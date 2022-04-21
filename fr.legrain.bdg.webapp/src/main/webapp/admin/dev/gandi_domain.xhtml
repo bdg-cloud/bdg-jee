@@ -1,0 +1,162 @@
+<!-- <!DOCTYPE html> -->
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+<p:panel id="idGandiDomainPanel" widgetVar="wvGandiDomainPanel">
+
+
+				 <div class="ui-g-12 ui-md-6 dashboard-buttons ">
+				         <p:commandButton value="Fermer" styleClass="icon icon-close menuitem-fermer-droite boutonRond" process="@this" 
+											onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())"/>
+				  </div>	
+			<!-- <p:panel header="Disponibilité d'un nom de domaine">
+				<h:panelGrid columns="2" cellpadding="10">
+		            <h:outputLabel value="Rentrer un nom de domaine :" />
+		            <h:inputText  value="#{gandiDomainController.nomDomaine}">
+		            	<p:ajax event="blur" update="@this" />
+		            </h:inputText>
+		            
+		            <p:commandButton  value="Verifier" id="idCheckDomainButton"
+						 update="@widgetVar(wvDomainDispoDataTable)"
+						  icon="fa fa-play" actionListener="#{gandiDomainController.checkAvailability}" styleClass="ui-priority-primary">
+							<f:setPropertyActionListener target="#{gandiDomainController.nomDomaine}" value="#{domain}" />
+						</p:commandButton>
+		            
+		        </h:panelGrid>
+		        
+		        <p:dataTable id="dataTableDomaineDispo" var="domain" value="#{gandiDomainController.availabilityList}" widgetVar="wvDomainDispoDataTable">
+			         <p:column sortBy="#{domain.name}" filterBy="#{domain.name}">
+							<f:facet name="header">
+								<h:outputText value="Nom" />
+							</f:facet>
+							<h:outputText value="#{domain.name}" />		
+						</p:column>	
+							
+					<p:column sortBy="#{domain.status}" filterBy="#{domain.status}">
+							<f:facet name="header">
+								<h:outputText value="Status " />
+							</f:facet>
+								
+						<h:outputText value="#{domain.status}" />	
+					</p:column>	
+
+		        </p:dataTable>
+			</p:panel> -->
+			
+		
+			<br />
+			<p:messages id="messages" showDetail="true" autoUpdate="true" closable="true" />
+			 <br />
+
+			<p:dataTable id="dataTable" var="domain"
+				value="#{gandiDomainController.values}"
+				rowKey="#{domain.id}"
+				sortBy="#{domain.fqdn}"
+				editable="true" 
+				selection="#{gandiDomainController.selectedInfosDomainList}"
+				selectionMode="single" 
+				paginator="true" rows="20"
+				resizableColumns="true"
+				widgetVar="wvDomainDataTable"
+				paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+				 rowsPerPageTemplate="10,20,50,100">
+
+				<p:ajax event="rowEdit" listener="#{gandiDomainController.OnRowEditDomain}"  />
+
+				<f:facet name="header">  
+           			Domaine (#{gandiDomainController.values.size()})
+        		</f:facet>
+
+				<p:column selectionMode="multiple" style="width:18px" />
+				<!-- ajouter sur le datatable pour une seule ligne selectionMode="single"-->
+
+				
+
+				<!-- <p:column sortBy="#{domain.id}" filterBy="#{domain.id}">
+						<f:facet name="header">
+							<h:outputText value="ID" />
+						</f:facet>
+							
+						<h:outputText value="#{domain.id}" />		
+				</p:column>	 -->
+				
+				<p:column sortBy="#{domain.fqdn}" filterBy="#{domain.fqdn}">
+						<f:facet name="header">
+							<h:outputText value="Nom" />
+						</f:facet>
+							
+						<h:outputText value="#{domain.fqdn}" />		
+				</p:column>	
+					
+				<p:column sortBy="#{domain.dateCreated}" filterBy="#{domain.dateCreated}">
+						<f:facet name="header">
+							<h:outputText value="Création" />
+						</f:facet>
+							
+						<h:outputText value="#{domain.dateCreated}">
+							<f:convertDateTime pattern="dd/MM/yyyy  HH:mm:ss" timeZone="Europe/Paris"/>
+						</h:outputText>		
+				</p:column>	
+				
+				<p:column sortBy="#{domain.dateRegistryEnd}" filterBy="#{domain.dateRegistryEnd}">
+						<f:facet name="header">
+							<h:outputText value="Expiration" />
+						</f:facet>
+							
+						<h:outputText value="#{domain.dateRegistryEnd}">
+							<f:convertDateTime pattern="dd/MM/yyyy  HH:mm:ss" timeZone="Europe/Paris"/>
+						</h:outputText>		
+				</p:column>	
+				
+				
+				
+				
+				
+				 <p:column>
+						<f:facet name="header">
+							<h:outputText value="Action"></h:outputText>
+						</f:facet>
+							
+						<!-- <p:commandButton value="Renouveler" id="idRenouvDomainButton"
+						 update="@widgetVar(dlgRenouv)"
+						  icon="fa fa-refresh"  oncomplete="PF('dlgRenouv').show();" styleClass="ui-priority-primary">
+							<f:setPropertyActionListener target="#{gandiDomainController.selectedInfosDomainList}" value="#{domain}" />
+						</p:commandButton> -->
+						
+						<p:commandButton value="Renouveler" ajax="false"
+							action="#{gandiDomainController.redirectRenouvDomain}" update="" title="renouveler">
+							 <f:setPropertyActionListener value="#{domain}"
+								target="#{gandiDomainController.selectedInfosDomainList}" />
+						</p:commandButton>
+						
+						
+						
+						<!-- action="#{gandiDomainController.renouvDomain}" -->
+						
+						<!-- <p:commandButton rendered="#{domain.state == 'running'? true : false }" value="Stop" id="idStopDomainButton"
+						 update="@widgetVar(wvDomainIassDataTable)"
+						  icon="fa fa-stop" action="#{gandiDomainController.stopDomain}" styleClass="redback">
+							<f:setPropertyActionListener target="#{gandiDomainController.selectedDomain}" value="#{domain}" />
+						</p:commandButton> -->
+				</p:column>
+				 
+				
+			</p:dataTable>
+
+		<p:dialog id="dialogRenouv" header="Renouveler" resizable="false" widgetVar="dlgRenouv">
+			 <h:form id="domainRenouvForm">
+				<h:panelGrid columns="2" cellpadding="4">
+			    	<h:outputText value="This is a Modal Dialog." />
+			    </h:panelGrid>
+			 </h:form> 
+		</p:dialog>
+
+
+		<p:growl id="growl" showDetail="true" life="5000" />
+		
+	</p:panel>
+</ui:composition>

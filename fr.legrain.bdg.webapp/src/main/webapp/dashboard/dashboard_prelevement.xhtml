@@ -1,0 +1,827 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    
+    <ui:define name="head">
+        <script type="text/javascript">
+            //<![CDATA[
+            function skinChart() {
+                this.cfg.shadow = false;
+                this.cfg.title = '';
+                this.cfg.seriesColors = ['#EA9624', '#5BA5D8'];
+                this.cfg.grid = {
+                    background: '#ffffff',
+                    borderColor: '#ffffff',
+                    gridLineColor: '#F5F5F5',
+                    shadow: false
+                };
+                this.cfg.axesDefaults = {
+                    rendererOptions: {
+                        textColor: '#666F77'
+                    }
+                };
+                this.cfg.seriesDefaults = {
+                    shadow: false,
+                    lineWidth: 1,
+                    markerOptions: {
+                        shadow: false,
+                        size: 7,
+                        style: 'circle'
+                    }
+                }
+            }
+            //]]>  
+        </script>
+        <style type="text/css">
+            .main-content {
+                padding: 0;
+            }
+            
+            #main-wrapper-content {
+                padding: 10px;
+            }
+        </style>
+    </ui:define>
+    
+    
+        <div class="dashboard">
+            <div class="dashboard-header">
+                <div class="ui-g">
+                        <p:commandButton value="Fermer" styleClass="icon icon-close menuitem-fermer-droite" process="@this" 
+							onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())"/>
+   						<h:graphicImage name="dashboard/prelevement.svg" id="imagedashboardPrelevement" library="images" />
+<!-- 					<i class="fa fa-file-text-o fa-3x" style="color:#1822c5"></i> -->
+                    <div class="ui-g-12 ui-md-6">
+                        <div class="dashboard-title">
+                            <h2>Prélèvement : Tableau de bord</h2>
+<!--                              actionListener="#{dashBoardPrelevementController.refresh}"  -->
+<!--                             <p:commandButton onclick="wvListePrelevement.clearFilters();" update="@widgetVar(wvCountNbPrelevementNonTransforme),@widgetVar(wvCountNbPrelevementTransforme),@widgetVar(wvListePrelevement), @widgetVar(wvCountNbPrelevementNonTransformeARelancer)" icon="fa fa-shopping-cart" title="Rafraîchir"> -->
+                              
+<!--                             </p:commandButton> -->
+<!--                             <i class="fa fa-map-marker" style="display:inline-block;"></i> -->
+<!--                             <p style="display:inline-block;"><p:outputLabel value="Nom du dossier : #{dashBoardBean.tenantInfo.tenantId} (#{monCompteBean.dossierCourant.taTNiveau.libelle})"/> </p> -->
+                        </div>
+                    </div>
+<!--                     <div class="ui-g-12 ui-md-6 dashboard-buttons"> -->
+<!--                         <button type="button"><i class="fa fa-floppy-o" aria-hidden="true"></i> </button> -->
+<!-- 						<p:commandButton icon="fa fa-shopping-cart" title="Panier" -->
+<!-- 							onstart="window.open('#{request.contextPath}/admin/renouvellement.xhtml?dossier=#{dashBoardBean.tenantInfo.tenantId}')"> -->
+<!-- 						</p:commandButton> -->
+<!--                         <button type="button"><i class="fa fa-trash" aria-hidden="true"></i> </button> -->
+<!--                         <button type="button"><i class="fa fa-print" aria-hidden="true"></i> </button> -->
+<!--                         <p:commandButton value="Fermer" styleClass="icon icon-close menuitem-fermer-droite" process="@this"  -->
+<!-- 							onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())"/> -->
+<!--                     </div> -->
+                    <div class="ui-g-12 ui-g-nopad">
+<!--                         <p:tabMenu activeIndex="#{param.i}" style="padding-left:40px"> -->
+<!--                             <p:menuitem value="Overview" outcome="/" icon="fa fa-star"> -->
+<!--                                 <f:param name="i" value="0" /> -->
+<!--                             </p:menuitem> -->
+<!--                             <p:menuitem value="Demos" outcome="/" icon="fa fa-search"> -->
+<!--                                 <f:param name="i" value="1" /> -->
+<!--                             </p:menuitem> -->
+<!--                             <p:menuitem value="Documentation" outcome="/" icon="fa fa-file"> -->
+<!--                                 <f:param name="i" value="2" /> -->
+<!--                             </p:menuitem> -->
+<!--                         </p:tabMenu> -->
+                    </div>
+                </div>
+            </div>
+            
+            <div id="main-wrapper-content-prelevement">
+<!--                 <div class="ui-g"> -->
+<!--                     <div class="ui-g-12 ui-md-6 ui-lg-3"> -->
+<!--                         <div class="box greenBack"> -->
+<!--                             <i class="fa fa-check" aria-hidden="true"></i> -->
+<!--                             <h2>ISSUES CLOSED</h2> -->
+<!--                             <p>631</p> -->
+<!--                         </div> -->
+<!--                     </div> -->
+<!--                     <div class="ui-g-12 ui-md-6 ui-lg-3"> -->
+<!--                         <div class="box blueBack"> -->
+<!--                             <i class="fa fa-clock-o" aria-hidden="true"></i> -->
+<!--                             <h2>LATEST CALL</h2> -->
+<!--                             <p>2 minutes ago</p> -->
+<!--                         </div> -->
+<!--                     </div> -->
+<!--                     <div class="ui-g-12 ui-md-6 ui-lg-3"> -->
+<!--                         <div class="box redBack"> -->
+<!--                             <i class="fa fa-commenting-o" aria-hidden="true"></i> -->
+<!--                             <h2>CALLS TODAY</h2> -->
+<!--                             <p>42</p> -->
+<!--                         </div> -->
+<!--                     </div> -->
+<!--                     <div class="ui-g-12 ui-md-6 ui-lg-3"> -->
+<!--                         <div class="box yellowBack"> -->
+<!--                             <i class="fa fa-archive" aria-hidden="true"></i> -->
+<!--                             <h2>MESSAGE BOX</h2> -->
+<!--                             <p>124</p> -->
+<!--                         </div> -->
+<!--                     </div> -->
+<!--                 </div> -->
+                    
+                <div class="ui-g">
+<!--                     <div class="ui-g-12 ui-md-6"> -->
+<!--                         <p:panel header="Contacts" style="height:100%"> -->
+<!--                             <ul class="contacts"> -->
+<!--                                 <li> -->
+<!--                                     <a href="#"> -->
+<!--                                         <p:graphicImage name="images/avatar_1.png" library="icarus-layout" width="35" style="border: 0 none;"/> -->
+<!--                                         <span class="name">Claire Williams</span> -->
+<!--                                         <span class="email">clare@primefaces-icarus.com</span> -->
+<!--                                     </a> -->
+<!--                                 </li> -->
+<!--                                 <li> -->
+<!--                                     <a href="#"> -->
+<!--                                         <p:graphicImage name="images/avatar_2.png" library="icarus-layout" width="35" style="border: 0 none;"/> -->
+<!--                                         <span class="name">Jason Dourne</span> -->
+<!--                                         <span class="email">jason@primefaces-icarus.com</span> -->
+<!--                                     </a> -->
+<!--                                 </li> -->
+<!--                                 <li> -->
+<!--                                     <a href="#"> -->
+<!--                                         <p:graphicImage name="images/avatar_3.png" library="icarus-layout" width="35" style="border: 0 none;"/> -->
+<!--                                         <span class="name">Jane Davidson</span> -->
+<!--                                         <span class="email">jane@primefaces-icarus.com</span> -->
+<!--                                     </a> -->
+<!--                                 </li> -->
+<!--                                 <li> -->
+<!--                                     <a href="#"> -->
+<!--                                         <p:graphicImage name="images/avatar_4.png" library="icarus-layout" width="35" style="border: 0 none;"/> -->
+<!--                                         <span class="name">Tony Corleone</span> -->
+<!--                                         <span class="email">tony@primefaces-icarus.com</span> -->
+<!--                                     </a> -->
+<!--                                 </li> -->
+<!--                             </ul> -->
+<!--                         </p:panel> -->
+<!--                     </div> -->
+<!--                     <div class="ui-g-12 ui-md-6"> -->
+<!--                         <div class="weather-box yellowBack centerText"> -->
+<!--                             <i class="fa fa-umbrella" aria-hidden="true"></i> -->
+<!--                             <div class="weather-box-inner"> -->
+<!--                                 <div class="city"> -->
+<!--                                     <p>Los Angeles</p> -->
+<!--                                     <p>Santa Monica</p> -->
+<!--                                 </div> -->
+<!--                                 <div class="weather"> -->
+<!--                                     <h2>Rainy</h2> -->
+<!--                                     <h4>18°C</h4> -->
+<!--                                 </div> -->
+<!--                             </div> -->
+<!--                         </div> -->
+<!--                         <div class="weather-box greenBack centerText" style="margin-top:1px"> -->
+<!--                             <i class="fa fa-umbrella green" aria-hidden="true"></i> -->
+<!--                             <div class="weather-box-inner"> -->
+<!--                                 <div class="city"> -->
+<!--                                     <p>San Francisco</p> -->
+<!--                                     <p>Bay Area</p> -->
+<!--                                 </div> -->
+<!--                                 <div class="weather"> -->
+<!--                                     <h2>Rainy</h2> -->
+<!--                                     <h4>15°C</h4> -->
+<!--                                 </div> -->
+<!--                             </div> -->
+<!--                         </div> -->
+<!--                     </div> -->
+                    
+<!--                     <div class="ui-g-12 ui-md-4 ui-fluid"> -->
+<!--                         <p:panel header="Contact Us" style="background:#fff;height:100%"> -->
+<!--                             <div class="ui-g-12"> -->
+<!--                                 <div class="ui-g-12"> -->
+<!--                                     <p:inputText placeholder="Name" /> -->
+<!--                                 </div> -->
+<!--                                 <div class="ui-g-12"> -->
+<!--                                     <p:inputTextarea placeholder="Message"/> -->
+<!--                                 </div> -->
+<!--                             </div> -->
+<!--                             <p:commandButton type="button" value="Send" icon="fa fa-check"></p:commandButton> -->
+<!--                         </p:panel> -->
+<!--                     </div> -->
+<!--                     <div class="ui-g-12 ui-md-8"> -->
+<!--                         <p:panel header="Tâche" style="height:100%"> -->
+<!--                             <ul class="task-list"> -->
+<!--                                 <li> -->
+<!--                                     <p:selectBooleanCheckbox /> -->
+<!--                                     <span class="task-name">Send sales reports to CEO</span> -->
+<!--                                     <span class="badge badge-green">Today</span> -->
+<!--                                 </li> -->
+<!--                                 <li> -->
+<!--                                     <p:selectBooleanCheckbox /> -->
+<!--                                     <span class="task-name">Pay the invoices</span> -->
+<!--                                     <span class="badge badge-yellow">Today</span> -->
+<!--                                 </li> -->
+<!--                                 <li> -->
+<!--                                     <p:selectBooleanCheckbox /> -->
+<!--                                     <span class="task-name">Dinner with Tony</span> -->
+<!--                                     <span class="badge badge-yellow">Today</span> -->
+<!--                                 </li> -->
+<!--                                 <li> -->
+<!--                                     <p:selectBooleanCheckbox /> -->
+<!--                                     <span class="task-name">Team meeting</span> -->
+<!--                                     <span class="badge badge-red">Tomorrow</span> -->
+<!--                                 </li> -->
+<!--                                 <li> -->
+<!--                                     <p:selectBooleanCheckbox /> -->
+<!--                                     <span class="task-name">Plan the new theme</span> -->
+<!--                                     <span class="badge badge-red">Tomorrow</span> -->
+<!--                                 </li> -->
+<!--                                 <li> -->
+<!--                                     <p:selectBooleanCheckbox /> -->
+<!--                                     <span class="task-name">Go to Gym</span> -->
+<!--                                     <span class="badge badge-red">Tomorrow</span> -->
+<!--                                 </li> -->
+<!--                             </ul> -->
+<!--                         </p:panel> -->
+<!--                     </div> -->
+
+				<div class="ui-g-12 ui-md-12">
+				<p:panel collapsed="true" toggleable="true" id="idPanelCriteresDashboardPrelevement"  >
+						<f:facet name="header">
+							<h:outputText value="Critères et paramètres du tableau de bord - " />
+							<h:outputText value="Période du " />
+							<h:outputText value="#{dashBoardPrelevementController.dateDebut}" >
+								<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" type="localDate"/>
+							</h:outputText>
+							<h:outputText value=" au " />
+							<h:outputText value="#{dashBoardPrelevementController.dateFin}" >
+								<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" type="localDate"/>
+							</h:outputText>
+						</f:facet>
+					<div class="ui-g-12 ui-md-4">
+					<p:fieldset style="margin-bottom:20px;">
+<!-- 						 <h:graphicImage name="dashboard/periode.png" library="images" /> -->
+		
+						<p:panel header="Période" styleClass="panelgrey">
+						<f:facet name="footer">
+							<p:commandButton 	oncomplete="PF('wvListePrelevement').filter()" 
+												update="@this,
+														idPanelCriteresDashboardPrelevement,
+														@widgetVar(wvDashPrelevementPanelPrelevement),
+														@widgetVar(wvCountNbPrelevementNonTransforme),
+														@widgetVar(wvCountNbPrelevementTransforme),
+														@widgetVar(wvListePrelevement),
+														@widgetVar(wvCountNbPrelevementNonTransformeARelancer),
+														@widgetVar(wvTauxPrelevementTransforme)" 
+												action="#{dashBoardPrelevementController.refreshDashBoard('tous')}" 
+												value="Appliquer" 
+												id="periodePrelevement" 
+												styleClass="ui-orange" 
+												style="width:100%;" />
+							
+						</f:facet>
+						 <div class="ui-g-12 ui-md-2" >
+						<i class="fa fa-calendar fa-3x" aria-hidden="true"></i>
+<!-- 						 <h:graphicImage name="dashboard/periode.png" library="images" /> -->
+						 </div>
+						 <div class="ui-g-12 ui-md-10">
+			        	<h:panelGrid columns="2" cellpadding="0">
+						 <p:outputLabel value="Du"/>
+											<p:calendar value="#{dashBoardPrelevementController.dateDebut}"
+												showOn="button" 
+												navigator="true" 
+												pattern="#{msg.date_pattern}" 
+												mask="true" 
+												locale="fr" 
+												timeZone="#{msg.time_zone}" >
+											</p:calendar>
+<!-- 												<f:convertDateTime pattern="#{msg.date_pattern}" -->
+<!-- 													timeZone="#{msg.time_zone}" /> -->
+
+						 <p:outputLabel value="au"/>
+											<p:calendar value="#{dashBoardPrelevementController.dateFin}"
+												showOn="button" 
+												navigator="true" 
+												pattern="#{msg.date_pattern}" 
+												mask="true" 
+												locale="fr" 
+												timeZone="#{msg.time_zone}" >
+											</p:calendar>
+<!-- 												<f:convertDateTime pattern="#{msg.date_pattern}" -->
+<!-- 													timeZone="#{msg.time_zone}" /> -->
+        				</h:panelGrid>
+        				</div>
+        				 <p:separator />
+<!--         				  <p:outputLabel value="Comparer à"/> -->
+<!-- 									<p:selectOneRadio id="console" columns="2" > -->
+<!-- 										<f:selectItem itemLabel="Même période, année précédente" itemValue="PS4"/> -->
+<!-- 										<f:selectItem itemLabel="Période précédente, même durée" itemValue="Xbox One" /> -->
+<!-- 									</p:selectOneRadio> -->
+
+								</p:panel>
+    				</p:fieldset>
+    				</div>
+<!-- 					<div class="ui-g-12 ui-md-2"> -->
+<!-- 					<p:fieldset style="margin-bottom:20px;"> -->
+<!-- 						<p:panel header="Période antérieure" styleClass="panelgrey"  > -->
+						
+<!-- 			        	<h:panelGrid columns="3" cellpadding="5"> -->
+<!--         				</h:panelGrid> -->
+<!--         				</p:panel> -->
+<!--     				</p:fieldset> -->
+<!--     				</div> -->
+					<div class="ui-g-12 ui-md-4">
+<!-- 					<p:fieldset style="margin-bottom:20px;heigth:80px;"> -->
+<!-- 						<p:panel header="Comparer à"  styleClass="panelgrey"> -->
+<!-- 						<f:facet name="footer"> -->
+<!-- 							<p:commandButton value="Appliquer" id="filtreArticle" styleClass="ui-orange" style="width:100%;" /> -->
+<!-- 						</f:facet>						 -->
+<!-- 			        	<p:panelGrid columns="1" cellpadding="5"> -->
+<!-- 									<p:selectOneRadio id="console"  layout="responsive" columns="1" > -->
+									
+<!-- 										<f:selectItem itemLabel="Même période, année précédente" itemValue="PS4" /> -->
+<!-- 										<f:selectItem itemLabel="Période précédente, même durée" itemValue="Xbox One" /> -->
+<!-- 									</p:selectOneRadio> -->
+						
+<!--         				</p:panelGrid> -->
+<!--         				</p:panel> -->
+<!--     				</p:fieldset> -->
+    				</div>
+					<div class="ui-g-12 ui-md-4">
+<!-- 					<p:fieldset style="margin-bottom:20px; heigth:80px;" > -->
+<!-- 						<p:panel header="Filtre Tiers"   styleClass="panelgrey"> -->
+<!-- 						<f:facet name="footer"> -->
+<!-- 							<p:commandButton value="Appliquer" id="filtreTier" styleClass="ui-orange" style="width:100%;" /> -->
+<!-- 						</f:facet>						 -->
+<!-- 			        	<h:panelGrid columns="3" cellpadding="5"> -->
+<!-- 						  <h:graphicImage name="dashboard/critere-tiers.png" id="criteretiers" library="images" /> -->
+
+<!-- 							<p:outputLabel value="Code famille : " /> -->
+
+<!-- 							<p:panel styleClass="panel-aide-contextuelle" > -->
+<!-- 							<p:autoComplete  -->
+<!-- 								styleClass="autocompletedashboard " -->
+<!-- 								value="#{articleController.taFamilleDTO}" -->
+<!-- 								multiple="true" -->
+<!-- 								completeMethod="#{articleController.familleArticleAutoCompleteLight}" -->
+<!-- 								id="idfamille" disabled="#{articleController.editable()}" -->
+<!-- 								var="famille" itemLabel="#{famille.codeFamille}" -->
+<!-- 								itemValue="#{famille}" forceSelection="true" dropdown="true" -->
+							
+<!-- 								placeholder="Famille d'article" converter="entityConverter"> -->
+<!-- 								<p:column> -->
+<!-- 									<f:facet name="header"> -->
+<!-- 										<p:commandButton value="Ajouter" title="Insérer" -->
+<!-- 											process="@this" update="@this" -->
+<!-- 											actionListener="#{articleController.actDialogFamille}" -->
+<!-- 											styleClass="btn-insert btn"> -->
+<!-- 											<p:ajax event="dialogReturn" -->
+<!-- 												listener="#{articleController.handleReturnDialogFamille}" -->
+<!-- 												update="@parent:@parent" /> -->
+<!-- 										</p:commandButton> -->
+<!-- 									</f:facet>								 -->
+<!-- 									<h:outputText value="#{famille.codeFamille}" /> -->
+<!-- 								</p:column> -->
+<!-- 								<p:column> -->
+<!-- 									<h:outputText value="#{famille.libcFamille}" /> -->
+<!-- 								</p:column> -->
+<!-- 								<p:column> -->
+<!-- 									<h:outputText value="#{famille.liblFamille}" /> -->
+<!-- 								</p:column> -->
+<!-- 									<f:attribute name="nomChamp" value="#{const.C_CODE_FAMILLE}" /> -->
+<!-- 								<p:ajax event="itemSelect" listener="#{articleController.autcompleteSelection}" update="@this" /> -->
+<!-- 								<p:ajax event="itemUnselect" listener="#{articleController.autcompleteUnSelect}" update="@this" /> -->
+<!-- 							</p:autoComplete> -->
+<!-- 							<p:commandLink id="idLinkAideTiersCodeFamille" styleClass="lien-aide-contextuelle" > -->
+<!-- 								<i class="fa fa-info-circle animated swing"></i> -->
+<!-- 							</p:commandLink> -->
+<!-- 								<p:overlayPanel for="idLinkAideTiersCodeFamille" hideEffect="fade" dynamic="true" showCloseIcon="true"  -->
+<!-- 						    		styleClass="overlay-aide-contextuelle"> -->
+<!-- 									<ui:include src="/aide_contextuelle/article_code_famille.xhtml" /> -->
+<!-- 								</p:overlayPanel> -->
+<!-- 							</p:panel> -->
+
+						
+<!--         				</h:panelGrid> -->
+<!--         				</p:panel> -->
+<!--     				</p:fieldset> -->
+    				</div>
+				</p:panel>
+				</div>
+
+				<div class="ui-g-12 ui-md-12" style="background:#ebebeb;">
+					<div class="ui-g-12 ui-md-3">
+						<p:panel header="Prélèvement sur la période" style="background:#ebebeb;" widgetVar="wvCountNbPrelevementTransforme">
+							<div class="box #{dashBoardPrelevementController.cSbNbDocumentSurPeriode}" >
+							<i class="fa fa-file-text-o"></i>
+							<h2>#{dashBoardPrelevementController.nbPrelevementSurPeriode} Prélèvement réalisés</h2>
+							<h3>Total HT : #{dashBoardPrelevementController.totauxCaPeriodePrelevement.mtHtCalc} € </h3>
+							<p>Du 
+							<p:outputLabel value="#{dashBoardPrelevementController.dateDebut}">
+								<f:convertDateTime pattern="#{msg.date_pattern}"
+										               timeZone="#{msg.time_zone}" type="localDate"/>		
+							</p:outputLabel>
+							  au 
+							<p:outputLabel value="#{dashBoardPrelevementController.dateFin}">
+								<f:convertDateTime pattern="#{msg.date_pattern}"
+										               timeZone="#{msg.time_zone}" type="localDate"/>		
+							</p:outputLabel>
+							
+							
+							</p>
+
+						<p:selectBooleanButton style="width:50%;" id="Prelevementtous" 
+												value="true" onLabel="Sélection active"
+												widgetVar="wvPrelevementTous" 
+												offLabel="Afficher" onIcon="ui-icon-check" offIcon="ui-icon-close">
+								<p:ajax oncomplete="PF('wvListePrelevement').filter()" 
+										update="@this,
+												@widgetVar(wvDashPrelevementPanelPrelevement),
+												@widgetVar(wvCountNbPrelevementNonTransforme),
+												@widgetVar(wvCountNbPrelevementTransforme),
+												@widgetVar(wvListePrelevement),
+												@widgetVar(wvCountNbPrelevementNonTransformeARelancer),
+												@widgetVar(wvTauxPrelevementTransforme)" 
+										listener="#{dashBoardPrelevementController.refreshDashBoard('tous')}"/>	 
+        				</p:selectBooleanButton>
+							</div> 
+						</p:panel>
+					</div>
+					<div class="ui-g-12 ui-md-3" style="background:#ebebeb;">
+						<p:panel header="Prélèvement en cours" style="background:#ebebeb;" widgetVar="wvCountNbPrelevementNonTransforme">
+							<div class="box #{dashBoardPrelevementController.cSbNbDocumentNonTransformeSurPeriode}">
+						
+							
+							<i class="fa fa-file-text-o"></i>
+							<h2>#{dashBoardPrelevementController.nbPrelevementNonTransformeSurPeriode} Prélèvement non transformés</h2>
+							<h3>Total HT : #{dashBoardPrelevementController.totauxCaPeriodePrelevementNonTransforme.mtHtCalc} € </h3>
+							<p>Du 
+							<p:outputLabel value="#{dashBoardPrelevementController.dateDebut}">
+								<f:convertDateTime pattern="#{msg.date_pattern}"
+										               timeZone="#{msg.time_zone}" type="localDate"/>		
+							</p:outputLabel>
+							  au 
+							<p:outputLabel value="#{dashBoardPrelevementController.dateFin}">
+								<f:convertDateTime pattern="#{msg.date_pattern}"
+										               timeZone="#{msg.time_zone}" type="localDate"/>		
+							</p:outputLabel>
+							
+							
+							</p>
+							 <p:selectBooleanButton style="width:50%;" id="Prelevementnontrans" value="false" onLabel="Sélection active" offLabel="Afficher" onIcon="ui-icon-check" offIcon="ui-icon-close" >
+								<p:ajax oncomplete="PF('wvListePrelevement').filter()" 
+										event="change" 
+										update="@this,
+												@widgetVar(wvDashPrelevementPanelPrelevement),
+												@widgetVar(wvCountNbPrelevementNonTransforme),
+												@widgetVar(wvCountNbPrelevementTransforme),
+												@widgetVar(wvListePrelevement),
+												@widgetVar(wvCountNbPrelevementNonTransformeARelancer),
+												@widgetVar(wvTauxPrelevementTransforme)" 
+										listener="#{dashBoardPrelevementController.refreshDashBoard('nontransforme')}"/>	 
+        					 </p:selectBooleanButton>
+							</div>
+						</p:panel>
+					</div>
+					<div class="ui-g-12 ui-md-3" style="background:#ebebeb;">
+						<p:panel header="Prélèvement crédité depuis au moins trois jours"  widgetVar="wvCountNbPrelevementNonTransformeARelancer" 
+							style="background:#ebebeb;">
+							<div class="box #{dashBoardPrelevementController.cSbNbDocumentTransformeSurPeriode}" >
+							<i class="fa fa-file-text-o"></i>
+							<h2>#{dashBoardPrelevementController.nbPrelevementNonTransformeARelancerSurPeriode} Prélèvement à vérifier</h2>
+							<h3>Total HT : #{dashBoardPrelevementController.totauxCaPeriodePrelevementTransforme.mtHtCalc} € </h3>
+							<p>Du 
+							<p:outputLabel value="#{dashBoardPrelevementController.dateDebut}">
+								<f:convertDateTime pattern="#{msg.date_pattern}"
+										               timeZone="#{msg.time_zone}" type="localDate"/>		
+							</p:outputLabel>
+							  au 
+							<p:outputLabel value="#{dashBoardPrelevementController.dateFin}">
+								<f:convertDateTime pattern="#{msg.date_pattern}"
+										               timeZone="#{msg.time_zone}" type="localDate"/>		
+							</p:outputLabel>
+							
+							
+							</p>
+							<!-- 							<p>Du #{dashBoardPrelevementController.dateDebut} au #{dashBoardPrelevementController.dateFin}</p> -->
+<!-- 						    <p:commandButton value="Ajax Submit" id="ajax" update="growl" actionListener="#{buttonView.buttonAction}" styleClass="ui-priority-primary" /> -->
+						    <p:selectBooleanButton  style="width:50%;" id="Prelevement15jours" value="false" onLabel="Sélection active" offLabel="Afficher" onIcon="ui-icon-check" offIcon="ui-icon-close" >
+								<p:ajax oncomplete="PF('wvListePrelevement').filter()" 
+										event="change" 
+										update="@this,
+												@widgetVar(wvDashPrelevementPanelPrelevement),
+												@widgetVar(wvCountNbPrelevementNonTransforme),
+												@widgetVar(wvCountNbPrelevementTransforme),
+												@widgetVar(wvListePrelevement),
+												@widgetVar(wvCountNbPrelevementNonTransformeARelancer),
+												@widgetVar(wvTauxPrelevementTransforme)" 
+										listener="#{dashBoardPrelevementController.refreshDashBoard('nontransformearelancer')}"/>	 
+        					</p:selectBooleanButton>
+							</div> 
+						</p:panel>
+					</div>
+					<div class="ui-g-12 ui-md-3 " style="background:#ebebeb;"> 
+						<p:panel header="Taux de transformation" widgetVar="wvTauxPrelevementTransforme" 
+						style="background:#ebebeb;">
+							<div class="box" >
+							<!-- #{dashBoardPrelevementController.cSbNbPrelevementTransformeSurPeriode} -->
+								<p:tabView style="text-align:left;">
+									<p:tab title="Montant HT" >
+									<h3 style="text-align:center;">Total HT : #{dashBoardPrelevementController.totauxCaPeriodePrelevementTransforme.mtHtCalc} € </h3>
+									<div class="knob-container  ui-corner-all" style="text-align:center;">
+										<p:knob labelTemplate="{value}%" value="#{dashBoardPrelevementController.tauxTransfoCa}" height="70"
+											width="70" disabled="true"/>
+									</div>
+									</p:tab>
+									<p:tab title="Nombre de Prélèvements" >
+									<h3 style="text-align:center;">#{dashBoardPrelevementController.nbPrelevementTransformeSurPeriode} Prelevement transformés</h3>
+									<div class="knob-container  ui-corner-all" style="text-align:center;">
+										<p:knob labelTemplate="{value}%" value="#{dashBoardPrelevementController.tauxTransfoNb}" height="70"
+											width="70" disabled="true" />
+									</div>
+									</p:tab>
+								</p:tabView>
+								<p:selectBooleanButton  style="width:50%;" id="PrelevementTransforme" value="false" onLabel="Sélection active" offLabel="Afficher" onIcon="ui-icon-check" offIcon="ui-icon-close" >
+								<p:ajax  oncomplete="PF('wvListePrelevement').filter()" event="change" update="@this,@widgetVar(wvDashPrelevementPanelPrelevement),@widgetVar(wvCountNbPrelevementNonTransforme),@widgetVar(wvCountNbPrelevementTransforme),@widgetVar(wvListePrelevement), @widgetVar(wvCountNbPrelevementNonTransformeARelancer), @widgetVar(wvTauxPrelevementTransforme)" listener="#{dashBoardPrelevementController.refreshDashBoard('transforme')}"/>	 
+        					</p:selectBooleanButton>
+<!-- 							<i class="fa fa-file-text-o"></i> -->
+<!-- 								<i class="fa fa-long-arrow-down" aria-hidden="true"></i> -->
+<!-- 							<h2>- 0.36 %</h2> -->
+<!-- 						  <h:graphicImage name="dashboard/fleche-montante.png" library="images" /> -->
+<!-- 							<p>En légère baisse</p> -->
+<!-- 							<h:outputText value="Tendance" /> -->
+<!-- 						  <h:graphicImage name="dashboard/fleche-montante.png" library="images" /> -->
+							</div> 
+						</p:panel>
+					</div>
+				</div>
+
+				<div class="ui-g-12 ui-md-12">
+				<p:panel header="Liste des Prélèvement " widgetVar="wvDashPrelevementPanelPrelevement" >
+
+						<p:dataTable id="taPrelevement" var="a"
+							value="#{dashBoardPrelevementController.valueLignesPrelevement}"
+							
+							
+							widgetVar="wvListePrelevement" resizableColumns="true" 
+							paginator="true"
+							rows="#{msg.modele_datatable_ligne_par_page_debut}"
+							paginatorTemplate="#{msg.modele_datatable_paginator}"
+							rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+							emptyMessage="#{msg.message_datatable_vide}"
+							currentPageReportTemplate="#{msg.modele_datatable_page_courante}"
+							
+							selectionMode="single" rowKey="#{a.codeDocument}" reflow="true">
+							
+							<f:facet name="header">
+							
+								<span style="float:left;">
+									        <p:commandButton id="idBtnListePrintEcranDasboardPrelevement"
+							 title="Imprimer la liste" 
+			onsuccess="window.open('#{request.contextPath}/output?__report=/reports/documents/prelevement/ListeDashboardPrelevement.rptdesign&amp;__format=pdf')"
+			actionListener="#{dashBoardPrelevementController.actImprimerListePrelevement}" styleClass="ui-priority-primary boutonPrint" style="color : white;" icon="fa fa-print"
+			process="@this" ></p:commandButton>
+									    </span>
+									    
+        						Liste des Prélèvements
+        						 <span style="float:right;" class="searchbar_list">
+						            <p:outputPanel>
+							                <p:inputText id="globalFilter" onkeyup="PF('wvListePrelevement').filter()" style="width:150px" placeholder="Rechercher"/>
+							            </p:outputPanel>
+						        </span>
+    						</f:facet>
+    						 
+							<p:column width="15%" rendered="true" filterMatchMode="contains"
+								filterBy="#{a.codeDocument}" sortBy="#{a.codeDocument}"  >
+								<f:facet name="header">
+									<h:outputText value="Code document" />
+								</f:facet>
+								<h:outputText value="#{a.codeDocument}" />
+							</p:column>
+
+							<p:column width="38%" filterMatchMode="contains" 
+								filterBy="#{a.libelleDocument}" sortBy="#{a.libelleDocument}">
+								<f:facet name="header">
+									<h:outputText value="Libellé" />
+								</f:facet>
+								<h:outputText value="#{a.libelleDocument}" id="idListeLibellePrelevement"/>
+								<p:tooltip id="toolTipListeLibellePrelevement" value="#{a.libelleDocument}" shared="true" for="idListeLibellePrelevement" showEffect="clip" position="top"/>
+							</p:column>
+
+							<p:column styleClass="center" width="12%"
+								filterMatchMode="contains" filterBy="#{prelevementController.customFormatDate(a.dateDocument)}"
+								sortBy="#{a.dateDocument}">
+								<f:facet name="header">
+									<h:outputText value="Fait le" />
+								</f:facet>
+								<h:outputText value="#{a.dateDocument}">
+									<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="center" width="20%"
+								filterMatchMode="contains" filterBy="#{a.codeTiers}"
+								sortBy="#{a.codeTiers}">
+								<f:facet name="header">
+									<h:outputText value="Code Tiers" />
+								</f:facet>
+<!-- 								<p:commandLink value="#{a.codeTiers}" -->
+<!-- 							action="#{etatFournisseurBean.detailTiers}" -->
+<!-- 							update=":form:tabView" -->
+<!-- 							oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');"> -->
+<!-- 							<f:setPropertyActionListener value="#{doc.taTiers}" -->
+<!-- 								target="#{etatFournisseurBean.detailLigneTiers}" /> -->
+<!-- 						</p:commandLink> -->
+								<h:outputText value="#{a.codeTiers}">
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="center" width="25%"
+								filterMatchMode="contains" filterBy="#{a.nomTiers}"
+								sortBy="#{a.nomTiers}">
+								<f:facet name="header">
+									<h:outputText value="Tiers" />
+								</f:facet>
+								<h:outputText value="#{a.nomTiers}">
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="right" width="12%"
+								filterMatchMode="contains" filterBy="#{a.netHtCalc}"
+								sortBy="#{a.netHtCalc}">
+								<f:facet name="header">
+									<h:outputText value="Montant HT" />
+								</f:facet>
+								<h:outputText value="#{a.netHtCalc}">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="right" width="10%"
+								filterMatchMode="contains" filterBy="#{a.netTvaCalc}"
+								sortBy="#{a.netTvaCalc}">
+								<f:facet name="header">
+									<h:outputText value="Montant TVA" />
+								</f:facet>
+								<h:outputText value="#{a.netTvaCalc}">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="right" width="12%"
+								filterMatchMode="contains" filterBy="#{a.netTtcCalc}"
+								sortBy="#{a.netTtcCalc}">
+								<f:facet name="header">
+									<h:outputText value="Montant TTC" />
+								</f:facet>
+								<h:outputText value="#{a.netTtcCalc}">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="center" width="12%"
+								filterMatchMode="contains" filterBy="#{prelevementController.customFormatDate(a.dateEchDocument)}"
+								sortBy="#{a.dateEchDocument}">
+								<f:facet name="header">
+									<h:outputText value="Prélevé le" />
+								</f:facet>
+								<h:outputText value="#{a.dateEchDocument}">
+									<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" />
+								</h:outputText>
+							</p:column>
+
+							
+						</p:dataTable>
+					</p:panel>
+				</div>
+				<div class="ui-g-12 ui-md-6">
+<!-- 				  <div class="dashboard-title"> -->
+					<p:panel>
+						<f:facet name="header">
+							<h:outputText value="Période du " />
+							<h:outputText value="#{dashBoardPrelevementController.dateDebut}" >
+								<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" type="localDate"/>
+							</h:outputText>
+							<h:outputText value=" au " />
+							<h:outputText value="#{dashBoardPrelevementController.dateFin}" >
+								<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" type="localDate"/>
+							</h:outputText>
+						</f:facet>
+					
+					<h:panelGrid columns="2" cellpadding="10">
+						<h:outputText value="Graphiques mensuels des documents par mois sur l'exercice" />
+					</h:panelGrid>
+					<p:tabView>
+						<!--         <p:ajax event="tabChange" listener="#{tabbedView.onTabChange}" update=":form:msgs"/> -->
+						<!--         <p:ajax event="tabClose" listener="#{tabbedView.onTabClose}" update=":form:msgs"/> -->
+
+
+						<p:tab title="Prélèvements">
+<!-- 							<h:panelGrid columns="2" cellpadding="10"> -->
+								<p:chart type="bar" model="#{dashBoardPrelevementController.barChartModelPrelevement}" style="height:240px;"/>
+<!-- 							</h:panelGrid> -->
+						</p:tab>
+<!-- 						<p:tab title="Prelevement" closable="true"> -->
+<!-- 							<h:panelGrid columns="2" cellpadding="10"> -->
+<!-- 								<p:graphicImage name="demo/images/godfather/godfather2.jpg" /> -->
+<!-- 								<h:outputText value="Francis Ford Coppola's legendary..." /> -->
+<!-- 							</h:panelGrid> -->
+<!-- 						</p:tab> -->
+<!-- 						<p:tab title="Commandes" closable="true"> -->
+<!-- 							<h:panelGrid columns="2" cellpadding="10"> -->
+<!-- 								<p:graphicImage name="demo/images/godfather/godfather3.jpg" /> -->
+<!-- 								<h:outputText value="After a break of more than 15 years..." /> -->
+<!-- 							</h:panelGrid> -->
+<!-- 						</p:tab> -->
+					</p:tabView>
+					</p:panel>
+<!-- 					<p:panel header="Dossier : #{dashBoardBean.tenantInfo.tenantId} - Niveau : #{monCompteBean.dossierCourant.taTNiveau.libelle} - Modules et fonctionnalités" > -->
+<!-- 						<h:panelGrid columns="2" cellpadding="10"> --> 
+<!-- 							<h:outputText value="Renouveler : " /> --> 
+<!-- 							<p:commandButton icon="fa fa-shopping-cart" title="Panier" -->
+<!-- 								styleClass="icon" value="Panier" -->
+<!-- 								onstart="window.open('#{request.contextPath}/admin/renouvellement.xhtml?dossier=#{dashBoardBean.tenantInfo.tenantId}')"> -->
+<!-- 							</p:commandButton> -->
+<!-- 						</h:panelGrid> -->
+						
+<!-- 						<p:dataTable var="a" -->
+<!-- 							value="#{monCompteBean.listeAutorisationDossier}" -->
+<!--  							selectionMode="single" rowKey="#{a.idAutorisation}" reflow="true" sortBy="#{a.dateFin.toGregorianCalendar().time}"> -->
+<!-- 							<f:facet name="header"> -->
+<!--         						Mes modules -->
+<!--     						</f:facet> -->
+<!-- 							<p:column width="12%"> -->
+<!-- 								<f:facet name="header" > -->
+<!-- 									<h:outputText value="Code" /> -->
+<!-- 								</f:facet> -->
+<!-- 								<h:outputText value="#{a.taProduit.code}" /> -->
+<!-- 							</p:column> -->
+
+<!-- 							<p:column width="38%"> -->
+<!-- 								<f:facet name="header"> -->
+<!-- 									<h:outputText value="Nom du module" /> -->
+<!-- 								</f:facet> -->
+<!-- 								<h:outputText value="#{a.taProduit.libelle}" /> -->
+<!-- 							</p:column> -->
+
+<!-- 							<p:column styleClass="center" width="25%"> -->
+<!-- 								<f:facet name="header"> -->
+<!-- 									<h:outputText value="Activé le" /> -->
+<!-- 								</f:facet> -->
+<!-- 								<h:outputText value="#{a.dateAchat.toGregorianCalendar().time}"> -->
+<!-- 									<f:convertDateTime pattern="#{msg.date_pattern}" -->
+<!-- 										timeZone="#{msg.time_zone}" /> -->
+<!-- 								</h:outputText> -->
+<!-- 							</p:column> -->
+
+<!-- 							<p:column styleClass="center" width="25%"> -->
+<!-- 								<f:facet name="header"> -->
+<!-- 									<h:outputText value="Expire le" /> -->
+<!-- 								</f:facet> -->
+<!-- 								<h:outputText value="#{a.dateFin.toGregorianCalendar().time}" styleClass="#{dashBoardBean.getClasseExpiration(a.dateFin.toGregorianCalendar().time)}"> -->
+<!-- 									<f:convertDateTime pattern="#{msg.date_pattern}" -->
+<!-- 										timeZone="#{msg.time_zone}" /> -->
+<!-- 								</h:outputText> -->
+<!-- 							</p:column> -->
+<!-- 						</p:dataTable> -->
+<!-- 					</p:panel> -->
+				</div>
+				<!--                     <div class="ui-g-12 ui-md-6"> -->
+<!--                         <p:panel header="Graphique"> -->
+<!--                             <p:chart id="line" type="line" model="#{dashBoardBean.lineModel1}" responsive="true"/> -->
+<!--                         </p:panel> -->
+<!--                     </div> -->
+<!--                     <div class="ui-g-12 ui-md-6"> -->
+<!--                         <p:panel header="Calendrier" style="height:100%"> -->
+<!--                             <p:schedule value="#{dashBoardBean.eventModel}" widgetVar="myschedule" timeZone="GMT+1"> -->
+<!-- 					            <p:ajax event="eventSelect" listener="#{dashBoardBean.onEventSelect}" update="eventDetails" oncomplete="PF('eventDialog').show();" /> -->
+
+<!--                             </p:schedule> -->
+<!--                         </p:panel> -->
+<!--                     </div> -->
+<!--                     <div class="ui-g-12 ui-md-4"> -->
+
+<!--                     </div> -->
+                </div>
+            </div>
+        </div>
+        
+<!--         <p:dialog widgetVar="eventDialogPrelevement" header="Détail" showEffect="clip" hideEffect="clip"> -->
+<!-- 	        <h:panelGrid id="eventDetailsPrelevement" columns="2"> -->
+<!-- 	            <p:outputLabel for="title" value="Titre"/> -->
+<!-- 	            <p:inputText id="titlePrelevement" value="#{dashBoardBean.event.title}" required="true" disabled="true"/> -->
+	 
+<!-- 	            <p:outputLabel for="from" value="Du" /> -->
+<!-- 	            <p:calendar id="fromPrelevement" value="#{dashBoardBean.event.startDate}" timeZone="GMT+1" pattern="dd/MM/yyyy HH:mm" disabled="true"/> -->
+	 
+<!-- 	            <p:outputLabel for="to" value="Au" /> -->
+<!-- 	            <p:calendar id="toPrelevement" value="#{dashBoardBean.event.endDate}" timeZone="GMT+1" pattern="dd/MM/yyyy HH:mm" disabled="true"/> -->
+	 
+<!-- 	            <p:outputLabel for="allDayPrelevement" value="Toute la journée" /> -->
+<!-- 	            <h:selectBooleanCheckbox id="allDayPrelevement" value="#{dashBoardBean.event.allDay}" disabled="true"/> -->
+	 
+<!-- 				<p:commandButton id="addButtonPrelevement" value="Fermer" oncomplete="PF('myschedule').update();PF('eventDialog').hide();" /> -->
+				
+<!-- 				<p:commandLink value="#{dashBoardBean.event.codeObjet}" action="#{dashBoardBean.openDocument}" update=":form:tabView" oncomplete="activeTabCenter('#{dashBoardBean.event.cssLgrTab}');"> -->
+<!-- 				</p:commandLink> -->
+<!-- 	        </h:panelGrid> -->
+<!--    		</p:dialog>     -->
+    
+</ui:composition>

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:composite="http://java.sun.com/jsf/composite"
+      >
+
+    <composite:interface>
+    	<composite:attribute name="title" />
+    	<composite:attribute name="value" />
+    	<composite:attribute name="styleClass" />
+    	<composite:attribute name="disabled" />
+   		<composite:attribute name="rendered" />
+   		<composite:attribute name="onsuccess" />
+   		<composite:attribute name="oncomplete" />
+<!--     	<composite:attribute name="registerButtonAction" method-signature="java.lang.String action()" /> -->
+
+<!-- 		<composite:attribute name="action" method-signature="void action(javax.faces.event.ActionEvent)" default="null"/> -->
+    	<composite:attribute name="actionListener" method-signature="void actionListener(javax.faces.event.ActionEvent)"/>
+    </composite:interface>
+
+    <composite:implementation>
+<!-- 		<h:form> -->
+<!-- 			<h:message for="textPanel" style="color:red;" /> -->
+<!-- 			<h:panelGrid columns="2" id="textPanel"> -->
+<!-- 				#{cc.attrs.nameLable} : -->
+<!-- 				<h:inputText id="name" value="#{cc.attrs.nameValue}" /> -->
+<!-- 				#{cc.attrs.emailLable} : -->
+<!-- 				<h:inputText id="email" value="#{cc.attrs.emailValue}" /> -->
+<!-- 			</h:panelGrid> -->
+<!-- 			<h:commandButton action="#{cc.attrs.registerButtonAction}" value="#{cc.attrs.registerButtonText}"/> -->
+<!-- 		</h:form> -->
+
+<!-- 		<p:menuitem title="#{c_facture.titre_menu_imprimer}" value="Imprimer" styleClass="icon icon-print" -->
+<!-- 			onsuccess="window.open('#{request.contextPath}/output?__report=/reports/documents/facture/FicheFacture.rptdesign&amp;__format=pdf')" -->
+<!-- 			actionListener="#{factureController.actImprimer}" -->
+<!-- 			disabled="#{factureController.etatBouton('imprimer') or factureController.stepEnCours('idLignesFacture')}"  -->
+<!-- 			rendered="#{!factureController.choixEdition}"/> -->
+			
+<!-- 		<p:menuitem title="#{c_facture.titre_menu_imprimer}" value="Imprimer" styleClass="icon icon-print" -->
+<!-- 			oncomplete="$('.classHiddenCommandForDialogImprimerReturnFacture').click()" -->
+<!-- 			actionListener="#{factureController.actImprimer}" -->
+<!-- 			disabled="#{factureController.etatBouton('imprimer') or factureController.stepEnCours('idLignesFacture')}"  -->
+<!-- 			rendered="#{factureController.choixEdition}"/> -->
+
+<!-- 		<p:menuitem title="#{cc.attrs.title} " value="#{cc.attrs.value}" styleClass="#{cc.attrs.styleClass}" -->
+<!-- 			onsuccess="#{cc.attrs.onsuccess}" -->
+<!-- 			oncomplete="#{cc.attrs.oncomplete}" -->
+<!-- 			actionListener="#{cc.attrs.actionListener}" -->
+<!-- 			disabled="#{cc.attrs.disabled}"  -->
+<!-- 			rendered="#{cc.attrs.rendered}"/> -->
+
+		<p:menuitem title="#{cc.attrs.title} " value="#{cc.attrs.value}" styleClass="#{cc.attrs.styleClass}"
+			onsuccess="#{cc.attrs.onsuccess}"
+			oncomplete="#{cc.attrs.oncomplete}"
+			actionListener="#{cc.attrs.actionListener}"
+			disabled="#{cc.attrs.disabled}" 
+			rendered="#{cc.attrs.rendered}"/>
+			
+		<p:menuitem title="#{c_facture.titre_menu_imprimer}" value="Imprimer" styleClass="icon icon-print"
+			oncomplete="$('.classHiddenCommandForDialogImprimerReturnFacture').click()"
+			actionListener="#{factureController.actImprimer}"
+			disabled="#{factureController.etatBouton('imprimer') or factureController.stepEnCours('idLignesFacture')}" 
+			rendered="#{factureController.choixEdition}"/>
+    </composite:implementation>
+
+</html>

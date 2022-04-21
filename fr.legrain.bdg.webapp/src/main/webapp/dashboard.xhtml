@@ -1,0 +1,1192 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:c="http://java.sun.com/jsp/jstl/core">
+    
+    <ui:define name="head">
+        <script type="text/javascript">
+            //<![CDATA[
+            function skinChart() {
+                this.cfg.shadow = false;
+                this.cfg.title = '';
+                this.cfg.seriesColors = ['#EA9624', '#5BA5D8'];
+                this.cfg.grid = {
+                    background: '#ffffff',
+                    borderColor: '#ffffff',
+                    gridLineColor: '#F5F5F5',
+                    shadow: false
+                };
+                this.cfg.axesDefaults = {
+                    rendererOptions: {
+                        textColor: '#666F77'
+                    }
+                };
+                this.cfg.seriesDefaults = {
+                    shadow: false,
+                    lineWidth: 1,
+                    markerOptions: {
+                        shadow: false,
+                        size: 7,
+                        style: 'circle'
+                    }
+                }
+            }
+            //]]>  
+        </script>
+
+
+		<style type="text/css">
+            .main-content {
+                padding: 0;
+            }
+            
+            #main-wrapper-content {
+                padding: 10px;
+            }
+        </style>
+    </ui:define>
+    
+    
+        <div class="dashboard">
+            <div class="dashboard-header">
+                <div class="ui-g">
+                    <div class="ui-g-12 ui-md-6">
+                        <div class="dashboard-title">
+                            
+                            <h2> Tableau de bord</h2>
+<!--                             <p style="display:inline-block;"><p:outputLabel value="Nom du dossier : #{dashBoardBean.tenantInfo.tenantId} (#{monCompteBean.dossierCourant.taTNiveau.libelle})"/> </p> -->
+                        </div>
+                    </div>
+                    <div class="ui-g-12 ui-md-6 dashboard-buttons">
+<!--                         <button type="button"><i class="fa fa-floppy-o" aria-hidden="true"></i> </button> -->
+<!-- 						<p:commandButton icon="fa fa-shopping-cart" title="Panier" -->
+<!-- 							onstart="window.open('#{request.contextPath}/admin/renouvellement.xhtml?dossier=#{dashBoardBean.tenantInfo.tenantId}')"> -->
+<!-- 						</p:commandButton> -->
+<!--                         <button type="button"><i class="fa fa-trash" aria-hidden="true"></i> </button> -->
+<!--                         <button type="button"><i class="fa fa-print" aria-hidden="true"></i> </button> -->
+                        <p:commandButton value="Fermer" styleClass="icon icon-close menuitem-fermer-droite" process="@this" 
+							onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())"/>
+                    </div>
+                    <div class="ui-g-12 ui-g-nopad">
+<!--                         <p:tabMenu activeIndex="#{param.i}" style="padding-left:40px"> -->
+<!--                             <p:menuitem value="Overview" outcome="/" icon="fa fa-star"> -->
+<!--                                 <f:param name="i" value="0" /> -->
+<!--                             </p:menuitem> -->
+<!--                             <p:menuitem value="Demos" outcome="/" icon="fa fa-search"> -->
+<!--                                 <f:param name="i" value="1" /> -->
+<!--                             </p:menuitem> -->
+<!--                             <p:menuitem value="Documentation" outcome="/" icon="fa fa-file"> -->
+<!--                                 <f:param name="i" value="2" /> -->
+<!--                             </p:menuitem> -->
+<!--                         </p:tabMenu> -->
+                    </div>
+                </div>
+            </div>
+            
+            <div id="main-wrapper-content">
+<!--                 <div class="ui-g"> -->
+<!--                     <div class="ui-g-12 ui-md-6 ui-lg-3"> -->
+<!--                         <div class="box greenBack"> -->
+<!--                             <i class="fa fa-check" aria-hidden="true"></i> -->
+<!--                             <h2>ISSUES CLOSED</h2> -->
+<!--                             <p>631</p> -->
+<!--                         </div> -->
+<!--                     </div> -->
+<!--                     <div class="ui-g-12 ui-md-6 ui-lg-3"> -->
+<!--                         <div class="box blueBack"> -->
+<!--                             <i class="fa fa-clock-o" aria-hidden="true"></i> -->
+<!--                             <h2>LATEST CALL</h2> -->
+<!--                             <p>2 minutes ago</p> -->
+<!--                         </div> -->
+<!--                     </div> -->
+<!--                     <div class="ui-g-12 ui-md-6 ui-lg-3"> -->
+<!--                         <div class="box redBack"> -->
+<!--                             <i class="fa fa-commenting-o" aria-hidden="true"></i> -->
+<!--                             <h2>CALLS TODAY</h2> -->
+<!--                             <p>42</p> -->
+<!--                         </div> -->
+<!--                     </div> -->
+<!--                     <div class="ui-g-12 ui-md-6 ui-lg-3"> -->
+<!--                         <div class="box yellowBack"> -->
+<!--                             <i class="fa fa-archive" aria-hidden="true"></i> -->
+<!--                             <h2>MESSAGE BOX</h2> -->
+<!--                             <p>124</p> -->
+<!--                         </div> -->
+<!--                     </div> -->
+<!--                 </div> -->
+                    
+                <div class="ui-g">
+<!--                     <div class="ui-g-12 ui-md-6"> -->
+<!--                         <p:panel header="Contacts" style="height:100%"> -->
+<!--                             <ul class="contacts"> -->
+<!--                                 <li> -->
+<!--                                     <a href="#"> -->
+<!--                                         <p:graphicImage name="images/avatar_1.png" library="icarus-layout" width="35" style="border: 0 none;"/> -->
+<!--                                         <span class="name">Claire Williams</span> -->
+<!--                                         <span class="email">clare@primefaces-icarus.com</span> -->
+<!--                                     </a> -->
+<!--                                 </li> -->
+<!--                                 <li> -->
+<!--                                     <a href="#"> -->
+<!--                                         <p:graphicImage name="images/avatar_2.png" library="icarus-layout" width="35" style="border: 0 none;"/> -->
+<!--                                         <span class="name">Jason Dourne</span> -->
+<!--                                         <span class="email">jason@primefaces-icarus.com</span> -->
+<!--                                     </a> -->
+<!--                                 </li> -->
+<!--                                 <li> -->
+<!--                                     <a href="#"> -->
+<!--                                         <p:graphicImage name="images/avatar_3.png" library="icarus-layout" width="35" style="border: 0 none;"/> -->
+<!--                                         <span class="name">Jane Davidson</span> -->
+<!--                                         <span class="email">jane@primefaces-icarus.com</span> -->
+<!--                                     </a> -->
+<!--                                 </li> -->
+<!--                                 <li> -->
+<!--                                     <a href="#"> -->
+<!--                                         <p:graphicImage name="images/avatar_4.png" library="icarus-layout" width="35" style="border: 0 none;"/> -->
+<!--                                         <span class="name">Tony Corleone</span> -->
+<!--                                         <span class="email">tony@primefaces-icarus.com</span> -->
+<!--                                     </a> -->
+<!--                                 </li> -->
+<!--                             </ul> -->
+<!--                         </p:panel> -->
+<!--                     </div> -->
+<!--                     <div class="ui-g-12 ui-md-6"> -->
+<!--                         <div class="weather-box yellowBack centerText"> -->
+<!--                             <i class="fa fa-umbrella" aria-hidden="true"></i> -->
+<!--                             <div class="weather-box-inner"> -->
+<!--                                 <div class="city"> -->
+<!--                                     <p>Los Angeles</p> -->
+<!--                                     <p>Santa Monica</p> -->
+<!--                                 </div> -->
+<!--                                 <div class="weather"> -->
+<!--                                     <h2>Rainy</h2> -->
+<!--                                     <h4>18°C</h4> -->
+<!--                                 </div> -->
+<!--                             </div> -->
+<!--                         </div> -->
+<!--                         <div class="weather-box greenBack centerText" style="margin-top:1px"> -->
+<!--                             <i class="fa fa-umbrella green" aria-hidden="true"></i> -->
+<!--                             <div class="weather-box-inner"> -->
+<!--                                 <div class="city"> -->
+<!--                                     <p>San Francisco</p> -->
+<!--                                     <p>Bay Area</p> -->
+<!--                                 </div> -->
+<!--                                 <div class="weather"> -->
+<!--                                     <h2>Rainy</h2> -->
+<!--                                     <h4>15°C</h4> -->
+<!--                                 </div> -->
+<!--                             </div> -->
+<!--                         </div> -->
+<!--                     </div> -->
+                    
+<!--                     <div class="ui-g-12 ui-md-4 ui-fluid"> -->
+<!--                         <p:panel header="Contact Us" style="background:#fff;height:100%"> -->
+<!--                             <div class="ui-g-12"> -->
+<!--                                 <div class="ui-g-12"> -->
+<!--                                     <p:inputText placeholder="Name" /> -->
+<!--                                 </div> -->
+<!--                                 <div class="ui-g-12"> -->
+<!--                                     <p:inputTextarea placeholder="Message"/> -->
+<!--                                 </div> -->
+<!--                             </div> -->
+<!--                             <p:commandButton type="button" value="Send" icon="fa fa-check"></p:commandButton> -->
+<!--                         </p:panel> -->
+<!--                     </div> -->
+<!--                     <div class="ui-g-12 ui-md-8"> -->
+<!--                         <p:panel header="Tâche" style="height:100%"> -->
+<!--                             <ul class="task-list"> -->
+<!--                                 <li> -->
+<!--                                     <p:selectBooleanCheckbox /> -->
+<!--                                     <span class="task-name">Send sales reports to CEO</span> -->
+<!--                                     <span class="badge badge-green">Today</span> -->
+<!--                                 </li> -->
+<!--                                 <li> -->
+<!--                                     <p:selectBooleanCheckbox /> -->
+<!--                                     <span class="task-name">Pay the invoices</span> -->
+<!--                                     <span class="badge badge-yellow">Today</span> -->
+<!--                                 </li> -->
+<!--                                 <li> -->
+<!--                                     <p:selectBooleanCheckbox /> -->
+<!--                                     <span class="task-name">Dinner with Tony</span> -->
+<!--                                     <span class="badge badge-yellow">Today</span> -->
+<!--                                 </li> -->
+<!--                                 <li> -->
+<!--                                     <p:selectBooleanCheckbox /> -->
+<!--                                     <span class="task-name">Team meeting</span> -->
+<!--                                     <span class="badge badge-red">Tomorrow</span> -->
+<!--                                 </li> -->
+<!--                                 <li> -->
+<!--                                     <p:selectBooleanCheckbox /> -->
+<!--                                     <span class="task-name">Plan the new theme</span> -->
+<!--                                     <span class="badge badge-red">Tomorrow</span> -->
+<!--                                 </li> -->
+<!--                                 <li> -->
+<!--                                     <p:selectBooleanCheckbox /> -->
+<!--                                     <span class="task-name">Go to Gym</span> -->
+<!--                                     <span class="badge badge-red">Tomorrow</span> -->
+<!--                                 </li> -->
+<!--                             </ul> -->
+<!--                         </p:panel> -->
+<!--                     </div> -->
+				<div class="ui-g-12 ui-md-12">
+					<p:panel header="Renouvellement BDG Cloud (BETA)"  id="idTabViewRenouvellementBDG" widgetVar="wvPanelRenouvellementBDG" rendered="#{auth.moduleBDGARenouveller}">
+						<!--  <p:commandButton  value="Rafraichir renouvellement" action="#{auth.refreshmoduleBDGARenouveller}" update="@widgetVar(wvPanelRenouvellementBDG)" process="@this" />  -->
+						 <p:commandLink  title="Renouveller BDG"  disabled="#{!auth.moduleBDGARenouveller}"  styleClass="icon icon-refresh btn-renouveller-bdg" actionListener="#{menuBean.openTunnelVenteRenouvellement}" process="@this" update=":form:tabView">
+						 	<!-- <h:graphicImage library="images" name="btn/rafraichir.svg" /> -->
+						 </p:commandLink>	
+						<!--  <p:commandButton  value="test"  action="#{tunnelVenteController.initListEcheance}" update="@widgetVar(wvPanelRenouvellementBDG)" />	 -->		
+					</p:panel>
+					
+					
+				</div>
+				
+				
+				<div class="ui-g-12 ui-md-6">
+<!-- 					<p:panel header="Notifications Dossier" rendered="#{messageDossierController.afficheMessageDossier}" id="idTabViewNotificationDossierAccueil"> -->
+					<p:panel header="Notifications Dossier" rendered="false" id="idTabViewNotificationDossierAccueil">
+						<p:tabView orientation="right" styleClass="verticalTab" >
+						 <c:forEach items="#{messageDossierController.listeMessage}" var="messDossier" >
+							<p:tab title="#{messDossier.titreMessage}" id="idTabNotificationDossierAccueil">
+							
+<!-- 								<h:panelGrid columns="2" cellpadding="10" style="width:75%;"> -->
+<!-- 									  #{messDossier.titreCorpsMessage}+#{messDossier.texte1Message}+#{messDossier.texte2Message}+#{messDossier.texte3Message} -->
+									<ui:include src="#{messDossier.titreCorpsMessage}" />
+									<ui:include src="#{messDossier.texte1Message}" />
+									<ui:include src="#{messDossier.texte2Message}" />
+									<ui:include src="#{messDossier.texte3Message}" />
+<!-- 									<h:outputLabel escape="false" value="#{messDossier.texte3Message}" /> -->
+ 									
+<!-- 								</h:panelGrid> -->
+							</p:tab>
+						 </c:forEach>
+						</p:tabView>
+					</p:panel>
+<!-- 							<p:panel header="Période du #{dashBoardBean.dateDebut} au #{dashBoardBean.dateFin}"  -->
+<!-- 											rendered="#{autorisationBean.autoriseMenu(autorisationBean.idModuleFacture)}"> -->
+							<p:panel rendered="#{autorisationBean.autoriseMenu(autorisationBean.idModuleFacture)}">
+						<f:facet name="header">
+							<h:outputText value="Période du " />
+							<h:outputText value="#{dashBoardBean.dateDebut}" >
+								<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" type="localDate"/>
+							</h:outputText>
+							<h:outputText value=" au " />
+							<h:outputText value="#{dashBoardBean.dateFin}" >
+								<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" type="localDate"/>
+							</h:outputText>
+						</f:facet>
+<!-- 						</p:panel>											 -->
+<!-- 										<h:panelGrid columns="2" cellpadding="10"> -->
+<!-- 											<h:outputText value="Informations et accès rapides" /> -->
+					<p:panel>
+					<h:panelGrid columns="3" cellpadding="10" >
+						<h:panelGroup rendered="#{!(dashBoardBean.nbFactureNonTotalementPayesSurPeriode == 0)}" >
+					<div class="card">
+						<h3 align="center">Factures en attente de réglement</h3>
+						<p:outputLabel value="Total TTC : "/> 
+						<p:outputLabel value="#{dashBoardBean.montantTotalTtcResteAReglerFacture}">
+						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+						</p:outputLabel>
+						<p:separator></p:separator>
+						<p:outputLabel value="Nombre : "/> 
+						<p:outputLabel value="#{dashBoardBean.nbFactureNonTotalementPayesSurPeriode}"/>
+					</div>
+					</h:panelGroup>
+<!-- 						<h:panelGroup> -->
+<!-- 					<div class="card"> -->
+<!-- 						<h3 align="center">Réglements non totalement affectés</h3> -->
+<!-- 						<p:outputLabel value="Reste à régler TTC : "/>  -->
+<!-- 						<p:outputLabel value="#{tiersController.dashBoardParTiersController.montantTotalTtcNonRegleFacture}"> -->
+<!-- 						<p:outputLabel value="0,00"> -->
+<!-- 						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" /> -->
+<!-- 						</p:outputLabel> -->
+<!-- 						<p:separator></p:separator> -->
+<!-- 						<p:outputLabel value="Nombre : "/>  -->
+<!-- 						<p:outputLabel value="0"/> -->
+<!-- 						<p:outputLabel value="#{tiersController.dashBoardParTiersController.nbFactureNonTransforme}"/> -->
+<!-- 					</div> -->
+<!-- 					</h:panelGroup> -->
+<!-- 						<h:panelGroup> -->
+<!-- 					<div class="card"> -->
+<!-- 						<h3 align="center">Factures non totalement réglées</h3> -->
+<!-- 						<p:outputLabel value="Reste à régler TTC : "/>  -->
+<!-- 						<p:outputLabel value="#{tiersController.dashBoardParTiersController.montantTotalTtcNonRegleFacture}"> -->
+<!-- 						<p:outputLabel value="0,00"> -->
+<!-- 						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" /> -->
+<!-- 						</p:outputLabel> -->
+<!-- 						<p:separator></p:separator> -->
+<!-- 						<p:outputLabel value="Nombre : "/>  -->
+<!-- 						<p:outputLabel value="0"/> -->
+<!-- 						<p:outputLabel value="#{tiersController.dashBoardParTiersController.nbFactureNonTransforme}"/> -->
+<!-- 					</div> -->
+<!-- 					</h:panelGroup> -->
+
+
+					</h:panelGrid>
+					</p:panel>
+<!-- 						<p:commandButton title="Détails" style="width:100%" styleClass="btn-liste btn" -->
+<!-- 							update="@this,@widgetVar(wvTiersListeFacture),idGraphiqueParTiersFacture" -->
+<!-- 							actionListener="#{tiersController.dashBoardParTiersController.initValueLignesFactureNonTransforme(tiersController.selectedTaTiersDTO.getCodeTiers())}" > -->
+<!-- 						</p:commandButton>				 -->
+<!-- 							update="@this,@widgetVar(wvTiersListeFacture,@widgetVar(wvGraphiqueParTiersFacture)" -->
+<!-- 				</div> -->
+<!-- 										</h:panelGrid> -->
+										<p:tabView id="idTabViewGraphiqueDocumentAccueil">
+					<!-- fin a remettre					 -->
+					<!--         <p:ajax event="tabChange" listener="#{tabbedView.onTabChange}" update=":form:msgs"/> -->
+					<!--         <p:ajax event="tabClose" listener="#{tabbedView.onTabClose}" update=":form:msgs"/> -->
+
+					<!-- a remettre -->
+<!-- 					SECTION MODULE FACTURE -->
+							<p:tab title="Suivi de l'activité" rendered="#{autorisationBean.autoriseMenu(autorisationBean.idModuleFacture) and !autorisationBean.autoriseMenu(autorisationBean.idModuleDevis) and !autorisationBean.autoriseMenu(autorisationBean.idModuleBonLivraison)}">
+<!-- 							<p:tab title="Facturation" rendered="true"> -->
+								<div class="card" style="background: #ebebeb;">
+									<!-- 							partie haute -->
+									<div class="ui-grid-row">
+										<div class="ui-grid-col-6">
+											<div class="box whiteback">
+												<h:graphicImage name="dashboard/facture.svg"
+													library="images" height="95px" style="margin-top:25px;" />
+													<h2><p:outputLabel style="font-size:20px;" value="#{dashBoardBean.nbFactureSurPeriode}">
+												 <f:convertNumber type="number"/>
+												 </p:outputLabel> factures</h2>
+												<h3>HT : <p:outputLabel value="#{dashBoardBean.montantTotalHtFacture}">
+												 <f:convertNumber currencySymbol="#{msg.currency_code}" type="currency"/>
+												 </p:outputLabel>
+													 </h3>
+												<div id="divMenuBasFacture1" style="padding-left:10px;">
+													<p:menubar styleClass="menu-onglet"
+														id="idMenuBoutonFactureDashBoardAccueil"
+														widgetVar="idMenuBoutonFactureDashBoardAccueil">
+															<p:menuitem value="Liste Factures"
+																id="idMenuFactureDashBoardAccueil"
+																styleClass="icon icon-liste"
+																oncomplete="PF('wvOverlayListeFacture').show();"
+																 />
+														<!-- icon="ui-icon-gear" -->
+													</p:menubar>
+												</div>
+
+											</div>
+										</div>
+										<div class="ui-grid-col-6">
+											<div class="box whiteback">
+												<h:graphicImage name="dashboard/facture-avoir.svg"
+													library="images" style="margin-top:25px;" />
+													<h2><p:outputLabel style="font-size:20px;" value="#{dashBoardBean.nbAvoirSurPeriode}">
+												 <f:convertNumber type="number"/>
+												 </p:outputLabel> avoirs</h2>
+												<h3>TTC : <p:outputLabel value="#{dashBoardBean.montantTotalTtcAvoir}">
+												 <f:convertNumber currencySymbol="#{msg.currency_code}" type="currency"/>
+												 </p:outputLabel>
+													 </h3>
+
+												<div id="divMenuBasAvoir1" style="padding-left:10px;">
+													<p:menubar styleClass="menu-onglet"
+														id="idMenuBoutonAvoirDashBoardAccueil"
+														widgetVar="idMenuBoutonAvoirDashBoardAccueil">
+															<p:menuitem value="Liste Avoirs"
+																id="idMenuAvoirDashBoardAccueil"
+																oncomplete="PF('wvOverlayListeAvoir').show();"
+																styleClass="icon icon-liste"
+																 />
+													</p:menubar>
+												</div>
+
+											</div>
+										</div>
+
+
+									</div>
+									<!-- 					Fin partie haute -->
+									<!-- 					Début partie basse -->
+									<div class="ui-grid-row">
+										<div class="ui-grid-col-6">
+											<div class="box whiteback">
+												<h:graphicImage name="dashboard/tier.svg" library="images"
+													style="margin-top:25px;" />
+												<h2>Tiers actifs</h2>
+												<h3><p:outputLabel style="font-size:20px;" value="#{dashBoardBean.nbTiersActif}">
+												 <f:convertNumber type="number"/>
+												 </p:outputLabel>
+												</h3>
+
+												<div id="divMenuBasTiers1" style="padding-left:10px;">
+													<p:menubar styleClass="menu-onglet"
+														id="idMenuBoutonTiersDashBoardAccueil"
+														widgetVar="idMenuBoutonTiersDashBoardAccueil">
+															<!-- 		 <p:submenu styleClass="icon-outil menuitem-droit" style=""> -->
+															<p:menuitem value="Liste Tiers"
+																id="idMenuTiersTiersDashBoardAccueil"
+																oncomplete="PF('wvOverlayListeTiers').show();"
+																disabled="#{!autorisationBean.autoriseMenu(autorisationBean.idModuleTiers)}"
+																styleClass="#{!autorisationBean.autoriseMenu(autorisationBean.idModuleTiers)?'disabled':''} icon icon-liste"
+																 />
+														
+
+													</p:menubar>
+												</div>
+											</div>
+										</div>
+										<div class="ui-grid-col-6">
+											<div class="box whiteback">
+												<h:graphicImage name="dashboard/article.svg"
+													library="images" style="margin-top:25px;" />
+												<h2>Articles actifs</h2>
+												<h3><p:outputLabel style="font-size:20px;" value="#{dashBoardBean.nbArticleActif}">
+												 <f:convertNumber type="number"/>
+												 </p:outputLabel>
+												</h3>
+
+												<div id="divMenuBasArticle1" style="padding-left:10px;">
+													<p:menubar styleClass="menu-onglet"
+														id="idMenuBoutonArticleDashBoardAccueil"
+														widgetVar="idMenuBoutonArticleDashBoardAccueil">
+															<!-- 		 <p:submenu styleClass="icon-outil menuitem-droit" style=""> -->
+															<p:menuitem value="Liste Articles"
+																id="idMenuArticleArticleDashBoardAccueil"
+																oncomplete="PF('wvOverlayListeArticle').show();"
+																disabled="#{!autorisationBean.autoriseMenu(autorisationBean.idModuleArticle)}"
+																styleClass="#{!autorisationBean.autoriseMenu(autorisationBean.idModuleArticle)?'disabled':''}  icon icon-liste"
+																/>
+														<!-- 		<p:menuitem styleClass="icon icon-outil menuitem-droit"  -->
+														<!-- 			title="" -->
+														<!-- 			> -->
+														<!-- 		</p:menuitem> -->
+
+													</p:menubar>
+												</div>
+
+											</div>
+										</div>
+
+									</div>
+									<!-- 					Fin partie basse					 -->
+								</div>
+								
+											</p:tab>
+					<!-- fin a remettre		
+					SECTION MODULE DEVIS/FACTURE				 -->
+							<p:tab title="Suivi de l'activité" closable="true"
+								rendered="#{autorisationBean.autoriseMenu(autorisationBean.idModuleFacture) and autorisationBean.autoriseMenu(autorisationBean.idModuleDevis) and !autorisationBean.autoriseMenu(autorisationBean.idModuleBonLivraison)}">
+<!-- 							<p:tab title="Facturation / Devis" closable="true" -->
+<!-- 								rendered="true"> -->
+								<div class="card" style="background: #ebebeb;">
+									<!-- 							partie haute -->
+									<div class="ui-grid-row">
+										<div class="ui-grid-col-4">
+											<div class="box whiteback">
+												<h:graphicImage name="dashboard/facture.svg"
+													library="images" height="55px" style="margin-top:25px;" />
+													<h2><p:outputLabel style="font-size:20px;" value="#{dashBoardBean.nbFactureSurPeriode}">
+												 <f:convertNumber type="number"/>
+												 </p:outputLabel> factures</h2>
+												<h3>HT : <p:outputLabel value="#{dashBoardBean.montantTotalHtFacture}">
+												 <f:convertNumber currencySymbol="#{msg.currency_code}" type="currency"/>
+												 </p:outputLabel>
+													 </h3>
+												<div id="divMenuBasFacture2" style="padding-left:10px;">
+													<p:menubar styleClass="menu-onglet"
+														id="idMenuBoutonFactureDashBoardAccueil2"
+														widgetVar="idMenuBoutonFactureDashBoardAccueil2">
+															<p:menuitem value="Liste Factures"
+																id="idMenuFactureDashBoardAccueil2"
+																styleClass="icon icon-liste"
+																oncomplete="PF('wvOverlayListeFacture').show();"
+																 />
+													</p:menubar>
+												</div>
+
+											</div>
+										</div>
+										<div class="ui-grid-col-4">
+											<div class="box whiteback">
+												<h:graphicImage name="dashboard/devis.svg" library="images"
+													height="55px" style="margin-top:25px;" />
+													<h2><p:outputLabel style="font-size:20px;" value="#{dashBoardBean.nbDevisSurPeriode}">
+												 <f:convertNumber type="number"/>
+												 </p:outputLabel> devis</h2>
+												<h3>HT : <p:outputLabel value="#{dashBoardBean.montantTotalHtDevis}">
+												 <f:convertNumber currencySymbol="#{msg.currency_code}" type="currency"/>
+												 </p:outputLabel>
+													 </h3>
+
+												<div id="divMenuBasDevis2" style="padding-left:10px;">
+													<p:menubar styleClass="menu-onglet"
+														id="idMenuBoutonDevisDashBoardAccueil2"
+														widgetVar="idMenuBoutonDevisDashBoardAccueil2">
+															<p:menuitem value="Liste devis"
+																id="idMenuDevisDashBoardAccueil2"
+																oncomplete="PF('wvOverlayListeDevis').show();"
+																styleClass="icon icon-liste" />
+													</p:menubar>
+												</div>
+
+											</div>
+										</div>
+										<div class="ui-grid-col-4">
+											<div class="box whiteback">
+												<h:graphicImage name="dashboard/facture-avoir.svg"
+													library="images" height="55px" style="margin-top:25px;" />
+													<h2><p:outputLabel style="font-size:20px;" value="#{dashBoardBean.nbAvoirSurPeriode}">
+												 <f:convertNumber type="number"/>
+												 </p:outputLabel> avoirs</h2>
+												<h3>TTC : <p:outputLabel value="#{dashBoardBean.montantTotalTtcAvoir}">
+												 <f:convertNumber currencySymbol="#{msg.currency_code}" type="currency"/>
+												 </p:outputLabel>
+													 </h3>
+
+												<div id="divMenuBasAvoir2" style="padding-left:10px;">
+													<p:menubar styleClass="menu-onglet"
+														id="idMenuBoutonAvoirDashBoardAccueil2"
+														widgetVar="idMenuBoutonAvoirDashBoardAccueil2">
+															<p:menuitem value="Liste Avoirs"
+																id="idMenuAvoirDashBoardAccueil2"
+																oncomplete="PF('wvOverlayListeAvoir').show();"
+																styleClass="icon icon-liste" />
+													</p:menubar>
+												</div>
+
+											</div>
+										</div>
+
+									</div>
+									<!-- 					Fin partie haute -->
+									<!-- 					Début partie basse -->
+									<div class="ui-grid-row">
+										<div class="ui-grid-col-6">
+											<div class="box whiteback">
+												<h:graphicImage name="dashboard/tier.svg" library="images"
+													style="margin-top:25px;" />
+												<h2>Tiers actifs</h2>
+												<h3><p:outputLabel style="font-size:20px;" value="#{dashBoardBean.nbTiersActif}">
+												 <f:convertNumber type="number"/>
+												 </p:outputLabel>
+												</h3>
+
+												<div id="divMenuBasTiers2" style="padding-left:10px;">
+													<p:menubar styleClass="menu-onglet"
+														id="idMenuBoutonTiersDashBoardAccueil2"
+														widgetVar="idMenuBoutonTiersDashBoardAccueil2">
+															<!-- 		 <p:submenu styleClass="icon-outil menuitem-droit" style=""> -->
+															<p:menuitem value="Liste Tiers"
+																id="idMenuTiersTiersDashBoardAccueil2"
+																oncomplete="PF('wvOverlayListeTiers').show();"
+																disabled="#{!autorisationBean.autoriseMenu(autorisationBean.idModuleTiers)}"
+																styleClass="#{!autorisationBean.autoriseMenu(autorisationBean.idModuleTiers)?'disabled':''}  icon icon-liste"
+																 />
+														<!-- 		<p:menuitem styleClass="icon icon-outil menuitem-droit"  -->
+														<!-- 			title="" -->
+														<!-- 			> -->
+														<!-- 		</p:menuitem> -->
+
+													</p:menubar>
+												</div>
+											</div>
+										</div>
+										<div class="ui-grid-col-6">
+											<div class="box whiteback">
+												<h:graphicImage name="dashboard/article.svg"
+													library="images" style="margin-top:25px;" />
+												<h2>Articles actifs</h2>
+												<h3><p:outputLabel style="font-size:20px;" value="#{dashBoardBean.nbArticleActif}">
+												 <f:convertNumber type="number"/>
+												 </p:outputLabel>
+												</h3>
+
+
+
+												<div id="divMenuBasArticle2" style="padding-left:10px;">
+													<p:menubar styleClass="menu-onglet"
+														id="idMenuBoutonArticleDashBoardAccueil2"
+														widgetVar="idMenuBoutonArticleDashBoardAccueil2">
+															<!-- 		 <p:submenu styleClass="icon-outil menuitem-droit" style=""> -->
+															<p:menuitem value="Liste Articles"
+																id="idMenuArticleArticleDashBoardAccueil2"
+																oncomplete="PF('wvOverlayListeArticle').show();"
+																disabled="#{!autorisationBean.autoriseMenu(autorisationBean.idModuleArticle)}"
+																styleClass="#{!autorisationBean.autoriseMenu(autorisationBean.idModuleArticle)?'disabled':''}  icon icon-liste"
+																 />
+														<!-- 		<p:menuitem styleClass="icon icon-outil menuitem-droit"  -->
+														<!-- 			title="" -->
+														<!-- 			> -->
+														<!-- 		</p:menuitem> -->
+
+													</p:menubar>
+												</div>
+
+											</div>
+										</div>
+
+									</div>
+									<!-- 					Fin partie basse					 -->
+								</div>
+
+
+
+							</p:tab>
+<!-- 							Fin tab Factures/ devis -->
+<!-- 						SECTION MODULE GESTION COMMERCIALE  -->
+							<p:tab title="Suivi de l'activité" closable="true"
+								rendered="#{autorisationBean.autoriseMenu(autorisationBean.idModuleFacture) and autorisationBean.autoriseMenu(autorisationBean.idModuleDevis) and autorisationBean.autoriseMenu(autorisationBean.idModuleBonLivraison)}">
+								<div class="card" style="background: #ebebeb;">
+									<!-- 							partie haute -->
+									<div class="ui-grid-row">
+										<div class="ui-grid-col-3">
+											<div class="box whiteback">
+													<h:graphicImage name="dashboard/facture.svg"
+													library="images" height="30px" style="margin-top:25px;" />
+													<h3><p:outputLabel value="#{dashBoardBean.nbFactureSurPeriode}">
+												 <f:convertNumber type="number"/>
+												 </p:outputLabel> factures</h3>
+<!-- 												<h3>HT : <p:outputLabel value="#{dashBoardBean.montantTotalHtFacture}"> -->
+												<h4>HT : <p:outputLabel value="#{dashBoardBean.montantTotalHtFacture}">
+												 <f:convertNumber currencySymbol="#{msg.currency_code}" type="currency"/>
+												 </p:outputLabel>
+													 </h4>
+												<div id="divMenuBasFacture3" style="padding-left:10px;">
+													<p:menubar styleClass="menu-onglet"
+														id="idMenuBoutonFactureDashBoardAccueil3"
+														widgetVar="idMenuBoutonFactureDashBoardAccueil3">
+														<p:menuitem value="Liste Factures"
+																id="idMenuFactureDashBoardAccueil3" styleClass="icon icon-liste"
+																oncomplete="PF('wvOverlayListeFacture').show();"
+																 />
+													</p:menubar>
+													
+													
+													<!-- <p:menubar styleClass="menu-onglet"
+														id="idMenuBoutonFactureDashBoardAccueil3"
+														widgetVar="idMenuBoutonFactureDashBoardAccueil3">
+														<p:submenu label=""  styleClass="icon icon-roue">
+															<p:menuitem value="Liste Factures"
+																id="idMenuFactureDashBoardAccueil3"
+																oncomplete="PF('wvOverlayListeFacture').show();"
+																icon="ui-icon-arrowreturnthick-1-w" />
+														</p:submenu>
+													</p:menubar> -->
+												</div>
+											</div>
+										</div>
+										<div class="ui-grid-col-3">
+											<div class="box whiteback">
+												<h:graphicImage name="dashboard/devis.svg" library="images"
+													height="30px" style="margin-top:25px;" />
+												<h3><p:outputLabel value="#{dashBoardBean.nbDevisSurPeriode}">
+												 <f:convertNumber type="number"/>
+												 </p:outputLabel> devis</h3>
+												<h4>HT : <p:outputLabel value="#{dashBoardBean.montantTotalHtDevis}">
+												 <f:convertNumber currencySymbol="#{msg.currency_code}" type="currency"/>
+												 </p:outputLabel>
+													 </h4>
+
+												<div id="divMenuBasDevis3" style="padding-left:10px;">
+													<p:menubar styleClass="menu-onglet"
+														id="idMenuBoutonDevisDashBoardAccueil3"
+														widgetVar="idMenuBoutonDevisDashBoardAccueil3">
+															<p:menuitem value="Liste devis"
+																id="idMenuDevisDashBoardAccueil3"
+																oncomplete="PF('wvOverlayListeDevis').show();"
+																styleClass="icon icon-liste" />
+													</p:menubar>
+												</div>
+
+											</div>
+										</div>
+										<div class="ui-grid-col-3">
+											<div class="box whiteback">
+												<h:graphicImage name="dashboard/proforma.svg"
+													library="images" height="30px" style="margin-top:25px;" />
+												<h3><p:outputLabel value="#{dashBoardBean.nbProformaSurPeriode}">
+												 <f:convertNumber type="number"/>
+												 </p:outputLabel> Proforma</h3>
+												<h4>HT : <p:outputLabel value="#{dashBoardBean.montantTotalHtProforma}">
+												 <f:convertNumber currencySymbol="#{msg.currency_code}" type="currency"/>
+												 </p:outputLabel>
+													 </h4>
+<!-- 												<h5><p:outputLabel value="#{dashBoardBean.nbProformaNonTransformeARelancerSurPeriode}"> relances à faire -->
+<!-- 												 <f:convertNumber currencySymbol="#{msg.currency_code}" type="currency"/> -->
+<!-- 												 </p:outputLabel> -->
+<!-- 													 </h5> -->
+													 
+												<div id="divMenuBasProforma3" style="padding-left:10px;">
+													<p:menubar styleClass="menu-onglet"
+														id="idMenuBoutonProformaDashBoardAccueil3"
+														widgetVar="idMenuBoutonProformaDashBoardAccueil3">
+															<p:menuitem value="Liste Proforma"
+																id="idMenuProformaDashBoardAccueil3"
+																oncomplete="PF('wvOverlayListeProforma').show();"
+																styleClass="icon icon-liste" />
+													</p:menubar>
+												</div>
+
+											</div>
+										</div>
+										<div class="ui-grid-col-3">
+											<div class="box whiteback">
+												<h:graphicImage name="dashboard/facture-avoir.svg"
+													library="images" height="30px" style="margin-top:25px;" />
+												<h3><p:outputLabel value="#{dashBoardBean.nbAvoirSurPeriode}">
+												 <f:convertNumber type="number"/>
+												 </p:outputLabel> avoirs</h3>
+												<h4>TTC : <p:outputLabel value="#{dashBoardBean.montantTotalTtcAvoir}">
+												 <f:convertNumber currencySymbol="#{msg.currency_code}" type="currency"/>
+												 </p:outputLabel>
+													 </h4>
+
+												<div id="divMenuBasAvoirTmp" style="padding-left:10px;">
+													<p:menubar styleClass="menu-onglet"
+														id="idMenuBoutonAvoirDashBoardAccueilTmp"
+														widgetVar="idMenuBoutonAvoirDashBoardAccueilTmp">
+															<p:menuitem value="Liste Avoirs"
+																id="idMenuAvoirDashBoardAccueilTmp"
+																oncomplete="PF('wvOverlayListeAvoir').show();"
+																styleClass="icon icon-liste" />
+													</p:menubar>
+												</div>
+
+											</div>
+										</div>
+									</div>
+									<!-- 					Fin partie haute -->
+<!-- 									Début Partie milieu -->
+									<div class="ui-grid-row">
+										<div class="ui-grid-col-3">
+											<div class="box whiteback">
+												<h:graphicImage name="dashboard/bon-de-livraison.svg"
+													library="images" height="30px" style="margin-top:25px;" />
+												<h3><p:outputLabel value="#{dashBoardBean.nbBonlivSurPeriode}">
+												 <f:convertNumber type="number"/>
+												 </p:outputLabel> BL</h3>
+												<h4>HT : <p:outputLabel value="#{dashBoardBean.montantTotalHtBonliv}">
+												 <f:convertNumber currencySymbol="#{msg.currency_code}" type="currency"/>
+												 </p:outputLabel>
+													 </h4>
+												<div id="divMenuBasBonLivraison3" style="padding-left:10px;">
+													<p:menubar styleClass="menu-onglet"
+														id="idMenuBoutonBonLivraisonDashBoardAccueil3"
+														widgetVar="idMenuBoutonBonLivraisonDashBoardAccueil3">
+															<p:menuitem value="Liste Bon Livraison"
+																id="idMenuBonLivraisonDashBoardAccueil3"
+																oncomplete="PF('wvOverlayListeBL').show();"
+																styleClass="icon icon-liste" />
+													</p:menubar>
+												</div>
+
+											</div>
+										</div>
+										<div class="ui-grid-col-3">
+											<div class="box whiteback">
+												<h:graphicImage name="dashboard/bon-de-commande.svg" library="images"
+													height="30px" style="margin-top:25px;" />
+												<h3><p:outputLabel value="#{dashBoardBean.nbBoncdeSurPeriode}">
+												 <f:convertNumber type="number"/>
+												 </p:outputLabel> BC</h3>
+												<h4>HT : <p:outputLabel value="#{dashBoardBean.montantTotalHtBoncde}">
+												 <f:convertNumber currencySymbol="#{msg.currency_code}" type="currency"/>
+												 </p:outputLabel>
+													 </h4>
+												<div id="divMenuBasBonCommande3" style="padding-left:10px;">
+													<p:menubar styleClass="menu-onglet"
+														id="idMenuBoutonBonCommandeDashBoardAccueil3"
+														widgetVar="idMenuBoutonBonCommandeDashBoardAccueil3">
+															<p:menuitem value="Liste bon de commande"
+																id="idMenuBonCommandeDashBoardAccueil3"
+																oncomplete="PF('wvOverlayListeBoncde').show();"
+																styleClass="icon icon-liste" />
+													</p:menubar>
+												</div>
+
+											</div>
+										</div>
+										<div class="ui-grid-col-3">
+											<div class="box whiteback">
+												<h:graphicImage name="dashboard/fact-apporteur.svg"
+													library="images" height="30px" style="margin-top:25px;" />
+												<h3>-- apporteur</h3>
+												<h4>HT :-- €</h4>
+												<div id="divMenuBasApporteur3" style="padding-left:10px;">
+													<p:menubar styleClass="menu-onglet"
+														id="idMenuBoutonApporteurDashBoardAccueil3"
+														widgetVar="idMenuBoutonApporteurDashBoardAccueil3">
+															<p:menuitem value="Liste Facture Apporteur"
+																id="idMenuApporteurDashBoardAccueil3"
+																oncomplete="PF('wvOverlayListeApporteur').show();"
+																styleClass="icon icon-liste" />
+													</p:menubar>
+												</div>
+
+											</div>
+										</div>
+										<div class="ui-grid-col-3">
+											<div class="box whiteback">
+												<h:graphicImage name="dashboard/fact-acompte.svg"
+													library="images" height="30px" style="margin-top:25px;" />
+												<h3><p:outputLabel value="#{dashBoardBean.nbAcompteSurPeriode}">
+												 <f:convertNumber type="number"/>
+												 </p:outputLabel> Acompte</h3>
+												<h4>HT : <p:outputLabel value="#{dashBoardBean.montantTotalHtAcompte}">
+												 <f:convertNumber currencySymbol="#{msg.currency_code}" type="currency"/>
+												 </p:outputLabel>
+													 </h4>
+												<div id="divMenuBasAccompte3" style="padding-left:10px;">
+													<p:menubar styleClass="menu-onglet"
+														id="idMenuBoutonAccompteDashBoardAccueil3"
+														widgetVar="idMenuBoutonAccompteDashBoardAccueil3">
+															<p:menuitem value="Liste Accompte"
+																id="idMenuAccompteDashBoardAccueil3"
+																oncomplete="PF('wvOverlayListeAcompte').show();"
+																styleClass="icon icon-liste" />
+													</p:menubar>
+												</div>
+
+											</div>
+										</div>
+									</div>
+<!-- 										Fin partie Milieu -->
+									<!-- 					Début partie basse -->
+									<div class="ui-grid-row">
+										<div class="ui-grid-col-6">
+											<div class="box whiteback">
+												<h:graphicImage name="dashboard/tier.svg" library="images" height="40px"
+													style="margin-top:25px;" />
+												<h2>Tiers actifs</h2>
+												<h3><p:outputLabel style="font-size:20px;" value="#{dashBoardBean.nbTiersActif}">
+												 <f:convertNumber type="number"/>
+												 </p:outputLabel>
+												 </h3>
+<!-- 												<h3>#{dashBoardTiersController.nbTiersActif}</h3> -->
+
+												<div id="divMenuBasTiers3" style="padding-left:10px;">
+													<p:menubar styleClass="menu-onglet"
+														id="idMenuBoutonTiersDashBoardAccueil3"
+														widgetVar="idMenuBoutonTiersDashBoardAccueil3">
+															<!-- 		 <p:submenu styleClass="icon-outil menuitem-droit" style=""> -->
+															<p:menuitem value="Liste Tiers"
+																id="idMenuTiersTiersDashBoardAccueil3"
+																oncomplete="PF('wvOverlayListeTiers').show();"
+																disabled="#{!autorisationBean.autoriseMenu(autorisationBean.idModuleTiers)}"
+																styleClass="#{!autorisationBean.autoriseMenu(autorisationBean.idModuleTiers)?'disabled':''}  icon icon-liste"
+																 />
+													
+
+													</p:menubar>
+												</div>
+											</div>
+										</div>
+										<div class="ui-grid-col-6">
+											<div class="box whiteback">
+												<h:graphicImage name="dashboard/article.svg"
+													library="images" height="40px" style="margin-top:25px;" />
+												<h2>Articles actifs</h2>
+												<h3><p:outputLabel style="font-size:20px;" value="#{dashBoardBean.nbArticleActif}">
+												 <f:convertNumber type="number"/>
+												 </p:outputLabel>
+												</h3>
+												<div id="divMenuBasArticle3" style="padding-left:10px;">
+													<p:menubar styleClass="menu-onglet"
+														id="idMenuBoutonArticleDashBoardAccueil3"
+														widgetVar="idMenuBoutonArticleDashBoardAccueil3">
+															<!-- 		 <p:submenu styleClass="icon-outil menuitem-droit" style=""> -->
+															<p:menuitem value="Liste Articles"
+																id="idMenuArticleArticleDashBoardAccueil3"
+																oncomplete="PF('wvOverlayListeArticle').show();"
+																disabled="#{!autorisationBean.autoriseMenu(autorisationBean.idModuleArticle)}"
+																styleClass="#{!autorisationBean.autoriseMenu(autorisationBean.idModuleArticle)?'disabled':''}  icon icon-liste"
+																/>
+
+													</p:menubar>
+												</div>
+
+											</div>
+										</div>
+<!-- 										<div class="ui-grid-col-4"> -->
+<!-- 											<div class="box whiteback"> -->
+<!-- 												<h:graphicImage name="dashboard/tier.svg" library="images" height="40px" -->
+<!-- 													style="margin-top:25px;" /> -->
+<!-- 												<h2>Tiers actifs</h2> -->
+<!-- 												<h3>#{dashBoardTiersController.nbTiersActif}</h3> -->
+<!-- 												<div id="divMenuBasTiers33"> -->
+<!-- 													<p:menubar styleClass="menu-onglet" -->
+<!-- 														id="idMenuBoutonTiersDashBoardAccueil33" -->
+<!-- 														widgetVar="idMenuBoutonTiersDashBoardAccueil33"> -->
+<!-- 														<p:submenu label="" icon="ui-icon-gear"> -->
+<!-- 															<p:menuitem value="Liste Tiers" -->
+<!-- 																id="idMenuTiersTiersDashBoardAccueil33" -->
+<!-- 																oncomplete="PF('wvOverlayListeTiers').show();" -->
+<!-- 																disabled="#{!autorisationBean.autoriseMenu(autorisationBean.idModuleTiers)}" -->
+<!-- 																styleClass="#{!autorisationBean.autoriseMenu(autorisationBean.idModuleTiers)?'disabled':''}" -->
+<!-- 																icon="ui-icon-user" /> -->
+<!-- 														</p:submenu> -->
+<!-- 													</p:menubar> -->
+<!-- 												</div> -->
+<!-- 											</div> -->
+<!-- 										</div> -->
+										
+
+									</div>
+									<!-- 					Fin partie basse					 -->
+								</div>
+
+							</p:tab>
+
+
+										</p:tabView>
+										</p:panel>
+
+<!-- 										<p:panel header="Période du #{dashBoardBean.dateDebut} au #{dashBoardBean.dateFin}"  -->
+<!-- 											rendered="#{autorisationBean.autoriseMenu(autorisationBean.idModuleFacture)}"> -->
+<!-- 										<h:panelGrid columns="2" cellpadding="10"> -->
+<!-- 											<h:outputText value="Graphiques mensuels des documents par mois sur l'exercice" /> -->
+<!-- 										</h:panelGrid> -->
+<!-- 										<p:tabView> -->
+<!-- 											<p:tab title="Factures" rendered="#{autorisationBean.autoriseMenu(autorisationBean.idModuleFacture)}"> -->
+<!-- 													<p:chart type="bar" model="#{dashBoardFactureController.barChartModelFacture}" style="height:300px;width:100%;"/> -->
+<!-- 											</p:tab> -->
+<!-- 											<p:tab title="Devis" closable="true" rendered="#{autorisationBean.autoriseMenu(autorisationBean.idModuleDevis)}"> -->
+<!-- 													<p:chart type="bar" model="#{dashBoardDevisController.barChartModelDevis}" style="height:300px;width:100%;"/> -->
+<!-- 											</p:tab> -->
+
+<!-- 										</p:tabView> -->
+<!-- 										</p:panel> -->
+										
+					<p:panel
+						header="Dossier : #{dashBoardBean.tenantInfo.tenantId} - Niveau : #{monCompteBean.dossierCourant.taTNiveau.libelle} - Modules et fonctionnalités">
+						<!--                     <div class="ui-g-12 ui-md-6 dashboard-buttons"> -->
+						<h:panelGrid columns="2" cellpadding="10">
+							<h:outputText value="Renouveler : " />
+							<p:commandButton icon="fa fa-shopping-cart" title="Panier"
+								styleClass="icon" value="Panier"
+								onstart="window.open('#{request.contextPath}/admin/renouvellement.xhtml?dossier=#{dashBoardBean.tenantInfo.tenantId}')">
+							</p:commandButton>
+						</h:panelGrid>
+						<!--                     </div> -->
+
+						<!--					selectionMode="single" rowKey="#{a.idAutorisation}" reflow="true"> -->
+						<p:dataTable var="a"
+							value="#{monCompteBean.listeAutorisationDossier}"
+							selectionMode="single" rowKey="#{a.idAutorisation}" reflow="true"
+							sortBy="#{a.dateFin.toGregorianCalendar().time}">
+							<f:facet name="header">
+        						Mes modules
+    						</f:facet>
+							<!-- 							<p:column sortBy="#{taArticle.taProduit.code}" width="12%"> -->
+							<p:column width="12%">
+								<f:facet name="header">
+									<h:outputText value="Code" />
+								</f:facet>
+								<h:outputText value="#{a.taProduit.code}" />
+							</p:column>
+
+							<!-- 							<p:column sortBy="#{a.taProduit.libelle}" width="38%"> -->
+							<p:column width="38%">
+								<f:facet name="header">
+									<h:outputText value="Nom du module" />
+								</f:facet>
+								<h:outputText value="#{a.taProduit.libelle}" />
+							</p:column>
+
+							<!-- 							<p:column sortBy="#{a.dateAchat}" styleClass="center" width="25%"> -->
+							<p:column styleClass="center" width="25%">
+								<f:facet name="header">
+									<h:outputText value="Activé le" />
+								</f:facet>
+								<h:outputText value="#{a.dateAchat.toGregorianCalendar().time}">
+									<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}"/>
+								</h:outputText>
+							</p:column>
+
+							<!-- 							<p:column sortBy="#{a.dateFin}" styleClass="center" width="25%"> -->
+							<p:column styleClass="center" width="25%">
+								<f:facet name="header">
+									<h:outputText value="Expire le" />
+								</f:facet>
+								<h:outputText value="#{a.dateFin.toGregorianCalendar().time}"
+									styleClass="#{dashBoardBean.getClasseExpiration(a.dateFin.toGregorianCalendar().time)}">
+									<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}"/>
+								</h:outputText>
+							</p:column>
+						</p:dataTable>
+					</p:panel>
+					<!-- 				 </div> -->
+				</div>
+				<!--                     <div class="ui-g-12 ui-md-6"> -->
+<!--                         <p:panel header="Graphique"> -->
+<!--                             <p:chart id="line" type="line" model="#{dashBoardBean.lineModel1}" responsive="true"/> -->
+<!--                         </p:panel> -->
+<!--                     </div> -->
+
+                   <div class="ui-g-12 ui-md-6">
+					<p:panel rendered="#{autorisationBean.autoriseMenu(autorisationBean.idModuleFacture)}">
+						<f:facet name="header">
+							<h:outputText value="Période du " />
+							<h:outputText value="#{dashBoardBean.dateDebut}" >
+								<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" type="localDate"/>
+							</h:outputText>
+							<h:outputText value=" au " />
+							<h:outputText value="#{dashBoardBean.dateFin}" >
+								<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" type="localDate"/>
+							</h:outputText>
+						</f:facet>
+										<h:panelGrid columns="2" cellpadding="10">
+											<h:outputText value="Graphiques mensuels des documents par mois sur l'exercice" />
+										</h:panelGrid>
+										<p:tabView  dynamic="true" cache="false">
+											<p:tab title="Factures" rendered="#{autorisationBean.autoriseMenu(autorisationBean.idModuleFacture)}">
+													<p:chart type="bar" model="#{dashBoardBean.barChartModelFacture}" style="height:300px;width:100%;"/>
+											</p:tab>
+											<p:tab title="Devis" closable="true" rendered="#{autorisationBean.autoriseMenu(autorisationBean.idModuleDevis)}">
+													<p:chart type="bar" model="#{dashBoardBean.barChartModelDevis}" style="height:300px;width:100%;"/>
+											</p:tab>
+											<p:tab title="Bon de commande" closable="true" rendered="#{autorisationBean.autoriseMenu(autorisationBean.idModuleBonCommande)}">
+													<p:chart type="bar" model="#{dashBoardBean.barChartModelBoncde}" style="height:300px;width:100%;"/>
+											</p:tab>
+										</p:tabView>
+										</p:panel>
+
+<!--                         <p:panel header="Fil d'actualités" style="height:100%"> -->
+<!--                             <ul class="contacts"> -->
+<!--                                 <li> -->
+<!--                                      <a href="#">  -->
+<!--                                         <p:graphicImage name="images/avatar_1.png" library="icarus-layout" width="35" style="border: 0 none;"/> -->
+<!--                                         <span style="text-align: right;" > -->
+<!--                                          <p:commandLink id="nonAjax" actionListener="#{menuBean.openDashBoardProforma}" ajax="false"> -->
+<!--          									<h:outputText value="Non-Ajax Submit" /> -->
+<!--      									</p:commandLink> -->
+<!--     										<p:commandButton value="Ajax Submit" id="ajax"  -->
+<!--     														actionListener="#{menuBean.openDashBoardProforma}"  -->
+<!--     														ajax="false" -->
+<!--     														styleClass="ui-priority-primary" />	 -->
+<!--     									</span> -->
+<!--                                         <span class="name">Claire Williams</span> -->
+<!--                                         <span class="email">clare@primefaces-icarus.com</span> -->
+<!--                                      </a> -->
+<!--                                 </li> -->
+<!--                                 <li> -->
+<!--                                     <a href="#"> -->
+<!--                                         <p:graphicImage name="images/avatar_2.png" library="icarus-layout" width="35" style="border: 0 none;"/> -->
+<!--                                         <span class="name">Jason Dourne</span> -->
+<!--                                         <span class="email">jason@primefaces-icarus.com</span> -->
+<!--                                     </a> -->
+<!--                                 </li> -->
+<!--                                 <li> -->
+<!--                                     <a href="#"> -->
+<!--                                         <p:graphicImage name="images/avatar_3.png" library="icarus-layout" width="35" style="border: 0 none;"/> -->
+<!--                                         <span class="name">Jane Davidson</span> -->
+<!--                                         <span class="email">jane@primefaces-icarus.com</span> -->
+<!--                                     </a> -->
+<!--                                 </li> -->
+<!--                                 <li> -->
+<!--                                     <a href="#"> -->
+<!--                                         <p:graphicImage name="images/avatar_4.png" library="icarus-layout" width="35" style="border: 0 none;"/> -->
+<!--                                         <span class="name">Tony Corleone</span> -->
+<!--                                         <span class="email">tony@primefaces-icarus.com</span> -->
+<!--                                     </a> -->
+<!--                                 </li> -->
+<!--                             </ul> -->
+<!--                         </p:panel> -->
+<!--                         <p:panel header="Calendrier" style="height:100%"> -->
+<!--                             <p:schedule value="#{dashBoardBean.eventModel}" widgetVar="myschedule" timeZone="GMT+1"> -->
+<!--//                                 <p:ajax event="dateSelect" listener="#{dashBoardBean.onDateSelect}" update="eventDetails" oncomplete="PF('eventDialog').show();" /> -->
+<!-- 					            <p:ajax event="eventSelect" listener="#{dashBoardBean.onEventSelect}" update="eventDetails" oncomplete="PF('eventDialog').show();" /> -->
+<!--// 					            <p:ajax event="eventMove" listener="#{dashBoardBean.onEventMove}" update="messages" /> -->
+<!--// 					            <p:ajax event="eventResize" listener="#{dashBoardBean.onEventResize}" update="messages" /> -->
+<!--                             </p:schedule> -->
+<!--                         </p:panel> -->
+                    </div>
+                    <div class="ui-g-12 ui-md-6">
+<!--                     <div class="fb-page" data-href="https://www.facebook.com/bdg.legrain.informatique" data-tabs="timeline" data-small-header="true" data-adapt-container-width="true" data-hide-cover="true" data-show-facepile="false"><blockquote cite="https://www.facebook.com/bdg.legrain.informatique" class="fb-xfbml-parse-ignore"><a href="https://www.facebook.com/bdg.legrain.informatique">Bureau de Gestion Cloud</a></blockquote></div> -->
+<!--                         <p:panel header="Activité" style="height:100%"> -->
+<!--                             <div class="activity-header"> -->
+<!--                                 <div class="ui-g"> -->
+<!--                                     <div class="ui-g-6"> -->
+<!--                                         <span style="font-weight:bold">Last Activity</span> -->
+<!--                                         <p>Updated 1 minute ago</p> -->
+<!--                                     </div> -->
+<!--                                     <div class="ui-g-6" style="text-align:right"> -->
+<!--                                         <p:commandButton type="button" icon="fa fa-refresh" /> -->
+<!--                                     </div> -->
+<!--                                 </div> -->
+<!--                             </div> -->
+<!--                             <ul class="activity-list"> -->
+<!--                                 <li> -->
+<!--                                     <div class="count">$900</div> -->
+<!--                                     <div class="ui-g"> -->
+<!--                                         <div class="ui-g-6">Income</div> -->
+<!--                                         <div class="ui-g-6">95%</div> -->
+<!--                                     </div> -->
+<!--                                 </li> -->
+<!--                                 <li> -->
+<!--                                     <div class="count">$250</div> -->
+<!--                                     <div class="ui-g"> -->
+<!--                                         <div class="ui-g-6">Tax</div> -->
+<!--                                         <div class="ui-g-6">24%</div> -->
+<!--                                     </div> -->
+<!--                                 </li> -->
+<!--                                 <li> -->
+<!--                                     <div class="count">$125</div> -->
+<!--                                     <div class="ui-g"> -->
+<!--                                         <div class="ui-g-6">Invoices</div> -->
+<!--                                         <div class="ui-g-6">55%</div> -->
+<!--                                     </div> -->
+<!--                                 </li> -->
+<!--                                 <li> -->
+<!--                                     <div class="count">$250</div> -->
+<!--                                     <div class="ui-g"> -->
+<!--                                         <div class="ui-g-6">Expenses</div> -->
+<!--                                         <div class="ui-g-6">15%</div> -->
+<!--                                     </div> -->
+<!--                                 </li> -->
+<!--                                 <li> -->
+<!--                                     <div class="count">$350</div> -->
+<!--                                     <div class="ui-g"> -->
+<!--                                         <div class="ui-g-6">Bonus</div> -->
+<!--                                         <div class="ui-g-6">5%</div> -->
+<!--                                     </div> -->
+<!--                                 </li> -->
+<!--                                 <li> -->
+<!--                                     <div class="count">$500</div> -->
+<!--                                     <div class="ui-g"> -->
+<!--                                         <div class="ui-g-6">Revenue</div> -->
+<!--                                         <div class="ui-g-6">25%</div> -->
+<!--                                     </div> -->
+<!--                                 </li> -->
+<!--                             </ul> -->
+<!--                         </p:panel> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <p:dialog widgetVar="eventDialog" header="Détail" showEffect="clip" hideEffect="clip">
+	        <h:panelGrid id="eventDetails" columns="2">
+	            <p:outputLabel for="title" value="Titre"/>
+	            <p:inputText id="title" value="#{dashBoardBean.event.title}" required="true" disabled="true"/>
+	 
+	            <p:outputLabel for="from" value="Du" />
+	            <p:calendar id="from" value="#{dashBoardBean.event.startDate}" timeZone="GMT+1" pattern="dd/MM/yyyy HH:mm" disabled="true"/>
+	 
+	            <p:outputLabel for="to" value="Au" />
+	            <p:calendar id="to" value="#{dashBoardBean.event.endDate}" timeZone="GMT+1" pattern="dd/MM/yyyy HH:mm" disabled="true"/>
+	 
+	            <p:outputLabel for="allDay" value="Toute la journée" />
+	            <h:selectBooleanCheckbox id="allDay" value="#{dashBoardBean.event.allDay}" disabled="true"/>
+	 
+<!-- 	            <p:commandButton type="reset" value="Reset" /> -->
+<!-- 	            <p:commandButton id="addButton" value="Save" actionListener="#{dashBoardBean.addEvent}" oncomplete="PF('myschedule').update();PF('eventDialog').hide();" /> -->
+				<p:commandButton id="addButton" value="Fermer" oncomplete="PF('myschedule').update();PF('eventDialog').hide();" />
+				
+				<p:commandLink value="#{dashBoardBean.event.codeObjet}" action="#{dashBoardBean.openDocument}" update=":form:tabView" oncomplete="activeTabCenter('#{dashBoardBean.event.cssLgrTab}');">
+<!-- 					<f:setPropertyActionListener target="#{clientController.taClient}" value="#{dossierController.taDossier.taClient}" /> -->
+				</p:commandLink>
+	        </h:panelGrid>
+   		</p:dialog>    
+    
+</ui:composition>

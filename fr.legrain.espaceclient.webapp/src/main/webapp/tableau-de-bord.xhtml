@@ -1,0 +1,55 @@
+<ui:composition 
+	xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:h="http://java.sun.com/jsf/html" 
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets" 
+	xmlns:p="http://primefaces.org/ui">
+
+	<h:outputStylesheet library="css" name="theme-compteclient.css" />
+
+	<h:form>
+
+		<div class="main-content">
+		
+			<div class="ui-g  ui-fluid">
+
+				<div class="ui-g-12">
+<!-- 					<p:outputLabel class="affiche-utilisateur" -->
+<!-- 						value="#{c_langue.formule_politesse} #{indexCompteController.utilisateur.prenom} #{indexCompteController.utilisateur.nom}" /> -->
+						<h:outputFormat class="affiche-utilisateur" value="#{c_langue.formule_politesse}">
+				            <f:param value="#{auth.user.prenom}" />
+				            <f:param value="#{auth.user.nom}" />
+				        </h:outputFormat>
+					<br />
+				</div>
+
+				<div class="container_onglet_menu_tb_fournisseurs" onclick="window.location.href='/ajout-fournisseur.xhtml'" id="mydiv">
+					<h:graphicImage class="picto-tb-fournisseurs" library="images" name="picto-fournisseurs.png" width="30%" height="50%" />
+					<div class="ui-g-8">
+						<p:outputLabel styleClass="titre-tb-picto" value="#{c_langue.panel_bleu_titre_Fournisseurs}" />
+						<p:outputLabel styleClass="texte-tb-picto" value="#{c_langue.panel_bleu_sous_titre_Fournisseurs}" />
+					</div>
+				</div>
+
+				<div class="container_onglet_menu_tb_documents" onclick="window.location.href='/page-mes-fournisseurs.xhtml'">
+					<h:graphicImage class="picto-tb-documents" library="images" name="picto-documents.png" width="30%" height="50%" />
+					<div class="ui-g-8">
+						<p:outputLabel styleClass="titre-tb-picto" value="#{c_langue.panel_jaune_titre_Documents}" />
+						<p:outputLabel styleClass="texte-tb-picto" value="#{c_langue.panel_jaune_sous_titre_Documents}" />
+					</div>
+				</div>
+
+				<div class="container_onglet_menu_tb_informations">
+					<h:graphicImage class="picto-tb-informations" library="images" name="picto-information.png" width="30%" height="50%" />
+					<div class="ui-g-8">
+						<p:outputLabel styleClass="titre-tb-picto" value="#{c_langue.panel_rouge_titre_Informations}" />
+						<p:outputLabel styleClass="texte-tb-picto" value="#{c_langue.panel_rouge_sous_titre_Informations}" />
+					</div>
+				</div>
+
+			</div>
+		</div>
+
+	</h:form>
+
+</ui:composition>

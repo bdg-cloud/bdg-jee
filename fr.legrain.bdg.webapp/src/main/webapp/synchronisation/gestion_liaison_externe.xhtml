@@ -1,0 +1,215 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<f:validateBean disabled="true">
+	
+		<p:menubar styleClass="menu-onglet">
+			
+			<p:menuitem title="Fermer" styleClass="icon icon-close menuitem-fermer-droite" process="@this" 
+				actionListener="#{gestionLiaisonExterneController.actFermer}"
+				onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())">
+			</p:menuitem>
+
+		</p:menubar>
+		
+		<p:panel header="Gestion des liaisons externes">
+					
+				<p:panel header="Choix des critères">
+					<h:panelGrid columns="2">
+					     <p:outputLabel for="idselectOneMenuLiaisonEntite" value="Type Entite BDG: " />
+				        <p:selectOneMenu id="idselectOneMenuLiaisonEntite" value="#{gestionLiaisonExterneController.selectedEntite}">
+				            <f:selectItem itemLabel="Choisir un type d'entité " itemValue="" />
+				            <f:selectItems value="#{gestionLiaisonExterneController.listeStringEntite}" />
+				            <p:ajax event="change" update="@this" />
+				        </p:selectOneMenu>  
+				        
+				        <p:outputLabel for="idSelectOneMenuServiceLiaison" value="Service externe : " />			        
+				        <p:selectOneMenu id="idSelectOneMenuServiceLiaison" value="#{gestionLiaisonExterneController.selectedServiceDTO}"  widgetVar="wvSelectOneMenuServiceLiaison" converter="entityConverter">
+				        	<f:selectItem itemLabel="Choisir un service" itemValue="" />
+			            	<f:selectItems value="#{gestionLiaisonExterneController.listeServiceDTO}" itemLabel="#{s.libelleServiceWebExterne}" var="s" itemValue="#{s}"/>
+			            	<p:ajax event="change" update="@this" />
+			       		 </p:selectOneMenu>
+				        
+					</h:panelGrid>
+					
+					 <p:commandButton value="Valider les critères" title="Valider les critères" styleClass="" icon="fa fa-check"
+								process="@this"
+								update="@this, @widgetVar(wvdatatableLiaison), @widgetVar(wvpanelAjoutLiaison)"
+								actionListener="#{gestionLiaisonExterneController.actRechercher}">
+					</p:commandButton>
+					
+				</p:panel>
+				
+				
+				
+				<p:panel header="Ajouter une liaison" widgetVar="wvpanelAjoutLiaison" toggleable="true" collapsed="false">
+					<h:panelGrid columns="4">
+					
+						<!-- Article -->
+					    <p:autoComplete value="#{gestionLiaisonExterneController.newLiaison.articleDTO}" completeMethod="#{gestionLiaisonExterneController.articleAutoCompleteDTOLight}" 
+										converter="entityConverter" var="art" itemLabel="#{art.codeArticle}" itemValue="#{art}" forceSelection="true" dropdown="true"
+										placeholder="Article" style="width:100%" rendered="#{gestionLiaisonExterneController.selectedEntite eq 'article'}">
+
+										<p:column>
+											<h:outputText value="#{art.codeArticle}" />
+										</p:column>
+
+										<p:column>
+											<h:outputText value="#{art.libellecArticle}" />
+										</p:column>
+									<p:column >
+										<h:outputText value="#{art.commentaireArticle}" rendered="#{gestionLiaisonExterneController.rechercheAvecCommentaire(false)}"/>
+									</p:column>
+
+										<f:attribute name="nomChamp" value="#{const.C_CODE_ARTICLE}" />
+										 <p:ajax event="itemSelect" listener="#{gestionLiaisonExterneController.autcompleteSelection}"
+										 update="" />
+										 <p:ajax event="clear" listener="#{gestionLiaisonExterneController.onClearArticle}" 
+										 update=""/> 									
+							</p:autoComplete>
+							
+						<!-- tiers -->
+					    <p:autoComplete value="#{gestionLiaisonExterneController.newLiaison.tiersDTO}" completeMethod="#{gestionLiaisonExterneController.tiersAutoCompleteDTOLight}"
+										converter="entityConverter" var="tiers" itemLabel="#{tiers.codeTiers}" itemValue="#{tiers}" forceSelection="true" dropdown="true"
+										placeholder="Tiers" style="width:100%" rendered="#{gestionLiaisonExterneController.selectedEntite eq 'tiers'}">
+
+										<p:column>
+											<h:outputText value="#{tiers.codeTiers}" />
+										</p:column>
+
+										<p:column>
+											<h:outputText value="#{tiers.nomTiers}" />
+										</p:column>
+
+										<f:attribute name="nomChamp" value="#{const.C_CODE_TIERS}" />
+										 <p:ajax event="itemSelect" listener="#{gestionLiaisonExterneController.autcompleteSelection}"
+										 update="" />
+										 <p:ajax event="clear" listener="#{gestionLiaisonExterneController.onClearTiers}" 
+										 update=""/> 									
+							</p:autoComplete>
+							
+							
+							<!-- type de paiement -->
+					   		 <p:autoComplete value="#{gestionLiaisonExterneController.newLiaison.taTPaiementDTO}" completeMethod="#{gestionLiaisonExterneController.typePaiementAutoCompleteDTO}" 
+										converter="entityConverter" var="tp" itemLabel="#{tp.codeTPaiement}" itemValue="#{tp}" forceSelection="true" dropdown="true"
+										placeholder="Type de règlement" style="width:100%" rendered="#{gestionLiaisonExterneController.selectedEntite eq 'type_paiement'}">
+
+										<p:column>
+											<h:outputText value="#{tp.codeTPaiement}" />
+										</p:column>
+
+										<p:column>
+											<h:outputText value="#{tp.libTPaiement}" />
+										</p:column>
+
+										<f:attribute name="nomChamp" value="#{const.C_CODE_T_PAIEMENT}" />
+										 <p:ajax event="itemSelect" listener="#{gestionLiaisonExterneController.autcompleteSelection}"
+										 update="" />
+										 
+							</p:autoComplete>
+							
+							
+							
+							<p:outputLabel for="idInmputTextRefExterne" value="Référence externe :" />
+							<p:inputText id="idInmputTextRefExterne" value="#{gestionLiaisonExterneController.newLiaison.refExterne}" >
+								<p:ajax event="blur" update="@this" />
+							</p:inputText>
+       						
+				        
+					</h:panelGrid>
+					 <p:commandButton value="Enregistrer la liaison" title="Enregistrer la liaison"  styleClass="" icon="fa fa-plus"
+									process="@this"
+									update="@this, @widgetVar(wvpanelAjoutLiaison), @widgetVar(wvdatatableLiaison)"
+									actionListener="#{gestionLiaisonExterneController.actEnregistrer}">
+					</p:commandButton>
+					
+				</p:panel>
+				
+				<p:dataTable widgetVar="wvdatatableLiaison" var="ligne" value="#{gestionLiaisonExterneController.listeLiaison}" selection="#{gestionLiaisonExterneController.selectedLiaison}">
+					<f:facet name="header">
+			            Les liaisons existantes
+			        </f:facet>
+			        <p:column headerText="Id" sortBy="#{ligne.id}">
+			            <h:outputText value="#{ligne.id}" />
+			        </p:column>
+			        <p:column headerText="Ref externe" sortBy="#{ligne.refExterne}">
+			            <h:outputText value="#{ligne.refExterne}" />
+			        </p:column>
+			        
+			         <p:column sortBy="#{ligne.codeTPaiement}" rendered="#{gestionLiaisonExterneController.selectedEntite eq 'type_paiement'}">
+			        	<f:facet name="header">
+							<h:outputText value="Code Type règlement" />
+						</f:facet>
+			           <p:outputLabel value="#{ligne.codeTPaiement}"></p:outputLabel> 
+			        </p:column>
+			        <p:column sortBy="#{ligne.libTPaiement}" rendered="#{gestionLiaisonExterneController.selectedEntite eq 'type_paiement'}">
+			        	<f:facet name="header">
+							<h:outputText value="Libelle Type règlement" />
+						</f:facet>
+			           <p:outputLabel value="#{ligne.libTPaiement}"></p:outputLabel> 
+			        </p:column>
+			        
+			        
+			         <p:column sortBy="#{ligne.codeArticle}" rendered="#{gestionLiaisonExterneController.selectedEntite eq 'article'}">
+			        	<f:facet name="header">
+							<h:outputText value="Code Article" />
+						</f:facet>
+			           <p:commandLink value="#{ligne.codeArticle}"
+																action="#{ouvertureDocumentBean.detailArticle(ouvertureDocumentBean.recupCodeArticle(ligne.codeArticle))}" 
+																update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');" process="@this">
+								</p:commandLink> 
+			        </p:column>
+			        <p:column sortBy="#{ligne.libelleArticle}" rendered="#{gestionLiaisonExterneController.selectedEntite eq 'article'}">
+			        	<f:facet name="header">
+							<h:outputText value="Libelle Article" />
+						</f:facet>
+			            <h:outputText value="#{ligne.libelleArticle}" />
+			        </p:column>
+			        <p:column sortBy="#{ligne.codeTiers}" rendered="#{gestionLiaisonExterneController.selectedEntite eq 'tiers'}">
+			        	<f:facet name="header">
+							<h:outputText value="Code Tiers" />
+						</f:facet>
+			            <p:commandLink value="#{ligne.codeTiers}"
+																action="#{ouvertureDocumentBean.detailTiers(ouvertureDocumentBean.recupCodetiers(ligne.codeTiers))}" 
+																update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');" process="@this">
+								</p:commandLink>
+			        </p:column>
+			          <p:column headerText="Nom Tiers" sortBy="#{ligne.nomTiers}" rendered="#{gestionLiaisonExterneController.selectedEntite eq 'tiers'}">
+			            <h:outputText value="#{ligne.nomTiers}" />
+			        </p:column>
+			          <p:column headerText="Prénom Tiers" sortBy="#{ligne.prenomTiers}" rendered="#{gestionLiaisonExterneController.selectedEntite eq 'tiers'}">
+			            <h:outputText value="#{ligne.prenomTiers}" />
+			        </p:column>
+			        <p:column headerText="Type" sortBy="#{ligne.typeEntite}">
+			            <h:outputText value="#{ligne.typeEntite}" />
+			        </p:column>
+			        <p:column headerText="Service" sortBy="#{ligne.libelleServiceExterne}">
+			            <h:outputText value="#{ligne.libelleServiceExterne}" />
+			        </p:column>
+			        <p:column style="width:16px">
+						<f:facet name="header">
+							<h:outputText value="" />
+						</f:facet>
+								<p:commandButton title="Supprimer" styleClass="icon-delete icon icon-grille" widgetVar="widgetVarBtnSupprimerLiaison"
+									action="#{gestionLiaisonExterneController.actSupprimerLigne}" process="@this"
+									update="@widgetVar(wvdatatableLiaison)">
+									<p:confirm header="Confirmation" message="Etes-vous sûr de vouloir supprimer cette liaison ?" icon="pi pi-exclamation-triangle" />
+									<f:setPropertyActionListener target="#{gestionLiaisonExterneController.selectedLiaison}" value="#{ligne}" />
+								</p:commandButton>
+
+					</p:column>
+				</p:dataTable>
+			
+		</p:panel>
+		
+
+		
+
+
+
+	</f:validateBean>
+
+</ui:composition>

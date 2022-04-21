@@ -1,0 +1,2130 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui" 
+	xmlns:lgr="http://legrain.fr/ui"
+	xmlns:lgrjsf="http://java.sun.com/jsf/composite/lgr-jsf-component">
+
+	<!-- 		<f:metadata> -->
+	<!-- 			<f:viewParam name="paramId" value="#{tiersController.paramId}"/> -->
+	<!-- 			<f:event type="preRenderView" listener="#{tiersController.refresh}" /> -->
+	<!-- 		</f:metadata> -->
+
+	<!-- 	<p:outputLabel value="tiers #{paramId}" /> -->
+
+	<!-- <f:validateBean disabled="true"> -->
+
+	<p:tabView id="idTabViewTiers" widgetVar="wvtabViewTiers" styleClass="verticalTab tab-dash-tiers" binding="#{tiersController.tabViewTiers}"  cache="false">
+
+		<p:ajax event="tabChange" 	update="@widgetVar(panelListeAdresseTiers), 
+ 											@widgetVar(panelDetailAdresseTiers),  
+   											@widgetVar(panelComptesBancairesTiers),    
+   											@widgetVar(panelEmailEnvoyesTiers),   
+   											idoutputLabelCahtFicheTiers,   
+      										@widgetVar(wvTabDashBoardFicheTiers),  
+                                            @widgetVar(wvtabViewDashBoardDetailTiers),
+                                            @widgetVar(wvpanelServiceTiers),
+                                            @widgetVar(wvpanelPaiementAbonnementTiers)"    
+			oncomplete="geocode()"
+			listener="#{tiersController.onTabChange}" />
+		
+			
+	
+		<!-- DASHBOARD TAB -->
+		
+		<p:tab title="Tableaux de bord" titleStyleClass="tab-min tab-dash-tiers" titletip="DashBoard" disabled="#{tiersController.disabledTab('')}"  
+				id="idTabDashBoardFicheTiers" widgetVar="wvTabDashBoardFicheTiers" >
+			<div class="dashboard-title" style="background: #f6f6f6; margin-bottom: 15px;">
+				<h:panelGrid columns="4" cellpadding="5">
+					<h:graphicImage name="dashboard/tier.svg" library="images" height="35px" style="margin-top:1px;" />
+					<p:outputLabel value="Tableaux de bord du Tiers : #{tiersController.selectedTaTiersDTO.nomTiers} || code tiers : #{tiersController.selectedTaTiersDTO.codeTiers}" style="font-size:20px;" />
+					<!-- Test bouton recommandation -->
+					<!-- <p:menubar styleClass="menu-recommandation-tiers">
+						<p:menuitem  title="Recommander le Bureau de Gestion Cloud à #{tiersController.selectedTaTiersDTO.nomTiers}" type="button" label="Envoyer une recommandation au Tiers courant" 
+					 value="Envoyer une recommandation au Tiers courant" styleClass="icon icon-partenariat menuitem-droite" style="margin-top: -15px;"
+						 onclick="PF('wvDialogRecommandation').show();" process="@this" update=":form:messages"/>
+					</p:menubar> -->
+					 <p:commandButton title="Recommander le Bureau de Gestion Cloud à #{tiersController.selectedTaTiersDTO.nomTiers}" label="Envoyer une recommandation au Tiers courant" 
+					 value="Envoyer une recommandation au Tiers courant" styleClass="icon icon-partenariat menuitem-poubelle-droite" style="margin-top: -15px;"
+						 onclick="PF('wvDialogRecommandation').show();" process="@this" update=":form:messages">
+					</p:commandButton> 
+					
+				<!-- 	<i class="ui-icon menu-item-alliance"></i> -->
+					<!-- Fin test bouton recommandation -->
+				</h:panelGrid>
+				
+			</div>
+			
+			<!-- MENU GENERAL -->
+			<p:menubar styleClass="menu-onglet">
+				<p:menuitem title="Aide" styleClass="icon icon-aidecontextuelle" onstart="PF('wvAideMenuTiers').show()" />
+				<p:separator styleClass="separateur-menu-vertical" />
+				<p:menuitem title="Enregistrer les modifications en cours" styleClass="icon-save icon" actionListener="#{tiersController.actEnregistrer}"
+					process="@this"
+					update="idPanelIdentite,idPanelAdresse,idPanelContact,idPanelCommentaire,:form:messages,@form,@widgetVar(wvMenuListeTiers),@widgetVar(wvDataTableListeTiers)"
+					disabled="#{tiersController.etatBouton('enregistrer')}" />
+				<p:menuitem title="Ajouter un nouveau Tiers" 
+				styleClass="icon-insert icon" 
+				actionListener="#{tiersController.actInserer}" 
+				process="@this"
+				update="idPanelIdentite,idPanelAdresse,idPanelContact,idPanelCommentaire,:form:messages,@form,@widgetVar(wvMenuListeTiers),@widgetVar(wvDataTableListeTiers)"
+				disabled="#{tiersController.etatBouton('inserer')}"
+				oncomplete="activeTabCenter('#{tiersController.CLASS_CSS_TAB_FICHE_TIERS}', '#{tiersController.WV_TABVIEW_TIERS}')"/>
+					
+					
+				<!-- <p:menuitem title="Modifier le Tiers courant" styleClass="icon-update icon" actionListener="#{tiersController.actModifier}" process="@this"
+					update="idPanelIdentite,idPanelAdresse,idPanelContact,idPanelCommentaire,:form:messages,@form,@widgetVar(wvMenuListeTiers),@widgetVar(wvDataTableListeTiers)"
+					disabled="#{tiersController.etatBouton('modifier')}" oncomplete="PF('wvtabViewTiers').select(1)" /> -->
+				<p:menuitem title="Modifier le Tiers courant" styleClass="icon-update icon"
+				 actionListener="#{tiersController.actModifier}" process="@this"
+			     update="idPanelIdentite,idPanelAdresse,idPanelContact,idPanelCommentaire,:form:messages,@form,@widgetVar(wvMenuListeTiers),@widgetVar(wvDataTableListeTiers)"
+				 disabled="#{tiersController.etatBouton('modifier')}"
+				 oncomplete="activeTabCenter('#{tiersController.CLASS_CSS_TAB_FICHE_TIERS}', '#{tiersController.WV_TABVIEW_TIERS}')" /> 
+
+					
+					
+					        
+					
+					
+				
+				<p:menuitem title="Annuler les modifications en cours" styleClass="icon-cancel icon" actionListener="#{tiersController.actAnnuler}"
+					process="@this"
+					update="idPanelIdentite,idPanelAdresse,idPanelContact,idPanelCommentaire,:form:messages,@form,@widgetVar(wvMenuListeTiers),@widgetVar(wvDataTableListeTiers)"
+					disabled="#{tiersController.etatBouton('annuler')}">
+					<p:confirm header="Confirmation" message="Etes vous sur de vouloir annuler les modifications en cours ?" icon="ui-icon-alert" />
+				</p:menuitem>
+				
+				
+				<p:menuitem title="Supprimer le Tiers courant" styleClass="icon icon-delete menuitem-poubelle-droite"
+					actionListener="#{tiersController.actSupprimer}" process="@this"
+					update="idPanelIdentite,idPanelAdresse,idPanelContact,idPanelCommentaire,:form:messages,@form,@widgetVar(wvDataTableListeTiers)"
+					disabled="#{tiersController.etatBouton('supprimer')}">
+					<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer ce Tiers ?" icon="ui-icon-alert" />
+				</p:menuitem>
+				
+				
+				
+				<p:menuitem title="Fermer l'onglet des Tiers" styleClass="icon icon-close menuitem-fermer-droite" process="@this"
+					actionListener="#{tiersController.actFermer}" update=":form:messages,@widgetVar(wvMenuListeTiers),@widgetVar(wvDataTableListeTiers)"
+					disabled="#{tiersController.etatBouton('fermer')}" onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())">
+					<p:confirm header="Confirmation" message="#{msg_diag.alert_fermeture_onglet}" icon="ui-icon-alert"
+						disabled="#{!tiersController.modeEcran.dataSetEnModif()}" />
+				</p:menuitem>
+
+				
+
+				<p:separator styleClass="separateur-menu-vertical" />
+				<p:submenu  icon="ui-icon-print" class="ui-icon-print-option">
+					<p:menuitem title="Imprimer la fiche du Tiers courant" value="Fiche du tiers"
+						onsuccess="window.open('#{request.contextPath}/output?__report=/reports/tiers/FicheTiers.rptdesign&amp;id_tiers=#{tiersController.selectedTaTiersDTO.id}&amp;__format=pdf')"
+						actionListener="#{tiersController.actImprimer}" disabled="#{tiersController.etatBouton('imprimer')}" />
+					
+					<p:menuitem title="Impression situation" value="Impression situation"
+						onclick="PF('interfacePrintTiers').show();">						
+					</p:menuitem>
+
+				</p:submenu>
+				<p:menuitem title="Envoyer un email" styleClass="icon icon-envoi-mail"
+					oncomplete="$('.classHiddenCommandForDialogEmailReturnTiers').click()" process="@this" update=":form:messages"
+					disabled="#{tiersController.etatBouton('modifier')}" />	
+				<p:menuitem title="Envoyer un SMS" styleClass="icon icon-envoi-sms"
+					oncomplete="$('.classHiddenCommandForDialogSMSReturnTiers').click()" process="@this" update=":form:messages"
+					disabled="#{tiersController.etatBouton('modifier')}" />	
+				<p:menuitem title="Envoyer un message Push" styleClass="icon icon-envoi-message-push"
+					oncomplete="$('.classHiddenCommandForDialogPushReturnTiers').click()" process="@this" update=":form:messages"
+					disabled="#{tiersController.etatBouton('modifier')}" rendered="#{auth.isDevLgr()}"/>	
+					
+					<!-- actionListener="#{agendaBean.actInsererEvenement}" -->
+				<p:menuitem title="Créer un évènement" styleClass="icon-agenda icon"
+					oncomplete="$('.classHiddenCommandForDialogAgendaReturnTiers').click()" process="@this"
+					update="idPanelIdentite,idPanelAdresse,idPanelContact,idPanelCommentaire,:form:messages,@form,@widgetVar(wvMenuListeTiers),@widgetVar(wvDataTableListeTiers)"
+					disabled="#{tiersController.etatBouton('modifier')}" />
+				<p:separator styleClass="separateur-menu-vertical"/>
+
+				<p:menuitem title="Paiement CB" styleClass="icon-paiement-cb icon" 
+					oncomplete="$('.classHiddenCommandForDialogPaiementCBReturnTiers').click()"
+					process="@this" 
+					update="@this" 
+					disabled="#{tiersController.etatBouton('imprimer')}"/>
+					
+				
+			
+				<p:separator styleClass="separateur-menu-vertical" />
+				<p:menuitem title="Liste des Tiers" styleClass="icon icon-liste" oncomplete="PF('wvOverlayListeTiers').show();" />
+				
+			</p:menubar>
+			
+			
+			
+			
+			
+
+			<!-- TABVIEW -->
+			<p:tabView 	dynamic="true" 
+						cache="false" 
+						orientation="left"
+						id="idtabViewDashBoardDetailTiers"
+						widgetVar="wvtabViewDashBoardDetailTiers"
+						style="margin-left:15px;">
+						
+						<p:ajax event="tabChange" listener="#{tiersController.dashBoardParTiersController.refresh}"   >
+						</p:ajax>
+						
+				
+
+				<p:tab id="idTabDashBoardTiersGeneral" title="Général" titleStyleClass="tab-dbtiers tab-min-db ta-dbtiers-default ta-dbtiers-active " >
+				
+					
+				
+				
+					<ui:include src="/tiers/onglet_dashboard_tiers_general.xhtml" >
+						</ui:include>		
+				</p:tab>
+				<p:tab id="idTabDashBoardTiersFacture" title="Factures"  rendered="#{autorisationBean.autoriseMenu(autorisationBean.idModuleFacture)}" titleStyleClass="tab-dbtiers tab-min-db ta-dbtiers-default ta-dbtiers-active " >
+					
+						<ui:include src="/tiers/onglet_dashboard_tiers_facture.xhtml" >
+						</ui:include>
+				</p:tab>
+				
+				<p:tab id="idTabDashBoardTiersReglement" title="Règlements"  rendered="#{autorisationBean.autoriseMenu(autorisationBean.idModuleReglements)}" titleStyleClass="tab-dbtiers tab-min-db ta-dbtiers-default ta-dbtiers-active " >
+					
+						<ui:include src="/tiers/onglet_dashboard_tiers_reglement.xhtml" >
+						</ui:include>
+				</p:tab>
+				
+				<p:tab id="idTabDashBoardTiersArticle" title="Articles achetés" rendered="#{autorisationBean.autoriseMenu(autorisationBean.idModuleArticle)}" titleStyleClass="tab-dbtiers tab-min-db  ta-dbtiers-default ta-dbtiers-active">
+					<ui:include src="/tiers/onglet_dashboard_tiers_article.xhtml" >
+						</ui:include>
+				</p:tab>
+
+				<p:tab id="idTabDashBoardTiersDevis" title="Devis" rendered="#{autorisationBean.autoriseMenu(autorisationBean.idModuleDevis)}" titleStyleClass="tab-dbtiers tab-min-db ta-dbtiers-default ta-dbtiers-active ">
+						<ui:include src="/tiers/onglet_dashboard_tiers_devis.xhtml" >
+						</ui:include>
+				</p:tab>
+
+				<p:tab id="idTabDashBoardTiersCommande" title="Commandes" rendered="#{autorisationBean.autoriseMenu(autorisationBean.idModuleBonCommande)}" titleStyleClass="tab-dbtiers tab-min-db ta-dbtiers-default ta-dbtiers-active ">
+					<ui:include src="/tiers/onglet_dashboard_tiers_commande.xhtml" >
+						</ui:include>
+				</p:tab>
+				
+				<p:tab id="idTabDashBoardTiersLivraison" title="Livraisons" rendered="#{autorisationBean.autoriseMenu(autorisationBean.idModuleBonLivraison)}" titleStyleClass="tab-dbtiers tab-min-db ta-dbtiers-default ta-dbtiers-active ">
+					<ui:include src="/tiers/onglet_dashboard_tiers_livraison.xhtml" >
+						</ui:include>
+				</p:tab>
+				
+				<p:tab id="idTabDashBoardTiersProforma" title="Proforma" rendered="#{autorisationBean.autoriseMenu(autorisationBean.idModuleProforma)}" titleStyleClass="tab-dbtiers tab-min-db ta-dbtiers-default ta-dbtiers-active">
+					
+						<ui:include src="/tiers/onglet_dashboard_tiers_proforma.xhtml" >
+						</ui:include>
+				</p:tab>
+				
+				</p:tabView>
+		</p:tab>
+
+
+
+		
+		
+		
+		
+		
+		
+
+		<p:tab title="Tiers"  titleStyleClass="tab-min tab-tiers tab-fiche-tiers" titletip="Tiers">
+			<!--             <div class="dashboard-title" style="background:#f6f6f6;"> -->
+			<!--               <h:panelGrid columns="2" cellpadding="5"> -->
+			<!--             	<h:graphicImage name="dashboard/tier.svg" library="images" height="35px" style="margin-top:1px;" /> -->
+			<!--                 <p:outputLabel value="Tiers : Gestion des contacts" /> -->
+			<!--               </h:panelGrid>   -->
+			<!--             </div> -->
+			<!--                     </div> -->
+
+			<div class="dashboard-title" style="background: #f6f6f6; margin-bottom: 15px;">
+				<h:panelGrid columns="4" cellpadding="5">
+					<h:graphicImage name="dashboard/tier.svg" library="images" height="35px" style="margin-top:1px;" />
+					<p:outputLabel value="Fiche du Tiers : #{tiersController.selectedTaTiersDTO.nomTiers} || code tiers : #{tiersController.selectedTaTiersDTO.codeTiers}" style="font-size:20px;" />
+<!-- 					<i class="fa fa-bell-o fa-2x" style="color:#d2524f"></i> -->
+				</h:panelGrid>
+			</div>
+
+			<p:menubar styleClass="menu-onglet">
+				<p:menuitem title="Aide" styleClass="icon icon-aidecontextuelle" onstart="PF('wvAideMenuTiers').show()" />
+				<p:separator styleClass="separateur-menu-vertical" />
+				<p:menuitem title="Enregistrer les modifications en cours" styleClass="icon-save icon" actionListener="#{tiersController.actEnregistrer}"
+					process="@this"
+					update="idPanelIdentite,idPanelAdresse,idPanelContact,idPanelCommentaire,:form:messages,@form,@widgetVar(wvMenuListeTiers),@widgetVar(wvDataTableListeTiers)"
+					disabled="#{tiersController.etatBouton('enregistrer')}" />
+				<p:menuitem title="Ajouter un nouveau Tiers" styleClass="icon-insert icon" actionListener="#{tiersController.actInserer}" process="@this"
+					update="idPanelIdentite,idPanelAdresse,idPanelContact,idPanelCommentaire,:form:messages,@form,@widgetVar(wvMenuListeTiers),@widgetVar(wvDataTableListeTiers)"
+					disabled="#{tiersController.etatBouton('inserer')}" />
+				<p:menuitem title="Modifier le Tiers courant" styleClass="icon-update icon" actionListener="#{tiersController.actModifier}" process="@this"
+					update="idPanelIdentite,idPanelAdresse,idPanelContact,idPanelCommentaire,:form:messages,@form,@widgetVar(wvMenuListeTiers),@widgetVar(wvDataTableListeTiers)"
+					disabled="#{tiersController.etatBouton('modifier')}" />
+				
+				<p:menuitem title="Annuler les modifications en cours" styleClass="icon-cancel icon" actionListener="#{tiersController.actAnnuler}"
+					process="@this"
+					update="idPanelIdentite,idPanelAdresse,idPanelContact,idPanelCommentaire,:form:messages,@form,@widgetVar(wvMenuListeTiers),@widgetVar(wvDataTableListeTiers)"
+					disabled="#{tiersController.etatBouton('annuler')}">
+					<p:confirm header="Confirmation" message="Etes vous sur de vouloir annuler les modifications en cours ?" icon="ui-icon-alert" />
+				</p:menuitem>
+				<p:menuitem title="Supprimer le Tiers courant" styleClass="icon icon-delete menuitem-poubelle-droite"
+					actionListener="#{tiersController.actSupprimer}" process="@this"
+					update="idPanelIdentite,idPanelAdresse,idPanelContact,idPanelCommentaire,:form:messages,@form,@widgetVar(wvDataTableListeTiers)"
+					disabled="#{tiersController.etatBouton('supprimer')}">
+					<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer ce Tiers ?" icon="ui-icon-alert" />
+				</p:menuitem>
+				<p:menuitem title="Fermer l'onglet des Tiers" styleClass="icon icon-close menuitem-fermer-droite" process="@this"
+					actionListener="#{tiersController.actFermer}" update=":form:messages,@widgetVar(wvMenuListeTiers),@widgetVar(wvDataTableListeTiers)"
+					disabled="#{tiersController.etatBouton('fermer')}" onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())">
+					<p:confirm header="Confirmation" message="#{msg_diag.alert_fermeture_onglet}" icon="ui-icon-alert"
+						disabled="#{!tiersController.modeEcran.dataSetEnModif()}" />
+				</p:menuitem>
+
+				<p:separator styleClass="separateur-menu-vertical" />
+
+				
+				
+				<p:submenu  icon="ui-icon-print" class="ui-icon-print-option">
+					<p:menuitem title="Imprimer la fiche du Tiers courant" value="Fiche du tiers"
+						onsuccess="window.open('#{request.contextPath}/output?__report=/reports/tiers/FicheTiers.rptdesign&amp;id_tiers=#{tiersController.selectedTaTiersDTO.id}&amp;__format=pdf')"
+						actionListener="#{tiersController.actImprimer}" disabled="#{tiersController.etatBouton('imprimer')}" />
+						<p:menuitem title="Impression situation" value="Impression situation" onclick="PF('interfacePrintTiers').show();">
+					</p:menuitem>
+
+				</p:submenu>					
+					
+				<p:menuitem title="Envoyer un email" styleClass="icon icon-envoi-mail"
+					oncomplete="$('.classHiddenCommandForDialogEmailReturnTiers').click()" process="@this" update=":form:messages"
+					disabled="#{tiersController.etatBouton('modifier')}" />
+					
+				<p:menuitem title="Envoyer un SMS" styleClass="icon icon-envoi-sms"
+					oncomplete="$('.classHiddenCommandForDialogSMSReturnTiers').click()" process="@this" update=":form:messages"
+					disabled="#{tiersController.etatBouton('modifier')}" />
+					
+				<p:menuitem title="Envoyer un message Push" styleClass="icon icon-envoi-message-push"
+					oncomplete="$('.classHiddenCommandForDialogPushReturnTiers').click()" process="@this" update=":form:messages"
+					disabled="#{tiersController.etatBouton('modifier')}" rendered="#{auth.isDevLgr()}"/>
+					
+				<!-- actionListener="#{agendaBean.actInsererEvenement}" -->
+				<p:menuitem title="Créer un évènement" styleClass="icon-agenda icon"
+					oncomplete="$('.classHiddenCommandForDialogAgendaReturnTiers').click()" process="@this"
+					update="idPanelIdentite,idPanelAdresse,idPanelContact,idPanelCommentaire,:form:messages,@form,@widgetVar(wvMenuListeTiers),@widgetVar(wvDataTableListeTiers)"
+					disabled="#{tiersController.etatBouton('modifier')}" />
+			
+				<p:separator styleClass="separateur-menu-vertical" />
+				
+				<p:menuitem title="Paiement CB" styleClass="icon-paiement-cb icon" 
+					oncomplete="$('.classHiddenCommandForDialogPaiementCBReturnTiers').click()"
+					process="@this" 
+					update="@this" 
+					disabled="#{tiersController.etatBouton('imprimer')}"/>	
+					
+				<p:separator styleClass="separateur-menu-vertical"/>	
+					
+				<p:menuitem title="Liste des Tiers" styleClass="icon icon-liste" oncomplete="PF('wvOverlayListeTiers').show();" />
+				
+				<p:menuitem title="Dupliquer un tiers" styleClass="icon-insert icon" 
+						oncomplete="$('.classHiddenCommandForDialogDuplicationTiers').click()" process="@this" rendered="#{auth.isDevLgr()}" 
+						disabled="#{tiersController.etatBouton('inserer')}" />	
+						
+						
+
+					
+				
+			</p:menubar>
+			
+				<p:commandButton styleClass="classHiddenCommandForDialogDuplicationTiers"  style="display:none" process="@this"  
+			actionListener="#{tiersController.actDuplicationTiersdialog}"  >
+        <p:ajax event="dialogReturn" listener="#{tiersController.handleReturnDialogDuplicationTiers}" 
+       update="idPanelIdentite,idPanelAdresse,idPanelContact,idPanelCommentaire,:form:messages,@form,@widgetVar(wvMenuListeTiers),@widgetVar(wvDataTableListeTiers)" />  
+    </p:commandButton>
+			
+			
+			<p:commandButton styleClass="classHiddenCommandForDialogPaiementCBReturnTiers" actionListener="#{tiersController.actInitPaiementCarteBancaire}" style="display:none" process="@this"  >
+		        <p:ajax event="dialogReturn" update="@form"  />  
+		    </p:commandButton>
+
+			<p:commandButton styleClass="classHiddenCommandForDialogAgendaReturnTiers" actionListener="#{tiersController.actDialogEvenement}"
+				style="display:none" process="@this">
+				<p:ajax event="dialogReturn" update="@widgetVar(wvAgenda)" />
+			</p:commandButton>
+
+			<p:commandButton styleClass="classHiddenCommandForDialogEmailReturnTiers" actionListener="#{tiersController.actDialogEmail}" style="display:none"
+				process="@this">
+				<p:ajax event="dialogReturn" listener="#{tiersController.handleReturnDialogEmail}" update=":form:messages" />
+			</p:commandButton>
+			<p:commandButton styleClass="classHiddenCommandForDialogRecommandationReturnTiers" actionListener="#{tiersController.actDialogRecommandation}" style="display:none"
+				process="@this">
+				<p:ajax event="dialogReturn" listener="#{tiersController.handleReturnDialogRecommandation}" update=":form:messages" />
+			</p:commandButton>
+			
+			<p:commandButton styleClass="classHiddenCommandForDialogSMSReturnTiers" actionListener="#{tiersController.actDialogSms}" style="display:none"
+				process="@this">
+				<p:ajax event="dialogReturn" listener="#{tiersController.handleReturnDialogSms}" update=":form:messages" />
+			</p:commandButton>
+			
+			<p:commandButton styleClass="classHiddenCommandForDialogPushReturnTiers" actionListener="#{tiersController.actDialogPush}" style="display:none"
+				process="@this">
+				<p:ajax event="dialogReturn" listener="#{tiersController.handleReturnDialogPush}" update=":form:messages" />
+			</p:commandButton>
+
+			<p:overlayPanel widgetVar="wvAideMenuTiers" hideEffect="fade" dynamic="true" showCloseIcon="true"
+				styleClass="overlay-aide-contextuelle overlay-aide-contextuelle-big">
+				<ui:include src="/aide_contextuelle/tiers_general.xhtml" />
+			</p:overlayPanel>
+			<!-- 	<p:hotkey bind="F1" update=":form:messages" actionListener="#{tiersController.actAide}"> -->
+			<!-- 		<p:ajax event="dialogReturn" listener="#{tiersController.actAideRetour}"/> -->
+			<!-- 	</p:hotkey> -->
+
+			<!-- 	<p:dashboard id="boardTiers" model="#{dashboardTiersBean.model}"> -->
+			<div class="ui-grid ui-grid-responsive">
+				<p:fieldset style="margin-bottom:20px;" widgetVar="wvBandeauActionTiers">
+					<h:panelGrid columns="10" cellpadding="5">
+						<p:outputLabel value="Etat : " />
+						<p:panel styleClass="panel-aide-contextuelle">
+							<p:selectBooleanButton id="value2" value="#{tiersController.selectedTaTiersDTO.actifTiers}" disabled="#{tiersController.editable()}"
+								onLabel="Actif" offLabel="Inactif" onIcon="ui-icon-check" offIcon="ui-icon-close">
+								<p:ajax event="change" update="@this" />
+							</p:selectBooleanButton>
+
+							<!-- 						<p:selectBooleanCheckbox value="#{tiersController.selectedTaTiersDTO.actifTiers}" disabled="#{tiersController.editable()}" > -->
+							<!-- 							<p:ajax event="change" update="@this"/> -->
+							<!-- 							</p:selectBooleanCheckbox> -->
+							<p:commandLink id="idLinkAideTiersActifTiers" styleClass="lien-aide-contextuelle">
+								<i class="fa fa-info-circle"></i>
+							</p:commandLink>
+							<p:overlayPanel for="idLinkAideTiersActifTiers" hideEffect="fade" dynamic="true" showCloseIcon="true" styleClass="overlay-aide-contextuelle">
+								<ui:include src="/aide_contextuelle/tiers_actif_tiers.xhtml" />
+							</p:overlayPanel>
+						</p:panel>
+						<p:separator styleClass="separateur-menu-vertical" />
+
+<!-- value="#{!tiersController.selectedTaTiersDTO.emailCleCompteClientEnvoye ? 'Activation espace client sécurisé' : 'Renvoyer clé secrète'}" -->
+						<p:commandButton
+							value="#{!tiersController.espaceClientDejaCreer() ? 'Activation espace client sécurisé' : 'Espace client déjà activé'}"
+							actionListener="#{tiersController.emailNotificationActivationCompteClient}" update="@widgetVar(wvBandeauActionTiers)"
+							disabled="#{tiersController.espaceClientDejaCreer()}">
+							<p:confirm header="Confirmation"
+								message="#{!tiersController.selectedTaTiersDTO.emailCleCompteClientEnvoye ? 'Vous allez activer un espace client sécurisé pour le client en cours et lui envoyer un email de notification. Continuer ?' : 'Vous êtes sur le point de renvoyer la clé secrète de liaison à votre client. Continuer ?'}"
+								icon="ui-icon-alert" />
+						</p:commandButton>
+						
+<!-- 						<p:commandButton rendered="#{auth.isDevLgr()}" -->
+<!-- 							value="Création de tous les comptes espace client et envoi des emails" -->
+<!-- 							actionListener="#{tiersController.emailNotificationActivationCompteClientTous}" update="@widgetVar(wvBandeauActionTiers)"> -->
+<!-- 							<p:confirm header="Confirmation" -->
+<!-- 								message="#{!tiersController.selectedTaTiersDTO.emailCleCompteClientEnvoye ? 'Vous allez activer un espace client sécurisé pour le client en cours et lui envoyer un email de notification. Continuer ?' : 'Vous êtes sur le point de renvoyer la clé secrète de liaison à votre client. Continuer ?'}" -->
+<!-- 								icon="ui-icon-alert" /> -->
+<!-- 						</p:commandButton> -->
+
+						<p:graphicImage name="activation-compte-client.svg" title="L'espace client n'est pas encore activé." styleClass="content" library="images"
+							width="70px" rendered="#{!tiersController.espaceClientDejaCreer()}" />
+<!-- 						<p:graphicImage name="activation-compte-client1.svg" -->
+<!-- 							title="L'espace client sécurisé bdg.cloud est activé mais votre client n'a pas encore établi la liaison avec votre facturation." -->
+<!-- 							styleClass="content" library="images" width="70px" -->
+<!-- 							rendered="#{tiersController.selectedTaTiersDTO.emailCleCompteClientEnvoye and !tiersController.selectedTaTiersDTO.utiliseCompteClient}" /> -->
+						<p:graphicImage name="activation-compte-client2.svg"
+							title="Depuis l'espace client sécurisé bdg.cloud, votre client a activé la liaison avec votre facturation. Désormais, votre client peut récupérer ses factures."
+							styleClass="content" library="images" width="70px" rendered="#{tiersController.espaceClientDejaCreer()}" />
+						<p:panel styleClass="panel-aide-contextuelle">
+
+							<p:commandLink id="idLinkAideTiersUtiliseCompteClient" styleClass="lien-aide-contextuelle">
+								<i class="fa fa-info-circle"></i>
+							</p:commandLink>
+							<p:overlayPanel for="idLinkAideTiersUtiliseCompteClient" hideEffect="fade" dynamic="false" showCloseIcon="true"
+								styleClass="overlay-aide-contextuelle">
+								<ui:include src="/aide_contextuelle/tiers_utilise_compte_client.xhtml" />
+							</p:overlayPanel>
+						</p:panel>
+						<p:separator styleClass="separateur-menu-vertical" />
+						<p:outputLabel value="CA HT : "/> 
+						<p:outputLabel value="#{tiersController.dashBoardParTiersController.totauxCaPeriodeFacture(tiersController.selectedTaTiersDTO.codeTiers).mtHtCalc}" id="idoutputLabelCahtFicheTiers">
+						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+						</p:outputLabel>
+						<p:separator styleClass="separateur-menu-vertical" />
+						
+<!-- 						<div class="top-menu"> -->
+<!-- 						<div class="top-bar-icon"> -->
+<!-- 					    <ul class="top-submenu animated flipInX">     -->
+<!-- 						 <p:commandLink actionListener="#{monCompteBean.openMonCompte}" update=":form:tabView" -->
+<!-- 										oncomplete="activeLastTabCenter()" > -->
+<!-- 						<i class="fa fa-bell-o fa-2x animated swing" style="color:#f5940A" ></i> -->
+					
+<!-- 						<span class="top-bar-badge animated rubberBand">5</span>  -->
+
+<!-- 					    </p:commandLink> -->
+
+<!-- 						</ul> -->
+<!-- 						</div> -->
+<!-- 						</div> -->
+
+					</h:panelGrid>
+
+
+
+				</p:fieldset>
+
+				<div class="ui-grid-row">
+
+					<div class="ui-grid-col-6">
+						<p:panel id="idPanelIdentite" header="Identité" toggleable="true" widgetVar="panelIdentite">
+
+							<!--  <p:ajax event="toggle" listener="#{panelView.onToggle}" update="msgs" /> -->
+
+							<h:panelGrid columns="2" cellpadding="10">
+
+								<p:outputLabel value="Code tiers : " styleClass="labelchob" />
+
+								<p:panel styleClass="panel-aide-contextuelle">
+									<p:inputText id="idCode" value="#{tiersController.selectedTaTiersDTO.codeTiers}" validator="#{tiersController.validateTiers}"
+										disabled="#{tiersController.editable()}">
+										<f:attribute name="nomChamp" value="#{const.C_CODE_TIERS}" />
+										<p:ajax event="blur" update="@this,idCodeCompta" />
+									</p:inputText>
+									<p:commandLink id="idLinkAideTiersCodeTiers" styleClass="lien-aide-contextuelle">
+										<i class="fa fa-info-circle animated swing"></i>
+									</p:commandLink>
+									<p:overlayPanel for="idLinkAideTiersCodeTiers" hideEffect="fade" dynamic="true" showCloseIcon="true" styleClass="overlay-aide-contextuelle">
+										<ui:include src="/aide_contextuelle/tiers_code_tiers.xhtml" />
+									</p:overlayPanel>
+								</p:panel>
+								<!-- 						<p:message for="idCode" display="icon"/> -->
+
+								<p:outputLabel value="Forme juridique : " />
+								<p:panel styleClass="panel-aide-contextuelle">
+									<!-- 						<p:autoComplete value="#{tiersController.taTEntite}" -->
+									<!-- 							completeMethod="#{tiersController.typeEntiteAutoComplete}" -->
+									<!-- 							disabled="#{tiersController.editable()}" var="typeEntite" -->
+									<!-- 							itemLabel="#{typeEntite.codeTEntite}" itemValue="#{typeEntite}" -->
+									<!-- 							forceSelection="true" dropdown="true" placeholder="Type d'entité"> -->
+									<!-- 							<p:column> -->
+									<!-- 								<f:facet name="header"> -->
+									<!-- 									<p:commandButton value="Ajouter" title="Insérer" -->
+									<!-- 										process="@this" update=":form:tabView,:form:messages" -->
+									<!-- 										actionListener="#{tiersController.actDialogTypeEntite}" -->
+									<!-- 										styleClass="btn-insert btn"> -->
+									<!-- 										<p:ajax event="dialogReturn" -->
+									<!-- 											listener="#{tiersController.handleReturnDialogTypeEntite}" -->
+									<!-- 											update="@parent:@parent" /> -->
+									<!-- 									</p:commandButton> -->
+									<!-- 								</f:facet> -->
+									<!-- 								<h:outputText value="#{typeEntite.codeTEntite}" /> -->
+									<!-- 							</p:column> -->
+									<!-- 							<p:column> -->
+									<!-- 								<h:outputText value="#{typeEntite.liblTEntite}" /> -->
+									<!-- 							</p:column> -->
+
+									<!-- 							<f:attribute name="nomChamp" value="#{const.C_CODE_T_ENTITE}" /> -->
+									<!-- 							<p:ajax event="itemSelect" -->
+									<!-- 								listener="#{tiersController.autcompleteSelection}" -->
+									<!-- 								update="@this" /> -->
+									<!-- 						</p:autoComplete> -->
+
+									<p:autoComplete value="#{tiersController.taTEntiteDTO}" completeMethod="#{tiersController.typeEntiteAutoCompleteLight}"
+										disabled="#{tiersController.editable()}" var="typeEntite" itemLabel="#{typeEntite.codeTEntite}" itemValue="#{typeEntite}"
+										forceSelection="true" dropdown="true" placeholder="Forme juridique" converter="entityConverter">
+										<p:column>
+<!-- 											<f:facet name="header"> -->
+<!-- 												<p:commandButton value="Ajouter" title="Insérer" process="@this" update="@this" actionListener="#{tiersController.actDialogTypeEntite}" -->
+<!-- 													styleClass="btn-insert btn"> -->
+<!-- 													<p:ajax event="dialogReturn" listener="#{tiersController.handleReturnDialogTypeEntite}" update="@parent:@parent" /> -->
+<!-- 												</p:commandButton> -->
+<!-- 											</f:facet> -->
+											<h:outputText value="#{typeEntite.codeTEntite}" />
+										</p:column>
+										<p:column>
+											<h:outputText value="#{typeEntite.liblTEntite}" />
+										</p:column>
+
+										<f:attribute name="nomChamp" value="#{const.C_CODE_T_ENTITE}" />
+										<p:ajax event="itemSelect" listener="#{tiersController.autcompleteSelection}" update="@this" />
+									</p:autoComplete>
+									<p:commandLink id="idLinkAideTiersEntiteTiers" styleClass="lien-aide-contextuelle">
+										<i class="fa fa-info-circle"></i>
+									</p:commandLink>
+									<p:overlayPanel for="idLinkAideTiersEntiteTiers" hideEffect="fade" dynamic="true" showCloseIcon="true" styleClass="overlay-aide-contextuelle">
+										<ui:include src="/aide_contextuelle/tiers_entite_tiers.xhtml" />
+									</p:overlayPanel>
+								</p:panel>
+
+								<p:outputLabel value="Raison Sociale : " />
+								<p:panel styleClass="panel-aide-contextuelle">
+									<p:inputText value="#{tiersController.selectedTaTiersDTO.nomEntreprise}" validator="#{tiersController.validateTiers}"
+										disabled="#{tiersController.editable()}">
+										<f:attribute name="nomChamp" value="#{const.C_NOM_ENTREPRISE}" />
+										<p:ajax event="blur" update="@this" />
+									</p:inputText>
+									<p:commandLink id="idLinkAideTiersRaisonSocialeTiers" styleClass="lien-aide-contextuelle">
+										<i class="fa fa-info-circle"></i>
+									</p:commandLink>
+									<p:overlayPanel for="idLinkAideTiersRaisonSocialeTiers" hideEffect="fade" dynamic="true" showCloseIcon="true"
+										styleClass="overlay-aide-contextuelle">
+										<ui:include src="/aide_contextuelle/tiers_raison_sociale_tiers.xhtml" />
+									</p:overlayPanel>
+								</p:panel>
+								
+
+								<p:outputLabel value="Type de tiers : " />
+								<p:panel styleClass="panel-aide-contextuelle">
+									<p:autoComplete value="#{tiersController.taTTiersDTO}" required="true" completeMethod="#{tiersController.typeTiersAutoCompleteLight}"
+										disabled="#{tiersController.editable()}" var="typeTiers" itemLabel="#{typeTiers.codeTTiers}" itemValue="#{typeTiers}" forceSelection="true"
+										dropdown="true" placeholder="Type de tiers" converter="entityConverter">
+										<p:column>
+											<h:outputText value="#{typeTiers.codeTTiers}" />
+										</p:column>
+										<p:column>
+											<h:outputText value="#{typeTiers.libelleTTiers}" />
+										</p:column>
+										<p:column>
+											<f:facet name="header">
+												<p:commandButton value="Ajouter" title="Insérer" process="@this" update="@this" actionListener="#{tiersController.actDialogTypeTiers}"
+													styleClass="btn-insert btn">
+													<p:ajax event="dialogReturn" listener="#{tiersController.handleReturnDialogTypeTiers}" update="@parent:@parent" />
+												</p:commandButton>
+											</f:facet>
+											<!-- 				            	actionListener="#{aProposBean.actAbout}" -->
+											<h:outputText value="#{typeTiers.compteTTiers}" />
+										</p:column>
+
+										<f:attribute name="nomChamp" value="#{const.C_CODE_T_TIERS}" />
+										<p:ajax event="itemSelect" listener="#{tiersController.autcompleteSelection}" update="@this" />
+									</p:autoComplete>
+									<p:commandLink id="idLinkAideTiersTypeTiers" styleClass="lien-aide-contextuelle">
+										<i class="fa fa-info-circle"></i>
+									</p:commandLink>
+									<p:overlayPanel for="idLinkAideTiersTypeTiers" hideEffect="fade" dynamic="true" showCloseIcon="true" styleClass="overlay-aide-contextuelle">
+										<ui:include src="/aide_contextuelle/tiers_type_tiers.xhtml" />
+									</p:overlayPanel>
+								</p:panel>								
+
+								<p:outputLabel value="Civilité : " />
+								<p:autoComplete value="#{tiersController.taTCiviliteDTO}" completeMethod="#{tiersController.civiliteAutoCompleteLight}"
+									disabled="#{tiersController.editable()}" var="civilite" itemLabel="#{civilite.codeTCivilite}" itemValue="#{civilite}" forceSelection="true"
+									dropdown="true" placeholder="Civilité" converter="entityConverter">
+									<p:column>
+										<f:facet name="header">
+											<p:commandButton value="Ajouter" title="Insérer" process="@this" update="@this" actionListener="#{tiersController.actDialogTypeCivilite}"
+												styleClass="btn-insert btn">
+												<p:ajax event="dialogReturn" listener="#{tiersController.handleReturnDialogTypeCivilite}" update="@parent:@parent" />
+											</p:commandButton>
+										</f:facet>
+
+										<h:outputText value="#{civilite.codeTCivilite}" />
+									</p:column>
+
+									<f:attribute name="nomChamp" value="#{const.C_CODE_T_CIVILITE}" />
+									<p:ajax event="itemSelect" listener="#{tiersController.autcompleteSelection}" update="@this" />
+								</p:autoComplete>
+
+								<p:outputLabel value="Nom : " styleClass="labelchob" />
+								<p:panel styleClass="panel-aide-contextuelle">
+									<p:inputText value="#{tiersController.selectedTaTiersDTO.nomTiers}" validator="#{tiersController.validateTiers}"
+										disabled="#{tiersController.editable()}">
+										<!-- 						<p:inputText value="#{tiersController.selectedTaTiersDTO.nomTiers}" disabled="#{tiersController.editable()}"> -->
+										<f:attribute name="nomChamp" value="#{const.C_NOM_TIERS}" />
+										<p:ajax event="blur" update="@this" />
+									</p:inputText>
+									<p:commandLink id="idLinkAideTiersNomTiers" styleClass="lien-aide-contextuelle">
+										<i class="fa fa-info-circle"></i>
+									</p:commandLink>
+									<p:overlayPanel for="idLinkAideTiersNomTiers" hideEffect="fade" dynamic="true" showCloseIcon="true" styleClass="overlay-aide-contextuelle">
+										<ui:include src="/aide_contextuelle/tiers_nom_tiers.xhtml" />
+									</p:overlayPanel>
+								</p:panel>
+
+								<p:outputLabel value="Prénom : " />
+								<p:inputText value="#{tiersController.selectedTaTiersDTO.prenomTiers}" validator="#{tiersController.validateTiers}"
+									disabled="#{tiersController.editable()}">
+									<f:attribute name="nomChamp" value="#{const.C_PRENOM_TIERS}" />
+									<p:ajax event="blur" update="@this" />
+									<!-- 							<p:ajax event="keyup" listener="#{tiersController.actModifier}" update=":form:messages,@form" immediate="true" /> -->
+								</p:inputText>
+
+								<p:outputLabel value="TVA Intracommunautaire : " />
+								<p:panel styleClass="panel-aide-contextuelle">
+									<p:inputText value="#{tiersController.selectedTaTiersDTO.tvaIComCompl}" validator="#{tiersController.validateTiers}"
+										disabled="#{tiersController.editable()}">
+										<f:attribute name="nomChamp" value="#{const.C_TVA_I_COM_COMPL}" />
+										<p:ajax event="blur" update="@this" />
+									</p:inputText>
+									<p:commandLink id="idLinkAideTiersTvaIntraTiers" styleClass="lien-aide-contextuelle">
+										<i class="fa fa-info-circle"></i>
+									</p:commandLink>
+									<p:overlayPanel for="idLinkAideTiersTvaIntraTiers" hideEffect="fade" dynamic="true" showCloseIcon="true"
+										styleClass="overlay-aide-contextuelle">
+										<ui:include src="/aide_contextuelle/tiers_tva_intra_tiers.xhtml" />
+									</p:overlayPanel>
+								</p:panel>
+
+								<!-- 						<p:outputLabel value="N° accise : " /> -->
+								<!-- 						<p:inputText value="#{tiersController.selectedTaTiersDTO.accise}" validator="#{tiersController.validateTiers}" disabled="#{tiersController.editable()}" > -->
+								<!-- 							<f:attribute name="nomChamp" value="#{const.C_ACCISE}" /> -->
+								<!-- 							<p:ajax event="blur" update="@form"/> -->
+								<!-- 						</p:inputText> -->
+
+
+								<p:outputLabel value="Famille : " />
+								<p:panel styleClass="panel-aide-contextuelle">
+									<p:autoComplete value="#{tiersController.taFamilleTiersDTO}" completeMethod="#{tiersController.familleTiersAutoCompleteLight}"
+										disabled="#{tiersController.editable()}" var="familleTiers" itemLabel="#{familleTiers.codeFamille}" itemValue="#{familleTiers}"
+										forceSelection="true" dropdown="true" placeholder="Famille" converter="entityConverter">
+										<p:column>
+											<f:facet name="header">
+												<p:commandButton value="Ajouter" title="Insérer" process="@this" update="@this" actionListener="#{tiersController.actDialogFamilleTiers}"
+													styleClass="btn-insert btn">
+													<p:ajax event="dialogReturn" listener="#{tiersController.handleReturnDialogFamilleTiers}" update="@parent:@parent" />
+												</p:commandButton>
+											</f:facet>
+
+											<h:outputText value="#{familleTiers.codeFamille}" />
+										</p:column>
+
+										<f:attribute name="nomChamp" value="#{const.C_CODE_FAMILLE_TIERS}" />
+										<p:ajax event="itemSelect" listener="#{tiersController.autcompleteSelection}" update="@this" />
+									</p:autoComplete>
+									<p:commandLink id="idLinkAideTiersFamilleTiers" styleClass="lien-aide-contextuelle">
+										<i class="fa fa-info-circle"></i>
+									</p:commandLink>
+									<p:overlayPanel for="idLinkAideTiersFamilleTiers" hideEffect="fade" dynamic="true" showCloseIcon="true"
+										styleClass="overlay-aide-contextuelle">
+										<ui:include src="/aide_contextuelle/tiers_famille_tiers.xhtml" />
+									</p:overlayPanel>
+								</p:panel>
+								<p:outputLabel value="Ma réf. tiers : " />
+								<p:panel styleClass="panel-aide-contextuelle">
+									<p:inputText value="#{tiersController.selectedTaTiersDTO.maRefTiers}" validator="#{tiersController.validateTiers}"
+										disabled="#{tiersController.editable()}">
+										<f:attribute name="nomChamp" value="#{const.C_MA_REF_TIERS}" />
+										<p:ajax event="blur" update="@this" />
+									</p:inputText>
+									<p:commandLink id="idLinkAideTiersMaRefTiers" styleClass="lien-aide-contextuelle">
+										<i class="fa fa-info-circle"></i>
+									</p:commandLink>
+									<p:overlayPanel for="idLinkAideTiersMaRefTiers" hideEffect="fade" dynamic="true" showCloseIcon="true"
+										styleClass="overlay-aide-contextuelle">
+										<ui:include src="/aide_contextuelle/tiers_ma_ref_tiers.xhtml" />
+									</p:overlayPanel>
+								</p:panel>
+							</h:panelGrid>
+
+							<!--         <f:facet name="options"> -->
+							<!--             <p:menu> -->
+							<!--                 <p:submenu label="Settings"> -->
+							<!--                     <p:menuitem value="Toggle" url="#" icon="ui-icon-newwin" onclick="PF('panel').toggle()" /> -->
+							<!--                     <p:menuitem value="Remove" url="#" icon="ui-icon-close" onclick="PF('panel').close()" /> -->
+							<!--                 </p:submenu> -->
+							<!--             </p:menu> -->
+							<!--         </f:facet> -->
+						</p:panel>
+
+					</div>
+
+					<div class="ui-grid-col-6">
+						<div class="ui-grid-row">
+
+							<div class="ui-grid-col-12">
+
+								<p:panel id="idPanelAdresse" header="Adresse par défaut" toggleable="true" widgetVar="panelAdresse">
+
+									<h:panelGrid columns="2" cellpadding="10">
+										<p:outputLabel value="Ligne : " />
+										<p:inputText value="#{tiersController.selectedTaTiersDTO.adresse1Adresse}" validator="#{tiersController.validateTiers}"
+											disabled="#{tiersController.editable()}">
+											<f:attribute name="nomChamp" value="#{const.C_ADRESSE1_ADRESSE}" />
+											<p:ajax event="blur" update="@this" />
+										</p:inputText>
+
+										<p:outputLabel value="Ligne (2) : " />
+										<p:inputText value="#{tiersController.selectedTaTiersDTO.adresse2Adresse}" validator="#{tiersController.validateTiers}"
+											disabled="#{tiersController.editable()}">
+											<f:attribute name="nomChamp" value="#{const.C_ADRESSE2_ADRESSE}" />
+											<p:ajax event="blur" update="@this" />
+										</p:inputText>
+
+										<p:outputLabel value="Ligne (3) : " />
+										<p:inputText value="#{tiersController.selectedTaTiersDTO.adresse3Adresse}" validator="#{tiersController.validateTiers}"
+											disabled="#{tiersController.editable()}">
+											<f:attribute name="nomChamp" value="#{const.C_ADRESSE3_ADRESSE}" />
+											<p:ajax event="blur" update="@this" />
+										</p:inputText>
+
+										<p:outputLabel value="Code postal : " />
+										<p:inputText value="#{tiersController.selectedTaTiersDTO.codepostalAdresse}" validator="#{tiersController.validateTiers}"
+											disabled="#{tiersController.editable()}">
+											<f:attribute name="nomChamp" value="#{const.C_CODEPOSTAL_ADRESSE}" />
+											<p:ajax event="blur" update="@this" />
+										</p:inputText>
+
+										<p:outputLabel value="Ville : " />
+										<p:inputText value="#{tiersController.selectedTaTiersDTO.villeAdresse}" validator="#{tiersController.validateTiers}"
+											disabled="#{tiersController.editable()}">
+											<f:attribute name="nomChamp" value="#{const.C_VILLE_ADRESSE}" />
+											<p:ajax event="blur" update="@this" />
+										</p:inputText>
+
+										<p:outputLabel value="Pays : " />
+										<p:inputText value="#{tiersController.selectedTaTiersDTO.paysAdresse}" validator="#{tiersController.validateTiers}"
+											disabled="#{tiersController.editable()}">
+											<f:attribute name="nomChamp" value="#{const.C_PAYS_ADRESSE}" />
+											<p:ajax event="blur" update="@this" />
+										</p:inputText>
+									</h:panelGrid>
+
+								</p:panel>
+
+							</div>
+						</div>
+
+						<div class="ui-grid-row">
+							<div class="ui-grid-col-12">
+
+								<p:panel id="idPanelContact" header="Contact" toggleable="true" widgetVar="panelContact">
+
+									<h:panelGrid columns="2" cellpadding="10">
+										<p:outputLabel value="Téléphone : " />
+										<p:inputText maxlength="20" value="#{tiersController.selectedTaTiersDTO.numeroTelephone}" validator="#{tiersController.validateTiers}"
+											disabled="#{tiersController.editable()}">
+											<f:attribute name="nomChamp" value="#{const.C_NUMERO_TELEPHONE}" />
+											<p:ajax event="blur" update="@this" />
+										</p:inputText>
+
+										<p:outputLabel value="Adresse email : " />
+										<p:inputText value="#{tiersController.selectedTaTiersDTO.adresseEmail}" validator="#{tiersController.validateTiers}"
+											disabled="#{tiersController.editable()}">
+											<f:attribute name="nomChamp" value="#{const.C_ADRESSE_EMAIL}" />
+											<p:ajax event="blur" update="@this" />
+										</p:inputText>
+
+										<p:outputLabel value="Adresse web : " />
+										<p:inputText value="#{tiersController.selectedTaTiersDTO.adresseWeb}" validator="#{tiersController.validateTiers}"
+											disabled="#{tiersController.editable()}">
+											<f:attribute name="nomChamp" value="#{const.C_ADRESSE_WEB}" />
+											<p:ajax event="blur" update="@this" />
+										</p:inputText>
+									</h:panelGrid>
+
+								</p:panel>
+
+							</div>
+						</div>
+
+					</div>
+
+				</div>
+
+				<div class="ui-grid-row">
+
+					<div class="ui-grid-col-6">
+						<p:panel id="idPanelComptaTiers" header="Comptabilité" toggleable="true" widgetVar="panelComptaTiers">
+							<h:panelGrid columns="2" cellpadding="10">
+
+								<p:outputLabel value="Code Compta : " />
+								<p:panel styleClass="panel-aide-contextuelle">
+									<p:inputText value="#{tiersController.selectedTaTiersDTO.codeCompta}" id="idCodeCompta" validator="#{tiersController.validateTiers}"
+										disabled="#{tiersController.editable()}">
+										<f:attribute name="nomChamp" value="#{const.C_CODE_COMPTA}" />
+										<p:ajax event="blur" update="@this" />
+									</p:inputText>
+									<p:commandLink id="idLinkAideTiersCodeComptaTiers" styleClass="lien-aide-contextuelle">
+										<i class="fa fa-info-circle"></i>
+									</p:commandLink>
+									<p:overlayPanel for="idLinkAideTiersCodeComptaTiers" hideEffect="fade" dynamic="true" showCloseIcon="true"
+										styleClass="overlay-aide-contextuelle">
+										<ui:include src="/aide_contextuelle/tiers_code_compta_tiers.xhtml" />
+									</p:overlayPanel>
+								</p:panel>
+
+								<p:outputLabel value="Compte rattaché : " />
+								<p:panel styleClass="panel-aide-contextuelle">
+									<p:inputText id="idPrixHTArticle" value="#{tiersController.selectedTaTiersDTO.compte}" validator="#{tiersController.validateTiers}"
+										disabled="#{tiersController.editable()}">
+										<f:attribute name="nomChamp" value="#{const.C_COMPTE}" />
+										<p:ajax event="blur" update="@this" />
+									</p:inputText>
+									<p:commandLink id="idLinkAideTiersCodeRattacheTiers" styleClass="lien-aide-contextuelle">
+										<i class="fa fa-info-circle"></i>
+									</p:commandLink>
+									<p:overlayPanel for="idLinkAideTiersCodeRattacheTiers" hideEffect="fade" dynamic="true" showCloseIcon="true"
+										styleClass="overlay-aide-contextuelle">
+										<ui:include src="/aide_contextuelle/tiers_compte_rattache_tiers.xhtml" />
+									</p:overlayPanel>
+								</p:panel>
+
+							</h:panelGrid>
+						</p:panel>
+					</div>
+					<div class="ui-grid-col-6">
+						<p:panel id="idPanelParamTiers" header="Paramètres" toggleable="true" widgetVar="panelParamTiers">
+							<h:panelGrid columns="2" cellpadding="10">
+
+								<p:outputLabel value="Saisie TTC : " />
+								<p:panel styleClass="panel-aide-contextuelle">
+									<p:selectBooleanCheckbox value="#{tiersController.selectedTaTiersDTO.ttcTiers}" disabled="#{tiersController.editable()}">
+										<p:ajax event="change" update="@this" />
+									</p:selectBooleanCheckbox>
+									<p:commandLink id="idLinkAideTiersSaisieTtcTiers" styleClass="lien-aide-contextuelle">
+										<i class="fa fa-info-circle"></i>
+									</p:commandLink>
+									<p:overlayPanel for="idLinkAideTiersSaisieTtcTiers" hideEffect="fade" dynamic="true" showCloseIcon="true"
+										styleClass="overlay-aide-contextuelle">
+										<ui:include src="/aide_contextuelle/tiers_saisiettc_tiers.xhtml" />
+									</p:overlayPanel>
+								</p:panel>
+
+								<p:outputLabel value="Condition de paiement : " />
+								<p:panel styleClass="panel-aide-contextuelle">
+									<p:autoComplete value="#{tiersController.taCPaiement}" completeMethod="#{tiersController.condPaiementAutoComplete}" id="idCPaiemnt"
+										disabled="#{tiersController.editable()}" var="cp" itemLabel="#{cp.codeCPaiement}" itemValue="#{cp}" forceSelection="true" dropdown="true"
+										placeholder="Condition de paiement" converter="entityConverter">
+										<p:column>
+											<f:facet name="header">
+												<p:commandButton value="Ajouter" title="Insérer" process="@this" update="@this"
+													actionListener="#{tiersController.actDialogConditionPaiement}" styleClass="btn-insert btn">
+													<p:ajax event="dialogReturn" listener="#{tiersController.handleReturnDialogConditionPaiement}" update="@parent:@parent" />
+												</p:commandButton>
+											</f:facet>
+											<h:outputText value="#{cp.codeCPaiement}" />
+										</p:column>
+										<p:column>
+											<h:outputText value="#{cp.libCPaiement}" />
+										</p:column>
+										<f:attribute name="nomChamp" value="#{const.C_CODE_C_PAIEMENT}" />
+										<p:ajax event="itemSelect" listener="#{tiersController.autcompleteSelection}" update="@this" />
+									</p:autoComplete>
+									<p:commandLink id="idLinkAideTiersCondPaiementTiers" styleClass="lien-aide-contextuelle">
+										<i class="fa fa-info-circle"></i>
+									</p:commandLink>
+									<p:overlayPanel for="idLinkAideTiersCondPaiementTiers" hideEffect="fade" dynamic="true" showCloseIcon="true"
+										styleClass="overlay-aide-contextuelle">
+										<ui:include src="/aide_contextuelle/tiers_cond_paiement_tiers.xhtml" />
+									</p:overlayPanel>
+								</p:panel>
+
+								<p:outputLabel value="Type de paiement : " />
+								<p:panel styleClass="panel-aide-contextuelle">
+									<p:autoComplete value="#{tiersController.taTPaiement}" converter="entityConverter" disabled="#{tiersController.editable()}"
+										completeMethod="#{tiersController.typePaiementAutoComplete}" var="tp" itemLabel="#{tp.codeTPaiement}" itemValue="#{tp}"
+										forceSelection="true" dropdown="true" placeholder="Type de paiement">
+										<p:column>
+											<f:facet name="header">
+												<p:commandButton value="Ajouter" title="Insérer" process="@this" update="@this" actionListener="#{tiersController.actDialogTypePaiement}"
+													styleClass="btn-insert btn">
+													<p:ajax event="dialogReturn" listener="#{tiersController.handleReturnDialogTypePaiement}" update="@parent:@parent" />
+												</p:commandButton>
+											</f:facet>
+											<h:outputText value="#{tp.codeTPaiement}" />
+										</p:column>
+										<p:column>
+											<h:outputText value="#{tp.libTPaiement}" />
+										</p:column>
+										<f:attribute name="nomChamp" value="#{const.C_CODE_T_PAIEMENT}" />
+										<p:ajax event="itemSelect" listener="#{tiersController.autcompleteSelection}" />
+									</p:autoComplete>
+									<p:commandLink id="idLinkAideTiersTypePaiementTiers" styleClass="lien-aide-contextuelle">
+										<i class="fa fa-info-circle"></i>
+									</p:commandLink>
+									<p:overlayPanel for="idLinkAideTiersTypePaiementTiers" hideEffect="fade" dynamic="true" showCloseIcon="true"
+										styleClass="overlay-aide-contextuelle">
+										<ui:include src="/aide_contextuelle/tiers_type_paiement_tiers.xhtml" />
+									</p:overlayPanel>
+								</p:panel>
+
+								<p:outputLabel value="Grille tarifaire : " />
+								<p:panel styleClass="panel-aide-contextuelle">
+									<p:autoComplete value="#{tiersController.taTTarif}" converter="entityConverter" disabled="#{tiersController.editable()}"
+										completeMethod="#{tiersController.typeTarifAutoComplete}" var="tp" itemLabel="#{tp.codeTTarif}" itemValue="#{tp}"
+										forceSelection="true" dropdown="true" placeholder="Grille tarifaire">
+										<p:column>
+											<f:facet name="header">
+												<p:commandButton value="Ajouter" title="Insérer" process="@this" update="@this" actionListener="#{tiersController.actDialogTypeTarif}"
+													styleClass="btn-insert btn">
+													<p:ajax event="dialogReturn" listener="#{tiersController.handleReturnDialogTypeTarif}" update="@parent:@parent" />
+												</p:commandButton>
+											</f:facet>
+											<h:outputText value="#{tp.codeTTarif}" />
+										</p:column>
+										<p:column>
+											<h:outputText value="#{tp.liblTTarif}" />
+										</p:column>
+										<f:attribute name="nomChamp" value="#{const.C_CODE_T_TARIF}" />
+										<p:ajax event="itemSelect" listener="#{tiersController.autcompleteSelection}" />
+									</p:autoComplete>
+									<p:commandLink id="idLinkAideTiersTypeTarifTiers" styleClass="lien-aide-contextuelle">
+										<i class="fa fa-info-circle"></i>
+									</p:commandLink>
+									<p:overlayPanel for="idLinkAideTiersTypeTarifTiers" hideEffect="fade" dynamic="true" showCloseIcon="true"
+										styleClass="overlay-aide-contextuelle">
+										<ui:include src="/aide_contextuelle/tiers_type_tarif_tiers.xhtml" />
+									</p:overlayPanel>
+								</p:panel>
+								
+								<p:outputLabel value="Localisation tiers pour TVA : " />
+								<p:panel styleClass="panel-aide-contextuelle">
+									<p:autoComplete value="#{tiersController.taTTvaDoc}" converter="entityConverter" disabled="#{tiersController.editable()}"
+										completeMethod="#{tiersController.typeTvaDocAutoComplete}" var="tp" itemLabel="#{tp.codeTTvaDoc}" itemValue="#{tp}" forceSelection="true"
+										dropdown="true" placeholder="Localisation tiers TVA">
+										<p:column>
+											<h:outputText value="#{tp.codeTTvaDoc}" />
+										</p:column>
+										<p:column>
+											<h:outputText value="#{tp.libelleTTvaDoc}" />
+										</p:column>
+										<f:attribute name="nomChamp" value="#{const.C_CODE_T_TVA_DOC}" />
+										<p:ajax event="itemSelect" listener="#{tiersController.autcompleteSelection}" />
+									</p:autoComplete>
+									<p:commandLink id="idLinkAideTiersLocTvaTiers" styleClass="lien-aide-contextuelle">
+										<i class="fa fa-info-circle"></i>
+									</p:commandLink>
+									<p:overlayPanel for="idLinkAideTiersLocTvaTiers" hideEffect="fade" dynamic="true" showCloseIcon="true" styleClass="overlay-aide-contextuelle">
+										<ui:include src="/aide_contextuelle/tiers_loca_tva_tiers.xhtml" />
+									</p:overlayPanel>
+								</p:panel>
+
+								<!-- 						<p:outputLabel value="Notification compte client : " />	 -->
+								<!-- 						<p:panel styleClass="panel-aide-contextuelle" > -->
+								<!-- 							<p:selectBooleanCheckbox value="#{tiersController.selectedTaTiersDTO.emailCleCompteClientEnvoye}" disabled="true" > -->
+								<!-- 								<p:ajax event="change" update="@this"/> -->
+								<!-- 							</p:selectBooleanCheckbox> -->
+								<!-- 							<p:commandButton value="Email de notification" actionListener="#{tiersController.emailNotificationActivationCompteClient}" update="@parent"/> -->
+								<!-- 						</p:panel>	 -->
+
+								<!-- 						<p:outputLabel value="Utilise le compte client : " /> -->
+								<!-- 						<p:panel styleClass="panel-aide-contextuelle" > -->
+								<!-- 							<p:selectBooleanCheckbox value="#{tiersController.selectedTaTiersDTO.utiliseCompteClient}" disabled="#{tiersController.editable()}" > -->
+								<!-- 								<p:ajax event="change" update="@this"/> -->
+								<!-- 							</p:selectBooleanCheckbox> -->
+								<!-- 							<p:commandLink id="idLinkAideTiersUtiliseCompteClient" styleClass="lien-aide-contextuelle" > -->
+								<!-- 								<i class="fa fa-info-circle"></i> -->
+								<!-- 							</p:commandLink> -->
+								<!-- 							<p:overlayPanel for="idLinkAideTiersUtiliseCompteClient" hideEffect="fade" dynamic="true" showCloseIcon="true"  -->
+								<!-- 							    styleClass="overlay-aide-contextuelle"> -->
+								<!-- 								<ui:include src="/aide_contextuelle/tiers_utilise_compte_client.xhtml" /> -->
+								<!-- 							</p:overlayPanel> -->
+								<!-- 						</p:panel>	 -->
+
+								<!-- 						<p:outputLabel value="Dernière connexion à l'espace client : " />	 -->
+								<!-- 						<p:outputLabel value="#{tiersController.selectedTaTiersDTO.dateDerniereConnexionCompteClient}" > -->
+								<!-- 							<f:convertDateTime pattern="#{msg.datetime_pattern}" timeZone="#{msg.time_zone}"/> -->
+								<!-- 						</p:outputLabel> -->
+
+							</h:panelGrid>
+						</p:panel>
+					</div>
+				</div>
+
+				<div class="ui-grid-row">
+					<div class="ui-grid-col-12">
+
+						<p:panel id="idPanelCommentaire" header="Commentaire" toggleable="true" widgetVar="panelCommentaire">
+
+
+							<p:inputTextarea value="#{tiersController.selectedTaTiersDTO.commentaire}" validator="#{tiersController.validateTiers}"
+								disabled="#{tiersController.editable()}" style="width:100%">
+								<f:attribute name="nomChamp" value="#{const.C_LIBL_COMMENTAIRE}" />
+								<p:ajax event="blur" update="@this" />
+							</p:inputTextarea>
+
+
+						</p:panel>
+
+					</div>
+				</div>
+
+			</div>
+
+		</p:tab>
+		
+		
+		
+		
+		<!-- ADRESSES -->
+		
+		<p:tab title="Adresses" titleStyleClass="tab-min" titletip="Adresse" disabled="#{tiersController.disabledTab('')}">
+			<div class="dashboard-title" style="background: #f6f6f6; margin-bottom: 15px;">
+				<h:panelGrid columns="4" cellpadding="5">
+					<h:graphicImage name="dashboard/tier.svg" library="images" height="35px" style="margin-top:1px;" />
+					<p:outputLabel value="Liste des adresses du Tiers : #{tiersController.selectedTaTiersDTO.nomTiers} || code tiers : #{tiersController.selectedTaTiersDTO.codeTiers} " style="font-size:20px;" />
+				</h:panelGrid>
+			</div>
+			<p:menubar styleClass="menu-onglet" widgetVar="wvMenuAdresseTiers">
+				<p:menuitem title="Enregistrer les modifications en cours" styleClass="icon-save icon"
+					actionListener="#{tiersController.adresseController.actEnregistrer}" process="@this"
+					update="@widgetVar(panelListeAdresseTiers), @widgetVar(panelDetailAdresseTiers),@widgetVar(panelAdresse), @widgetVar(wvMenuAdresseTiers)"
+					disabled="#{tiersController.adresseController.etatBouton('enregistrer')}" oncomplete="geocode()" />
+				<p:menuitem title="Ajouter une nouvelle adresse" styleClass="icon-insert icon" actionListener="#{tiersController.adresseController.actInserer}"
+					process="@this" update="@widgetVar(panelListeAdresseTiers), @widgetVar(panelDetailAdresseTiers), @widgetVar(wvMenuAdresseTiers)"
+					disabled="#{tiersController.adresseController.etatBouton('inserer')}" />
+				<p:menuitem title="Modifier l'adresse courante" styleClass="icon-update icon" actionListener="#{tiersController.adresseController.actModifier}"
+					process="@this" update="@widgetVar(panelListeAdresseTiers), @widgetVar(panelDetailAdresseTiers), @widgetVar(wvMenuAdresseTiers)"
+					disabled="#{tiersController.adresseController.etatBouton('modifier')}" />
+				<p:menuitem title="Annuler les modifications en cours" styleClass="icon-cancel icon"
+					actionListener="#{tiersController.adresseController.actAnnuler}" process="@this"
+					update="@widgetVar(panelListeAdresseTiers), @widgetVar(panelDetailAdresseTiers), @widgetVar(wvMenuAdresseTiers)"
+					disabled="#{tiersController.adresseController.etatBouton('annuler')}" />
+				<p:menuitem title="Supprimer l'adresse courante" styleClass="icon icon-delete menuitem-poubelle-droite"
+					actionListener="#{tiersController.adresseController.actSupprimer}" process="@this"
+					update="@widgetVar(panelListeAdresseTiers), @widgetVar(panelDetailAdresseTiers), @widgetVar(wvMenuAdresseTiers)"
+					disabled="#{tiersController.adresseController.etatBouton('supprimer')}">
+					<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer cette adresse ?" icon="ui-icon-alert" />
+				</p:menuitem>
+
+			</p:menubar>
+			<div class="ui-grid ui-grid-responsive">
+				<div class="ui-grid-row">
+				
+					<p:panel header="Liste des adresses du tiers" widgetVar="panelListeAdresseTiers">
+						<p:dataTable value="#{tiersController.adresseController.values}" var="a" rowKey="#{a.id}" styleClass="datatable mt10"
+							selection="#{tiersController.adresseController.selectedTaAdresseDTO}" selectionMode="single" sortBy="#{a.codeTAdr}" expandableRowGroups="true">
+		
+							<p:ajax event="rowSelect" delay="#{msg.datatable_rowselect_delay}" listener="#{tiersController.adresseController.onRowSelect}"
+								update="@widgetVar(panelDetailAdresseTiers), @widgetVar(wvMenuAdresseTiers)" oncomplete="geocode()" />
+							<p:headerRow>
+								<p:column colspan="8">
+									<h:outputText value="#{a.codeTAdr}" />
+								</p:column>
+							</p:headerRow>
+		
+							<p:column headerText="Ligne">
+								<h:outputText value="#{a.adresse1Adresse}" />
+							</p:column>
+							<p:column headerText="Ligne (2)">
+								<h:outputText value="#{a.adresse2Adresse}" />
+							</p:column>
+							<p:column headerText="Ligne (3)">
+								<h:outputText value="#{a.adresse3Adresse}" />
+							</p:column>
+							<p:column headerText="Code postal">
+								<h:outputText value="#{a.codepostalAdresse}" />
+							</p:column>
+							<p:column headerText="Ville">
+								<h:outputText value="#{a.villeAdresse}" />
+							</p:column>
+							<p:column headerText="Pays">
+								<h:outputText value="#{a.paysAdresse}" />
+							</p:column>
+							<p:column headerText="Type">
+								<h:outputText value="#{a.codeTAdr}" />
+							</p:column>
+							<p:column headerText="Ordre">
+								<h:outputText value="#{a.ordre}" />
+							</p:column>
+						</p:dataTable>
+						<br />
+						<p:commandButton value="changer l'ordre des adresses" title="Changer l'ordre" process="@this"
+							update="@this,@widgetVar(widgetVarReorderAdresseForm)" styleClass="btn-update btn" oncomplete="PF('adresseReorderDlg').show()"
+							actionListener="#{tiersController.actDialogAdresseReorder}">
+							<p:ajax event="dialogReturn" listener="#{tiersController.adresseController.handleReturnDialogAdresseReorder}"
+								update="@widgetVar(panelListeAdresseTiers)" />
+						</p:commandButton>
+						<br />
+					</p:panel>
+			
+			</div>
+			<div class="ui-grid-row">
+				<div class="ui-grid-col-12">
+				<p:panel header="Adresses" widgetVar="panelDetailAdresseTiers">
+					<div class="ui-g-5">
+					
+						<h:panelGrid columns="2" cellpadding="10">
+							<p:outputLabel value="Ligne : " />
+							<p:inputText id="idLigne1" value="#{tiersController.adresseController.selectedTaAdresseDTO.adresse1Adresse}"
+								validator="#{tiersController.adresseController.validateAdresse}" disabled="#{tiersController.adresseController.editable()}">
+								<f:attribute name="nomChamp" value="#{const.C_ADRESSE1_ADRESSE}" />
+								<p:ajax event="blur" update="@this" />
+							</p:inputText>
+	
+							<p:outputLabel value="Ligne (2) : " />
+							<p:inputText id="idLigne2" value="#{tiersController.adresseController.selectedTaAdresseDTO.adresse2Adresse}"
+								validator="#{tiersController.adresseController.validateAdresse}" disabled="#{tiersController.adresseController.editable()}">
+								<f:attribute name="nomChamp" value="#{const.C_ADRESSE2_ADRESSE}" />
+								<p:ajax event="blur" update="@this" />
+							</p:inputText>
+	
+							<p:outputLabel value="Ligne (3) : " />
+							<p:inputText id="idLigne3" value="#{tiersController.adresseController.selectedTaAdresseDTO.adresse3Adresse}"
+								validator="#{tiersController.adresseController.validateAdresse}" disabled="#{tiersController.adresseController.editable()}">
+								<f:attribute name="nomChamp" value="#{const.C_ADRESSE3_ADRESSE}" />
+								<p:ajax event="blur" update="@this" />
+							</p:inputText>
+	
+							<p:outputLabel value="Code postal : " />
+							<p:inputText id="idCodePostal" value="#{tiersController.adresseController.selectedTaAdresseDTO.codepostalAdresse}"
+								validator="#{tiersController.adresseController.validateAdresse}" disabled="#{tiersController.adresseController.editable()}">
+								<f:attribute name="nomChamp" value="#{const.C_CODEPOSTAL_ADRESSE}" />
+								<p:ajax event="blur" update="@this" />
+							</p:inputText>
+	
+							<p:outputLabel value="Ville : " />
+							<p:inputText id="idVille" value="#{tiersController.adresseController.selectedTaAdresseDTO.villeAdresse}"
+								validator="#{tiersController.adresseController.validateAdresse}" disabled="#{tiersController.adresseController.editable()}">
+								<f:attribute name="nomChamp" value="#{const.C_VILLE_ADRESSE}" />
+								<p:ajax event="blur" update="@this" />
+							</p:inputText>
+	
+							<p:outputLabel value="Pays : " />
+							<p:inputText id="idPays" value="#{tiersController.adresseController.selectedTaAdresseDTO.paysAdresse}"
+								validator="#{tiersController.adresseController.validateAdresse}" disabled="#{tiersController.adresseController.editable()}">
+								<f:attribute name="nomChamp" value="#{const.C_PAYS_ADRESSE}" />
+								<p:ajax event="blur" update="@this" />
+							</p:inputText>
+	
+							<p:outputLabel value="Type d'adresse : " />
+							<p:autoComplete value="#{tiersController.adresseController.taTAdrDTO}" required="true"
+								completeMethod="#{tiersController.adresseController.typeAdresseAutoCompleteLight}" disabled="#{tiersController.adresseController.editable()}"
+								var="typeAdresse" itemLabel="#{typeAdresse.codeTAdr}" itemValue="#{typeAdresse}" forceSelection="true" dropdown="true"
+								placeholder="Type d'adresse" converter="entityConverter">
+								<p:column>
+									<h:outputText value="#{typeAdresse.codeTAdr}" />
+								</p:column>
+								<p:column>
+									<h:outputText value="#{typeAdresse.liblTAdr}" />
+								</p:column>
+								<p:column>
+									<f:facet name="header">
+										<p:commandButton value="Ajouter" title="Insérer" process="@this" update="@this"
+											actionListener="#{tiersController.adresseController.actDialogTypeAdresse}" styleClass="btn-insert btn">
+											<p:ajax event="dialogReturn" listener="#{tiersController.adresseController.handleReturnDialogTypeAdresse}" update="@parent:@parent" />
+										</p:commandButton>
+									</f:facet>
+									<h:outputText value="#{typeTiers.compteTTiers}" />
+								</p:column>
+	
+								<f:attribute name="nomChamp" value="#{const.C_CODE_T_ADR}" />
+								<p:ajax event="itemSelect" listener="#{tiersController.adresseController.autcompleteSelection}" update="@this" />
+							</p:autoComplete>
+							
+														
+							<p:outputLabel value="par défaut : " />
+							<p:selectBooleanCheckbox id="idDefaut" value="#{tiersController.adresseController.selectedTaAdresseDTO.defaut}"
+								disabled="#{tiersController.adresseController.editable()}">
+								<p:ajax event="change" update="@this" />
+							</p:selectBooleanCheckbox>
+						</h:panelGrid>
+
+					<div class="ui-grid-col-12">
+						<p:panel  header="infos supplémentaires pour livraison" toggleable="true" widgetVar="panelInfosLivraison" >
+							<h:panelGrid columns="2" cellpadding="10">
+
+							<p:outputLabel value="infos Livraison : " />
+							<p:inputTextarea  value="#{tiersController.adresseController.selectedTaAdresseDTO.livraison}"
+								validator="#{tiersController.adresseController.validateAdresse}" disabled="#{tiersController.adresseController.editable()}">
+								<f:attribute name="nomChamp" value="#{const.C_LIVRAISON}" />
+								<p:ajax event="blur" update="@this" />
+							</p:inputTextarea>
+
+							<p:outputLabel value="latitude : " />
+							<p:inputText  value="#{tiersController.adresseController.selectedTaAdresseDTO.latitudeDec}"
+								validator="#{tiersController.adresseController.validateAdresse}" disabled="#{tiersController.adresseController.editable()}" validatorMessage="invalid value">
+								<f:attribute name="nomChamp" value="#{const.C_LATITUDE_DEC}" />
+								<p:ajax event="blur" update="@this" />
+							</p:inputText>
+
+
+							<p:outputLabel value="longitude  : " />
+							<p:inputText  value="#{tiersController.adresseController.selectedTaAdresseDTO.longitudeDec}"
+								validator="#{tiersController.adresseController.validateAdresse}" disabled="#{tiersController.adresseController.editable()}" validatorMessage="invalid value">
+								<f:attribute name="nomChamp" value="#{const.C_LONGITUDE_DEC}" />
+								<p:ajax event="blur" update="@this" />
+							</p:inputText>
+
+							
+							</h:panelGrid>
+						</p:panel>
+					</div>
+					</div>
+					<div class="ui-g-7">
+						<p:gmap widgetVar="pmap" center="#{tiersController.adresseController.centerGeoMap}" zoom="#{tiersController.adresseController.zoomGeoMap}"
+							type="ROADMAP" style="width:100%;height:300px" model="#{tiersController.adresseController.mapModel}">
+							<p:ajax event="geocode" listener="#{tiersController.adresseController.onGeocode}" update="@this" />
+						</p:gmap>
+					</div>
+				</p:panel>
+				</div>
+			</div>
+		</div>
+		</p:tab>
+
+		
+		
+		<!-- TELEPHONES -->
+		
+		
+		<p:tab title="Téléphones" titleStyleClass="tab-min" titletip="Téléphone" disabled="#{tiersController.disabledTab('')}">
+			<div class="dashboard-title" style="background: #f6f6f6; margin-bottom: 15px;">
+				<h:panelGrid columns="4" cellpadding="5">
+					<h:graphicImage name="dashboard/tier.svg" library="images" height="35px" style="margin-top:1px;" />
+					<p:outputLabel value="Liste des téléphones du Tiers : #{tiersController.selectedTaTiersDTO.nomTiers} || code tiers : #{tiersController.selectedTaTiersDTO.codeTiers} " style="font-size:20px;" />
+				</h:panelGrid>
+			</div>
+			<!-- MENU BAR -->
+			
+			<p:menubar styleClass="menu-onglet" widgetVar="wvMenuTelephoneTiers">
+				<p:menuitem title="Enregistrer les modifications en cours" styleClass="icon-save icon"
+					actionListener="#{tiersController.telephoneController.actEnregistrer}" process="@this"
+					update="@widgetVar(panelListeTelephoneTiers), @widgetVar(panelDetailTelephoneTiers),@widgetVar(panelTelephone), @widgetVar(wvMenuTelephoneTiers), @widgetVar(panelContact), idPanelContact"
+					disabled="#{tiersController.telephoneController.etatBouton('enregistrer')}" />
+				<p:menuitem title="Ajouter une nouveau numéro" styleClass="icon-insert icon" actionListener="#{tiersController.telephoneController.actInserer}"
+					process="@this" update="@widgetVar(panelListeTelephoneTiers), @widgetVar(panelDetailTelephoneTiers), @widgetVar(wvMenuTelephoneTiers)"
+					disabled="#{tiersController.telephoneController.etatBouton('inserer')}" />
+				<p:menuitem title="Modifier l'adresse courante" styleClass="icon-update icon" actionListener="#{tiersController.telephoneController.actModifier}"
+					process="@this" update="@widgetVar(panelListeTelephoneTiers), @widgetVar(panelDetailTelephoneTiers), @widgetVar(wvMenuTelephoneTiers)"
+					disabled="#{tiersController.telephoneController.etatBouton('modifier')}" />
+				<p:menuitem title="Annuler les modifications en cours" styleClass="icon-cancel icon"
+					actionListener="#{tiersController.telephoneController.actAnnuler}" process="@this"
+					update="@widgetVar(panelListeTelephoneTiers), @widgetVar(panelDetailTelephoneTiers), @widgetVar(wvMenuTelephoneTiers)"
+					disabled="#{tiersController.telephoneController.etatBouton('annuler')}" />
+				<p:menuitem title="Supprimer le numéro de téléphone courant" styleClass="icon icon-delete menuitem-poubelle-droite"
+					actionListener="#{tiersController.telephoneController.actSupprimer}" process="@this"
+					update="@widgetVar(panelListeTelephoneTiers), @widgetVar(panelDetailTelephoneTiers), @widgetVar(wvMenuTelephoneTiers)"
+					disabled="#{tiersController.telephoneController.etatBouton('supprimer')}">
+					<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer ce numéro de téléphone ?" icon="ui-icon-alert" />
+				</p:menuitem>
+				<p:menuitem title="Envoyer un SMS à #{tiersController.telephoneController.selectedTaTelephoneDTO.numeroTelephone}" rendered="#{tiersController.telephoneController.selectedTaTelephoneDTO != null}"
+				 styleClass="icon icon-envoi-mail"
+					process="@this" update=":form:messages"
+					actionListener="#{tiersController.telephoneController.actDialogSms}"
+					
+					disabled="#{tiersController.etatBouton('modifier')}" />
+			</p:menubar>
+			<div class="ui-grid ui-grid-responsive">
+				<div class="ui-grid-row">
+					<!-- LISTE DES NUMEROS -->
+<!-- 					<div class="ui-g-6"> -->
+						<div class="ui-grid-col-6">
+							<p:panel  header="Liste des numéros de téléphones du tiers" widgetVar="panelListeTelephoneTiers">
+<!-- 								<p:dataTable value="#{tiersController.telephoneController.values}" var="a" rowKey="#{a.id}" styleClass="datatable mt10" -->
+<!-- 									selection="#{tiersController.telephoneController.selectedTaTelephoneDTO}" selectionMode="single" sortBy="#{a.codeTTel}" expandableRowGroups="true"> -->
+									<p:dataTable value="#{tiersController.telephoneController.values}" var="a" rowKey="#{a.id}" styleClass="datatable mt10"
+									selection="#{tiersController.telephoneController.selectedTaTelephoneDTO}" selectionMode="single"  expandableRowGroups="true">
+				
+									<p:ajax event="rowSelect" delay="#{msg.datatable_rowselect_delay}" listener="#{tiersController.telephoneController.onRowSelect}"
+										update="@widgetVar(panelDetailTelephoneTiers), @widgetVar(wvMenuTelephoneTiers)" />
+<!-- 									<p:headerRow> -->
+<!-- 										<p:column colspan="1"> -->
+<!-- 											<h:outputText value="#{a.liblTTel}" /> -->
+<!-- 										</p:column> -->
+<!-- 									</p:headerRow> -->
+									
+									<p:column headerText="Type de téléphone :" filterMatchMode="contains" 
+								filterBy="#{a.liblTTel}" sortBy="#{a.liblTTel}" >
+											<h:outputText value="#{a.liblTTel}" />
+									</p:column>
+				
+									<p:column headerText="numéros :"  >
+									<p:commandLink  id="idCommandLinkAfficheTelTabTels" update=":form:messages"  action="#{tiersController.telephoneController.actDialogSms(a)}">
+										<h:outputText value="#{a.numeroTelephone}" />
+									</p:commandLink>
+									</p:column>
+									
+									
+							
+								</p:dataTable>
+							</p:panel>
+						</div>
+						
+						<!-- EDITION DU TEL -->
+<!-- 						<div class="ui-g-6"> -->
+							<div class="ui-grid-col-6">
+							<p:panel  header="Numéros de téléphone" widgetVar="panelDetailTelephoneTiers">
+								
+									<h:panelGrid columns="2" cellpadding="10">
+										<p:outputLabel value="numéro : " />
+										<p:inputText id="idLigne1Tel" value="#{tiersController.telephoneController.selectedTaTelephoneDTO.numeroTelephone}"
+											validator="#{tiersController.telephoneController.validateTel}" disabled="#{tiersController.telephoneController.editable()}">
+											<f:attribute name="nomChamp" value="#{const.C_NUMERO_TELEPHONE}" />
+											<p:ajax event="blur" update="@this" />
+										</p:inputText>
+				
+				
+										<p:outputLabel value="Type de téléphone : " />
+										<p:autoComplete value="#{tiersController.telephoneController.taTTelDTO}" required="true"
+											completeMethod="#{tiersController.telephoneController.typeTelAutoCompleteLight}" disabled="#{tiersController.telephoneController.editable()}"
+											var="typeTelephone" itemLabel="#{typeTelephone.codeTTel}" itemValue="#{typeTelephone}" forceSelection="true" dropdown="true"
+											placeholder="Type de téléphone" converter="entityConverter">
+											<p:column>
+												<h:outputText value="#{typeTelephone.codeTTel}" />
+											</p:column>
+											<p:column>
+												<h:outputText value="#{typeTelephone.liblTTel}" />
+											</p:column>
+											<p:column>
+												<f:facet name="header">
+													<p:commandButton value="Ajouter" title="Insérer" process="@this" update="@this"
+														actionListener="#{tiersController.telephoneController.actDialogTypeTel}" styleClass="btn-insert btn">
+														<p:ajax event="dialogReturn" listener="#{tiersController.telephoneController.handleReturnDialogTypeTel}" update="@parent:@parent" />
+													</p:commandButton>
+												</f:facet>
+				<!-- 								<h:outputText value="#{typeTiers.compteTTiers}" /> -->
+											</p:column>
+				
+											<f:attribute name="nomChamp" value="#{const.C_CODE_T_TEL}" />
+											<p:ajax event="itemSelect" listener="#{tiersController.telephoneController.autcompleteSelection}" update="@this" />
+										</p:autoComplete>
+										<p:outputLabel value="par défaut : " />
+										<p:selectBooleanCheckbox id="idDefautTel" value="#{tiersController.telephoneController.selectedTaTelephoneDTO.defaut}"
+											disabled="#{tiersController.telephoneController.editable()}">
+											<p:ajax event="change" update="@this" />
+										</p:selectBooleanCheckbox>
+									</h:panelGrid>
+								
+							</p:panel>
+							</div>
+					</div>
+				</div>
+			
+		</p:tab>
+		
+		
+		
+		
+		
+		
+		<!-- EMAILS (TIERS) -->
+		
+		
+		<p:tab title="Emails" titleStyleClass="tab-min" titletip="Emails" disabled="#{tiersController.disabledTab('')}">
+			<div class="dashboard-title" style="background: #f6f6f6; margin-bottom: 15px;">
+				<h:panelGrid columns="4" cellpadding="5">
+					<h:graphicImage name="dashboard/tier.svg" library="images" height="35px" style="margin-top:1px;" />
+					<p:outputLabel value="Liste des adresses email du Tiers : #{tiersController.selectedTaTiersDTO.nomTiers} || code tiers : #{tiersController.selectedTaTiersDTO.codeTiers} " style="font-size:20px;" />
+				</h:panelGrid>
+			</div>
+			<!-- MENU BAR -->
+			
+			<p:menubar styleClass="menu-onglet" widgetVar="wvMenuEmailTiers">
+				<p:menuitem title="Enregistrer les modifications en cours" styleClass="icon-save icon"
+					actionListener="#{tiersController.emailTiersController.actEnregistrer}" process="@this"
+					update="@widgetVar(panelListeEmailTiers), @widgetVar(panelDetailEmailTiers),@widgetVar(panelEmail), @widgetVar(wvMenuEmailTiers)"
+					disabled="#{tiersController.emailTiersController.etatBouton('enregistrer')}" />
+				<p:menuitem title="Ajouter une nouvelle adresse mail" styleClass="icon-insert icon" actionListener="#{tiersController.emailTiersController.actInserer}"
+					process="@this" update="@widgetVar(panelListeEmailTiers), @widgetVar(panelDetailEmailTiers), @widgetVar(wvMenuEmailTiers)"
+					disabled="#{tiersController.emailTiersController.etatBouton('inserer')}" />
+				<p:menuitem title="Modifier l'adresse mail courante" styleClass="icon-update icon" actionListener="#{tiersController.emailTiersController.actModifier}"
+					process="@this" update="@widgetVar(panelListeEmailTiers), @widgetVar(panelDetailEmailTiers), @widgetVar(wvMenuEmailTiers)"
+					disabled="#{tiersController.emailTiersController.etatBouton('modifier')}" />
+				<p:menuitem title="Annuler les modifications en cours" styleClass="icon-cancel icon"
+					actionListener="#{tiersController.emailTiersController.actAnnuler}" process="@this"
+					update="@widgetVar(panelListeEmailTiers), @widgetVar(panelDetailEmailTiers), @widgetVar(wvMenuEmailTiers)"
+					disabled="#{tiersController.emailTiersController.etatBouton('annuler')}" />
+				<p:menuitem title="Supprimer l' adresse mail courante" styleClass="icon icon-delete menuitem-poubelle-droite"
+					actionListener="#{tiersController.emailTiersController.actSupprimer}" process="@this"
+					update="@widgetVar(panelListeEmailTiers), @widgetVar(panelDetailEmailTiers), @widgetVar(wvMenuEmailTiers)"
+					disabled="#{tiersController.emailTiersController.etatBouton('supprimer')}">
+					<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer cette adresse Email ?" icon="ui-icon-alert" />
+				</p:menuitem>
+				
+				<p:menuitem title="Envoyer un email à #{tiersController.emailTiersController.selectedTaEmailDTO.adresseEmail}" rendered="#{tiersController.emailTiersController.selectedTaEmailDTO != null}"
+				 styleClass="icon icon-envoi-mail"
+					process="@this" update=":form:messages"
+					actionListener="#{tiersController.emailTiersController.actDialogEmail}"
+					
+					disabled="#{tiersController.etatBouton('modifier')}" />
+			</p:menubar>
+			<div class="ui-grid ui-grid-responsive">
+				<div class="ui-grid-row">
+					<!-- LISTE DES ADRESSERS MAIL -->
+<!-- 					<div class="ui-g-6"> -->
+						<div class="ui-grid-col-6">
+							<p:panel  header="Liste des adresses mail du tiers" widgetVar="panelListeEmailTiers">
+<!-- 								<p:dataTable value="#{tiersController.emailTiersController.values}" var="a" rowKey="#{a.id}" styleClass="datatable mt10" -->
+<!-- 									selection="#{tiersController.emailTiersController.selectedTaEmailDTO}" selectionMode="single" sortBy="#{a.codeTEmail}" expandableRowGroups="true"> -->
+							<p:dataTable value="#{tiersController.emailTiersController.values}" var="a" rowKey="#{a.id}" styleClass="datatable mt10"
+									selection="#{tiersController.emailTiersController.selectedTaEmailDTO}" selectionMode="single" expandableRowGroups="true">
+									<p:ajax event="rowSelect" delay="#{msg.datatable_rowselect_delay}" listener="#{tiersController.emailTiersController.onRowSelect}"
+										update="@widgetVar(panelDetailEmailTiers), @widgetVar(wvMenuEmailTiers)" />
+<!-- 									<p:headerRow> -->
+<!-- 										<p:column colspan="1"> -->
+<!-- 											<h:outputText value="#{a.liblTEmail}" /> -->
+<!-- 										</p:column> -->
+<!-- 									</p:headerRow> -->
+									<p:column headerText="Type de  mail :"  filterMatchMode="contains" 
+								filterBy="#{a.liblTEmail}" sortBy="#{a.liblTEmail}">
+									
+											<h:outputText value="#{a.liblTEmail}" />
+										</p:column>
+									<p:column headerText="Adresses mail :">
+									<p:commandLink  id="idCommandLinkAfficheEmailTabEmails" update=":form:messages"  action="#{tiersController.emailTiersController.actDialogEmail(a)}">
+										<h:outputText value="#{a.adresseEmail}" />
+									</p:commandLink> 
+									</p:column>
+									
+							
+								</p:dataTable>
+							</p:panel>
+						</div>
+						
+						<!-- EDITION DE L'ADRESSE MAIL -->
+<!-- 						<div class="ui-g-6"> -->
+						<div class="ui-grid-col-6">
+							<p:panel  header="Adresse Email" widgetVar="panelDetailEmailTiers">
+								
+									<h:panelGrid columns="2" cellpadding="10">
+										<p:outputLabel value="adresse mail: " />
+										<p:inputText id="idLigne1Email" value="#{tiersController.emailTiersController.selectedTaEmailDTO.adresseEmail}"
+											validator="#{tiersController.emailTiersController.validateEmail}" disabled="#{tiersController.emailTiersController.editable()}">
+											<f:attribute name="nomChamp" value="#{const.C_ADRESSE_EMAIL}" />
+											<p:ajax event="blur" update="@this" />
+										</p:inputText>
+				
+				
+										<p:outputLabel value="Type d'adresse mail : " />
+										<p:autoComplete value="#{tiersController.emailTiersController.taTEmailDTO}" required="true"
+											completeMethod="#{tiersController.emailTiersController.typeEmailAutoCompleteLight}" disabled="#{tiersController.emailTiersController.editable()}"
+											var="typeEmail" itemLabel="#{typeEmail.codeTEmail}" itemValue="#{typeEmail}" forceSelection="true" dropdown="true"
+											placeholder="Type d'adresse mail" converter="entityConverter">
+											<p:column>
+												<h:outputText value="#{typeEmail.codeTEmail}" />
+											</p:column>
+											<p:column>
+												<h:outputText value="#{typeEmail.liblTEmail}" />
+											</p:column>
+											<p:column>
+												<f:facet name="header">
+													<p:commandButton value="Ajouter" title="Insérer" process="@this" update="@this"
+														actionListener="#{tiersController.emailTiersController.actDialogTypeEmail}" styleClass="btn-insert btn">
+														<p:ajax event="dialogReturn" listener="#{tiersController.emailTiersController.handleReturnDialogTypeEmail}" update="@parent:@parent" />
+													</p:commandButton>
+												</f:facet>
+				<!-- 								<h:outputText value="#{typeTiers.compteTTiers}" /> -->
+											</p:column>
+				
+											<f:attribute name="nomChamp" value="#{const.C_CODE_T_EMAIL}" />
+											<p:ajax event="itemSelect" listener="#{tiersController.emailTiersController.autcompleteSelection}" update="@this" />
+										</p:autoComplete>
+										<p:outputLabel value="par défaut : " />
+										<p:selectBooleanCheckbox id="idDefautEmail" value="#{tiersController.emailTiersController.selectedTaEmailDTO.defaut}"
+											disabled="#{tiersController.emailTiersController.editable()}">
+											<p:ajax event="change" update="@this" />
+										</p:selectBooleanCheckbox>
+									</h:panelGrid>
+								
+							</p:panel>
+						</div>
+					</div>
+		    </div>
+		</p:tab>
+		
+		
+		<p:tab title="Informations juridiques" titleStyleClass="tab-min" titletip="Informations juridiques" disabled="#{tiersController.disabledTab('')}">
+			<div class="dashboard-title" style="background: #f6f6f6; margin-bottom: 15px;">
+				<h:panelGrid columns="4" cellpadding="5">
+					<h:graphicImage name="dashboard/tier.svg" library="images" height="35px" style="margin-top:1px;" />
+					<p:outputLabel value="Informations juridiques du Tiers : #{tiersController.selectedTaTiersDTO.nomTiers} || code tiers : #{tiersController.selectedTaTiersDTO.codeTiers} " style="font-size:20px;" />
+				</h:panelGrid>
+			</div>
+			<!-- MENU BAR -->
+			
+			<p:menubar styleClass="menu-onglet" widgetVar="wvMenuInfosJuridiqueTiers">
+				<p:menuitem title="Enregistrer les modifications en cours" styleClass="icon-save icon"
+					actionListener="#{tiersController.infosJuridiqueController.actEnregistrer}" process="@this"
+					update="@widgetVar(panelListeInfosJuridiqueTiers), @widgetVar(panelDetailInfosJuridiqueTiers),@widgetVar(panelInfosJuridique), @widgetVar(wvMenuInfosJuridiqueTiers), @widgetVar(panelContact), idPanelContact"
+					disabled="#{tiersController.infosJuridiqueController.etatBouton('enregistrer')}" />
+				<p:menuitem title="Ajouter une nouveau numéro" styleClass="icon-insert icon" actionListener="#{tiersController.infosJuridiqueController.actInserer}"
+					process="@this" update="@widgetVar(panelListeInfosJuridiqueTiers), @widgetVar(panelDetailInfosJuridiqueTiers), @widgetVar(wvMenuInfosJuridiqueTiers)"
+					disabled="#{tiersController.infosJuridiqueController.etatBouton('inserer') or !tiersController.infosJuridiqueController.insertionValide()}" />
+				<p:menuitem title="Modifier l'adresse courante" styleClass="icon-update icon" actionListener="#{tiersController.infosJuridiqueController.actModifier}"
+					process="@this" update="@widgetVar(panelListeInfosJuridiqueTiers), @widgetVar(panelDetailInfosJuridiqueTiers), @widgetVar(wvMenuInfosJuridiqueTiers)"
+					disabled="#{tiersController.infosJuridiqueController.etatBouton('modifier')}" />
+				<p:menuitem title="Annuler les modifications en cours" styleClass="icon-cancel icon"
+					actionListener="#{tiersController.infosJuridiqueController.actAnnuler}" process="@this"
+					update="@widgetVar(panelListeInfosJuridiqueTiers), @widgetVar(panelDetailInfosJuridiqueTiers), @widgetVar(wvMenuInfosJuridiqueTiers)"
+					disabled="#{tiersController.infosJuridiqueController.etatBouton('annuler')}" />
+				<p:menuitem title="Supprimer le numéro de téléphone courant" styleClass="icon icon-delete menuitem-poubelle-droite"
+					actionListener="#{tiersController.infosJuridiqueController.actSupprimer}" process="@this"
+					update="@widgetVar(panelListeInfosJuridiqueTiers), @widgetVar(panelDetailInfosJuridiqueTiers), @widgetVar(wvMenuInfosJuridiqueTiers)"
+					disabled="#{tiersController.infosJuridiqueController.etatBouton('supprimer')}">
+					<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer ce numéro de téléphone ?" icon="ui-icon-alert" />
+				</p:menuitem>
+
+			</p:menubar>
+			<div class="ui-grid ui-grid-responsive">
+				<div class="ui-grid-row">
+					<!-- LISTE DES NUMEROS -->
+<!-- 						<div class="ui-grid-col-6"> -->
+<!-- 							<p:panel  header="Liste des numéros de téléphones du tiers" widgetVar="panelListeInfosJuridiqueTiers"> -->
+<!-- 									<p:dataTable value="#{tiersController.infosJuridiqueController.values}" var="a" rowKey="#{a.id}" styleClass="datatable mt10" -->
+<!-- 									selection="#{tiersController.infosJuridiqueController.selectedTaInfoJuridiqueDTO}" selectionMode="single"  expandableRowGroups="true"> -->
+				
+<!-- 									<p:ajax event="rowSelect" delay="#{msg.datatable_rowselect_delay}" listener="#{tiersController.infosJuridiqueController.onRowSelect}" -->
+<!-- 										update="@widgetVar(panelDetailInfosJuridiqueTiers), @widgetVar(wvMenuInfosJuridiqueTiers)" /> -->
+									
+<!-- 									<p:column headerText="Type de téléphone :" filterMatchMode="contains"  -->
+<!-- 								filterBy="#{a.liblTTel}" sortBy="#{a.liblTTel}" > -->
+<!-- 											<h:outputText value="#{a.liblTTel}" /> -->
+<!-- 									</p:column> -->
+				
+<!-- 									<p:column headerText="numéros :"  > -->
+<!-- 									<p:commandLink  id="idCommandLinkAfficheTelTabTels" update=":form:messages"  action="#{tiersController.infosJuridiqueController.actDialogSms(a)}"> -->
+<!-- 										<h:outputText value="#{a.numeroInfosJuridique}" /> -->
+<!-- 									</p:commandLink> -->
+<!-- 									</p:column> -->
+									
+									
+							
+<!-- 								</p:dataTable> -->
+<!-- 							</p:panel> -->
+<!-- 						</div> -->
+						
+						<!-- EDITION DU TEL -->
+<!-- 						<div class="ui-g-6"> -->
+							<div class="ui-grid-col-6">
+							<p:panel  header="Informations juridiques" widgetVar="panelDetailInfosJuridiqueTiers">
+								
+									<h:panelGrid columns="2" cellpadding="10">
+										<p:outputLabel value="RCS : " />
+										<p:inputText id="idRcs" value="#{tiersController.infosJuridiqueController.selectedTaInfoJuridiqueDTO.rcsInfoJuridique}"
+											validator="#{tiersController.infosJuridiqueController.validate}" disabled="#{tiersController.infosJuridiqueController.editable()}">
+											<f:attribute name="nomChamp" value="#{const.C_RCS_INFO_JURIDIQUE}" />
+											<p:ajax event="blur" update="@this" />
+										</p:inputText>
+
+										<p:outputLabel value="Capital : " />
+										<p:inputText id="idCapital" value="#{tiersController.infosJuridiqueController.selectedTaInfoJuridiqueDTO.capitalInfoJuridique}"
+											validator="#{tiersController.infosJuridiqueController.validate}" disabled="#{tiersController.infosJuridiqueController.editable()}">
+											<f:attribute name="nomChamp" value="#{const.C_CAPITAL_INFO_JURIDIQUE}" />
+											<p:ajax event="blur" update="@this" />
+										</p:inputText>
+										
+										<p:outputLabel value="Code APE : " />
+										<p:inputText id="idApe" value="#{tiersController.infosJuridiqueController.selectedTaInfoJuridiqueDTO.apeInfoJuridique}"
+											validator="#{tiersController.infosJuridiqueController.validate}" disabled="#{tiersController.infosJuridiqueController.editable()}">
+											<f:attribute name="nomChamp" value="#{const.C_APE_INFO_JURIDIQUE}" />
+											<p:ajax event="blur" update="@this" />
+										</p:inputText>
+										
+										<p:outputLabel value="Siret : " />
+										<p:inputText id="idSiret" value="#{tiersController.infosJuridiqueController.selectedTaInfoJuridiqueDTO.siretInfoJuridique}"
+											validator="#{tiersController.infosJuridiqueController.validate}" disabled="#{tiersController.infosJuridiqueController.editable()}">
+											<f:attribute name="nomChamp" value="#{const.C_SIRET_INFO_JURIDIQUE}" />
+											<p:ajax event="blur" update="@this" />
+										</p:inputText>
+										
+									</h:panelGrid>
+								
+							</p:panel>
+							</div>
+					</div>
+				</div>
+			
+		</p:tab>
+		
+		
+		
+		
+		
+		<p:tab title="Moyens de paiement" titleStyleClass="tab-min" titletip="Comptes bancaires" disabled="#{tiersController.disabledTab('')}">
+			<div class="dashboard-title" style="background: #f6f6f6; margin-bottom: 15px;">
+				<h:panelGrid columns="4" cellpadding="5">
+					<h:graphicImage name="dashboard/tier.svg" library="images" height="35px" style="margin-top:1px;" />
+					<p:outputLabel value="Liste des moyens de paiements du tiers: #{tiersController.selectedTaTiersDTO.nomTiers} || code tiers : #{tiersController.selectedTaTiersDTO.codeTiers} " style="font-size:20px;" />
+				</h:panelGrid>
+			</div>
+			<p:tabView>
+			<p:tab title="Comptes bancaires (#{tiersController.banqueController.values.size()})">
+				<p:panel header="Comptes bancaires" widgetVar="panelComptesBancairesTiers">
+					<ui:include src="/tiers/compte_banque_include.xhtml" >
+						<ui:param name="dansDialogue" value="true" />
+						<ui:param name="variableNomWvIDUnique" value="_Tiers" />
+						<ui:param name="banqueController" value="#{tiersController.banqueController}" />
+					</ui:include>
+				</p:panel>
+			</p:tab>
+			<p:tab title="Cartes bancaires (#{tiersController.carteBancaireController.values.size()})" rendered="#{auth.isDevLgr()}">
+				<p:panel header="Cartes bancaires" widgetVar="panelCartesBancairesTiers">
+					<ui:include src="/tiers/carte_bancaire_include.xhtml" >
+						<ui:param name="dansDialogue" value="true" />
+						<ui:param name="variableNomWvIDUnique" value="_TiersCB" />
+						<ui:param name="carteBancaireController" value="#{tiersController.carteBancaireController}" />
+					</ui:include>
+				</p:panel>
+			</p:tab>
+			</p:tabView>
+		</p:tab>		
+		
+		<p:tab title="Historique Emails" titleStyleClass="tab-min" titletip="Historique Emails" disabled="#{tiersController.disabledTab('')}">
+			<div class="dashboard-title" style="background: #f6f6f6; margin-bottom: 15px;">
+				<h:panelGrid columns="4" cellpadding="5">
+					<h:graphicImage name="dashboard/tier.svg" library="images" height="35px" style="margin-top:1px;" />
+					<p:outputLabel value="Historique Email du Tiers : #{tiersController.selectedTaTiersDTO.nomTiers} || code tiers : #{tiersController.selectedTaTiersDTO.codeTiers} " style="font-size:20px;" />
+				</h:panelGrid>
+			</div>
+			<p:panel header="Emails envoyés" widgetVar="panelEmailEnvoyesTiers">
+
+				<ui:include src="/emails_envoyes_include.xhtml" >
+					<ui:param name="dansDialogue" value="true" />
+					<ui:param name="emailController" value="#{tiersController.emailController}" />
+				</ui:include>
+			</p:panel>
+		</p:tab>
+
+		
+		
+		<p:tab title="SMS" titleStyleClass="tab-min" titletip="SMS" disabled="#{tiersController.disabledTab('')}">
+			<div class="dashboard-title" style="background: #f6f6f6; margin-bottom: 15px;">
+				<h:panelGrid columns="4" cellpadding="5">
+					<h:graphicImage name="dashboard/tier.svg" library="images" height="35px" style="margin-top:1px;" />
+					<p:outputLabel value="Historique SMS du Tiers : #{tiersController.selectedTaTiersDTO.nomTiers} || code tiers : #{tiersController.selectedTaTiersDTO.codeTiers} " style="font-size:20px;" />
+				</h:panelGrid>
+			</div>
+			<p:panel header="SMS envoyés" widgetVar="panelSMSEnvoyesTiers">
+				<ui:include src="/sms_envoyes_include.xhtml" >
+					<ui:param name="dansDialogue" value="true" />
+					<ui:param name="smsController" value="#{tiersController.smsController}" />
+				</ui:include>
+			</p:panel>
+		</p:tab>
+		
+		<!-- <p:tab title="Abonnement" titleStyleClass="tab-min" titletip="Abonnement" disabled="#{tiersController.disabledTab('')}" rendered="#{auth.isDevLgr()}">
+			<p:panel header="Abonnement" widgetVar="panelAbonnementTiers">
+				<ui:include src="/tiers/abonnement_tiers_include.xhtml" >
+					<ui:param name="variableNomWvIDUnique" value="AbonnementTiers" />
+					<ui:param name="abonnementTiersController" value="#{tiersController.abonnementTiersController}" />
+				</ui:include>
+			</p:panel>
+		</p:tab> -->	
+		
+		<p:tab title="Services" titleStyleClass="tab-min" titletip="Services" disabled="#{tiersController.disabledTab('')}" rendered="#{auth.isDevLgr()}">
+			<p:panel header="Services" widgetVar="wvpanelServiceTiers">
+				<ui:include src="/tiers/service_tiers_include.xhtml" >
+					<ui:param name="variableNomWvIDUnique" value="ServiceTiers" />
+					<ui:param name="serviceTiersController" value="#{tiersController.serviceTiersController}" />
+				</ui:include>
+			</p:panel>
+		</p:tab> 
+		
+		 <p:tab title="Paiement Echéances" titleStyleClass="tab-min" titletip="Paiement des échéances" disabled="#{tiersController.disabledTab('')}" rendered="#{auth.isDevLgr()}">
+			<p:panel header="Paiement des abonnements" widgetVar="wvpanelPaiementAbonnementTiers">
+				<ui:include src="/tiers/paiement_abonnement_tiers_include.xhtml" >
+					<ui:param name="variableNomWvIDUnique" value="PaiementAbonnementTiers" />
+					<ui:param name="paiementAbonnementTiersController" value="#{tiersController.paiementAbonnementTiersController}" />
+				</ui:include>
+			</p:panel>
+		</p:tab> 
+		
+		
+		<p:tab title="Espace client" titleStyleClass="tab-min" titletip="Espace client" disabled="#{tiersController.disabledTab('')}" rendered="#{auth.isDevLgr()}">
+		
+		</p:tab>
+		
+	</p:tabView>
+	<!-- 	</p:dashboard> -->
+	<!-- </f:validateBean> -->
+	
+			<!-- TEST DIALOG RECOMMANDATION-->
+		<p:dialog header="Recommandation" widgetVar="wvDialogRecommandation" modal="true" appendTo="@(body)"  width="960" height="560">
+		<!-- contentHeight ="100%" contentWidth="100%" -->
+			
+			<p:commandButton title="Envoyer la recommandation"   value="Envoyer la recommandation" oncomplete="PF('wvDialogRecommandation').hide();"
+					actionListener="#{tiersController.actEnvoiRecommandation}"></p:commandButton>
+					
+			 <p:commandButton title="Fermer" styleClass="icon icon-close menuitem-fermer-droite"
+				    onclick="PF('wvDialogRecommandation').hide();"
+					process="@this" >
+					<!-- <p:confirm header="Confirmation" message="#{msg_diag.alert_fermeture_onglet}" icon="ui-icon-alert" disabled="#{!tiersController.modeEcran.dataSetEnModif()}"/> -->
+			</p:commandButton>  
+		<!-- <p:menubar>
+			<p:menuitem title="Fermer" styleClass="icon icon-close menuitem-fermer-droite"
+					actionListener="#{tiersController.actFermerDialog}"
+					process="@this" >
+					<p:confirm header="Confirmation" message="#{msg_diag.alert_fermeture_onglet}" icon="ui-icon-alert" disabled="#{!tiersController.modeEcran.dataSetEnModif()}"/>
+			</p:menuitem> 
+		</p:menubar> -->	
+		
+		
+			<p:separator/>
+			
+			<p:messages autoUpdate="true" showDetail="true"/>
+			
+			<p:panel id="idPanelGlobalRecommandation" widgetVar="wvPanelGlobalRecommandation">
+				<div class="ui-g ui-g-nopad">
+				
+					<p:outputLabel>Vous êtes sur le point de recommander le Bureau de gestion cloud à l'un de vos tiers et nous vous en remercions.</p:outputLabel>
+					<p:outputLabel>Si le destinataire de ce message s'abonne au Bureau de gestion cloud, vous recevrez une remise de 10% du montant total HT de son premier abonnement,
+					 à déduire sur votre prochain renouvellement.</p:outputLabel>
+					 <p:outputLabel>Voici le message que votre correspondant va recevoir : </p:outputLabel>
+					<div class="ui-g-12">
+						<p:inputTextarea rows="10" cols="110" readonly="true" value="#{tiersController.texteMailRecommandationDossierTiers}"/>
+					</div>
+	
+					<!-- <p:outputLabel>Message que vous allez recevoir : </p:outputLabel>
+					<div class="ui-g-12">
+						<p:inputTextarea rows="10" cols="110" readonly="true" value="#{tiersController.texteMailRecommandationBdgDossier}"/>
+					</div> -->
+					
+					
+				</div>
+	
+			</p:panel>
+		
+			<p:confirmDialog global="true" showEffect="fade">
+					<p:commandButton id="idConfirmDialogCtrlLotOui" value="Oui" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+					<p:commandButton id="idConfirmDialogCtrlLotNon" value="Non" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+			</p:confirmDialog>
+			
+			<style type="text/css">
+				.ui-panel .ui-panel-content {
+					padding: 0;
+				}
+			</style>
+			
+		</p:dialog>
+		<!-- FIN TEST DIALO RECOMMANDATION -->
+
+	<p:dialog header="Ordre des adresses" widgetVar="adresseReorderDlg" resizable="true" width="800" id="idAdresseReorderDlg" showEffect="fade"
+		modal="true" appendTo="@(body)">
+		<h:form id="idDialogAdresseReorder">
+			<p:panel id="reorderAdresseFormPrincipal" widgetVar="widgetVarReorderAdresseForm">
+
+				<p class="subtitle">Gestion de l'ordre des adresses pour un type d'adresse</p>
+
+				<div class="ui-g">
+
+					<div class="ui-g-4">
+						<p:panel header="Compléments">
+							<p:outputLabel value="Sélectionner le type d'adresse" />
+							<br />
+							<p:selectOneMenu value="#{tiersController.adresseController.adresseReorderController.selectedTypeAdresse}" var="t" id="idSelectionTypeAdresse"
+								converter="entityConverter">
+								<f:selectItems value="#{tiersController.adresseController.adresseReorderController.listeTypeAdresse}" var="tAdr" itemLabel="#{tAdr.codeTAdr}"
+									itemValue="#{tAdr}" />
+								<p:column>
+									<h:outputText name="#{t.codeTAdr}" />
+								</p:column>
+								<p:column>
+									<h:outputText value="#{t.liblTAdr}" />
+								</p:column>
+								<p:ajax update="idListeAdresseReorder" listener="#{tiersController.adresseController.adresseReorderController.refresh}" />
+							</p:selectOneMenu>
+
+							<br />
+						</p:panel>
+					</div>
+				</div>
+
+
+				<p:orderList value="#{tiersController.adresseController.adresseReorderController.values}" widgetVar="wvListeAdresseReorder"
+					id="idListeAdresseReorder" var="ligne" itemLabel="#{ligne}" itemValue="#{ligne}" controlsLocation="left" responsive="true"
+					converter="entityConverter">
+
+					<f:facet name="caption">liste des adresses</f:facet>
+
+					<p:column>
+						<h:outputText value="#{ligne.adresse1Adresse}" />
+					</p:column>
+					<p:column>
+						<h:outputText value="#{ligne.adresse2Adresse}" />
+					</p:column>
+					<p:column>
+						<h:outputText value="#{ligne.adresse2Adresse}" />
+					</p:column>
+					<p:column>
+						<h:outputText value="#{ligne.codepostalAdresse}" />
+					</p:column>
+					<p:column>
+						<h:outputText value="#{ligne.villeAdresse}" />
+					</p:column>
+					<p:column>
+						<h:outputText value="#{ligne.paysAdresse}" />
+					</p:column>
+					<p:ajax event="reorder" listener="#{tiersController.adresseController.adresseReorderController.onReorder}" process="@this" />
+				</p:orderList>
+
+			</p:panel>
+			<div class="ui-grid-row">
+				<div class="ui-grid-col-12 text-center">
+					<p:commandButton id="idReorderAdresseEnregistrer" value="Enregistrer" process="@this,@widgetVar(wvListeAdresseReorder)" class="btn-save btn"
+						update="@widgetVar(panelListeAdresseTiers), @widgetVar(panelDetailAdresseTiers),@this" action="#{tiersController.refreshAdresseReorder}"
+						actionListener="#{tiersController.adresseController.adresseReorderController.actEnregistrerReorder()}"
+						oncomplete="PF('adresseReorderDlg').hide()" />
+
+					<p:commandButton id="idReorderAdresseAnnulerDialogue" widgetVar="wvReorderAdresseAnnulerDialogue" value="Annuler" styleClass="btn-cancel btn"
+						process="@this" oncomplete="PF('adresseReorderDlg').hide()">
+					</p:commandButton>
+				</div>
+			</div>
+			
+		</h:form>
+	</p:dialog>
+	
+
+		<p:dialog header="Imprimer la situation personalisée du tiers #{tiersController.selectedTaTiersDTO.nomTiers}" closeOnEscape="true" style="position: absolute;" 
+		 widgetVar="interfacePrintTiers" appendTo="@(body)"  modal="true" showEffect="clip" hideEffect="clip" width="900" height="860" >
+    		<h:form id="interface" >
+    		
+    		
+    	<div class="ui-grid-col-12 text-center">	
+		    	<h3 >
+		    		SITUATION DU CLIENT
+<!-- 		    		style="text-decoration: underline; text-decoration-style: solid; text-underline-position: below;" -->
+		    	</h3>
+		    	<hr width="20%" size="1" color="black" style="margin-top: -10px"></hr>
+		    			    	
+    	</div>
+        				     	   				
+    		<p:panel widgetVar="interfaceUpdate" style="margin-left:9%; margin-right:9%;">
+    					
+    				<div class="ui-grid-col-12" style=" margin-top:26px;">
+    				<h:graphicImage name="dashboard/tier.svg" library="images" height="26px" style="margin-left:-5px;" />
+					<p:outputLabel value="IDENTITE DU CLIENT" style="font-size: 14px;font-weight: bold; vertical-align: 2px; margin-left:3px;" />    				
+					
+    	<p:selectOneRadio id="identification" value="#{dashBoardParTiersController.identification}" unselectable="true" style="margin-right:180px; margin-top: 3px; float:right">
+    				 				
+    		<f:selectItem itemLabel="Aucune" itemValue="Aucune" />
+    				
+    				
+            <f:selectItem itemLabel="Sommaire" itemValue="Sommaire" />
+            		
+            		
+            <f:selectItem itemLabel="Etendu" itemValue="Etendu" />
+            		
+            <p:ajax update="@this,@widgetVar(interfaceUpdate)" />           
+        </p:selectOneRadio>
+        			        
+        	<p:selectBooleanCheckbox id="incCommentairel" value="#{dashBoardParTiersController.inclureCommentaire}" itemLabel="Inclure commentaire" itemValue="true"
+       							  rendered="#{!dashBoardParTiersController.identification.equals('Aucune')}" style="font-weight: bold; padding-left: 10px" >     	 						
+       	 						<p:ajax update="@this" />
+       		</p:selectBooleanCheckbox>
+ 									
+  				</div>	
+  				
+  				<div class="ui-grid-col-12" style="margin-top:5px;">
+  				<hr width="100%" size="1" color="black" style="margin-top: 10px"></hr>
+    				<h:graphicImage name="dashboard/facture.svg" library="images" height="26px" style="margin-left:-5px;" />
+					<p:outputLabel value="ETAT FACTURE" style="font-size: 14px;font-weight: bold; vertical-align: 2px; margin-left:3px;" />
+				</div>
+				
+    			<div>    			
+    			<div class="ui-grid-col-6">
+    	<p:selectBooleanCheckbox id="factureRealise" value="#{dashBoardParTiersController.factureRealise}" itemLabel="Factures réalisées" itemValue="true" style="margin-left:35px;">     	 						
+       	 						<p:ajax update="@this"/>
+       	</p:selectBooleanCheckbox>	
+       	
+<!--         	Ne pas oublier de remettre dans <P:ajax	update="@this,@widgetVar(interfaceUpdate)"/>
+		    				   				   				  -->
+<!--     	<p:selectBooleanCheckbox id="incRegleFactReal" value="#{dashBoardParTiersController.inclureReglementFactReal}" itemLabel="Inclure réglement" itemValue="true" -->
+<!--        							 rendered="#{dashBoardParTiersController.factureRealise}" style="font-weight: bold; padding-left: 65px" >     	 						 -->
+<!--        	 						<p:ajax update="@this" /> -->
+<!--        	</p:selectBooleanCheckbox> -->
+       	
+       	<p:selectBooleanCheckbox id="factNonRegle" value="#{dashBoardParTiersController.factureNonTotalRegle}" itemLabel="Factures non totalement réglées" itemValue="true" style="margin-left:35px;">     	 						
+       	 						<p:ajax update="@this" />
+       	</p:selectBooleanCheckbox>
+       				      	    			
+<!--        	<p:selectBooleanCheckbox id="incRegleFactNonTotalRegle" value="#{dashBoardParTiersController.inclureReglementNonTotReg}" itemLabel="Inclure réglement" itemValue="true" -->
+<!--        							 rendered="#{dashBoardParTiersController.factureNonTotalRegle}" style="font-weight: bold; padding-left: 65px" >     	 						 -->
+<!--        	 						<p:ajax update="@this" /> -->
+<!--        	</p:selectBooleanCheckbox>	 -->
+       	
+    	 		</div>
+    	 		<div class="ui-grid-col-6">
+    	<p:selectBooleanCheckbox id="factARelancer" value="#{dashBoardParTiersController.factureARelancer}" itemLabel="Factures à relancer" itemValue="true" style="margin-left:85px;">     	 						
+       	 						<p:ajax update="@this" />
+       	</p:selectBooleanCheckbox>
+       
+<!--        	<p:selectBooleanCheckbox id="incRegleFactARelancer" value="#{dashBoardParTiersController.inclureReglementARelancer}" itemLabel="Inclure réglement" itemValue="true" -->
+<!--        							 rendered="#{dashBoardParTiersController.factureARelancer}" style="font-weight: bold; padding-left: 115px" >     	 						 -->
+<!--        	 						<p:ajax update="@this" /> -->
+<!--        	</p:selectBooleanCheckbox>	 -->
+       	
+    	<p:selectBooleanCheckbox id="factRegle" value="#{dashBoardParTiersController.factureTotalRegle}" itemLabel="Factures entièrement réglées" itemValue="true" style="margin-left:85px;">     	 						
+       	 						<p:ajax update="@this" />
+       	</p:selectBooleanCheckbox>
+       	 		      		 		
+<!--        	<p:selectBooleanCheckbox id="incRegleFactTotalRegle" value="#{dashBoardParTiersController.inclureReglementTotReg}" itemLabel="Inclure réglement" itemValue="true" -->
+<!--        							 rendered="#{dashBoardParTiersController.factureTotalRegle}" style="font-weight: bold; padding-left: 115px" >     	 						 -->
+<!--        	 						<p:ajax update="@this" /> -->
+<!--        	</p:selectBooleanCheckbox>	 -->
+       	
+       			</div>
+       			
+         			</div>
+    				
+    				<div class="ui-grid-col-12" style="margin-top:5px;">
+    				<hr width="100%" size="1" color="black" style="margin-top: 10px"></hr>
+    				<h:graphicImage name="dashboard/reglement.svg" library="images" height="26px" style="margin-left:-5px;" />
+					<p:outputLabel value="ETAT REGLEMENT" style="font-size: 14px;font-weight: bold; vertical-align: 2px; margin-left:3px;" />
+					</div>
+    				
+    				<div class="ui-grid-col-6">
+    	<p:selectBooleanCheckbox id="reglementRealise" value="#{dashBoardParTiersController.reglementRealise}" itemLabel="Réglement réalisées" itemValue="true" style="margin-left:35px;">     	 						
+       	 						<p:ajax update="@this,@widgetVar(interfaceUpdate)"/>
+       	</p:selectBooleanCheckbox>	
+	  	<p:selectBooleanCheckbox id="incFactTotalRegle" value="#{dashBoardParTiersController.inclureReglementFactReal}" itemLabel="Inclure factures liées" itemValue="true"
+       							 rendered="#{dashBoardParTiersController.reglementRealise}" style="font-weight: bold; padding-left: 65px" >     	 						
+       	 						<p:ajax update="@this" />
+       	</p:selectBooleanCheckbox>			    				   				   				
+    	
+       	<p:selectBooleanCheckbox id="reglementPartielAffecte" value="#{dashBoardParTiersController.reglementNonTransforme}" itemLabel="Réglement partiellement afféctés" itemValue="true" style="margin-left:35px;">     	 						
+       	 						<p:ajax update="@this,@widgetVar(interfaceUpdate)" />
+       	</p:selectBooleanCheckbox>
+       			      	    			
+       	<p:selectBooleanCheckbox id="incRegtNonTotalAffecte" value="#{dashBoardParTiersController.inclureFactNonTotReg}" itemLabel="Inclure factures liées" itemValue="true"
+       							 rendered="#{dashBoardParTiersController.reglementNonTransforme}" style="font-weight: bold; padding-left: 65px" >     	 						
+       	 						<p:ajax update="@this" />
+       	</p:selectBooleanCheckbox>	
+
+    	 		</div>
+    	 		
+    	 		<div class="ui-grid-col-6">
+    	<p:selectBooleanCheckbox id="reglementAffecte" value="#{dashBoardParTiersController.reglementARelancer}" itemLabel="Réglement non affectés" itemValue="true" style="margin-left:85px;">     	 						
+       	 						<p:ajax update="@this,@widgetVar(interfaceUpdate)" />
+       	</p:selectBooleanCheckbox>
+       	
+       			</div>   	
+      		 		
+       		 		<div class="ui-grid-col-12" style="margin-top:5px;">
+  				<hr width="100%" size="1" color="black" style="margin-top: 10px"></hr>
+    				<h:graphicImage name="dashboard/article.svg" library="images" height="26px" style="margin-left:-5px;" />
+					<p:outputLabel value="ETAT ARTICLE ACHETES" style="font-size: 14px;font-weight: bold; vertical-align: 2px; margin-left:3px;" />
+					</div>
+       		 		<div class="ui-grid-col-6">			 
+
+    	 <p:selectBooleanCheckbox id="regroupeArticle" value="#{dashBoardParTiersController.regroupeArticle}" itemLabel="Liste regroupée par articles" itemValue="true" style="margin-left:35px;">     	 						
+       	 						<p:ajax update="@this" />
+       	 </p:selectBooleanCheckbox>
+       	 
+    	<p:selectBooleanCheckbox id="histoArticle" value="#{dashBoardParTiersController.histoArticle}" itemLabel="Historique des articles achetés" itemValue="true" style="margin-left:35px;">
+    							<p:ajax update="@this" />
+    	 </p:selectBooleanCheckbox>
+    	 			</div>
+    	 			<div class="ui-grid-col-6">
+    	<p:selectBooleanCheckbox id="fammilleArticle" value="#{dashBoardParTiersController.familleArticle}" itemLabel="Articles regroupés par famille" itemValue="true" style="margin-left:85px;">	
+    							<p:ajax update="@this" />
+    	</p:selectBooleanCheckbox>	
+    	    				 
+    				 </div>
+    				 
+    				 <div class="ui-grid-col-12" style="margin-top:5px;">
+  				<hr width="100%" size="1" color="black" style="margin-top: 10px"></hr>
+    				<h:graphicImage name="dashboard/devis.svg" library="images" height="26px" style="margin-left:-5px;" />
+					<p:outputLabel value="ETAT DEVIS" style="font-size: 14px;font-weight: bold; vertical-align: 2px; margin-left:3px;" />
+					</div>
+    				 <div class="ui-grid-col-6">
+    				
+    					
+    	 <p:selectBooleanCheckbox id="devisRealise" value="#{dashBoardParTiersController.devisRealise}" itemLabel="Devis réalisées" itemValue="true" style="margin-left:35px;">
+       	 						<p:ajax update="@this" />
+    	</p:selectBooleanCheckbox>
+    							
+    	 <p:selectBooleanCheckbox id="devisNonTransforme" value="#{dashBoardParTiersController.devisNonTransforme}" itemLabel="Devis non transformées" itemValue="true" style="margin-left:35px;">
+       	 						<p:ajax update="@this" />
+    	</p:selectBooleanCheckbox>
+    				
+    				</div>
+    				<div class="ui-grid-col-6">
+    				
+    	<p:selectBooleanCheckbox id="devisARelancer" value="#{dashBoardParTiersController.devisARelancer}" itemLabel="Devis à relancer" itemValue="true" style="margin-left:85px;">
+       	 						<p:ajax update="@this" />
+    	</p:selectBooleanCheckbox>
+    	
+    	<p:selectBooleanCheckbox id="devisTransforme" value="#{dashBoardParTiersController.devisTransforme}" itemLabel="Devis tranformés" itemValue="true" style="margin-left:85px;">
+       	 						<p:ajax update="@this" />
+    	</p:selectBooleanCheckbox>      				
+    				    				 
+    				 </div>
+    				 
+    				  <div class="ui-grid-col-12" style="margin-top:5px;">
+  				<hr width="100%" size="1" color="black" style="margin-top: 10px"></hr>
+    				<h:graphicImage name="dashboard/bon-de-commande.svg" library="images" height="26px" style="margin-left:-5px;" />
+					<p:outputLabel value="ETAT COMMANDE" style="font-size: 14px;font-weight: bold; vertical-align: 2px; margin-left:3px;" />
+					</div>
+					
+    				 <div class="ui-grid-col-6">
+    	  				  				
+    	 <p:selectBooleanCheckbox id="commandeRealise" value="#{dashBoardParTiersController.commandeRealise}" itemLabel="Commande réalisées" itemValue="true" style="margin-left:35px;">
+       	 						<p:ajax update="@this" />
+    	</p:selectBooleanCheckbox>
+    							
+    	 <p:selectBooleanCheckbox id="commandeNonTransforme" value="#{dashBoardParTiersController.commandeNonTransforme}" itemLabel="Commande non transformées" itemValue="true" style="margin-left:35px;">
+       	 						<p:ajax update="@this" />
+    	</p:selectBooleanCheckbox>
+    				</div>
+    				<div class="ui-grid-col-6">
+    	<p:selectBooleanCheckbox id="commandeARelancer" value="#{dashBoardParTiersController.commandeARelancer}" itemLabel="Commande à relancer" itemValue="true" style="margin-left:85px;">
+       	 						<p:ajax update="@this" />
+    	</p:selectBooleanCheckbox>
+    	
+    	<p:selectBooleanCheckbox id="commandeTransforme" value="#{dashBoardParTiersController.commandeTransforme}" itemLabel="Commande tranformés" itemValue="true" style="margin-left:85px;">
+       	 						<p:ajax update="@this" />
+    	</p:selectBooleanCheckbox>      				
+    				
+    				</div>
+    				
+    				<div class="ui-grid-col-12" style="margin-top:5px;">
+  				<hr width="100%" size="1" color="black" style="margin-top: 10px"></hr>
+    				<h:graphicImage name="dashboard/bon-de-livraison.svg" library="images" height="26px" style="margin-left:-5px;" />
+					<p:outputLabel value="ETAT LIVRAISON" style="font-size: 14px;font-weight: bold; vertical-align: 2px; margin-left:3px;" />
+					</div>
+    				
+    				<div class="ui-grid-col-6">	
+    	 <p:selectBooleanCheckbox id="livRealise" value="#{dashBoardParTiersController.livraisonRealise}" itemLabel="Livraison réalisées" itemValue="true" style="margin-left:35px;">
+       	 						<p:ajax update="@this" />
+    	</p:selectBooleanCheckbox>
+    							
+    	 <p:selectBooleanCheckbox id="livNonFacture" value="#{dashBoardParTiersController.livraisonNonFacture}" itemLabel="Livraisons non facturées" itemValue="true" style="margin-left:35px;">
+       	 						<p:ajax update="@this" />
+    	</p:selectBooleanCheckbox>
+    				</div>
+    				<div class="ui-grid-col-6">
+    	<p:selectBooleanCheckbox id="livFacture" value="#{dashBoardParTiersController.livraisonFacture}" itemLabel="Livraisons facturées" itemValue="true" style="margin-left:85px;">
+       	 						<p:ajax update="@this" />
+    	</p:selectBooleanCheckbox>      				
+    					
+    					<div class="ui-grid-col-1" style="position:absolute; bottom:10px; right:30px">
+
+    	<p:commandButton value="Imprimer" id="print"
+    		onsuccess="window.open('#{request.contextPath}/output?__report=/reports/tiers/InterfacePrintTiers.rptdesign&amp;__format=pdf')"
+			action="#{dashBoardParTiersController.actImprimerInterfacePrintTiers(tiersController.selectedTaTiersDTO.getCodeTiers(), tiersController.selectedTaTiersDTO.getNomTiers())}"
+			styleClass="ui-priority-primary boutonPrint" style="color:white; margin-top:10px; float:left" icon="fa fa-print"
+			process="@this"  update="@this,@widgetVar(interfaceUpdate)"/>
+    	<p:commandButton value="Cocher" id="cocher" action="#{dashBoardParTiersController.cocher}" style="width:96px; right:0px;margin-bottom:6px; float:left"
+    					 icon="fa fa-check-square" process="@this" update="@this,@widgetVar(interfaceUpdate)"/>
+    	<p:commandButton value="Décocher" id="decocher" action="#{dashBoardParTiersController.decocher}" style="right:0px; float:left"
+    					 icon="fa fa-check-square" process="@this" update="@this,@widgetVar(interfaceUpdate)"/>
+
+					</div>
+    				 </div>
+    				 
+    				 <div class="ui-grid-col-12" style="margin-top:5px;">
+  				<hr width="100%" size="1" color="black" style="margin-top: 10px"></hr>
+    				<h:graphicImage name="dashboard/proforma.svg" library="images" height="26px" style="margin-left:-5px;" />
+					<p:outputLabel value="ETAT PROFORMA" style="font-size: 14px;font-weight: bold; vertical-align: 2px; margin-left:3px;" />
+					</div>
+					
+    				 <div class="ui-grid-col-6">
+    					
+    	 <p:selectBooleanCheckbox id="proformaRealise" value="#{dashBoardParTiersController.proformaRealise}" itemLabel="Proforma réalisées" itemValue="true" style="margin-left:35px;">
+       	 						<p:ajax update="@this" />
+    	</p:selectBooleanCheckbox>
+    							
+    	 <p:selectBooleanCheckbox id="proformaNonTransforme" value="#{dashBoardParTiersController.proformaNonTransforme}" itemLabel="Proforma non transformées" itemValue="true" style="margin-left:35px;">
+       	 						<p:ajax update="@this" />
+    	</p:selectBooleanCheckbox>
+    				</div>
+    				<div class="ui-grid-col-6">
+    	<p:selectBooleanCheckbox id="proformaARelancer" value="#{dashBoardParTiersController.proformaARelancer}" itemLabel="Proforma à relancer" itemValue="true" style="margin-left:85px;">
+       	 						<p:ajax update="@this" />
+    	</p:selectBooleanCheckbox>
+    	
+    	<p:selectBooleanCheckbox id="proformaTransforme" value="#{dashBoardParTiersController.proformaTransforme}" itemLabel="Proforma tranformés" itemValue="true" style="margin-left:85px;">
+       	 						<p:ajax update="@this" />
+    	</p:selectBooleanCheckbox>      				
+    				 
+    				</div>
+    				
+<!--     				<div class="ui-grid-col-9"> -->
+<!--     	<p:commandButton value="Imprimer" id="print" -->
+<!--     		onsuccess="window.open('#{request.contextPath}/output?__report=/reports/tiers/InterfacePrintTiers.rptdesign&amp;__format=pdf')" -->
+<!-- 			action="#{dashBoardParTiersController.actImprimerInterfacePrintTiers(tiersController.selectedTaTiersDTO.getCodeTiers(), tiersController.selectedTaTiersDTO.getNomTiers())}" -->
+<!-- 			styleClass="ui-priority-primary boutonPrint" style="color:white;margin-right:40px; margin-top:14px " icon="fa fa-print" -->
+<!-- 			process="@this"  update="@this,@widgetVar(interfaceUpdate)"/> -->
+    	
+<!--     	<p:commandButton value="Décocher" id="decocher" action="#{dashBoardParTiersController.decocher}" style="margin-right:20px;" -->
+<!--     					 process="@this" update="@this,@widgetVar(interfaceUpdate)"/> -->
+<!-- 				</div> -->
+					
+    			</p:panel>
+    					
+		 	</h:form>
+		 </p:dialog>	 
+
+
+</ui:composition>

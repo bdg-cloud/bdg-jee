@@ -1,0 +1,137 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<div class="ui-g">
+		<div class="ui-g-6">
+			<p:fieldset legend="Paramètres">
+				<p:panelGrid columns="4">
+					<p:outputLabel value="Début"/>
+						<p:calendar value="#{etatExportationDocumentBean.dateDebut}"
+						pattern="dd/MM/yyyy" mask="true" locale="fr" navigator="true" showOn="button"  timeZone="#{msg.time_zone}">
+							<p:ajax event="dateSelect" update="@this" listener="#{etatExportationDocumentBean.initListeDate()}" process="@this"/>
+							<p:ajax event="change"  update="@this" listener="#{etatExportationDocumentBean.initListeDate()}" process="@this"/>
+						</p:calendar>
+					<p:outputLabel value="Fin"/>
+						<p:calendar value="#{etatExportationDocumentBean.dateFin}"
+						pattern="dd/MM/yyyy" mask="true" locale="fr" navigator="true" showOn="button"  timeZone="#{msg.time_zone}">
+							<p:ajax event="dateSelect" update="@this" listener="#{etatExportationDocumentBean.initListeDate()}" process="@this"/>
+							<p:ajax event="change"  update="@this" listener="#{etatExportationDocumentBean.initListeDate()}" process="@this"/>
+						</p:calendar>					
+					<p:outputLabel value="Type de document"/>
+					<p:selectOneMenu value="#{etatExportationDocumentBean.selectedTypeDocument}">
+			            <f:selectItems value="#{etatExportationDocumentBean.listeTypeDocument}" />
+		        	</p:selectOneMenu>
+					<p:outputLabel value="Tiers"/>
+						<p:autoComplete value="#{etatExportationDocumentBean.taTiersDTO}" converter="entityConverter"
+								completeMethod="#{etatExportationDocumentBean.tiersAutoCompleteDTOLight}"
+								var="tiers"
+								itemLabel="#{tiers.codeTiers}" 
+								itemValue="#{tiers}"
+									maxResults="#{etatExportationDocumentBean.taPreferencesService.nbMaxChargeListeTiers()}"
+									moreText="Il y a #{component.maxResults} affichés sur #{component.suggestions.size()} au total, Veuillez affiner votre recherche ou cliquer ici pour en afficher plus ..."
+								forceSelection="true" dropdown="true" placeholder="Tiers" >
+								<p:column>
+									<h:outputText value="#{tiers.codeTiers}"/>
+								</p:column>
+								
+								<p:column>
+									<h:outputText value="#{tiers.nomTiers}" />
+								</p:column>
+								
+								<p:ajax event="moreText" listener="#{etatExportationDocumentBean.onMoreTextTiers}" />
+						</p:autoComplete>
+
+				</p:panelGrid>
+				<p:commandButton value="Valider" actionListener="#{etatExportationDocumentBean.actRecherche}" update="@widgetVar(wvDataTableDocumentExport)"/>
+			</p:fieldset>
+		</div>
+		<div class="ui-g-3">
+			<p:fieldset legend="Liste des dates d'exportation" widgetVar="wvDateEtatExportation" id="idDateEtatExportation">
+				<p:panelGrid columns="3" >
+					<p:outputLabel value="#{etatExportationDocumentBean.listeDateExportItem.size()}" />
+					<p:selectOneMenu value="#{etatExportationDocumentBean.selectedDateExport}">
+					 <f:selectItem itemLabel="--Choisir une date--" itemValue=""/>
+			            <f:selectItems value="#{etatExportationDocumentBean.listeDateExportItem}" />
+		        	</p:selectOneMenu>
+		        	<p:commandButton title="Rafraîchir" update="@widgetVar(wvDateEtatExportation)"  process="@this" 
+			actionListener="#{etatExportationDocumentBean.actRefresh}" styleClass="icon icon-refresh" />
+				</p:panelGrid>
+			</p:fieldset>
+		</div>	
+		<div class="ui-g-3">
+			<p:fieldset legend="Export">
+				<p:selectOneRadio value="#{etatExportationDocumentBean.paramExport}" layout="grid" columns="1">
+		            <f:selectItem itemLabel="Déjà exporté" itemValue="exporte" />
+		            <f:selectItem itemLabel="Non exporté" itemValue="pas_exporte" />
+		            <f:selectItem itemLabel="Tous" itemValue="tous" />
+		        </p:selectOneRadio>
+			</p:fieldset>
+		</div>
+	</div>
+	
+	<p:panel header="Liste des documents">
+		<div class="ui-g">
+			<div class="ui-g-10">
+				<p:dataTable value="#{etatExportationDocumentBean.modelDocument}" 
+								var="doc" 
+								rowKey="#{doc.id}" 
+								widgetVar="wvDataTableDocumentExport"
+								selection="#{etatExportationDocumentBean.selection}"
+								resizableColumns="true"
+								paginator="true" 
+								rows="#{msg.modele_datatable_ligne_par_page_debut}"
+								paginatorTemplate="#{msg.modele_datatable_paginator}"
+								rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+								emptyMessage="#{msg.message_datatable_vide}"
+								currentPageReportTemplate="#{msg.modele_datatable_page_courante}">
+								
+								
+					<p:column headerText="Exporté" selectionMode="multiple"  style="width:40px;text-align:center" />
+					<p:column headerText="Document" sortBy="#{doc.codeDocument}">
+									<p:commandLink value="#{doc.codeDocument}"
+										action="#{etatExportationDocumentBean.ouvertureDocumentBean.detailDocument(etatExportationDocumentBean.ouvertureDocumentBean.recupCodeDocument(doc.codeDocument,doc.typeDocument))}" 
+										update=":form:tabView" oncomplete="activeTabCenter('#{etatExportationDocumentBean.ouvertureDocumentBean.event.cssLgrTab}');">
+									</p:commandLink>					
+<!-- 				<p:commandLink value="#{doc.codeDocument}" action="#{etatExportationDocumentBean.detailDocument}" update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');"> -->
+<!-- 				<f:setPropertyActionListener value="#{doc}" target="#{etatExportationDocumentBean.detailLigne}" /> -->
+<!-- 				</p:commandLink>					 -->
+					</p:column>
+					<p:column headerText="Code Tiers" sortBy="#{doc.codeTiers}">
+				<p:commandLink value="#{doc.codeTiers}" action="#{etatExportationDocumentBean.detailTiers}" update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+				<f:setPropertyActionListener value="#{doc.codeTiers}" target="#{etatExportationDocumentBean.detailLigneTiers}" />
+				</p:commandLink>
+					</p:column>
+					<p:column headerText="Nom Tiers" sortBy="#{doc.nomTiers}">
+						<p:outputLabel value="#{doc.nomTiers}"/>
+					</p:column>
+					<p:column headerText="Date document" styleClass="center" sortBy="#{doc.dateDocument}">
+						<p:outputLabel value="#{doc.dateDocument}">
+							<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+						</p:outputLabel>
+					</p:column>
+					<p:column headerText="Date Export" styleClass="center" sortBy="#{doc.dateExport}">
+						<p:outputLabel value="#{doc.dateExport}">
+							<f:convertDateTime pattern="#{msg.datetime_pattern}" timeZone="#{msg.time_zone}"/>
+						</p:outputLabel>
+					</p:column>
+					<p:column headerText="Libellé" sortBy="#{doc.libelleDocument}">
+						<p:outputLabel value="#{doc.libelleDocument}"/>
+					</p:column>
+				</p:dataTable>
+			</div>
+			<div class="ui-g-2">
+				<p:panelGrid columns="1">
+					<p:commandButton value="Annuler" actionListener="#{etatExportationDocumentBean.actAnnuler}" update="@widgetVar(wvDataTableDocumentExport)"/>
+					<p:commandButton value="Inverser les cochés" actionListener="#{etatExportationDocumentBean.actInverser}" update="@widgetVar(wvDataTableDocumentExport)"/>
+					<p:commandButton value="Tout cocher" actionListener="#{etatExportationDocumentBean.actToutCocher}" update="@widgetVar(wvDataTableDocumentExport)"/>
+					<p:commandButton value="Enregistrer" actionListener="#{etatExportationDocumentBean.actEnregistrer}" update="@widgetVar(wvDataTableDocumentExport),@widgetVar(wvDateEtatExportation),idDateEtatExportation"/>
+					<p:commandButton value="Tout décocher" actionListener="#{etatExportationDocumentBean.actToutDechocher}" update="@widgetVar(wvDataTableDocumentExport)"/>
+				</p:panelGrid>
+			</div>
+		</div>
+	</p:panel>
+
+</ui:composition>

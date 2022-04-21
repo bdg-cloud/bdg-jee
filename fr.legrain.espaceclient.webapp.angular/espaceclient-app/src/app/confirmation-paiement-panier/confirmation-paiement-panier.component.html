@@ -1,0 +1,48 @@
+<p-card>
+    <p>
+        <img src="../assets/images/boutique/confirmation.svg" style="height: 38px; width: 38px; vertical-align: middle;"/>
+        <span style="font-style: normal; font-size: xx-large; vertical-align: middle; margin-left: 10px;">Confirmation</span>
+    </p>
+    <div id="resume" style="margin: auto; text-align: center;">
+        
+        <div [innerHTML]="texteConfirmation" *ngIf="texteConfirmation; else texteDefaut"></div>
+
+        <ng-template #texteDefaut>
+            <p>
+                Votre commande a bien été prise en compte.<br/> 
+                Elle est en cours de traitement.<br/>
+                Vous allez recevoir un email de confirmation
+            </p>
+        </ng-template> 
+
+        <p-panel header="Informations sur la commande">
+            <table style="margin: auto; margin-bottom: 30px; border: solid 1px;">
+                <tr>
+                    <td>N° Panier</td><td>{{codePanier}}</td>
+                </tr>
+                <tr>
+                    <td>N° Commande</td><td>{{codeCommande}}</td>
+                </tr>
+                <tr>
+                    <td>N° Règlement</td><td>{{codeReglement}}</td>
+                </tr>
+                <tr>
+                    <td>N° Règlement internet</td><td>{{codeReglementInternet}}</td>
+                </tr>
+                <tr>
+                    <td>Montant HT</td><td>{{montantHT}}</td>
+                </tr>
+                <tr>
+                    <td>Montant TTC</td><td>{{montantTTC}}</td>
+                </tr>
+            </table>
+        </p-panel>
+
+        <p-button label="Enregistrer en PDF" (onClick)="exportAsPDF('resume');"></p-button>
+
+
+        <a [routerLink]="['/catalogue']" routerLinkActive="active" style="margin-top: 30px;">
+            <div>Boutique</div>
+        </a>
+    </div>
+</p-card>

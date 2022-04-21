@@ -1,0 +1,47 @@
+<ui:composition 
+xmlns="http://www.w3.org/1999/xhtml" 
+xmlns:f="http://java.sun.com/jsf/core" 
+xmlns:h="http://java.sun.com/jsf/html"	
+xmlns:ui="http://java.sun.com/jsf/facelets" 
+xmlns:p="http://primefaces.org/ui">
+
+
+	<p:menubar styleClass="menu-onglet">
+		<p:menuitem title="Fermer" styleClass="icon icon-close menuitem-fermer-droite" process="@this"
+			actionListener="#{etatStockCapsuleController.actFermer}" onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())">
+		</p:menuitem>
+		<p:menuitem title="Rafraîchir" process="@this" styleClass="icon icon-refresh" />
+	</p:menubar>
+
+	<p:tabView id="idTabViewCapsules" styleClass="verticalTab" binding="#{etatStockCapsuleController.tabViewCapsules}" cache="false">
+		<p:ajax event="tabChange" />
+		<p:tab title="Stocks CRD" titleStyleClass="tab-min" titletip="Stocks CRD">
+			<p:panel header="Mouvement de stocks CRD" widgetVar="panelMouvementStockCRD">
+				<ui:include src="/gestionCapsules/mouvements_crd.xhtml" />
+			</p:panel>		
+		</p:tab>
+		<p:tab title="calcul des reports de stocks CRD" titleStyleClass="tab-min" titletip="calcul des reports de stocks CRD">
+			<p:panel header="Calcul des reports CRD" widgetVar="panelCalculReportsCRD">
+				<ui:include src="/gestionCapsules/calcul_reports_capsules_include.xhtml" />
+			</p:panel>		
+		</p:tab>
+		<p:tab title="Etat des reports de stocks CRD" titleStyleClass="tab-min" titletip="Etat des reports de stocks CRD">
+			<p:panel header="Etat des reports CRD" widgetVar="panelEtatReportsCRD">
+				<ui:include src="/gestionCapsules/etat_reports_capsules_include.xhtml" />
+			</p:panel>
+		</p:tab>
+		<p:tab title="Etat des stocks CRD" titleStyleClass="tab-min" titletip="Etat des stocks CRD">
+			<p:panel header="Etat des stocks CRD" widgetVar="panelEtatStockCRD">
+				<ui:include src="/gestionCapsules/etat_stock_capsules_include.xhtml" />
+			</p:panel>
+		</p:tab>
+
+		<p:tab title="Etat des mouvements CRD" titleStyleClass="tab-min" titletip="Etat des mouvements CRD">
+			<p:panel header="Etat des mouvements CRD" widgetVar="panelEtatMouvementCRD">
+				<ui:include src="/gestionCapsules/etat_mouvements_capsules_include.xhtml" />
+			</p:panel>
+		</p:tab>
+	</p:tabView>
+	
+	
+</ui:composition>

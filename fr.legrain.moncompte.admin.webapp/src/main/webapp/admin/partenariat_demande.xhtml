@@ -1,0 +1,132 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html" 
+	xmlns:ui="http://java.sun.com/jsf/facelets" 
+	xmlns:p="http://primefaces.org/ui">
+
+	<!-- 	<f:metadata> -->
+	<!-- 		<f:viewParam name="modeEcranDefaut" value="#{panierController.modeEcranDefaut}" /> -->
+	<!-- 		<f:event type="preRenderView" listener="#{panierController.refresh}" /> -->
+	<!-- 	</f:metadata> -->
+
+	<p:panel>
+
+	Gestion des demandes de partenariat
+		
+	</p:panel>
+
+	<p:dataTable id="dataTableListeDemandePartenariat" 
+		var="client" 
+		widgetVar="wvDataTableListeDemandePartenariat"
+		styleClass="datatable mt10" 
+		value="#{demandePartenariatController.values}" 
+		rowKey="#{client.id}"
+		selection="#{demandePartenariatController.selectedTaClient}"
+		selectionMode="single" 
+		dblClickSelect="true"
+		resizableColumns="true" 
+		paginator="true" 
+		rows="#{msg.modele_datatable_ligne_par_page_debut}"
+		paginatorTemplate="#{msg.modele_datatable_paginator}" 
+		rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+		emptyMessage="#{msg.message_datatable_vide}" 
+		currentPageReportTemplate="#{msg.modele_datatable_page_courante}">
+
+		<!-- 				<p:ajax event="rowDblselect" listener="#{clientController.onRowSelect}" update=":form:tabView,:form:messages,@form" oncomplete="activeLastTabCenter()"/> -->
+		<!-- 				<p:ajax event="rowSelect" listener="#{clientController.onRowSelect}" disabled="#{clientController.pasDejaOuvert()}" update=":form:tabView,:form:messages,@form" />  -->
+
+<!-- 		<p:ajax event="rowSelect" listener="#{clientController.onRowSelect}" update=":form:tabView,:form:messages" -->
+<!-- 			oncomplete="PF('wvOverlayListeClient').hide();" /> -->
+
+		<f:facet name="{Exporters}">
+			<h:commandLink>
+				<p:graphicImage library="images" name="excel.png" width="24" />
+				<p:dataExporter type="xls" target="dataTableListeDemandePartenariat" fileName="liste_demande_partenariat" />
+			</h:commandLink>
+
+			<h:commandLink>
+				<p:graphicImage library="images" name="pdf.png" width="24" />
+				<p:dataExporter type="pdf" target="dataTableListeDemandePartenariat" fileName="liste_demande_partenariat" />
+			</h:commandLink>
+
+			<h:commandLink>
+				<p:graphicImage library="images" name="csv.png" width="24" />
+				<p:dataExporter type="csv" target="dataTableListeDemandePartenariat" fileName="liste_demande_partenariat" />
+			</h:commandLink>
+
+			<h:commandLink>
+				<p:graphicImage library="images" name="xml.png" width="24" />
+				<p:dataExporter type="xml" target="dataTableListeDemandePartenariat" fileName="liste_demande_partenariat" />
+			</h:commandLink>
+		</f:facet>
+
+		<p:column sortBy="#{client.code}">
+			<f:facet name="header">
+				<h:outputText value="Code client" />
+			</f:facet>
+			<h:outputText value="#{client.code}" />
+		</p:column>
+
+		<p:column sortBy="#{client.nom}">
+			<f:facet name="header">
+				<h:outputText value="Nom" />
+			</f:facet>
+			<h:outputText value="#{client.nom}" />
+		</p:column>
+		
+		<p:column sortBy="#{client.prenom}">
+			<f:facet name="header">
+				<h:outputText value="Prénom" />
+			</f:facet>
+			<h:outputText value="#{client.prenom}" />
+		</p:column>
+		
+		<p:column sortBy="#{client.taPartenaire.codePartenaire}">
+			<f:facet name="header">
+				<h:outputText value="Code partenaire" />
+			</f:facet>
+			<h:outputText value="#{client.taPartenaire.codePartenaire}" />
+		</p:column>
+		
+		<p:column sortBy="#{client.taPartenaire.taTypePartenaire.libelle}">
+			<f:facet name="header">
+				<h:outputText value="Type partenaire" />
+			</f:facet>
+			<h:outputText value="#{client.taPartenaire.taTypePartenaire.libelle}" />
+		</p:column>
+		
+<!-- 		<p:column style="width:16px"> -->
+		<p:column>
+			<f:facet name="header">
+				<h:outputText value="" />
+			</f:facet>
+			
+			<p:commandButton title="Supprimer" styleClass="icon-insert icon icon-grille" widgetVar="widgetVarBtnSupprimerDemandeListe"
+				action="#{demandePartenariatController.actSupprimerDemande}"
+				process="@this"
+				update="@widgetVar(wvDataTableListeDemandePartenariat)">
+				<f:setPropertyActionListener target="#{demandePartenariatController.selectedTaClient}" value="#{client}" />
+				<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer cette demande ?" icon="ui-icon-alert" />
+			</p:commandButton>
+			
+			<p:commandButton title="Accepter" styleClass="icon-insert icon icon-grille" widgetVar="widgetVarBtnAccepterDemandeListe"
+				action="#{demandePartenariatController.actAccepteDemande}"
+				process="@this"
+				update="@widgetVar(wvDataTableListeDemandePartenariat)">
+				<f:setPropertyActionListener target="#{demandePartenariatController.selectedTaClient}" value="#{client}" />
+				<p:confirm header="Confirmation" message="Etes vous sur de vouloir accepter cette demande ?" icon="ui-icon-alert" />
+			</p:commandButton>
+			
+<!-- 			<p:commandButton title="Supprimer" styleClass="icon-delete icon icon-grille" widgetVar="widgetVarBtnSupprimerDevisListe" -->
+<!-- 				action="#{devisController.actSupprimer}" -->
+<!-- 				process="@this" -->
+<!-- 				update="@widgetVar(wvDataTableListeDemandePartenariat)"> -->
+<!-- 				<f:setPropertyActionListener target="#{devisController.selectedTaDevisDTO}" value="#{client}" /> -->
+<!-- 				<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer cette demande ?" icon="ui-icon-alert" /> -->
+<!-- 			</p:commandButton> -->
+							
+		</p:column>
+
+	</p:dataTable>
+	
+</ui:composition>

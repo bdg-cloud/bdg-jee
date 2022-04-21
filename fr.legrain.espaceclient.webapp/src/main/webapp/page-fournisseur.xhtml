@@ -1,0 +1,287 @@
+<ui:composition 
+	xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:h="http://java.sun.com/jsf/html" 
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets" 
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+
+	<ui:define name="content">
+		
+		<h:form id="form">
+
+			<div class="ui-g  ui-fluid">
+
+				<div class="ui-g-12">
+<!-- 					<p:outputLabel class="affiche-utilisateur" -->
+<!-- 						value="#{c_langue.formule_politesse} #{indexCompteController.utilisateur.prenom} #{indexCompteController.utilisateur.nom}" /> -->
+						<h:outputFormat class="affiche-utilisateur" value="#{c_langue.formule_politesse}">
+				            <f:param value="#{auth.user.prenom}" />
+				            <f:param value="#{auth.user.nom}" />
+				        </h:outputFormat>
+				</div>
+
+				<div class="container_onglet_menu_fournisseurs" onclick="window.location.href='/ajout-fournisseur.xhtml'">
+					<h:graphicImage class="picto-fournisseurs" library="images" name="picto-fournisseurs.png" />
+					<div class="ui-g-8">
+						<p:outputLabel styleClass="titre-picto" value="#{c_langue.panel_bleu_titre_Fournisseurs}" />
+						<p:outputLabel styleClass="texte-picto" value="#{c_langue.panel_bleu_sous_titre_Fournisseurs}" />
+					</div>
+				</div>
+
+				<div class="container_onglet_menu_documents" onclick="window.location.href='/page-mes-fournisseurs.xhtml'">
+					<h:graphicImage class="picto-documents" library="images" name="picto-documents.png" />
+					<div class="ui-g-8">
+						<p:outputLabel styleClass="titre-picto" value="#{c_langue.panel_jaune_titre_Documents}" />
+						<p:outputLabel styleClass="texte-picto" value="#{c_langue.panel_jaune_sous_titre_Documents}" />
+					</div>
+				</div>
+
+				<div class="container_onglet_menu_informations">
+					<h:graphicImage class="picto-informations" library="images" name="picto-information.png" />
+					<div class="ui-g-8">
+						<p:outputLabel styleClass="titre-picto" value="#{c_langue.panel_rouge_titre_Informations}" />
+						<p:outputLabel styleClass="texte-picto" value="#{c_langue.panel_rouge_sous_titre_Informations}" />
+					</div>
+				</div>
+
+				<div class="ui-g-12" align="center">
+					<p:outputLabel styleClass="info-page" value="#{c_langue.page_fournisseur_titre}" />
+					
+					<p:outputLabel id="doc-consult-titre" styleClass="info-texte"
+						value="#{c_langue.page_fournisseur_sous_titre} #{pageFournisseurController.mesFournisseurs.taFournisseur.raisonSocialeFournisseur}" />
+					<br/>
+					<p:graphicImage value="/image_log_frs_cpt_client/#{pageFournisseurController.mesFournisseurs.taFournisseur.idFournisseur}"  height="30"/>
+				</div>
+
+				<div class="ui-g-12 ui-lg-12">
+
+					<p:outputLabel styleClass="info-doc" value="#{c_langue.panel_jaune_titre_Documents}" />
+					
+					<div id="j_idt30_content" class="ui-panelgrid-content ui-widget-content ui-grid ui-grid-responsive">
+					
+						<div class="ui-g-12">
+
+							<p:tabView>
+
+								<p:tab title="#{c_langue.page_fournisseur_titre_table_facture}">
+
+									<p:dataTable 
+										var="d" 
+										value="#{pageFournisseurController.listeFacture}" 
+										selection="#{pageFournisseurController.selectedFacture}"
+										selectionMode="single" 
+										rowKey="#{d.codeDocument}" 
+										emptyMessage="Aucun enregistrement trouvé">
+
+										<p:column class="code" filterBy="#{d.codeDocument}" headerText="#{c_langue.datatable_col_code}">
+											<h:outputText value="#{d.codeDocument}" />
+										</p:column>
+
+										<p:column filterBy="#{d.libelleDocument}" headerText="#{c_langue.datatable_col_libele}">
+											<h:outputText value="#{d.libelleDocument}" />
+										</p:column>
+
+										<p:column class="date-fact" sortBy="#{d.dateDocument}" headerText="#{c_langue.datatable_col_date_facture}"  styleClass="center">
+											<h:outputText value="#{d.dateDocument.toGregorianCalendar().time}">
+												<f:convertDateTime timeZone="Europe/Paris" pattern="dd/MM/yyyy" />
+											</h:outputText>
+										</p:column>
+
+										<p:column class="ht" sortBy="€#{d.netHtCalc}" headerText="#{c_langue.datatable_col_ht}" styleClass="right">
+											<h:outputText value="#{d.netHtCalc}">
+												<f:convertNumber currencySymbol="€" type="currency" />
+											</h:outputText>
+										</p:column>
+
+										<p:column class="tva" sortBy="#{d.mtTvaCalc}" headerText="#{c_langue.datatable_col_tva}" styleClass="right">
+											<h:outputText value="#{d.mtTvaCalc}">
+												<f:convertNumber currencySymbol="€" type="currency" />
+											</h:outputText>
+										</p:column>
+
+										<p:column class="ttc" sortBy="#{d.mtTtcCalc}" headerText="#{c_langue.datatable_col_ttc}" styleClass="right">
+											<h:outputText value="#{d.mtTtcCalc}">
+												<f:convertNumber currencySymbol="€" type="currency" />
+											</h:outputText>
+										</p:column>
+
+<!-- 										<p:column class="avoir" sortBy="#{d.avoirsComplet}" headerText="#{c_langue.datatable_col_avoir}" styleClass="right"> -->
+<!-- 											<h:outputText value="#{d.avoirsComplet}"> -->
+<!-- 												<f:convertNumber currencySymbol="€" type="currency" /> -->
+<!-- 											</h:outputText> -->
+<!-- 										</p:column> -->
+
+<!-- 										<p:column class="acompte" sortBy="#{d.acomptes}" headerText="#{c_langue.datatable_col_acompte}" styleClass="right"> -->
+<!-- 											<h:outputText value="#{d.acomptes}"> -->
+<!-- 												<f:convertNumber currencySymbol="€" type="currency" /> -->
+<!-- 											</h:outputText> -->
+<!-- 										</p:column> -->
+
+										<p:column class="solde" sortBy="€#{d.resteAReglerComplet}" headerText="#{c_langue.datatable_col_solde}" styleClass="right">
+											<h:outputText value="#{d.resteAReglerComplet}">
+												<f:convertNumber currencySymbol="€" type="currency" />
+											</h:outputText>
+										</p:column>
+
+										<p:column class="echeance" sortBy="#{d.dateEchDocument}" headerText="#{c_langue.datatable_col_echeance}" styleClass="center">
+											<h:outputText value="#{d.dateEchDocument.toGregorianCalendar().time}">
+												<f:convertDateTime timeZone="Europe/Paris" pattern="dd/MM/yyyy" />
+											</h:outputText>
+										</p:column>
+
+										<p:column class="payer" headerText="#{c_langue.datatable_col_payer}">
+											<p:graphicImage rendered="#{d.resteAReglerComplet!=null and d.resteAReglerComplet le 0}" title="Facture déjà payée" library="images" name="valider.png" style="width: 20px; height: 20px" />
+											
+											<p:commandButton icon="fa fa-credit-card" actionListener="#{pageFournisseurController.actPayerFacture}" action="#{pageFournisseurController.payerFacture(d)}" rendered="#{pageFournisseurController.fournisseurPermetPaiementCB and d.resteAReglerComplet!=null and d.resteAReglerComplet gt 0}">
+<!-- 											<p:commandButton icon="fa fa-credit-card" actionListener="#{pageFournisseurController.actPayerFacture}" action="#{pageFournisseurController.payerFacture(d)}" rendered="#{pageFournisseurController.fournisseurPermetPaiementCB and d.resteAReglerComplet!=null and d.resteAReglerComplet gt 0}"> -->
+<!-- 												 <f:setPropertyActionListener target="#{paiementController.taMesFournisseurs}" value="#{pageFournisseurController.mesFournisseurs}" /> -->
+<!-- 												 <f:setPropertyActionListener target="#{paiementController.taFacture}" value="#{d}" /> -->
+												 
+<!-- 												 <f:param name="mesfrs" value="#{pageFournisseurController.mesFournisseurs}"/> -->
+<!-- 												  <f:param name="fact" value="#{d}"/> -->
+											</p:commandButton>
+										</p:column>
+
+										<p:column class="pdf" headerText="PDF">
+
+											<p:commandButton ajax="false" icon="fa fa-cloud-download" actionListener="#{pageFournisseurController.download}">
+												<f:attribute name="code" value="#{d.codeDocument}" />
+												<p:fileDownload value="#{pageFournisseurController.file}" />
+											</p:commandButton>
+										</p:column>
+
+									</p:dataTable>
+
+									<p:messages id="messages" showDetail="true" autoUpdate="true" closable="true" />
+								</p:tab>
+
+								<!-- 									<p:tab title="Devis"> -->
+
+								<!-- 										<p:dataTable var="car" value="#{dtBasicView.cars}"> -->
+								<!-- 											<p:column filterBy="#{car.libele}" headerText="libéle"> -->
+								<!-- 												<h:outputText value="#{car.id}" /> -->
+								<!-- 											</p:column> -->
+
+								<!-- 											<p:column style="width:60px;text-align: center" filterBy="#{car.date}" headerText="Date"> -->
+								<!-- 												<h:outputText value="#{car.date}" /> -->
+								<!-- 											</p:column> -->
+
+								<!-- 											<p:column style="width:50px;text-align: center" filterBy="€#{car.montant}" headerText="Montant"> -->
+								<!-- 												<h:outputText value="#{car.date}" /> -->
+								<!-- 											</p:column> -->
+
+								<!-- 											<p:column style="width:50px;text-align: center" filterBy="€#{car.solde}" headerText="Solde"> -->
+								<!-- 												<h:outputText value="#{car.solde}" /> -->
+								<!-- 											</p:column> -->
+
+								<!-- 											<p:column style="width:60px;text-align: center" filterBy="#{car.echeance}" headerText="Echeance"> -->
+								<!-- 												<h:outputText value="#{car.echeance}" /> -->
+								<!-- 											</p:column> -->
+
+								<!-- 											<p:column style="width:32px;text-align: center"> -->
+								<!-- 												<p:triStateCheckbox value="#{triStateCheckboxView.value1}" /> -->
+								<!-- 												<p:commandButton update=":form:carDetail" oncomplete="PF('carDialog').show()" icon="ui-icon-search" title="Payer"> -->
+								<!-- 													<f:setPropertyActionListener value="#{car}" target="#{dtSelectionView.selectedCar}" /> -->
+								<!-- 												</p:commandButton> -->
+								<!-- 											</p:column> -->
+
+								<!-- 											<p:column style="width:32px;text-align: center"> -->
+								<!-- 												<p:commandButton update=":form:carDetail" oncomplete="PF('carDialog').show()" icon="ui-icon-search" title="PDF"> -->
+								<!-- 													<f:setPropertyActionListener value="#{car}" target="#{dtSelectionView.selectedCar}" /> -->
+								<!-- 												</p:commandButton> -->
+								<!-- 											</p:column> -->
+								<!-- 										</p:dataTable> -->
+								<!-- 									</p:tab> -->
+
+								<!-- 									<p:tab title="Bc"> -->
+
+								<!-- 										<p:dataTable var="car" value="#{dtBasicView.cars}"> -->
+								<!-- 											<p:column filterBy="#{car.libele}" headerText="libéle"> -->
+								<!-- 												<h:outputText value="#{car.id}" /> -->
+								<!-- 											</p:column> -->
+
+								<!-- 											<p:column style="width:60px;text-align: center" filterBy="#{car.date}" headerText="Date"> -->
+								<!-- 												<h:outputText value="#{car.date}" /> -->
+								<!-- 											</p:column> -->
+
+								<!-- 											<p:column style="width:50px;text-align: center" filterBy="€#{car.montant}" headerText="Montant"> -->
+								<!-- 												<h:outputText value="#{car.date}" /> -->
+								<!-- 											</p:column> -->
+
+								<!-- 											<p:column style="width:50px;text-align: center" filterBy="€#{car.solde}" headerText="Solde"> -->
+								<!-- 												<h:outputText value="#{car.solde}" /> -->
+								<!-- 											</p:column> -->
+
+								<!-- 											<p:column style="width:60px;text-align: center" filterBy="#{car.echeance}" headerText="Echeance"> -->
+								<!-- 												<h:outputText value="#{car.echeance}" /> -->
+								<!-- 											</p:column> -->
+
+								<!-- 											<p:column style="width:32px;text-align: center"> -->
+								<!-- 												<p:triStateCheckbox value="#{triStateCheckboxView.value1}" /> -->
+								<!-- 												<p:commandButton update=":form:carDetail" oncomplete="PF('carDialog').show()" icon="ui-icon-search" title="Payer"> -->
+								<!-- 													<f:setPropertyActionListener value="#{car}" target="#{dtSelectionView.selectedCar}" /> -->
+								<!-- 												</p:commandButton> -->
+								<!-- 											</p:column> -->
+
+								<!-- 											<p:column style="width:32px;text-align: center"> -->
+								<!-- 												<p:commandButton update=":form:carDetail" oncomplete="PF('carDialog').show()" icon="ui-icon-search" title="PDF"> -->
+								<!-- 													<f:setPropertyActionListener value="#{car}" target="#{dtSelectionView.selectedCar}" /> -->
+								<!-- 												</p:commandButton> -->
+								<!-- 											</p:column> -->
+
+								<!-- 										</p:dataTable> -->
+								<!-- 									</p:tab> -->
+
+								<!-- 									<p:tab title="Autres élements"> -->
+
+								<!-- 										<p:dataTable var="car" value="#{dtBasicView.cars}"> -->
+								<!-- 											<p:column filterBy="#{car.libele}" headerText="libéle"> -->
+								<!-- 												<h:outputText value="#{car.id}" /> -->
+								<!-- 											</p:column> -->
+
+								<!-- 											<p:column style="width:60px;text-align: center" filterBy="#{car.date}" headerText="Date"> -->
+								<!-- 												<h:outputText value="#{car.date}" /> -->
+								<!-- 											</p:column> -->
+
+								<!-- 											<p:column style="width:50px;text-align: center" filterBy="#{car.montant}" headerText="Montant"> -->
+								<!-- 												<h:outputText value="#{car.date}" /> -->
+								<!-- 											</p:column> -->
+
+								<!-- 											<p:column style="width:50px;text-align: center" filterBy="#{car.solde}" headerText="Solde"> -->
+								<!-- 												<h:outputText value="#{car.solde}" /> -->
+								<!-- 											</p:column> -->
+
+								<!-- 											<p:column style="width:60px;text-align: center" filterBy="#{car.echeance}" headerText="Echeance"> -->
+								<!-- 												<h:outputText value="#{car.echeance}" /> -->
+								<!-- 											</p:column> -->
+
+								<!-- 											<p:column style="width:32px;text-align: center"> -->
+								<!-- 												<p:triStateCheckbox value="#{triStateCheckboxView.value1}" /> -->
+								<!-- 												<p:commandButton update=":form:carDetail" oncomplete="PF('carDialog').show()" icon="ui-icon-search" title="Payer"> -->
+								<!-- 													<f:setPropertyActionListener value="#{car}" target="#{dtSelectionView.selectedCar}" /> -->
+								<!-- 												</p:commandButton> -->
+								<!-- 											</p:column> -->
+
+								<!-- 											<p:column style="width:32px;text-align: center"> -->
+								<!-- 												<p:commandButton update=":form:carDetail" oncomplete="PF('carDialog').show()" icon="ui-icon-search" title="PDF"> -->
+								<!-- 													<f:setPropertyActionListener value="#{car}" target="#{dtSelectionView.selectedCar}" /> -->
+								<!-- 												</p:commandButton> -->
+								<!-- 											</p:column> -->
+
+								<!-- 										</p:dataTable> -->
+
+								<!-- 									</p:tab> -->
+
+							</p:tabView>
+
+						</div>
+					</div>
+				</div>
+			</div>
+			
+		</h:form>
+
+	</ui:define>
+
+</ui:composition>

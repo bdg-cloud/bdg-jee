@@ -1,0 +1,91 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html" 
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:o="http://omnifaces.org/ui" 
+	xmlns:p="http://primefaces.org/ui">
+	
+	<o:importConstants type="fr.legrain.moncompte.admin.webapp.app.LgrTab" />
+
+	<f:validateBean disabled="true">
+
+		<div class="ui-grid ui-grid-responsive">
+			<div class="ui-grid-row">
+				<div class="ui-grid-col-12">
+
+					<div class="text-center">
+						<p:commandButton value="Annuler" icon="fa fa-undo" actionListener="#{dossierController.actAnnuler}"
+							process="@this" update=":form:messages,@form"
+							disabled="#{dossierController.etatBouton('annuler')}" />
+							
+<!-- 							<p:commandButton value="Supprimer" icon="fa fa-trash" -->
+<!-- 									actionListener="#{dossierController.actSupprimer}" process="@this" -->
+<!-- 									update=":form:messages,@form,@widgetVar(wvDataTableListeDossiers)" /> -->
+									
+							<p:commandButton value="Supprimer" action="#{dossierController.actAfficheDialogSupprimer}" oncomplete="PF('wvDlgSupprimerDossier').show();" update="@widgetVar(wvDlgPanelSupprimerDossier)">
+								<f:setPropertyActionListener target="#{dossierController.taDossier}" value="#{taDossier}" />
+							</p:commandButton>
+					</div>
+					
+				</div>
+			</div>
+
+			<div class="ui-grid-row">
+			
+				<div class="ui-grid-col-6">
+
+					<p:panel header="Dossier">
+						<h:panelGrid columns="2" cellpadding="10">
+
+							<p:outputLabel value="Code" />
+							<p:outputLabel value="#{dossierController.selectedTaDossierDTO.code}" />
+<!-- 							<p:outputLabel value="#{dossierController.taDossier.code}" /> -->
+							
+							<p:outputLabel value="URL" />
+							<p:link value="#{dossierController.urlDossier}" href="#{dossierController.urlDossier}"/>
+
+						</h:panelGrid>
+					</p:panel>
+				</div>
+				
+				<div class="ui-grid-col-6">
+					<p:panel header="Client">
+						<h:panelGrid columns="2" cellpadding="10">
+
+							<p:outputLabel value="Code" />
+							<p:commandLink value="#{dossierController.taDossier.taClient.code}" action="#{clientController.openClient}" update=":form:tabView" oncomplete="activeTabCenter('#{LgrTab.CSS_CLASS_TAB_CLIENT}');">
+								<f:setPropertyActionListener target="#{clientController.taClient}" value="#{dossierController.taDossier.taClient}" />
+							</p:commandLink>
+							
+							<p:outputLabel value="Nom" />
+							<p:outputLabel value="#{dossierController.taDossier.taClient.nom}" />
+
+						</h:panelGrid>
+					</p:panel>
+				</div>
+
+			</div>
+
+		</div>
+
+	</f:validateBean>
+	
+	<p:dialog header="Supression de dossier" widgetVar="wvDlgSupprimerDossier" minHeight="40">
+		<p:panel widgetVar="wvDlgPanelSupprimerDossier">
+			<p:panelGrid columns="2">
+				<h:outputText value="Supprimer le client (et tous les autres dossiers de ce client)" />
+    			<p:selectBooleanCheckbox value="#{dossierController.supprimerClient}" />
+    			
+<!--     			<h:outputText value="Supprimer l'utilisateur" /> -->
+<!--     			<p:selectBooleanCheckbox value="#{dossierController.supprimerUtilisateur}" /> -->
+    		</p:panelGrid>
+    		
+    		<p:commandButton value="Annuler" type="button" onclick="PF('wvDlgSupprimerDossier').hide();"/>
+			.
+			<p:commandButton value="Supprimer"
+				actionListener="#{dossierController.actSupprimer}" update="@widgetVar(wvDataTableListeDossiers)" 
+				oncomplete="PF('wvDlgSupprimerDossier').hide();"/>
+    	</p:panel>
+	</p:dialog>
+
+</ui:composition>

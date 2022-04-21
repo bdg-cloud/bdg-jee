@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<title>Bureau de gestion - Renouvellement</title>
+	<link rel="shortcut icon" type="image/x-icon" href="#{resource['images:favicon.ico']}" />
+
+	<f:facet name="first">
+	</f:facet>
+
+	<style type="text/css">
+
+	</style>
+</h:head>
+<h:body>
+	<f:facet name="last">
+		<!-- surcharge des CSS primefaces -->
+		<h:outputStylesheet library="css" name="hacks.css" />
+		<h:outputStylesheet library="css" name="icarus-bdg.css" />
+		<h:outputStylesheet library="css" name="theme-bdg.css" />
+	</f:facet>
+
+	<f:metadata>
+<!-- 		<f:viewParam name="dossier" value="#{renouvellementBean.dossier}" /> -->
+		<f:viewParam name="p" value="#{renouvellementBean.paramPartenaire}" />
+		<f:event type="preRenderView" listener="#{renouvellementBean.preRenderView}" />
+	</f:metadata>
+	
+	<div id="bandeau-bdg-fin">
+		<div>
+<!-- 			<h:graphicImage library="images" name="Bureau de Gestion.svg" title="Solstyce" width="75" height="50" /> -->
+		</div>
+	</div>
+
+	<h:form id="idFormPanier">
+
+		<p:messages autoUpdate="true" showDetail="true" />
+
+		<div class="ui-g">
+			<div class="ui-g-12">
+				<div class="card centerText">
+
+					<!--                 <p:messages autoUpdate="true" /> -->
+
+					<p:wizard showStepStatus="false" showNavBar="false" 
+						flowListener="#{renouvellementBean.onFlowProcess}"
+						widgetVar="wvWizardPanier" id="idWizardPanier">
+
+						<p:tab id="panier" title="Panier">
+							<p:steps activeIndex="0" styleClass="custom">
+								<p:menuitem value="Panier" />
+								<p:menuitem value="Contact" />
+								<p:menuitem value="Validation" />
+								<p:menuitem value="Moyen de paiement" />
+								<p:menuitem value="Paiement" />
+								<p:menuitem value="Confirmation" />
+							</p:steps>
+
+							<h:panelGrid columns="2" cellpadding="10" width="100%">
+								<p:outputLabel value="Nom du dossier : #{renouvellementBean.dossier} (#{renouvellementBean.dossierCourant.taTNiveau.libelle})" />
+								<p:outputLabel value="Code Alliance : #{renouvellementBean.paramPartenaire}" rendered="#{renouvellementBean.paramPartenaire!=null}"/>
+
+							</h:panelGrid>
+
+							<p:separator />
+
+							<p:panelGrid columns="2" cellpadding="10" width="100%">
+								<p:outputLabel for="formule" value="Version :" />
+								<p:selectOneMenu id="formule" value="#{renouvellementBean.selectedTaTNiveau}" style="width:150px" converter="entityConverter">
+									<p:ajax listener="#{renouvellementBean.filtreVersion}" update="@widgetVar(wvDataTableListeArticle),idPrixHTPanier" />
+									<f:selectItems var="p" itemLabel="#{p.libelle}" itemValue="#{p}" value="#{renouvellementBean.listeTaTNiveau}" />
+								</p:selectOneMenu>
+
+								<p:outputLabel for="catpro" value="Catégorie professionnelle :" />
+								<p:selectOneMenu id="catpro" value="#{renouvellementBean.selectedTaCategoriePro}" style="width:150px" converter="entityConverter">
+									<p:ajax listener="#{renouvellementBean.filtreVersion}" update="@widgetVar(wvDataTableListeArticle),idPrixHTPanier" />
+									<f:selectItems var="p" itemLabel="#{p.libelle}" itemValue="#{p}" value="#{renouvellementBean.listeTaCategoriePro}" />
+								</p:selectOneMenu>
+							</p:panelGrid>
+
+							<p:separator />
+			
+							Modules disponibles
+							<p:dataTable var="taProduit" 
+								widgetVar="wvDataTableListeArticle" 
+								styleClass="datatable mt10"
+								value="#{renouvellementBean.lignesPanierJSF}" 
+								rowKey="#{taProduit.produit.idProduit}"
+								selection="#{renouvellementBean.selectedModules}" 
+								resizableColumns="true" 
+								>
+<!-- 								sortBy="#{taProduit.produit.taGroupeProduit.code}" -->
+<!-- 								expandableRowGroups="true" -->
+
+								<p:ajax event="rowSelectCheckbox" listener="#{renouvellementBean.onRowSelect}" update="@parent:idPrixHTPanier" />
+								<p:ajax event="rowUnselectCheckbox" listener="#{renouvellementBean.onRowUnselect}" update="@parent:idPrixHTPanier" />
+								<p:ajax event="toggleSelect" listener="#{renouvellementBean.onToggleSelect}" update="@parent:idPrixHTPanier" />
+
+								<p:column selectionMode="multiple" style="width:16px;text-align:center" />
+								
+<!-- 								<p:headerRow> -->
+<!-- 						            <p:column colspan="8"> -->
+<!-- 						                <h:outputText value="#{taProduit.produit.taGroupeProduit.code}" /> -->
+<!-- 						            </p:column> -->
+<!-- 						        </p:headerRow> -->
+
+								<p:column sortBy="#{taProduit.produit.libelle}">
+									<f:facet name="header">
+										<h:outputText value="Module" />
+									</f:facet>
+									<h:outputText value="#{taProduit.produit.libelle}" />
+								</p:column>
+
+								<p:column styleClass="center">
+									<f:facet name="header">
+										<h:outputText value="Niveau module" />
+									</f:facet>
+									<h:outputText value="#{taProduit.typeNiveau}" />
+								</p:column>
+
+								<p:column sortBy="#{taProduit.prixHT}" styleClass="right">
+									<f:facet name="header">
+										<h:outputText value="Prix HT / mois" />
+									</f:facet>
+									<h:outputText value="#{taProduit.prixHT} €" />
+								</p:column>
+
+								<p:column styleClass="right">
+									<f:facet name="header">
+										<h:outputText value="Par poste installé" />
+									</f:facet>
+									<h:outputText value="+ #{taProduit.prixHTParPosteInstalle} €" />
+								</p:column>
+
+								<p:column styleClass="right">
+									<f:facet name="header">
+										<h:outputText value="WebService" />
+									</f:facet>
+									<h:outputText value="+ #{taProduit.prixHTWs} €" />
+								</p:column>
+
+								<p:column styleClass="center">
+									<f:facet name="header">
+										<h:outputText value="Expire le" />
+									</f:facet>
+									<h:outputText value="#{taProduit.dateExpiration}">
+										<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}" />
+									</h:outputText>
+								</p:column>
+
+								<p:column style="width:16px">
+									<p:rowToggler/>
+								</p:column>
+
+								<p:rowExpansion>
+									<p:panelGrid>
+										<!--                 <f:facet name="header"> -->
+										<!--                     <p:graphicImage name="demo/images/car/#{car.brand}-big.gif"/>  -->
+										<!--                 </f:facet> -->
+										<p:row>
+											<p:column style="width:20%">
+												<h:outputText value="." />
+											</p:column>
+											<p:column style="width:80%">
+												<h:outputText value="Description : " />
+												<h:outputText value="#{taProduit.produit.descriptionHtml}" escape="false" />
+											</p:column>
+										</p:row>
+									</p:panelGrid>
+								</p:rowExpansion>
+
+							</p:dataTable>
+
+							<p:separator />
+
+							<div class="ui-g">
+								<div class="ui-g-12 ui-md-3">
+									<p:panelGrid columns="2" styleClass="panier80 center mt50">
+										<f:facet name="header">
+											<p:outputLabel value="Nombre d'utilisateur" />
+										</f:facet>
+										
+										<p:selectOneMenu value="#{renouvellementBean.selectedTaPrixParUtilisateur}" style="width:150px"
+											rendered="#{!renouvellementBean.prixPersoParUtilisateur}" converter="entityConverter">
+											<p:ajax listener="#{renouvellementBean.recalculTotaux}" update="idPrixHTPanier" />
+											<f:selectItems var="p" itemLabel="#{p.nbUtilisateur} utilisateur(s) +#{p.prixHT}€" itemValue="#{p}"
+												value="#{renouvellementBean.listPrixParUtilisateur}" />
+										</p:selectOneMenu>
+
+										<p:selectOneMenu value="#{renouvellementBean.selectedTaPrixParUtilisateurPerso}" style="width:150px"
+											rendered="#{renouvellementBean.prixPersoParUtilisateur}" converter="entityConverter">
+											<p:ajax listener="#{renouvellementBean.recalculTotaux}" update="idPrixHTPanier" />
+											<f:selectItems var="p" itemLabel="#{p.nbUtilisateur} utilisateur(s) +#{p.prixHT}€" itemValue="#{p}"
+												value="#{renouvellementBean.listPrixParUtilisateurPerso}" />
+										</p:selectOneMenu>
+									</p:panelGrid>
+								</div>
+
+								<div class="ui-g-12 ui-md-3"> 
+									<p:panelGrid columns="2" styleClass="panier80 center mt50">
+										<f:facet name="header">
+											<p:outputLabel for="install" value="Nombre de poste installé" />
+										</f:facet>
+
+										<p:spinner id="install" value="#{renouvellementBean.nbPoste}" min="0" max="1000">
+											<p:ajax update="idPrixHTPanier" listener="#{renouvellementBean.recalculTotaux}" process="@this" />
+										</p:spinner>
+									</p:panelGrid>
+								</div>
+
+								<div class="ui-g-12 ui-md-3">
+									<p:panelGrid columns="2" styleClass="panier80 center mt50">
+										<f:facet name="header">
+											<p:outputLabel for="webservice" value="WebServices" />
+										</f:facet>
+
+										<p:selectBooleanCheckbox id="webservice" value="#{renouvellementBean.webservice}" itemLabel="Cocher la case" style="color: #A6A9C0;">
+											<p:ajax update="idPrixHTPanier" listener="#{renouvellementBean.recalculTotaux}" />
+										</p:selectBooleanCheckbox>
+									</p:panelGrid>
+								</div>
+
+								<div class="ui-g-12 ui-md-3">
+									<p:panelGrid columns="2" styleClass="panier80 center mt50">
+										<f:facet name="header">
+											<p:outputLabel value="Durée" />
+										</f:facet>
+										<p:selectOneMenu value="#{renouvellementBean.nbMois}" style="width:150px">
+											<p:ajax listener="#{renouvellementBean.recalculTotaux}" update="idPrixHTPanier" />
+											<f:selectItem itemLabel="1 mois" itemValue="1" />
+											<f:selectItem itemLabel="3 mois" itemValue="3" />
+											<f:selectItem itemLabel="6 mois" itemValue="6" />
+											<f:selectItem itemLabel="12 mois" itemValue="12" />
+										</p:selectOneMenu>
+									</p:panelGrid>
+								</div>
+
+
+								<div class="ui-g-12 ui-md-3"></div>
+								<div class="ui-g-12 ui-md-3"></div>
+								<div class="ui-g-12 ui-md-3"></div>
+								<div class="ui-g-12 ui-md-3">
+									<div class="block-total-panier">
+										<div class="block-total-panier-entete">
+											<p:outputLabel value="Total HT" />
+										</div>
+										<div class="block-total-panier-total">
+											<p:outputLabel value="#{renouvellementBean.totalHT} €" id="idPrixHTPanier" />
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<p:separator />
+
+
+						</p:tab>
+
+						<p:tab id="contact" title="Contact">
+
+							<p:steps activeIndex="1" styleClass="custom">
+								<p:menuitem value="Panier" />
+								<p:menuitem value="Contact" />
+								<p:menuitem value="Validation" />
+								<p:menuitem value="Moyen de paiement" />
+								<p:menuitem value="Paiement" />
+								<p:menuitem value="Confirmation" />
+							</p:steps>
+
+							<div class="ui-g">
+								<div class="ui-g-12 ui-md-2"></div>
+
+								<div class="ui-g-12 ui-md-8">
+									<div class="ui-g">
+										<div class="ui-g-12" style="padding: 0">
+											<div class="panier-bandeau-titre">
+												IDENTITE ENTREPRISE
+											</div>
+										</div>
+										<div class="ui-g-12 ui-md-12 ui-lg-4" style="padding: 0;">
+											<p:panelGrid columns="2" style="float:left;" styleClass="panier90">
+												<f:facet name="header">
+													Identité
+												</f:facet>
+												<p:outputLabel value="Nom :" />
+												<p:inputText value="#{renouvellementBean.clientCourant.nom}" />
+
+												<p:outputLabel value="Prénom :" />
+												<p:inputText value="#{renouvellementBean.clientCourant.prenom}" />
+
+												<p:outputLabel value="Nom entreprise :" />
+												<p:inputText value="#{renouvellementBean.clientCourant.adresse1.nomEntreprise}" />
+												
+												<p:outputLabel value="Numéro de TVA :" />
+												<p:inputText value="#{renouvellementBean.clientCourant.numeroTva}" />
+											</p:panelGrid>
+										</div>
+
+										<div class="ui-g-12 ui-md-12 ui-lg-4" style="padding: 0;">
+											<p:panelGrid columns="2" styleClass="panier90">
+												<f:facet name="header">
+													Adresse
+												</f:facet>
+												
+												<p:outputLabel value="Adresse 1 :" />
+												<p:inputText value="#{renouvellementBean.clientCourant.adresse1.adresse1}" />
+
+												<p:outputLabel value="Adresse 2 :" />
+												<p:inputText value="#{renouvellementBean.clientCourant.adresse1.adresse2}" />
+
+												<p:outputLabel value="Adresse 3 :" />
+												<p:inputText value="#{renouvellementBean.clientCourant.adresse1.adresse3}" />
+
+												<p:outputLabel value="Code postal :" />
+												<p:inputText value="#{renouvellementBean.clientCourant.adresse1.codePostal}" />
+
+												<p:outputLabel value="Ville :" />
+												<p:inputText value="#{renouvellementBean.clientCourant.adresse1.ville}" />
+
+												<p:outputLabel value="Pays :" />
+												<p:inputText value="#{renouvellementBean.clientCourant.adresse1.pays}" />
+											</p:panelGrid>
+										</div>
+
+										<div class="ui-g-12 ui-md-12 ui-lg-4" style="padding: 0;">
+											<p:panelGrid columns="2" style="float:right" styleClass="panier90">
+												<f:facet name="header">
+													Contact
+												</f:facet>
+												
+												<p:outputLabel value="Téléphone 1 :" />
+												<p:inputText value="#{renouvellementBean.clientCourant.adresse1.numTel1}" />
+
+												<p:outputLabel value="Téléphone 2 :" />
+												<p:inputText value="#{renouvellementBean.clientCourant.adresse1.numTel2}" />
+
+												<p:outputLabel value="Fax :" />
+												<p:inputText value="#{renouvellementBean.clientCourant.adresse1.numFax}" />
+
+												<p:outputLabel value="Téléphone portable :" />
+												<p:inputText value="#{renouvellementBean.clientCourant.adresse1.numPort}" />
+
+												<p:outputLabel value="Email :" />
+												<p:inputText value="#{renouvellementBean.clientCourant.adresse1.email}" />
+
+												<p:outputLabel value="Web :" />
+												<p:inputText value="#{renouvellementBean.clientCourant.adresse1.web}" />
+
+											</p:panelGrid>
+										</div>
+									</div>
+								</div>
+								<div class="ui-g-12 ui-md-2"></div>
+							</div>
+							<p:separator />
+
+						</p:tab>
+
+						<p:tab id="validation" title="Validation">
+
+							<p:steps activeIndex="2" styleClass="custom">
+								<p:menuitem value="Panier" />
+								<p:menuitem value="Contact" />
+								<p:menuitem value="Validation" />
+								<p:menuitem value="Moyen de paiement" />
+								<p:menuitem value="Paiement" />
+								<p:menuitem value="Confirmation" />
+							</p:steps>
+							
+							<div class="ui-g">
+								<div class="ui-g-12 ui-md-2"></div>
+
+								<div class="ui-g-12 ui-md-8">
+									<div class="ui-g">
+										<div class="ui-g-12" style="padding: 0">
+											<div class="panier-bandeau-titre">
+												IDENTITE ENTREPRISE
+											</div>
+										</div>
+										<div class="ui-g-12 ui-md-12 ui-lg-4" style="padding: 0;">
+											<p:panelGrid columns="1" style="float:left;" styleClass="panier90">
+												<f:facet name="header">
+													Identité
+												</f:facet>
+
+												<p:outputLabel value="#{renouvellementBean.clientCourant.adresse1.nomEntreprise}" />
+												<p:outputLabel value="#{renouvellementBean.clientCourant.nom} #{renouvellementBean.clientCourant.prenom}" />
+												<p:outputLabel value="Numéro de TVA : #{renouvellementBean.clientCourant.numeroTva}" />
+											</p:panelGrid>
+										</div>
+
+
+										<div class="ui-g-12 ui-md-12 ui-lg-4" style="padding: 0;">
+											<p:panelGrid columns="1" styleClass="panier90">
+												<f:facet name="header">
+													Adresse
+												</f:facet>
+												<p:outputLabel value="#{renouvellementBean.clientCourant.adresse1.adresse1}" />
+												<p:outputLabel value="#{renouvellementBean.clientCourant.adresse1.adresse2}" />
+												<p:outputLabel value="#{renouvellementBean.clientCourant.adresse1.adresse3}" />
+												<p:outputLabel
+													value="#{renouvellementBean.clientCourant.adresse1.codePostal} #{renouvellementBean.clientCourant.adresse1.ville}" />
+												<p:outputLabel value="#{renouvellementBean.clientCourant.adresse1.pays}" />
+											</p:panelGrid>
+										</div>
+
+										<div class="ui-g-12 ui-md-12 ui-lg-4" style="padding: 0;">
+											<p:panelGrid columns="1" style="float:right;" styleClass="panier90">
+												<f:facet name="header">
+													Contact
+												</f:facet>
+												<p:outputLabel value="Tel 1 : #{renouvellementBean.clientCourant.adresse1.numTel1}" />
+												<p:outputLabel value="Tel 2 : #{renouvellementBean.clientCourant.adresse1.numTel2}" />
+												<p:outputLabel value="Fax : #{renouvellementBean.clientCourant.adresse1.numFax}" />
+												<p:outputLabel value="Téléphone portable : #{renouvellementBean.clientCourant.adresse1.numPort}" />
+												<p:outputLabel value="Email : #{renouvellementBean.clientCourant.adresse1.email}" />
+												<p:outputLabel value="Web : #{renouvellementBean.clientCourant.adresse1.web}" />
+											</p:panelGrid>
+										</div>
+									</div>
+
+								</div>
+								<div class="ui-g-12 ui-md-2"></div>
+
+
+								<div class="ui-g-12 ui-md-2"></div>
+
+								<div class="ui-g-12 ui-md-8">
+									<p:dataTable var="lp" widgetVar="wvDataTableValidationPanier" styleClass="datatable mt10"
+										value="#{renouvellementBean.fac.lignes}" rowKey="#{lp.idLDocument}" resizableColumns="true">
+
+										<p:column>
+											<f:facet name="header">
+												<h:outputText value="Code" />
+											</f:facet>
+											<h:outputText value="#{lp.taArticle.codeArticle}" />
+										</p:column>
+
+										<p:column>
+											<f:facet name="header">
+												<h:outputText value="Libelle" />
+											</f:facet>
+											<h:outputText value="#{lp.libLDocument}" />
+										</p:column>
+
+										<p:column>
+											<f:facet name="header">
+												<h:outputText value="HT" />
+											</f:facet>
+											<h:outputText value="#{lp.mtHtLApresRemiseGlobaleDocument} €" />
+										</p:column>
+
+										<p:column>
+											<f:facet name="header">
+												<h:outputText value="TTC" />
+											</f:facet>
+											<h:outputText value="#{lp.mtTtcLApresRemiseGlobaleDocument} €" />
+										</p:column>
+									</p:dataTable>
+								</div>
+
+								<div class="ui-g-12 ui-md-2"></div>
+
+								<div class="ui-g-12 ui-md-2"></div>
+
+								<div class="ui-g-12 ui-md-8">
+									<div class="ui-g">
+										<div class="ui-g-12 ui-md-4">
+											<div class="block-total-panier">
+												<div class="block-total-panier-entete">
+													<p:outputLabel value="Total HT" />
+												</div>
+												<div class="block-total-panier-total">
+													<p:outputLabel value="#{renouvellementBean.fac.netHtCalc} €" />
+												</div>
+											</div>
+										</div>
+
+										<div class="ui-g-12 ui-md-4">
+											<div class="block-total-panier">
+												<div class="block-total-panier-entete">
+													<p:outputLabel value="TVA" />
+												</div>
+												<div class="block-total-panier-total">
+													<p:outputLabel value="#{renouvellementBean.fac.netTvaCalc} €" />
+												</div>
+											</div>
+										</div>
+
+										<div class="ui-g-12 ui-md-4">
+											<div class="block-total-panier">
+												<div class="block-total-panier-entete">
+													<p:outputLabel value="Total TTC" />
+												</div>
+												<div class="block-total-panier-total">
+													<p:outputLabel value="#{renouvellementBean.fac.netTtcCalc} €" />
+												</div>
+											</div>
+										</div>
+
+									</div>
+
+								</div>
+								<div class="ui-g-12 ui-md-2"></div>
+
+								<div class="ui-g-12 ui-md-12 ui-lg-12">
+									<div style="margin: auto; margin-top: 20px; text-align: center;">
+										<p:commandLink value="Lire les conditions générales de vente."
+											actionListener="#{renouvellementBean.actDialogCgv}" />
+										<p:outputLabel value=" - " />
+										<p:commandLink value="Télécharger" ajax="false">
+											<p:fileDownload value="#{renouvellementBean.fichierCgv}" />
+										</p:commandLink>
+										<br />
+										<p:outputLabel for="cgv" value="J'ai lu et j'accepte les conditions générales de vente. " />
+
+										<p:selectBooleanCheckbox id="cgv" value="#{renouvellementBean.cgv}" widgetVar="wvCheckboxCgv">
+											<p:ajax event="change" update="@this"
+												oncomplete="if(PF('wvCheckboxCgv').input.is(':checked')) {PF('wvWizardPanier').showNextNav();} else {PF('wvWizardPanier').hideNextNav();}" />
+										</p:selectBooleanCheckbox>
+
+									</div>
+								</div>
+
+							</div>
+
+
+
+						</p:tab>
+						
+						<p:tab id="moyen-paiement" title="Moyen de paiement">
+
+							<p:steps activeIndex="3" styleClass="custom">
+								<p:menuitem value="Panier" />
+								<p:menuitem value="Contact" />
+								<p:menuitem value="Validation" />
+								<p:menuitem value="Moyen de paiement" />
+								<p:menuitem value="Paiement" />
+								<p:menuitem value="Confirmation" />
+							</p:steps>
+
+							<div class="ui-g">
+								<div class="ui-g-12" style="padding: 0">
+									<div class="panier-bandeau-titre">
+										VOTRE MODE DE REGLEMENT
+									</div>
+								</div>
+								<div class="ui-g-12 ui-md-12 ui-lg-12" style="padding: 0;">
+								
+									<p:selectOneRadio id="idMoyenPaiementRadio" value="#{renouvellementBean.moyenPaiement}" layout="custom" 
+										required="true" requiredMessage="Veuillez sélectionner un moyen de paiement pour continuer.">
+							            <f:selectItem itemLabel="Carte bancaire" itemValue="CB"  />
+							            <f:selectItem itemLabel="Chèque" itemValue="C" />
+							            <f:selectItem itemLabel="Virement" itemValue="VIR"/>
+							            <f:selectItem itemLabel="Prélèvement" itemValue="PREL"/>
+							            <f:selectItem itemLabel="CB - Prélèvement" itemValue="CBP"/>
+						       		</p:selectOneRadio>
+							        
+							        <div class="ui-g">
+										<div class="ui-g-12 ui-md-4">
+											<div class="block-total-panier">
+												<div class="block-total-panier-entete" style="padding-top: 4px;">
+													<p:graphicImage library="images" name="paiement/carte-bancaire.png" title="Carte bancaire"/>
+													<br/>
+													<h:outputLabel for="opt1" value="Carte bancaire" />
+												</div>
+												<div class="block-total-panier-total">
+													<p:radioButton id="opt1" for="idMoyenPaiementRadio" itemIndex="0"/>
+												</div>
+											</div>
+										</div>
+
+										<div class="ui-g-12 ui-md-4">
+											<div class="block-total-panier">
+												<div class="block-total-panier-entete" style="padding-top: 4px;">
+													<p:graphicImage library="images" name="paiement/cheque.png" title="Chèque" />
+													<br/>
+													<h:outputLabel for="opt2" value="Chèque"/>
+												</div>
+												<div class="block-total-panier-total">
+													<p:radioButton id="opt2" for="idMoyenPaiementRadio" itemIndex="1" />
+												</div>
+											</div>
+										</div>
+
+										<div class="ui-g-12 ui-md-4">
+											<div class="block-total-panier">
+												<div class="block-total-panier-entete" style="padding-top: 4px;">
+													<p:graphicImage library="images" name="paiement/virement.png" title="Virement" />
+													<br/>
+													<h:outputLabel for="opt3" value="Virement" />
+												</div>
+												<div class="block-total-panier-total">
+													<p:radioButton id="opt3" for="idMoyenPaiementRadio" itemIndex="2" />
+												</div>
+											</div>
+										</div>
+										
+<!-- 										<div class="ui-g-12 ui-md-4"> -->
+<!-- 											<div class="block-total-panier"> -->
+<!-- 												<div class="block-total-panier-entete" style="padding-top: 4px;"> -->
+<!-- 													<p:graphicImage library="images" name="paiement/prelevement.png" title="Prélèvement" />  -->
+<!-- 												 	<br/> -->
+<!--  							            			<h:outputLabel for="opt4" value="Prélèvement" /> -->
+<!-- 												</div> -->
+<!-- 												<div class="block-total-panier-total"> -->
+<!-- 													<p:radioButton id="opt4" for="idMoyenPaiementRadio" itemIndex="3" />  -->
+<!-- 												</div> -->
+<!-- 											</div> -->
+<!-- 										</div> -->
+										
+<!-- 										<div class="ui-g-12 ui-md-4"> -->
+<!-- 											<div class="block-total-panier"> -->
+<!-- 												<div class="block-total-panier-entete" style="padding-top: 4px;"> -->
+<!-- 													<p:graphicImage library="images" name="paiement/paiement-recurrent-carte.png" title="Paiement récurrent par carte bancaire" /> -->
+<!-- 													<br/> -->
+<!-- 							            			<h:outputLabel for="opt5" value="Paiement récurrent par carte bancaire" /> -->
+<!-- 												</div> -->
+<!-- 												<div class="block-total-panier-total"> -->
+<!-- 													<p:radioButton id="opt5" for="idMoyenPaiementRadio" itemIndex="4" />  -->
+<!-- 												</div> -->
+<!-- 											</div> -->
+<!-- 										</div> -->
+
+									</div>
+							        
+					       		</div>
+							</div>
+							
+						</p:tab>
+
+						<p:tab id="paiement-cb" title="Paiement">
+
+							<p:steps activeIndex="4" styleClass="custom">
+								<p:menuitem value="Panier" />
+								<p:menuitem value="Contact" />
+								<p:menuitem value="Validation" />
+								<p:menuitem value="Moyen de paiement" />
+								<p:menuitem value="Paiement" />
+								<p:menuitem value="Confirmation" />
+							</p:steps>
+
+
+							<div class="ui-g">
+								<div class="ui-g-12" style="padding: 0">
+									<div class="panier-bandeau-titre" style="height: 60px;">
+										VOTRE REGLEMENT PAR CARTE BANCAIRE TTC
+										<br/>
+										<p:graphicImage library="images" name="paiement/cadenas.png" height="16px"/> Espace sécurisé
+									</div>
+								</div>
+								<div class="ui-g-12 ui-md-12 ui-lg-12" style="padding: 0;">
+									<p:panelGrid columns="1" style="width:100%; height: 100%;" styleClass="panier">
+										<f:facet name="header">
+											<p:outputLabel value="Montant total à payer : #{renouvellementBean.fac.netTtcCalc} €" />
+										</f:facet>
+
+										<p:panelGrid columns="2" style="margin:auto; width:40%; height: 100%;" styleClass="panier">
+
+
+											<p:outputLabel value="Nom du porteur :" />
+											<p:inputText value="#{renouvellementBean.nomCarte}" />
+											<p:outputLabel value="Numéro :" />
+											<p:inputText value="#{renouvellementBean.numCarte}" />
+											<p:outputLabel value="Mois :" />
+											<!-- 					<p:inputText value="#{renouvellementBean.moisCarte}" /> -->
+											<p:selectOneMenu value="#{renouvellementBean.moisCarte}" style="width:150px">
+												<f:selectItems var="p" itemLabel="#{p}" itemValue="#{p}" value="#{renouvellementBean.listeMoisCB}" />
+											</p:selectOneMenu>
+											<p:outputLabel value="Année :" />
+<!-- 																<p:inputText value="#{renouvellementBean.anneeCarte}" /> -->
+											<p:selectOneMenu value="#{renouvellementBean.anneeCarte}" style="width:150px">
+												<f:selectItems var="p" itemLabel="#{p}" itemValue="#{p}" value="#{renouvellementBean.listeAnneeCB}" />
+											</p:selectOneMenu>
+											<p:outputLabel value="Cryptogramme :" />
+											<p:inputText value="#{renouvellementBean.cryptoCarte}" />
+										</p:panelGrid>
+										<!-- 				<p:outputLabel value="Type :" /> -->
+										<!-- 				<p:inputText value="#{renouvellementBean.typeCarte}" /> -->
+
+									</p:panelGrid>
+								</div>
+							</div>
+
+						</p:tab>
+						
+						<p:tab id="paiement-cheque" title="Paiement">
+
+							<p:steps activeIndex="4" styleClass="custom">
+								<p:menuitem value="Panier" />
+								<p:menuitem value="Contact" />
+								<p:menuitem value="Validation" />
+								<p:menuitem value="Moyen de paiement" />
+								<p:menuitem value="Paiement" />
+								<p:menuitem value="Confirmation" />
+							</p:steps>
+
+
+							<div class="ui-g">
+<!-- 								<div class="ui-g-12" style="padding: 0"> -->
+<!-- 									<div class="panier-bandeau-titre"> -->
+<!-- 										VOTRE REGLEMENT PAR CHEQUE TTC -->
+<!-- 									</div> -->
+<!-- 								</div> -->
+								
+								<div class="ui-g-12 ui-md-12 ui-lg-12" style="padding: 0; margin-top: 20px;">
+									<p:panelGrid columns="1" style="width:100%; height: 100%;" styleClass="panier center">
+										<f:facet name="header">
+											<p:outputLabel value="VOTRE REGLEMENT PAR CHEQUE TTC" />
+										</f:facet>
+										
+										<p:outputLabel style="display: block; width: 500px; margin: auto;" value="Paiement par chèque" />
+										<p:outputLabel style="display: block; width: 500px; margin: auto;" value="Merci d'adresser votre règlement par chèque libellé à : Legrain Informatique" />
+										<p:outputLabel style="display: block; width: 500px; margin: auto;" value="Montant du règlement : #{renouvellementBean.fac.netTtcCalc} €" />
+										<p:outputLabel style="display: block; width: 500px; margin: auto;" value="Adresse d'envoi :" />
+										<p:outputLabel style="display: block; width: 500px; margin: auto;" value="Legrain Informatique" />
+										<p:outputLabel style="display: block; width: 500px; margin: auto;" value="Service Comptabilité" />
+										<p:outputLabel style="display: block; width: 500px; margin: auto;" value="290, avenue Charles de gaulle" />
+										<p:outputLabel style="display: block; width: 500px; margin: auto;" value="82000 Montauban" />
+										<p:outputLabel style="display: block; width: 500px; margin: auto;" value="N'oubliez pas d'indiquer au dos de votre chèque le code de votre dossier" />
+										<p:outputLabel style="display: block; width: 500px; margin: auto;" value="Information : Le délais de traitement des règlements par chèque pouvant être plus long, veuillez prévoir l'envoi de votre règlement au moins 15 jours avant les dates d'échéances de vos modules. Merci de votre compréhension." />
+										<p:outputLabel style="display: block; width: 500px; margin: auto;" value="Legrain Informatique" />
+
+									</p:panelGrid>
+								</div>
+							</div>
+						</p:tab>
+						
+						<p:tab id="paiement-virement" title="Paiement">
+
+							<p:steps activeIndex="4" styleClass="custom">
+								<p:menuitem value="Panier" />
+								<p:menuitem value="Contact" />
+								<p:menuitem value="Validation" />
+								<p:menuitem value="Moyen de paiement" />
+								<p:menuitem value="Paiement" />
+								<p:menuitem value="Confirmation" />
+							</p:steps>
+
+							<div class="ui-g">
+								<div class="ui-g-12 ui-md-12 ui-lg-12" style="padding: 0; margin-top: 20px;">
+									<p:panelGrid columns="1" style="width:100%; height: 100%;" styleClass="panier center">
+										<f:facet name="header">
+											<p:outputLabel value="VOTRE REGLEMENT PAR VIREMENT" />
+										</f:facet>
+										<p:outputLabel style="display: block; width: 400px; margin: auto;" value="" />
+										
+										<p:outputLabel style="display: block; width: 500px; margin: auto;" value="Paiement par virement" />
+										<p:outputLabel style="display: block; width: 500px; margin: auto;" value="Montant du règlement : #{renouvellementBean.fac.netTtcCalc} €" />
+										<p:outputLabel style="display: block; width: 500px; margin: auto;" value="N'oubliez pas d'indiquer dans le libellé de votre virement le code de votre dossier" />
+										<p:outputLabel style="display: block; width: 500px; margin: auto;" value="Information : Le délais de traitement des règlements par virement pouvant être plus long, veuillez prévoir l'envoi de votre règlement au moins 15 jours avant les dates d'échéances de vos modules. Merci de votre compréhension." />
+										<p:outputLabel style="display: block; width: 500px; margin: auto;" value="Legrain Informatique" />
+										<p:outputLabel style="display: block; width: 500px; margin: auto;" value="*************************" />
+										<p:outputLabel style="display: block; width: 700px; margin: auto;" value="Titulaire du compte : SAS LE GRAIN INFORMATIQUE 290 AVENUE CHARLES DE GAULLE 82000 MONTAUBAN" />
+										<p:outputLabel style="display: block; width: 600px; margin: auto;" value="IBAN (International Bank Account Number) : FR76 1780 7000 0485 4215 5619 030" />
+										<p:outputLabel style="display: block; width: 600px; margin: auto;" value="BIC (Bank Identification Code) / SWIFT : CCBPFRPPTLS" />
+										<p:outputLabel style="display: block; width: 600px; margin: auto;" value="Code Banque : 17807" />
+										<p:outputLabel style="display: block; width: 600px; margin: auto;" value="Code Guichet : 00004" />
+										<p:outputLabel style="display: block; width: 600px; margin: auto;" value="N° du compte : 85421556190" />
+										<p:outputLabel style="display: block; width: 600px; margin: auto;" value="Clé RIB : 30" />
+										<p:outputLabel style="display: block; width: 600px; margin: auto;" value="Domiciliation : BPOC MONTAUBAN" />
+	
+									</p:panelGrid>
+								</div>
+							</div>
+						</p:tab>
+						
+						<p:tab id="paiement-prelevement" title="Paiement">
+
+							<p:steps activeIndex="4" styleClass="custom">
+								<p:menuitem value="Panier" />
+								<p:menuitem value="Contact" />
+								<p:menuitem value="Validation" />
+								<p:menuitem value="Moyen de paiement" />
+								<p:menuitem value="Paiement" />
+								<p:menuitem value="Confirmation" />
+							</p:steps>
+
+							<div class="ui-g">
+								<div class="ui-g-12 ui-md-12 ui-lg-12" style="padding: 0; margin-top: 20px;">
+									<p:panelGrid columns="1" style="width:100%; height: 100%;" styleClass="panier center">
+										<f:facet name="header">
+											<p:outputLabel value="VOTRE REGLEMENT PAR PRELEVEMENT" />
+										</f:facet>
+										<p:outputLabel style="display: block; width: 400px; margin: auto;" value="" />
+									</p:panelGrid>
+								</div>
+							</div>
+						</p:tab>
+						
+						<p:tab id="paiement-cb-recurrent" title="Paiement">
+
+							<p:steps activeIndex="4" styleClass="custom">
+								<p:menuitem value="Panier" />
+								<p:menuitem value="Contact" />
+								<p:menuitem value="Validation" />
+								<p:menuitem value="Moyen de paiement" />
+								<p:menuitem value="Paiement" />
+								<p:menuitem value="Confirmation" />
+							</p:steps>
+
+							<div class="ui-g">
+								<div class="ui-g-12 ui-md-12 ui-lg-12" style="padding: 0; margin-top: 20px;">
+									<p:panelGrid columns="1" style="width:100%; height: 100%;" styleClass="panier center">
+										<f:facet name="header">
+											<p:outputLabel value="VOTRE REGLEMENT PAR CARTE BANCAIRE RECURRENT" />
+										</f:facet>
+										<p:outputLabel style="display: block; width: 400px; margin: auto;" value="" />
+									</p:panelGrid>
+								</div>
+							</div>
+						</p:tab>
+
+						<p:tab id="confirmation" title="Confirmation">
+
+							<p:steps activeIndex="5" styleClass="custom">
+								<p:menuitem value="Panier" />
+								<p:menuitem value="Contact" />
+								<p:menuitem value="Validation" />
+								<p:menuitem value="Moyen de paiement" />
+								<p:menuitem value="Paiement" />
+								<p:menuitem value="Confirmation" />
+							</p:steps>
+
+							<div class="ui-g">
+
+								<div class="ui-g-12 ui-md-12 ui-lg-12" style="padding: 0; margin-top: 20px;">
+									<p:panelGrid columns="1" style="width:100%; height: 100%;" styleClass="panier center">
+										<f:facet name="header">
+											<p:outputLabel value="Votre règlement s'est éffectué avec succès" />
+										</f:facet>
+										
+										<p:selectBooleanCheckbox value="#{renouvellementBean.panierPaye()}" disabled="true" />
+										<p:outputLabel style="display: block; width: 400px; margin: auto;" value="Référence du paiement : #{renouvellementBean.panier.refPaiement}" />
+										<p:outputLabel style="display: block; width: 300px; margin: auto;" value="Nous vous communiquons un email de confirmation de votre enregistrement." />
+										<p:outputLabel style="display: block; width: 200px; margin: auto;" value="Cordialement." />
+										<p:outputLabel style="display: block; width: 200px; margin: auto" value="Le service comptabilié." />
+										<p:outputLabel style="display: block; width: 200px; margin: auto; color: #A6A9C0;" value="Sté LEGRAIN INFORMATIQUE - Téléphone : 05 63 30 31 44" />
+										
+										<p:commandButton title="Imprimer le panier" value="Imprimer" 
+											styleClass="icon icon-print"
+											actionListener="#{renouvellementBean.actImprimer}" 
+											onsuccess="window.open('#{request.contextPath}/output?__report=/reports/documents/panier/FichePanier.rptdesign&amp;__format=pdf')"
+											/>
+<!-- 										<p:commandButton title="Imprimer le panier HTML" value="Imprimer"  -->
+<!-- 											styleClass="icon icon-print" -->
+<!-- 											actionListener="#{renouvellementBean.actImprimer}"  -->
+<!-- 											update="@widgetVar(wvPanelEditionPanier)" -->
+<!-- 											onsuccess="PF('wvDlgEditionPanier').show();" -->
+<!-- 											/> -->
+											
+										
+
+									</p:panelGrid>
+								</div>
+							</div>
+						</p:tab>
+
+					</p:wizard>
+
+					<h:panelGroup id="idnavpanier" layout="block" style="margin:auto;display:grid">
+						<div style="margin: auto;">
+							<p:commandButton value="#{renouvellementBean.backLabel}" onclick="PF('wvWizardPanier').back();" id="idBack"
+								rendered="#{renouvellementBean.backLabelVisible}" />
+							<p:commandButton value="#{renouvellementBean.nextLabel}" onsuccess="PF('wvWizardPanier').next();" id="idNext"
+								rendered="#{renouvellementBean.nextLabelVisible}" />
+						</div>
+					</h:panelGroup>
+
+				</div>
+			</div>
+		</div>
+
+
+	</h:form>
+	
+	<p:dialog widgetVar="wvDlgEditionPanier" styleClass="print-panier">
+		<p:commandButton value="Imprimer" type="button" icon="ui-icon-print" style="display:block;margin-bottom: 20px">
+		    <p:printer target="idPanelEditionPanier" />
+		</p:commandButton>
+		
+		<p:commandButton styleClass="noPrintBlock" type="button" title="Imprimer le panier LGR" value="Imprimer" 
+				onclick="window.print();" />
+		
+		<p:panel widgetVar="wvPanelEditionPanier" id="idPanelEditionPanier" styleClass="print-panier">
+			<div class="ui-g">
+				
+
+				<div class="ui-g-12" style="padding: 0;">
+					<p:panelGrid columns="1" style="float:left;" styleClass="panier90">
+						
+						<p:outputLabel value="#{renouvellementBean.clientCourant.adresse1.nomEntreprise}" />
+						<p:outputLabel value="#{renouvellementBean.clientCourant.nom} #{renouvellementBean.clientCourant.prenom}" />
+						<p:outputLabel value="Numéro de TVA : #{renouvellementBean.clientCourant.numeroTva}" />
+
+						<p:outputLabel value="#{renouvellementBean.clientCourant.adresse1.adresse1}" />
+						<p:outputLabel value="#{renouvellementBean.clientCourant.adresse1.adresse2}" />
+						<p:outputLabel value="#{renouvellementBean.clientCourant.adresse1.adresse3}" />
+						<p:outputLabel
+							value="#{renouvellementBean.clientCourant.adresse1.codePostal} #{renouvellementBean.clientCourant.adresse1.ville}" />
+						<p:outputLabel value="#{renouvellementBean.clientCourant.adresse1.pays}" />
+
+						<p:outputLabel value="Tel 1 : #{renouvellementBean.clientCourant.adresse1.numTel1}" />
+						<p:outputLabel value="Tel 2 : #{renouvellementBean.clientCourant.adresse1.numTel2}" />
+						<p:outputLabel value="Fax : #{renouvellementBean.clientCourant.adresse1.numFax}" />
+						<p:outputLabel value="Téléphone portable : #{renouvellementBean.clientCourant.adresse1.numPort}" />
+						<p:outputLabel value="Email : #{renouvellementBean.clientCourant.adresse1.email}" />
+						<p:outputLabel value="Web : #{renouvellementBean.clientCourant.adresse1.web}" />
+					</p:panelGrid>
+				</div>
+
+				<div class="ui-g-12">
+					<p:dataTable var="lp" widgetVar="wvDataTableEditionPanier" styleClass="print-panier"
+						value="#{renouvellementBean.fac.lignes}" rowKey="#{lp.idLDocument}" resizableColumns="true">
+
+						<p:column style="width:25%">
+							<f:facet name="header">
+								<h:outputText value="Code" />
+							</f:facet>
+							<h:outputText value="#{lp.taArticle.codeArticle}" />
+						</p:column>
+
+						<p:column>
+							<f:facet name="header" style="width:25%">
+								<h:outputText value="Libelle" />
+							</f:facet>
+							<h:outputText value="#{lp.libLDocument}" />
+						</p:column>
+
+						<p:column>
+							<f:facet name="header" style="width:25%">
+								<h:outputText value="HT" />
+							</f:facet>
+							<h:outputText value="#{lp.mtHtLApresRemiseGlobaleDocument} €" />
+						</p:column>
+
+						<p:column>
+							<f:facet name="header" style="width:25%">
+								<h:outputText value="TTC" />
+							</f:facet>
+							<h:outputText value="#{lp.mtTtcLApresRemiseGlobaleDocument} €" />
+						</p:column>
+					</p:dataTable>
+				</div>
+
+
+				<div class="ui-g-12">
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-4">
+							<div class="block-total-panier">
+								<div class="block-total-panier-entete">
+									<p:outputLabel value="Total HT" />
+								</div>
+								<div class="block-total-panier-total">
+									<p:outputLabel value="#{renouvellementBean.fac.netHtCalc} €" />
+								</div>
+							</div>
+						</div>
+
+						<div class="ui-g-12 ui-md-4">
+							<div class="block-total-panier">
+								<div class="block-total-panier-entete">
+									<p:outputLabel value="TVA" />
+								</div>
+								<div class="block-total-panier-total">
+									<p:outputLabel value="#{renouvellementBean.fac.netTvaCalc} €" />
+								</div>
+							</div>
+						</div>
+
+						<div class="ui-g-12 ui-md-4">
+							<div class="block-total-panier">
+								<div class="block-total-panier-entete">
+									<p:outputLabel value="Total TTC" />
+								</div>
+								<div class="block-total-panier-total">
+									<p:outputLabel value="#{renouvellementBean.fac.netTtcCalc} €" />
+								</div>
+							</div>
+						</div>
+
+					</div>
+
+				</div>
+
+			</div>
+		</p:panel>
+	</p:dialog>
+
+	<h:outputScript name="/js/functions.js" />
+	<h:outputScript name="/js/locale_fr.js" />
+
+</h:body>
+</html>

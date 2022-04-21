@@ -1,0 +1,1065 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    
+    <ui:define name="head">
+         <script type="text/javascript">
+            //<![CDATA[
+            function skinChart() {
+                this.cfg.shadow = false;
+                this.cfg.title = '';
+                this.cfg.seriesColors = ['#EA9624', '#5BA5D8'];
+                this.cfg.grid = {
+                    background: '#ffffff',
+                    borderColor: '#ffffff',
+                    gridLineColor: '#F5F5F5',
+                    shadow: false
+                };
+                this.cfg.axesDefaults = {
+                    rendererOptions: {
+                        textColor: '#666F77'
+                    }
+                };
+                this.cfg.seriesDefaults = {
+                    shadow: false,
+                    lineWidth: 1,
+                    markerOptions: {
+                        shadow: false,
+                        size: 7,
+                        style: 'circle'
+                    }
+                }
+            }
+            //]]>  
+        </script> 
+        <style type="text/css">
+            .main-content {
+                padding: 0;
+            }
+            
+            #main-wrapper-content {
+                padding: 10px;
+            }
+        </style>
+    </ui:define>
+    
+    
+        <div class="dashboard">
+            <div class="dashboard-header">
+                <div class="ui-g">
+                        <p:commandButton value="Fermer" styleClass="icon icon-close menuitem-fermer-droite" process="@this" 
+							onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())"/>
+   						<h:graphicImage name="dashboard/fabrication.svg" id="imagedashboard" library="images" height="71px" width="71px" />
+   						
+<!-- 					<i class="fa fa-file-text-o fa-3x" style="color:#d2524f"></i> -->
+                    <div class="ui-g-12 ui-md-6">
+                        <div class="dashboard-title">
+                            <h2>Fabrications : Tableau de bord</h2>
+
+                        </div>
+                    </div>
+
+                    <div class="ui-g-12 ui-g-nopad">
+
+                    </div>
+                </div>
+            </div>
+            
+            <div id="main-wrapper-content-devis">
+
+                    
+                <div class="ui-g">
+
+
+				<div class="ui-g-12 ui-md-12">
+				<p:panel collapsed="true" toggleable="true" id="idPanelCriteresDashboardFabrication" >
+						<f:facet name="header">
+							<h:outputText value="Critères et paramètres du tableau de bord - " />
+							<h:outputText value="Période du " />
+							<h:outputText value="#{dashBoardFabricationController.dateDebut}" >
+								<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" type="localDate"/>
+							</h:outputText>
+							<h:outputText value=" au " />
+							<h:outputText value="#{dashBoardFabricationController.dateFin}" >
+								<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" type="localDate"/>
+							</h:outputText>
+						</f:facet>
+				
+					<div class="ui-g-12 ui-md-3">
+					<div class="card">
+		
+						<p:panel header="Période en cours" styleClass="panelgrey" >
+						<f:facet name="footer">
+						<i class="fa fa-calendar fa-2x" aria-hidden="true" style="color:skyblue;"></i>
+							<p:commandButton oncomplete="PF('wvListeFabrication').filter()" 
+											update="@this,
+													idPanelCriteresDashboardFabrication,
+													@widgetVar(wvDashFabricationPanelFabrication),
+													@widgetVar(wvListeFabrication),
+													@widgetVar(wvCountNbFabricationNonTransformeARelancer),
+													@widgetVar(wvTauxFabricationTransforme),
+													@widgetVar(wvTabViewFabricationJour),
+													@widgetVar(wvPanelFabricationJourDataTable),
+													@widgetVar(wvListeFabricationMoisFabrications),
+													@widgetVar(wvListeFabricationJour),
+													@widgetVar(wvListeFabricationJourFabrications)"  
+							action="#{dashBoardFabricationController.refreshDashBoard('tous')}" value="Appliquer" id="idPeriodeFabrication" styleClass="ui-green" 
+							style="width:60%;margin-left: 15px;bottom: 5px;" />
+							
+						</f:facet>
+						 <div class="ui-g-12 ui-md-1" >
+
+						 </div>
+						 <div class="ui-g-12 ui-md-11">
+			        	<h:panelGrid columns="2" cellpadding="0">
+						 <p:outputLabel value="Du"/>
+											<p:calendar value="#{dashBoardFabricationController.dateDebut}"
+												showOn="button" 
+												pattern="#{msg.date_pattern}" 
+												mask="true" 
+												pages="3"
+												locale="fr" 
+												timeZone="#{msg.time_zone}"
+												size="8" >
+											</p:calendar>
+
+						 <p:outputLabel value="au"/>
+											<p:calendar value="#{dashBoardFabricationController.dateFin}"
+												showOn="button" 
+												navigator="true" 
+												pattern="#{msg.date_pattern}" 
+												mask="true" 
+												locale="fr" 
+												timeZone="#{msg.time_zone}" 
+												size="8">
+											</p:calendar>
+
+        				</h:panelGrid>
+        				</div>
+        				 <p:separator />
+
+
+								</p:panel>
+					
+					</div>					
+
+    				</div>
+    				
+    				<div class="ui-g-12 ui-md-2">
+					<div class="card">
+					<p:panel header="Raccourcis périodes" styleClass="panelgrey">
+						<p:panelGrid columns="1" cellpadding="0" columnClasses="ui-grid-col-12" style="width:100%">
+							<p:commandButton oncomplete="PF('wvListeFabrication').filter()" 
+											update="@this,
+													idPanelCriteresDashboardFabrication,
+													@widgetVar(wvDashFabricationPanelFabrication),
+													@widgetVar(wvListeFabrication),
+													@widgetVar(wvCountNbFabricationNonTransformeARelancer),
+													@widgetVar(wvTauxFabricationTransforme),
+													@widgetVar(wvTabViewFabricationJour),
+													@widgetVar(wvPanelFabricationJourDataTable),
+													@widgetVar(wvListeFabricationMoisFabrications),
+													@widgetVar(wvListeFabricationJour),
+													@widgetVar(wvListeFabricationJourFabrications)"  
+							action="#{dashBoardFabricationController.initBornePeriodeAujourdhui()}" value="Aujourd'hui" id="idPeriodeDevisJourCourant"  
+							 style="font-size: 12px;height: 22px;width:100%;border-bottom: 2px solid #7FA128;"/>
+<!-- 							 styleClass="ui-orange"					 -->
+							<p:commandButton oncomplete="PF('wvListeFabrication').filter()" 
+											update="@this,
+													idPanelCriteresDashboardFabrication,
+													@widgetVar(wvDashFabricationPanelFabrication),
+													@widgetVar(wvListeFabrication),
+													@widgetVar(wvCountNbFabricationNonTransformeARelancer),
+													@widgetVar(wvTauxFabricationTransforme),
+													@widgetVar(wvTabViewFabricationJour),
+													@widgetVar(wvPanelFabricationJourDataTable),
+													@widgetVar(wvListeFabricationMoisFabrications),
+													@widgetVar(wvListeFabricationJour),
+													@widgetVar(wvListeFabricationJourFabrications)"   
+							action="#{dashBoardFabricationController.initBornePeriodeHier()}" value="Hier" id="idPeriodeDevisJourPrecedent"  
+							 style="font-size: 12px;height: 22px;width:100%;border-bottom: 2px solid #7FA128;"/>
+							<p:commandButton oncomplete="PF('wvListeFabrication').filter()" 
+											update="@this,
+													idPanelCriteresDashboardFabrication,
+													@widgetVar(wvDashFabricationPanelFabrication),
+													@widgetVar(wvListeFabrication),
+													@widgetVar(wvCountNbFabricationNonTransformeARelancer),
+													@widgetVar(wvTauxFabricationTransforme),
+													@widgetVar(wvTabViewFabricationJour),
+													@widgetVar(wvPanelFabricationJourDataTable),
+													@widgetVar(wvListeFabricationMoisFabrications),
+													@widgetVar(wvListeFabricationJour),
+													@widgetVar(wvListeFabricationJourFabrications)" 
+							action="#{dashBoardFabricationController.initBornePeriodeMoisCourant()}" value="Mois courant" id="idPeriodeDevisMoisCourant"  
+							style="font-size: 12px;height: 22px;width:100%;border-bottom: 2px solid #7FA128;"/>
+							<p:commandButton oncomplete="PF('wvListeFabrication').filter()" 
+											update="@this,
+													idPanelCriteresDashboardFabrication,
+													@widgetVar(wvDashFabricationPanelFabrication),
+													@widgetVar(wvListeFabrication),
+													@widgetVar(wvCountNbFabricationNonTransformeARelancer),
+													@widgetVar(wvTauxFabricationTransforme),
+													@widgetVar(wvTabViewFabricationJour),
+													@widgetVar(wvPanelFabricationJourDataTable),
+													@widgetVar(wvListeFabricationMoisFabrications),
+													@widgetVar(wvListeFabricationJour),
+													@widgetVar(wvListeFabricationJourFabrications)"   
+							action="#{dashBoardFabricationController.initBornePeriodeAnneeCourante()}" value="Année courante" id="idPeriodeFabricationAnneeCourante"  
+							 style="font-size: 12px;height: 22px;width:100%;border-bottom: 2px solid #7FA128;"/>
+						</p:panelGrid>
+					</p:panel>
+					</div>
+    				</div>
+<!-- 					<div class="ui-g-12 ui-md-2"> -->
+<!-- 					<p:fieldset style="margin-bottom:20px;"> -->
+<!-- 						<p:panel header="Période antérieure" styleClass="panelgrey"  > -->
+						
+<!-- 			        	<h:panelGrid columns="3" cellpadding="5"> -->
+<!--         				</h:panelGrid> -->
+<!--         				</p:panel> -->
+<!--     				</p:fieldset> -->
+<!--     				</div> -->
+					<div class="ui-g-12 ui-md-4">
+
+    				</div>
+					<div class="ui-g-12 ui-md-4">
+
+    				</div>
+				</p:panel>
+				</div>
+
+				<div class="ui-g-12 ui-md-12" style="background:#ebebeb;">
+					<div class="ui-g-12 ui-md-3">
+						<p:panel header="Fabrication sur la période" style="background:#ebebeb;" widgetVar="wvCountNbFabricationTransforme">
+							<div class="box #{dashBoardFabricationController.cSbNbDocumentSurPeriode}" >
+<!-- 							<h:graphicImage name="dashboard/devis.svg" id="imagedashboard" library="images" height="40px"/> -->
+							<h:graphicImage name="dashboard/fabrication-blanc.svg" id="imagedashboardfabrication" style="margin-top : 10px;" library="images" height="40px" />
+							<!-- <i class="fa fa-cube"></i> -->
+							<h2>2 fabrications</h2>
+							<h3>Total HT : <p:outputLabel value="100">
+								<!-- <f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" /> -->		
+							</p:outputLabel>
+							</h3>
+<!-- 							<h3>Total HT : #{dashBoardFabricationController.totauxCaPeriodeDevis.mtHtCalc} € </h3> -->
+							<p>Du 
+							<p:outputLabel value="#{dashBoardFabricationController.dateDebut}">
+								<f:convertDateTime pattern="#{msg.date_pattern}"
+										               timeZone="#{msg.time_zone}" type="localDate"/>		
+							</p:outputLabel>
+							  au 
+							<p:outputLabel value="#{dashBoardFabricationController.dateFin}">
+								<f:convertDateTime pattern="#{msg.date_pattern}"
+										               timeZone="#{msg.time_zone}" type="localDate"/>		
+							</p:outputLabel>
+							
+							
+							</p>
+
+
+
+						<p:selectBooleanButton style="width:50%;" id="devistous" 
+												value="true" onLabel="Sélection active"
+												widgetVar="wvFabricationTous" 
+												offLabel="Afficher" onIcon="ui-icon-check" offIcon="ui-icon-close">
+								<p:ajax oncomplete="PF('wvListeFabrication').filter()"
+										event="change" 
+										update="@this,
+													idPanelCriteresDashboardFabrication,
+													@widgetVar(wvDashFabricationPanelFabrication),
+													@widgetVar(wvListeFabrication),
+													@widgetVar(wvCountNbFabricationNonTransformeARelancer),
+													@widgetVar(wvTauxFabricationTransforme),
+													@widgetVar(wvTabViewFabricationJour),
+													@widgetVar(wvPanelFabricationJourDataTable),
+													@widgetVar(wvListeFabricationMoisFabrications),
+													@widgetVar(wvListeFabricationJour),
+													@widgetVar(wvListeFabricationJourFabrications)" 		
+												listener="#{dashBoardFabricationController.refreshDashBoard('tous')}"/>	 
+        					</p:selectBooleanButton>
+							</div> 
+						</p:panel>
+					</div>
+					
+					
+				</div>
+
+				<div class="ui-g-12 ui-md-12">
+				<p:panel header="Liste des fabrications" widgetVar="wvDashFabricationPanelFabrication" >
+
+						<p:dataTable id="taFabrication" var="a"
+							value="#{dashBoardFabricationController.valueLignesFabrications}"
+							scrollable="true"
+							scrollHeight="150"
+							liveResize="true"								
+							
+							widgetVar="wvListeFabrication" resizableColumns="true" 
+							paginator="true"
+							rows="#{msg.modele_datatable_ligne_par_page_debut}"
+							paginatorTemplate="#{msg.modele_datatable_paginator}"
+							rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+							emptyMessage="#{msg.message_datatable_vide}"
+							currentPageReportTemplate="#{msg.modele_datatable_page_courante}"
+							
+							selectionMode="single" rowKey="#{a.codeDocument}" reflow="true">
+							
+							<f:facet name="header">
+        						Liste des fabrications
+        						
+        						<span style="float:right;" class="searchbar_list">
+						            <p:outputPanel>
+							                <p:inputText id="globalFilter" onkeyup="PF('wvListeFabrication').filter()" style="width:150px" placeholder="Rechercher"/>
+							            </p:outputPanel>
+						        </span>
+    						</f:facet>
+    						 
+							<p:column width="15%" rendered="true" filterMatchMode="contains"
+								filterBy="#{a.codeDocument}" sortBy="#{a.codeDocument}"  >
+								<f:facet name="header">
+									<h:outputText value="Numéro de fabrication" />
+								</f:facet>
+								<!-- <p:commandLink  value="#{a.codeFabrication}"
+												action=""
+												update=":form:tabView">
+								</p:commandLink> -->
+								
+								<!-- action="#{ouvertureDocumentBean.detailFabrication(ouvertureDocumentBean.recupCodetiers(a.codeFabrication))}" -->
+								<!-- oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');" -->
+								<h:outputText value="#{a.codeDocument}"/>
+									
+								</p:column>
+
+							<p:column  filterMatchMode="contains" 
+								filterBy="#{a.liblTFabrication}" sortBy="#{a.liblTFabrication}">
+								<f:facet name="header">
+									<h:outputText value="Type de fabrication" />
+								</f:facet>
+								<h:outputText value="#{a.liblTFabrication}" id="idListeliblTFabrication"/>
+								
+							</p:column>
+
+							<p:column styleClass="center" width="12%"
+								filterMatchMode="contains" filterBy="#{a.nomRedacteur}"
+								sortBy="#{a.nomRedacteur}">
+								<f:facet name="header">
+									<h:outputText value="Rédacteur" />
+								</f:facet>
+								<h:outputText value="#{a.nomRedacteur}">
+								</h:outputText>
+							</p:column>
+
+							<p:column sortBy="#{a.nomControleur}" filterBy="#{a.nomControleur}" filterMatchMode="contains">
+								<f:facet name="header">
+									<h:outputText value="Controlleur" />
+								</f:facet>
+								<h:outputText value="#{a.nomControleur}" />
+							</p:column>
+							
+							<p:column sortBy="#{a.dateDebR}" 
+							filterBy="#{factureController.customFormatDate(a.dateDebR)}"
+							 filterMatchMode="contains">
+								<f:facet name="header">
+									<h:outputText value="Date Deb R" />
+								</f:facet>
+								<h:outputText value="#{a.dateDebR}" >
+									<f:convertDateTime pattern="#{msg.datetime_pattern}" timeZone="#{msg.time_zone}"/>
+								</h:outputText>
+							</p:column>
+								
+							
+											
+							<!-- <p:column headerText="PF" sortBy="#{a.produitFini}" filterBy="#{a.produitFini}" filterMatchMode="equals" styleClass="center" >
+						            <f:facet name="filter">
+						                <p:selectOneButton onchange="PF('wvListeFabrication').filter()">
+						                    <f:converter converterId="javax.faces.Boolean" />
+						                    <f:selectItem itemLabel="Tous" itemValue="" />
+						                    <f:selectItem itemLabel="Vrai" itemValue="true" />
+						                    <f:selectItem itemLabel="Faux" itemValue="false" />
+						                </p:selectOneButton>
+								</f:facet>
+								<p:selectBooleanCheckbox value="#{a.produitFini}"  disabled="true"/>
+							</p:column> -->
+											
+							
+
+							
+						</p:dataTable>
+					</p:panel>
+				</div>
+				
+				<!-- <div class="ui-g-12 ui-md-12" style="background:#ebebeb;">
+				<div class="ui-g-12 ui-md-4">
+						<p:panel id="idPanelMensuelTitrePeriodeDevis">
+						<f:facet name="header">
+							<h:outputText value="Période du " />
+							<h:outputText value="#{dashBoardFabricationController.dateDebut}" >
+								<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" />
+							</h:outputText>
+							<h:outputText value=" au " />
+							<h:outputText value="#{dashBoardFabricationController.dateFin}" >
+								<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" />
+							</h:outputText>
+						</f:facet>
+					</p:panel>
+					<p:tabView widgetVar="wvGraphiqueDevis">
+						<p:tab title="Devis">
+								<p:chart type="bar" model="#{dashBoardFabricationController.barChartModelDevis}" 
+								
+								responsive="true" 
+								style="height:300px;">
+								
+							<p:ajax event="itemSelect" 
+									listener="#{dashBoardFabricationController.itemSelectMois}" 
+									update="@widgetVar(wvListeDevisMois),
+											@widgetVar(wvGraphiqueDevisJour),
+											@widgetVar(wvTabViewDevisJour),
+											@widgetVar(wvPanelDevisJourDataTable),
+											@widgetVar(wvListeDevisMoisFabrications)"
+											style="cursor: pointer;"/>
+							</p:chart>
+
+						</p:tab>
+					</p:tabView>
+					</div>
+					
+					
+					<div class="ui-g-12 ui-md-8">
+				
+					<p:tabView>
+						<p:tab title="Liste des documents par mois">
+            			<h:panelGrid columns="2" cellpadding="10">
+                	
+						<br/>
+						
+						<p:dataTable id="taDevisMois" var="a"
+							value="#{dashBoardFabricationController.listeDocumentDetailMois}"
+							scrollable="true"
+							scrollHeight="135"
+							liveResize="true"
+							
+							widgetVar="wvListeDevisMois" resizableColumns="true" 
+							paginator="true"
+							rows="#{msg.modele_datatable_ligne_par_page_debut}"
+							paginatorTemplate="#{msg.modele_datatable_paginator}"
+							rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+							emptyMessage="#{msg.message_datatable_vide}"
+							currentPageReportTemplate="#{msg.modele_datatable_page_courante}"
+							
+							selectionMode="single" rowKey="#{a.codeDocument}" reflow="true">
+							
+							<f:facet name="header">
+
+    								#{dashBoardFabricationController.infosLabelRapportMensuelDataTable}
+    						</f:facet>
+    						 
+							<p:column width="20%" rendered="true" filterMatchMode="contains"
+								filterBy="#{a.codeDocument}" sortBy="#{a.codeDocument}"  >
+								<f:facet name="header">
+									<h:outputText value="Code" />
+								</f:facet>
+								<h:outputText value="#{a.codeDocument}" />
+								<p:commandLink value="#{a.codeDocument}"
+									action="#{ouvertureDocumentBean.detailDocument(ouvertureDocumentBean.recupCodeDocument(a.codeDocument,ouvertureDocumentBean.getTypeDocumentDevis()))}" 
+									update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+								</p:commandLink>
+
+							</p:column>
+
+							<p:column width="33%" filterMatchMode="contains" 
+								filterBy="#{a.libelleDocument}" sortBy="#{a.libelleDocument}">
+								<f:facet name="header">
+									<h:outputText value="Libellé" />
+								</f:facet>
+								<h:outputText value="#{a.libelleDocument}" />
+							</p:column>
+
+							<p:column styleClass="center" width="17%"
+								filterMatchMode="contains" filterBy="#{a.dateDocument}"
+								sortBy="#{a.dateDocument}">
+								<f:facet name="header">
+									<h:outputText value="Date" />
+								</f:facet>
+								<h:outputText value="#{a.dateDocument}">
+									<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="center" width="20%"
+								filterMatchMode="contains" filterBy="#{a.codeFabrication}"
+								sortBy="#{a.codeFabrication}">
+								<f:facet name="header">
+									<h:outputText value="Code Fabrication" />
+								</f:facet>
+
+								<h:outputText value="#{a.codeFabrication}">
+								</h:outputText>
+										<p:commandLink value="#{a.codeFabrication}"
+											action="#{ouvertureDocumentBean.detailFabrication(ouvertureDocumentBean.recupCodetiers(a.codeFabrication))}" update=":form:tabView"
+											oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+										</p:commandLink>
+							</p:column>
+
+							<p:column styleClass="center" width="20%"
+								filterMatchMode="contains" filterBy="#{a.nomFabrication}"
+								sortBy="#{a.nomFabrication}">
+								<f:facet name="header">
+									<h:outputText value="Fabrication" />
+								</f:facet>
+								<h:outputText value="#{a.nomFabrication}">
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="right" width="12%"
+								filterMatchMode="contains" filterBy="#{a.netHtCalc}"
+								sortBy="#{a.netHtCalc}">
+								<f:facet name="header">
+									<h:outputText value="HT" />
+								</f:facet>
+								<h:outputText value="#{a.netHtCalc}">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="right" width="10%"
+								filterMatchMode="contains" filterBy="#{a.netTvaCalc}"
+								sortBy="#{a.netTvaCalc}">
+								<f:facet name="header">
+									<h:outputText value="TVA" />
+								</f:facet>
+								<h:outputText value="#{a.netTvaCalc}">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="right" width="12%"
+								filterMatchMode="contains" filterBy="#{a.netTtcCalc}"
+								sortBy="#{a.netTtcCalc}">
+								<f:facet name="header">
+									<h:outputText value="TTC" />
+								</f:facet>
+								<h:outputText value="#{a.netTtcCalc}">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="center" width="12%"
+								filterMatchMode="contains" filterBy="#{a.dateEchDocument}"
+								sortBy="#{a.dateEchDocument}">
+								<f:facet name="header">
+									<h:outputText value="Expire le" />
+								</f:facet>
+								<h:outputText value="#{a.dateEchDocument}">
+									<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" />
+								</h:outputText>
+							</p:column>
+
+							
+						</p:dataTable>
+                		
+            			</h:panelGrid>
+        				</p:tab>
+						<p:tab title="Détail des fabrications par mois">
+						<h:panelGrid columns="2" cellpadding="10">
+						
+						<p:dataTable id="taDevisFabricationsParFabricationParMois" var="a"
+							value="#{dashBoardFabricationController.listeDocumentFabricationParFabricationParMois}"
+							scrollable="true"
+							scrollHeight="135"
+							liveResize="true"
+							
+							widgetVar="wvListeDevisMoisFabrications" resizableColumns="true" 
+							paginator="true"
+							rows="#{msg.modele_datatable_ligne_par_page_debut}"
+							paginatorTemplate="#{msg.modele_datatable_paginator}"
+							rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+							emptyMessage="#{msg.message_datatable_vide}"
+							currentPageReportTemplate="#{msg.modele_datatable_page_courante}"
+							
+							selectionMode="single" rowKey="#{a.codeDocument}" reflow="true">
+							
+							<f:facet name="header">
+
+    								#{dashBoardFabricationController.infosLabelRapportFabricationsDataTable}
+    						</f:facet>
+    					
+							<p:column styleClass="center" width="20%"
+								filterMatchMode="contains" filterBy="#{a.codeDocument}"
+								sortBy="#{a.codeDocument}">
+								<f:facet name="header">
+									<h:outputText value="Code" />
+								</f:facet>
+								<h:outputText value="#{a.codeDocument}">
+								</h:outputText>
+								<p:commandLink value="#{a.codeDocument}"
+									action="#{ouvertureDocumentBean.detailDocument(ouvertureDocumentBean.recupCodeDocument(a.codeDocument,ouvertureDocumentBean.getTypeDocumentDevis()))}" 
+									update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+								</p:commandLink>
+							</p:column>
+							
+							<p:column width="20%" filterMatchMode="contains" 
+								filterBy="#{a.libellecFabrication}" sortBy="#{a.libellecFabrication}">
+								<f:facet name="header">
+									<h:outputText value="Libellé fabrication(s)" />
+								</f:facet>
+								<h:outputText value="#{a.libellecFabrication}" />
+							</p:column>
+
+							<p:column styleClass="center" width="15%"
+								filterMatchMode="contains" filterBy="#{a.dateDocument}"
+								sortBy="#{a.dateDocument}">
+								<f:facet name="header">
+									<h:outputText value="Fait le" />
+								</f:facet>
+								<h:outputText value="#{a.dateDocument}">
+									<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="center" width="20%"
+								filterMatchMode="contains" filterBy="#{a.codeFabrication}"
+								sortBy="#{a.codeFabrication}">
+								<f:facet name="header">
+									<h:outputText value="Code Fabrication" />
+								</f:facet>
+
+								<h:outputText value="#{a.codeFabrication}">
+								</h:outputText>
+										<p:commandLink value="#{a.codeFabrication}"
+											action="#{ouvertureDocumentBean.detailFabrication(ouvertureDocumentBean.recupCodetiers(a.codeFabrication))}" update=":form:tabView"
+											oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+										</p:commandLink>
+							</p:column>
+
+							<p:column styleClass="center" width="20%"
+								filterMatchMode="contains" filterBy="#{a.nomFabrication}"
+								sortBy="#{a.nomFabrication}">
+								<f:facet name="header">
+									<h:outputText value="Fabrication" />
+								</f:facet>
+								<h:outputText value="#{a.nomFabrication}">
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="right" width="15%"
+								filterMatchMode="contains" filterBy="#{a.mtHtLDocument}"
+								sortBy="#{a.mtHtLDocument}">
+								<f:facet name="header">
+									<h:outputText value="HT" />
+								</f:facet>
+								<h:outputText value="#{a.mtHtLDocument}">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="right" width="15%"
+								filterMatchMode="contains" filterBy="#{a.mtTtcLDocument}"
+								sortBy="#{a.mtTtcLDocument}">
+								<f:facet name="header">
+									<h:outputText value="TTC" />
+								</f:facet>
+								<h:outputText value="#{a.mtTtcLDocument}">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+							
+						</p:dataTable>
+						</h:panelGrid>
+						</p:tab>
+	 				</p:tabView>
+						
+					</div>
+					
+					</div> -->
+					
+<!-- 					//////////////////////////////////////////////////////////////////////////// -->
+<!-- 					Début second graphique DevisJour lié a son datatable -->
+					
+<!-- 					<div class="ui-g-12 ui-md-12" style="background:#ebebeb;">
+				<div class="ui-g-12 ui-md-12">
+					
+					<p:tabView widgetVar="wvTabViewDevisJour">
+								
+						<p:tab title="Détail des Devis par jour pour #{dashBoardFabricationController.nomMoisDetail}" 
+						rendered="#{dashBoardFabricationController.afficheDocumentJour}">
+						<br/><br/>
+								<h:panelGrid columns="2" cellpadding="0" >
+								
+						<f:facet name="header">
+        						Graphique journalier des documents pour le mois de #{dashBoardFabricationController.nomMoisDetail} pour un montant de #{dashBoardFabricationController.montantTotalHtMois} € de type #{dashBoardFabricationController.infoEtatDocument}
+    						</f:facet>
+						
+					</h:panelGrid>
+					
+								rendered="#{dashBoardFabricationController.afficheDevisJour}"
+								<p:chart type="bar" model="#{dashBoardFabricationController.barChartModelDevisJour}" widgetVar="wvGraphiqueDevisJour" 
+								responsive="true" 
+								style="height:240px;">
+								
+							<p:ajax event="itemSelect" listener="#{dashBoardFabricationController.itemSelectJour}" update="@widgetVar(wvListeDevisJour),@widgetVar(wvPanelDevisJourDataTable)" style="cursor: pointer"/>
+							</p:chart>
+
+						</p:tab>
+					
+					</p:tabView>
+					</div>
+					
+					
+						<div class="ui-g-12 ui-md-12">
+						
+					<p:tabView widgetVar="wvPanelDevisJourDataTable">
+					
+						<p:tab title="Liste des documents par jour" rendered="#{dashBoardFabricationController.afficheDocumentJourDataTable}">
+						<h:panelGrid columns="2" cellpadding="10">
+				
+						<p:dataTable id="taDevisJour" var="a"
+							value="#{dashBoardFabricationController.listeDocumentDetailJour}"
+							scrollable="true"
+							scrollHeight="150"
+							liveResize="true"
+							widgetVar="wvListeDevisJour" resizableColumns="true" 
+							
+							paginator="true"
+							rows="#{msg.modele_datatable_ligne_par_page_debut}"
+							paginatorTemplate="#{msg.modele_datatable_paginator}"
+							rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+							emptyMessage="#{msg.message_datatable_vide}"
+							currentPageReportTemplate="#{msg.modele_datatable_page_courante}"
+							
+							selectionMode="single" rowKey="#{a.codeDocument}" reflow="true">
+							
+							<f:facet name="header">
+        						#{dashBoardFabricationController.infosLabelRapportJournalierDataTable}
+    						</f:facet>
+    						 
+							<p:column width="20%" rendered="true" filterMatchMode="contains"
+								filterBy="#{a.codeDocument}" sortBy="#{a.codeDocument}"  >
+								<f:facet name="header">
+									<h:outputText value="Code" />
+								</f:facet>
+								<h:outputText value="#{a.codeDocument}" />
+								<p:commandLink value="#{a.codeDocument}"
+									action="#{ouvertureDocumentBean.detailDocument(ouvertureDocumentBean.recupCodeDocument(a.codeDocument,ouvertureDocumentBean.getTypeDocumentDevis()))}" 
+									update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+								</p:commandLink>
+							</p:column>
+
+							<p:column width="33%" filterMatchMode="contains" 
+								filterBy="#{a.libelleDocument}" sortBy="#{a.libelleDocument}">
+								<f:facet name="header">
+									<h:outputText value="Libellé" />
+								</f:facet>
+								<h:outputText value="#{a.libelleDocument}" />
+							</p:column>
+
+							<p:column styleClass="center" width="17%"
+								filterMatchMode="contains" filterBy="#{a.dateDocument}"
+								sortBy="#{a.dateDocument}">
+								<f:facet name="header">
+									<h:outputText value="Date" />
+								</f:facet>
+								<h:outputText value="#{a.dateDocument}">
+									<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="center" width="20%"
+								filterMatchMode="contains" filterBy="#{a.codeFabrication}"
+								sortBy="#{a.codeFabrication}">
+								<f:facet name="header">
+									<h:outputText value="Code Fabrication" />
+								</f:facet>
+
+								<h:outputText value="#{a.codeFabrication}">
+								</h:outputText>
+										<p:commandLink value="#{a.codeFabrication}"
+											action="#{ouvertureDocumentBean.detailFabrication(ouvertureDocumentBean.recupCodetiers(a.codeFabrication))}" update=":form:tabView"
+											oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+										</p:commandLink>
+							</p:column>
+
+							<p:column styleClass="center" width="20%"
+								filterMatchMode="contains" filterBy="#{a.nomFabrication}"
+								sortBy="#{a.nomFabrication}">
+								<f:facet name="header">
+									<h:outputText value="Fabrication" />
+								</f:facet>
+								<h:outputText value="#{a.nomFabrication}">
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="right" width="12%"
+								filterMatchMode="contains" filterBy="#{a.netHtCalc}"
+								sortBy="#{a.netHtCalc}">
+								<f:facet name="header">
+									<h:outputText value="HT" />
+								</f:facet>
+								<h:outputText value="#{a.netHtCalc}">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="right" width="10%"
+								filterMatchMode="contains" filterBy="#{a.netTvaCalc}"
+								sortBy="#{a.netTvaCalc}">
+								<f:facet name="header">
+									<h:outputText value="TVA" />
+								</f:facet>
+								<h:outputText value="#{a.netTvaCalc}">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="right" width="12%"
+								filterMatchMode="contains" filterBy="#{a.netTtcCalc}"
+								sortBy="#{a.netTtcCalc}">
+								<f:facet name="header">
+									<h:outputText value="TTC" />
+								</f:facet>
+								<h:outputText value="#{a.netTtcCalc}">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="center" width="12%"
+								filterMatchMode="contains" filterBy="#{a.dateEchDocument}"
+								sortBy="#{a.dateEchDocument}">
+								<f:facet name="header">
+									<h:outputText value="Expire le" />
+								</f:facet>
+								<h:outputText value="#{a.dateEchDocument}">
+									<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" />
+								</h:outputText>
+							</p:column>
+
+							
+						</p:dataTable>
+						</h:panelGrid>
+						</p:tab>
+						
+						<p:tab title="Détail des fabrications par jour" rendered="#{dashBoardFabricationController.afficheDocumentJourDataTable}">
+						<h:panelGrid columns="2" cellpadding="10">
+						
+						<br/>
+						
+						<p:dataTable id="taDevisFabricationsParFabricationParJour" var="a"
+							value="#{dashBoardFabricationController.listeDocumentFabricationParFabricationParJour}"
+							scrollable="true"
+							scrollHeight="150"
+							liveResize="true"
+							
+							widgetVar="wvListeDevisJourFabrications" resizableColumns="true" 
+							paginator="true"
+							rows="#{msg.modele_datatable_ligne_par_page_debut}"
+							paginatorTemplate="#{msg.modele_datatable_paginator}"
+							rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+							emptyMessage="#{msg.message_datatable_vide}"
+							currentPageReportTemplate="#{msg.modele_datatable_page_courante}"
+							
+							selectionMode="single" rowKey="#{a.codeDocument}" reflow="true">
+							
+							<f:facet name="header">
+
+    								#{dashBoardFabricationController.infosLabelRapportFabricationsJourDataTable}
+    						</f:facet>
+    						
+							<p:column styleClass="center" width="20%"
+								filterMatchMode="contains" filterBy="#{a.codeDocument}"
+								sortBy="#{a.codeDocument}">
+								<f:facet name="header">
+									<h:outputText value="Code" />
+								</f:facet>
+								<h:outputText value="#{a.codeDocument}">
+								</h:outputText>
+								<p:commandLink value="#{a.codeDocument}"
+									action="#{ouvertureDocumentBean.detailDocument(ouvertureDocumentBean.recupCodeDocument(a.codeDocument,ouvertureDocumentBean.getTypeDocumentDevis()))}" 
+									update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+								</p:commandLink>
+							</p:column>
+							
+							<p:column width="20%" filterMatchMode="contains" 
+								filterBy="#{a.libellecFabrication}" sortBy="#{a.libellecFabrication}">
+								<f:facet name="header">
+									<h:outputText value="Libellé fabrication(s)" />
+								</f:facet>
+								<h:outputText value="#{a.libellecFabrication}" />
+							</p:column>
+
+							<p:column styleClass="center" width="15%"
+								filterMatchMode="contains" filterBy="#{a.dateDocument}"
+								sortBy="#{a.dateDocument}">
+								<f:facet name="header">
+									<h:outputText value="Fait le" />
+								</f:facet>
+								<h:outputText value="#{a.dateDocument}">
+									<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="center" width="20%"
+								filterMatchMode="contains" filterBy="#{a.codeFabrication}"
+								sortBy="#{a.codeFabrication}">
+								<f:facet name="header">
+									<h:outputText value="Code Fabrication" />
+								</f:facet>
+
+								<h:outputText value="#{a.codeFabrication}">
+								</h:outputText>
+										<p:commandLink value="#{a.codeFabrication}"
+											action="#{ouvertureDocumentBean.detailFabrication(ouvertureDocumentBean.recupCodetiers(a.codeFabrication))}" update=":form:tabView"
+											oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+										</p:commandLink>
+							</p:column>
+
+							<p:column styleClass="center" width="20%"
+								filterMatchMode="contains" filterBy="#{a.nomFabrication}"
+								sortBy="#{a.nomFabrication}">
+								<f:facet name="header">
+									<h:outputText value="Fabrication" />
+								</f:facet>
+								<h:outputText value="#{a.nomFabrication}">
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="right" width="15%"
+								filterMatchMode="contains" filterBy="#{a.mtHtLDocument}"
+								sortBy="#{a.mtHtLDocument}">
+								<f:facet name="header">
+									<h:outputText value="HT" />
+								</f:facet>
+								<h:outputText value="#{a.mtHtLDocument}">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="right" width="15%"
+								filterMatchMode="contains" filterBy="#{a.mtTtcLDocument}"
+								sortBy="#{a.mtTtcLDocument}">
+								<f:facet name="header">
+									<h:outputText value="TTC" />
+								</f:facet>
+								<h:outputText value="#{a.mtTtcLDocument}">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+							
+						</p:dataTable>
+						</h:panelGrid>
+						</p:tab>
+						</p:tabView>
+					</div>
+					
+					</div> -->
+
+<!-- 				////////////////////////////////////////////////////////////////////////////////////////// -->
+					
+				<!--                     <div class="ui-g-12 ui-md-6"> -->
+<!--                         <p:panel header="Graphique"> -->
+<!--                             <p:chart id="line" type="line" model="#{dashBoardBean.lineModel1}" responsive="true"/> -->
+<!--                         </p:panel> -->
+<!--                     </div> -->
+<!--                     <div class="ui-g-12 ui-md-6"> -->
+<!--                         <p:panel header="Calendrier" style="height:100%"> -->
+<!--                             <p:schedule value="#{dashBoardBean.eventModel}" widgetVar="myschedule" timeZone="GMT+1"> -->
+<!-- Laisser en commentaire                                <p:ajax event="dateSelect" listener="#{dashBoardBean.onDateSelect}" update="eventDetails" oncomplete="PF('eventDialog').show();" /> -->
+<!-- 					            <p:ajax event="eventSelect" listener="#{dashBoardBean.onEventSelect}" update="eventDetails" oncomplete="PF('eventDialog').show();" /> -->
+<!-- Laisser en commentaire					            <p:ajax event="eventMove" listener="#{dashBoardBean.onEventMove}" update="messages" /> -->
+<!-- Laisser en commentaire					            <p:ajax event="eventResize" listener="#{dashBoardBean.onEventResize}" update="messages" /> -->
+<!--                             </p:schedule> -->
+<!--                         </p:panel> -->
+<!--                     </div> -->
+                    <div class="ui-g-12 ui-md-4">
+<!--                         <p:panel header="Activité" style="height:100%"> -->
+<!--                             <div class="activity-header"> -->
+<!--                                 <div class="ui-g"> -->
+<!--                                     <div class="ui-g-6"> -->
+<!--                                         <span style="font-weight:bold">Last Activity</span> -->
+<!--                                         <p>Updated 1 minute ago</p> -->
+<!--                                     </div> -->
+<!--                                     <div class="ui-g-6" style="text-align:right"> -->
+<!--                                         <p:commandButton type="button" icon="fa fa-refresh" /> -->
+<!--                                     </div> -->
+<!--                                 </div> -->
+<!--                             </div> -->
+<!--                             <ul class="activity-list"> -->
+<!--                                 <li> -->
+<!--                                     <div class="count">$900</div> -->
+<!--                                     <div class="ui-g"> -->
+<!--                                         <div class="ui-g-6">Income</div> -->
+<!--                                         <div class="ui-g-6">95%</div> -->
+<!--                                     </div> -->
+<!--                                 </li> -->
+<!--                                 <li> -->
+<!--                                     <div class="count">$250</div> -->
+<!--                                     <div class="ui-g"> -->
+<!--                                         <div class="ui-g-6">Tax</div> -->
+<!--                                         <div class="ui-g-6">24%</div> -->
+<!--                                     </div> -->
+<!--                                 </li> -->
+<!--                                 <li> -->
+<!--                                     <div class="count">$125</div> -->
+<!--                                     <div class="ui-g"> -->
+<!--                                         <div class="ui-g-6">Invoices</div> -->
+<!--                                         <div class="ui-g-6">55%</div> -->
+<!--                                     </div> -->
+<!--                                 </li> -->
+<!--                                 <li> -->
+<!--                                     <div class="count">$250</div> -->
+<!--                                     <div class="ui-g"> -->
+<!--                                         <div class="ui-g-6">Expenses</div> -->
+<!--                                         <div class="ui-g-6">15%</div> -->
+<!--                                     </div> -->
+<!--                                 </li> -->
+<!--                                 <li> -->
+<!--                                     <div class="count">$350</div> -->
+<!--                                     <div class="ui-g"> -->
+<!--                                         <div class="ui-g-6">Bonus</div> -->
+<!--                                         <div class="ui-g-6">5%</div> -->
+<!--                                     </div> -->
+<!--                                 </li> -->
+<!--                                 <li> -->
+<!--                                     <div class="count">$500</div> -->
+<!--                                     <div class="ui-g"> -->
+<!--                                         <div class="ui-g-6">Revenue</div> -->
+<!--                                         <div class="ui-g-6">25%</div> -->
+<!--                                     </div> -->
+<!--                                 </li> -->
+<!--                             </ul> -->
+<!--                         </p:panel> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+<!--         <p:dialog widgetVar="eventDialog" header="Détail" showEffect="clip" hideEffect="clip"> -->
+<!-- 	        <h:panelGrid id="eventDetails" columns="2"> -->
+<!-- 	            <p:outputLabel for="title" value="Titre"/> -->
+<!-- 	            <p:inputText id="title" value="#{dashBoardBean.event.title}" required="true" disabled="true"/> -->
+	 
+<!-- 	            <p:outputLabel for="from" value="Du" /> -->
+<!-- 	            <p:calendar id="from" value="#{dashBoardBean.event.startDate}" timeZone="GMT+1" pattern="dd/MM/yyyy HH:mm" disabled="true"/> -->
+	 
+<!-- 	            <p:outputLabel for="to" value="Au" /> -->
+<!-- 	            <p:calendar id="to" value="#{dashBoardBean.event.endDate}" timeZone="GMT+1" pattern="dd/MM/yyyy HH:mm" disabled="true"/> -->
+	 
+<!-- 	            <p:outputLabel for="allDay" value="Toute la journée" /> -->
+<!-- 	            <h:selectBooleanCheckbox id="allDay" value="#{dashBoardBean.event.allDay}" disabled="true"/> -->
+	 
+<!-- 				<p:commandButton id="addButton" value="Fermer" oncomplete="PF('myschedule').update();PF('eventDialog').hide();" /> -->
+				
+<!-- 				<p:commandLink value="#{dashBoardBean.event.codeObjet}" action="#{dashBoardBean.openDocument}" update=":form:tabView" oncomplete="activeTabCenter('#{dashBoardBean.event.cssLgrTab}');"> -->
+<!-- 				</p:commandLink> -->
+<!-- 	        </h:panelGrid> -->
+<!--    		</p:dialog>     -->
+    
+</ui:composition>

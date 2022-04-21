@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" 
+		xmlns:h="http://java.sun.com/jsf/html" 
+		xmlns:f="http://java.sun.com/jsf/core"
+		xmlns:ui="http://java.sun.com/jsf/facelets" 
+		xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<title>Test</title>
+</h:head>
+
+<h:body>
+
+	<f:facet name="last">
+		<!-- surcharge des CSS primefaces -->
+		<h:outputStylesheet library="css" name="icarus-bdg.css" />
+		<h:outputStylesheet library="css" name="theme-bdg.css" />
+	</f:facet>
+
+<h:form>
+
+
+<p:wizard nextLabel="Suivant" backLabel="Précédent" binding="#{devisController.wizardDevis}" 
+	showStepStatus="false" widgetVar="widgetVarLigneDevis" flowListener="#{devisController.handleFlow}" >
+
+<p:tab id="idLignesDevis" title="Ligne">
+<p:panel id="idPanelLignesDevis" header="Lignes" toggleable="true" widgetVar="panelLignesDevis">
+
+<p:focus>
+					
+					<p:autoComplete value="#{testBean.selectedB}"
+					    id="idtiers" converter="entityConverter"
+						completeMethod="#{testBean.testAutoComplete}"
+						required="true" requiredMessage="#{msg_diag.alert_champs_obligatoir}"
+						var="tiers"
+						itemLabel="#{tiers.val10}" itemValue="#{tiers}"
+						forceSelection="true" dropdown="true" placeholder="Tiers" >
+						<p:column>
+							<h:outputText value="#{tiers.val10}"/>
+						</p:column>
+						
+						<p:column>
+							<h:outputText value="#{tiers.val11}" />
+						</p:column>
+		
+						<f:attribute name="nomChamp" value="#{const.C_CODE_TIERS}" />
+						<p:ajax event="itemSelect" listener="#{testBean.autocompleteSelection}" update="idNomTiers" />
+					</p:autoComplete>
+					</p:focus>
+					
+					<p:outputLabel value="Nom Tiers : " />
+					<p:inputText value="#{testBean.selectedA.val1}" id="idNomTiers" validator="#{testBean.validateDocument}">
+						<f:attribute name="nomChamp" value="#{const.C_NOM_TIERS}" />
+						<p:ajax event="blur" update="@this" />
+					</p:inputText>
+
+
+	</p:panel>
+</p:tab>
+
+<p:tab id="dfsf" title="ggggggggggg">
+</p:tab>
+
+</p:wizard>
+
+</h:form>
+
+	<h:outputStylesheet name="css/animate.css" library="icarus-layout" />
+	<h:outputStylesheet name="css/nanoscroller.css" library="icarus-layout" />
+	<h:outputStylesheet name="css/layout-#{auth.themeCouleur}.css" library="icarus-layout" />
+
+	<h:outputScript name="/js/functions.js" />
+	<h:outputScript name="/js/locale_fr.js" />
+
+</h:body>
+</html>

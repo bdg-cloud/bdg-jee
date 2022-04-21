@@ -1,0 +1,144 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
+xmlns:f="http://java.sun.com/jsf/core" 
+xmlns:h="http://java.sun.com/jsf/html"
+xmlns:ui="http://java.sun.com/jsf/facelets" 
+xmlns:o="http://omnifaces.org/ui" 
+xmlns:p="http://primefaces.org/ui">
+
+<p:panel id="catalogueWebFormPrincipal" widgetVar="catalogueWebForm#{variableNomWvIDUnique}">
+	
+		<p:panel id="catalogueWebDataTableF" >
+
+			<p:commandButton value="Modifier" title="Modifier" process="@this"
+				update=":form:messages" 
+				actionListener="#{catalogueWebArticleController.actModifier}"
+				styleClass="icon-update icon" >
+			</p:commandButton>
+			
+			<p:commandButton value="Enregistrer" title="Enregistrer" process="@this,idTextEditorCatWebArticle,idTextEditorResumeCatWebArticle"
+				update=":form:messages" 
+				actionListener="#{catalogueWebArticleController.actEnregistrer}"
+				styleClass="icon-save icon" >
+			</p:commandButton>
+		
+<!-- 			<p:commandButton id="catalogueWebSupprimer" value="Supprimer" -->
+<!-- 				styleClass="icon-delete icon menuitem-poubelle-droite" -->
+<!-- 				disabled="#{catalogueWebArticleController.etatBouton('supprimer')}" -->
+<!-- 				actionListener="#{catalogueWebArticleController.actSupprimer}" -->
+<!-- 				update="@widgetVar(wvcatalogueWebDataTable)"  -->
+<!-- 				process="@this"> -->
+<!-- 				<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer cet enregistrement ?" icon="ui-icon-alert" /> -->
+<!-- 			</p:commandButton> -->
+
+		</p:panel>
+		
+		<p:panelGrid columns="2">
+		
+			<p:outputLabel value="Visible"/>
+			<p:selectBooleanCheckbox value="#{catalogueWebArticleController.dto.exportationCatalogueWeb}">
+				<p:ajax event="change" update="@this" />
+			</p:selectBooleanCheckbox>
+			
+			<p:outputLabel value="Libellé catalogue"/>
+			<p:inputText value="#{catalogueWebArticleController.dto.libelleCatalogue}" style="width:100%">
+				<p:ajax event="blur" update="@this" />
+			</p:inputText>
+			
+			<p:outputLabel value="Catégorie"/>
+	        <p:autoComplete value="#{catalogueWebArticleController.taCategorieArticleDTO}" 
+	        		completeMethod="#{catalogueWebArticleController.categorieAutoCompleteLight}"
+	        				 converter="entityConverter"
+	                        var="famille" itemLabel="#{famille.libelleCategorieArticle}" itemValue="#{famille}"  
+	                        forceSelection="true" dropdown="true" placeholder="Catégorie" widgetVar="wvAutoCompleteCategorieCatalogueWeb">
+	            <p:column>
+	                <h:outputText value="#{famille.codeCategorieArticle}" />
+	            </p:column>
+	            <p:column>
+	                <h:outputText value="#{famille.libelleCategorieArticle}" />
+	            </p:column>
+<!-- 	             <p:column> -->
+<!-- 	                <h:outputText value="#{famille.liblFamille}" /> -->
+<!-- 	            </p:column> -->
+	            
+	            <f:attribute name="nomChamp" value="#{const.C_CODE_FAMILLE}_DEFAUT" />
+				<p:ajax event="itemSelect" listener="#{catalogueWebArticleController.autcompleteSelection}" update="@this, @widgetVar(wvAutoCompleteCategorieCatalogueWeb)"/>
+				<p:ajax event="clear" listener="#{catalogueWebArticleController.clearCategorie}"/>
+		    </p:autoComplete>
+		    
+		    <p:outputLabel value="Résumé catalogue"/>
+			<p:textEditor secure="false" id="idTextEditorResumeCatWebArticle" value="#{catalogueWebArticleController.dto.resumeCatWeb}" height="100">
+<!-- 				<p:ajax event="blur" update="@this" /> -->
+<!-- 				<p:ajax event="change" update="@this" /> -->
+			</p:textEditor>
+			
+			<p:outputLabel value="Description catalogue"/>
+			<p:textEditor secure="false" id="idTextEditorCatWebArticle" value="#{catalogueWebArticleController.dto.descriptionLongueCatWeb}" height="200">
+<!-- 				<p:ajax event="blur" update="@this" /> -->
+<!-- 				<p:ajax event="change" update="@this" /> -->
+			</p:textEditor>
+			
+			<p:outputLabel value="URL Rewriting"/>
+			<p:inputText value="#{catalogueWebArticleController.dto.urlRewritingCatalogueWeb}">
+				<p:ajax event="blur" update="@this" />
+			</p:inputText>
+			
+			<p:outputLabel value="Nouveauté" />
+			<p:selectBooleanCheckbox value="#{catalogueWebArticleController.dto.nouveauteCatalogueWeb}">
+				<p:ajax event="change" update="@this" />
+			</p:selectBooleanCheckbox>
+			
+			<p:outputLabel value="Spécial" />
+			<p:selectBooleanCheckbox value="#{catalogueWebArticleController.dto.specialCatalogueWeb}">
+				<p:ajax event="change" update="@this" />
+			</p:selectBooleanCheckbox>
+			
+			<p:outputLabel value="Expédiable" />
+			<p:selectBooleanCheckbox value="#{catalogueWebArticleController.dto.expediableCatalogueWeb}">
+				<p:ajax event="change" update="@this" />
+			</p:selectBooleanCheckbox>
+			
+			<p:outputLabel value="Non disponible" />
+			<p:selectBooleanCheckbox value="#{catalogueWebArticleController.dto.nonDisponibleCatalogueWeb}">
+				<p:ajax event="change" update="@this" />
+			</p:selectBooleanCheckbox>
+			
+			<p:outputLabel value="Frais de port additionnel : " />
+			<p:inputText value="#{catalogueWebArticleController.dto.fraisPortAdditionnel}">
+				<p:ajax event="blur" update="@this" />
+			</p:inputText>
+			
+		</p:panelGrid>
+		
+		<p:panel id="idPanelPrixDefautCatalogue" header="Prix catalogue par défaut" toggleable="true" widgetVar="panelPrixCatalogue">
+			<h:panelGrid columns="2" cellpadding="10">
+			
+				<p:outputLabel value="Code TVA : " />
+				<p:outputLabel value="#{articleController.taTvaDTO.codeTva}"/>
+				
+				<p:outputLabel value="Unité 1 : " />
+				<p:outputLabel value="#{articleController.taUnite1.codeUnite}"/>
+				
+	
+
+				<p:outputLabel value="Tarif HT : " />
+				<p:inputText id="idPrixHTArticleCatalogue"
+					value="#{catalogueWebArticleController.dto.prixPrix}"
+					validator="#{catalogueWebArticleController.validateObject}">
+					<f:attribute name="nomChamp" value="#{const.C_PRIX_PRIX}" />
+					<p:ajax event="blur" update="idPrixTTCArticleCatalogue" />
+				</p:inputText>
+
+				<p:outputLabel value="Tarif TTC : " />
+				<p:inputText id="idPrixTTCArticleCatalogue"
+					value="#{catalogueWebArticleController.dto.prixttcPrix}"
+					validator="#{catalogueWebArticleController.validateObject}">
+					<f:attribute name="nomChamp" value="#{const.C_PRIXTTC_PRIX}" />
+					<p:ajax event="blur" update="idPrixTTCArticleCatalogue" />
+				</p:inputText>
+				
+			</h:panelGrid>
+		</p:panel>
+
+	</p:panel>
+		
+</ui:composition>

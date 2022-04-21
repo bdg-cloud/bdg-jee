@@ -1,0 +1,174 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:p="http://primefaces.org/ui">
+	
+	<o:importConstants type="fr.legrain.bdg.webapp.app.LgrTab" />
+	
+	<p:commandLink id="listeEditionDossierBtn" >
+		<i class="top-submenu-icon fa fa-fw fa-user"></i>
+		<span><h:outputText value="Liste des éditions dossier" /></span>
+	</p:commandLink>
+	
+	<p:overlayPanel id="idListeEditionDossierPanel" for="listeEditionDossierBtn" hideEffect="fade" dynamic="true" 
+		dismissable="true" appendTo="@(body)" widgetVar="wvOverlayListeEditionDossier" showCloseIcon="true">
+		<h:form>
+		<div class="dashboard-title" style="background:#f6f6f6;">
+              <h:panelGrid columns="3" cellpadding="5">
+<!--             	<h:graphicImage name="dashboard/tier.svg" library="images" height="35px" style="margin-top:1px;" /> -->
+                <p:outputLabel value="Liste des éditions du dossier" style="font-size:20px;"/>
+              </h:panelGrid>  
+              <p:separator/>
+        </div>
+	<p:menubar styleClass="menu-onglet" widgetVar="wvMenuListeEditionDossier" id="idMenuListeEditionDossier">
+		 <p:menuitem title="Ajouter une nouvelle édition" update=":form:tabView,:form:messages,@widgetVar(wvMenuListeEditionDossier),@widgetVar(wvDataTableListeEditionDossier),@widgetVar(wvBandeauActionEditionDossier)" 
+		 	actionListener="#{editionDossierController.nouveau}" styleClass="icon icon-insert" disabled="#{editionDossierController.etatBouton('inserer')}" oncomplete="PF('wvOverlayListeEditionDossier').hide();"/>
+
+		 <p:menuitem title="Rafraîchir la liste" update="@form,:form:messages" actionListener="#{editionDossierController.refresh}" styleClass="icon icon-refresh" disabled="#{editionDossierController.modeEcran.dataSetEnModif()}"/>
+	</p:menubar>
+	
+	<p:sticky target="idMenuListeEditionDossier" />
+	 
+	 	
+<!-- 	stickyHeader="true" -->
+	
+	<p:dataTable id="dataTableListeEditionDossier" var="taEditionDossier"
+				widgetVar="wvDataTableListeEditionDossier"
+				value="#{editionDossierController.values}"
+				rowKey="#{taEditionDossier.id}"
+				sortBy="#{taEditionDossier.codeTEdition}"
+				selection="#{editionDossierController.selectedTaEditionDTOs}"
+				dblClickSelect="true"
+				styleClass="datatable mt10"
+				resizableColumns="true"
+				paginator="true" 
+				expandableRowGroups="true"
+				rows="#{msg.modele_datatable_ligne_par_page_debut}"
+				paginatorTemplate="#{msg.modele_datatable_paginator}"
+				rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+				emptyMessage="#{msg.message_datatable_vide}"
+				currentPageReportTemplate="#{msg.modele_datatable_page_courante}"
+				disabledSelection="#{editionDossierController.modeEcran.dataSetEnModif()}">
+				
+<!-- 				<p:ajax event="rowDblselect" listener="#{editionDossierController.onRowSelect}" update=":form:tabView,:form:messages,@form" />  -->
+<!-- 				<p:ajax event="rowSelect" listener="#{editionDossierController.onRowSelect}" disabled="#{editionDossierController.pasDejaOuvert()}" update=":form:tabView,:form:messages,@form" /> -->
+				
+<!-- 				<p:ajax event="rowDblselect" listener="#{editionDossierController.onRowSelect}" update=":form:tabView,:form:messages" oncomplete="activeTabCenter('#{LgrTab.CSS_CLASS_TAB_TIERS}');PF('wvOverlayListeEditionDossier').hide();scrollToTop();"/> -->
+				<p:ajax event="rowSelect" delay="#{msg.datatable_rowselect_delay}" listener="#{editionDossierController.onRowSelect}" update=":form:tabView,:form:messages,@widgetVar(wvBandeauActionEditionDossier)" oncomplete="activeTabCenter('#{LgrTab.CSS_CLASS_TAB_EDITION_DOSSIER}');PF('wvOverlayListeEditionDossier').hide();scrollToTop();"/>
+			
+				<f:facet name="header">  
+           			<h:outputText value="EditionDossier" />
+<!--            			<p:outputPanel> -->
+<!-- 		                <h:outputText value="Rechercher dans les champs :" /> -->
+<!-- 		                <p:inputText id="globalFilter" onkeyup="PF('carsTable').filter()" style="width:150px" placeholder="Enter keyword"/> -->
+<!-- 		            </p:outputPanel> -->
+        		</f:facet>
+        		
+        		<p:headerRow>
+		            <p:column colspan="8">
+		                <h:outputText value="#{taEditionDossier.codeTEdition}" />
+		            </p:column>
+		        </p:headerRow>
+
+		  		<f:facet name="{Exporters}">
+		            <h:commandLink>
+		                <p:graphicImage library="images" name="excel.png" width="24"/>
+		                <p:dataExporter type="xls" target="dataTableListeEditionDossier" fileName="liste_tiers" />
+		            </h:commandLink>
+		 
+		            <h:commandLink>
+		                <p:graphicImage  library="images" name="pdf.png"  width="24"/>
+		                <p:dataExporter type="pdf" target="dataTableListeEditionDossier" fileName="liste_tiers"/>
+		            </h:commandLink>
+		 
+		            <h:commandLink>
+		                <p:graphicImage  library="images" name="csv.png"  width="24"/>
+		                <p:dataExporter type="csv" target="dataTableListeEditionDossier" fileName="liste_tiers" />
+		            </h:commandLink>
+		 
+		            <h:commandLink>
+		                <p:graphicImage  library="images" name="xml.png"  width="24"/>
+		                <p:dataExporter type="xml" target="dataTableListeEditionDossier" fileName="liste_tiers" />
+		            </h:commandLink>
+		        </f:facet>
+        
+        		<p:column selectionMode="multiple" style="width:16px;text-align:center" exportable="false"/>
+			
+				<p:column style="width:16px" exportable="false">
+					<f:facet name="header">
+						<h:outputText value="" />
+					</f:facet>
+					<p:commandButton title="Détail" update=":form:tabView,:form:messages,@widgetVar(wvBandeauActionEditionDossier)" 
+						action="#{editionDossierController.detail}" styleClass="icon icon-detail icon-grille" 
+						disabled="#{editionDossierController.modeEcran.dataSetEnModif()}" oncomplete="PF('wvOverlayListeEditionDossier').hide();">
+						<f:setPropertyActionListener target="#{editionDossierController.selectedTaEditionDTO}" value="#{taEditionDossier}" />
+					</p:commandButton>
+				</p:column>
+        
+				<p:column sortBy="#{taEditionDossier.actif}" styleClass="center" filterBy="#{taEditionDossier.actif}" filterMatchMode="equals">
+					<f:facet name="header">
+						<h:outputText value="Actif" />
+					</f:facet>
+					<f:facet name="filter">
+			                <p:selectOneButton onchange="PF('wvDataTableListeEditionDossier').filter()">
+			                    <f:converter converterId="javax.faces.Boolean" />
+			                    <f:selectItem itemLabel="Tous" itemValue="" />
+			                    <f:selectItem itemLabel="Vrai" itemValue="true" />
+			                    <f:selectItem itemLabel="Faux" itemValue="false" />
+			                </p:selectOneButton>
+			            </f:facet>
+					<p:selectBooleanCheckbox value="#{taEditionDossier.actif}" disabled="true"/>
+				</p:column>
+
+				<p:column sortBy="#{taEditionDossier.codeEdition}" filterBy="#{taEditionDossier.codeEdition}" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="Code" />
+					</f:facet>
+					<h:outputText value="#{taEditionDossier.codeEdition}" />
+				</p:column>
+				
+				<p:column sortBy="#{taEditionDossier.libelleEdition}" filterBy="#{taEditionDossier.libelleEdition}" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="Libellé" />
+					</f:facet>
+					<h:outputText value="#{taEditionDossier.libelleEdition}"/>
+				</p:column>
+				
+				
+				<p:column sortBy="#{taEditionDossier.codeTEdition}" filterBy="#{taEditionDossier.codeTEdition}" styleClass="center" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="Type" />
+					</f:facet>
+					<h:outputText value="#{taEditionDossier.codeTEdition}" />
+				</p:column>
+				
+				<p:column styleClass="center">
+					<f:facet name="header">
+						<h:outputText value="Logo" />
+					</f:facet>
+<!-- 					<p:graphicImage value="/image_service_web_externe/#{taEditionDossier.id}"  height="40"/> -->
+				</p:column>
+				
+				<p:column style="width:16px" exportable="false">
+					<f:facet name="header">
+						<h:outputText value="" />
+					</f:facet>
+					
+					<p:commandButton title="Supprimer" styleClass="icon-delete icon icon-grille" widgetVar="widgetVarBtnSupprimerEditionDossierListe"
+						action="#{editionDossierController.actSupprimer}"
+						process="@this"
+						update="@widgetVar(wvDataTableListeEditionDossier)">
+						<f:setPropertyActionListener target="#{editionDossierController.selectedTaEditionDTO}" value="#{taEditionDossier}" />
+						<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer ce tiers ?" icon="ui-icon-alert" />
+					</p:commandButton>
+						
+				</p:column>
+
+			</p:dataTable>
+
+		</h:form>
+	</p:overlayPanel>
+	
+</ui:composition>

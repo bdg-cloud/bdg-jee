@@ -1,0 +1,89 @@
+#FROM jboss/wildfly
+ 
+# Environment variable with default value
+#ARG APP_FILE=appfile.war
+ 
+# Add your application to the deployment folder
+#ADD ${APP_FILE} /opt/jboss/wildfly/standalone/deployments/${APP_FILE}
+ 
+#**********************************
+
+# Use latest jboss/base-jdk:11 image as the base
+FROM jboss/base-jdk:11
+
+# Set the WILDFLY_VERSION env variable
+ENV WILDFLY_VERSION 17.0.1.Final
+ENV WILDFLY_SHA1 eaef7a87062837c215e54511c4ada8951f0bd8d5
+ENV JBOSS_HOME /opt/wildfly
+
+USER root
+
+ARG WILDFLY_NAME
+ARG CLUSTER_PW
+
+ENV WILDFLY_NAME=${WILDFLY_NAME}
+ENV CLUSTER_PW=${CLUSTER_PW}
+
+#ADD wildfly-17.0.1.Final.lgr/ ${JBOSS_HOME}
+ADD wildfly-24.0.1.Final ${JBOSS_HOME}
+
+RUN chmod -R 777 ${JBOSS_HOME}
+
+RUN sed -i 's/remote security/remote username="nicolas" security/' /opt/wildfly/domain/configuration/host-balancing.xml
+
+
+####################################################################################################
+RUN /bin/bash -c "echo '#!/bin/bash' > /tmp/jboss.sh" && chmod 777 /tmp/jboss.sh
+# IPADDRESS
+RUN /bin/bash -c "echo 'IPADDRESS=\$(hostname -i)' >> /tmp/jboss.sh"
+RUN /bin/bash -c "echo 'echo \"IPADDRESS=\$IPADDRESS\"' >> /tmp/jboss.sh"
+# ### ### ### ### ###
+RUN /bin/bash -c "echo $'/opt/wildfly/bin/jboss-cli.sh <<EOF \n\
+embed-host-controller --std-out=echo --host-config=host-balancing.xml \n\
+/host=balancing:write-attribute(name=name,value=${WILDFLY_NAME}) \n\
+quit \n\
+EOF\n'\
+>> /tmp/jboss.sh"
+# ### ### ### ### ###
+RUN /bin/bash -c "echo $'/opt/wildfly/bin/jboss-cli.sh <<EOF \n\
+embed-host-controller --std-out=echo --host-config=host-balancing.xml \n\
+/host=${WILDFLY_NAME}/core-service=management/security-realm=ManagementRealm/server-identity=secret:write-attribute(name=value,value=bGdyMDA2) \n\
+quit \n\
+EOF\n'\
+>> /tmp/jboss.sh"
+###########################################################
+
+#RUN /bin/bash -c "echo $'/opt/wildfly/bin/jboss-cli.sh <<EOF \n\
+#embed-host-controller --std-out=echo --host-config=host-balancing.xml \n\
+#/socket-binding-group=ha-sockets/remote-destination-outbound-socket-binding=proxy1:add(host=$IPADDRESS, port=8090)  \n\
+#/profile=ha/subsystem=modcluster/proxy=default:write-attribute(name=advertise, value=false)  \n\
+#/profile=ha/subsystem=modcluster/proxy=default:list-add(name=proxies, value=proxy1)  \n\
+#quit \n\
+#EOF\n'\
+#>> /tmp/jboss.sh"
+
+
+# Ensure signals are forwarded to the JVM process correctly for graceful shutdown
+ENV LAUNCH_JBOSS_IN_BACKGROUND true
+
+USER jboss
+
+# Expose the ports we're interested in
+EXPOSE 8080 8443 9990 9999 8090 23364 8009 
+
+#RUN sed -i s#"jdbc:postgresql:"#"jdbc:postgresql://"${DB_HOST_IP}#g ${JBOSS_HOME}/standalone/configuration/standalone.xml
+# Set the default command to run on boot
+# This will boot WildFly in the standalone mode and bind to all interface
+#CMD ["/opt/jboss/wildfly/bin/standalone.sh", "-b", "0.0.0.0","-DdbHostIp=${DB_HOST_IP}"]
+#CMD /opt/jboss/wildfly/bin/standalone.sh -b 0.0.0.0 -DdbHostIp=${DB_HOST_IP} -c standalone-ha.xml
+
+#ENTRYPOINT ["/opt/wildfly/bin/domain.sh"]
+#CMD ["--host-config", "host-master.xml", "-b", "0.0.0.0","-bmanagement", "0.0.0.0"]
+
+#RUN echo '/opt/wildfly/bin/domain.sh -b 0.0.0.0 -bmanagement 0.0.0.0 -Djboss.domain.master.address=dc -host-config=host-balancing.xml ${PARAM}' >> /tmp/jboss.sh
+
+RUN echo '/opt/wildfly/bin/domain.sh -b $IPADDRESS -bmanagement $IPADDRESS -bprivate $IPADDRESS -Djboss.domain.master.address=dc -Djboss.domain.master.port=9999  -host-config=host-balancing.xml ${PARAM}' >> /tmp/jboss.sh
+
+
+CMD "/tmp/jboss.sh"
+

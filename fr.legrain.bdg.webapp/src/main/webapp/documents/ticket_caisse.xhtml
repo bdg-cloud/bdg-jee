@@ -1,0 +1,2111 @@
+<ui:composition 
+	xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:f="http://java.sun.com/jsf/core" 
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets" 
+	xmlns:p="http://primefaces.org/ui" 
+	xmlns:lgr="http://legrain.fr/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+<!-- 	xmlns:lgrjsf="http://java.sun.com/jsf/composite/lgr-jsf-component" -->
+
+	<!-- <f:validateBean disabled="true"> -->
+	<ui:define name="metadata">
+		<f:metadata>
+			<f:viewParam name="variableEcran" value="Ticket_caisse" />
+		</f:metadata>
+	</ui:define>
+	
+	<p:menubar styleClass="menu-onglet" id="idMenuBoutonTicketCaisse" widgetVar="wvMenuBoutonTicketCaisse">
+	<p:menuitem title="#{c_facture.titre_menu_aide}" styleClass="icon icon-aidecontextuelle" onstart="PF('wvAideMenuTicketCaisse').show()" />
+	<p:separator styleClass="separateur-menu-vertical"/>
+	
+		<p:menuitem title="#{c_facture.titre_menu_enregistrer}" value="Enregistrer" styleClass="icon icon-save"
+			process="@this idtiersTicketCaisse idCodeTicketCaisse" actionListener="#{ticketDeCaisseController.actEnregistrer}"
+			oncomplete="impressionDirect(PF('wvImpressionDirectTicketCaisse'),'#{request.contextPath}/output?__report=/reports/documents/facture/FicheTicketCaisse.rptdesign&amp;__format=pdf');
+			clickBouttonSuivantCheckBox(PF('wvEnvoyerEmailDirectTicketCaisse'),'.classHiddenCommandForDialogEmailReturnTicketCaisse')"
+			update="idPanelEnteteTicketCaisse,idPanelLignesTicketCaisse,idTableauComplementaireFac,:form:messages,@form,@widgetVar(wvMenuListeTicketCaisse),@widgetVar(wvDataTableListeTicketCaisse)"
+			disabled="#{ticketDeCaisseController.etatBouton('enregistrer') or ticketDeCaisseController.stepEnCours('idLignesTicketCaisse')}" />
+
+		<p:menuitem title="#{c_facture.titre_menu_inserer}" value="Insérer" styleClass="icon icon-insert" actionListener="#{ticketDeCaisseController.actInserer}"
+			process="@this" oncomplete="if(PF('widgetVarLigneTicketCaisse').getStepIndex()!=-1) {PF('widgetVarLigneTicketCaisse').loadStep('idEnteteTicketCaisse', false)}"
+			update="idPanelEnteteTicketCaisse,idPanelLignesTicketCaisse,idTableauComplementaireFac,idPrecisionPrixTicketCaisse,:form:messages,@form,@widgetVar(wvMenuListeTicketCaisse),@widgetVar(wvDataTableListeTicketCaisse)"
+			disabled="#{ticketDeCaisseController.etatBouton('inserer') or ticketDeCaisseController.stepEnCours('idLignesTicketCaisse')}" />
+
+		<p:menuitem title="#{c_facture.titre_menu_modifier}" value="Modifier" styleClass="icon icon-update" actionListener="#{ticketDeCaisseController.actModifier}"
+			process="@this" 
+			update="idPanelEnteteTicketCaisse,idPanelLignesTicketCaisse,idTableauComplementaireFac,:form:messages,@form,@widgetVar(wvMenuBoutonTicketCaisse),@widgetVar(wvMenuListeTicketCaisse),@widgetVar(wvDataTableListeTicketCaisse)"
+			disabled="#{ticketDeCaisseController.etatBouton('modifier') or ticketDeCaisseController.documentDTOEstVerrouille().verrouille}" >
+			<p:confirm header="#{ticketDeCaisseController.titreModification}" message="#{ticketDeCaisseController.messageModification}" icon="ui-icon-alert" />
+		</p:menuitem>
+			
+
+		<p:menuitem title="#{c_facture.titre_menu_annuler}" value="Annuler" styleClass="icon icon-cancel"
+			actionListener="#{ticketDeCaisseController.actAnnuler}" process="@this"
+			update="idPanelEnteteTicketCaisse,idPanelLignesTicketCaisse,idTableauComplementaireFac,:form:messages,@form,@widgetVar(wvMenuListeTicketCaisse),@widgetVar(wvDataTableListeTicketCaisse)"
+			disabled="#{ticketDeCaisseController.etatBouton('annuler') }">
+			<p:confirm header="Confirmation" message="#{msg_diag.alert_annulation}" icon="ui-icon-alert" />
+		</p:menuitem>
+
+		<p:menuitem title="Créer un évènement" styleClass="icon-agenda icon" 
+			
+			oncomplete="$('.classHiddenCommandForDialogAgendaReturnFac').click()"
+			process="@this" 
+			update="@this" 
+			disabled="#{ticketDeCaisseController.etatBouton('modifier')}"/>
+
+<!-- 		<p:separator styleClass="separateur-menu-vertical"/> -->
+		
+		<p:menuitem title="#{c_facture.titre_menu_supprimer}" value="Supprimer" styleClass="icon icon-delete menuitem-poubelle-droite"
+			actionListener="#{ticketDeCaisseController.actSupprimer}" process="@this"
+			update="idPanelEnteteTicketCaisse,idPanelLignesTicketCaisse,idTableauComplementaireFac,:form:messages,@form,@widgetVar(wvMenuListeTicketCaisse),@widgetVar(wvDataTableListeTicketCaisse)"
+			disabled="#{ticketDeCaisseController.etatBouton('supprimer') or ticketDeCaisseController.stepEnCours('idLignesTicketCaisse') or ticketDeCaisseController.documentDTOEstVerrouille().verrouille}">
+<!-- 			<p:confirm header="Confirmation" message="#{msg_diag.alert_suppresion}" icon="ui-icon-alert" /> -->
+			<p:confirm header="Confirmation de la suppression" message="#{ticketDeCaisseController.messageSuppression}" icon="ui-icon-alert" />
+
+		</p:menuitem>
+
+		<p:separator styleClass="separateur-menu-vertical" />
+
+		<p:menuitem title="#{c_facture.titre_menu_fermer}" value="Fermer" styleClass="icon icon-close menuitem-fermer-droite" process="@this"
+			actionListener="#{ticketDeCaisseController.actFermer}" update=":form:messages,@widgetVar(wvMenuListeTicketCaisse),@widgetVar(wvDataTableListeTicketCaisse)"
+			disabled="#{ticketDeCaisseController.etatBouton('fermer')}" onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())">
+
+			<p:confirm header="Confirmation" message="#{msg_diag.alert_fermeture_onglet}" icon="ui-icon-alert"
+				disabled="#{!ticketDeCaisseController.modeEcran.dataSetEnModif()}" />
+		</p:menuitem>
+
+<!-- ****************************************** -->
+		<lgr:menuItemImprimer title="#{c_facture.titre_menu_imprimer}" value="Imprimer" styleClass="icon icon-print"
+			disabled="#{ticketDeCaisseController.etatBouton('imprimer') or ticketDeCaisseController.stepEnCours('idLignesTicketCaisse')}"
+			onsuccess="window.open('#{request.contextPath}/output?__report=/reports/documents/facture/FicheTicketCaisse.rptdesign&amp;__format=pdf')"
+			oncomplete="$('.classHiddenCommandForDialogImprimerReturnTicketCaisse').click()"
+			actionBean="#{ticketDeCaisseController}"
+			actionMethod="actImprimer"
+			choixEdition="#{ticketDeCaisseController.choixEdition}"
+			/>
+			
+<!-- 		<p:menuitem title="#{c_facture.titre_menu_imprimer}" value="Imprimer" styleClass="icon icon-print" -->
+<!-- 			onsuccess="window.open('#{request.contextPath}/output?__report=/reports/documents/facture/FicheTicketCaisse.rptdesign&amp;__format=pdf')" -->
+<!-- 			actionListener="#{ticketDeCaisseController.actImprimer}" -->
+<!-- 			disabled="#{ticketDeCaisseController.etatBouton('imprimer') or ticketDeCaisseController.stepEnCours('idLignesTicketCaisse')}"  -->
+<!-- 			rendered="#{!ticketDeCaisseController.choixEdition}"/> -->
+
+<!-- 		<p:menuitem title="#{c_facture.titre_menu_imprimer}" value="Imprimer" styleClass="icon icon-print" -->
+<!-- 			oncomplete="$('.classHiddenCommandForDialogImprimerReturnTicketCaisse').click()" -->
+<!-- 			actionListener="#{ticketDeCaisseController.actImprimer}" -->
+<!-- 			disabled="#{ticketDeCaisseController.etatBouton('imprimer') or ticketDeCaisseController.stepEnCours('idLignesTicketCaisse')}"  -->
+<!-- 			rendered="#{ticketDeCaisseController.choixEdition}"/> -->
+			
+		<p:menuitem title="#{c_facture.titre_menu_imprimer} pour le client" value="Imprimer" styleClass="icon icon-print"
+			onsuccess="window.open('#{request.contextPath}/output?__report=/reports/documents/facture/FicheTicketCaisse.rptdesign&amp;__format=pdf')"
+			actionListener="#{ticketDeCaisseController.actImprimer}"
+			update="idPanelEnteteTicketCaisse,idPanelLignesTicketCaisse,idTableauComplementaireFac,:form:messages,@form,@widgetVar(wvMenuListeTicketCaisse),@widgetVar(wvDataTableListeTicketCaisse)"
+			disabled="#{ticketDeCaisseController.etatBouton('imprimer') or ticketDeCaisseController.stepEnCours('idLignesTicketCaisse')}">
+			<f:attribute name="pour_client" value="true" />
+			<p:confirm header="Confirmation" message="Etes-vous sur de vouloir mettre à disposition du client cette facture ?. Ensuite, vous ne pourrez plus la modifier ?" icon="ui-icon-alert" />
+		</p:menuitem>
+<!-- ****************************************** -->
+
+		<p:menuitem title="Imprimer étiquettes code barre" value="Imprimer étiquette code barre" styleClass="icon icon-barcode"
+			onsuccess="window.open('#{request.contextPath}/articles/etiquette_cb.xhtml')" actionListener="#{ticketDeCaisseController.actImprimerEtiquetteCB}" />
+
+		<!-- 		<p:separator styleClass="separateur-menu-vertical"/> -->
+
+		<!-- 				<p:menuitem value="Generation modèle" title="Génération Modèle document" styleClass="icon icon-insert" -->
+		<!-- 						actionListener="#{ticketDeCaisseController.actDialogGenerationModeleDocument}"> -->
+		<!-- 				</p:menuitem> -->
+		<!-- 					<p:menuitem value="Generation document" title="Génération document" styleClass="icon icon-insert" -->
+		<!-- 						actionListener="#{ticketDeCaisseController.actDialogGenerationDocument}"> -->
+		<!-- 				</p:menuitem> -->
+
+
+<!-- 		<p:menuitem title="#{c_facture.titre_menu_envoyer_par_email}" value="Envoyer par email" styleClass="icon icon-envoi-mail" -->
+<!-- 			actionListener="#{ticketDeCaisseController.actEnvoyerParEmail}" -->
+<!-- 			disabled="#{ticketDeCaisseController.etatBouton('imprimer') or ticketDeCaisseController.stepEnCours('idLignesTicketCaisse')}" /> -->
+			
+		<p:menuitem title="Envoyer par email" styleClass="icon icon-envoi-mail"
+			oncomplete="$('.classHiddenCommandForDialogEmailReturnTicketCaisse').click()"
+			process="@this" 
+			update="idPanelEnteteTicketCaisse,idPanelLignesTicketCaisse,idTableauComplementaireFac,:form:messages,@form,@widgetVar(wvMenuListeTicketCaisse),@widgetVar(wvDataTableListeTicketCaisse)"
+			disabled="#{ticketDeCaisseController.etatBouton('modifier')}">
+			<p:confirm header="Confirmation" message="Etes-vous sur de vouloir mettre à disposition du client cette facture ?. Ensuite, vous ne pourrez plus la modifier ?" icon="ui-icon-alert" />
+			</p:menuitem>
+
+		<p:separator styleClass="separateur-menu-vertical" />
+
+
+		<!-- 		<p:menuitem title="Liste des factures" icon="fa fa-list" oncomplete="PF('wvOverlayListeTicketCaisse').show();"/>	 -->
+		<p:menuitem title="#{c_facture.titre_menu_afficher_liste}" styleClass="icon icon-liste" oncomplete="PF('wvOverlayListeTicketCaisse').show();" />
+		
+		<p:separator styleClass="separateur-menu-vertical" />		
+		
+		<p:menuitem title="Documents liés" styleClass="icon icon-documents-lies"  rendered="#{auth.isDevLgr()}"
+			oncomplete="$('.classHiddenCommandForDialogDocumentLieReturnTicketDeCaisse').click()"
+			process="@this" 
+			update="@this" 
+			disabled="#ticketDeCaisseController.etatBouton('imprimer') }" />
+				
+	</p:menubar>
+
+	
+		<p:commandButton styleClass="classHiddenCommandForDialogAgendaReturnFac" actionListener="#{ticketDeCaisseController.actDialogEvenement}" style="display:none" process="@this"  >
+        <p:ajax event="dialogReturn" update="@widgetVar(wvAgenda)"  />  
+    </p:commandButton>
+    
+	<p:commandButton styleClass="classHiddenCommandForDialogEmailReturnTicketCaisse" actionListener="#{ticketDeCaisseController.actDialogEmail}" style="display:none" process="@this"  >
+        <p:ajax event="dialogReturn" listener="#{ticketDeCaisseController.handleReturnDialogEmail}" update=":form:messages,idTableauComplementaireFac"  />  
+    </p:commandButton>
+    
+    <p:commandButton styleClass="classHiddenCommandForDialogImprimerReturnTicketCaisse" actionListener="#{ticketDeCaisseController.actDialogImprimer}" style="display:none" process="@this"  >
+        <p:ajax event="dialogReturn" listener="#{ticketDeCaisseController.handleReturnDialogImprimer}" update=":form:messages,idTableauComplementaireFac"  />  
+    </p:commandButton>
+   
+    <p:commandButton styleClass="classHiddenCommandForDialogDocumentLieReturnTicketDeCaisse" actionListener="#{ticketDeCaisseController.actDialogGenerationDocumentLie}" style="display:none" process="@this"  >
+        <p:ajax event="dialogReturn" update="@form"  listener="#{ticketDeCaisseController.handleReturnDialogDocumentLie}"/>  
+    </p:commandButton>
+    
+	<p:overlayPanel widgetVar="wvAideMenuTicketCaisse" hideEffect="fade"
+								dynamic="true" showCloseIcon="true"
+								styleClass="overlay-aide-contextuelle overlay-aide-contextuelle-big">
+								<ui:include src="/aide_contextuelle/facture_general.xhtml" />
+	</p:overlayPanel>
+	
+	<p:fieldset style="margin-bottom:20px;" id="idTableauComplementaireFac" widgetVar="wvTableauComplementaireFac">
+		<h:panelGrid columns="13" cellpadding="15">
+			<p:panel styleClass="panel-aide-contextuelle">
+
+				<p:commandButton process="@this"
+								alt="#{const_vue.btn_generation_modele}" 
+								title="#{const_vue.btn_generation_modele}"
+								label="#{const_vue.btn_generation_modele}" 
+								value="#{const_vue.btn_generation_modele}" icon="ui-icon-copy"
+					action="#{duplicationDocumentBean.actDialogGenerationModeleDocument}" disabled="#{ticketDeCaisseController.modeEcran.dataSetEnModif()}">
+						<f:setPropertyActionListener target="#{duplicationDocumentBean.doc}" value="#{ticketDeCaisseController.masterEntity}"/>
+					<p:ajax event="dialogReturn" listener="#{duplicationDocumentBean.handleReturnDialogGenerationDocument}"
+						update=":form:tabView,@widgetVar(wvMenuListeTicketCaisse),@widgetVar(wvDataTableListeTicketCaisse)"
+						oncomplete="activeTabCenter('#{ticketDeCaisseController.css}');" />
+				</p:commandButton>
+				<p:commandLink id="idLinkAideGenerationModeleDocumentTicketCaisse" styleClass="lien-aide-contextuelle">
+					<i class="fa fa-info-circle animated"></i>
+				</p:commandLink>
+
+				<p:overlayPanel for="idLinkAideGenerationModeleDocumentTicketCaisse" hideEffect="fade" dynamic="true" showCloseIcon="true"
+					styleClass="overlay-aide-contextuelle">
+					<ui:include src="/aide_contextuelle/document_generation_modele_document.xhtml" />
+				</p:overlayPanel>
+			</p:panel>
+			<p:separator />
+			<p:panel styleClass="panel-aide-contextuelle">
+
+				<p:commandButton process="@this"
+								title="#{const_vue.btn_generation_document}" 
+								alt="#{const_vue.btn_generation_document}" 
+								label="#{const_vue.btn_generation_document}" 
+								value="#{const_vue.btn_generation_document}" icon="ui-icon-link"
+					action="#{duplicationDocumentBean.actDialogGenerationDocument}" disabled="#{ticketDeCaisseController.modeEcran.dataSetEnModif()}">
+					<f:setPropertyActionListener target="#{duplicationDocumentBean.doc}" value="#{ticketDeCaisseController.masterEntity}"/>
+					<f:setPropertyActionListener target="#{duplicationDocumentBean.genereToutesLesLignes}" value="true"/>
+					<p:ajax event="dialogReturn" listener="#{duplicationDocumentBean.handleReturnDialogGenerationDocument}"
+						update=":form:tabView,@widgetVar(wvMenuListeTicketCaisse),@widgetVar(wvDataTableListeTicketCaisse)"
+						oncomplete="activeTabCenter('#{ticketDeCaisseController.css}');" />
+				</p:commandButton>
+				<p:commandLink id="idLinkAideGenerationDocumentTicketCaisse" styleClass="lien-aide-contextuelle">
+					<i class="fa fa-info-circle animated"></i>
+				</p:commandLink>
+
+				<p:overlayPanel for="idLinkAideGenerationDocumentTicketCaisse" hideEffect="fade" dynamic="true" showCloseIcon="true"
+					styleClass="overlay-aide-contextuelle">
+					<ui:include src="/aide_contextuelle/document_generation_document.xhtml" />
+				</p:overlayPanel>
+			</p:panel>
+<!-- 			<p:separator styleClass="separateur-menu-vertical"/> -->
+<!-- 			<p:graphicImage name="paye.svg" title="La facture en cours est payée" library="images" -->
+<!-- 							width="90px" />	 -->
+<!-- 			<p:separator styleClass="separateur-menu-vertical"/> -->
+			<!-- 							<p:panel> -->
+			<!-- 							<p:outputLabel value="CA HT : " /> -->
+			<!-- 							</p:panel> -->
+			<!-- 							<p:panel> -->
+			<!-- 							<p:outputLabel value="150 €" /> -->
+			<!-- 							</p:panel> -->
+			<!-- 							<p:separator styleClass="separateur-menu-vertical"/> -->
+			<!-- 							<p:panel> -->
+			<!-- 							<p:outputLabel value="CA HT : " /> -->
+			<!-- 							</p:panel> -->
+			<!-- 							<p:panel> -->
+			<!-- 							<p:outputLabel value="150 €" /> -->
+			<!-- 							</p:panel> -->
+					    <p:outputLabel value="Etat du document  " rendered="#{auth.isDevLgr()}"/>
+						<p:panel styleClass="panel-aide-contextuelle">
+							<p:autoComplete value="#{ticketDeCaisseController.selectedEtatDocument}" rendered="#{auth.isDevLgr()}"
+								converter="entityConverter"
+								completeMethod="#{ticketDeCaisseController.etatAutoComplete}"
+								disabled="true" var="etat"
+								itemLabel="#{etat.codeEtat}" itemValue="#{etat}"
+								forceSelection="true" dropdown="true" placeholder="Etat du document">
+								<p:column>
+									<h:outputText value="#{etat.codeEtat}" />
+								</p:column>
+
+								<p:column>
+									<h:outputText value="#{etat.liblEtat}" />
+								</p:column>
+
+								<f:attribute name="nomChamp" value="#{const.C_CODE_ETAT}" />
+								  <p:ajax event="clear" listener="#{ticketDeCaisseController.onClearEtat}" update="idPanelEnteteTicketCaisse,idPanelLignesTicketCaisse,idTableauComplementaireFac,:form:messages,@form,@widgetVar(wvMenuBoutonTicketCaisse),@widgetVar(wvMenuListeTicketCaisse),@widgetVar(wvDataTableListeTicketCaisse)"/>
+								<p:ajax event="itemSelect"
+									listener="#{ticketDeCaisseController.autcompleteSelection}"
+									update="idPanelEnteteTicketCaisse,idPanelLignesTicketCaisse,idTableauComplementaireFac,:form:messages,@form,@widgetVar(wvMenuBoutonTicketCaisse),@widgetVar(wvMenuListeTicketCaisse),@widgetVar(wvDataTableListeTicketCaisse)"/>
+							</p:autoComplete>
+						</p:panel>
+						   <p:graphicImage value="Document verrouillé !!!" title="#{ticketDeCaisseController.documentDTOEstVerrouille().message}" library="images" name="verrouiller.svg" width="32"  rendered="#{ticketDeCaisseController.documentDTOEstVerrouille().verrouille}"/> 
+					<p:outputLabel value="précision prix : " rendered="#{ticketDeCaisseController.affichagePrecisionPrixDocument()}"/>
+					<p:outputLabel value="#{ticketDeCaisseController.masterEntity.nbDecimalesPrix} décimale(s)" style="font-weight: bold;" id="idPrecisionPrixTicketCaisse" 
+					rendered="#{ticketDeCaisseController.affichagePrecisionPrixDocument()}"/>
+	
+		</h:panelGrid>
+	</p:fieldset>
+
+	<!-- 	<div class="ui-grid ui-grid-responsive"> -->
+	<!-- 		<div class="ui-grid-row"> -->
+	<!-- 			<div class="ui-grid-col-12"> -->
+	<!-- 	flowListener="#{ticketDeCaisseController.onFlowProcess}" -->
+
+	<p:wizard nextLabel="#{const_vue.btn_suivant}" backLabel="#{const_vue.btn_precedent}" showStepStatus="false" binding="#{ticketDeCaisseController.wizardDocument}" step="#{ticketDeCaisseController.stepCourant()}"
+		widgetVar="widgetVarLigneTicketCaisse" flowListener="#{ticketDeCaisseController.handleFlow}" showNavBar="false"  >
+<!-- 		 onback="btnWizardBack()" onnext="btnWizardNext()" -->
+<p:tab id="idSyntheseTicketCaisse" title="Synthèse du ticket de Caisse">
+			<div class="card">
+				<p:panel header="Synthèse du ticket de Caisse" style="width:100%;" rendered="#{!ticketDeCaisseController.selectedDocumentDTO.factureEstVide()}">
+					<p:panelGrid columns="3" id="idInfosTicketDeCaisse" columnClasses="ui-grid-col-4,ui-grid-col-4,ui-grid-col-4" styleClass="ui-panelgrid-blank" layout="grid">
+						<h:panelGroup>
+						<p:outputLabel value="Code ticket de Caisse : " style="font-weight: bold;"/>
+						<p:outputLabel value="#{ticketDeCaisseController.selectedDocumentDTO.codeDocument}" />
+						</h:panelGroup>
+						<h:panelGroup>
+						<p:outputLabel value="Code tiers : " style="font-weight: bold;"/>
+						<p:outputLabel value="#{ticketDeCaisseController.selectedDocumentDTO.codeTiers}"/>
+						</h:panelGroup>
+						<h:panelGroup>
+						<p:outputLabel value="Adresse facturation : " style="font-weight: bold;"/>
+<!-- 						<p:outputLabel value="#{ticketDeCaisseController.selectedDocumentDTO.dateDocument}" > -->
+<!-- 							<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/> -->
+<!-- 						</p:outputLabel> -->
+						</h:panelGroup>
+						
+						<h:panelGroup>
+<!-- 						<p:outputLabel value="Libellé : "/> -->
+						<p:outputLabel value="#{ticketDeCaisseController.selectedDocumentDTO.libelleDocument}" />
+						</h:panelGroup>
+						<h:panelGroup>
+						<p:outputLabel value="Entreprise : " style="font-weight: bold;"/>
+						<p:outputLabel value="#{ticketDeCaisseController.selectedDocumentDTO.nomEntreprise}"/>
+						<br />
+						<p:outputLabel value="#{ticketDeCaisseController.selectedDocumentDTO.nomTiers} - #{ticketDeCaisseController.selectedDocumentDTO.prenomTiers}"/>
+<!-- 						<hr/> -->
+<!-- 						<h:panelGroup> -->
+<!-- 						<p:outputLabel value="Coordonnées : " style="font-weight: bold;"/> -->
+<!-- 						<p:outputLabel value="#{ticketDeCaisseController.selectedInfosTiers.adresseEmail} - #{ticketDeCaisseController.selectedInfosTiers.numeroTelephone}"/> -->
+<!-- 						</h:panelGroup> -->
+						</h:panelGroup>
+						<h:panelGroup>
+						<p:outputLabel value="" style="font-weight:bold;"/>
+						<p:outputLabel value="#{ticketDeCaisseController.taAdresseFact.adresse1Adresse}" >
+						</p:outputLabel>
+						<br/>
+						<p:outputLabel value="#{ticketDeCaisseController.taAdresseFact.adresse2Adresse}" >
+						</p:outputLabel>
+						</h:panelGroup>
+
+						<h:panelGroup>
+						<p:outputLabel value="Date ticket de Caisse : " style="font-weight: bold;"/>
+						<p:outputLabel value="#{ticketDeCaisseController.selectedDocumentDTO.dateDocument}" >
+							<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+						</p:outputLabel>
+						</h:panelGroup>
+						<h:panelGroup>
+						<p:outputLabel value="Tèl : " style="font-weight: bold;"/>
+						<p:outputLabel value="#{ticketDeCaisseController.taTiersDTO.numeroTelephone}"/>
+						</h:panelGroup>
+						<h:panelGroup>
+						<p:outputLabel value="" style="font-weight: bold;"/>
+						<p:outputLabel value="#{ticketDeCaisseController.taAdresseFact.adresse3Adresse}" >
+<!-- 						<p:outputLabel value="#{ticketDeCaisseController.taAdresseFact.codepostalAdresse} #{ticketDeCaisseController.taAdresseFact.villeAdresse}" > -->
+<!-- 							<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/> -->
+						</p:outputLabel>
+						</h:panelGroup>
+						
+						<h:panelGroup>
+						<p:outputLabel value="Date échéance : " style="font-weight:bold;"/>
+						<p:outputLabel value="#{ticketDeCaisseController.selectedDocumentDTO.dateEchDocument}" >
+							<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+						</p:outputLabel>
+						</h:panelGroup>
+						<h:panelGroup>
+						<p:outputLabel value="Email : " style="font-weight: bold;"/>
+						<p:outputLabel value="#{ticketDeCaisseController.taTiersDTO.adresseEmail}"/>
+						</h:panelGroup>
+						<h:panelGroup>
+						<p:outputLabel value="Ville : " style="font-weight: bold;"/>
+						<p:outputLabel value="#{ticketDeCaisseController.taAdresseFact.codepostalAdresse} #{ticketDeCaisseController.taAdresseFact.villeAdresse}" >
+<!-- 							<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/> -->
+						</p:outputLabel>
+						</h:panelGroup>
+																		
+ 						<h:panelGroup> 
+						<div class="card" style="background:#ebebeb;text-align:center;center;padding: 5px;margin-top: 15px;">
+						<p:outputLabel value="Net TTC" style="font-weight: bold;"/>
+						<p:separator style="color:#9a9a9a"/>
+						<p:outputLabel value="#{ticketDeCaisseController.selectedDocumentDTO.netTtcCalc}">
+						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+						</p:outputLabel>
+<!-- 						<hr /> -->
+						</div>
+						</h:panelGroup>
+
+						
+						
+						<h:panelGroup>
+						<div class="card" style="background:#ebebeb;text-align:center;center;padding: 5px;margin-top: 15px;">
+<!-- 						<p:outputLabel value="Déjà réglé : " style="font-weight: bold;"/> -->
+<!-- 						<p:separator style="color:#9a9a9a"/> -->
+<!-- 						<p:outputLabel value="#{ticketDeCaisseController.selectedDocumentDTO.regleDocument}"> -->
+<!-- 						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" /> -->
+<!-- 						</p:outputLabel> -->
+						</div>
+						</h:panelGroup>
+<!-- 						</h:panelGroup> -->
+<!--border-style: solid;border-width: thin;padding: 7px; -->
+						<h:panelGroup>
+						<div class="card" style="background: #ebf9cc;text-align: center;padding: 5px;margin-top: 15px;">
+<!-- 						<p:outputLabel value="Reste à régler" style="font-weight: bold;"/> -->
+<!-- 						<p:separator style="color:#9a9a9a"/> -->
+<!-- 						<p:outputLabel value="#{ticketDeCaisseController.selectedDocumentDTO.resteAReglerComplet}" style="font-weight: bold;" > -->
+<!-- 						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" /> -->
+<!-- 						</p:outputLabel> -->
+<!-- 						<hr /> -->
+						</div>
+						</h:panelGroup>
+					</p:panelGrid>
+<!-- Début détail ligne synthèse					 -->
+					<p:dataTable id="iddataTableLigneTicketDeCaisseSynthese" 
+					var="ligne"
+					scrollable="true"
+					scrollHeight="250"					
+					widgetVar="widgetVarDataTableLigneTicketDeCaisseSynthese"
+					
+					value="#{ticketDeCaisseController.valuesLigne}"
+					rowKey="#{ligne.dto.numLigneLDocument}"
+					styleClass="datatable mt10 myclassTicketDeCaisse">
+					
+															
+					<p:ajax event="toggleSelect" process="@this" />
+					<p:ajax event="rowToggle" process="@this" oncomplete="ligneSeperationExpend()" />
+					
+					<p:column style="width:8px" styleClass="center" >
+						<p:rowToggler  rendered="#{ligne.ligneLieeFils!=null or ligne.ligneLieeMere!=null or ligne.ligneAbonnement!=null}"/>
+					</p:column>
+					
+					<p:column style="width:10%">
+						<f:facet name="header">
+							<h:outputText value="Code article" />
+						</f:facet>
+								<h:outputText value="#{ligne.taArticle.codeArticle}"/>
+					</p:column >
+					
+					<p:column style="width:24%">
+						<f:facet name="header">
+							<h:outputText value="Libellé" />
+						</f:facet>
+								<h:outputText value="#{ligne.dto.libLDocument}" />
+					</p:column>
+
+					<p:column  style="width:8%" styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Qté 1" />
+						</f:facet>
+								<h:outputText value="#{ligne.dto.qteLDocument}"/>	
+					</p:column>
+
+					<p:column style="width:5%" styleClass="center">
+						<f:facet name="header">
+							<h:outputText value="U1" />
+						</f:facet>
+
+								<h:outputText value="#{ligne.taUnite1.codeUnite}" />
+					</p:column>
+
+					<p:column  style="width:8%" styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Qté 2" />
+						</f:facet>
+							<h:outputText value="#{ligne.dto.qte2LDocument}" id="idqte2LTicketDeCaisseSynthese"/>
+					</p:column>
+
+					<p:column style="width:5%" styleClass="center">
+						<f:facet name="header">
+							<h:outputText value="U2" />
+						</f:facet>
+								<h:outputText value="#{ligne.taUnite2.codeUnite}"/>
+					</p:column>
+					
+					<p:column style="width:8%" styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Prix unitaire" />
+						</f:facet>
+								<h:outputText value="#{ligne.dto.prixULDocument}">
+									<f:convertNumber type="currency" minFractionDigits="#{ticketDeCaisseController.prefNbDecimalesPrix}"  currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+					</p:column>
+					
+					<p:column style="width:5%" styleClass="right" >
+						<f:facet name="header">
+							<h:outputText value="Remise %" />
+						</f:facet>
+								<h:outputText value="#{ligne.dto.remTxLDocument}" />
+					</p:column>
+					
+					<p:column style="width:20%" styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Montant HT" />
+						</f:facet>
+								<h:outputText value="#{ligne.dto.mtHtLDocument}" disabled="true">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+					</p:column>
+					
+					<p:column style="width:5%" styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="TVA"/>
+						</f:facet>
+								<h:outputText value="#{ligne.dto.codeTvaLDocument}" disabled="true">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+					</p:column>
+					
+					<p:column style="width:20%" styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Montant TTC" />
+						</f:facet>
+								<h:outputText value="#{ligne.dto.mtTtcLDocument}" disabled="true">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+					</p:column>
+					
+					<p:column style="width:5%" styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Remise globale" />
+						</f:facet>
+								<h:outputText value="#{ligne.dto.txRemHtDocument}" disabled="true">
+								</h:outputText>
+					</p:column>
+					<p:column style="width:1%">
+						<f:facet name="header">
+							<h:outputText value="Etat" />
+						</f:facet>
+								<h:outputText value="#{ligne.codeEtat}"  id="idListeSyntheseEtat#{variableEcran}"/>
+								<p:tooltip  value="#{ligne.codeEtat.concat(ligne.libelleEtat)}" shared="true" for="idListeSyntheseEtat#{variableEcran}" showEffect="clip" position="top"/>
+					</p:column>					
+															
+					<p:rowExpansion>
+
+					<p:panelGrid columns="2"  columnClasses="ui-grid-col-6,ui-grid-col-6" styleClass="ui-panelgrid-blank" layout="grid" rendered="#{ligne.ligneLieeFils!=null or ligne.ligneLieeMere!=null}">
+					<p:panel header="document ayant servi à générer le document courant" style="width:100%;" >
+						<p:dataTable value="#{ligne.ligneLieeMere}" id="dataTableLigneLieeMere" var="lien" selectionMode="single" editable="true"
+							selection="#{ticketDeCaisseController.selectedLigneALigneDTO}" rowKey="#{lien.id}" widgetVar="wvdataTableLigneLieeMere" 
+							emptyMessage="#{msg.message_datatable_vide}" resizableColumns="true">
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="code document" />
+								</f:facet>
+								<p:commandLink value="#{lien.codeDocumentDest}"
+									action="#{ticketDeCaisseController.duplicationDocumentBean.ouvertureDocumentBean.detailDocument(ticketDeCaisseController.duplicationDocumentBean.ouvertureDocumentBean.recupCodeDocument(lien.codeDocumentDest,lien.typeDocument))}"
+									update=":form:tabView"
+									oncomplete="activeTabCenter('#{ticketDeCaisseController.duplicationDocumentBean.ouvertureDocumentBean.event.cssLgrTab}');">>
+								</p:commandLink>
+								<!-- 								<h:outputText value="#{lien.codeDocumentDest}" /> -->
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="libellé ligne" />
+								</f:facet>
+								<h:outputText value="#{lien.libelleLigne}" />
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="lot" />
+								</f:facet>
+								<h:outputText value="#{lien.numLot}" />
+							</p:column>
+							<p:column styleClass="right">
+								<f:facet name="header">
+									<h:outputText value="Qté. reçue" />
+								</f:facet>
+								<h:outputText value="#{lien.qteRecue}" />
+							</p:column>
+<!-- 							<p:column> -->
+<!-- 								<f:facet name="header"> -->
+<!-- 									<h:outputText value="Etat" /> -->
+<!-- 								</f:facet> -->
+<!-- 								<h:outputText value="#{lien.etat}" /> -->
+<!-- 							</p:column>							 -->
+
+						</p:dataTable>
+						</p:panel>
+						<p:panel header="document généré à partir du document courant" style="width:100%;" >
+						<p:dataTable value="#{ligne.ligneLieeFils}" id="dataTableLigneLieeFils" var="lien" selectionMode="single" editable="true"
+							selection="#{ticketDeCaisseController.selectedLigneALigneDTO}" rowKey="#{lien.id}" widgetVar="wvdataTableLigneLieeFils" 
+							emptyMessage="#{msg.message_datatable_vide}" resizableColumns="true">
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="code document" />
+								</f:facet>
+								<p:commandLink value="#{lien.codeDocumentDest}"
+									action="#{ticketDeCaisseController.duplicationDocumentBean.ouvertureDocumentBean.detailDocument(ticketDeCaisseController.duplicationDocumentBean.ouvertureDocumentBean.recupCodeDocument(lien.codeDocumentDest,lien.typeDocument))}"
+									update=":form:tabView"
+									oncomplete="activeTabCenter('#{ticketDeCaisseController.duplicationDocumentBean.ouvertureDocumentBean.event.cssLgrTab}');">>
+								</p:commandLink>
+								<!-- 								<h:outputText value="#{lien.codeDocumentDest}" /> -->
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="libellé ligne" />
+								</f:facet>
+								<h:outputText value="#{lien.libelleLigne}" />
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="lot" />
+								</f:facet>
+								<h:outputText value="#{lien.numLot}" />
+							</p:column>
+							<p:column styleClass="right">
+								<f:facet name="header">
+									<h:outputText value="Qté. reçue" />
+								</f:facet>
+								<h:outputText value="#{lien.qteRecue}" />
+							</p:column>
+<!-- 							<p:column> -->
+<!-- 								<f:facet name="header"> -->
+<!-- 									<h:outputText value="Etat" /> -->
+<!-- 								</f:facet> -->
+<!-- 								<h:outputText value="#{lien.etat}" /> -->
+<!-- 							</p:column>							 -->
+
+						</p:dataTable>
+						</p:panel>
+					</p:panelGrid>
+					<p:panel header="Infos de l'abonnement" style="width:100%;" rendered="#{ligne.ligneAbonnement!=null}">
+						<p:dataTable value="#{ligne.ligneAbonnement}" id="dataTableLigneAbonnement" var="lien" selectionMode="single" editable="true"
+							selection="#{ticketDeCaisseController.selectedLigneALigneDTO}" rowKey="#{lien.id}" widgetVar="wvdataTableLigneAbonnement" 
+							emptyMessage="#{msg.message_datatable_vide}" resizableColumns="true">
+								<p:column  style="width:80px" >
+									<p:commandButton value="" actionListener="#{ticketDeCaisseController.actDialogDetailLigneAbonnement}" process="@this"
+										styleClass="icon-medium icon-reglement" title="Détail de la ligne d'abonnement">
+										<f:attribute name="taLigneALigneEcheanceDTO" value="#{lien}" />
+										<p:ajax event="dialogReturn" listener="#{ticketDeCaisseController.handleReturnDialogDetailLigneAbonnement}" />
+									</p:commandButton>
+								</p:column>
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="code document" />
+								</f:facet>
+								<p:commandLink value="#{lien.codeDocumentDest}"
+									action="#{ticketDeCaisseController.duplicationDocumentBean.ouvertureDocumentBean.detailAbonnement(ticketDeCaisseController.duplicationDocumentBean.ouvertureDocumentBean.recupCodeDocument(lien.codeDocumentDest,lien.typeDocument))}"
+									update=":form:tabView"
+									oncomplete="activeTabCenter('#{ticketDeCaisseController.duplicationDocumentBean.ouvertureDocumentBean.event.cssLgrTab}');">>
+								</p:commandLink>
+
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="libellé ligne" />
+								</f:facet>
+								<h:outputText value="#{lien.libelleLigne}" />
+							</p:column>
+						</p:dataTable>
+						</p:panel>
+					</p:rowExpansion>
+
+					
+					
+
+				</p:dataTable>
+<!-- Fin détail ligne synthèse					 -->
+					<p:panelGrid columns="1" id="idInfosCommentaireTicketDeCaisse" columnClasses="ui-grid-col-4" styleClass="ui-panelgrid-blank" layout="grid">
+						<h:panelGroup>
+						<p:outputLabel value="Commentaires" style="font-weight: bold;"/>
+						<br/>
+						<p:outputLabel value="#{ticketDeCaisseController.selectedDocumentDTO.commentaire}" />
+						</h:panelGroup>
+					</p:panelGrid>
+				</p:panel>
+			</div>
+		</p:tab>
+		<p:tab id="idEnteteTicketCaisse" title="Entête">
+			<!-- 			<p:ribbon > -->
+			<!-- 				<p:tab title="Extra" > -->
+			<!-- 					<p:ribbonGroup label="Générer"  > -->
+			<!-- 						<p:commandButton value="Modèles" icon="ui-ribbonicon-new" -->
+			<!-- 							styleClass="ui-ribbon-bigbutton" type="button" /> -->
+			<!-- 						<p:commandButton value="Documents" icon="ui-ribbonicon-save" -->
+			<!-- 							styleClass="ui-ribbon-bigbutton" type="button" /> -->
+			<!-- 					</p:ribbonGroup> -->
+			<!-- 				</p:tab> -->
+			<!-- 			</p:ribbon> -->
+
+			<p:panel id="idPanelEnteteTicketCaisse" header="#{const_vue.titre_panel_entete}" toggleable="true" widgetVar="panelEnteteTicketCaisse">
+			<f:facet name="actions">
+				<p:commandLink id="idLinkAideEnteteTicketCaisse"
+						styleClass="lien-aide-contextuelle">
+						<i class="fa fa-info-circle animated"></i>
+					</p:commandLink>
+
+					<p:overlayPanel for="idLinkAideEnteteTicketCaisse" hideEffect="fade"
+						dynamic="true" showCloseIcon="true"
+						styleClass="overlay-aide-contextuelle">
+						<ui:include src="/aide_contextuelle/document_entete_document.xhtml" />
+					</p:overlayPanel>
+        		</f:facet>
+
+				<h:panelGrid columns="2" cellpadding="10">
+					<!-- 				    <p:outputLabel id="idBtn1"  value="" title="La référence de la facture" styleClass="icon icon-print"/> -->
+					<!-- 				    <p:button id="idBtn1" icon="ui-icon-star" title="Icon Only"> -->
+					<!-- 					</p:button> -->
+
+					<p:outputLabel id="idlabelCodeTicketCaisse" value="Code facture " title="La référence de la facture" styleClass="labelchob" />
+
+					<p:panel styleClass="panel-aide-contextuelle">
+					<p:inputText id="idCodeTicketCaisse" value="#{ticketDeCaisseController.selectedDocumentDTO.codeDocument}" validator="#{ticketDeCaisseController.validateDocument}"
+						disabled="#{ticketDeCaisseController.editableEnInsertionUniquement()}">
+						<f:attribute name="nomChamp" value="#{const.C_CODE_DOCUMENT}" minimum="0" />
+						<p:ajax event="blur" update="@this" />
+
+					</p:inputText>
+						<p:commandLink id="idLinkAideCodeTicketCaisse"
+							styleClass="lien-aide-contextuelle">
+							<i class="fa fa-info-circle animated swing"></i>
+						</p:commandLink>
+						<p:overlayPanel for="idLinkAideCodeTicketCaisse" hideEffect="fade"
+							dynamic="true" showCloseIcon="true"
+							styleClass="overlay-aide-contextuelle">
+							<ui:include src="/aide_contextuelle/document_code_document.xhtml" />
+						</p:overlayPanel>
+					</p:panel>
+					<p:outputLabel value="Code tiers : " styleClass="labelchob" />
+					<p:focus>
+
+						<p:panel styleClass="panel-aide-contextuelle">
+						<p:autoComplete value="#{ticketDeCaisseController.taTiersDTO}" id="idtiersTicketCaisse" converter="entityConverter"
+							completeMethod="#{ticketDeCaisseController.tiersAutoCompleteDTOLight}" required="true" requiredMessage="#{msg_diag.alert_champs_obligatoir}"
+							disabled="#{ticketDeCaisseController.editable()}" var="tiers" itemLabel="#{tiers.codeTiers}" itemValue="#{tiers}" forceSelection="true"
+							dropdown="true" placeholder="Tiers">
+							<p:column>
+								<!-- 				             	<f:facet name="header"> -->
+								<!-- 				            		<p:commandButton value="Ajouter" title="Insérer" -->
+								<!-- 										process="@this" -->
+								<!-- 										update=":form:tabView,:form:messages" -->
+								<!-- 										actionListener="#{ticketDeCaisseController.actDialogTiers}" -->
+								<!-- 										styleClass="btn-insert btn" > -->
+								<!-- 											<p:ajax event="dialogReturn" listener="#{ticketDeCaisseController.handleReturnDialogTiers}" update="@parent:@parent"/> -->
+								<!-- 										</p:commandButton> -->
+								<!-- 				            	</f:facet> -->
+								<h:outputText value="#{tiers.codeTiers}" required="true" requiredMessage="#{msg_diag.alert_champs_obligatoir}" />
+							</p:column>
+
+							<p:column>
+								<h:outputText value="#{tiers.nomTiers}" />
+							</p:column>
+
+							<p:column>
+								<h:outputText value="#{tiers.prenomTiers}" />
+							</p:column>
+
+							<p:column>
+								<h:outputText value="#{tiers.nomEntreprise}" />
+							</p:column>
+
+
+							<f:attribute name="nomChamp" value="#{const.C_CODE_TIERS}" />
+							<p:ajax event="itemSelect" listener="#{ticketDeCaisseController.autcompleteSelection}"
+								update="idNomTiersTicketCaisse,idLibellePieceTicketCaisse,idTTCTicketCaisse,idLocalisationTvaDocTicketCaisse,@this,@widgetVar(panelAdresseFacturationTicketCaisse),@widgetVar(panelAdresseLivraisonTicketCaisse),
+						@widgetVar(panelConditionPaiementTicketCaisse)" />
+						</p:autoComplete>
+							<p:commandLink id="idLinkAideCodeTiersTicketCaisse"
+								styleClass="lien-aide-contextuelle">
+								<i class="fa fa-info-circle animated swing"></i>
+							</p:commandLink>
+
+							<p:overlayPanel for="idLinkAideCodeTiersTicketCaisse" hideEffect="fade"
+								dynamic="true" showCloseIcon="true"
+								styleClass="overlay-aide-contextuelle">
+								<ui:include src="/aide_contextuelle/document_code_tiers.xhtml" />
+							</p:overlayPanel>
+						</p:panel>
+						
+						</p:focus>
+
+					<p:outputLabel value="Nom Tiers : " styleClass="labelchob" />
+					<p:panel styleClass="panel-aide-contextuelle">
+					<p:inputText value="#{ticketDeCaisseController.selectedDocumentDTO.nomTiers}" id="idNomTiersTicketCaisse" validator="#{ticketDeCaisseController.validateDocument}"
+						disabled="#{ticketDeCaisseController.editable()}">
+						<f:attribute name="nomChamp" value="#{const.C_NOM_TIERS}" />
+						<p:ajax event="blur" update="@this" />
+					</p:inputText>
+
+						<p:commandLink id="idLinkAideNomTiersTicketCaisse"
+							styleClass="lien-aide-contextuelle">
+							<i class="fa fa-info-circle animated swing"></i>
+						</p:commandLink>
+
+						<p:overlayPanel for="idLinkAideNomTiersTicketCaisse" hideEffect="fade"
+							dynamic="true" showCloseIcon="true"
+							styleClass="overlay-aide-contextuelle">
+							<ui:include src="/aide_contextuelle/document_nom_tiers.xhtml" />
+						</p:overlayPanel>
+					</p:panel>
+					
+					<p:outputLabel value="Date facture: " styleClass="labelchob" />
+					<p:panel styleClass="panel-aide-contextuelle">
+					<p:calendar value="#{ticketDeCaisseController.selectedDocumentDTO.dateDocument}" pattern="dd/MM/yyyy" mask="true" locale="fr" navigator="true"
+						mindate="#{ticketDeCaisseController.dateMin}"
+						maxdate="#{ticketDeCaisseController.dateMax}" 
+						showOn="button" timeZone="#{msg.time_zone}"    disabled="#{ticketDeCaisseController.editable()}">
+						<f:attribute name="nomChamp" value="#{const.C_DATE_DOCUMENT}" />
+						<p:ajax event="dateSelect" listener="#{ticketDeCaisseController.controleDate}" update="@this,idDateEchTicketCaisse" />
+						<p:ajax event="change" listener="#{ticketDeCaisseController.controleDate}"  update="@this,idDateEchTicketCaisse" />
+					</p:calendar>
+					<p:commandLink id="idLinkAideDateTicketCaisse"
+						styleClass="lien-aide-contextuelle">
+						<i class="fa fa-info-circle animated swing"></i>
+					</p:commandLink>
+
+					<p:overlayPanel for="idLinkAideDateTicketCaisse" hideEffect="fade"
+						dynamic="true" showCloseIcon="true"
+						styleClass="overlay-aide-contextuelle">
+						<ui:include src="/aide_contextuelle/document_date_document.xhtml" />
+					</p:overlayPanel>
+					</p:panel>
+					
+					<p:panel styleClass="panel-aide-contextuelle">
+					<p:outputLabel value="Libellé : " />
+					<p:commandLink id="idLinkAideLibelleTicketCaisse"
+						styleClass="lien-aide-contextuelle">
+						<i class="fa fa-info-circle animated"></i>
+					</p:commandLink>
+
+					<p:overlayPanel for="idLinkAideLibelleTicketCaisse" hideEffect="fade"
+						dynamic="true" showCloseIcon="true"
+						styleClass="overlay-aide-contextuelle">
+						<ui:include src="/aide_contextuelle/document_libelle_document.xhtml" />
+					</p:overlayPanel>
+					</p:panel>
+					
+					<p:inputText value="#{ticketDeCaisseController.selectedDocumentDTO.libelleDocument}" id="idLibellePieceTicketCaisse"
+						validator="#{ticketDeCaisseController.validateDocument}" style="width:300%" disabled="#{ticketDeCaisseController.editable()}">
+						<f:attribute name="nomChamp" value="#{const.C_LIBELLE_DOCUMENT}" />
+						<p:ajax event="blur" update="@this" />
+					</p:inputText>
+
+					<p:outputLabel value="TTC : " />
+					<p:panel styleClass="panel-aide-contextuelle">
+					<p:selectBooleanCheckbox value="#{ticketDeCaisseController.selectedDocumentDTO.ttc}" id="idTTCTicketCaisse" disabled="#{ticketDeCaisseController.disableTtc() or ticketDeCaisseController.disableTtcSiDocSansTVA()}">
+						<f:attribute name="nomChamp" value="#{const.C_TTC}" />
+						<p:ajax event="change" update="@this" />
+					</p:selectBooleanCheckbox>
+					<p:commandLink id="idLinkAideSaisieTtcTicketCaisse"
+						styleClass="lien-aide-contextuelle">
+						<i class="fa fa-info-circle animated"></i>
+					</p:commandLink>
+
+					<p:overlayPanel for="idLinkAideSaisieTtcTicketCaisse" hideEffect="fade"
+						dynamic="true" showCloseIcon="true"
+						styleClass="overlay-aide-contextuelle">
+						<ui:include src="/aide_contextuelle/document_saisiettc_document.xhtml" />
+					</p:overlayPanel>
+					</p:panel>
+					
+					<p:outputLabel value="Date de livraison : " />
+					<p:calendar value="#{ticketDeCaisseController.selectedDocumentDTO.dateLivDocument}" pattern="dd/MM/yyyy" mask="true" locale="fr" navigator="true"
+						showOn="button" timeZone="#{msg.time_zone}" validator="#{ticketDeCaisseController.validateDocument}" disabled="#{ticketDeCaisseController.editable()}">
+
+						<f:attribute name="nomChamp" value="#{const.C_DATE_LIV_DOCUMENT}" />
+						<p:ajax event="dateSelect" update="@this" />
+						<p:ajax event="change" update="@this" />
+					</p:calendar>
+
+					<!-- 					<p:outputLabel value="Localisation TVA : " /> -->
+					<!-- 					<p:selectOneMenu id="console" value="#{ticketDeCaisseController.selectedDocumentDTO.commentaire}" style="width:125px"> -->
+					<!-- 			            <f:selectItem itemLabel="Client en France" itemValue="fr" /> -->
+					<!-- 			        </p:selectOneMenu> -->
+
+					<p:outputLabel value="Localisation TVA : " />
+					<p:panel styleClass="panel-aide-contextuelle">
+					<p:autoComplete value="#{ticketDeCaisseController.taTTvaDoc}" id="idLocalisationTvaDocTicketCaisse" converter="entityConverter"
+						disabled="#{ticketDeCaisseController.editable() or ticketDeCaisseController.disableTtc()}" completeMethod="#{ticketDeCaisseController.typeTvaDocAutoComplete}" var="tp" itemLabel="#{tp.codeTTvaDoc}"
+						itemValue="#{tp}" forceSelection="true" dropdown="true" placeholder="Localisation TVA">
+						<p:column>
+							<h:outputText value="#{tp.codeTTvaDoc}" />
+						</p:column>
+						<p:column>
+							<h:outputText value="#{tp.libelleTTvaDoc}" />
+						</p:column>
+						<f:attribute name="nomChamp" value="#{const.C_CODE_T_TVA_DOC}" />
+						<p:ajax event="itemSelect" listener="#{ticketDeCaisseController.autcompleteSelection}" update="idTTCTicketCaisse"/>
+					</p:autoComplete>
+					<p:commandLink id="idLinkAideLocalidationTvaTicketCaisse"
+						styleClass="lien-aide-contextuelle">
+						<i class="fa fa-info-circle animated"></i>
+					</p:commandLink>
+
+					<p:overlayPanel for="idLinkAideLocalidationTvaTicketCaisse" hideEffect="fade"
+						dynamic="true" showCloseIcon="true"
+						styleClass="overlay-aide-contextuelle">
+						<ui:include src="/aide_contextuelle/document_localisationtva_document.xhtml" />
+					</p:overlayPanel>
+					</p:panel>
+					<p:outputLabel value="Observation : " />
+					<p:inputTextarea value="#{ticketDeCaisseController.selectedDocumentDTO.commentaire}" validator="#{ticketDeCaisseController.validateDocument}"
+						style="width:300%" disabled="#{ticketDeCaisseController.editable()}">
+						<f:attribute name="nomChamp" value="#{const.C_COMMENTAIRE}" />
+						<p:ajax event="blur" update="@this" />
+					</p:inputTextarea>
+
+					<p:outputLabel value="Gestion des lots : " />
+					<p:inputSwitch value="#{ticketDeCaisseController.selectedDocumentDTO.gestionLot}" onLabel="Oui" offLabel="Non" disabled="#{ticketDeCaisseController.editable()}">
+						<p:ajax listener="#{ticketDeCaisseController.validateDocument}" update="@this" />
+					</p:inputSwitch>
+
+					<!-- 				<p:commandButton  process="@this" title="Génération modèle"  -->
+					<!-- 						styleClass="btn-generation-modele btn" actionListener="#{ticketDeCaisseController.actDialogGenerationModeleDocument}" > -->
+					<!-- 						<p:ajax event="dialogReturn" listener="#{ticketDeCaisseController.handleReturnDialogGenerationDocument}"  -->
+					<!-- 						update=":form:tabView,@widgetVar(wvMenuListeTicketCaisse),@widgetVar(wvDataTableListeTicketCaisse)" oncomplete="activeTabCenter('#{ticketDeCaisseController.css}');" /> -->
+					<!-- 				</p:commandButton> -->
+					<!-- 				<p:commandButton process="@this" title="Génération document"  -->
+					<!-- 						styleClass="btn-generation-document btn" actionListener="#{ticketDeCaisseController.actDialogGenerationDocument}" > -->
+					<!-- 						<p:ajax event="dialogReturn" listener="#{ticketDeCaisseController.handleReturnDialogGenerationDocument}"  -->
+					<!-- 						update=":form:tabView,@widgetVar(wvMenuListeTicketCaisse),@widgetVar(wvDataTableListeTicketCaisse)" oncomplete="activeTabCenter('#{ticketDeCaisseController.css}');" /> -->
+					<!-- 				</p:commandButton> -->
+
+
+					<!-- Invisible, relier au meme champ que la checkbox du dernier step du wizard, reprise de cette valeur dans le 1er step car le oncomplete du actEnregistrer se declanche apres le retour au 1er, la valeur doit donc etre disponible ici pour le javascript -->
+					<p:selectBooleanCheckbox value="#{ticketDeCaisseController.impressionDirect}" styleClass="invisible" disabled="#{ticketDeCaisseController.editable()}"
+						widgetVar="wvImpressionDirectTicketCaisse" />
+					<p:selectBooleanCheckbox value="#{ticketDeCaisseController.envoyeParEmail}" styleClass="invisible" disabled="#{ticketDeCaisseController.editable()}"
+						widgetVar="wvEnvoyerEmailDirectTicketCaisse" />
+
+
+
+				</h:panelGrid>
+
+    		<div class="ui-g">
+    		 <div class="ui-g-6">
+				<p:panel id="idAdresseFacturationTicketCaisse" header="#{const_vue.titre_panel_adresse_facturation}" toggleable="true" widgetVar="panelAdresseFacturationTicketCaisse"
+					collapsed="false">
+					<h:panelGrid columns="2" cellpadding="10" id="idPanelAdresseFacTicketCaisse">
+						<p:outputLabel value="" />
+						<p:selectOneMenu value="#{ticketDeCaisseController.taAdresseFact}" converter="entityConverter" var="t" filter="true" filterMatchMode="contains"
+							disabled="#{ticketDeCaisseController.editable()}">
+							<f:selectItems value="#{ticketDeCaisseController.listeAdresseInfosFacturationDTO}" var="tt" itemValue="#{t}" itemLabel="sélectionner une adresse" />
+							<p:column>
+								<h:outputText value="#{t.adresse1Adresse}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{t.adresse2Adresse}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{t.adresse3Adresse}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{t.codepostalAdresse}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{t.villeAdresse}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{t.paysAdresse}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{t.codeTAdr}" />
+							</p:column>
+							<p:ajax event="change" listener="#{ticketDeCaisseController.affecteAdrFactAutoComplete}" update="idPanelAdresseFacTicketCaisse" />
+						</p:selectOneMenu>
+
+						<p:outputLabel value="Adresse 1" />
+						<p:panel styleClass="panel-autocomplete">
+							<p:inputText value="#{ticketDeCaisseController.selectedAdresseFact.adresse1Adresse}" disabled="#{ticketDeCaisseController.editable()}">
+								<p:ajax event="blur" update="@this" />
+							</p:inputText>
+							<p:commandButton value="Raffraîchir" styleClass="icon-refresh btn" disabled="#{ticketDeCaisseController.editable()}"
+								actionListener="#{ticketDeCaisseController.actReinitAdrFact}" process="@this" update="idPanelAdresseFacTicketCaisse,idMenuBoutonTicketCaisse" />
+						</p:panel>
+
+						<p:outputLabel value="Adresse 2" />
+						<p:inputText value="#{ticketDeCaisseController.selectedAdresseFact.adresse2Adresse}" disabled="#{ticketDeCaisseController.editable()}">
+							<p:ajax event="blur" update="@this" />
+						</p:inputText>
+						<p:outputLabel  value="Adresse 3" />
+						<p:inputText value="#{ticketDeCaisseController.selectedAdresseFact.adresse3Adresse}" disabled="#{ticketDeCaisseController.editable()}">
+							<p:ajax event="blur" update="@this" />
+						</p:inputText>
+						<p:outputLabel value="Code postal" />
+						<p:inputText value="#{ticketDeCaisseController.selectedAdresseFact.codepostalAdresse}" disabled="#{ticketDeCaisseController.editable()}">
+							<p:ajax event="blur" update="@this" />
+						</p:inputText>
+						<p:outputLabel value="Ville" />
+						<p:inputText value="#{ticketDeCaisseController.selectedAdresseFact.villeAdresse}" disabled="#{ticketDeCaisseController.editable()}">
+							<p:ajax event="blur" update="@this" />
+						</p:inputText>
+						<p:outputLabel value="Pays" />
+						<p:inputText value="#{ticketDeCaisseController.selectedAdresseFact.paysAdresse}" disabled="#{ticketDeCaisseController.editable()}">
+							<p:ajax event="blur" update="@this" />
+						</p:inputText>
+					</h:panelGrid>
+				</p:panel>
+			</div>
+			
+			<div class="ui-g-6">
+			
+				<p:panel id="idAdresseLivraisonTicketCaisse" header="Adresse de livraison" widgetVar="panelAdresseLivraisonTicketCaisse">
+					<h:panelGrid columns="2" cellpadding="10" id="idPanelAdresseLivTicketCaisse">
+
+						<p:outputLabel value="" />
+						<p:selectOneMenu value="#{ticketDeCaisseController.taAdresseLiv}" converter="entityConverter" var="t" filter="true" filterMatchMode="contains"
+							disabled="#{ticketDeCaisseController.editable()}">
+							<f:selectItems value="#{ticketDeCaisseController.listeAdresseInfosLivraisonDTO}" var="tt" itemValue="#{t}" itemLabel="sélectionner une adresse" />
+							<p:column>
+								<h:outputText value="#{t.adresse1AdresseLiv}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{t.adresse2AdresseLiv}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{t.adresse3AdresseLiv}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{t.codepostalAdresseLiv}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{t.villeAdresseLiv}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{t.paysAdresseLiv}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{t.codeTAdr}" />
+							</p:column>
+							<p:ajax event="change" listener="#{ticketDeCaisseController.affecteAdrLivAutoComplete}" update="idPanelAdresseLivTicketCaisse" />
+						</p:selectOneMenu>
+					
+
+						<p:outputLabel value="Adresse 1" />
+						<p:panel styleClass="panel-autocomplete">
+							<p:inputText value="#{ticketDeCaisseController.selectedAdresseLiv.adresse1AdresseLiv}" disabled="#{ticketDeCaisseController.editable()}">
+								<p:ajax event="blur" update="@this" />
+							</p:inputText>
+							<p:commandButton value="Raffraîchir" styleClass="icon-refresh btn" disabled="#{ticketDeCaisseController.editable()}"
+								actionListener="#{ticketDeCaisseController.actReinitAdrLiv}" process="@this" update="idPanelAdresseLivTicketCaisse,idMenuBoutonTicketCaisse" />
+						</p:panel>
+						<p:outputLabel value="Adresse 2" />
+						<p:inputText value="#{ticketDeCaisseController.selectedAdresseLiv.adresse2AdresseLiv}" disabled="#{ticketDeCaisseController.editable()}">
+							<p:ajax event="blur" update="@this" />
+						</p:inputText>
+						<p:outputLabel value="Adresse 3" />
+						<p:inputText value="#{ticketDeCaisseController.selectedAdresseLiv.adresse3AdresseLiv}" disabled="#{ticketDeCaisseController.editable()}">
+							<p:ajax event="blur" update="@this" />
+						</p:inputText>
+						<p:outputLabel value="Code postal" />
+						<p:inputText value="#{ticketDeCaisseController.selectedAdresseLiv.codepostalAdresseLiv}" disabled="#{ticketDeCaisseController.editable()}">
+							<p:ajax event="blur" update="@this" />
+						</p:inputText>
+						<p:outputLabel value="Ville" />
+						<p:inputText value="#{ticketDeCaisseController.selectedAdresseLiv.villeAdresseLiv}" disabled="#{ticketDeCaisseController.editable()}">
+							<p:ajax event="blur" update="@this" />
+						</p:inputText>
+						<p:outputLabel value="Pays" />
+						<p:inputText value="#{ticketDeCaisseController.selectedAdresseLiv.paysAdresseLiv}" disabled="#{ticketDeCaisseController.editable()}">
+							<p:ajax event="blur" update="@this" />
+						</p:inputText>
+					</h:panelGrid>
+				</p:panel>
+			</div>
+		</div>
+
+				<p:panel id="idIdentiteTiersTicketCaisse" header="Identité tiers" toggleable="true" widgetVar="panelIdentiteTiersTicketCaisse" collapsed="true">
+					<div class="ui-grid-row">
+						<div class="ui-grid-col-6">
+							<p:panel id="idPanelIdentite" header="Identité" toggleable="true" widgetVar="panelIdentite">
+								<h:panelGrid columns="2" cellpadding="10" id="idPanelIdentTiersTicketCaisse">
+									<p:outputLabel value="Type entité" />
+									<p:panel styleClass="panel-autocomplete">
+										<p:inputText value="#{ticketDeCaisseController.selectedInfosTiers.codeTEntite}" disabled="#{ticketDeCaisseController.editable()}">
+											<p:ajax event="blur" update="@this" />
+										</p:inputText>
+										<p:commandButton value="Raffraîchir" styleClass="icon-refresh btn" disabled="#{ticketDeCaisseController.editable()}"
+											actionListener="#{ticketDeCaisseController.actReinitInfosTiers}" process="@this" update="idPanelIdentTiersTicketCaisse,idMenuBoutonTicketCaisse" />
+									</p:panel>
+									<p:outputLabel value="Raison sociale" />
+									<p:inputText value="#{ticketDeCaisseController.selectedInfosTiers.nomEntreprise}" disabled="#{ticketDeCaisseController.editable()}">
+										<p:ajax event="blur" update="@this" />
+									</p:inputText>
+									<p:outputLabel value="Civilité" />
+									<p:inputText value="#{ticketDeCaisseController.selectedInfosTiers.codeTCivilite}" disabled="#{ticketDeCaisseController.editable()}">
+										<p:ajax event="blur" update="@this" />
+									</p:inputText>
+									<p:outputLabel value="Nom" />
+									<p:inputText value="#{ticketDeCaisseController.selectedInfosTiers.nomTiers}" disabled="#{ticketDeCaisseController.editable()}">
+										<p:ajax event="blur" update="@this" />
+									</p:inputText>
+									<p:outputLabel value="Prénom" />
+									<p:inputText value="#{ticketDeCaisseController.selectedInfosTiers.prenomTiers}" disabled="#{ticketDeCaisseController.editable()}">
+										<p:ajax event="blur" update="@this" />
+									</p:inputText>
+									<p:outputLabel value="Tva Intracommunautaire" />
+									<p:inputText value="#{ticketDeCaisseController.selectedInfosTiers.tvaIComCompl}" disabled="#{ticketDeCaisseController.editable()}">
+										<p:ajax event="blur" update="@this" />
+									</p:inputText>
+									<p:outputLabel value="N° Siret" />
+									<p:inputText value="#{ticketDeCaisseController.selectedInfosTiers.siretCompl}" disabled="#{ticketDeCaisseController.editable()}">
+										<p:ajax event="blur" update="@this" />
+									</p:inputText>
+								</h:panelGrid>
+							</p:panel>
+						</div>
+
+						<div class="ui-grid-row">
+							<div class="ui-grid-col-6">
+
+								<p:panel id="idPanelContact" header="Contact" toggleable="true">
+									<h:panelGrid columns="2" cellpadding="10">
+										<p:outputLabel value="Téléphone : " />
+										<p:inputText maxlength="20" value="#{ticketDeCaisseController.selectedInfosTiers.siretCompl}" disabled="#{ticketDeCaisseController.editable()}">
+											<p:ajax event="blur" update="@this" />
+										</p:inputText>
+
+										<p:outputLabel value="Adresse email : " />
+										<p:inputText value="#{ticketDeCaisseController.selectedInfosTiers.siretCompl}" disabled="#{ticketDeCaisseController.editable()}">
+											<p:ajax event="blur" update="@this" />
+										</p:inputText>
+
+										<p:outputLabel value="Adresse web : " />
+										<p:inputText value="#{ticketDeCaisseController.selectedInfosTiers.siretCompl}" disabled="#{ticketDeCaisseController.editable()}">
+											<p:ajax event="blur" update="@this" />
+										</p:inputText>
+									</h:panelGrid>
+								</p:panel>
+
+							</div>
+							<div class="ui-grid-row">
+								<div class="ui-grid-col-6">
+
+									<p:panel id="idPanelComptabilite" header="Comptabilité" toggleable="true">
+										<h:panelGrid columns="2" cellpadding="10">
+											<p:outputLabel value="Code compta : " />
+											<p:inputText maxlength="20" value="#{ticketDeCaisseController.selectedInfosTiers.codeCompta}" disabled="#{ticketDeCaisseController.editable()}">
+												<p:ajax event="blur" update="@this" />
+											</p:inputText>
+
+											<p:outputLabel value="Compte rattaché : " />
+											<p:inputText value="#{ticketDeCaisseController.selectedInfosTiers.compte}" disabled="#{ticketDeCaisseController.editable()}">
+												<p:ajax event="blur" update="@this" />
+											</p:inputText>
+
+										</h:panelGrid>
+										
+										
+									</p:panel>
+								</div>
+							</div>
+						</div>
+					</div>
+				</p:panel>
+			</p:panel>
+
+			<!-- 			</div> -->
+			<!-- 		</div> -->
+
+		</p:tab>
+
+		<!-- 		<div class="ui-grid-row"> -->
+		<!-- 			<div class="ui-grid-col-12"> -->
+
+		<p:tab id="idLignesTicketCaisse" title="Ligne">
+			<p:panel widgetVar="wvLigneTicketCaisseMesssages">
+				<p:messages id="idLigneTicketCaisseMessages" showDetail="true" closable="true" autoUpdate="false" />
+			</p:panel>
+			<p:panel id="idPanelLignesTicketCaisse" header="Lignes" toggleable="true" widgetVar="panelLignesTicketCaisse">
+
+
+				<p:menubar styleClass="menu-onglet">
+
+					<p:menuitem title="Insérer" styleClass="icon-insert icon" actionListener="#{ticketDeCaisseController.actInsererLigne}" process="@this"
+						update="@this,@widgetVar(widgetVarDataTableLigneTicketCaisse),:form:messages"
+						disabled="#{!ticketDeCaisseController.modeEcran.dataSetEnModif() or ticketDeCaisseController.etatBoutonLigne('inserer')}"
+						oncomplete="editionDerniereLigne('myclassTicketDeCaisse');" />
+
+					<p:menuitem title="Supprimer" styleClass="icon-delete icon" widgetVar="widgetVarBtnSupprimer"
+						actionListener="#{ticketDeCaisseController.actSupprimerLigne}" process="@this" update="@widgetVar(wvBCPanelLignes),:form:messages,@form"
+						disabled="#{!ticketDeCaisseController.modeEcran.dataSetEnModif() or ticketDeCaisseController.etatBoutonLigne('supprimer')}" />
+				</p:menubar>
+				<p:confirmDialog widgetVar="wvConfirmSaveRow">
+				     le document est associé à un règlement dont le montant diffère du montant total du document. Vous devrez revalider le règlement.
+				</p:confirmDialog>
+
+				<p:dataTable id="iddataTableLigneTicketCaisse" var="ligne" widgetVar="widgetVarDataTableLigneTicketCaisse" value="#{ticketDeCaisseController.valuesLigne}"
+					rowKey="#{ligne.dto.numLigneLDocument}" selection="#{ticketDeCaisseController.selectedLigneJSF}" selectionMode="single" editable="true"
+					dblClickSelect="true" styleClass="datatable mt10 myclassTicketDeCaisse" resizableColumns="true" draggableRows="true">
+
+					<!--  					if(reglementDifferentNetTTC(xhr, status, args)){PF('wvConfirmSaveRow').show()}; -->
+					<p:ajax event="rowReorder" listener="#{ticketDeCaisseController.onRowReorder}" update="@this,@widgetVar(wvMenuBoutonTicketCaisse)" />
+					<p:ajax event="rowEdit" listener="#{ticketDeCaisseController.onRowEdit}"
+						update="@widgetVar(wvLigneTicketCaisseMesssages),@parent:idTotauxLTicketCaisse,@parent:idReglementTicketCaisse"
+						oncomplete="if(!handleCompleteValidationError(xhr, status, args)) {increment();};autreLigneModifiable('myclassTicketDeCaisse');" />
+					<p:ajax event="rowEditCancel" listener="#{ticketDeCaisseController.onRowCancel}" update="@widgetVar(widgetVarBtnSupprimer)"
+						oncomplete="autreLigneModifiable('myclassTicketDeCaisse');" />
+					<p:ajax event="rowSelect" listener="#{ticketDeCaisseController.onRowSelectLigne}" />
+					<p:ajax event="rowEditInit" listener="#{ticketDeCaisseController.onRowEditInit}" oncomplete="autreLigneNonModifiable('myclassTicketDeCaisse');" />
+
+					
+										
+					<p:ajax event="toggleSelect" process="@this" />
+					<p:ajax event="rowToggle" process="@this" oncomplete="ligneSeperationExpend()" />
+					
+					<p:column style="width:8px" styleClass="center" >
+						<p:rowToggler  rendered="#{ligne.ligneLieeFils!=null or ligne.ligneLieeMere!=null or ligne.ligneAbonnement!=null}"/>
+					</p:column>
+
+					<p:column style="width:16px">
+						<p:rowEditor rendered="#{ticketDeCaisseController.etatBoutonLigne('rowEditor')}" styleClass="row-editor-debut" />
+					</p:column>
+
+					<p:column>
+						<f:facet name="header">
+							<h:outputText value="N°" />
+						</f:facet>
+						<h:outputText value="#{ligne.dto.numLigneLDocument}" />
+					</p:column>
+
+					<p:column style="width:140px">
+						<f:facet name="header">
+							<h:outputText value="Code article" />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{ligne.taArticle.codeArticle}" />
+							</f:facet>
+							<f:facet name="input">
+								<p:focus>
+									<p:autoComplete value="#{ligne.taArticleDTO}" completeMethod="#{ticketDeCaisseController.articleAutoCompleteDTOLight}" id="idarticleTicketCaisse"
+										converter="entityConverter" var="art" itemLabel="#{art.codeArticle}" itemValue="#{art}" forceSelection="true" dropdown="true"
+									maxResults="#{ticketDeCaisseController.taPreferencesService.nbMaxChargeListeArticle()}"
+									moreText="Il y a #{component.maxResults} affichés sur #{component.suggestions.size()} au total, Veuillez affiner votre recherche ou cliquer ici pour en afficher plus ..."
+										placeholder="Article" style="width:100%">
+										<!-- 									required="true" requiredMessage="Le code article est obligatoire" -->
+
+										<p:column>
+											<h:outputText value="#{art.codeArticle}" />
+										</p:column>
+
+										<p:column>
+											<h:outputText value="#{art.libellecArticle}" />
+										</p:column>
+									<p:column >
+										<h:outputText value="#{art.commentaireArticle}" rendered="#{ticketDeCaisseController.rechercheAvecCommentaire(false)}"/>
+									</p:column>
+
+										<f:attribute name="nomChamp" value="#{const.C_CODE_ARTICLE}" />
+										 <p:ajax event="clear" listener="#{ticketDeCaisseController.onClearArticle}" update="@parent:idlibLTicketCaisse,idQte1LTicketCaisse,idu1LTicketCaisse,idLot,@this
+									idu2LTicketCaisse,idpuLTicketCaisse,idhtLTicketCaisse,idttcLTicketCaisse,idtvaLTicketCaisse,idLotMPTicketCaisse,idLRemiseTicketCaisse,idqte2LTicketCaisse,idEntrepotTC"/>
+										<p:ajax event="itemSelect" listener="#{ticketDeCaisseController.autcompleteSelection}"
+											update="@parent:idlibLTicketCaisse,idQte1LTicketCaisse,idu1LTicketCaisse,
+									idu2LTicketCaisse,idpuLTicketCaisse,idhtLTicketCaisse,idttcLTicketCaisse,idtvaLTicketCaisse,idLotMPTicketCaisse,idLRemiseTicketCaisse,idqte2LTicketCaisse,idEntrepotTC" />
+																		<p:ajax event="moreText" listener="#{ticketDeCaisseController.onMoreTextArticle}" />
+									
+									</p:autoComplete>
+								</p:focus>
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+
+					<p:column sortBy="#{ligne.taLot.numLot}" style="width:10%" rendered="#{ticketDeCaisseController.selectedDocumentDTO.gestionLot}"  id="idLot">
+						<f:facet name="header">
+							<h:outputText value="Numéro de lot" />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<!-- 										<p:outputLabel id="idNumLot" value="#{ligne.articleLotEntrepotDTO.numLot}" onclick="PF('wvOverlayPanelDetailLotTicketCaisse').show()"/> -->
+								<p:commandLink value="#{ligne.articleLotEntrepotDTO.numLot}" process="@this" update="@widgetVar(wvPanelGridDetailLotTicketCaisse)"
+									oncomplete="PF('wvOverlayPanelDetailLotTicketCaisse').show('#{component.clientId}');">
+									<f:setPropertyActionListener value="#{ligne}" target="#{ticketDeCaisseController.detailLigneOverLayPanel}" />
+								</p:commandLink>
+							</f:facet>
+							<f:facet name="input">
+
+								<p:autoComplete value="#{ligne.articleLotEntrepotDTO}" completeMethod="#{ticketDeCaisseController.lotAutoComplete}"
+									converter="#{articleLotEntrepotDTOTicketCaisseConverter}" var="lot" itemLabel="#{lot.numLot}" itemValue="#{lot}" id="idLotMPTicketCaisse"
+									forceSelection="true" dropdown="true" placeholder="Lot" style="width:100%" 
+									disabled="#{ligne.ligneCommentaire() or ticketDeCaisseController.lotEstVirtuelEtAUneSeuleLigne(ligne.taArticle)}">
+									<p:column>
+										<f:facet name="header">
+											<h:outputText value="Numéro de lot" />
+										</f:facet>
+										<h:outputText value="#{lot.numLot}" />
+									</p:column>
+									<p:column>
+										<f:facet name="header">
+											<h:outputText value="Libellé lot" />
+										</f:facet>
+										<h:outputText value="#{lot.libelleLot}" />
+									</p:column>
+									<p:column>
+										<f:facet name="header">
+											<h:outputText value="Code entrepot" />
+										</f:facet>
+										<h:outputText value="#{lot.codeEntrepot}" />
+									</p:column>
+									<p:column>
+										<f:facet name="header">
+											<h:outputText value="Entrepot" />
+										</f:facet>
+										<h:outputText value="#{lot.libelleEntrepot}" />
+									</p:column>
+									<p:column>
+										<f:facet name="header">
+											<h:outputText value="Emplacement" />
+										</f:facet>
+										<h:outputText value="#{lot.emplacement}" />
+									</p:column>
+									<p:column>
+										<f:facet name="header">
+											<h:outputText value="Qte en stock" />
+										</f:facet>
+										<h:outputText value="#{lot.qte1}" />
+									</p:column>
+									<p:column>
+										<f:facet name="header">
+											<h:outputText value="Unité" />
+										</f:facet>
+										<h:outputText value="#{lot.codeUnite}" />
+									</p:column>
+									<p:column>
+										<f:facet name="header">
+											<h:outputText value="Date lot" />
+										</f:facet>
+										<h:outputText value="#{lot.dateLot}" />
+									</p:column>
+									<p:column>
+										<f:facet name="header">
+											<h:outputText value="Dluo" />
+										</f:facet>
+										<h:outputText value="#{lot.dluo}" />
+									</p:column>
+									<f:attribute name="nomChamp" value="#{const.C_NUM_LOT}" />
+									<!-- 												<p:ajax event="itemSelect" listener="#{ticketDeCaisseController.autcompleteSelectionMP}" update="libLotMP,idEntrepotMP,idEmplcementMP"/> -->
+									<p:ajax event="itemSelect" listener="#{ticketDeCaisseController.autcompleteSelection}" update="@parent:idlibLTicketCaisse,idEntrepotTC"/>
+								</p:autoComplete>
+
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+
+					<p:column style="width:140px">
+						<f:facet name="header">
+							<h:outputText value="Libellé" />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.libLDocument}" />
+							</f:facet>
+							<f:facet name="input">
+								<p:inputText value="#{ligne.dto.libLDocument}" id="idlibLTicketCaisse" validator="#{ticketDeCaisseController.validateLignesDocument}">
+									<f:attribute name="nomChamp" value="#{const.C_LIB_L_DOCUMENT}" />
+									<p:ajax event="blur" />
+								</p:inputText>
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+
+					<p:column style="width:10%">
+						<f:facet name="header">
+							<h:outputText value="Entrepot" />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{ligne.taEntrepot.codeEntrepot}" />
+							</f:facet>
+							<f:facet name="input">
+							<h:outputText value="#{ligne.taEntrepot.codeEntrepot}" disabled="true" id="idEntrepotTC" />
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+					
+
+					<p:column style="width:80px">
+						<f:facet name="header">
+							<h:outputText value="Qté 1" />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.qteLDocument}" />
+							</f:facet>
+							<f:facet name="input">
+								<p:inputText id="idQte1LTicketCaisse" value="#{ligne.dto.qteLDocument}" style="width:100%" validator="#{ticketDeCaisseController.validateLignesDocument}">
+									<f:attribute name="nomChamp" value="#{const.C_QTE_L_DOCUMENT}"  disabled="#{ligne.ligneCommentaire()}"/>
+									<p:ajax event="blur" update="@parent:idqte2LTicketCaisse,idhtLTicketCaisse,idttcLTicketCaisse,idtvaLTicketCaisse,@this" />
+								</p:inputText>
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+
+					<p:column>
+						<f:facet name="header">
+							<h:outputText value="Unité 1" />
+						</f:facet>
+						<!-- 						<p:cellEditor > -->
+						<!-- 							<f:facet name="output"> -->
+						<!-- 								<h:outputText value="#{ligne.dto.u1LDocument}" /> -->
+						<!-- 							</f:facet> -->
+						<!-- 							<f:facet name="input"> -->
+						<!-- 								<p:inputText value="#{ligne.dto.u1LDocument}" style="width:100%" id="u1"/> -->
+						<!-- 							</f:facet> -->
+						<!-- 						</p:cellEditor> -->
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{ligne.taUnite1.codeUnite}" />
+							</f:facet>
+							<f:facet name="input">
+								<!-- 								<p:inputText value="#{ligne.taUnite1.codeUnite}" style="width:100%" id="u1"/> -->
+								<p:autoComplete value="#{ligne.taUnite1}" completeMethod="#{ticketDeCaisseController.uniteAutoComplete}" var="unit" itemLabel="#{unit.codeUnite}"
+									itemValue="#{unit}" forceSelection="true" dropdown="true" placeholder="U1" style="width:100%" id="idu1LTicketCaisse" disabled="#{ligne.ligneCommentaire()}">
+									<p:column>
+										<h:outputText value="#{unit.codeUnite}" />
+									</p:column>
+
+									<f:attribute name="nomChamp" value="#{const.C_U1_L_DOCUMENT}" />
+									<p:ajax event="itemSelect" listener="#{ticketDeCaisseController.autcompleteSelection}" />
+								</p:autoComplete>
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+
+					<p:column style="width:80px">
+						<f:facet name="header">
+							<h:outputText value="Qté 2" />
+						</f:facet>
+						<h:outputText value="#{ligne.dto.qte2LDocument}" id="idqte2LTicketCaisse"  disabled="#{ligne.ligneCommentaire()}"/>
+					</p:column>
+
+					<p:column>
+						<f:facet name="header">
+							<h:outputText value="Unité 2" />
+						</f:facet>
+						<!-- 						<h:outputText value="#{ligne.dto.u2LDocument}" id="u2" />					 -->
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{ligne.taUnite2.codeUnite}" />
+							</f:facet>
+							<f:facet name="input">
+								<!-- 								<p:inputText value="#{ligne.taUnite2.codeUnite}" style="width:100%" id="u2"/> -->
+								<p:autoComplete value="#{ligne.taUnite2}" completeMethod="#{ticketDeCaisseController.uniteAutoCompleteAll}" var="unit" itemLabel="#{unit.codeUnite}"
+									itemValue="#{unit}" forceSelection="true" dropdown="true" placeholder="U2" style="width:100%" id="idu2LTicketCaisse" disabled="#{ligne.ligneCommentaire()}">
+									<p:column>
+										<h:outputText value="#{unit.codeUnite}" />
+									</p:column>
+
+									<f:attribute name="nomChamp" value="#{const.C_U2_L_DOCUMENT}" />
+									<p:ajax event="itemSelect" listener="#{ticketDeCaisseController.autcompleteSelection}" />
+								</p:autoComplete>
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+
+					<p:column styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Prix unitaire" />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.prixULDocument}">
+									<f:convertNumber type="currency" minFractionDigits="#{ticketDeCaisseController.prefNbDecimalesPrix}"  currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</f:facet>
+							<f:facet name="input">
+								<p:inputText value="#{ligne.dto.prixULDocument}" id="idpuLTicketCaisse" style="width:100%" validator="#{ticketDeCaisseController.validateLignesDocument}">
+									<f:attribute name="nomChamp" value="#{const.C_PRIX_U_L_DOCUMENT}" />
+									<p:ajax event="blur" update="@this,idhtLTicketCaisse,idttcLTicketCaisse,idtvaLTicketCaisse" />
+								</p:inputText>
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+
+					<p:column>
+						<f:facet name="header">
+							<h:outputText value="Remise %" />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.remTxLDocument}" />
+							</f:facet>
+							<f:facet name="input">
+								<p:inputText value="#{ligne.dto.remTxLDocument}" style="width:100%" id="idLRemiseTicketCaisse" 
+								validator="#{ticketDeCaisseController.validateLignesDocument}" disabled="#{ligne.ligneCommentaire()}">
+									<f:attribute name="nomChamp" value="#{const.C_REM_TX_L_DOCUMENT}" />
+									<p:ajax event="blur" update="@this,idhtLTicketCaisse,idttcLTicketCaisse,idtvaLTicketCaisse" />
+								</p:inputText>
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+
+					<p:column styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Montant HT" />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.mtHtLDocument}" disabled="true">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</f:facet>
+							<f:facet name="input">
+								<h:outputText value="#{ligne.dto.mtHtLDocument}" id="idhtLTicketCaisse" style="width:100%" disabled="true" />
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+
+					<p:column styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Montant TTC" />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.mtTtcLDocument}" disabled="true">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</f:facet>
+							<f:facet name="input">
+								<h:outputText value="#{ligne.dto.mtTtcLDocument}" id="idttcLTicketCaisse" style="width:100%" disabled="true" />
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+
+					<p:column styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="TVA" />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.codeTvaLDocument}" disabled="true">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</f:facet>
+							<f:facet name="input">
+								<h:outputText value="#{ligne.dto.codeTvaLDocument}" disabled="true" id="idtvaLTicketCaisse" style="width:100%" />
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+
+					<p:column styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Remise globale" />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.txRemHtDocument}" disabled="true">
+								</h:outputText>
+							</f:facet>
+							<f:facet name="input">
+								<h:outputText value="#{ligne.dto.txRemHtDocument}" disabled="true" style="width:100%" />
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+
+					<p:column style="width:1%">
+						<f:facet name="header">
+							<h:outputText value="Etat" />
+						</f:facet>
+								<h:outputText value="#{ligne.codeEtat}"  id="idListeSaisieEtat#{variableEcran}"/>
+								<p:tooltip  value="#{ligne.codeEtat.concat(ligne.libelleEtat)}" shared="true" for="idListeSaisieEtat#{variableEcran}" showEffect="clip" position="top"/>
+					</p:column>	
+
+					<p:column style="width:16px">
+						<f:facet name="header">
+							<h:outputText value="" />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<p:commandButton title="Supprimer" styleClass="icon-delete icon icon-grille" widgetVar="widgetVarBtnSupprimer"
+									action="#{ticketDeCaisseController.actSupprimerLigne}" process="@this"
+									disabled="#{!ticketDeCaisseController.modeEcran.dataSetEnModif() or ticketDeCaisseController.etatBoutonLigne('supprimer')}"
+									update="@widgetVar(panelLignesTicketCaisse)">
+									<!-- 									<f:attribute name="idLigne" value="#{ligne.dto.id}" /> -->
+									<f:setPropertyActionListener target="#{ticketDeCaisseController.selectedLigneJSF}" value="#{ligne}" />
+								</p:commandButton>
+							</f:facet>
+							<f:facet name="input">
+								<h:outputText value="" />
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+
+					<p:column style="width:26px">
+						<p:rowEditor rendered="#{ticketDeCaisseController.etatBoutonLigne('rowEditor')}" styleClass="row-editor-fin" />
+					</p:column>
+					
+					<p:rowExpansion>
+
+					<p:panelGrid columns="2"  columnClasses="ui-grid-col-6,ui-grid-col-6" styleClass="ui-panelgrid-blank" layout="grid" rendered="#{ligne.ligneLieeFils!=null or ligne.ligneLieeMere!=null}">
+					<p:panel header="document ayant servi à générer le document courant" style="width:100%;" >
+						<p:dataTable value="#{ligne.ligneLieeMere}" id="dataTableLigneLieeMere" var="lien" selectionMode="single" editable="true"
+							selection="#{ticketDeCaisseController.selectedLigneALigneDTO}" rowKey="#{lien.id}" widgetVar="wvdataTableLigneLieeMere" 
+							emptyMessage="#{msg.message_datatable_vide}" resizableColumns="true">
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="code document" />
+								</f:facet>
+								<p:commandLink value="#{lien.codeDocumentDest}"
+									action="#{ticketDeCaisseController.duplicationDocumentBean.ouvertureDocumentBean.detailDocument(ticketDeCaisseController.duplicationDocumentBean.ouvertureDocumentBean.recupCodeDocument(lien.codeDocumentDest,lien.typeDocument))}"
+									update=":form:tabView"
+									oncomplete="activeTabCenter('#{ticketDeCaisseController.duplicationDocumentBean.ouvertureDocumentBean.event.cssLgrTab}');">>
+								</p:commandLink>
+								<!-- 								<h:outputText value="#{lien.codeDocumentDest}" /> -->
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="libellé ligne" />
+								</f:facet>
+								<h:outputText value="#{lien.libelleLigne}" />
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="lot" />
+								</f:facet>
+								<h:outputText value="#{lien.numLot}" />
+							</p:column>
+							<p:column styleClass="right">
+								<f:facet name="header">
+									<h:outputText value="Qté. reçue" />
+								</f:facet>
+								<h:outputText value="#{lien.qteRecue}" />
+							</p:column>
+<!-- 							<p:column> -->
+<!-- 								<f:facet name="header"> -->
+<!-- 									<h:outputText value="Etat" /> -->
+<!-- 								</f:facet> -->
+<!-- 								<h:outputText value="#{lien.etat}" /> -->
+<!-- 							</p:column>							 -->
+
+						</p:dataTable>
+						</p:panel>
+						<p:panel header="document généré à partir du document courant" style="width:100%;" >
+						<p:dataTable value="#{ligne.ligneLieeFils}" id="dataTableLigneLieeFils" var="lien" selectionMode="single" editable="true"
+							selection="#{ticketDeCaisseController.selectedLigneALigneDTO}" rowKey="#{lien.id}" widgetVar="wvdataTableLigneLieeFils" 
+							emptyMessage="#{msg.message_datatable_vide}" resizableColumns="true">
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="code document" />
+								</f:facet>
+								<p:commandLink value="#{lien.codeDocumentDest}"
+									action="#{ticketDeCaisseController.duplicationDocumentBean.ouvertureDocumentBean.detailDocument(ticketDeCaisseController.duplicationDocumentBean.ouvertureDocumentBean.recupCodeDocument(lien.codeDocumentDest,lien.typeDocument))}"
+									update=":form:tabView"
+									oncomplete="activeTabCenter('#{ticketDeCaisseController.duplicationDocumentBean.ouvertureDocumentBean.event.cssLgrTab}');">>
+								</p:commandLink>
+								<!-- 								<h:outputText value="#{lien.codeDocumentDest}" /> -->
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="libellé ligne" />
+								</f:facet>
+								<h:outputText value="#{lien.libelleLigne}" />
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="lot" />
+								</f:facet>
+								<h:outputText value="#{lien.numLot}" />
+							</p:column>
+							<p:column styleClass="right">
+								<f:facet name="header">
+									<h:outputText value="Qté. reçue" />
+								</f:facet>
+								<h:outputText value="#{lien.qteRecue}" />
+							</p:column>
+<!-- 							<p:column> -->
+<!-- 								<f:facet name="header"> -->
+<!-- 									<h:outputText value="Etat" /> -->
+<!-- 								</f:facet> -->
+<!-- 								<h:outputText value="#{lien.etat}" /> -->
+<!-- 							</p:column>							 -->
+
+						</p:dataTable>
+						</p:panel>
+					</p:panelGrid>
+					<p:panel header="Infos de l'abonnement" style="width:100%;" rendered="#{ligne.ligneAbonnement!=null}">
+						<p:dataTable value="#{ligne.ligneAbonnement}" id="dataTableLigneAbonnement" var="lien" selectionMode="single" editable="true"
+							selection="#{ticketDeCaisseController.selectedLigneALigneDTO}" rowKey="#{lien.id}" widgetVar="wvdataTableLigneAbonnement" 
+							emptyMessage="#{msg.message_datatable_vide}" resizableColumns="true">
+								<p:column  style="width:80px" >
+									<p:commandButton value="" actionListener="#{ticketDeCaisseController.actDialogDetailLigneAbonnement}" process="@this"
+										styleClass="icon-medium icon-reglement" title="Détail de la ligne d'abonnement">
+										<f:attribute name="taLigneALigneEcheanceDTO" value="#{lien}" />
+										<p:ajax event="dialogReturn" listener="#{ticketDeCaisseController.handleReturnDialogDetailLigneAbonnement}" />
+									</p:commandButton>
+								</p:column>
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="code document" />
+								</f:facet>
+								<p:commandLink value="#{lien.codeDocumentDest}"
+									action="#{ticketDeCaisseController.duplicationDocumentBean.ouvertureDocumentBean.detailAbonnement(ticketDeCaisseController.duplicationDocumentBean.ouvertureDocumentBean.recupCodeDocument(lien.codeDocumentDest,lien.typeDocument))}"
+									update=":form:tabView"
+									oncomplete="activeTabCenter('#{ticketDeCaisseController.duplicationDocumentBean.ouvertureDocumentBean.event.cssLgrTab}');">>
+								</p:commandLink>
+
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="libellé ligne" />
+								</f:facet>
+								<h:outputText value="#{lien.libelleLigne}" />
+							</p:column>
+						</p:dataTable>
+						</p:panel>
+					</p:rowExpansion>
+
+
+
+				</p:dataTable>
+
+				<p:overlayPanel widgetVar="wvOverlayPanelDetailLotTicketCaisse" hideEffect="fade">
+					<p:panel widgetVar="wvPanelGridDetailLotTicketCaisse" style="text-align:center;">
+						<p:panelGrid columns="2" rendered="#{not empty ticketDeCaisseController.detailLigneOverLayPanel}">
+							<h:outputText value="Lot" />
+							<h:outputText value="#{ticketDeCaisseController.detailLigneOverLayPanel.dto.numLot} - #{ticketDeCaisseController.detailLigneOverLayPanel.dto.libelleLot}" />
+
+							<h:outputText value="Entrepot" />
+							<h:outputText value="#{ticketDeCaisseController.detailLigneOverLayPanel.dto.codeEntrepot}" />
+
+							<h:outputText value="Qte" />
+							<h:outputText
+								value="#{ticketDeCaisseController.detailLigneOverLayPanel.dto.qteLDocument} #{ticketDeCaisseController.detailLigneOverLayPanel.dto.u1LDocument}" />
+
+							<h:outputText value="DLUO" />
+							<h:outputText value="#{ticketDeCaisseController.detailLigneOverLayPanel.dto.dluo}" />
+						</p:panelGrid>
+					</p:panel>
+				</p:overlayPanel>
+
+				<p:panelGrid columns="3" styleClass="totaux-lignes-document" id="idTotauxLTicketCaisse">
+					<f:facet name="header">
+						<h:outputText value="Totaux" />
+					</f:facet>
+
+					<h:outputText value="NET HT" />
+
+					<h:outputText value="NET TVA" />
+
+					<h:outputText value="NET TTC" />
+					<h:outputText value="#{ticketDeCaisseController.selectedDocumentDTO.netHtCalc}">
+						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+					</h:outputText>
+					<h:outputText value="#{ticketDeCaisseController.selectedDocumentDTO.netTvaCalc}">
+						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+					</h:outputText>
+					<h:outputText value="#{ticketDeCaisseController.selectedDocumentDTO.netTtcCalc}">
+						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+					</h:outputText>
+
+				</p:panelGrid>
+
+
+
+			</p:panel>
+		</p:tab>
+
+		<p:tab id="idTotauxFormTicketCaisse" title="Totaux">
+
+			<p:panel id="idPaneltotauxFormTicketCaisse" header="Totaux" toggleable="true" widgetVar="panelTotauxFormTicketCaisse">
+				<div class="ui-g">
+					<div class="ui-g-12 ui-md-12 ui-lg-6">
+						<div class="ui-g-12 ui-md-12 ui-lg-6">
+							<p:fieldset legend="Totaux">
+								<h:panelGrid columns="2" cellpadding="10">
+
+									<p:outputLabel value="HT" />
+									<p:inputText value="#{ticketDeCaisseController.selectedDocumentDTO.mtHtCalc}" disabled="true">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+									</p:inputText>
+
+									<p:outputLabel value="TVA" />
+									<p:inputText value="#{ticketDeCaisseController.selectedDocumentDTO.mtTvaCalc}" disabled="true">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+									</p:inputText>
+
+									<p:outputLabel value="TTC" />
+									<p:inputText value="#{ticketDeCaisseController.selectedDocumentDTO.mtTtcAvantRemiseGlobaleCalc}" disabled="true">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+									</p:inputText>
+
+
+								</h:panelGrid>
+							</p:fieldset>
+						</div>
+						<div class="ui-g-12 ui-md-12 ui-lg-6">
+							<p:fieldset legend="Totaux après remise globale">
+								<h:panelGrid columns="2" cellpadding="10">
+
+									<p:outputLabel value="Montant HT" />
+									<p:inputText value="#{ticketDeCaisseController.selectedDocumentDTO.netHtCalc}" disabled="true">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+									</p:inputText>
+
+									<p:outputLabel value="Montant TVA" />
+									<p:inputText value="#{ticketDeCaisseController.selectedDocumentDTO.netTvaCalc}" disabled="true">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+									</p:inputText>
+
+									<p:outputLabel value="Montant TTC" />
+									<p:inputText value="#{ticketDeCaisseController.selectedDocumentDTO.netTtcCalc}" disabled="true">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+									</p:inputText>
+
+								</h:panelGrid>
+							</p:fieldset>
+						</div>
+
+						<div class="ui-g-12 ui-md-12 ui-lg-6">
+							<p:fieldset legend="Remise">
+								<h:panelGrid columns="2" cellpadding="10">
+									<p:outputLabel value="Remise globale %" />
+									<p:inputText value="#{ticketDeCaisseController.selectedDocumentDTO.txRemHtDocument}" disabled="#{ticketDeCaisseController.editable()}"
+										validator="#{ticketDeCaisseController.validateDocument}">
+										<f:attribute name="nomChamp" value="#{const.C_TX_REM_HT_DOCUMENT}" />
+										<p:ajax event="blur" update="@this,@widgetVar(panelTotauxFormTicketCaisse)" />
+									</p:inputText>
+
+									<p:outputLabel value="Remise sur HT" />
+									<p:inputText value="#{ticketDeCaisseController.selectedDocumentDTO.remHtDocument}" disabled="true">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+									</p:inputText>
+								</h:panelGrid>
+							</p:fieldset>
+						</div>
+						<div class="ui-g-12 ui-md-12 ui-lg-6">
+							<p:fieldset legend="Escompte">
+								<h:panelGrid columns="2" cellpadding="10">
+
+									<p:outputLabel value="Escompte accordé %" />
+									<p:inputText value="#{ticketDeCaisseController.selectedDocumentDTO.txRemTtcDocument}" disabled="#{ticketDeCaisseController.editable()}"
+										validator="#{ticketDeCaisseController.validateDocument}">
+										<f:attribute name="nomChamp" value="#{const.C_TX_REM_TTC_DOCUMENT}" />
+										<p:ajax event="blur" update="@this,@widgetVar(panelTotauxFormTicketCaisse)" />
+									</p:inputText>
+
+									<p:outputLabel value="Montant escompte" />
+									<p:inputText value="#{ticketDeCaisseController.selectedDocumentDTO.remTtcDocument}" disabled="true">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+									</p:inputText>
+
+								</h:panelGrid>
+							</p:fieldset>
+						</div>
+					</div>
+					<div class="ui-g-12 ui-md-12 ui-lg-6">
+						<div class="ui-g-12 ui-md-12 ui-lg-6" >
+							<p:fieldset legend="Règlement rapide" style="height:100%"  id="idReglementRapide" >
+								<h:panelGrid columns="2" cellpadding="10" id="idReglementTicketCaisse" >
+									<p:outputLabel value="#{ticketDeCaisseController.libelleMultipleReglement}"  style="color: #FF0000; font-size: 12 pt; font-weight: bold; width: 200%" />
+									<p:outputLabel value="#{ticketDeCaisseController.libelleReglementEnAttente}" style="font-size: 12 pt; font-weight: bold; width: 200%"/>
+									
+									<p:outputLabel value="TicketCaisse réglée"  />
+									<p:selectBooleanCheckbox value="#{ticketDeCaisseController.factureReglee}" title="facture Réglée" widgetVar="idTicketCaisseReglee"
+										disabled="#{ticketDeCaisseController.editable() || ticketDeCaisseController.masterEntity.reglementExistant() || ticketDeCaisseController.masterEntity.multiReglementReel()}">
+										<p:ajax update="idReglementTicketCaisse,idResteAPayerTicketCaisse" listener="#{ticketDeCaisseController.actInitReglement}" />
+									</p:selectBooleanCheckbox>
+
+									<p:outputLabel value="Type paiement" />
+									<!-- 						<p:inputText value="#{ticketDeCaisseController.selectedDocumentDTO.compte}"/> -->
+									<p:autoComplete value="#{ticketDeCaisseController.taTPaiement}" converter="entityConverter"
+										completeMethod="#{ticketDeCaisseController.typePaiementAutoComplete}" var="tp" itemLabel="#{tp.codeTPaiement}" itemValue="#{tp}"
+										forceSelection="true" dropdown="true" disabled="#{ticketDeCaisseController.editable() || ticketDeCaisseController.masterEntity.reglementExistant() || !ticketDeCaisseController.factureReglee || ticketDeCaisseController.masterEntity.multiReglementReel()}"
+										placeholder="Type de paiement" style="width:100%">
+										<p:column>
+											<h:outputText value="#{tp.codeTPaiement}" />
+										</p:column>
+										<p:column>
+											<h:outputText value="#{tp.libTPaiement}" />
+										</p:column>
+										<f:attribute name="nomChamp" value="#{const.C_CODE_T_PAIEMENT}" />
+										<p:ajax event="itemSelect" listener="#{ticketDeCaisseController.autcompleteSelection}" update="idReglementTicketCaisse, idLibPaiementTicketCaisse" />
+									</p:autoComplete>
+
+									<p:outputLabel value="Montant paiement" />
+									<p:inputText value="#{ticketDeCaisseController.selectedDocumentDTO.montantReglement}" disabled="true">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />					
+									</p:inputText>
+
+									<p:outputLabel value="Libellé paiement" />
+									<p:inputText id="idLibPaiementTicketCaisse" value="#{ticketDeCaisseController.selectedDocumentDTO.libelleReglement}" validator="#{ticketDeCaisseController.validateDocument}"
+										disabled="#{ticketDeCaisseController.editable() || ticketDeCaisseController.masterEntity.reglementExistant() || ticketDeCaisseController.masterEntity.multiReglementReel()}" >
+										<f:attribute name="nomChamp" value="#{const.C_LIBELLE_REGLEMENT}" />
+										<p:ajax event="blur" update="@this"/>
+									</p:inputText>
+								</h:panelGrid>
+							</p:fieldset>
+						</div>
+						<div class="ui-g-12 ui-md-12 ui-lg-6">
+							<p:fieldset legend="Autres" style="height:100%">
+								<h:panelGrid columns="2" cellpadding="10">
+									<p:outputLabel value="Date d'échéance " />
+									<p:calendar value="#{ticketDeCaisseController.selectedDocumentDTO.dateEchDocument}" id="idDateEchTicketCaisse" pattern="dd/MM/yyyy" mask="true"
+										locale="fr" navigator="true" showOn="button" timeZone="#{msg.time_zone}" 
+										disabled="#{ticketDeCaisseController.editable()}">
+
+										<f:attribute name="nomChamp" value="#{const.C_DATE_ECH_DOCUMENT}" />
+						<p:ajax event="dateSelect" listener="#{ticketDeCaisseController.controleDate}" update="@this" />
+						<p:ajax event="change" listener="#{ticketDeCaisseController.controleDate}"  update="@this" />
+									</p:calendar>
+								</h:panelGrid>
+							</p:fieldset>
+						</div>
+						<div class="ui-g-12 ui-md-12 ui-lg-12">
+							<p:fieldset legend="Règlements multiples" style="height:100%" id="idReglementMultiple">
+								<div class="ui-g-12 ui-md-12 ui-lg-3">
+									<p:commandButton value="Régler la facture" actionListener="#{ticketDeCaisseController.actDialogGenerationReglement}" icon="fa fa-check">
+										<p:ajax event="dialogReturn" listener="#{ticketDeCaisseController.handleReturnDialogGestionReglement}" 
+										update="idResteAPayerTicketCaisse,idReglementMultiple,idReglementRapide,@widgetVar(panelTotauxFormTicketCaisse),@widgetVar(wvMenuBoutonTicketCaisse)" />
+									</p:commandButton>
+								</div>
+								<div class="ui-g-12 ui-md-12 ui-lg-9">
+									<p:dataTable 
+									var="rReglement" 
+									value="#{ticketDeCaisseController.listeTaRReglementDTOJSF}"
+											emptyMessage="#{msg.message_datatable_vide}">
+										<p:column headerText="code">
+											<h:outputText value="#{rReglement.dto.codeDocument}" />
+										</p:column>
+
+										<p:column headerText="Date">
+											<h:outputText value="#{rReglement.dto.dateDocument}" >
+											<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+											</h:outputText>
+										</p:column>
+
+										<p:column headerText="Montant">
+											<h:outputText value="#{rReglement.dto.netTtcCalc}" />
+										</p:column>
+
+										<p:column headerText="Affectation">
+											<h:outputText value="#{rReglement.dto.affectation}" />
+										</p:column>
+										
+										<p:column headerText="Int."  style="width:30px">
+											<h:selectBooleanCheckbox  value="#{rReglement.dto.estDirect}" disabled="true" readonly="true"/>
+										</p:column>										
+									</p:dataTable>
+								</div>
+							</p:fieldset>
+
+						</div>
+					</div>
+
+						<div class="ui-g-12 ui-md-12 ui-lg-6">
+						<p:panel id="idConditionPaiementTicketCaisse" header="Conditon de paiement" toggleable="true" widgetVar="panelConditionPaiementTicketCaisse"
+							collapsed="false">
+							<h:panelGrid columns="2" cellpadding="10" id="idPanelConditionPaiementTicketCaisse">
+								<p:outputLabel value="Code paiement" />
+								<h:panelGrid columns="3" cellpadding="10">
+									<p:autoComplete value="#{ticketDeCaisseController.taCPaiementDoc}" converter="entityConverter" id="idCodeCPaiementTicketCaisse"
+										completeMethod="#{ticketDeCaisseController.typeCPaiementAutoComplete}" var="tp" itemLabel="#{tp.codeCPaiement}" itemValue="#{tp}"
+										forceSelection="true" dropdown="true" disabled="#{ticketDeCaisseController.editable()}" placeholder="Condition de paiement" style="width:100%">
+										<p:column>
+											<h:outputText value="#{tp.codeCPaiement}" />
+										</p:column>
+										<p:column>
+											<h:outputText value="#{tp.libCPaiement}" />
+										</p:column>
+										<f:attribute name="nomChamp" value="#{const.C_CODE_C_PAIEMENT}" />
+										<p:ajax event="itemSelect" listener="#{ticketDeCaisseController.autcompleteSelection}"
+											update="idLibelleCPaimentTicketCaisse,idReportTicketCaisse,idFinMoisTicketCaisse,idDateEchTicketCaisse,idMenuBoutonTicketCaisse" />
+									</p:autoComplete>
+									<p:commandButton value="Appliquer" styleClass="icon-refresh btn" actionListener="#{ticketDeCaisseController.actAppliquerCPaiement}" process="@this"
+										update="idPanelConditionPaiementTicketCaisse,idLibelleCPaimentTicketCaisse,idReportTicketCaisse,idFinMoisTicketCaisse,idDateEchTicketCaisse,idMenuBoutonTicketCaisse" />
+								</h:panelGrid>
+								<p:outputLabel value="Libellé" />
+								<p:inputText value="#{ticketDeCaisseController.selectedCPaiement.libCPaiement}" disabled="#{ticketDeCaisseController.editable()}"
+									id="idLibelleCPaimentTicketCaisse">
+									<p:ajax event="blur" update="@this" />
+								</p:inputText>
+								<p:outputLabel value="Report" />
+								<p:inputText value="#{ticketDeCaisseController.selectedCPaiement.reportCPaiement}" disabled="#{ticketDeCaisseController.editable()}" id="idReportTicketCaisse">
+									<p:ajax event="blur" update="@this" />
+								</p:inputText>
+								<p:outputLabel value="Fin de mois" />
+								<p:inputText value="#{ticketDeCaisseController.selectedCPaiement.finMoisCPaiement}" disabled="#{ticketDeCaisseController.editable()}" id="idFinMoisTicketCaisse">
+									<p:ajax event="blur" update="@this" />
+								</p:inputText>
+							</h:panelGrid>
+						</p:panel>
+					</div>
+					<div class="ui-g-12 ui-md-12 ui-lg-6">
+						<div class="ui-g-12 ui-md-12 ui-lg-6">
+							<p:fieldset legend="">
+								<h:panelGrid columns="2" cellpadding="10" id="idNetAPayerTicketCaisse">
+									<p:outputLabel value="Net à payer" />
+									<p:inputText value="#{ticketDeCaisseController.selectedDocumentDTO.netTtcCalc}" disabled="true">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+									</p:inputText>
+								</h:panelGrid>
+							</p:fieldset>
+						</div>
+						<div class="ui-g-12 ui-md-12 ui-lg-6">
+							<p:fieldset legend="">
+								<h:panelGrid columns="2" cellpadding="10" id="idResteAPayerTicketCaisse">
+									<p:outputLabel value="Reste à régler" />
+									<p:inputText value="#{ticketDeCaisseController.selectedDocumentDTO.resteARegler}" disabled="true">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+									</p:inputText>
+								</h:panelGrid>
+							</p:fieldset>
+						</div>
+					</div>
+
+					<div class="ui-g-12 ui-md-12 ui-lg-6">
+						<p:dataTable value="#{ticketDeCaisseController.masterEntity.lignesTVA}" var="ltva">
+							<f:facet name="header">
+								<h:outputText value="TVA" />
+							</f:facet>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="Code TVA" />
+								</f:facet>
+								<h:outputText value="#{ltva.codeTva}" />
+							</p:column>
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="Libellé" />
+								</f:facet>
+								<h:outputText value="#{ltva.libelle}" />
+							</p:column>
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="Taux" />
+								</f:facet>
+								<h:outputText value="#{ltva.tauxTva}" />
+							</p:column>
+
+							<p:column styleClass="right">
+								<f:facet name="header">
+									<h:outputText value="Montant" />
+								</f:facet>
+								<h:outputText value="#{ltva.mtTva}">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+						</p:dataTable>
+					</div>
+					<div class="ui-g-12 ui-md-12 ui-lg-6">
+					  <p:fieldset legend="Aperçu">
+							<p:outputLabel value="Imprimer brouillon" /><p:spacer width="5" />
+							<p:selectBooleanCheckbox value="#{ticketDeCaisseController.impressionDirect}" disabled="#{ticketDeCaisseController.editable()}">
+								<p:ajax event="change" update="@this"/>
+							</p:selectBooleanCheckbox>
+					  </p:fieldset>
+					  <p:fieldset legend="Transmettre la facture au client">
+					  
+<!-- 						<h:panelGrid columns="2" cellpadding="10"> -->
+<!-- 							<p:outputLabel value="Imprimer" /> -->
+<!-- 							<p:selectBooleanCheckbox value="#{ticketDeCaisseController.impressionDirect}" disabled="#{ticketDeCaisseController.editable()}"> -->
+<!-- 								<p:ajax event="change" update="@this,idImprimerTicketCaissePourClient" listener="#{ticketDeCaisseController.actImprimerPourClient}"/> -->
+<!-- 							</p:selectBooleanCheckbox> -->
+							<div class="ui-g-4">
+							<p:outputLabel value="Imprimer pour client" /><p:spacer width="5" />
+							<p:selectBooleanCheckbox id="idImprimerTicketCaissePourClient" value="#{ticketDeCaisseController.impressionDirectClient}" disabled="#{ticketDeCaisseController.editable()}">
+								<p:ajax event="change" update="@this" />
+							</p:selectBooleanCheckbox>
+							</div>
+<!-- 							<p:outputLabel value="Imprimer pour client" /> -->
+<!-- 							<p:selectBooleanCheckbox id="idImprimerTicketCaissePourClient" value="#{ticketDeCaisseController.impressionDirectClient}" disabled="#{ticketDeCaisseController.editable() or !ticketDeCaisseController.impressionDirect}"> -->
+<!-- 								<p:ajax event="change" update="@this" /> -->
+<!-- 							</p:selectBooleanCheckbox> -->
+							
+							<div class="ui-g-4">
+							<p:outputLabel value="Compte client" /><p:spacer width="5" />
+							<p:selectBooleanCheckbox value="#{ticketDeCaisseController.miseADispositionCompteClient}" disabled="#{ticketDeCaisseController.editable()}">
+								<p:ajax event="change" update="@this" />
+							</p:selectBooleanCheckbox>
+							</div>
+							
+							<div class="ui-g-4">
+							<p:outputLabel value="Envoyer par email" /><p:spacer width="5" />
+							<p:selectBooleanCheckbox value="#{ticketDeCaisseController.envoyeParEmail}" disabled="#{ticketDeCaisseController.editable()}">
+								<p:ajax event="change" update="@this" />
+							</p:selectBooleanCheckbox>
+							</div>
+<!-- 						</h:panelGrid> -->
+					 </p:fieldset>
+					</div>
+
+				</div>
+
+
+			</p:panel>
+
+		</p:tab>
+
+
+
+	</p:wizard>
+
+	<p:panel id="idPanelWizardButtonTicketCaisse" styleClass="wizard-ticket-de-caisse bullseye-btn-wizard-document">
+		<div class="ui-g">
+			<div class="ui-g wizard-ticket-de-caisse btn-wizard-document-tous">
+				<div class="ui-g-4">
+					<h:panelGroup id="idBtnWizardButtonPrecedentTicketCaisse" styleClass="wizard-ticket-de-caisse btn-wizard-document-left btn-wizard-float">
+						<p:commandButton value="#{const_vue.btn_precedent}" style="float: left;" 
+							onstart="PF('widgetVarLigneTicketCaisse').back();" rendered="#{ticketDeCaisseController.btnPrecedentVisible}"/>
+					</h:panelGroup>
+				</div>
+				<div class="ui-g-4">
+				</div>
+				<div class="ui-g-4">
+					<h:panelGroup id="idBtnWizardButtonSuivantTicketCaisse" styleClass="wizard-ticket-de-caisse btn-wizard-document-right">
+						<p:commandButton value="#{const_vue.btn_suivant}" style="float: right;" 
+							onstart="PF('widgetVarLigneTicketCaisse').next();" rendered="#{ticketDeCaisseController.btnSuivantVisible}"/>
+					</h:panelGroup>
+				</div>
+			</div>
+		</div>
+	</p:panel>
+
+	<!-- 			</div> -->
+	<!-- 		</div> -->
+	<!-- 	</div> --> 
+
+	<p:remoteCommand name="increment" binding="#{ticketDeCaisseController.rc}" actionListener="#{ticketDeCaisseController.actAutoInsererLigne}" process="@this"
+		update="@widgetVar(panelLignesTicketCaisse)" disabled="#{ticketDeCaisseController.insertAuto}" />
+	<!-- oncomplete="jQuery('.myclassTicketDeCaisse .ui-datatable-data tr').last().find('span.ui-icon-pencil').each(function(){jQuery(this).click()});" -->
+
+	<!-- </f:validateBean> -->
+
+	<p:dialog header="Cohérence de la qté 2" widgetVar="wVdialogQte2TicketCaisse" modal="true" appendTo="@(body)" showEffect="clip" hideEffect="clip" width="900"
+		height="200">
+		<p:panelGrid columns="1">
+			<p:outputLabel value="La qté 2 n'est pas cohérente par rapport au coefficient applicable, voulez vous la conserver ?" />
+		</p:panelGrid>
+		<p:panelGrid columns="2">
+			<p:commandButton value="Conserver la valeur" process="@this" onstart="PF('wVdialogQte2TicketCaisse').hide()" />
+			<p:commandButton value="Appliquer le coefficient" process="@this" actionListener="#{ticketDeCaisseController.actArreterEnregistrementEtFocusQte2()}"
+				oncomplete="PF('wVdialogQte2TicketCaisse').hide()" update="@widgetVar(widgetVarDataTableLigneTicketCaisse)" />
+		</p:panelGrid>
+	</p:dialog>
+
+
+</ui:composition>

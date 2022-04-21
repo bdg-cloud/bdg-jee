@@ -1,0 +1,373 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
+xmlns:f="http://java.sun.com/jsf/core" 
+xmlns:h="http://java.sun.com/jsf/html"
+xmlns:ui="http://java.sun.com/jsf/facelets" 
+xmlns:o="http://omnifaces.org/ui" 
+xmlns:p="http://primefaces.org/ui">
+
+<!-- 				<p:ajax event="tabChange" listener="#{tiersController.dashBoardParTiersController.refresh}"  > -->
+<!-- 						<f:attribute name="codeTiers" value="#{tiersController.selectedTaTiersDTO.getCodeTiers()}" /> -->
+<!-- 				</p:ajax> -->
+<!-- 	<div class="ui-g-12 ui-md-12"> -->
+<!-- 		<h:panelGrid columns="2" cellpadding="0"> -->
+<!-- 			<p:outputLabel value="Votre dossier est très volumineux, Cliquez sur le bouton pour raffraîchir les données" style="font-weight : bold;" -->
+<!-- 				rendered="#{tiersController.dashBoardParTiersController.grosFichierTiers}"> -->
+<!-- 			</p:outputLabel> -->
+<!-- 			<p:commandButton process="@this" rendered="#{tiersController.dashBoardParTiersController.grosFichierTiers}" -->
+<!-- 							update="@this,idZoneTotauxArticle, @widgetVar(wvTiersListeArticleExhaustive),@widgetVar(wvTiersListeArticleRegroupee),@widgetVar(wvTiersListeArticleFamille), idGraphiqueParFamilleTiersArticle, idGraphiqueParArticlesTiersArticle,@widgetVar(wvRappelPeriodePanelTiersArticle)"  -->
+<!-- 							action="#{tiersController.dashBoardParTiersController.initAllValueArticle(tiersController.selectedTaTiersDTO.getCodeTiers())}"  -->
+<!-- 				value="Raffraîchir" styleClass="ui-orange" style="width:100%;" /> -->
+<!-- 		</h:panelGrid> -->
+<!-- 	</div>				 -->
+
+				<div class="ui-g-12 ui-md-12">
+				<p:panel header="Critères et paramètres du tableau de bord" collapsed="true" toggleable="true" toggleOrientation="horizontal" >
+					<div class="ui-g-12 ui-md-4">
+					<p:fieldset style="margin-bottom:20px;">
+<!-- 						 <h:graphicImage name="dashboard/periode.png" library="images" /> -->
+		
+						<p:panel header="Période" styleClass="panelgrey">
+						<f:facet name="footer">
+<!-- 						oncomplete="PF('wvTiersListeGeneral').filter()" -->
+<!-- 							<p:commandButton   -->
+<!-- 							update="@this,idZoneTotauxGeneral, @widgetVar(wvTiersListeGeneral),idGraphiqueParTiersGeneral"  -->
+<!-- 							action="#{tiersController.dashBoardParTiersController.initAllValueGeneral(tiersController.selectedTaTiersDTO.getCodeTiers())}" value="Appliquer" styleClass="ui-orange"  -->
+<!-- 							style="width:100%;" /> -->
+							<p:commandButton
+							process="@this"  
+							update="@this,idZoneTotauxGeneral, @widgetVar(wvZoneTotauxCards), @widgetVar(wvTiersListeGeneral),@widgetVar(wvRappelPeriodePanelTiersGeneral)" 
+							action="#{tiersController.dashBoardParTiersController.initAllValueGeneral(tiersController.selectedTaTiersDTO.getCodeTiers())}" value="Appliquer" styleClass="ui-orange" 
+							style="width:100%;" />
+							
+						</f:facet>
+						 <div class="ui-g-12 ui-md-2" >
+						<i class="fa fa-calendar fa-3x" aria-hidden="true"></i>
+<!-- 						 <h:graphicImage name="dashboard/periode.png" library="images" /> -->
+						 </div>
+						 <div class="ui-g-12 ui-md-10">
+			        	<h:panelGrid columns="2" cellpadding="0">
+						 <p:outputLabel value="Du"/>
+											<p:calendar value="#{tiersController.dashBoardParTiersController.dateDebutGeneral}"
+												showOn="button" 
+												navigator="true" 
+												pattern="#{msg.date_pattern}" 
+												mask="true" 
+												locale="fr" 
+												timeZone="#{msg.time_zone}" >
+												<p:ajax event="dateSelect"/>
+													<p:ajax event="change"/>
+											</p:calendar>
+<!-- 												<f:convertDateTime pattern="#{msg.date_pattern}" -->
+<!-- 													timeZone="#{msg.time_zone}" /> -->
+
+						 <p:outputLabel value="au"/>
+											<p:calendar value="#{tiersController.dashBoardParTiersController.dateFinGeneral}"
+												showOn="button" 
+												navigator="true" 
+												pattern="#{msg.date_pattern}" 
+												mask="true" 
+												locale="fr" 
+												timeZone="#{msg.time_zone}" >
+												<p:ajax event="dateSelect"/>
+													<p:ajax event="change"/>
+											</p:calendar>
+
+        				</h:panelGrid>
+        				</div>
+        				 <p:separator />
+
+
+								</p:panel>
+    				</p:fieldset>
+    				</div>
+
+					<div class="ui-g-12 ui-md-4">
+
+    				</div>
+					<div class="ui-g-12 ui-md-4">
+
+    				</div>
+				</p:panel>
+				<p:panel widgetVar="wvRappelPeriodePanelTiersGeneral"  style="font-size : 20px;">
+				<p:outputLabel>Période du </p:outputLabel>
+				 <h:outputText value="#{tiersController.dashBoardParTiersController.dateDebutGeneral}"  style="font-weight : bold;">
+				 	<f:convertDateTime type="date" pattern="dd MMMM yyyy" timeZone="#{msg.time_zone}"/>
+				 </h:outputText>
+				 <p:outputLabel> au  </p:outputLabel>
+				 <h:outputText value="#{tiersController.dashBoardParTiersController.dateFinGeneral}"  style="font-weight : bold;">
+				 	<f:convertDateTime type="date" pattern="dd MMMM yyyy" timeZone="#{msg.time_zone}"/>
+				 </h:outputText>
+				 
+				</p:panel>
+				</div>
+
+				<p:outputPanel id="idZoneTotauxGeneral">
+				<div class="ui-g-12 ui-md-12">
+				<h:panelGroup id="idZonePanelGroupTotauxGeneral" rendered="#{tiersController.dashBoardParTiersController.nbFactureNonTransforme gt 0}" layout="block" >
+					<div class="ui-g-12 ui-md-4 ">
+					<div class="card" style="padding-top: 0px;padding-left: 0px;padding-right: 0px;height: 160px;">
+					<p  style="background: #c9c9c9;margin-top: 0px;text-align:center;"><i class="fa fa-info-circle fa-2x" aria-hidden="true" style="color:#ae1414;padding-top: 8px;padding-bottom: 8px;"/>
+					<p:spacer width="20"></p:spacer></p>
+					
+					<p style="text-align: center;">
+					<p:outputLabel value="#{tiersController.dashBoardParTiersController.nbFactureNonTransforme}"/>
+					<p:outputLabel value=" factures restent à régler pour un montant de : " rendered="#{tiersController.dashBoardParTiersController.nbFactureNonTransforme gt 1}"/>
+					<p:outputLabel value=" facture reste à régler pour un montant de : " rendered="#{tiersController.dashBoardParTiersController.nbFactureNonTransforme lt 2}"/>
+					<p:outputLabel value="#{tiersController.dashBoardParTiersController.montantTotalTtcNonRegleFacture}">
+						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+						</p:outputLabel>
+					<p:outputLabel value=" TTC"/>
+					</p>
+					</div>
+					</div>
+				</h:panelGroup>
+
+					<div class="ui-g-12 ui-md-6">
+					<div class="card"  style="height: 160px;">
+					<p:panelGrid columns="2" id="idInfosTiersDashBoardGeneralTiers" columnClasses="ui-grid-col-6,ui-grid-col-6" styleClass="ui-panelgrid-blank" layout="grid">
+<!-- 						<h:panelGroup> -->
+<!-- 						<p:outputLabel value="Code devis : " style="font-weight: bold;"/> -->
+<!-- 						<p:outputLabel value="#{devisController.selectedDocumentDTO.codeDocument}" /> -->
+<!-- 						</h:panelGroup> -->
+<!-- 						Col 1 -->
+						<h:panelGroup>
+						<p:outputLabel value="Code tiers : "/>
+						<p:outputLabel value="#{tiersController.selectedTaTiersDTO.codeTiers}" style="font-weight: bold;"/>
+
+<!-- 							<p:commandLink 	value="#{devisController.selectedDocumentDTO.codeTiers}" -->
+<!-- 											style="font-weight: bold;"  -->
+<!-- 											action="#{devisController.ouvertureTiersBean.detailTiers(devisController.ouvertureTiersBean.recupCodetiers(devisController.selectedDocumentDTO.codeTiers))}" update=":form:tabView" -->
+<!-- 											oncomplete="activeTabCenter('#{devisController.ouvertureTiersBean.event.cssLgrTab}');"> -->
+<!-- 							</p:commandLink>						 -->
+<!-- 						<p:outputLabel value="#{devisController.selectedDocumentDTO.codeTiers}"/> -->
+						</h:panelGroup>
+<!-- 						Col 2 -->
+						<h:panelGroup>
+						<p:outputLabel value="#{tiersController.selectedTaTiersDTO.prenomTiers}" style="font-weight: bold;"/>
+						<p:outputLabel value=" #{tiersController.selectedTaTiersDTO.nomTiers}" style="font-weight: bold;"/>
+<!-- 						<hr/> -->
+						</h:panelGroup>
+<!-- 						Col 1 -->
+						<h:panelGroup>
+						<p:outputLabel value="Entreprise : "/>
+						<p:outputLabel value="#{tiersController.selectedTaTiersDTO.nomEntreprise}" style="font-weight: bold;"/>
+<!-- 						<p:outputLabel value="Libellé : "/> -->
+<!-- 						<p:outputLabel value="#{devisController.selectedDocumentDTO.libelleDocument}" /> -->
+						</h:panelGroup>
+<!-- 						Col 2 -->
+						<h:panelGroup>
+						<i class="fa fa-envelope fa-1x" aria-hidden="true"/>
+<!-- 						<p:outputLabel value="Adresse facturation : " style="font-weight: bold;"/> -->
+						<p:outputLabel value=" : #{tiersController.selectedTaTiersDTO.adresse1Adresse}" />
+<!-- 							<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/> -->
+<!-- 						</p:outputLabel> -->
+<!-- 						<p:outputLabel value="Entreprise : " style="font-weight: bold;"/> -->
+<!-- 						<p:outputLabel value="#{devisController.selectedDocumentDTO.nomEntreprise}"/> -->
+						<br />
+<!-- 						<p:outputLabel value="#{devisController.selectedDocumentDTO.nomTiers} - #{devisController.selectedDocumentDTO.prenomTiers}"/> -->
+<!-- 						<hr/> -->
+<!-- 						<h:panelGroup> -->
+<!-- 						<p:outputLabel value="Coordonnées : " style="font-weight: bold;"/> -->
+<!-- 						<p:outputLabel value="#{devisController.selectedInfosTiers.adresseEmail} - #{devisController.selectedInfosTiers.numeroTelephone}"/> -->
+<!-- 						</h:panelGroup> -->
+						</h:panelGroup>
+<!-- 						Col 1 -->
+						<h:panelGroup>
+						<i class="fa fa-phone fa-1x" aria-hidden="true"/>
+<!-- 						<p:outputLabel value="Tèl : "/> -->
+						<p:outputLabel value=" : #{tiersController.selectedTaTiersDTO.numeroTelephone}" style="font-weight: bold;"/>
+<!-- 						<p:outputLabel value="" style="font-weight:bold;"/> -->
+<!-- 						<p:outputLabel value="#{devisController.taAdresseFact.adresse1Adresse}" > -->
+<!-- 						</p:outputLabel> -->
+						<br/>
+<!-- 						<p:outputLabel value="#{devisController.taAdresseFact.adresse2Adresse}" > -->
+<!-- 						</p:outputLabel> -->
+						</h:panelGroup>
+
+<!-- 						<h:panelGroup> -->
+<!-- 						<p:outputLabel value="Date devis : " style="font-weight: bold;"/> -->
+<!-- 						<p:outputLabel value="#{devisController.selectedDocumentDTO.dateDocument}" > -->
+<!-- 							<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/> -->
+<!-- 						</p:outputLabel> -->
+<!-- 						</h:panelGroup> -->
+<!-- 						Col 2 -->
+						<h:panelGroup>
+						<p:outputLabel value="#{tiersController.selectedTaTiersDTO.adresse2Adresse}" />
+<!-- 						<p:outputLabel value="Tèl : " style="font-weight: bold;"/> -->
+<!-- 						<p:outputLabel value="#{devisController.taTiersDTO.numeroTelephone}"/> -->
+						</h:panelGroup>
+<!-- 						Col 1 -->
+						<h:panelGroup>
+<!-- 						<p:outputLabel value="" style="font-weight: bold;"/> -->
+						<i class="fa fa-at fa-1x" aria-hidden="true"/> : 
+<!-- 						<i class="fa fa-paper-plane fa-1x" aria-hidden="true"/> -->
+<!-- 						<p:outputLabel value="Email : "/> -->
+   							 <p:commandLink update=":form:messages" actionListener="#{tiersController.actDialogEmail}">
+        						<h:outputText value="#{tiersController.selectedTaTiersDTO.adresseEmail}" />
+    						</p:commandLink>
+<!-- 						<p:link onclick="$('.classHiddenCommandForDialogEmailReturnTiers2').click()" value="#{tiersController.selectedTaTiersDTO.adresseEmail}" > -->
+<!--     						<f:param name="productId" value="10" /> -->
+<!-- 						</p:link> -->
+<!-- 						<p:outputLabel value=" : #{tiersController.selectedTaTiersDTO.adresseEmail}" style="font-weight: bold;"/> -->
+<!-- 						<p:outputLabel value="#{devisController.taAdresseFact.adresse3Adresse}" > -->
+<!-- 						<p:outputLabel value="#{devisController.taAdresseFact.codepostalAdresse} #{devisController.taAdresseFact.villeAdresse}" > -->
+<!-- 							<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/> -->
+<!-- 						</p:outputLabel> -->
+						</h:panelGroup>
+						
+<!-- 						<h:panelGroup> -->
+<!-- 						<p:outputLabel value="Date échéance : " style="font-weight:bold;"/> -->
+<!-- 						</h:panelGroup> -->
+<!-- 						Col 2 -->
+						<h:panelGroup>
+						<p:outputLabel value="#{tiersController.selectedTaTiersDTO.adresse3Adresse}" />
+<!-- 						<p:outputLabel value="Ville : "/> -->
+<!-- 						<p:outputLabel value="Email : " style="font-weight: bold;"/> -->
+<!-- 						<p:outputLabel value="#{devisController.taTiersDTO.adresseEmail}"/> -->
+						</h:panelGroup>
+<!-- 						Col 1 -->
+						<h:panelGroup>
+						<i class="fa fa-globe fa-1x" aria-hidden="true"/> : 
+							<h:outputLink value = "#{tiersController.selectedTaTiersDTO.adresseWeb}" target="_blanck"><p:outputLabel value="#{tiersController.selectedTaTiersDTO.adresseWeb}" style=" cursor:pointer;font-weight: bold;"/></h:outputLink> 
+<!-- 						<p:outputLabel value="Site internet : "/> -->
+<!-- 						<p:outputLabel value=" : #{tiersController.selectedTaTiersDTO.adresseWeb}" style="font-weight: bold;"/> -->
+<!-- 						<p:outputLabel value="#{devisController.taAdresseFact.codepostalAdresse} #{devisController.taAdresseFact.villeAdresse}" > -->
+<!-- 						</p:outputLabel> -->
+						</h:panelGroup>
+																		
+ 						<h:panelGroup> 
+						<p:outputLabel value="#{tiersController.selectedTaTiersDTO.codepostalAdresse} " />
+						<p:outputLabel value="#{tiersController.selectedTaTiersDTO.villeAdresse}"/>
+<!-- 						<div class="card" style="background:#ebebeb;text-align:center;center;padding: 5px;margin-top: 15px;"> -->
+<!-- 						<p:outputLabel value="Net TTC" style="font-weight: bold;"/> -->
+
+<!-- 						</div> -->
+						</h:panelGroup>
+						
+
+
+						
+						
+<!-- 						<h:panelGroup> -->
+<!-- 						<div class="card" style="background:#ebebeb;text-align:center;center;padding: 5px;margin-top: 15px;"> -->
+<!-- 						<p:outputLabel value="Déjà réglé : " style="font-weight: bold;"/> -->
+<!-- 						<p:separator style="color:#9a9a9a"/> -->
+<!-- 						<p:outputLabel value="#{devisController.selectedDocumentDTO.regleDocument}"> -->
+<!-- 						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" /> -->
+<!-- 						</p:outputLabel> -->
+<!-- 						</div> -->
+<!-- 						</h:panelGroup> -->
+<!-- 						</h:panelGroup> -->
+<!--border-style: solid;border-width: thin;padding: 7px; -->
+<!-- 						<h:panelGroup> -->
+<!-- 						<div class="card" style="background: #ebf9cc;text-align: center;padding: 5px;margin-top: 15px;"> -->
+<!-- 						<p:outputLabel value="Reste à régler" style="font-weight: bold;"/> -->
+<!-- 						<p:separator style="color:#9a9a9a"/> -->
+<!-- 						<p:outputLabel value="#{devisController.selectedDocumentDTO.resteAReglerComplet}" style="font-weight: bold;" > -->
+<!-- 						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" /> -->
+<!-- 						</p:outputLabel> -->
+<!-- 						<hr /> -->
+<!-- 						</div> -->
+<!-- 						</h:panelGroup> -->
+					</p:panelGrid>
+						</div>
+					</div>
+					
+					<h:panelGroup id="idZonePanelGroupDashBoardGeneralInfoComplementaire" rendered="#{tiersController.dashBoardParTiersController.nbFactureNonTransforme lt 1}" layout="block" >
+					<div class="ui-g-12 ui-md-6 ">
+					<div class="card" style="height: 160px;">
+					<div class="ui-g-12 ui-md-6 ">
+					<p:panelGrid columns="2" id="idInfosComplTiersDashBoardGeneralTiers" columnClasses="ui-grid-col-6,ui-grid-col-6" styleClass="ui-panelgrid-blank" layout="grid">
+					
+					<p:outputLabel value="Famille : " />
+					<p:outputLabel value="#{tiersController.selectedTaTiersDTO.codeFamilleTiers}" />
+<!-- 					<br /> -->
+					<p:outputLabel value="Saisie TTC : " />
+					<p:selectBooleanCheckbox value="#{tiersController.selectedTaTiersDTO.ttcTiers}" disabled="true">
+					</p:selectBooleanCheckbox>
+					
+<!-- 					<br /> -->
+					<p:outputLabel value="Grille tarifaire : " />
+					<p:outputLabel value="#{tiersController.selectedTaTiersDTO.codeTTarif}" />
+<!-- 					<br /> -->
+					<p:outputLabel value="Condition paiement : " />
+					<p:outputLabel value="#{tiersController.selectedTaTiersDTO.codeCPaiement}" />
+					</p:panelGrid>
+					</div>
+
+					<div class="ui-g-12 ui-md-6 ">
+					</div>
+					</div>
+					</div>
+				</h:panelGroup>
+				
+				</div>
+				
+				<div class="ui-g-12 ui-md-12">
+				
+				<div class="ui-g-12 ui-md-6 ui-lg-2 ">
+					<div class="card card-height-150">
+						<h3 align="center"><span style="font-size : 30px;">#{tiersController.dashBoardParTiersController.nbFactureGeneral}</span> factures réalisées</h3>
+						<p:outputLabel value="CA HT : "/> 
+						<p:outputLabel value="#{tiersController.dashBoardParTiersController.montantTotalHtFactureGeneral}" >
+						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+						</p:outputLabel>
+						<!-- <p:separator></p:separator>
+						<p:outputLabel value="Nombre : "/> 
+						<p:outputLabel value="#{tiersController.dashBoardParTiersController.nbFacture}"/> -->
+					</div>
+				</div>
+				
+				 <div class="ui-g-12 ui-md-6 ui-lg-2">
+					<div class="card text-center card-height-150">
+					<br/>
+						<h3 align="center">Encours </h3>
+						
+						<p:outputLabel value="CA HT : "/> 
+						<p:outputLabel value="#{tiersController.dashBoardParTiersController.montantTotalHtNonTransfoArticleGeneral}" >
+						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+						</p:outputLabel>
+						<!-- <p:separator></p:separator> -->
+						<!-- <p:outputLabel value="Nombre : "/> 
+						<p:outputLabel value="#{tiersController.dashBoardParTiersController.nbArticleNonTransforme}"/> -->
+					</div>					
+				</div> 
+				
+				<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+					<div class="card card-height-150"> 
+						<p:outputLabel value="Etat : "/>
+						<p:outputLabel value="#{tiersController.selectedTaTiersDTO.actifTiers ? 'Actif' : 'Inactif'} " style="font-weight: bold;"/>
+						<BR />
+						<p:outputLabel value="Commentaire :"/><BR />
+						<p:outputLabel value="#{tiersController.selectedTaTiersDTO.commentaire}" style="font-style: italic;"/>
+						
+					</div>			
+				</div>
+
+			
+				</div>
+				
+			</p:outputPanel>
+
+				<div class="ui-g-12 ui-md-12">
+				
+				<div class="ui-g-12 ui-md-8 ">
+									
+				</div>
+<!-- 				<div class="ui-g-12 ui-md-4 "> -->
+<!-- 					<div class="card"> -->
+<!-- 					<p:tab title="General" rendered="true"> -->
+					
+<!-- 						<h3 align="center">Graphique</h3> -->
+<!-- 								<p:chart type="bar" model="#{tiersController.dashBoardParTiersController.barChartModelFacture}" -->
+<!-- 								id="idGraphiqueParTiersGeneral"  -->
+<!-- 								widgetVar="wvGraphiqueParTiersGeneral" -->
+<!-- 								responsive="true"  -->
+<!-- 								style="height:300px;"> -->
+<!-- 								</p:chart> -->
+<!-- 					</p:tab> -->
+<!-- 					</div>				 -->
+<!-- 				</div> -->
+				</div>
+				
+</ui:composition>

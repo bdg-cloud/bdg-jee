@@ -1,0 +1,1957 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:lgr="http://legrain.fr/ui"
+    xmlns:pe="http://primefaces.org/ui/extensions">
+
+	<!-- <f:validateBean disabled="true"> -->
+
+	<ui:define name="metadata">
+		<f:metadata>
+			<f:viewParam name="variableEcran" value="Proforma" />
+		</f:metadata>
+	</ui:define>
+	
+			<div class="dashboard-title" style="background: #f0f1f2; margin-bottom: 15px;">
+						<h:panelGroup id="idPanelGroupInfosTiersEnteteProforma" rendered="#{!proformaController.selectedDocumentDTO.ProformaEstVide()}">
+						<p:spacer width="30" height="5" />
+						<p:outputLabel value="Code : " />
+						<p:outputLabel value="#{proformaController.selectedDocumentDTO.codeDocument}" style="font-weight: bold;"/>
+						<p:spacer width="30" height="5" />
+						<p:outputLabel value="Code tiers : " />
+						<p:commandLink value="#{proformaController.selectedDocumentDTO.codeTiers}" style="font-weight: bold;"
+						action="#{ouvertureDocumentBean.detailTiers(ouvertureDocumentBean.recupCodetiers(proformaController.selectedDocumentDTO.codeTiers))}" 
+						update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+						</p:commandLink>
+						<p:spacer width="30" height="5" />
+						<p:outputLabel value="Nom : " />
+						<p:outputLabel value="#{proformaController.selectedDocumentDTO.nomTiers} #{proformaController.selectedDocumentDTO.prenomTiers}" style="font-weight: bold;"/>
+						<p:spacer width="30" height="5" />
+						<p:outputLabel value="Raison sociale : " />
+						<p:outputLabel value="#{proformaController.selectedDocumentDTO.nomEntreprise}" style="font-weight: bold;"/>
+						</h:panelGroup>
+			</div>
+	<p:menubar styleClass="menu-onglet" id="idMenuBoutonProforma" widgetVar="wvMenuBoutonProforma">
+
+		<p:menuitem title="Enregistrer le proforma en cours de saisie" value="Enregistrer" styleClass="icon icon-save" process="@this idtiersProforma idCodeProforma"
+			actionListener="#{proformaController.actEnregistrer}" 
+			oncomplete="impressionDirect(PF('wvImpressionDirectProforma'),'#{request.contextPath}/output?__report=/reports/documents/proforma/Fiche_proforma.rptdesign&amp;__format=pdf')"
+			update="idPanelEnteteProforma,idPanelLignesProforma,idTableauComplementaireProforma,:form:messages,@form,@widgetVar(wvMenuListeProforma),@widgetVar(wvDataTableListeProforma)"
+			disabled="#{proformaController.etatBouton('enregistrer') or proformaController.stepEnCours('idLignesProforma')}" />
+			
+		<p:menuitem title="Créer un nouvel proforma" value="Insérer" styleClass="icon icon-insert"
+			actionListener="#{proformaController.actInserer}" process="@this"
+			oncomplete="if(PF('widgetVarLigneProforma').getStepIndex()!=-1) {PF('widgetVarLigneProforma').loadStep('idEnteteProforma', false)}"
+			update="idPanelEnteteProforma,idPanelLignesProforma,idTableauComplementaireProforma,idPrecisionPrixPro,:form:messages,@form,@widgetVar(wvMenuListeProforma),@widgetVar(wvDataTableListeProforma)"
+			disabled="#{proformaController.etatBouton('inserer') or proformaController.stepEnCours('idLignesProforma')}" />
+			
+		<p:menuitem title="Modifier l'proforma courant" value="Modifier" styleClass="icon icon-update"
+			actionListener="#{proformaController.actModifier}"
+			process="@this"
+			update="idPanelEnteteProforma,idPanelLignesProforma,idTableauComplementaireProforma,:form:messages,@form,@widgetVar(wvMenuListeProforma),@widgetVar(wvDataTableListeProforma)"
+			disabled="#{proformaController.etatBouton('modifier')}" >
+			<p:confirm header="#{proformaController.titreModification}" message="#{proformaController.messageModification}" icon="ui-icon-alert" />
+		</p:menuitem>
+			
+			
+		<p:menuitem title="Annuler les modifications en cours" value="Annuler" styleClass="icon icon-cancel"
+			actionListener="#{proformaController.actAnnuler}" process="@this"
+			update="idPanelEnteteProforma,idPanelLignesProforma,idTableauComplementaireProforma,:form:messages,@form,@widgetVar(wvMenuListeProforma),@widgetVar(wvDataTableListeProforma)"
+			disabled="#{proformaController.etatBouton('annuler') }" >
+		<p:confirm header="Confirmation" message="Etes vous sur de vouloir annuler les modifications en cours ?"  icon="ui-icon-alert" />
+		</p:menuitem>
+			
+<!-- 		<p:separator styleClass="separateur-menu-vertical"/> -->
+		<p:menuitem title="Supprimer le proforma courant" value="Supprimer" styleClass="icon icon-delete menuitem-poubelle-droite"
+			actionListener="#{proformaController.actSupprimer}"
+			process="@this"
+			update="idPanelEnteteProforma,idPanelLignesProforma,idTableauComplementaireProforma,:form:messages,@form,@widgetVar(wvMenuListeProforma),@widgetVar(wvDataTableListeProforma)"
+			disabled="#{proformaController.etatBouton('supprimer') or proformaController.stepEnCours('idLignesProforma')}" >
+<!-- 			<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer cet enregistrement ?" icon="ui-icon-alert" /> -->
+			<p:confirm header="Confirmation de la suppression" message="#{proformaController.messageSuppression}" icon="ui-icon-alert" />
+
+		</p:menuitem>			
+
+		<p:menuitem title="Créer un évènement" styleClass="icon-agenda icon" 
+			
+			oncomplete="$('.classHiddenCommandForDialogAgendaReturnProforma').click()"
+			process="@this" 
+			update="@this" 
+			disabled="#{proformaController.etatBouton('modifier')}"/>
+
+		<p:separator styleClass="separateur-menu-vertical"/>
+
+		<p:menuitem title="Fermer l'écran des proformas" value="Fermer" styleClass="icon icon-close menuitem-fermer-droite"
+			process="@this" 
+			actionListener="#{proformaController.actFermer}"
+			update=":form:messages,@widgetVar(wvMenuListeProforma),@widgetVar(wvDataTableListeProforma)"
+			disabled="#{proformaController.etatBouton('fermer')}"
+			onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())">
+			
+			<p:confirm header="Confirmation" message="#{msg_diag.alert_fermeture_onglet}" icon="ui-icon-alert" disabled="#{!proformaController.modeEcran.dataSetEnModif()}"/>
+		</p:menuitem>
+
+<!-- 		<p:menuitem title="Imprimer le proforma courant" value="Imprimer" styleClass="icon icon-print" -->
+<!-- 			onsuccess="window.open('#{request.contextPath}/output?__report=/reports/documents/proforma/Fiche_proforma.rptdesign&amp;__format=pdf')" -->
+<!-- 			actionListener="#{proformaController.actImprimer}" -->
+<!-- 			disabled="#{proformaController.etatBouton('imprimer') or proformaController.stepEnCours('idLignesProforma')}" /> -->
+
+		<!-- Menu Imprimer Avec Impression personnalisée YANN -->
+<!-- 		<lgr:menuItemImprimer title="Imprimer le proforma courant" value="Imprimer" styleClass="icon icon-print" -->
+<!-- 			disabled="#{proformaController.etatBouton('imprimer') or proformaController.stepEnCours('idLignesProforma')}" -->
+<!-- 			onsuccess="window.open('#{request.contextPath}/output?__report=/reports/documents/proforma/Fiche_proforma.rptdesign&amp;__format=pdf')" -->
+<!-- 			oncomplete="$('.classHiddenCommandForDialogImprimerReturnProforma').click()" -->
+<!-- 			actionBean="#{proformaController}" -->
+<!-- 			actionMethod="actImprimer" -->
+<!-- 			choixEdition="#{proformaController.choixEdition}" -->
+<!-- 			/> -->
+		
+		
+		<!--  <lgr:menuItemImprimer title="Imprimer le proforma courant" value="Imprimer" styleClass="icon icon-print"
+			disabled="#{proformaController.etatBouton('imprimer') or proformaController.stepEnCours('idLignesProforma')}"
+			onsuccess="window.open('#{request.contextPath}/output?__report=/reports/documents/proforma/Fiche_proforma.rptdesign&amp;__format=pdf')"
+			oncomplete="$('.classHiddenCommandForDialogImprimerReturnProforma').click()"
+			actionBean="#{proformaController}"
+			actionMethod="actImprimer"
+			choixEdition="#{proformaController.choixEdition}"
+			/>-->
+		
+		<!-- JE TAFF ICI POUR LE CHOIX EDITION A L'IMPRESSION -->
+	<p:submenu  icon="ui-icon-print"  class="ui-icon-print-option">
+	<!-- NEW BUTTON COMME FACTURE AVEC EDITION DEFAUT 29/10/19 -->
+	<p:menuitem title="#{c_proforma.titre_menu_imprimer} pour le client" value="Imprimer pour le client" icon="fa fa-print"
+				disabled="#{(proformaController.etatBouton('imprimer') or proformaController.stepEnCours('idLignesProforma')) }"
+				actionListener="#{proformaController.imprimeEdition(null, 'CLIENT', 'true')}"
+				update="idTableauComplementaireProforma">
+				<p:confirm header="Confirmation" disabled="#{proformaController.selectedDocumentDTO.estMisADisposition}" message="Etes-vous sur de vouloir mettre à disposition du client ce document ? Ensuite, vous ne pourrez plus le modifier ?" icon="ui-icon-alert" />
+	</p:menuitem>
+	<p:submenu label="Tous les modèles" disabled="#{(proformaController.etatBouton('imprimer') or devisController.stepEnCours('idLignesProforma'))}">
+		 <c:forEach items="#{proformaController.listeEdition}" var="edition" varStatus="loop">
+		       <p:menuitem  title="#{edition.libelleEdition}" value="#{edition.libelleEdition}" actionListener="#{proformaController.imprimeEdition(edition, 'CLIENT', 'true')}" 
+		       update="idTableauComplementaireProforma">
+				<p:confirm header="Confirmation" disabled="#{proformaController.selectedDocumentDTO.estMisADisposition}" message="Etes-vous sur de vouloir mettre à disposition du client ce document ? Ensuite, vous ne pourrez plus le modifier ?" icon="ui-icon-alert" />
+				</p:menuitem >
+		   </c:forEach>
+	</p:submenu>
+			
+<!-- 			<p:separator /> -->
+<!-- 	<p:menuitem title="#{c_proforma.titre_menu_imprimer} en Duplicata" value="Duplicata" icon="fa fa-print" -->
+<!-- 		disabled="#{(proformaController.etatBouton('imprimer') or proformaController.stepEnCours('idLignesProforma')) or !proformaController.selectedDocumentDTO.estMisADisposition}" -->
+<!-- 		actionListener="#{proformaController.imprimeEdition(null, 'DUPLICATA', 'false')}"> -->
+<!-- 	</p:menuitem> -->
+	
+<!-- 	<p:submenu label="Tous les modèles" -->
+<!-- 	 disabled="#{(proformaController.etatBouton('imprimer') or proformaController.stepEnCours('idLignesProforma')) or !proformaController.selectedDocumentDTO.estMisADisposition}"> -->
+<!-- 		 <c:forEach items="#{proformaController.listeEdition}" var="edition" varStatus="loop"> -->
+<!-- 		       <p:menuitem  title="#{edition.libelleEdition}" value="#{edition.libelleEdition}" actionListener="#{proformaController.imprimeEdition(edition, 'DUPLICATA', 'false')}"> -->
+<!-- 				</p:menuitem > -->
+<!-- 		   </c:forEach> -->
+<!-- 	</p:submenu> -->
+			
+			<p:separator />
+	<p:menuitem  title="#{c_proforma.titre_menu_imprimer} en brouillon" value="Brouillon" icon="fa fa-print"
+				disabled="#{(proformaController.etatBouton('imprimer') or proformaController.stepEnCours('idLignesProforma')) or proformaController.selectedDocumentDTO.estMisADisposition }"
+				actionListener="#{proformaController.imprimeEdition(null, 'BROUILLON', 'false')}">
+	</p:menuitem >
+	<p:submenu label="Tous les modèles" disabled="#{(proformaController.etatBouton('imprimer') or proformaController.stepEnCours('idLignesProforma')) or proformaController.selectedDocumentDTO.estMisADisposition }">
+			 <c:forEach items="#{proformaController.listeEdition}" var="edition" varStatus="loop">
+			       <p:menuitem  title="#{edition.libelleEdition}" value="#{edition.libelleEdition}" actionListener="#{proformaController.imprimeEdition(edition, 'BROUILLON', 'false')}">
+					</p:menuitem >
+			   </c:forEach>
+	</p:submenu>
+			 
+	</p:submenu>
+	<!-- FIN NEW BUTTONS -->
+		
+		<p:menuitem title="Imprimer étiquettes code barre" value="Imprimer étiquette code barre" styleClass="icon icon-barcode"
+						onsuccess="window.open('#{request.contextPath}/articles/etiquette_cb.xhtml')"
+						actionListener="#{proformaController.actImprimerEtiquetteCB}"/>		
+						
+		<p:submenu  icon="ui-icon-mail"  class="ui-icon-mail-option">
+			
+			<p:menuitem  title="Envoyer par email pour le client" value="Envoyer au client" icon="fa fa-paper-plane"
+				disabled="#{proformaController.etatBouton('modifier')}"
+				oncomplete="$('.classHiddenCommandForDialogEmailReturnProforma').click()"
+				update="idPanelEnteteProforma,idPanelLignesProforma,idTableauComplementaireProforma,:form:messages,@form,@widgetVar(wvMenuListeProforma),@widgetVar(wvDataTableListeProforma)"
+				actionListener="#{proformaController.envoiMailEdition(null, 'CLIENT', 'true')}">
+				<p:confirm header="Confirmation" disabled="#{proformaController.selectedDocumentDTO.estMisADisposition}" message="Etes-vous sur de vouloir mettre à disposition du client ce document ?" icon="ui-icon-alert" />
+				</p:menuitem >
+				<p:submenu label="Tous les modèles" disabled="#{proformaController.etatBouton('modifier')}">
+					 <c:forEach items="#{proformaController.listeEdition}" var="edition" varStatus="loop">
+					       <p:menuitem  title="#{edition.libelleEdition}" value="#{edition.libelleEdition}"
+					        actionListener="#{proformaController.envoiMailEdition(edition, 'CLIENT', 'true')}"
+					         oncomplete="$('.classHiddenCommandForDialogEmailReturnProforma').click()">
+					         <p:confirm header="Confirmation" disabled="#{proformaController.selectedDocumentDTO.estMisADisposition}" message="Etes-vous sur de vouloir mettre à disposition du client ce document ?" icon="ui-icon-alert" />
+							</p:menuitem >
+					   </c:forEach>
+				</p:submenu>
+				
+<!-- 				<p:separator /> -->
+				
+<!-- 				<p:menuitem  title="Envoyer par email en duplicata" value="Duplicata" icon="fa fa-paper-plane" -->
+<!-- 				disabled="#{proformaController.etatBouton('modifier') or !proformaController.selectedDocumentDTO.estMisADisposition}" -->
+<!-- 				oncomplete="$('.classHiddenCommandForDialogEmailReturnProforma').click()" -->
+<!-- 				update="idPanelEnteteProforma,idPanelLignesProforma,idTableauComplementaireProforma,:form:messages,@form,@widgetVar(wvMenuListeProforma),@widgetVar(wvDataTableListeProforma)" -->
+<!-- 				actionListener="#{proformaController.envoiMailEdition(null, 'DUPLICATA', 'false')}"> -->
+<!-- 				</p:menuitem > -->
+<!-- 				<p:submenu label="Tous les modèles" disabled="#{proformaController.etatBouton('modifier') or !proformaController.selectedDocumentDTO.estMisADisposition}"> -->
+<!-- 					 <c:forEach items="#{proformaController.listeEdition}" var="edition" varStatus="loop"> -->
+<!-- 					       <p:menuitem  title="#{edition.libelleEdition}" value="#{edition.libelleEdition}" -->
+<!-- 					        actionListener="#{proformaController.envoiMailEdition(edition, 'DUPLICATA', 'false')}" -->
+<!-- 					         oncomplete="$('.classHiddenCommandForDialogEmailReturnProforma').click()"> -->
+<!-- 							</p:menuitem > -->
+<!-- 					   </c:forEach> -->
+<!-- 				</p:submenu> -->
+				
+				<p:separator />
+				
+				<p:menuitem  title="Envoyer par email en brouillon" value="Brouillon" icon="fa fa-paper-plane"
+				disabled="#{proformaController.etatBouton('modifier') or proformaController.selectedDocumentDTO.estMisADisposition}"
+				oncomplete="$('.classHiddenCommandForDialogEmailReturnProforma').click()"
+				update="idPanelEnteteProforma,idPanelLignesProforma,idTableauComplementaireProforma,:form:messages,@form,@widgetVar(wvMenuListeProforma),@widgetVar(wvDataTableListeProforma)"
+				actionListener="#{proformaController.envoiMailEdition(null, 'BROUILLON', 'false')}">
+				</p:menuitem >
+				<p:submenu label="Tous les modèles" disabled="#{proformaController.etatBouton('modifier') or proformaController.selectedDocumentDTO.estMisADisposition}">
+					 <c:forEach items="#{proformaController.listeEdition}" var="edition" varStatus="loop">
+					       <p:menuitem  title="#{edition.libelleEdition}" value="#{edition.libelleEdition}"
+					        actionListener="#{proformaController.envoiMailEdition(edition, 'BROUILLON', 'false')}"
+					         oncomplete="$('.classHiddenCommandForDialogEmailReturnProforma').click()">
+							</p:menuitem >
+					   </c:forEach>
+				</p:submenu>
+				
+		</p:submenu>
+
+		<p:separator styleClass="separateur-menu-vertical" />
+
+<!-- 		<p:menuitem title="Liste des proformas" icon="fa fa-list" oncomplete="PF('wvOverlayListeProforma').show();"/>	 -->
+		<p:menuitem title="Liste des proformas" styleClass="icon icon-liste" oncomplete="PF('wvOverlayListeProforma').show();"/>
+		
+		<p:separator styleClass="separateur-menu-vertical" />		
+		
+		<p:menuitem title="Documents liés" styleClass="icon icon-documents-lies"  rendered="#{auth.isDevLgr()}"
+			oncomplete="$('.classHiddenCommandForDialogDocumentLieReturnProforma').click()"
+			process="@this" 
+			update="@this" 
+			disabled="#bonCdeAchatController.etatBouton('imprimer') }" />
+				
+	</p:menubar>
+	<p:commandButton styleClass="classHiddenCommandForDialogAgendaReturnProforma" actionListener="#{proformaController.actDialogEvenement}" style="display:none" process="@this"  >
+        <p:ajax event="dialogReturn" update="@widgetVar(wvAgenda)"  />  
+    </p:commandButton>
+    	<p:commandButton styleClass="classHiddenCommandForDialogEmailReturnProforma" actionListener="#{proformaController.actDialogEmailSelectedEdition}" style="display:none" process="@this"  >
+        <p:ajax event="dialogReturn" listener="#{proformaController.handleReturnDialogEmail}" update=":form:messages, idTableauComplementaireProforma"  />  
+    </p:commandButton> 
+   
+    <p:commandButton styleClass="classHiddenCommandForDialogDocumentLieReturnProforma" actionListener="#{proformaController.actDialogGenerationDocumentLie}" style="display:none" process="@this"  >
+        <p:ajax event="dialogReturn" update="@form"  listener="#{proformaController.handleReturnDialogDocumentLie}"/>  
+    </p:commandButton>
+      
+    <p:commandButton styleClass="classHiddenCommandForDialogImprimerReturnProforma" actionListener="#{proformaController.actDialogImprimer}" style="display:none" process="@this"  >
+        <p:ajax event="dialogReturn" listener="#{proformaController.handleReturnDialogImprimer}" update=":form:messages, idTableauComplementaireProforma"  />  
+    </p:commandButton> 
+	<!-- 	<div class="ui-grid ui-grid-responsive"> -->
+	<!-- 		<div class="ui-grid-row"> -->
+	<!-- 			<div class="ui-grid-col-12"> -->
+<!-- 	flowListener="#{proformaController.onFlowProcess}" -->
+
+		<!-- 					Ajouter le 03/08/2017 Jean Marc -->
+	<p:fieldset style="margin-bottom:20px;" id="idTableauComplementaireProforma" widgetVar="wvTableauComplementairePro">
+		<h:panelGrid columns="10" cellpadding="15">
+			<p:panel styleClass="panel-aide-contextuelle">
+				<p:commandButton process="@this" 
+				alt="#{const_vue.btn_generation_modele}"
+				title="#{const_vue.btn_generation_modele}" 
+				label="#{const_vue.btn_generation_modele}" 
+				value="#{const_vue.btn_generation_modele}"
+				icon="ui-icon-copy"
+					action="#{duplicationDocumentBean.actDialogGenerationModeleDocument}" disabled="#{proformaController.modeEcran.dataSetEnModif()}">
+						<f:setPropertyActionListener target="#{duplicationDocumentBean.doc}" value="#{proformaController.masterEntity}"/>
+					<p:ajax event="dialogReturn"
+						listener="#{duplicationDocumentBean.handleReturnDialogGenerationDocument}"
+						update=":form:tabView,@widgetVar(wvMenuListeProforma),@widgetVar(wvDataTableListeProforma)"
+						oncomplete="activeTabCenter('#{proformaController.css}');" />
+				</p:commandButton>
+				<p:commandLink id="idLinkAideGenerationModeleDocumentProforma"
+					styleClass="lien-aide-contextuelle">
+					<i class="fa fa-info-circle animated"></i>
+				</p:commandLink>
+
+				<p:overlayPanel for="idLinkAideGenerationModeleDocumentProforma"
+					hideEffect="fade" dynamic="true" showCloseIcon="true"
+					styleClass="overlay-aide-contextuelle">
+					<ui:include
+						src="/aide_contextuelle/document_generation_modele_document.xhtml" />
+				</p:overlayPanel>
+			</p:panel>
+			<p:separator/>
+			<p:panel styleClass="panel-aide-contextuelle">
+				<p:commandButton process="@this" 
+					alt="#{const_vue.btn_generation_document}" 
+					title="#{const_vue.btn_generation_document}"
+					label="#{const_vue.btn_generation_document}" 
+					value="#{const_vue.btn_generation_document}"
+				icon="ui-icon-link"
+					action="#{duplicationDocumentBean.actDialogGenerationDocument}" disabled="#{proformaController.modeEcran.dataSetEnModif()}">
+					<f:setPropertyActionListener target="#{duplicationDocumentBean.doc}" value="#{proformaController.masterEntity}"/>	
+					<f:setPropertyActionListener target="#{duplicationDocumentBean.genereToutesLesLignes}" value="true"/>
+					<p:ajax event="dialogReturn"
+						listener="#{duplicationDocumentBean.handleReturnDialogGenerationDocument}"
+						update=":form:tabView,@widgetVar(wvMenuListeProforma),@widgetVar(wvDataTableListeProforma)"
+						oncomplete="activeTabCenter('#{proformaController.css}');" />
+				</p:commandButton>
+				<p:commandLink id="idLinkAideGenerationDocumentProforma"
+					styleClass="lien-aide-contextuelle">
+					<i class="fa fa-info-circle animated"></i>
+				</p:commandLink>
+
+				<p:overlayPanel for="idLinkAideGenerationDocumentProforma" hideEffect="fade"
+					dynamic="true" showCloseIcon="true"
+					styleClass="overlay-aide-contextuelle">
+					<ui:include
+						src="/aide_contextuelle/document_generation_document.xhtml" />
+				</p:overlayPanel>
+			
+			</p:panel>
+					    <p:outputLabel value="Etat du document  " rendered="#{auth.isDevLgr()}"/>
+						<p:panel styleClass="panel-aide-contextuelle">
+							<p:autoComplete value="#{proformaController.selectedEtatDocument}" rendered="#{auth.isDevLgr()}"
+								converter="entityConverter"
+								completeMethod="#{proformaController.etatAutoComplete}"
+								disabled="true" var="etat"
+								itemLabel="#{etat.codeEtat}" itemValue="#{etat}"
+								forceSelection="true" dropdown="true" placeholder="Etat du document">
+								<p:column>
+									<h:outputText value="#{etat.codeEtat}" />
+								</p:column>
+
+								<p:column>
+									<h:outputText value="#{etat.liblEtat}" />
+								</p:column>
+
+								<f:attribute name="nomChamp" value="#{const.C_CODE_ETAT}" />
+								  <p:ajax event="clear" listener="#{proformaController.onClearEtat}" 
+								  update="idPanelEnteteProforma,idPanelLignesProforma,idTableauComplementaireProforma,:form:messages,@form,@widgetVar(wvMenuListeProforma),@widgetVar(wvDataTableListeProforma)"/>
+								<p:ajax event="itemSelect" listener="#{proformaController.autcompleteSelection}"
+									update="idPanelEnteteProforma,idPanelLignesProforma,idTableauComplementaireProforma,:form:messages,@form,@widgetVar(wvMenuListeProforma),@widgetVar(wvDataTableListeProforma)"/>
+							</p:autoComplete>
+						</p:panel>
+					<h:outputLabel value="Document mis à la disposition du client !!!" title="#{proformaController.documentDTOEstVerrouille().message}" rendered="#{proformaController.documentDTOEstVerrouille().verrouille}"/>				
+					
+					<p:outputLabel value="précision prix : " rendered="#{proformaController.affichagePrecisionPrixDocument()}"/>
+					<p:outputLabel value="#{proformaController.masterEntity.nbDecimalesPrix} décimale(s)" style="font-weight: bold;" id="idPrecisionPrixPro" 
+					rendered="#{proformaController.affichagePrecisionPrixDocument()}"/>
+
+		</h:panelGrid>
+	</p:fieldset>	
+	
+
+	<p:wizard nextLabel="Suivant" backLabel="Précédent" showStepStatus="false" binding="#{proformaController.wizardDocument}" step="#{proformaController.stepCourant()}"
+	widgetVar="widgetVarLigneProforma" flowListener="#{proformaController.handleFlow}">
+		<p:tab id="idSyntheseProforma" title="Synthèse de la proforma">
+			<div class="card">
+				<p:panel header="Synthèse de la facture proforma" style="width:100%;" rendered="#{!proformaController.selectedDocumentDTO.ProformaEstVide()}">
+					<p:panelGrid columns="3" id="idInfosProforma" columnClasses="ui-grid-col-4,ui-grid-col-4,ui-grid-col-4" styleClass="ui-panelgrid-blank" layout="grid">
+						<h:panelGroup>
+						<p:outputLabel value="Code proforma : " style="font-weight: bold;"/>
+						<p:outputLabel value="#{proformaController.selectedDocumentDTO.codeDocument}" />
+						</h:panelGroup>
+						<h:panelGroup>
+						<p:outputLabel value="Code tiers : " style="font-weight: bold;"/>
+						<p:commandLink value="#{proformaController.selectedDocumentDTO.codeTiers}"
+						action="#{ouvertureDocumentBean.detailTiers(ouvertureDocumentBean.recupCodetiers(proformaController.selectedDocumentDTO.codeTiers))}" 
+						update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+					</p:commandLink>
+						</h:panelGroup>
+						<h:panelGroup>
+						<p:outputLabel value="Adresse facturation : " style="font-weight: bold;"/>
+<!-- 						<p:outputLabel value="#{proformaController.selectedDocumentDTO.dateDocument}" > -->
+<!-- 							<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/> -->
+<!-- 						</p:outputLabel> -->
+						</h:panelGroup>
+						
+						<h:panelGroup>
+<!-- 						<p:outputLabel value="Libellé : "/> -->
+						<p:outputLabel value="#{proformaController.selectedDocumentDTO.libelleDocument}" />
+						</h:panelGroup>
+						<h:panelGroup>
+						<p:outputLabel value="Entreprise : " style="font-weight: bold;"/>
+						<p:outputLabel value="#{proformaController.selectedDocumentDTO.nomEntreprise}"/>
+						<br />
+						<p:outputLabel value="#{proformaController.selectedDocumentDTO.nomTiers} - #{proformaController.selectedDocumentDTO.prenomTiers}"/>
+<!-- 						<hr/> -->
+<!-- 						<h:panelGroup> -->
+<!-- 						<p:outputLabel value="Coordonnées : " style="font-weight: bold;"/> -->
+<!-- 						<p:outputLabel value="#{proformaController.selectedInfosTiers.adresseEmail} - #{proformaController.selectedInfosTiers.numeroTelephone}"/> -->
+<!-- 						</h:panelGroup> -->
+						</h:panelGroup>
+						<h:panelGroup>
+						<p:outputLabel value="" style="font-weight:bold;"/>
+						<p:outputLabel value="#{proformaController.taAdresseFact.adresse1Adresse}" >
+						</p:outputLabel>
+						<br/>
+						<p:outputLabel value="#{proformaController.taAdresseFact.adresse2Adresse}" >
+						</p:outputLabel>
+						</h:panelGroup>
+
+						<h:panelGroup>
+						<p:outputLabel value="Date proforma : " style="font-weight: bold;"/>
+						<p:outputLabel value="#{proformaController.selectedDocumentDTO.dateDocument}" >
+							<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+						</p:outputLabel>
+						</h:panelGroup>
+						<h:panelGroup>
+						<p:outputLabel value="Tèl : " style="font-weight: bold;"/>
+						<p:outputLabel value="#{proformaController.taTiersDTO.numeroTelephone}"/>
+						</h:panelGroup>
+						<h:panelGroup>
+						<p:outputLabel value="" style="font-weight: bold;"/>
+						<p:outputLabel value="#{proformaController.taAdresseFact.adresse3Adresse}" >
+<!-- 						<p:outputLabel value="#{proformaController.taAdresseFact.codepostalAdresse} #{proformaController.taAdresseFact.villeAdresse}" > -->
+<!-- 							<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/> -->
+						</p:outputLabel>
+						</h:panelGroup>
+						
+						<h:panelGroup>
+						<p:outputLabel value="Date échéance : " style="font-weight:bold;"/>
+						<p:outputLabel value="#{proformaController.selectedDocumentDTO.dateEchDocument}" >
+							<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+						</p:outputLabel>
+						</h:panelGroup>
+						<h:panelGroup>
+						<p:outputLabel value="Email : " style="font-weight: bold;"/>
+						<p:commandLink update=":form:messages" actionListener="#{proformaController.actDialogEmail}">
+        						<h:outputText value="#{proformaController.taTiersDTO.adresseEmail}" />
+    						</p:commandLink>
+						</h:panelGroup>
+						<h:panelGroup>
+						<p:outputLabel value="Ville : " style="font-weight: bold;"/>
+						<p:outputLabel value="#{proformaController.taAdresseFact.codepostalAdresse} #{proformaController.taAdresseFact.villeAdresse}" >
+<!-- 							<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/> -->
+						</p:outputLabel>
+						</h:panelGroup>
+																		
+ 						<h:panelGroup> 
+						<div class="card" style="background:#ebebeb;text-align:center;center;padding: 5px;margin-top: 15px;">
+						<p:outputLabel value="Net TTC" style="font-weight: bold;"/>
+						<p:separator style="color:#9a9a9a"/>
+						<p:outputLabel value="#{proformaController.selectedDocumentDTO.netTtcCalc}">
+						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+						</p:outputLabel>
+						</div>
+						</h:panelGroup>						
+						
+						<h:panelGroup>
+						<div class="card" style="background:#ebebeb;text-align:center;center;padding: 5px;margin-top: 15px;">
+
+						<p:outputLabel value="Déjà réglé : " style="font-weight: bold;"/>
+						<p:separator style="color:#9a9a9a"/>
+						<p:outputLabel value="#{proformaController.selectedDocumentDTO.regleDocument}">
+						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+						</p:outputLabel>
+						</div>
+						</h:panelGroup>
+
+						<h:panelGroup>
+						<div class="card" style="background: #ebf9cc;text-align: center;padding: 5px;margin-top: 15px;">
+						<p:outputLabel value="Reste à régler" style="font-weight: bold;"/>
+						<p:separator style="color:#9a9a9a"/>
+						<p:outputLabel value="#{proformaController.selectedDocumentDTO.resteAReglerComplet}" style="font-weight: bold;" >
+						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+						</p:outputLabel>
+<!-- 						<hr /> -->
+						</div>
+						</h:panelGroup>
+					</p:panelGrid>
+<!-- Début détail ligne synthèse					 -->
+					<p:dataTable id="iddataTableLigneProformaSynthese" 
+					var="ligne"
+					scrollable="true"
+					scrollHeight="250"					
+					widgetVar="widgetVarDataTableLigneProformaSynthese"
+					
+					value="#{proformaController.valuesLigne}"
+					rowKey="#{ligne.dto.numLigneLDocument}"
+					styleClass="datatable mt10 myclassProforma">
+					
+					<p:ajax event="toggleSelect" process="@this" />
+					<p:ajax event="rowToggle" process="@this" oncomplete="ligneSeperationExpend()" />
+					
+					<p:column style="width:8px" styleClass="center" >
+						<p:rowToggler  rendered="#{ligne.ligneLieeFils!=null or ligne.ligneLieeMere!=null or ligne.ligneAbonnement!=null}"/>
+					</p:column>
+					
+					
+					<p:column style="width:10%">
+						<f:facet name="header">
+							<h:outputText value="Code article" />
+						</f:facet>
+								<p:commandLink value="#{ligne.taArticle.codeArticle}"
+																action="#{ouvertureDocumentBean.detailArticle(ouvertureDocumentBean.recupCodeArticle(ligne.taArticle.codeArticle))}" 
+																update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+															</p:commandLink>  
+					</p:column >
+					
+					<p:column style="width:24%">
+						<f:facet name="header">
+							<h:outputText value="Libellé" />
+						</f:facet>
+								<h:outputText value="#{ligne.dto.libLDocument}" id="idListeSyntheseLibelleProforma"/>
+								<p:tooltip id="toolTipListeSyntheseLibelleProforma" value="#{ligne.dto.libLDocument}" shared="true" for="idListeSyntheseLibelleProforma" showEffect="clip" position="top"/>
+					</p:column>
+
+					<p:column  style="width:8%" styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Qté 1" />
+						</f:facet>
+								<h:outputText value="#{ligne.dto.qteLDocument}"/>	
+					</p:column>
+
+					<p:column style="width:5%" styleClass="center">
+						<f:facet name="header">
+							<h:outputText value="U1" />
+						</f:facet>
+
+								<h:outputText value="#{ligne.taUnite1.codeUnite}" />
+					</p:column>
+
+					<p:column  style="width:8%" styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Qté 2" />
+						</f:facet>
+							<h:outputText value="#{ligne.dto.qte2LDocument}" id="idqte2LProformaSynthese"/>
+					</p:column>
+
+					<p:column style="width:5%" styleClass="center">
+						<f:facet name="header">
+							<h:outputText value="U2" />
+						</f:facet>
+								<h:outputText value="#{ligne.taUnite2.codeUnite}"/>
+					</p:column>
+					
+					<p:column style="width:8%" styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Prix unitaire" />
+						</f:facet>
+								<h:outputText value="#{ligne.dto.prixULDocument}">
+									<f:convertNumber type="currency"  minFractionDigits="#{proformaController.prefNbDecimalesPrix}" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+					</p:column>
+					
+					<p:column style="width:5%" styleClass="right" >
+						<f:facet name="header">
+							<h:outputText value="Remise %" />
+						</f:facet>
+								<h:outputText value="#{ligne.dto.remTxLDocument}" />
+					</p:column>
+					
+					<p:column style="width:20%" styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Montant HT" />
+						</f:facet>
+								<h:outputText value="#{ligne.dto.mtHtLDocument}" disabled="true">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+					</p:column>
+					
+					<p:column style="width:5%" styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="TVA"/>
+						</f:facet>
+								<h:outputText value="#{ligne.dto.codeTvaLDocument}" disabled="true">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+					</p:column>
+					
+					<p:column style="width:20%" styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Montant TTC" />
+						</f:facet>
+								<h:outputText value="#{ligne.dto.mtTtcLDocument}" disabled="true">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+					</p:column>
+					
+					<p:column style="width:5%" styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Remise globale" />
+						</f:facet>
+								<h:outputText value="#{ligne.dto.txRemHtDocument}" disabled="true">
+								</h:outputText>
+					</p:column>
+					<p:column style="width:5%" styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Qté CRD" rendered="#{proformaController.gestionCapsules}"/>
+						</f:facet>
+								<h:outputText value="#{ligne.dto.qteTitreTransport}" disabled="true" rendered="#{proformaController.gestionCapsules}">
+								</h:outputText>
+					</p:column>
+					
+					
+					<p:column style="width:5%" styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Titre CRD" rendered="#{proformaController.gestionCapsules}"/>
+						</f:facet>
+								<h:outputText value="#{ligne.dto.codeTitreTransport}" disabled="true" rendered="#{proformaController.gestionCapsules}">
+								</h:outputText>
+					</p:column>
+					
+					
+					<p:column style="width:1%">
+						<f:facet name="header">
+							<h:outputText value="Etat" />
+						</f:facet>
+								<h:outputText value="#{ligne.codeEtat}"  id="idListeSyntheseEtat#{variableEcran}"/>
+								<p:tooltip  value="#{ligne.codeEtat.concat(ligne.libelleEtat)}" shared="true" for="idListeSyntheseEtat#{variableEcran}" showEffect="clip" position="top"/>
+					</p:column>					
+					
+					<p:rowExpansion>
+
+					<p:panelGrid columns="2"  columnClasses="ui-grid-col-6,ui-grid-col-6" styleClass="ui-panelgrid-blank" layout="grid" rendered="#{ligne.ligneLieeFils!=null or ligne.ligneLieeMere!=null}">
+					<p:panel header="document ayant servi à générer le document courant" style="width:100%;" >
+						<p:dataTable value="#{ligne.ligneLieeMere}" id="dataTableLigneLieeMere" var="lien" selectionMode="single" editable="true"
+							selection="#{proformaController.selectedLigneALigneDTO}" rowKey="#{lien.id}" widgetVar="wvdataTableLigneLieeMere" 
+							emptyMessage="#{msg.message_datatable_vide}" resizableColumns="true">
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="code document" />
+								</f:facet>
+								<p:commandLink value="#{lien.codeDocumentDest}"
+									action="#{proformaController.duplicationDocumentBean.ouvertureDocumentBean.detailDocument(proformaController.duplicationDocumentBean.ouvertureDocumentBean.recupCodeDocument(lien.codeDocumentDest,lien.typeDocument))}"
+									update=":form:tabView"
+									oncomplete="activeTabCenter('#{proformaController.duplicationDocumentBean.ouvertureDocumentBean.event.cssLgrTab}');">>
+								</p:commandLink>
+								<!-- 								<h:outputText value="#{lien.codeDocumentDest}" /> -->
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="libellé ligne" />
+								</f:facet>
+								<h:outputText value="#{lien.libelleLigne}" />
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="lot" />
+								</f:facet>
+								<h:outputText value="#{lien.numLot}" />
+							</p:column>
+							<p:column styleClass="right">
+								<f:facet name="header">
+									<h:outputText value="Qté. reçue" />
+								</f:facet>
+								<h:outputText value="#{lien.qteRecue}" />
+							</p:column>
+<!-- 							<p:column> -->
+<!-- 								<f:facet name="header"> -->
+<!-- 									<h:outputText value="Etat" /> -->
+<!-- 								</f:facet> -->
+<!-- 								<h:outputText value="#{lien.etat}" /> -->
+<!-- 							</p:column>							 -->
+
+						</p:dataTable>
+						</p:panel>
+						<p:panel header="document généré à partir du document courant" style="width:100%;" >
+						<p:dataTable value="#{ligne.ligneLieeFils}" id="dataTableLigneLieeFils" var="lien" selectionMode="single" editable="true"
+							selection="#{proformaController.selectedLigneALigneDTO}" rowKey="#{lien.id}" widgetVar="wvdataTableLigneLieeFils" 
+							emptyMessage="#{msg.message_datatable_vide}" resizableColumns="true">
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="code document" />
+								</f:facet>
+								<p:commandLink value="#{lien.codeDocumentDest}"
+									action="#{proformaController.duplicationDocumentBean.ouvertureDocumentBean.detailDocument(proformaController.duplicationDocumentBean.ouvertureDocumentBean.recupCodeDocument(lien.codeDocumentDest,lien.typeDocument))}"
+									update=":form:tabView"
+									oncomplete="activeTabCenter('#{proformaController.duplicationDocumentBean.ouvertureDocumentBean.event.cssLgrTab}');">>
+								</p:commandLink>
+								<!-- 								<h:outputText value="#{lien.codeDocumentDest}" /> -->
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="libellé ligne" />
+								</f:facet>
+								<h:outputText value="#{lien.libelleLigne}" />
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="lot" />
+								</f:facet>
+								<h:outputText value="#{lien.numLot}" />
+							</p:column>
+							<p:column styleClass="right">
+								<f:facet name="header">
+									<h:outputText value="Qté. reçue" />
+								</f:facet>
+								<h:outputText value="#{lien.qteRecue}" />
+							</p:column>
+<!-- 							<p:column> -->
+<!-- 								<f:facet name="header"> -->
+<!-- 									<h:outputText value="Etat" /> -->
+<!-- 								</f:facet> -->
+<!-- 								<h:outputText value="#{lien.etat}" /> -->
+<!-- 							</p:column>							 -->
+
+						</p:dataTable>
+						</p:panel>
+					</p:panelGrid>
+					<p:panel header="Infos de l'abonnement" style="width:100%;" rendered="#{ligne.ligneAbonnement!=null}">
+
+						<p:dataTable value="#{ligne.ligneAbonnement}" id="dataTableLigneAbonnement" var="lien" selectionMode="single" editable="true"
+							selection="#{proformaController.selectedLigneALigneDTO}" rowKey="#{lien.id}" widgetVar="wvdataTableLigneAbonnement" 
+							emptyMessage="#{msg.message_datatable_vide}" resizableColumns="true">
+								<p:column  style="width:80px" >
+									<p:commandButton value="" actionListener="#{proformaController.actDialogDetailLigneAbonnement}" process="@this"
+										styleClass="icon-medium icon-reglement" title="Détail de la ligne d'abonnement">
+										<f:attribute name="taLigneALigneEcheanceDTO" value="#{lien}" />
+										<p:ajax event="dialogReturn" listener="#{proformaController.handleReturnDialogDetailLigneAbonnement}" />
+									</p:commandButton>
+								</p:column>
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="code document" />
+								</f:facet>
+								<p:commandLink value="#{lien.codeDocumentDest}"
+									action="#{proformaController.duplicationDocumentBean.ouvertureDocumentBean.detailAbonnement(proformaController.duplicationDocumentBean.ouvertureDocumentBean.recupCodeDocument(lien.codeDocumentDest,lien.typeDocument))}"
+									update=":form:tabView"
+									oncomplete="activeTabCenter('#{proformaController.duplicationDocumentBean.ouvertureDocumentBean.event.cssLgrTab}');">>
+								</p:commandLink>
+
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="libellé ligne" />
+								</f:facet>
+								<h:outputText value="#{lien.libelleLigne}" />
+							</p:column>
+						</p:dataTable>
+					</p:panel>
+					</p:rowExpansion>
+
+
+
+				</p:dataTable>
+<!-- Fin détail ligne synthèse					 -->
+					<p:panelGrid columns="1" id="idInfosCommentaireProforma" columnClasses="ui-grid-col-4" styleClass="ui-panelgrid-blank" layout="grid">
+						<h:panelGroup>
+						<p:outputLabel value="Commentaires" style="font-weight: bold;"/>
+						<br/>
+						<p:outputLabel value="#{proformaController.selectedDocumentDTO.commentaire}" />
+						</h:panelGroup>
+					</p:panelGrid>
+				</p:panel>
+			</div>
+		</p:tab>
+		<p:tab id="idEnteteProforma" title="Entête" >
+		
+			<p:panel id="idPanelEnteteProforma" header="Entête" toggleable="true" widgetVar="panelEnteteProforma">
+			
+			 <p:overlayPanel id="idAideProforma" for="idlabelCodeProforma" hideEffect="fade" showCloseIcon="true" dynamic="true" hideEvent="mousedown" style="text-align:center;width:200px;align:center;">
+			  <ui:include src="/aide_contextuelle/document_code_document.xhtml" />
+    		 </p:overlayPanel>
+    				
+				<h:panelGrid columns="2" cellpadding="10">
+<!-- 				    <p:outputLabel id="idBtn1"  value="" title="La référence de la proforma" styleClass="icon icon-print"/> -->
+<!-- 				    <p:button id="idBtn1" icon="ui-icon-star" title="Icon Only"> -->
+<!-- 					</p:button> -->
+
+					<p:outputLabel id="idlabelCodeProforma" value="Code proforma " title="La référence de la proforma" styleClass="labelchob"/>
+					<p:outputLabel id="idCodeProforma"	value="#{proformaController.selectedDocumentDTO.codeDocument}"/>
+						
+
+<!-- 					<p:inputText id="idCodeProforma" -->
+						
+<!-- 						value="#{proformaController.selectedDocumentDTO.codeDocument}" -->
+<!-- 						validator="#{proformaController.validateDocument}" -->
+<!-- 						disabled="#{proformaController.editableEnInsertionUniquement()}"> -->
+<!-- 						<f:attribute name="nomChamp" value="#{const.C_CODE_DOCUMENT}" minimum="0"/> -->
+<!-- 						<p:ajax event="blur" update="@this" /> -->
+						
+<!-- 					</p:inputText> -->
+					
+					<p:outputLabel  value="Code tiers : " styleClass="labelchob"/>
+					<p:focus >
+					
+					<p:autoComplete value="#{proformaController.taTiersDTO}"
+					       id="idtiersProforma" converter="entityConverter"
+					       
+						completeMethod="#{proformaController.tiersAutoCompleteDTOLight}"
+						required="true" requiredMessage="#{msg_diag.alert_champs_obligatoir}"
+						disabled="#{proformaController.editable()}" var="tiers"
+						itemLabel="#{tiers.codeTiers}" itemValue="#{tiers}"
+						forceSelection="true" dropdown="true" placeholder="Tiers" >
+						<p:column>
+							<!-- 				             	<f:facet name="header"> -->
+							<!-- 				            		<p:commandButton value="Ajouter" title="Insérer" -->
+							<!-- 										process="@this" -->
+							<!-- 										update=":form:tabView,:form:messages" -->
+							<!-- 										actionListener="#{proformaController.actDialogTiers}" -->
+							<!-- 										styleClass="btn-insert btn" > -->
+							<!-- 											<p:ajax event="dialogReturn" listener="#{proformaController.handleReturnDialogTiers}" update="@parent:@parent"/> -->
+							<!-- 										</p:commandButton> -->
+							<!-- 				            	</f:facet> -->
+							<h:outputText  value="#{tiers.codeTiers}" required="true" requiredMessage="#{msg_diag.alert_champs_obligatoir}"/>
+						</p:column>
+						
+						<p:column>
+							<h:outputText value="#{tiers.nomTiers}" />
+						</p:column>
+
+						<p:column>
+							<h:outputText value="#{tiers.prenomTiers}" />
+						</p:column>
+
+						<p:column>
+							<h:outputText value="#{tiers.nomEntreprise}" />
+						</p:column>
+
+						<f:attribute name="nomChamp" value="#{const.C_CODE_TIERS}" />
+						<p:ajax event="itemSelect" listener="#{proformaController.autcompleteSelection}" 
+						update="idNomTiersProforma,idLibellePieceProforma,idTTCProforma,idLocalisationTvaProforma,@this,@widgetVar(panelAdresseFacturationProforma),@widgetVar(panelAdresseLivraisonProforma),
+						@widgetVar(panelConditionPaiementProforma),idPanelGroupInfosTiersEnteteProforma" />
+					</p:autoComplete>
+					</p:focus>
+					
+					<p:outputLabel value="Nom Tiers : " styleClass="labelchob"/>
+					<p:inputText
+						
+						value="#{proformaController.selectedDocumentDTO.nomTiers}" id="idNomTiersProforma"
+						validator="#{proformaController.validateDocument}" 
+						disabled="#{proformaController.editable()}">
+						<f:attribute name="nomChamp" value="#{const.C_NOM_TIERS}" />
+						<p:ajax event="blur" update="@this" />
+					</p:inputText>
+
+					<p:outputLabel value="Date proforma: " styleClass="labelchob"/>
+					<p:calendar
+						
+						value="#{proformaController.selectedDocumentDTO.dateDocument}"
+						pattern="dd/MM/yyyy" mask="true" locale="fr" navigator="true" showOn="button"  timeZone="#{msg.time_zone}" 
+						mindate="#{proformaController.dateMin}"
+						maxdate="#{proformaController.dateMax}"
+						disabled="#{proformaController.editable()}">
+						
+						<f:attribute name="nomChamp" value="#{const.C_DATE_DOCUMENT}" />
+						<p:ajax event="dateSelect" listener="#{proformaController.controleDate}" update="@this,idDateEchProforma" />
+						<p:ajax event="change" listener="#{proformaController.controleDate}"  update="@this,idDateEchProforma" />
+					</p:calendar>
+
+					<p:outputLabel value="Libellé : " />
+					<p:inputText
+						value="#{proformaController.selectedDocumentDTO.libelleDocument}" id="idLibellePieceProforma"
+						validator="#{proformaController.validateDocument}" style="width:300%"
+						disabled="#{proformaController.editable()}">
+						<f:attribute name="nomChamp" value="#{const.C_LIBELLE_DOCUMENT}" />
+						<p:ajax event="blur" update="@this" />
+					</p:inputText>
+					
+					<p:outputLabel value="TTC : " />
+					<p:selectBooleanCheckbox
+					 	
+						value="#{proformaController.selectedDocumentDTO.ttc}" id="idTTCProforma" 
+						disabled="#{proformaController.disableTtc() or proformaController.disableTtcSiDocSansTVA()}">
+						<f:attribute name="nomChamp" value="#{const.C_TTC}" />
+						<p:ajax event="change" update="@this" />
+					</p:selectBooleanCheckbox>
+					
+					<p:outputLabel value="Date de livraison : " />
+					<p:calendar
+						value="#{proformaController.selectedDocumentDTO.dateLivDocument}"
+						pattern="dd/MM/yyyy" mask="true" locale="fr" navigator="true"  showOn="button" timeZone="#{msg.time_zone}" 
+						validator="#{proformaController.validateDocument}"
+						disabled="#{proformaController.editable()}">
+						
+						<f:attribute name="nomChamp" value="#{const.C_DATE_LIV_DOCUMENT}" />
+						<p:ajax event="dateSelect" update="@this" />
+						<p:ajax event="change"  update="@this"/>
+					</p:calendar>
+					
+<!-- 					<p:outputLabel value="Localisation TVA : " /> -->
+<!-- 					<p:selectOneMenu id="console" value="#{proformaController.selectedDocumentDTO.commentaire}" style="width:125px"> -->
+<!-- 			            <f:selectItem itemLabel="Client en France" itemValue="fr" /> -->
+<!-- 			        </p:selectOneMenu> -->
+			        
+			        <p:outputLabel value="Localisation TVA : " />
+						<p:autoComplete value="#{proformaController.taTTvaDoc}" id="idLocalisationTvaProforma"
+							converter="entityConverter" disabled="#{proformaController.editable() or proformaController.disableTtc()}"
+							completeMethod="#{proformaController.typeTvaDocAutoComplete}"
+							var="tp" itemLabel="#{tp.codeTTvaDoc}" itemValue="#{tp}"
+							forceSelection="true" dropdown="true"
+							placeholder="Localisation TVA" style="width:100%">
+							<p:column>
+								<h:outputText value="#{tp.codeTTvaDoc}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{tp.libelleTTvaDoc}" />
+							</p:column>
+							<f:attribute name="nomChamp" value="#{const.C_CODE_T_TVA_DOC}" />
+							<p:ajax event="itemSelect" listener="#{proformaController.autcompleteSelection}" update="idTTCProforma"/>
+						</p:autoComplete>
+
+					<p:outputLabel value="Observation : " />
+					<p:inputTextarea
+						value="#{proformaController.selectedDocumentDTO.commentaire}"
+						validator="#{proformaController.validateDocument}" style="width:300%"
+						disabled="#{proformaController.editable()}">
+						<f:attribute name="nomChamp" value="#{const.C_COMMENTAIRE}" />
+						<p:ajax event="blur" update="@this" />
+					</p:inputTextarea>
+					
+<!-- 					<p:outputLabel value="Gestion des lots : " /> -->
+<!-- 					<p:inputSwitch value="#{proformaController.gestionLot}" onLabel="Oui" offLabel="Non" disabled="#{proformaController.editable()}"> -->
+<!-- 			            <p:ajax listener="#{proformaController.validateDocument}" update="@this" /> -->
+<!-- 			        </p:inputSwitch> -->
+
+<!-- 			        Modifier le 03/08/2017 Jean Marc -->			        
+<!-- 				<p:commandButton  process="@this" title="Génération modèle"  -->
+<!-- 						styleClass="btn-generation-modele btn" actionListener="#{proformaController.actDialogGenerationModeleDocument}" > -->
+<!-- 						<p:ajax event="dialogReturn" listener="#{proformaController.handleReturnDialogGenerationDocument}"  -->
+<!-- 						update=":form:tabView,@widgetVar(wvMenuListeProforma),@widgetVar(wvDataTableListeProforma)" oncomplete="activeTabCenter('#{proformaController.css}');" /> -->
+<!-- 				</p:commandButton> -->
+<!-- 				<p:commandButton process="@this" title="Génération document"  -->
+<!-- 						styleClass="btn-generation-document btn" actionListener="#{proformaController.actDialogGenerationDocument}" > -->
+<!-- 						<p:ajax event="dialogReturn" listener="#{proformaController.handleReturnDialogGenerationDocument}"  -->
+<!-- 						update=":form:tabView,@widgetVar(wvMenuListeProforma),@widgetVar(wvDataTableListeProforma)" oncomplete="activeTabCenter('#{proformaController.css}');" /> -->
+<!-- 				</p:commandButton> -->
+				
+
+
+					<!-- Invisible, relier au meme champ que la checkbox du dernier step du wizard, reprise de cette valeur dans le 1er step car le oncomplete du actEnregistrer se declanche apres le retour au 1er, la valeur doit donc etre disponible ici pour le javascript -->
+					<p:selectBooleanCheckbox value="#{proformaController.impressionDirect}" styleClass="invisible" disabled="#{proformaController.editable()}" widgetVar="wvImpressionDirectProforma"/>
+
+
+
+				</h:panelGrid>
+    		<div class="ui-g">
+    		 <div class="ui-g-6">
+				<p:panel id="idAdresseFacturationProforma" header="#{const_vue.titre_panel_adresse_facturation}" toggleable="true" widgetVar="panelAdresseFacturationProforma"
+					collapsed="false">
+					<h:panelGrid columns="2" cellpadding="10" id="idPanelAdresseFacProforma">
+						<p:outputLabel value="" />
+						<p:selectOneMenu value="#{proformaController.taAdresseFact}" converter="entityConverter" var="t" filter="true" filterMatchMode="contains"
+							disabled="#{proformaController.editable()}">
+							<f:selectItems value="#{proformaController.listeAdresseInfosFacturationDTO}" var="tt" itemValue="#{t}" itemLabel="sélectionner une adresse" />
+							<p:column>
+								<h:outputText value="#{t.adresse1Adresse}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{t.adresse2Adresse}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{t.adresse3Adresse}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{t.codepostalAdresse}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{t.villeAdresse}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{t.paysAdresse}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{t.codeTAdr}" />
+							</p:column>
+							<p:ajax event="change" listener="#{proformaController.affecteAdrFactAutoComplete}" update="idPanelAdresseFacProforma" />
+						</p:selectOneMenu>
+
+
+						<p:outputLabel value="Adresse 1" />
+						<p:panel styleClass="panel-autocomplete">
+							<p:inputText value="#{proformaController.selectedAdresseFact.adresse1Adresse}" disabled="#{proformaController.editable()}">
+								<p:ajax event="blur" update="@this" />
+							</p:inputText>
+							<p:commandButton value="Raffraîchir" styleClass="icon-refresh btn" disabled="#{proformaController.editable()}"
+								actionListener="#{proformaController.actReinitAdrFact}" process="@this" update="idPanelAdresseFacProforma,idMenuBoutonProforma" />
+						</p:panel>
+
+						<p:outputLabel value="Adresse 2" />
+						<p:inputText value="#{proformaController.selectedAdresseFact.adresse2Adresse}" disabled="#{proformaController.editable()}">
+							<p:ajax event="blur" update="@this" />
+						</p:inputText>
+						<p:outputLabel  value="Adresse 3" />
+						<p:inputText value="#{proformaController.selectedAdresseFact.adresse3Adresse}" disabled="#{proformaController.editable()}">
+							<p:ajax event="blur" update="@this" />
+						</p:inputText>
+						<p:outputLabel value="Code postal" />
+						<p:inputText value="#{proformaController.selectedAdresseFact.codepostalAdresse}" disabled="#{proformaController.editable()}">
+							<p:ajax event="blur" update="@this" />
+						</p:inputText>
+						<p:outputLabel value="Ville" />
+						<p:inputText value="#{proformaController.selectedAdresseFact.villeAdresse}" disabled="#{proformaController.editable()}">
+							<p:ajax event="blur" update="@this" />
+						</p:inputText>
+						<p:outputLabel value="Pays" />
+						<p:inputText value="#{proformaController.selectedAdresseFact.paysAdresse}" disabled="#{proformaController.editable()}">
+							<p:ajax event="blur" update="@this" />
+						</p:inputText>
+					</h:panelGrid>
+				</p:panel>
+			</div>
+			
+			<div class="ui-g-6">
+			
+				<p:panel id="idAdresseLivraisonProforma" header="Adresse de livraison" widgetVar="panelAdresseLivraisonProforma">
+					<h:panelGrid columns="2" cellpadding="10" id="idPanelAdresseLivProforma">
+
+						<p:outputLabel value="" />
+						<p:selectOneMenu value="#{proformaController.taAdresseLiv}" converter="entityConverter" var="t" filter="true" filterMatchMode="contains"
+							disabled="#{proformaController.editable()}">
+							<f:selectItems value="#{proformaController.listeAdresseInfosLivraisonDTO}" var="tt" itemValue="#{t}" itemLabel="sélectionner une adresse" />
+							<p:column>
+								<h:outputText value="#{t.adresse1AdresseLiv}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{t.adresse2AdresseLiv}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{t.adresse3AdresseLiv}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{t.codepostalAdresseLiv}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{t.villeAdresseLiv}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{t.paysAdresseLiv}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{t.codeTAdr}" />
+							</p:column>
+							<p:ajax event="change" listener="#{proformaController.affecteAdrLivAutoComplete}" update="idPanelAdresseLivProforma" />
+						</p:selectOneMenu>
+					
+
+						<p:outputLabel value="Adresse 1" />
+						<p:panel styleClass="panel-autocomplete">
+							<p:inputText value="#{proformaController.selectedAdresseLiv.adresse1AdresseLiv}" disabled="#{proformaController.editable()}">
+								<p:ajax event="blur" update="@this" />
+							</p:inputText>
+							<p:commandButton value="Raffraîchir" styleClass="icon-refresh btn" disabled="#{proformaController.editable()}"
+								actionListener="#{proformaController.actReinitAdrLiv}" process="@this" update="idPanelAdresseLivProforma,idMenuBoutonProforma" />
+						</p:panel>
+						<p:outputLabel value="Adresse 2" />
+						<p:inputText value="#{proformaController.selectedAdresseLiv.adresse2AdresseLiv}" disabled="#{proformaController.editable()}">
+							<p:ajax event="blur" update="@this" />
+						</p:inputText>
+						<p:outputLabel value="Adresse 3" />
+						<p:inputText value="#{proformaController.selectedAdresseLiv.adresse3AdresseLiv}" disabled="#{proformaController.editable()}">
+							<p:ajax event="blur" update="@this" />
+						</p:inputText>
+						<p:outputLabel value="Code postal" />
+						<p:inputText value="#{proformaController.selectedAdresseLiv.codepostalAdresseLiv}" disabled="#{proformaController.editable()}">
+							<p:ajax event="blur" update="@this" />
+						</p:inputText>
+						<p:outputLabel value="Ville" />
+						<p:inputText value="#{proformaController.selectedAdresseLiv.villeAdresseLiv}" disabled="#{proformaController.editable()}">
+							<p:ajax event="blur" update="@this" />
+						</p:inputText>
+						<p:outputLabel value="Pays" />
+						<p:inputText value="#{proformaController.selectedAdresseLiv.paysAdresseLiv}" disabled="#{proformaController.editable()}">
+							<p:ajax event="blur" update="@this" />
+						</p:inputText>
+					</h:panelGrid>
+				</p:panel>
+			</div>
+		</div>
+
+
+
+
+			</p:panel>
+
+			<!-- 			</div> -->
+			<!-- 		</div> -->
+			
+		</p:tab>
+
+		<!-- 		<div class="ui-grid-row"> -->
+		<!-- 			<div class="ui-grid-col-12"> -->
+
+		<p:tab id="idLignesProforma" title="Ligne" >
+		<p:panel widgetVar="wvLigneProformaMesssages">
+			<p:messages id="idLigneProformaMessages" showDetail="true" closable="true" autoUpdate="false"/>
+		</p:panel>
+			<p:panel id="idPanelLignesProforma" header="Lignes" toggleable="true" widgetVar="panelLignesProforma">
+
+				
+				<p:menubar styleClass="menu-onglet">
+				
+					<p:menuitem title="Insérer" styleClass="icon-insert icon"
+						actionListener="#{proformaController.actInsererLigne}"
+						process="@this"
+						update="@this,@widgetVar(widgetVarDataTableLigneProforma),:form:messages"
+						disabled="#{!proformaController.modeEcran.dataSetEnModif() or proformaController.etatBoutonLigne('inserer')}"
+						oncomplete="editionDerniereLigne('myclassProforma');" />
+						
+					<p:menuitem title="Supprimer" styleClass="icon-delete icon" widgetVar="widgetVarBtnSupprimer"
+						actionListener="#{proformaController.actSupprimerLigne}"
+						process="@this"
+						update="@widgetVar(wvBCPanelLignes),:form:messages,@form"
+						disabled="#{!proformaController.modeEcran.dataSetEnModif() or proformaController.etatBoutonLigne('supprimer')}" />
+				</p:menubar>
+<!-- 				<p:confirmDialog widgetVar="wvConfirmSaveRow"> -->
+<!-- 				     le document est associé à un règlement dont le montant diffère du montant total du document. Vous devrez revalider le règlement. -->
+<!-- 				</p:confirmDialog> -->
+
+				<p:dataTable id="iddataTableLigneProforma" 
+					var="ligne"
+					widgetVar="widgetVarDataTableLigneProforma"
+					
+					value="#{proformaController.valuesLigne}"
+					rowKey="#{ligne.dto.numLigneLDocument}"
+					selection="#{proformaController.selectedLigneJSF}"
+					selectionMode="single" 
+					editable="true" 
+					dblClickSelect="true"
+					styleClass="datatable mt10 myclassProforma" 
+					resizableColumns="true"
+					draggableRows="true">
+<!-- 					paginator="true" -->
+<!-- 					rows="#{msg.modele_datatable_ligne_par_page_debut}" -->
+<!-- 					paginatorTemplate="#{msg.modele_datatable_paginator_sans_exporter}" -->
+<!-- 					rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}" -->
+<!-- 					emptyMessage="#{msg.message_datatable_vide}" -->
+<!-- 					currentPageReportTemplate="#{msg.modele_datatable_page_courante}"> -->
+<!-- onsuccess="increment();"  -->
+
+<!--  					if(reglementDifferentNetTTC(xhr, status, args)){PF('wvConfirmSaveRow').show()}; -->
+					<p:ajax event="rowReorder" listener="#{proformaController.onRowReorder}" update="@this,@widgetVar(wvMenuBoutonProforma)" />
+					<p:ajax event="rowEdit" listener="#{proformaController.onRowEdit}"  
+					update="@widgetVar(wvLigneProformaMesssages),@parent:idTotauxLProforma,@parent:idReglementProforma" 
+					oncomplete="if(!handleCompleteValidationError(xhr, status, args)) {increment();};autreLigneModifiable('myclassProforma');" />
+					<p:ajax event="rowEditCancel" listener="#{proformaController.onRowCancel}" update="@widgetVar(widgetVarBtnSupprimer)" oncomplete="autreLigneModifiable('myclassProforma');"/>
+					<p:ajax event="rowSelect" listener="#{proformaController.onRowSelectLigne}"/>
+					<p:ajax event="rowEditInit" listener="#{proformaController.onRowEditInit}" oncomplete="autreLigneNonModifiable('myclassProforma');"/>
+					
+<!-- 					<p:overlayPanel widgetVar="wvOverlayPanelDetailLotProforma" hideEffect="fade"> -->
+<!-- 					<p:panelGrid columns="2" widgetVar="wvPanelGridDetailLotProforma">	 -->
+
+					<p:ajax event="toggleSelect" process="@this" />
+					<p:ajax event="rowToggle" process="@this" oncomplete="ligneSeperationExpend()" />
+					
+					<p:column style="width:8px" styleClass="center" >
+						<p:rowToggler  rendered="#{ligne.ligneLieeFils!=null or ligne.ligneLieeMere!=null or ligne.ligneAbonnement!=null}"/>
+					</p:column>
+
+
+					<p:column style="width:16px" >
+						<p:rowEditor rendered="#{proformaController.etatBoutonLigne('rowEditor')}" styleClass="row-editor-debut"/>
+					</p:column>
+							
+					<p:column>
+						<f:facet name="header">
+							<h:outputText value="N°" />
+						</f:facet>
+						<h:outputText value="#{ligne.dto.numLigneLDocument}" />
+					</p:column>
+					
+					<p:column style="width:140px">
+						<f:facet name="header">
+							<h:outputText value="Code article" />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{ligne.taArticle.codeArticle}"/>
+							</f:facet>
+							<f:facet name="input">
+							<p:focus>
+								<p:autoComplete value="#{ligne.taArticleDTO}"
+									completeMethod="#{proformaController.articleAutoCompleteDTOLight}"
+									id="idarticleProforma" converter="entityConverter"
+									var="art" itemLabel="#{art.codeArticle}" itemValue="#{art}"
+									forceSelection="true" dropdown="true"
+									maxResults="#{proformaController.taPreferencesService.nbMaxChargeListeArticle()}"
+									moreText="Il y a #{component.maxResults} affichés sur #{component.suggestions.size()} au total, Veuillez affiner votre recherche ou cliquer ici pour en afficher plus ..."
+									 placeholder="Article" 
+									style="width:100%">
+									<!-- 									required="true" requiredMessage="Le code article est obligatoire" -->
+									
+									<p:column>
+										<h:outputText value="#{art.codeArticle}" />
+									</p:column>
+									
+									<p:column>
+										<h:outputText value="#{art.libellecArticle}" />
+									</p:column>
+									<p:column >
+										<h:outputText value="#{art.commentaireArticle}" rendered="#{proformaController.rechercheAvecCommentaire(false)}"/>
+									</p:column>
+
+									<f:attribute name="nomChamp" value="#{const.C_CODE_ARTICLE}" />
+									<p:ajax event="clear" listener="#{proformaController.onClearArticle}" 
+									update="@parent:idlibLProforma,idQte1LProforma,idu1LProforma,
+									idu2LProforma,idpuLProforma,idhtLProforma,idQteTransportProforma,idCodeTransportProforma,idttcLProforma,idtvaLProforma,idLRemiseProforma,idqte2LProforma"/>
+									<p:ajax event="itemSelect" listener="#{proformaController.autcompleteSelection}" 
+									update="@parent:idlibLProforma,idQte1LProforma,idu1LProforma,idQteTransportProforma,idCodeTransportProforma,
+									idu2LProforma,idpuLProforma,idhtLProforma,idttcLProforma,idtvaLProforma,idLRemiseProforma,idqte2LProforma"/>
+																		<p:ajax event="moreText" listener="#{proformaController.onMoreTextArticle}" />
+									
+								</p:autoComplete>
+							</p:focus>
+							</f:facet>
+						</p:cellEditor >
+					</p:column >
+					
+					<p:column style="width:140px">
+						<f:facet name="header">
+							<h:outputText value="Libellé" />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.libLDocument}" />
+							</f:facet>
+							<f:facet name="input">
+								<p:inputText value="#{ligne.dto.libLDocument}" id="idlibLProforma"
+								validator="#{proformaController.validateLignesDocument}">
+								<f:attribute name="nomChamp" value="#{const.C_LIB_L_DOCUMENT}" />
+								<p:ajax event="blur" />
+								</p:inputText>
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+
+					<p:column  style="width:80px">
+						<f:facet name="header">
+							<h:outputText value="Qté 1" />
+						</f:facet>
+						<p:cellEditor >
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.qteLDocument}"/>	
+							</f:facet>
+							<f:facet name="input" >
+								<p:inputText id="idQte1LProforma"  value="#{ligne.dto.qteLDocument}"  style="width:100%" 
+										validator="#{proformaController.validateLignesDocument}" disabled="#{ligne.ligneCommentaire()}">
+									<f:attribute name="nomChamp" value="#{const.C_QTE_L_DOCUMENT}" /> 
+									<p:ajax event="blur" update="@parent:idqte2LProforma,idhtLProforma,idttcLProforma,idtvaLProforma,@this"/>
+								</p:inputText>
+							</f:facet >
+						</p:cellEditor>
+					</p:column>
+
+					<p:column >
+						<f:facet name="header">
+							<h:outputText value="Unité 1" />
+						</f:facet>
+<!-- 						<p:cellEditor > -->
+<!-- 							<f:facet name="output"> -->
+<!-- 								<h:outputText value="#{ligne.dto.u1LDocument}" /> -->
+<!-- 							</f:facet> -->
+<!-- 							<f:facet name="input"> -->
+<!-- 								<p:inputText value="#{ligne.dto.u1LDocument}" style="width:100%" id="u1"/> -->
+<!-- 							</f:facet> -->
+<!-- 						</p:cellEditor> -->
+						<p:cellEditor >
+							<f:facet name="output">
+								<h:outputText value="#{ligne.taUnite1.codeUnite}" />
+							</f:facet>
+							<f:facet name="input">
+<!-- 								<p:inputText value="#{ligne.taUnite1.codeUnite}" style="width:100%" id="u1"/> -->
+								<p:autoComplete value="#{ligne.taUnite1}"
+									completeMethod="#{proformaController.uniteAutoComplete}"
+									var="unit" itemLabel="#{unit.codeUnite}" itemValue="#{unit}"
+									forceSelection="true" dropdown="true"
+									placeholder="U1" style="width:100%" id="idu1LProforma" disabled="#{ligne.ligneCommentaire()}">
+									<p:column>
+										<h:outputText value="#{unit.codeUnite}" />
+									</p:column>
+									
+									<f:attribute name="nomChamp" value="#{const.C_U1_L_DOCUMENT}" />
+									<p:ajax event="itemSelect" listener="#{proformaController.autcompleteSelection}" update="@parent:idqte2LProforma"/>
+								</p:autoComplete>
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+
+					<p:column  style="width:80px">
+						<f:facet name="header">
+							<h:outputText value="Qté 2" />
+						</f:facet>
+						<p:cellEditor >
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.qte2LDocument}"/>	
+							</f:facet>
+							<f:facet name="input" >
+								<p:inputText id="idqte2LProforma"  value="#{ligne.dto.qte2LDocument}"  style="width:100%" 
+										validator="#{proformaController.validateLignesDocument}" disabled="#{ligne.ligneCommentaire()}">
+									<f:attribute name="nomChamp" value="#{const.C_QTE2_L_DOCUMENT}" /> 
+									<p:ajax event="blur" update="@parent:idQte1LProforma,idhtLProforma,idttcLProforma,idtvaLProforma,@this"/>
+								</p:inputText>
+							</f:facet >
+						</p:cellEditor>
+					</p:column>
+
+					<p:column >
+						<f:facet name="header">
+							<h:outputText value="Unité 2" />
+						</f:facet>
+<!-- 						<h:outputText value="#{ligne.dto.u2LDocument}" id="u2" />					 -->
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{ligne.taUnite2.codeUnite}"/>
+							</f:facet>
+							<f:facet name="input">
+<!-- 								<p:inputText value="#{ligne.taUnite2.codeUnite}" style="width:100%" id="u2"/> -->
+								<p:autoComplete value="#{ligne.taUnite2}"
+									completeMethod="#{proformaController.uniteAutoCompleteAll}"
+									var="unit" itemLabel="#{unit.codeUnite}" itemValue="#{unit}"
+									forceSelection="true" dropdown="true"
+									placeholder="U2" style="width:100%" id="idu2LProforma" disabled="#{ligne.ligneCommentaire()}">
+									<p:column>
+										<h:outputText value="#{unit.codeUnite}" />
+									</p:column>
+									
+									<f:attribute name="nomChamp" value="#{const.C_U2_L_DOCUMENT}" />
+									<p:ajax event="itemSelect" listener="#{proformaController.autcompleteSelection}" update="@parent:idqte2LProforma"/>
+								</p:autoComplete>
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+					
+					<p:column styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Prix unitaire" />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.prixULDocument}">
+									<f:convertNumber type="currency"  minFractionDigits="#{proformaController.prefNbDecimalesPrix}" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</f:facet>
+							<f:facet name="input">
+								<p:inputText value="#{ligne.dto.prixULDocument}" id="idpuLProforma" style="width:100%" 
+										validator="#{proformaController.validateLignesDocument}" disabled="#{ligne.ligneCommentaire()}">
+									<f:attribute name="nomChamp" value="#{const.C_PRIX_U_L_DOCUMENT}" /> 
+									<p:ajax event="blur" update="@this,idhtLProforma,idttcLProforma,idtvaLProforma"/>
+								</p:inputText>	
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+					
+					<p:column >
+						<f:facet name="header">
+							<h:outputText value="Remise %" />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.remTxLDocument}" />
+							</f:facet>
+							<f:facet name="input">
+								<p:inputText value="#{ligne.dto.remTxLDocument}" style="width:100%" id="idLRemiseProforma" 
+										validator="#{proformaController.validateLignesDocument}" disabled="#{ligne.ligneCommentaire()}">
+									<f:attribute name="nomChamp" value="#{const.C_REM_TX_L_DOCUMENT}" /> 
+									<p:ajax event="blur" update="@this,idhtLProforma,idttcLProforma,idtvaLProforma"/>
+								</p:inputText>	
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+					
+					<p:column styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Montant HT" />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.mtHtLDocument}" disabled="true">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</f:facet>
+							<f:facet name="input">
+								<h:outputText value="#{ligne.dto.mtHtLDocument}" id="idhtLProforma" style="width:100%" disabled="true" />
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+					
+					<p:column styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Montant TTC" />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.mtTtcLDocument}" disabled="true">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</f:facet>
+							<f:facet name="input">
+								<h:outputText value="#{ligne.dto.mtTtcLDocument}" id="idttcLProforma" style="width:100%"  disabled="true" />	
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+					
+					<p:column styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="TVA"/>
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.codeTvaLDocument}" disabled="true">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</f:facet>
+							<f:facet name="input">
+								<h:outputText value="#{ligne.dto.codeTvaLDocument}" disabled="true" id="idtvaLProforma" style="width:100%"/>
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+					
+					<p:column styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Remise globale" />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.txRemHtDocument}" disabled="true">
+								</h:outputText>
+							</f:facet>
+							<f:facet name="input">
+								<h:outputText value="#{ligne.dto.txRemHtDocument}" disabled="true"  style="width:100%"/>
+							</f:facet>							
+						</p:cellEditor>
+					</p:column>
+
+
+
+					<p:column style="width:5%" styleClass="right"  rendered="#{proformaController.gestionCapsules}">
+						<f:facet name="header">
+							<h:outputText value="Qté CRD"  />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.qteTitreTransport}"  />
+							</f:facet>
+							<f:facet name="input">
+								<p:inputText value="#{ligne.dto.qteTitreTransport}"  id="idQteTransportProforma" style="width:100%" validator="#{proformaController.validateLignesDocument}"  disabled="#{ligne.ligneCommentaire()}">
+									<f:attribute name="nomChamp" value="#{const.C_QTE_TITRE_TRANSPORT_L_DOCUMENT}" />
+									<p:ajax event="blur" update="@this"/>
+								</p:inputText>
+							</f:facet>
+						</p:cellEditor>						
+					</p:column>
+
+
+					<p:column  style="width:5%" styleClass="right"  rendered="#{proformaController.gestionCapsules}">
+						<f:facet name="header">
+							<h:outputText value="Titre CRD" />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.codeTitreTransport}">
+								</h:outputText>
+							</f:facet>
+							<f:facet name="input">
+								<p:autoComplete value="#{ligne.taTitreTransport}" id="idCodeTransportProforma"
+								completeMethod="#{proformaController.titreTransportAutoComplete}" var="unit" itemLabel="#{unit.codeTitreTransport}"
+									itemValue="#{unit}" forceSelection="true" dropdown="true" placeholder="U2" style="width:100%" converter="entityConverter"  disabled="#{ligne.ligneCommentaire()}">
+									<p:column>
+										<h:outputText value="#{unit.codeTitreTransport}" />
+									</p:column>
+
+									<f:attribute name="nomChamp" value="#{const.C_CODE_TITRE_TRANSPORT}" />
+									 <p:ajax event="clear" listener="#{proformaController.onClearTaTitreTransport}" update="idQteTransportProforma"/>
+									<p:ajax event="itemSelect" listener="#{proformaController.autcompleteSelection}"/>
+								</p:autoComplete>
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+					
+
+
+
+					<p:column style="width:1%">
+						<f:facet name="header">
+							<h:outputText value="Etat" />
+						</f:facet>
+								<h:outputText value="#{ligne.codeEtat}"  id="idListeSaisieEtat#{variableEcran}"/>
+								<p:tooltip  value="#{ligne.codeEtat.concat(ligne.libelleEtat)}" shared="true" for="idListeSaisieEtat#{variableEcran}" showEffect="clip" position="top"/>
+					</p:column>	
+					
+					<p:column style="width:16px">
+						<f:facet name="header">
+							<h:outputText value="" />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<p:commandButton title="Supprimer" styleClass="icon-delete icon icon-grille" widgetVar="widgetVarBtnSupprimer"
+									action="#{proformaController.actSupprimerLigne}"
+									process="@this"
+									disabled="#{!proformaController.modeEcran.dataSetEnModif() or proformaController.etatBoutonLigne('supprimer')}"
+									update="@widgetVar(panelLignesProforma)">
+<!-- 									<f:attribute name="idLigne" value="#{ligne.dto.id}" /> -->
+									<f:setPropertyActionListener target="#{proformaController.selectedLigneJSF}" value="#{ligne}" />
+								</p:commandButton>
+							</f:facet>
+							<f:facet name="input">
+								<h:outputText value="" />
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+
+					<p:column style="width:26px">
+						<p:rowEditor rendered="#{proformaController.etatBoutonLigne('rowEditor')}" styleClass="row-editor-fin"/>
+					</p:column>
+					
+					<p:rowExpansion>
+
+					<p:panelGrid columns="2"  columnClasses="ui-grid-col-6,ui-grid-col-6" styleClass="ui-panelgrid-blank" layout="grid" rendered="#{ligne.ligneLieeFils!=null or ligne.ligneLieeMere!=null}">
+					<p:panel header="document ayant servi à générer le document courant" style="width:100%;" >
+						<p:dataTable value="#{ligne.ligneLieeMere}" id="dataTableLigneLieeMere" var="lien" selectionMode="single" editable="true"
+							selection="#{proformaController.selectedLigneALigneDTO}" rowKey="#{lien.id}" widgetVar="wvdataTableLigneLieeMere" 
+							emptyMessage="#{msg.message_datatable_vide}" resizableColumns="true">
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="code document" />
+								</f:facet>
+								<p:commandLink value="#{lien.codeDocumentDest}"
+									action="#{proformaController.duplicationDocumentBean.ouvertureDocumentBean.detailDocument(proformaController.duplicationDocumentBean.ouvertureDocumentBean.recupCodeDocument(lien.codeDocumentDest,lien.typeDocument))}"
+									update=":form:tabView"
+									oncomplete="activeTabCenter('#{proformaController.duplicationDocumentBean.ouvertureDocumentBean.event.cssLgrTab}');">>
+								</p:commandLink>
+								<!-- 								<h:outputText value="#{lien.codeDocumentDest}" /> -->
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="libellé ligne" />
+								</f:facet>
+								<h:outputText value="#{lien.libelleLigne}" />
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="lot" />
+								</f:facet>
+								<h:outputText value="#{lien.numLot}" />
+							</p:column>
+							<p:column styleClass="right">
+								<f:facet name="header">
+									<h:outputText value="Qté. reçue" />
+								</f:facet>
+								<h:outputText value="#{lien.qteRecue}" />
+							</p:column>
+<!-- 							<p:column> -->
+<!-- 								<f:facet name="header"> -->
+<!-- 									<h:outputText value="Etat" /> -->
+<!-- 								</f:facet> -->
+<!-- 								<h:outputText value="#{lien.etat}" /> -->
+<!-- 							</p:column>							 -->
+
+						</p:dataTable>
+						</p:panel>
+						<p:panel header="document généré à partir du document courant" style="width:100%;" >
+						<p:dataTable value="#{ligne.ligneLieeFils}" id="dataTableLigneLieeFils" var="lien" selectionMode="single" editable="true"
+							selection="#{proformaController.selectedLigneALigneDTO}" rowKey="#{lien.id}" widgetVar="wvdataTableLigneLieeFils" 
+							emptyMessage="#{msg.message_datatable_vide}" resizableColumns="true">
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="code document" />
+								</f:facet>
+								<p:commandLink value="#{lien.codeDocumentDest}"
+									action="#{proformaController.duplicationDocumentBean.ouvertureDocumentBean.detailDocument(proformaController.duplicationDocumentBean.ouvertureDocumentBean.recupCodeDocument(lien.codeDocumentDest,lien.typeDocument))}"
+									update=":form:tabView"
+									oncomplete="activeTabCenter('#{proformaController.duplicationDocumentBean.ouvertureDocumentBean.event.cssLgrTab}');">>
+								</p:commandLink>
+								<!-- 								<h:outputText value="#{lien.codeDocumentDest}" /> -->
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="libellé ligne" />
+								</f:facet>
+								<h:outputText value="#{lien.libelleLigne}" />
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="lot" />
+								</f:facet>
+								<h:outputText value="#{lien.numLot}" />
+							</p:column>
+							<p:column styleClass="right">
+								<f:facet name="header">
+									<h:outputText value="Qté. reçue" />
+								</f:facet>
+								<h:outputText value="#{lien.qteRecue}" />
+							</p:column>
+<!-- 							<p:column> -->
+<!-- 								<f:facet name="header"> -->
+<!-- 									<h:outputText value="Etat" /> -->
+<!-- 								</f:facet> -->
+<!-- 								<h:outputText value="#{lien.etat}" /> -->
+<!-- 							</p:column>							 -->
+
+						</p:dataTable>
+						</p:panel>
+					</p:panelGrid>
+					<p:panel header="Infos de l'abonnement" style="width:100%;" rendered="#{ligne.ligneAbonnement!=null}">
+						<p:dataTable value="#{ligne.ligneAbonnement}" id="dataTableLigneAbonnement" var="lien" selectionMode="single" editable="true"
+							selection="#{proformaController.selectedLigneALigneDTO}" rowKey="#{lien.id}" widgetVar="wvdataTableLigneAbonnement" 
+							emptyMessage="#{msg.message_datatable_vide}" resizableColumns="true">
+								<p:column  style="width:80px" >
+									<p:commandButton value="" actionListener="#{proformaController.actDialogDetailLigneAbonnement}" process="@this"
+										styleClass="icon-medium icon-reglement" title="Détail de la ligne d'abonnement">
+										<f:attribute name="taLigneALigneEcheanceDTO" value="#{lien}" />
+										<p:ajax event="dialogReturn" listener="#{proformaController.handleReturnDialogDetailLigneAbonnement}" />
+									</p:commandButton>
+								</p:column>
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="code document" />
+								</f:facet>
+								<p:commandLink value="#{lien.codeDocumentDest}"
+									action="#{proformaController.duplicationDocumentBean.ouvertureDocumentBean.detailAbonnement(proformaController.duplicationDocumentBean.ouvertureDocumentBean.recupCodeDocument(lien.codeDocumentDest,lien.typeDocument))}"
+									update=":form:tabView"
+									oncomplete="activeTabCenter('#{proformaController.duplicationDocumentBean.ouvertureDocumentBean.event.cssLgrTab}');">>
+								</p:commandLink>
+
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="libellé ligne" />
+								</f:facet>
+								<h:outputText value="#{lien.libelleLigne}" />
+							</p:column>
+						</p:dataTable>
+					</p:panel>
+					</p:rowExpansion>
+
+
+
+				</p:dataTable>
+
+				<p:overlayPanel widgetVar="wvOverlayPanelDetailLotProforma" hideEffect="fade">
+					<p:panel widgetVar="wvPanelGridDetailLotProforma" style="text-align:center;">
+					<p:panelGrid columns="2" rendered="#{not empty proformaController.detailLigneOverLayPanel}">
+						<h:outputText value="Lot" />
+						<h:outputText value="#{proformaController.detailLigneOverLayPanel.dto.numLot} - #{proformaController.detailLigneOverLayPanel.dto.libelleLot}" />
+
+						<h:outputText value="Entrepot" />
+						<h:outputText value="#{proformaController.detailLigneOverLayPanel.dto.codeEntrepot}" />
+
+						<h:outputText value="Qte" />
+						<h:outputText value="#{proformaController.detailLigneOverLayPanel.dto.qteLDocument} #{proformaController.detailLigneOverLayPanel.dto.u1LDocument}" />
+
+						<h:outputText value="DLUO" />
+						<h:outputText value="#{proformaController.detailLigneOverLayPanel.dto.dluo}" />
+					</p:panelGrid>
+					</p:panel>
+				</p:overlayPanel>
+
+				<p:panelGrid columns="3" styleClass="totaux-lignes-document" id="idTotauxLProforma">
+					<f:facet name="header">
+							<h:outputText value="Totaux" />
+					</f:facet>
+					
+					<h:outputText value="NET HT" />
+				
+					<h:outputText value="NET TVA" />
+			
+					<h:outputText value="NET TTC" />
+					<h:outputText value="#{proformaController.selectedDocumentDTO.netHtCalc}">
+						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+					</h:outputText>
+					<h:outputText value="#{proformaController.selectedDocumentDTO.netTvaCalc}">
+						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+					</h:outputText>
+					<h:outputText value="#{proformaController.selectedDocumentDTO.netTtcCalc}">
+						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+					</h:outputText>
+					
+				</p:panelGrid>
+				
+
+
+			</p:panel>
+		</p:tab>
+		
+		<p:tab id="idTotauxFormProforma" title="Totaux" >
+
+			<p:panel id="idPaneltotauxFormProforma" header="Totaux" toggleable="true" widgetVar="panelTotauxFormProforma">
+			<div class="ui-g">
+				<div class="ui-g-12 ui-md-12 ui-lg-6">
+					<div class="ui-g-12 ui-md-12 ui-lg-6">
+						<p:fieldset legend="Totaux">
+							<h:panelGrid columns="2" cellpadding="10">
+		
+								<p:outputLabel value="HT" />
+								<p:inputText value="#{proformaController.selectedDocumentDTO.mtHtCalc}" disabled="true">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</p:inputText>
+								
+								<p:outputLabel value="TVA" />
+								<p:inputText value="#{proformaController.selectedDocumentDTO.mtTvaCalc}" disabled="true">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</p:inputText>
+		
+								<p:outputLabel value="TTC" />
+								<p:inputText value="#{proformaController.selectedDocumentDTO.mtTtcAvantRemiseGlobaleCalc}" disabled="true">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</p:inputText>
+		
+		
+							</h:panelGrid>
+						</p:fieldset>
+					</div>
+					<div class="ui-g-12 ui-md-12 ui-lg-6">
+						<p:fieldset legend="Totaux après remise globale">
+							<h:panelGrid columns="2" cellpadding="10">
+		
+								<p:outputLabel value="Montant HT" />
+								<p:inputText value="#{proformaController.selectedDocumentDTO.netHtCalc}" disabled="true">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</p:inputText>
+								
+								<p:outputLabel value="Montant TVA" />
+								<p:inputText value="#{proformaController.selectedDocumentDTO.netTvaCalc}" disabled="true">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</p:inputText>
+		
+								<p:outputLabel value="Montant TTC" />
+								<p:inputText value="#{proformaController.selectedDocumentDTO.netTtcCalc}" disabled="true">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</p:inputText>
+		
+							</h:panelGrid>
+						</p:fieldset>
+					</div>
+				
+					<div class="ui-g-12 ui-md-12 ui-lg-6">
+						<p:fieldset legend="Remise">
+							<h:panelGrid columns="2" cellpadding="10">
+								<p:outputLabel value="Remise globale %" />
+								<p:inputText value="#{proformaController.selectedDocumentDTO.txRemHtDocument}"
+									disabled="#{proformaController.editable()}" validator="#{proformaController.validateDocument}">
+									<f:attribute name="nomChamp" value="#{const.C_TX_REM_HT_DOCUMENT}" />
+									<p:ajax event="blur" update="@this,@widgetVar(panelTotauxFormProforma)" />
+								</p:inputText>
+								
+								<p:outputLabel value="Remise sur HT" />
+								<p:inputText value="#{proformaController.selectedDocumentDTO.remHtDocument}" disabled="true">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</p:inputText>
+							</h:panelGrid>
+						</p:fieldset>
+					</div>
+<!-- 					<div class="ui-g-12 ui-md-12 ui-lg-6"> -->
+<!-- 						<p:fieldset legend="Escompte"> -->
+<!-- 							<h:panelGrid columns="2" cellpadding="10"> -->
+		
+<!-- 								<p:outputLabel value="Escompte accordé %" /> -->
+<!-- 								<p:inputText value="#{proformaController.selectedDocumentDTO.txRemTtcDocument}" -->
+<!-- 									disabled="#{proformaController.editable()}" validator="#{proformaController.validateDocument}"> -->
+<!-- 									<f:attribute name="nomChamp" value="#{const.C_TX_REM_TTC_DOCUMENT}" /> -->
+<!-- 									<p:ajax event="blur" update="@this,@widgetVar(panelTotauxFormProforma)" /> -->
+<!-- 								</p:inputText> -->
+								
+<!-- 								<p:outputLabel value="Montant escompte" /> -->
+<!-- 								<p:inputText value="#{proformaController.selectedDocumentDTO.remTtcDocument}" disabled="true"> -->
+<!-- 									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" /> -->
+<!-- 								</p:inputText> -->
+		
+<!-- 							</h:panelGrid> -->
+<!-- 						</p:fieldset> -->
+<!-- 					</div> -->
+				</div>
+				<div class="ui-g-12 ui-md-12 ui-lg-6">
+					<p:fieldset legend="Règlements" style="height:100%" >
+						<h:panelGrid columns="2" cellpadding="10" id="idReglementProforma">
+<!-- 							<p:outputLabel value="Proforma réglée" disabled="#{proformaController.editable()}" /> -->
+<!-- 							<p:selectBooleanCheckbox value="#{proformaController.proformaReglee}" title="proforma Réglée" widgetVar="idProformaReglee" disabled="#{proformaController.editable()}" > -->
+<!-- 							<p:ajax update="idReglementProforma,idResteAPayerProforma" listener="#{proformaController.actInitReglement}"  /> -->
+<!-- 							</p:selectBooleanCheckbox> -->
+							
+<!-- 							<p:outputLabel value="Accompte" rendered="false"/> -->
+<!-- 							<p:inputText value="#{proformaController.selectedDocumentDTO.acomptes}" disabled="true" rendered="false"/> -->
+							
+<!-- 							<p:outputLabel value="Proformas" rendered="false"/> -->
+<!-- 							<p:inputText value="#{proformaController.selectedDocumentDTO.proformas}" disabled="true" rendered="false"/> -->
+	
+		
+							<p:outputLabel value="Type paiement" />
+							<!-- 						<p:inputText value="#{proformaController.selectedDocumentDTO.compte}"/> -->
+							<p:autoComplete value="#{proformaController.taTPaiement}" converter="entityConverter" 
+								completeMethod="#{proformaController.typePaiementAutoComplete}" var="tp" itemLabel="#{tp.codeTPaiement}"
+								itemValue="#{tp}" forceSelection="true" dropdown="true" disabled="#{proformaController.editable()}"
+								placeholder="Type de paiement" style="width:100%">
+								<p:column>
+									<h:outputText value="#{tp.codeTPaiement}" />
+								</p:column>
+								<p:column>
+									<h:outputText value="#{tp.libTPaiement}" />
+								</p:column>
+								<f:attribute name="nomChamp" value="#{const.C_CODE_T_PAIEMENT}" />
+								<p:ajax event="itemSelect" listener="#{proformaController.autcompleteSelection}" />
+							</p:autoComplete>
+
+<!-- 							<p:outputLabel value="Montant paiement" /> -->
+<!-- 							<p:inputText value="#{proformaController.selectedDocumentDTO.montantReglement}" disabled="true"> -->
+<!-- 								<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" /> -->
+<!-- 							</p:inputText> -->
+							
+<!-- 							<p:outputLabel value="Libellé paiement" /> -->
+<!-- 							<p:inputText id="idLibPaiementProforma" value="#{proformaController.selectedDocumentDTO.libelleReglement}" disabled="#{proformaController.editable()}" /> -->
+							
+							<p:outputLabel value="Date d'échéance " />
+							<p:calendar
+								value="#{proformaController.selectedDocumentDTO.dateEchDocument}" id="idDateEchProforma"
+								pattern="dd/MM/yyyy" mask="true" locale="fr" navigator="true" showOn="button"  timeZone="#{msg.time_zone}" 
+								disabled="#{proformaController.editable()}">
+								
+								<f:attribute name="nomChamp" value="#{const.C_DATE_ECH_DOCUMENT}" />
+						<p:ajax event="dateSelect" listener="#{proformaController.controleDate}" update="@this" />
+						<p:ajax event="change" listener="#{proformaController.controleDate}"  update="@this" />
+							</p:calendar>
+						</h:panelGrid>
+					</p:fieldset>
+				</div>
+				
+				<div class="ui-g-12 ui-md-12 ui-lg-6">
+					<p:panel id="idConditionPaiementProforma" header="Condition de paiement" toggleable="true" widgetVar="panelConditionPaiementProforma" collapsed="false">
+						<h:panelGrid columns="2" cellpadding="10" id="idPanelConditionPaiementProforma" >
+								<p:outputLabel value="Code paiement" />
+								<h:panelGrid columns="3" cellpadding="10">
+									<p:autoComplete value="#{proformaController.taCPaiementDoc}" converter="entityConverter" id="idCodeCPaiementProforma"
+										completeMethod="#{proformaController.typeCPaiementAutoComplete}" var="tp" itemLabel="#{tp.codeCPaiement}"
+										itemValue="#{tp}" forceSelection="true" dropdown="true" disabled="#{proformaController.editable()}"
+										placeholder="Condition de paiement" style="width:100%">
+										<p:column>
+											<h:outputText value="#{tp.codeCPaiement}" />
+										</p:column>
+										<p:column>
+											<h:outputText value="#{tp.libCPaiement}" />
+										</p:column>
+										<f:attribute name="nomChamp" value="#{const.C_CODE_C_PAIEMENT}" />
+										<p:ajax event="itemSelect" listener="#{proformaController.autcompleteSelection}"
+											update="idLibelleCPaimentProforma,idReportProforma,idFinMoisProforma,idDateEchProforma,idMenuBoutonProforma" />
+									</p:autoComplete>
+									<!-- 										<p:inputText value="#{proformaController.selectedCPaiement.codeCPaiement}" -->
+									<!-- 											disabled="#{proformaController.editable()}"> -->
+									<!-- 											<p:ajax event="blur" update="@this" /> -->
+									<!-- 										</p:inputText> -->
+									<p:commandButton value="Appliquer" styleClass="icon-refresh btn"
+										actionListener="#{proformaController.actAppliquerCPaiement}" process="@this"
+										update="idPanelConditionPaiementProforma,idLibelleCPaimentProforma,idReportProforma,idFinMoisProforma,idDateEchProforma,idMenuBoutonProforma" />
+								</h:panelGrid>
+								<p:outputLabel value="Libellé" />
+							<p:inputText value="#{proformaController.selectedCPaiement.libCPaiement}" disabled="#{proformaController.editable()}" id="idLibelleCPaimentProforma">
+							<p:ajax event="blur" update="@this" />
+							</p:inputText>
+							<p:outputLabel value="Report" />
+							<p:inputText value="#{proformaController.selectedCPaiement.reportCPaiement}" disabled="#{proformaController.editable()}" id="idReportProforma">
+							<p:ajax event="blur" update="@this" />
+							</p:inputText>
+							<p:outputLabel value="Fin de mois" />
+							<p:inputText value="#{proformaController.selectedCPaiement.finMoisCPaiement}" disabled="#{proformaController.editable()}" id="idFinMoisProforma">
+							<p:ajax event="blur" update="@this" />
+							</p:inputText>
+						</h:panelGrid>
+					</p:panel>
+				</div>
+				<div class="ui-g-12 ui-md-12 ui-lg-6">
+					<div class="ui-g-12 ui-md-12 ui-lg-6">
+						<p:fieldset legend="">
+							<h:panelGrid columns="2" cellpadding="10" id="idNetAPayerProforma">
+								<p:outputLabel value="Net à payer" />
+								<p:inputText value="#{proformaController.selectedDocumentDTO.netTtcCalc}" disabled="true">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</p:inputText>
+							</h:panelGrid>
+						</p:fieldset>
+					</div>
+<!-- 					<div class="ui-g-12 ui-md-12 ui-lg-6"> -->
+<!-- 						<p:fieldset legend=""> -->
+<!-- 							<h:panelGrid columns="2" cellpadding="10" id="idResteAPayerProforma"> -->
+<!-- 								<p:outputLabel value="Accompte" /> -->
+<!-- 								<p:inputText value="#{proformaController.selectedDocumentDTO.regleDocument}" disabled="true"> -->
+<!-- 									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" /> -->
+<!-- 								</p:inputText> -->
+<!-- 							</h:panelGrid> -->
+<!-- 						</p:fieldset> -->
+<!-- 					</div> -->
+				</div>	
+				
+				<div class="ui-g-12 ui-md-12 ui-lg-6">
+					<p:dataTable value="#{proformaController.masterEntity.lignesTVA}" var="ltva">
+						<f:facet name="header">
+								<h:outputText value="TVA" />
+						</f:facet>
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="Code TVA" />
+							</f:facet>
+							<h:outputText value="#{ltva.codeTva}" />
+						</p:column>
+						
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="Libellé" />
+							</f:facet>
+							<h:outputText value="#{ltva.libelle}" />
+						</p:column>
+						
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="Taux" />
+							</f:facet>
+							<h:outputText value="#{ltva.tauxTva}" />
+						</p:column>
+						
+						<p:column styleClass="right">
+							<f:facet name="header">
+								<h:outputText value="Montant" />
+							</f:facet>
+							<h:outputText value="#{ltva.mtTva}">
+								<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+							</h:outputText>
+						</p:column>
+					</p:dataTable>
+				</div>
+				
+				<div class="ui-g-12 ui-md-12 ui-lg-6">
+					<h:panelGrid columns="2" cellpadding="10">
+						<p:outputLabel value="Imprimer" />
+						<p:selectBooleanCheckbox value="#{proformaController.impressionDirect}" disabled="#{proformaController.editable()}">
+						<p:ajax event="change" update="@this"/>
+						</p:selectBooleanCheckbox>
+					</h:panelGrid>
+				</div>
+			
+		</div>	
+	</p:panel>
+			
+		</p:tab>
+		
+
+		
+	</p:wizard>
+
+	<!-- 			</div> -->
+	<!-- 		</div> -->
+	<!-- 	</div> -->
+
+	<p:remoteCommand name="increment" binding="#{proformaController.rc}"
+		actionListener="#{proformaController.actAutoInsererLigne}"
+		process="@this" update="@widgetVar(panelLignesProforma)"
+		disabled="#{proformaController.insertAuto}"
+		 />
+<!-- oncomplete="jQuery('.myclassProforma .ui-datatable-data tr').last().find('span.ui-icon-pencil').each(function(){jQuery(this).click()});" -->
+	
+	<!-- </f:validateBean> -->
+
+	<p:dialog header="Cohérence de la qté 2" widgetVar="wVdialogQte2Proforma" modal="true" appendTo="@(body)" showEffect="clip" hideEffect="clip" width="900"
+		height="200">
+		<p:panelGrid columns="1">
+			<p:outputLabel value="La qté 2 n'est pas cohérente par rapport au coefficient applicable, voulez vous la conserver ?" />
+		</p:panelGrid>
+		<p:panelGrid columns="2">
+			<p:commandButton value="Conserver la valeur" process="@this" onstart="PF('wVdialogQte2Proforma').hide()" />
+			<p:commandButton value="Appliquer le coefficient" process="@this" actionListener="#{proformaController.actArreterEnregistrementEtFocusQte2()}"
+				oncomplete="PF('wVdialogQte2Proforma').hide()" update="@widgetVar(widgetVarDataTableLigneProforma)" />
+		</p:panelGrid>
+	</p:dialog>
+
+
+</ui:composition>

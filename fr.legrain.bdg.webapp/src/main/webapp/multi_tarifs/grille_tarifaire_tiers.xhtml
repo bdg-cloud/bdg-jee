@@ -1,0 +1,498 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions">
+
+	<p:menubar styleClass="menu-onglet" id="idMenuBoutonGestGrilleTarifaireTiers" widgetVar="wvMenuBoutonGestGrilleTarifaireTiers">
+
+		<p:menuitem title="Enregistrer la grille tarifaire du tiers" value="Enregistrer" styleClass="icon icon-save" process="@this"
+			actionListener="#{grilleTarifaireTiersController.actEnregistrer}"
+			update=":form:messages,@form,@widgetVar(wvMenuListeGrilleTarifaireTiers),@widgetVar(wvDataTableListeGestGrilleTarifaireTiers),
+			@widgetVar(wvDataTableListeGestGrilleTarifaireTiers2),@widgetVar(wvPanelRenderedGrilleTarifaireTiers),@widgetVar(wvInfosComplementairesGrilleTiers)"
+			disabled="#{grilleTarifaireTiersController.etatBouton('enregistrer')}" />
+
+
+
+		<p:menuitem title="Annuler les modifications en cours" value="Annuler" styleClass="icon icon-cancel"
+			actionListener="#{grilleTarifaireTiersController.actAnnuler}" process="@this"
+			update=":form:messages,@form,@widgetVar(wvMenuListeGrilleTarifaireTiers),@widgetVar(wvDataTableListeGestGrilleTarifaireTiers),@widgetVar(wvDataTableListeGestGrilleTarifaireTiers2),@widgetVar(wvPanelRenderedGrilleTarifaireTiers),@widgetVar(wvInfosComplementairesGrilleTiers)"
+			disabled="#{grilleTarifaireTiersController.etatBouton('annuler')}">
+			<p:confirm header="Confirmation" message="Etes vous sur de vouloir annuler les modifications en cours ?" icon="ui-icon-alert" />
+		</p:menuitem>
+
+
+		<!-- 		<p:menuitem title="Imprimer la grille de référence" value="Imprimer" styleClass="icon icon-print" -->
+		<!-- 			onsuccess="window.open('#{request.contextPath}/output?__report=/reports/remise/FicheGrilleTarifaireTiers.rptdesign&amp;__format=pdf')" -->
+		<!-- 			actionListener="#{grilleTarifaireTiersController.actImprimer}" disabled="#{grilleTarifaireTiersController.etatBouton('imprimer')}" /> -->
+
+
+		<p:menuitem title="Fermer l'écran" value="Fermer" styleClass="icon icon-close menuitem-fermer-droite" process="@this"
+			actionListener="#{grilleTarifaireTiersController.actFermer}"
+			update=":form:messages,@widgetVar(wvMenuListeGrilleTarifaireTiers),@widgetVar(wvDataTableListeGestGrilleTarifaireTiers2)"
+			disabled="#{grilleTarifaireTiersController.etatBouton('fermer')}" onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())">
+
+			<p:confirm header="Confirmation" message="#{msg_diag.alert_fermeture_onglet}" icon="ui-icon-alert"
+				disabled="#{!grilleTarifaireTiersController.modeEcran.dataSetEnModif()}" />
+		</p:menuitem>
+
+
+		<p:separator styleClass="separateur-menu-vertical" />
+		
+				<p:menuitem title="Liste des tiers" styleClass="icon icon-liste"  
+				oncomplete="PF('wvOverlayListeTiersGrilleTarifaire').show();" action="#{grilleTarifaireTiersController.reset}"
+				update="@widgetVar(wvDataTableListeGestGrilleTarifaireTiers2),@widgetVar(wVPanelTitreGrilleTarifaireTiers),@widgetVar(wvInfosComplementairesGrilleTiers),idBtnValiderGrilleTiers,idCoefTTarifGrilleTiers" 
+				disabled="#{grilleTarifaireTiersController.modeEcran.dataSetEnModif()}" />
+	</p:menubar>
+
+	<!-- <p:hotkey bind="down" handler="PF('switcher').previous();" /> -->
+
+	<p:fieldset style="margin-bottom:20px;" widgetVar="wvInfosComplementairesGrilleTiers">
+		<h:panelGrid columns="13" cellpadding="15">
+			<p:outputLabel value="Tiers en cours" />
+			<p:outputLabel value="#{grilleTarifaireTiersController.codeTiers}" />
+			<p:outputLabel value="Grille tarifaire" />
+			<p:outputLabel value="#{grilleTarifaireTiersController.codeTTarif}" />			
+<!-- 			<p:menubar> -->
+<!-- 				<p:menuitem title="Liste des articles dans la grille tarifaire" styleClass="icon icon-liste"   -->
+<!-- 				oncomplete="PF('wvOverlayListeGrilleTarifaireTiers').show();"  -->
+<!-- 				update="@widgetVar(wvDataTableListeGestGrilleTarifaireTiers2),@widgetVar(wVPanelTitreGrilleTarifaireTiers),@widgetVar(wvInfosComplementairesGrilleTiers),idBtnValiderGrilleTiers,idCoefTTarifGrilleTiers"  -->
+<!-- 				disabled="#{grilleTarifaireTiersController.modeEcran.dataSetEnModif()}" /> -->
+<!-- 			</p:menubar> -->
+		</h:panelGrid>
+	</p:fieldset>
+	<div class="container">
+		<p:fieldset legend="Etape 1/2 : Saisissez les critères de sélection des articles ou familles d'article" widgetVar="wvCriteresFiltresGrilleTarifaireTiers"
+			toggleable="true" toggleSpeed="50">
+
+			<div class="ui-g">
+
+				<div class="ui-g-12 ui-lg-12">
+					<div class="ui-g-12 ui-lg-6">
+						<div class="ui-g-12 ui-lg-6">
+							<div class="card">
+								<p:panel header="Retrouver un article">
+									<p:panelGrid columns="2" columnClasses="ui-grid-col-3,ui-grid-col-3,ui-grid-col-3,ui-grid-col-3" styleClass="ui-panelgrid-blank"
+										layout="grid">
+										<p:outputLabel value="Article" />
+										<p:autoComplete value="#{grilleTarifaireTiersController.taArticleDTO}" converter="entityConverter"
+											completeMethod="#{grilleTarifaireTiersController.articleAutoComplete}" var="article" itemLabel="#{article.codeArticle}" itemValue="#{article}"
+									maxResults="#{grilleTarifaireTiersController.taPreferencesService.nbMaxChargeListeArticle()}"
+									moreText="Il y a #{component.maxResults} affichés sur #{component.suggestions.size()} au total, Veuillez affiner votre recherche ou cliquer ici pour en afficher plus ..."
+											forceSelection="true" dropdown="true" placeholder="Article">
+											<p:column>
+												<h:outputText value="#{article.codeArticle}" />
+											</p:column>
+
+											<p:column>
+												<h:outputText value="#{article.libellecArticle}" />
+											</p:column>
+
+											<f:attribute name="nomChamp" value="#{const.C_CODE_ARTICLE}" />
+											<p:ajax event="itemSelect" listener="#{grilleTarifaireTiersController.autcompleteSelection}" update="" />
+											<p:ajax event="clear" listener="#{grilleTarifaireTiersController.reset}" 
+											update="@widgetVar(widgetVarDataTableLigneGrilleTarifaireTiers)" />
+											<p:ajax event="moreText" listener="#{grilleTarifaireTiersController.onMoreTextArticle}" />
+										</p:autoComplete>
+
+									</p:panelGrid>
+								</p:panel>
+							</div>
+						</div>
+						<div class="ui-g-12 ui-lg-6">
+							<div class="card">
+								<p:panel header="Retrouver une liste d'article à partir d'une famille">
+									<p:panelGrid columns="2" columnClasses="ui-grid-col-4 right,ui-grid-col-8" styleClass="ui-panelgrid-blank" layout="grid">
+										<i class="fa fa-file-text-o fa-3x" aria-hidden="true"></i>
+										<p:panelGrid columns="1" cellpadding="0">
+											<p:outputLabel value="Famille" />
+											<p:autoComplete value="#{grilleTarifaireTiersController.taFamilleDTO}" converter="entityConverter"
+												completeMethod="#{grilleTarifaireTiersController.familleAutoComplete}" var="famille" itemLabel="#{famille.codeFamille}" itemValue="#{famille}"
+												forceSelection="true" dropdown="true" placeholder="Famille">
+												<p:column>
+													<h:outputText value="#{famille.codeFamille}" />
+												</p:column>
+
+												<p:column>
+													<h:outputText value="#{famille.libcFamille}" />
+												</p:column>
+
+												<f:attribute name="nomChamp" value="#{const.C_CODE_FAMILLE}" />
+												<p:ajax event="itemSelect" listener="#{grilleTarifaireTiersController.autcompleteSelection}" update="" />
+												<p:ajax event="clear" listener="#{grilleTarifaireTiersController.reset}" update="@widgetVar(widgetVarDataTableLigneGrilleTarifaireTiers)" />
+											</p:autoComplete>
+										</p:panelGrid>
+									</p:panelGrid>
+								</p:panel>
+
+							</div>
+						</div>
+						<div class="card" style="text-align: center;">
+							<p:commandButton value="Valider les critères" id="idBtnValiderGrilleTiers" action="#{grilleTarifaireTiersController.refresh}"
+								update="idPanelListeTiersGestGrilleTarifaireTiers,@widgetVar(wvDataTableListeGestGrilleTarifaireTiers2),@widgetVar(wVPanelTitreGrilleTarifaireTiers)" 
+								style="width:40%; height:45px;" icon="fa fa-check"
+																		
+								disabled="#{grilleTarifaireTiersController.codeTTarif==null || grilleTarifaireTiersController.codeTTarif.isEmpty()}" />
+						</div>
+
+					</div>
+					<div class="ui-g-12 ui-lg-6">
+						<div class="card" >
+							<p:panel header="Appliquer un coefficient" id="idCoefTTarifGrilleTiers">
+								<p:panelGrid columns="4">
+									<p:outputLabel value="Coefficient" />
+									<p:inputText value="#{grilleTarifaireTiersController.coefTTarif}" />
+									<p:outputLabel for="idAppliquer"  value="Appliquer " />
+									<p:selectOneRadio id="idAppliquer" value="#{grilleTarifaireTiersController.appliquerATous}">
+										<f:selectItem itemLabel="à tous les articles" itemValue="#{grilleTarifaireTiersController.libelleAppliquerATous}" />
+										<f:selectItem itemLabel="à tous les articles à 0" itemValue="#{grilleTarifaireTiersController.libelleAppliquerAZero}" />
+									</p:selectOneRadio>
+
+								</p:panelGrid>
+								
+						<div style="text-align: center;">
+							<p:commandButton value="Appliquer le coefficient" id="idBtnAppliquerGrilleTiers" actionListener="#{grilleTarifaireTiersController.appliquerCoefficient}"
+								update="idPanelListeTiersGestGrilleTarifaireTiers,@widgetVar(wvMenuBoutonGestGrilleTarifaireTiers)" style="width:40%; height:45px;text-align: center;" icon="fa fa-check" 
+								disabled="#{grilleTarifaireTiersController.coefTTarif==null}"  process="@this"/>
+						</div>
+						</p:panel>
+						</div>
+						<div class="card">
+							<p:panel header="Déterminer le type de saisie" >
+								<p:panel widgetVar="wVtitreSaisieDetailGrilleTiers">
+<!-- 									<p:selectBooleanCheckbox itemLabel="#{grilleTarifaireTiersController.titreSaisieRapideOuDetail()}" title="#{grilleTarifaireTiersController.titreSaisieRapideOuDetail()}" -->
+<!-- 										 value="#{grilleTarifaireTiersController.saisieDetail}" > -->
+<!-- 										<p:ajax update="@widgetVar(wvPanelRenderedGrilleTarifaireTiers),@widgetVar(wVtitreSaisieDetailGrilleTiers)" /> -->
+<!-- 									</p:selectBooleanCheckbox> -->
+		<p:selectOneRadio  value="#{grilleTarifaireTiersController.modeSaisie}"  >
+			<f:selectItem  itemValue="#{const.C_SAISIE_SIMPLE}" itemLabel="#{grilleTarifaireTiersController.titreSaisieRapide}"/>
+			<f:selectItem  itemValue="#{const.C_SAISIE_DETAIL}" itemLabel="#{grilleTarifaireTiersController.titreSaisieDetail}"/>
+			<p:ajax listener="#{grilleTarifaireTiersController.initEcran()}" update="@widgetVar(wvPanelRenderedGrilleTarifaireTiers)"/>
+		</p:selectOneRadio>
+								</p:panel>							
+								<p:panel widgetVar="wVtitreSaisie2GrilleTiers">
+<!-- 									<p:selectBooleanCheckbox itemLabel="#{grilleTarifaireTiersController.titreSaisie()}" title="#{grilleTarifaireTiersController.titreSaisie()}" -->
+<!-- 										widgetVar="wVSaisieHTGrilleTiers" value="#{grilleTarifaireTiersController.saisieHT}" > -->
+<!-- 										<p:ajax update="@widgetVar(wvPanelRenderedGrilleTarifaireTiers),@widgetVar(wVtitreSaisie2GrilleTiers)" /> -->
+<!-- 									</p:selectBooleanCheckbox> -->
+		<p:selectOneRadio  value="#{grilleTarifaireTiersController.modeSaisiePrix}"   >
+			<f:selectItem  itemValue="#{const.C_SAISIE_HT}" itemLabel="#{grilleTarifaireTiersController.titreSaisieHt}"/>
+			<f:selectItem  itemValue="#{const.C_SAISIE_TTC}" itemLabel="#{grilleTarifaireTiersController.titreSaisieTtc}"/>
+			<f:selectItem  itemValue="#{const.C_SAISIE_COEF}" itemLabel="#{grilleTarifaireTiersController.titreSaisieCoef}"/> 
+			<p:ajax listener="#{grilleTarifaireTiersController.initEcran()}" update="@widgetVar(wvPanelRenderedGrilleTarifaireTiers)"/>
+		</p:selectOneRadio>
+								</p:panel>
+							</p:panel>
+							
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- 			<div class="card" style="text-align: center;"> -->
+			<!-- 				<p:commandButton value="Valider les critères" id="idBtnValider" actionListener="#{grilleTarifaireTiersController.refresh}" update="idPanelListeTiersGestGrilleTarifaireTiers" -->
+			<!-- 					style="width:20%; height:45px;" icon="fa fa-check" disabled="#{grilleTarifaireTiersController.taTTarifDTO==null}"/> -->
+			<!-- 			</div> -->
+
+		</p:fieldset>
+	</div>
+	<div class="container">
+		<p:panel id="idPanelRenderedGrilleTarifaireTiers" widgetVar="wvPanelRenderedGrilleTarifaireTiers">
+			<div class="container">
+
+				<p:fieldset legend="#{grilleTarifaireTiersController.titreEcran}" toggleable="true" toggleSpeed="50">
+				
+
+					<p:panel header="Liste des articles avec leur prix associé à la grille tarifaire en cours" id="idPanelListeTiersGestGrilleTarifaireTiers">
+						<div class="ui-g">
+							<div class="ui-g-12">
+								<p:dataTable 
+								var="ligne" 
+								id="datatablegrilleTarifaireTiers1"
+								value="#{grilleTarifaireTiersController.valuesLignes}" 
+								editable="true" 
+								editMode="cell"									
+								widgetVar="widgetVarDataTableLigneGrilleTarifaireTiers" 
+								styleClass="datatable mt10" 
+								emptyMessage="#{msg.message_datatable_vide}"
+								rendered="#{!grilleTarifaireTiersController.saisieDetail}"
+								paginator="true" 
+								rows="#{msg.modele_datatable_ligne_par_page_debut}"
+								paginatorTemplate="#{msg.modele_datatable_paginator}" 
+								rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+								currentPageReportTemplate="#{msg.modele_datatable_page_courante}">								
+>
+		  		<f:facet name="{Exporters}">
+		            <h:commandLink>
+		                <p:graphicImage library="images" name="excel.png" width="24"/>
+		                <p:dataExporter type="xls" target="datatablegrilleTarifaireTiers1" fileName="grille_tarifaire_tiers" />
+		            </h:commandLink>
+		 
+		            <h:commandLink>
+		                <p:graphicImage  library="images" name="pdf.png"  width="24"/>
+		                <p:dataExporter type="pdf" target="datatablegrilleTarifaireTiers1" fileName="grille_tarifaire_tiers"/>
+		            </h:commandLink>
+		 
+		            <h:commandLink>
+		                <p:graphicImage  library="images" name="csv.png"  width="24"/>
+		                <p:dataExporter type="csv" target="datatablegrilleTarifaireTiers1" fileName="grille_tarifaire_tiers" options="#{separateurCsvController.csvOptions}" />
+		            </h:commandLink>
+		 
+		            <h:commandLink>
+		                <p:graphicImage  library="images" name="xml.png"  width="24"/>
+		                <p:dataExporter type="xml" target="datatablegrilleTarifaireTiers1" fileName="grille_tarifaire_tiers" />
+		            </h:commandLink>
+		        </f:facet>
+
+			
+								<p:ajax event="cellEdit" listener="#{grilleTarifaireTiersController.onCellEdit}"
+										update="@widgetVar(wvMenuBoutonGestGrilleTarifaireTiers),@widgetVar(widgetVarDataTableLigneGrilleTarifaireTiers),@widgetVar(wVSaisieHTGrilleTiers)" />
+
+									<p:column headerText="Code famille" sortBy="#{ligne.articleDTO.codeFamille}" >
+										<h:outputText value="#{ligne.articleDTO.codeFamille}" />
+									</p:column>
+
+									<p:column headerText="Code article" sortBy="#{ligne.dto.codeArticle}" >
+										<p:commandLink value="#{ligne.dto.codeArticle}"
+											action="#{ouvertureDocumentBean.detailArticle(ouvertureDocumentBean.recupCodeArticle(ligne.dto.codeArticle))}" update=":form:tabView"
+											oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');" process="@this">
+										</p:commandLink>
+									</p:column>
+
+									<p:column headerText="libellé" sortBy="#{ligne.dto.libellecArticle}" >
+										<h:outputText value="#{ligne.dto.libellecArticle}" />
+									</p:column>
+
+									<p:column headerText="Taux Tva" sortBy="#{ligne.dto.tauxTva}" >
+										<h:outputText value="#{ligne.dto.tauxTva}" />
+									</p:column>
+
+									<p:column headerText="Prix grille HT" sortBy="#{ligne.dto.prixPrix}" >
+										<h:outputText value="#{ligne.dto.prixPrix}" />
+									</p:column>
+
+									<p:column headerText="Prix grille TTC" sortBy="#{ligne.dto.prixttcPrix}" >
+										<h:outputText value="#{ligne.dto.prixttcPrix}" />
+									</p:column>
+
+
+									<p:column headerText="Coefficient" styleClass="ui-cell-editor-exclu-click-selection" sortBy="#{ligne.dto.coef}" rendered="#{grilleTarifaireTiersController.modeSaisieCoef()}">
+										<p:cellEditor>
+											<f:facet name="output">
+												<h:outputText value="#{ligne.dto.coef}" />
+											</f:facet>
+											<f:facet name="input">
+												<p:inputText id="idCoefDirectGrilleTiers" value="#{ligne.dto.coef}" style="width:96%">
+													<f:attribute name="nomChamp" value="#{const.C_COEFFICIENT}" />
+													<p:ajax event="blur"   listener="#{grilleTarifaireTiersController.majDesPrixCalcules(ligne.dto.coef)}"  update="idCoefDirectGrilleTiers,idHtDirectGrilleTiers,idTtcDirectGrilleTiers" />
+<!-- 													listener="#{grilleTarifaireTiersController.majDesPrixCalcules(ligne.dto.coef)}" -->
+												</p:inputText>
+											</f:facet>
+										</p:cellEditor>
+									</p:column>
+
+									<p:column headerText="HT" styleClass="ui-cell-editor-exclu-click-selection" sortBy="#{ligne.dto.prixPrixCalc}"  rendered="#{grilleTarifaireTiersController.modeSaisieHt()}">
+										<p:cellEditor>
+											<f:facet name="output">
+												<h:outputText value="#{ligne.dto.prixPrixCalc}" />
+											</f:facet>
+											<f:facet name="input">
+												<p:inputText id="idHtDirectGrilleTiers" value="#{ligne.dto.prixPrixCalc}" style="width:96%">
+													<f:attribute name="nomChamp" value="#{const.C_PRIX_PRIX}" />
+													<p:ajax event="blur"  listener="#{grilleTarifaireTiersController.recalculCoef(false,true)}" update="idCoefDirectGrilleTiers,idHtDirectGrilleTiers,idTtcDirectGrilleTiers" />
+<!-- 													listener="#{grilleTarifaireTiersController.majPrixHT(ligne.dto.prixPrixCalc)}" -->
+												</p:inputText>
+											</f:facet>
+										</p:cellEditor>
+									</p:column>
+
+
+									<p:column headerText="TTC" styleClass="ui-cell-editor-exclu-click-selection" sortBy="#{ligne.dto.prixttcPrixCalc}"  rendered="#{grilleTarifaireTiersController.modeSaisietTtc()}">
+										<p:cellEditor>
+											<f:facet name="output">
+												<h:outputText value="#{ligne.dto.prixttcPrixCalc}" />
+											</f:facet>
+											<f:facet name="input">
+												<p:inputText id="idTtcDirectGrilleTiers" value="#{ligne.dto.prixttcPrixCalc}" style="width:96%">
+													<f:attribute name="nomChamp" value="#{const.C_PRIXTTC_PRIX}" />
+													<p:ajax event="blur"  listener="#{grilleTarifaireTiersController.recalculCoef(true,true)}" update="idCoefDirectGrilleTiers,idHtDirectGrilleTiers,idTtcDirectGrilleTiers" />
+<!-- 													listener="#{grilleTarifaireTiersController.majPrixTTC(ligne.dto.prixttcPrixCalc)}" -->
+												</p:inputText>
+											</f:facet>
+										</p:cellEditor>
+									</p:column>
+
+																		
+					<p:column style="width:16px"  exportable="false">
+						<f:facet name="header">
+							<h:outputText value="" />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<p:commandButton title="Supprimer" styleClass="icon-delete icon icon-grille" 
+									action="#{grilleTarifaireTiersController.actSupprimerLigne}" rendered="#{!ligne.suppression}"
+									process="@this"
+									
+									update="@widgetVar(wvPanelRenderedGrilleTarifaireTiers),@widgetVar(wvMenuBoutonGestGrilleTarifaireTiers)">
+									<f:setPropertyActionListener target="#{grilleTarifaireTiersController.selectionLigne}" value="#{ligne}" />
+								</p:commandButton>
+							</f:facet>
+							<f:facet name="input">
+								<h:outputText value="" />
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+
+								</p:dataTable>
+								
+								<p:dataTable 
+								var="ligne" 
+								id="datatablegrilleTarifaireTiers2"
+								value="#{grilleTarifaireTiersController.valuesLignes}" 
+								editable="true" 
+								rowKey="#{ligne.dto.id}" 
+								selection="#{grilleTarifaireTiersController.selectionLigne}" 
+								selectionMode="single"
+								dblClickSelect="true"								
+								widgetVar="widgetVarDataTableLigneGrilleTarifaireTiers" 
+								styleClass="datatable mt10" 
+								emptyMessage="#{msg.message_datatable_vide}"
+								rendered="#{grilleTarifaireTiersController.saisieDetail}"
+								paginator="true" 
+								rows="#{msg.modele_datatable_ligne_par_page_debut}"
+								paginatorTemplate="#{msg.modele_datatable_paginator}" 
+								rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+								currentPageReportTemplate="#{msg.modele_datatable_page_courante}">								
+>
+		  		<f:facet name="{Exporters}">
+		            <h:commandLink>
+		                <p:graphicImage library="images" name="excel.png" width="24"/>
+		                <p:dataExporter type="xls" target="datatablegrilleTarifaireTiers2" fileName="grille_tarifaire_tiers" />
+		            </h:commandLink>
+		 
+		            <h:commandLink>
+		                <p:graphicImage  library="images" name="pdf.png"  width="24"/>
+		                <p:dataExporter type="pdf" target="datatablegrilleTarifaireTiers2" fileName="grille_tarifaire_tiers"/>
+		            </h:commandLink>
+		 
+		            <h:commandLink>
+		                <p:graphicImage  library="images" name="csv.png"  width="24"/>
+		                <p:dataExporter type="csv" target="datatablegrilleTarifaireTiers2" fileName="grille_tarifaire_tiers" />
+		            </h:commandLink>
+		 
+		            <h:commandLink>
+		                <p:graphicImage  library="images" name="xml.png"  width="24"/>
+		                <p:dataExporter type="xml" target="datatablegrilleTarifaireTiers2" fileName="grille_tarifaire_tiers" />
+		            </h:commandLink>
+		        </f:facet>			
+									<p:ajax event="rowSelect"  listener="#{grilleTarifaireTiersController.onRowSelectLigne}"  />
+<!-- 								<p:ajax event="cellEdit" listener="#{grilleTarifaireTiersController.onCellEdit}" -->
+<!-- 										update="@widgetVar(wvMenuBoutonGestGrilleTarifaireTiers),@widgetVar(widgetVarDataTableLigneGrilleTarifaireTiers),@widgetVar(wVSaisieHT)" /> -->
+								     <p:ajax event="rowEditInit" listener="#{grilleTarifaireTiersController.onRowEditInit}" oncomplete="autreLigneNonModifiable('myclass');"/>
+								    <p:ajax event="rowEdit" listener="#{grilleTarifaireTiersController.onRowEdit}" oncomplete="autreLigneModifiable('myclass');" update="@widgetVar(wvMenuBoutonGestGrilleTarifaireTiers),@widgetVar(widgetVarDataTableLigneGrilleTarifaireTiers),@widgetVar(wVSaisieHTGrilleTiers)" />
+									<p:ajax event="rowEditCancel" listener="#{grilleTarifaireTiersController.onRowCancel}"  oncomplete="autreLigneModifiable('myclass');" update="@widgetVar(wvMenuBoutonGestGrilleTarifaireTiers)"/>
+					
+					<p:column style="width:16px"  exportable="false">
+						<p:rowEditor  styleClass="row-editor-debut" rendered="#{!ligne.suppression}"/>
+					</p:column>
+									<p:column headerText="Code famille" sortBy="#{ligne.articleDTO.codeFamille}" >
+										<h:outputText value="#{ligne.articleDTO.codeFamille}" />
+									</p:column>
+
+									<p:column headerText="Code article" sortBy="#{ligne.dto.codeArticle}" >
+										<p:commandLink value="#{ligne.dto.codeArticle}"
+											action="#{ouvertureDocumentBean.detailArticle(ouvertureDocumentBean.recupCodeArticle(ligne.dto.codeArticle))}" update=":form:tabView"
+											oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');" process="@this">
+										</p:commandLink>
+									</p:column>
+
+									<p:column headerText="libellé" sortBy="#{ligne.dto.libellecArticle}" >
+										<h:outputText value="#{ligne.dto.libellecArticle}" />
+									</p:column>
+
+									<p:column headerText="Taux Tva" sortBy="#{ligne.dto.tauxTva}" >
+										<h:outputText value="#{ligne.dto.tauxTva}" />
+									</p:column>
+
+									<p:column headerText="Prix grille HT" sortBy="#{ligne.dto.prixPrix}" >
+										<h:outputText value="#{ligne.dto.prixPrix}" />
+									</p:column>
+
+									<p:column headerText="Prix grille TTC" sortBy="#{ligne.dto.prixttcPrix}" >
+										<h:outputText value="#{ligne.dto.prixttcPrix}" />
+									</p:column>
+
+									<p:column headerText="Coefficient"  sortBy="#{ligne.dto.coef}" >
+										<p:cellEditor>
+											<f:facet name="output">
+												<h:outputText value="#{ligne.dto.coef}" />
+											</f:facet>
+											<f:facet name="input">
+												<p:inputText id="idCoefGrilleTiers" value="#{ligne.dto.coef}" style="width:96%">
+													<f:attribute name="nomChamp" value="#{const.C_COEFFICIENT}" />
+													<p:ajax event="blur" listener="#{grilleTarifaireTiersController.majDesPrixCalcules(ligne.dto.coef)}" update="idCoefGrilleTiers,idPrixHTCalcGrilleTiers,idPrixTTCCalcGrilleTiers" />
+													 
+												</p:inputText>
+											</f:facet>
+										</p:cellEditor>
+									</p:column>
+
+									<p:column headerText="Prix HT tiers"  sortBy="#{ligne.dto.prixPrixCalc}" >
+										<p:cellEditor>
+											<f:facet name="output">
+												<h:outputText value="#{ligne.dto.prixPrixCalc}" />
+											</f:facet>
+											<f:facet name="input">
+												<p:inputText id="idPrixHTCalcGrilleTiers" value="#{ligne.dto.prixPrixCalc}" style="width:96%" disabled="#{!grilleTarifaireTiersController.saisieHT}">
+													<f:attribute name="nomChamp" value="#{const.C_PRIX_PRIX}" />
+													<p:ajax event="blur" listener="#{grilleTarifaireTiersController.recalculCoef(false,true)}" update="idCoefGrilleTiers,idPrixHTCalcGrilleTiers,idPrixTTCCalcGrilleTiers" />
+													
+												</p:inputText>
+											</f:facet>
+										</p:cellEditor>
+									</p:column>
+
+									<p:column headerText="Prix TTC tiers"  sortBy="#{ligne.dto.prixttcPrixCalc}" >
+										<p:cellEditor>
+											<f:facet name="output">
+												<h:outputText value="#{ligne.dto.prixttcPrixCalc}" />
+											</f:facet>
+											<f:facet name="input">
+												<p:inputText id="idPrixTTCCalcGrilleTiers" value="#{ligne.dto.prixttcPrixCalc}" style="width:96%" disabled="#{grilleTarifaireTiersController.saisieHT}">
+													<f:attribute name="nomChamp" value="#{const.C_PRIXTTC_PRIX}" />
+													<p:ajax event="blur" listener="#{grilleTarifaireTiersController.recalculCoef(true,true)}" update="idCoefGrilleTiers,idPrixHTCalcGrilleTiers,idPrixTTCCalcGrilleTiers" />
+													
+												</p:inputText>
+											</f:facet>
+										</p:cellEditor>
+									</p:column>
+					<p:column style="width:16px"  exportable="false">
+						<f:facet name="header">
+							<h:outputText value="" />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<p:commandButton title="Supprimer" styleClass="icon-delete icon icon-grille" 
+									action="#{grilleTarifaireTiersController.actSupprimerLigne}" rendered="#{!ligne.suppression}"
+									process="@this"
+									
+									update="@widgetVar(wvPanelRenderedGrilleTarifaireTiers),@widgetVar(wvMenuBoutonGestGrilleTarifaireTiers)">
+									<f:setPropertyActionListener target="#{grilleTarifaireTiersController.selectionLigne}" value="#{ligne}" />
+								</p:commandButton>
+							</f:facet>
+							<f:facet name="input">
+								<h:outputText value="" />
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+									<p:column style="width:26px" exportable="false">
+										<p:rowEditor  styleClass="row-editor-fin"/>
+									</p:column>
+					
+								</p:dataTable>								
+							</div>
+						</div>
+					</p:panel>
+				</p:fieldset>
+			</div>
+		</p:panel>
+	</div>
+
+</ui:composition>

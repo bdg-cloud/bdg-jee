@@ -1,0 +1,32 @@
+<ui:composition 
+	xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:o="http://omnifaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+	
+<!-- 		<c:set var="id" value="#{id}" /> -->
+<!--     	<c:set var="maj" value="@this" /> -->
+<!--     	<c:set var="pour" value="#{pour}" /> -->
+ 
+    	<p:commandButton id="#{id}" styleClass="fghgfhf" actionListener="#{actionBean[actionMethod]}" style="display:none" process="@this"  >
+        	<p:ajax event="dialogReturn" update="#{maj}"  />  
+        </p:commandButton>
+<!--         #{sortActionBean['sortActionMethod']} -->
+
+        <o:onloadScript>
+        	$(document).on('click', '.#{pour}', function(e) {  
+        		//alert('ffg');
+        		//document.getElementById("#{id}").click(); 
+        		$('.fghgfhf').click();
+        	} );
+        	$(document).on('eventSelect', '.gggaa', function(e) {  
+        		//alert('ffg');
+        		//document.getElementById("#{id}").click(); 
+        		$('.fghgfhf').click();
+        	} );
+    	</o:onloadScript>
+    	
+</ui:composition>

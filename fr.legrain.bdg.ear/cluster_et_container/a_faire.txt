@@ -1,0 +1,65 @@
+=================================
+IDEE CLUSTERS / CONTAINER
+=================================
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!  PROBLEMES PRIORITAIRES CONNUS !!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+* Remettre <distributable/> dans le web.xml de bdg.webapp
+Mais attention cela semble avoir un impact sur le fonctionnement des identifiants de session et donc sur la libération de code généré (ex: N° de lot qui de s'incrémente plus)
+TaGenCodeExService - VerrouCodeGenereDAO - SessionInfo - SessionListener - Auth - MenuBean
+* Pour les clusters il y a de toute façon un potentiel problème de thread avec la fonction : public static void updateSessionKeys() dans SessionListener à vérifier
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+* MODCLUSTER000042: Error MEM sending ENABLE-APP : à cause de la webapp welcome qui est dans le même ear que BDG, si on l'enlève il n'y a plus de message, 
+	il semble créer un virtual host httpd par ear et non par webapp (ou host wildfly) =>  sortir welcome et lui faire son propre EAR ???
+	le problème vient surtout (a priori) du fait d'avoir le meme context-root ("/") pour les 2 webapps d'un même ear. Pour moncompte (on a 2 webapp et 2 context root différent a priori sans problème)
+	=> faire un EAR uniquement pour la parti welcome (mais problème de dépendance avec bdg.ejb) 
+	ET/OU faire des web service pour la création de dossier appelable sans etre connecté
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+* orchestration ou pas (si plusieurs machine physique, swarm obligatoire ou kubernete si besoin)
+* kubernetes (ou peut etre swarm)
+* open stack et open shift
+
+* autre endroits du code qui ne fonctionnerais plus au cause des cluster/container
+* reseau docker sur machine physiques differentes (docker machine déprécié => cluster swarm (swarm bientot abandonné ?))
+* replication de session HTTP
+* replication d'EJB
+* (répartition de charge)
+* hébergement chez un spécialiste du cloud (amazon ou autre - open stack/shift)
+* mise à jour bdg à chaud en mode domaine (standalone meilleur)
+* ajout/suppression d'un noeud à chaud
+* voir la charge, les containeur actifs, les sessions ? (monitoring plus précis)
+* voir les logs facilement (dans un volume ?)
+* automatisation du déploiement (wildfly et bdg) (peut etre encore plus simple si on a un .deb)
+* nouveaux script de lancement automatique de BDG
+* cluster postgres
+* postgres dans un conteneur (volume)
+* pouvoir lancer des container et former un domaine wildfly à partir d'eclipse pour pouvoir tester le code sans compiler tout
+* tester, tester, tester, tester, ....
+* pourvoir redémarrer le load balancer ou certains wildfly
+* load balancing avec wildfly au lieu d'apache pour avoir moins de techno différentes ?
+* oauth
+* oauth et api rest deja existante (espace client et appli mobile)
+
+* la réplication de session semble produire un double ID du head JSF, si on fait F5 on est bien connecté, normal ou pas ?
+
+* modif de bdg pour utiliser plus la session (id des entités ouvertes par exemple), pour rendre "transparent" un F5, ET/OU stockage de données de sessions en base de données
+* si pas appli SPA, peut etre moins de problème suite à un changement de neud de cluster (clic sur lien recharge une page, sans ajax, = F5)
+
+* si pas de modif des sessions, peut etre qu'il ne faut pas de réplication de session mais seulement du loadbalancing avec une sticky session (mais dans ce cas, reconnection obligatoire - mais rare)
+
+* arriver a générer/modifier des fichiers bdg.properties et domain.xml (pour les nom de domaines par exemple) en fonction de l'endroit ou seront déployés les conteneurs
+ OU arriver a "injecter" ces propriétés dans les conteneurs
+
+=================================
+Fait MAIS à vérifier sur internet
+=================================
+* config et comportement basés sur l'ip qui ne fonctionnent surment plus
+* timers en base de données (s'assuré que les timers ce déclenche et qu'ils ne soient pas executé plusieurs fois par plusieurs noeud différent)
+* timers, SQL et modification du standalone.xml et domain.xml, faire la modif sur tous les postes de DEV
+
+=================================
+OK - TERMINEE
+=================================
+

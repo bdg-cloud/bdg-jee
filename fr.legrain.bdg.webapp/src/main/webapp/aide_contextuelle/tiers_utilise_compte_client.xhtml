@@ -1,0 +1,18 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+	<p:panel header="Aide">
+		<h3>
+			<i class="fa fa-info-circle animated swing"></i> Zone : Utilise le compte client
+		</h3>
+		<p>Activez cette option si voulez que votre client puisse se connecter à l’espace client du Bureau de Gestion afin de pouvoir effectuer certaines opérations, comme télécharger vos factures. Ce service est gratuit.</p>
+		<p><i class="fa fa-lightbulb-o" style="color:green; "></i> Pour plus d’informations à ce sujet, merci de consulter la documentation en ligne ou vous rapprocher de notre service clientèle.</p>
+		<p:outputLabel value="Dernière connexion à l'espace client : " />	
+		<p:outputLabel value="#{tiersController.selectedTaTiersDTO.dateDerniereConnexionCompteClient != null ? tiersController.selectedTaTiersDTO.dateDerniereConnexionCompteClient : 'Jamais'}" >
+		<f:convertDateTime pattern="#{msg.datetime_pattern}" timeZone="#{msg.time_zone}"/>
+		</p:outputLabel>	
+	</p:panel>
+</ui:composition>
+

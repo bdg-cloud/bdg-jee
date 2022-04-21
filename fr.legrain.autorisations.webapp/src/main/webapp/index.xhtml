@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<title>Solstyce</title>
+	<link rel="shortcut icon" type="image/x-icon"
+		href="#{resource['images:legrain_new.ico']}" />
+
+	<f:facet name="first">
+	</f:facet>
+</h:head>
+<h:body>
+	<f:facet name="last">
+		<!-- surcharge des CSS primefaces -->
+		<h:outputStylesheet library="css" name="hacks.css" />
+	</f:facet>
+	
+	<p:layout fullPage="true" widgetVar="widgetLayoutPage" >
+	
+		<p:ajax event="toggle" listener="#{leftBean.handleToggle}"/>
+
+		<p:layoutUnit position="north" size="100" gutter="0" class="north">
+			<div class="ui-grid ui-grid-responsive">
+				<div class="ui-grid-col-2">
+					<p:link href="/index.xhtml">
+						<p:graphicImage library="images" name="solstyce_32x32.png" />
+						<h:outputText value="Solstyce" />
+					</p:link>
+				</div>
+				<div class="ui-grid-col-3">
+					<p:ajaxStatus>
+						<f:facet name="start">
+							<p:graphicImage library="images" name="ajax-loader.gif" />
+						</f:facet>
+						<f:facet name="complete">
+<!-- 							<h:outputText value="Done!" /> -->
+						</f:facet>
+					</p:ajaxStatus>
+				</div>
+				<div class="ui-grid-col-10 text-right">
+<!-- 				<p:commandLink value="Mon compte" actionListener="#{monCompteBean.openMonCompte}" update=":form:tabView" oncomplete="activeLastTabCenter()"/> - <p:commandLink value="déconnexion" actionListener="#{auth.logout}"/> -->
+					<p:commandLink value="déconnexion" actionListener="#{auth.logout}"/>
+				</div>
+
+
+			</div>
+			<ui:include src="menu.xhtml" />
+		</p:layoutUnit>
+		<!-- 
+		<p:layoutUnit position="south" size="100" resizable="true">
+		</p:layoutUnit>
+ -->
+		<p:layoutUnit id="idWestUnit" position="west" size="550" resizable="true" collapsed="#{leftBean.collapsed}" 
+			collapsible="true" header="" gutter="4" class="west">
+
+			<ui:include src="left.xhtml" />
+		</p:layoutUnit>
+
+		<p:layoutUnit position="east" size="200" resizable="true"
+			collapsible="true" collapsed="true" header="" gutter="2" class="east">
+		</p:layoutUnit>
+
+		<p:layoutUnit position="center" gutter="4" class="center">
+			<ui:include src="center.xhtml" />
+		</p:layoutUnit>
+
+	</p:layout>
+	
+	<h:outputScript name="/js/functions.js"  />
+
+</h:body>
+</html>

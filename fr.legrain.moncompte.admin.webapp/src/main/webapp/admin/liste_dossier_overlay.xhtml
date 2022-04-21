@@ -1,0 +1,104 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html" 
+	xmlns:ui="http://java.sun.com/jsf/facelets" 
+
+	xmlns:p="http://primefaces.org/ui">
+	
+<!-- 	<o:importConstants type="fr.legrain.moncompte.admin.webapp.app.LgrTab" /> -->
+
+
+	<p:commandLink id="listeDossierBtn" title="Liste dossiers">
+		<i class="fa fa-users animated swing" aria-hidden="true"></i>
+		<!-- 		<i class="top-bar-badge animated rubberBand"><h:outputText value="#{topBarController.nbProduit}" /></i> -->
+		<span><h:outputText value="Liste dossier" /></span>
+	</p:commandLink>
+
+	<!-- 	<p:overlayPanel id="moviePanel" for="movieBtn" hideEffect="fade" dynamic="true"  -->
+	<!-- 		dismissable="true" appendToBody="true" widgetVar="wvOverlayListeProduit" showCloseIcon="true"> -->
+
+	<p:overlayPanel id="idListeDossierPanel" for="listeDossierBtn" hideEffect="fade" dynamic="true" dismissable="true"
+		appendTo="@(body)" widgetVar="wvOverlayListeDossier" showCloseIcon="true">
+		
+		<h:form>
+
+			<div class="text-center">
+<!-- 				<p:commandButton value="Ajouter" title="Ajouter" update=":form:tabView,:form:messages" actionListener="#{dossierController.nouveau}" icon="fa fa-plus-circle" -->
+<!-- 					oncomplete="PF('wvOverlayListeDossier').hide();" /> -->
+				<p:commandButton value="Détail" title="Détail" update=":form:tabView,:form:messages" actionListener="#{dossierController.detail}" icon="fa fa-eye" oncomplete="PF('wvOverlayListeDossier').hide();" />
+<!-- 				<p:commandButton value="Supprimer" title="Supprimer" update=":form:tabView,:form:messages" actionListener="#{dossierController.supprimer}" icon="fa fa-trash" /> -->
+				<p:commandButton value="Rafraîchir" title="Rafraîchir" update=":form:messages" actionListener="#{dossierController.refresh}" icon="fa fa-refresh" />
+			</div>
+
+			<p:dataTable id="dataTableListeDossiers" 
+				var="taDossier" 
+				widgetVar="wvDataTableListeDossiers"
+				styleClass="datatable mt10" 
+				value="#{dossierController.values}" 
+				rowKey="#{taDossier.id}"
+				selection="#{dossierController.selectedTaDossierDTO}" 
+				selectionMode="single" 
+				dblClickSelect="true"
+				resizableColumns="true" 
+				paginator="true" rows="#{msg.modele_datatable_ligne_par_page_debut}"
+				paginatorTemplate="#{msg.modele_datatable_paginator}" 
+				rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+				emptyMessage="#{msg.message_datatable_vide}" 
+				currentPageReportTemplate="#{msg.modele_datatable_page_courante}">
+
+				<!-- 				<p:ajax event="rowDblselect" listener="#{dossierController.onRowSelect}" update=":form:tabView,:form:messages,@form" oncomplete="activeLastTabCenter()"/> -->
+				<!-- 				<p:ajax event="rowSelect" listener="#{dossierController.onRowSelect}" disabled="#{dossierController.pasDejaOuvert()}" update=":form:tabView,:form:messages,@form" />  -->
+
+				<p:ajax event="rowSelect" listener="#{dossierController.onRowSelect}" update=":form:tabView,:form:messages"
+					oncomplete="PF('wvOverlayListeDossier').hide();" />
+
+				<f:facet name="{Exporters}">
+					<h:commandLink>
+						<p:graphicImage library="images" name="excel.png" width="24" />
+						<p:dataExporter type="xls" target="dataTableListeDossiers" fileName="liste_dossiers" />
+					</h:commandLink>
+
+					<h:commandLink>
+						<p:graphicImage library="images" name="pdf.png" width="24" />
+						<p:dataExporter type="pdf" target="dataTableListeDossiers" fileName="liste_dossiers" />
+					</h:commandLink>
+
+					<h:commandLink>
+						<p:graphicImage library="images" name="csv.png" width="24" />
+						<p:dataExporter type="csv" target="dataTableListeDossiers" fileName="liste_dossiers" />
+					</h:commandLink>
+
+					<h:commandLink>
+						<p:graphicImage library="images" name="xml.png" width="24" />
+						<p:dataExporter type="xml" target="dataTableListeDossiers" fileName="liste_dossiers" />
+					</h:commandLink>
+				</f:facet>
+
+				<p:column sortBy="#{taDossier.code}" filterBy="#{taDossier.code}">
+					<f:facet name="header">
+						<h:outputText value="Code" />
+					</f:facet>
+					<h:outputText value="#{taDossier.code}" />
+				</p:column>
+
+				<p:column sortBy="#{taDossier.nomTiers}" filterBy="#{taDossier.nomTiers}">
+					<f:facet name="header">
+						<h:outputText value="Nom client" />
+					</f:facet>
+					<h:outputText value="#{taDossier.nomTiers}" />
+				</p:column>
+
+				<p:column sortBy="#{taDossier.codeTiers}" filterBy="#{taDossier.codeTiers}">
+					<f:facet name="header">
+						<h:outputText value="Code client" />
+					</f:facet>
+					<h:outputText value="#{taDossier.codeTiers}" />
+				</p:column>
+
+			</p:dataTable>
+			
+		</h:form>
+		
+	</p:overlayPanel>
+
+</ui:composition>

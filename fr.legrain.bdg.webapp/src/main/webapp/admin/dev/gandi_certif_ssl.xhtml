@@ -1,0 +1,125 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+<!-- <p:tabView id="idTabViewArticle" widgetVar="wvtabViewGandiSimpleHosting" binding="#{gandiSimpleHostingController.tabViewGandiSimpleHosting}" styleClass="verticalTab" cache="false">
+</p:tabView> -->
+<p:panel id="idGandiCertifSSLPanel" widgetVar="wvGandiCertifSSLPanel">
+
+
+				 <div class="ui-g-12 ui-md-6 dashboard-buttons ">
+				         <p:commandButton value="Fermer" styleClass="icon icon-close menuitem-fermer-droite boutonRond" process="@this" 
+											onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())"/>
+				  </div>
+		
+			<br />
+			<p:messages id="messages" showDetail="true" autoUpdate="true" closable="true" />
+			 <br />
+
+			<p:dataTable id="dataTable" var="certif"
+				value="#{gandiCertifSSLController.values}"
+				rowKey="#{certif.id}"
+				sortBy="#{certif.cn}"
+				editable="true" 
+				selection="#{gandiCertifSSLController.selectedInfosCertifSSL}"
+				selectionMode="single" 
+				paginator="true" rows="20"
+				resizableColumns="true"
+				widgetVar="wvCertifSSLDataTable"
+				paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+				 rowsPerPageTemplate="10,20,50,100">
+
+				<p:ajax event="rowEdit" listener="#{gandiCertifSSLController.OnRowEditDomain}"  />
+
+				<f:facet name="header">  
+           			Certificat SSL (#{gandiCertifSSLController.values.size()})
+        		</f:facet>
+
+				<p:column selectionMode="multiple" style="width:18px" />
+				<!-- ajouter sur le datatable pour une seule ligne selectionMode="single"-->
+
+				
+
+				<!-- <p:column sortBy="#{certif.id}" filterBy="#{certif.id}">
+						<f:facet name="header">
+							<h:outputText value="ID" />
+						</f:facet>
+							
+						<h:outputText value="#{certif.id}" />		
+				</p:column>	 -->
+				
+				<p:column sortBy="#{certif.cn}" filterBy="#{certif.cn}">
+						<f:facet name="header">
+							<h:outputText value="Adresse sécuriée" />
+						</f:facet>
+							
+						<h:outputText value="#{certif.cn}" />		
+				</p:column>	
+				
+				<p:column sortBy="#{certif.contact}" filterBy="#{certif.contact}">
+						<f:facet name="header">
+							<h:outputText value="Propriétaire" />
+						</f:facet>
+							
+						<h:outputText value="#{certif.contact}" />		
+				</p:column>
+				
+				<p:column sortBy="#{certif.package_gandi}" filterBy="#{certif.package_gandi}">
+						<f:facet name="header">
+							<h:outputText value="Type de certificat" />
+						</f:facet>
+							
+						<h:outputText value="#{certif.package_gandi}" />		
+				</p:column>
+				
+				
+				
+				<p:column sortBy="#{certif.status}" filterBy="#{certif.status}">
+						<f:facet name="header">
+							<h:outputText value="Status" />
+						</f:facet>
+							
+						<h:outputText value="#{certif.status}" />		
+				</p:column>	
+					
+				<p:column sortBy="#{certif.date_end}" filterBy="#{certif.date_end}">
+						<f:facet name="header">
+							<h:outputText value="Expiration" />
+						</f:facet>
+							
+						<h:outputText value="#{certif.date_end}">
+							<f:convertDateTime pattern="dd/MM/yyyy  HH:mm:ss" timeZone="Europe/Paris"/>
+						</h:outputText>		
+				</p:column>	
+				
+				
+				
+				
+				
+				<!-- <p:column>
+						<f:facet name="header">
+							<h:outputText value="Action"></h:outputText>
+						</f:facet>
+							
+						<p:commandButton rendered="#{certif.state == 'running'? false : true }" value="Start" id="idSartDomainButton"
+						 update="@widgetVar(wvDomainIassDataTable)"
+						  icon="fa fa-play" action="#{gandiCertifSSLController.startDomain}" styleClass="ui-priority-primary">
+							<f:setPropertyActionListener target="#{gandiCertifSSLController.selectedDomain}" value="#{certif}" />
+						</p:commandButton>
+						
+						<p:commandButton rendered="#{certif.state == 'running'? true : false }" value="Stop" id="idStopDomainButton"
+						 update="@widgetVar(wvDomainIassDataTable)"
+						  icon="fa fa-stop" action="#{gandiCertifSSLController.stopDomain}" styleClass="redback">
+							<f:setPropertyActionListener target="#{gandiCertifSSLController.selectedDomain}" value="#{certif}" />
+						</p:commandButton>
+				</p:column>
+				 -->
+				
+			</p:dataTable>
+
+
+		<p:growl id="growl" showDetail="true" life="5000" />
+
+</p:panel>
+</ui:composition>	

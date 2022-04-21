@@ -1,0 +1,178 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:p="http://primefaces.org/ui">
+	
+<!-- 	<o:methodParam name="bbb" value="#{aaa}" /> -->
+	
+	<f:metadata>
+		<f:viewParam name="idTiers" value="#{smsController.paramId}"/>
+		<f:event type="preRenderView" listener="#{smsController.refresh}" />
+	</f:metadata>
+	
+
+
+	<p:panel id="smsEnvoyeFormPrincipal" widgetVar="smsEnvoyeForm">
+
+		<p:outputLabel value="Gestion des sms envoyés" rendered="#{dansDialogue == null ? true : false}" />
+
+		<p:panel id="smsEnvoyeDataTableF" style="position:relative;" rendered="#{dansDialogue == null ? true : false}">
+			
+			<p:commandButton value="Rafraîchir" title="Rafraîchir" actionListener="#{smsController.refresh}" disabled="#{smsController.modeEcran.dataSetEnModif()}"
+				styleClass="icon-refresh icon" process="@this" update=":form:tabView,:form:messages,:form" >
+			</p:commandButton>		
+			
+			<p:commandButton title="Envoyer SMS" styleClass="icon icon-envoi-mail" actionListener="#{envoyerSmsController.actDialogEmail}"
+			process="@this" 
+			update=":form:messages">
+				<p:ajax event="dialogReturn" listener="#{envoyerSmsController.handleReturnDialogEmail}" update=":form:messages"  />  
+			</p:commandButton>	
+
+			<p:commandButton id="smsEnvoyeFermer" title="Fermer"
+				styleClass="icon-close icon menuitem-fermer-droite" onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())">
+				 <p:confirm header="Confirmation" message="#{msg_diag.alert_fermeture_onglet}" icon="ui-icon-alert" disabled="#{!smsController.modeEcran.dataSetEnModif()}"/>
+			</p:commandButton>
+				 
+			<p:commandButton id="smsEnvoyeFermerDialogue" title="Fermer"
+				process="@this" styleClass="icon-close icon menuitem-fermer-droite"
+				actionListener="#{smsController.actFermerDialog}"
+				rendered="#{dansDialogue != null ? true : false}" />
+		</p:panel>
+		
+<!-- 		<p:sticky target="smsEnvoyeDataTableF" /> -->
+		<p:dataTable id="smsEnvoyeDataTable" 
+			var="table"
+			value="#{smsController.values}"
+			rowKey="#{table.id}" 
+			selectionMode="single"
+			class="datatable" 
+			selection="#{smsController.selectedTaMessageSMSDTO}"
+			scrollable="true" scrollHeight="250"
+			paginator="true" 
+			rowStyleClass="#{table.styleClass ? null : table.styleClass}"
+			rows="#{msg.modele_datatable_ligne_par_page_debut}"
+			paginatorTemplate="#{msg.modele_datatable_paginator}"
+			rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+			emptyMessage="#{msg.message_datatable_vide}"
+			currentPageReportTemplate="#{msg.modele_datatable_page_courante}">
+
+<!-- 			<p:ajax event="rowSelect" listener="#{bbb}" update="@widgetVar(wvDetailSmsEnvoye)"/> -->
+			<p:ajax event="rowSelect" listener="#{smsController.onRowSelect}" update="@widgetVar(wvDetailSmsEnvoye#{variableNomWvIDUnique})"/>
+			
+<!-- 			<p:ajax event="contextMenu" listener="#{smsController.onContextMenu}"/> -->
+<!-- 			<p:ajax event="contextMenu" listener="#{smsController.onContextMenu}" oncomplete="PF('wvContextMenuEtiquetteEmailEnvoye').show();" update="@widgetVar(wvContextMenuEtiquetteEmailEnvoye)" /> -->
+			
+
+			<f:facet name="{Exporters}">
+				<h:commandLink>
+					<p:graphicImage library="images" name="excel.png" width="24" />
+					<p:dataExporter type="xls" target="smsEnvoyeDataTable"
+						fileName="email_envoye" />
+				</h:commandLink>
+
+				<h:commandLink>
+					<p:graphicImage library="images" name="pdf.png" width="24" />
+					<p:dataExporter type="pdf" target="smsEnvoyeDataTable"
+						fileName="email_envoye" />
+				</h:commandLink>
+
+				<h:commandLink>
+					<p:graphicImage library="images" name="csv.png" width="24" />
+					<p:dataExporter type="csv" target="smsEnvoyeDataTable"
+						fileName="email_envoye" options="#{separateurCsvController.csvOptions}" />
+				</h:commandLink>
+
+				<h:commandLink>
+					<p:graphicImage library="images" name="xml.png" width="24" />
+					<p:dataExporter type="xml" target="smsEnvoyeDataTable"
+						fileName="email_envoye" />
+				</h:commandLink>
+
+			</f:facet>
+			
+			<f:facet name="header">  
+           			<h:outputText value="#{smsController.values.size()} SMS" />
+        	</f:facet>
+
+			<p:column sortBy="#{table.dateEnvoi}"
+				filterBy="#{table.dateEnvoi}" filterMatchMode="contains" styleClass="center">
+				<f:facet name="header">
+					<h:outputText value="Date" />
+				</f:facet>
+				<h:outputText value="#{table.dateEnvoi}" >
+					<f:convertDateTime pattern="#{msg.datetime_pattern}" timeZone="#{msg.time_zone}"/>
+				</h:outputText>
+			</p:column>
+
+<!-- 			<p:column sortBy="#{table.subject}" filterBy="#{table.subject}" filterMatchMode="contains" > -->
+<!-- 				<f:facet name="header"> -->
+<!-- 					<h:outputText value="Sujet" /> -->
+<!-- 				</f:facet> -->
+<!-- 				<h:outputText value="#{table.subject}" /> -->
+<!-- 			</p:column> -->
+
+			<p:column sortBy="#{table.bodyPlain}" filterBy="#{table.bodyPlain}" filterMatchMode="contains" styleClass="center">
+				<f:facet name="header" >
+					<h:outputText value="Corps" />
+				</f:facet>
+				<h:outputText value="#{table.bodyPlain}"/>
+			</p:column>
+
+			<p:column styleClass="center">
+				<f:facet name="header" >
+					<h:outputText value="Destinataire" />
+				</f:facet>
+				<p:repeat value="${table.destinataires}" var="item">
+					<h:outputText value="#{item.numeroTelephone}, " />
+				</p:repeat>
+			</p:column>
+				
+		</p:dataTable>
+		
+
+		
+		<p:resizable for="idDetailSmsEnvoye" />
+		
+		<p:panel id="idDetailSmsEnvoye" header="Détail" widgetVar="wvDetailSmsEnvoye#{variableNomWvIDUnique}">
+			<p:panelGrid columns="2">
+				
+				<h:outputText value="Date" />
+				<h:outputText value="#{smsController.selectedTaMessageSMSDTO.dateEnvoi}" >
+					<f:convertDateTime pattern="#{msg.datetime_pattern}" timeZone="#{msg.time_zone}"/>
+				</h:outputText>
+				
+				<h:outputText value="Status " />
+				<h:panelGroup>
+					<p:panelGrid columns="2">
+						<h:outputText value="#{smsController.selectedTaMessageSMSDTO.statusServiceExterne}" />
+						<p:panel header="Détails techniques" toggleable="true" collapsed="true">
+							<p:outputLabel value="#{smsController.selectedTaMessageSMSDTO.infosTechniques}" escape="false" />
+						</p:panel>
+					</p:panelGrid>
+<!-- 					<p:commandButton value="?" type="button" onclick="PF('wvPanelOverlayDetailTechniques#{variableNomWvIDUnique}').show()" /> -->
+				</h:panelGroup>
+			    
+				
+				<h:outputText value="Destinataire " />
+				<p:repeat value="${smsController.selectedTaMessageSMSDTO.destinataires}" var="item">
+					<h:outputText value="#{item.numeroTelephone}, " />
+				</p:repeat>
+				
+	
+			</p:panelGrid>
+			
+			<p:separator/>
+			
+			<h:outputText value="#{smsController.selectedTaMessageSMSDTO.bodyPlain}" escape="false"/>
+			
+			<p:separator/>
+
+		</p:panel>
+
+		
+	</p:panel>
+
+	
+</ui:composition>

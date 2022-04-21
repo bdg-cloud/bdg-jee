@@ -1,0 +1,429 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions">
+
+	<p:menubar styleClass="menu-onglet" id="idMenuBoutonGestGrilleReference" widgetVar="wvMenuBoutonGestGrilleReference">
+
+		<p:menuitem title="Enregistrer la grille de référence" value="Enregistrer" styleClass="icon icon-save" process="@this"
+			actionListener="#{grilleReferenceController.actEnregistrer}"
+			update=":form:messages,@form,@widgetVar(wvMenuListeGrilleReference),@widgetVar(wvDataTableListeGestGrilleReference),
+			@widgetVar(wvDataTableListeGestGrilleReference2),@widgetVar(wvPanelRenderedGrilleReference),@widgetVar(wvInfosComplementairesGrilleReference),@widgetVar(wvDataTableListeGestGrilleReference2)"
+			disabled="#{grilleReferenceController.etatBouton('enregistrer')}" />
+
+
+
+		<p:menuitem title="Annuler les modifications en cours" value="Annuler" styleClass="icon icon-cancel"
+			actionListener="#{grilleReferenceController.actAnnuler}" process="@this"
+			update=":form:messages,@form,@widgetVar(wvMenuListeGrilleReference),@widgetVar(wvDataTableListeGestGrilleReference),@widgetVar(wvDataTableListeGestGrilleReference2),@widgetVar(wvPanelRenderedGrilleReference),@widgetVar(wvInfosComplementairesGrilleReference)"
+			disabled="#{grilleReferenceController.etatBouton('annuler')}">
+			<p:confirm header="Confirmation" message="Etes vous sur de vouloir annuler les modifications en cours ?" icon="ui-icon-alert" />
+		</p:menuitem>
+
+
+<!-- 		<p:menuitem title="Imprimer la grille de référence" value="Imprimer" styleClass="icon icon-print" -->
+<!-- 			onsuccess="window.open('#{request.contextPath}/output?__report=/reports/remise/FicheGrilleReference.rptdesign&amp;__format=pdf')" -->
+<!-- 			actionListener="#{grilleReferenceController.actImprimer}" disabled="#{grilleReferenceController.etatBouton('imprimer')}" /> -->
+
+
+		<p:menuitem title="Fermer l'écran" value="Fermer" styleClass="icon icon-close menuitem-fermer-droite" process="@this"
+			actionListener="#{grilleReferenceController.actFermer}"
+			update=":form:messages,@widgetVar(wvMenuListeGrilleReference),@widgetVar(wvDataTableListeGestGrilleReference2)"
+			disabled="#{grilleReferenceController.etatBouton('fermer')}" onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())">
+
+			<p:confirm header="Confirmation" message="#{msg_diag.alert_fermeture_onglet}" icon="ui-icon-alert"
+				disabled="#{!grilleReferenceController.modeEcran.dataSetEnModif()}" />
+		</p:menuitem>
+
+
+		<p:separator styleClass="separateur-menu-vertical" />
+
+
+	</p:menubar>
+
+<!-- <p:hotkey bind="down" handler="PF('switcher').previous();" /> -->
+
+<!-- 	<p:fieldset style="margin-bottom:20px;" widgetVar="wvInfosComplementairesGrilleReference"> -->
+<!-- 		<h:panelGrid columns="13" cellpadding="15"> -->
+<!-- 			<p:menubar> -->
+<!-- 		<p:menuitem title="Liste des prix de référence" styleClass="icon icon-liste"   -->
+<!-- 		oncomplete="PF('wvOverlayListeGrilleReference').show();" update="@widgetVar(wvDataTableListeGestGrilleReference2)" disabled="#{grilleReferenceController.modeEcran.dataSetEnModif()}" /> -->
+<!-- 			</p:menubar> -->
+<!-- 		</h:panelGrid> -->
+<!-- 	</p:fieldset> -->
+	<div class="container">
+		<p:fieldset legend="Etape 1/2 : Saisissez les critères de sélection des articles ou familles d'article"  widgetVar="wvCriteresFiltresGrilleReference"
+			toggleable="true" toggleSpeed="50">
+
+			<div class="ui-g">
+
+				<div class="ui-g-12 ui-lg-12">
+					<div class="ui-g-12 ui-lg-4">
+						<div class="card">
+							<p:panel header="Retrouver un article">
+								<p:panelGrid columns="2" columnClasses="ui-grid-col-3,ui-grid-col-3,ui-grid-col-3,ui-grid-col-3" styleClass="ui-panelgrid-blank" layout="grid">
+									<p:outputLabel value="Article" />
+									<p:autoComplete value="#{grilleReferenceController.taArticleDTO}" converter="entityConverter"
+										completeMethod="#{grilleReferenceController.articleAutoComplete}" var="article" itemLabel="#{article.codeArticle}" itemValue="#{article}"
+									maxResults="#{grilleReferenceController.taPreferencesService.nbMaxChargeListeArticle()}"
+									moreText="Il y a #{component.maxResults} affichés sur #{component.suggestions.size()} au total, Veuillez affiner votre recherche ou cliquer ici pour en afficher plus ..."
+										forceSelection="true" dropdown="true" placeholder="Article">
+										<p:column>
+											<h:outputText value="#{article.codeArticle}" />
+										</p:column>
+
+										<p:column>
+											<h:outputText value="#{article.libellecArticle}" />
+										</p:column>
+
+										<f:attribute name="nomChamp" value="#{const.C_CODE_ARTICLE}" />
+										<p:ajax event="itemSelect" listener="#{grilleReferenceController.autcompleteSelection}" update="@widgetVar(wvPanelRenderedGrilleReference)" />
+										<p:ajax event="moreText" listener="#{grilleReferenceController.onMoreTextArticle}" />
+									</p:autoComplete>
+
+								</p:panelGrid>
+							</p:panel>
+						</div>
+					</div>
+					<div class="ui-g-12 ui-lg-4">
+						<div class="card">
+							<p:panel header="Retrouver une liste d'article à partir d'une famille">
+								<p:panelGrid columns="2" columnClasses="ui-grid-col-4 right,ui-grid-col-8" styleClass="ui-panelgrid-blank" layout="grid">
+									<i class="fa fa-file-text-o fa-3x" aria-hidden="true"></i>
+									<p:panelGrid columns="1" cellpadding="0">
+										<p:outputLabel value="Famille" />
+										<p:autoComplete value="#{grilleReferenceController.taFamilleDTO}" converter="entityConverter"
+											completeMethod="#{grilleReferenceController.familleAutoComplete}" var="famille" itemLabel="#{famille.codeFamille}" itemValue="#{famille}"
+											forceSelection="true" dropdown="true" placeholder="Famille">
+											<p:column>
+												<h:outputText value="#{famille.codeFamille}" />
+											</p:column>
+
+											<p:column>
+												<h:outputText value="#{famille.libcFamille}" />
+											</p:column>
+
+											<f:attribute name="nomChamp" value="#{const.C_CODE_FAMILLE}" />
+											<p:ajax event="itemSelect" listener="#{grilleReferenceController.autcompleteSelection}" update="@widgetVar(wvPanelRenderedGrilleReference)" />
+										</p:autoComplete>
+									</p:panelGrid>
+								</p:panelGrid>
+							</p:panel>
+						</div>
+					</div>
+					<div class="ui-g-12 ui-lg-4">
+						<div class="card">
+							<p:panel header="Déterminer le type de saisie" id="idTypeSaisie">
+								<p:panel widgetVar="wVtitreSaisieDetailReference">
+<!-- 								disabled="#{grilleTarifaireController.modeEcran.dataSetEnModif()}" -->
+<!-- 									<p:selectBooleanCheckbox itemLabel="#{grilleReferenceController.titreSaisieRapideOuDetail()}" title="#{grilleReferenceController.titreSaisieRapideOuDetail()}" -->
+<!-- 										widgetVar="wVSaisieDetailReference" value="#{grilleReferenceController.saisieDetail}" > -->
+<!-- 										<p:ajax update="@widgetVar(wvPanelRenderedGrilleReference),@widgetVar(wVtitreSaisieDetailReference)" /> -->
+<!-- 									</p:selectBooleanCheckbox> -->
+									
+		<p:selectOneRadio  value="#{grilleReferenceController.modeSaisie}"   widgetVar="wVSaisieDetailReference">
+			<f:selectItem  itemValue="#{const.C_SAISIE_SIMPLE}" itemLabel="#{grilleReferenceController.titreSaisieRapide}"/>
+			<f:selectItem  itemValue="#{const.C_SAISIE_DETAIL}" itemLabel="#{grilleReferenceController.titreSaisieDetail}"/>
+			<p:ajax listener="#{grilleReferenceController.initEcran()}" update="@widgetVar(wvPanelRenderedGrilleReference)"/>
+		</p:selectOneRadio>
+		
+								</p:panel>							
+								<p:panel widgetVar="wVtitreSaisieReference">
+<!-- 								disabled="#{grilleTarifaireController.modeEcran.dataSetEnModif()}" -->
+<!-- 									<p:selectBooleanCheckbox itemLabel="#{grilleReferenceController.titreSaisie()}" title="#{grilleReferenceController.titreSaisie()}" -->
+<!-- 										widgetVar="wVSaisieHTReference" value="#{grilleReferenceController.saisieHT}" > -->
+<!-- 										<p:ajax update="@widgetVar(wvPanelRenderedGrilleReference),@widgetVar(wVtitreSaisieReference)" /> -->
+<!-- 									</p:selectBooleanCheckbox> -->
+		<p:selectOneRadio  value="#{grilleReferenceController.modeSaisiePrix}"   widgetVar="wVSaisieHTReference">
+			<f:selectItem  itemValue="#{const.C_SAISIE_HT}" itemLabel="#{grilleReferenceController.titreSaisieHt}"/>
+			<f:selectItem  itemValue="#{const.C_SAISIE_TTC}" itemLabel="#{grilleReferenceController.titreSaisieTtc}"/>
+			<p:ajax listener="#{grilleReferenceController.initEcran()}" update="@widgetVar(wvPanelRenderedGrilleReference)"/>
+		</p:selectOneRadio>
+								</p:panel>
+							</p:panel>
+							
+						</div>					
+<!-- 						<div class="card"> -->
+<!-- 							<p:panel header="#{grilleReferenceController.titreSaisie()}" widgetVar="wVtitreSaisie"> -->
+<!-- 								<p:panelGrid columns="1" columnClasses="ui-grid-col-3,ui-grid-col-3,ui-grid-col-3,ui-grid-col-3" styleClass="ui-panelgrid-blank" layout="grid"> -->
+<!-- 									<p:selectBooleanCheckbox id="idSaisieHT" widgetVar="wVSaisieHT" label="Saisie en HT"  value="#{grilleReferenceController.saisieHT}" disabled="#{grilleReferenceController.modeEcran.dataSetEnModif()}"> -->
+<!-- 									<p:ajax  update="@widgetVar(wvPanelRenderedGrilleReference),@widgetVar(wVtitreSaisie)"/> -->
+<!-- 									</p:selectBooleanCheckbox> -->
+<!-- 								</p:panelGrid> -->
+<!-- 							</p:panel> -->
+<!-- 						</div> -->
+					</div>					
+				</div>
+			</div>
+
+			<div class="card" style="text-align: center;">
+				<p:commandButton value="Valider les critères" actionListener="#{grilleReferenceController.refresh}" 
+				update="idPanelListeTiersGestGrilleReference,@widgetVar(wVPanelTitreGrilleReference)"
+					style="width:20%; height:45px;" icon="fa fa-check" />
+			</div>
+
+		</p:fieldset>
+	</div>
+	<div class="container">
+		<p:panel id="idPanelRenderedGrilleReference" widgetVar="wvPanelRenderedGrilleReference">
+			<div class="container">
+
+				<p:fieldset legend="#{grilleReferenceController.titreEcran}" toggleable="true" toggleSpeed="50">
+
+					<p:panel header="Liste des articles avec leur prix de référence" id="idPanelListeTiersGestGrilleReference">
+						<div class="ui-g">
+							<div class="ui-g-12">
+								<p:dataTable 
+								var="ligne" 
+								id="datatablegrilleReference1"
+								value="#{grilleReferenceController.valuesLignes}" 
+								editable="true" 
+								editMode="cell"
+								widgetVar="widgetVarDataTableLigneGrilleReference" 
+								styleClass="datatable mt10" 
+								emptyMessage="#{msg.message_datatable_vide}"
+								rendered="#{!grilleReferenceController.saisieDetail}"
+								paginator="true" 
+								rows="#{msg.modele_datatable_ligne_par_page_debut}"
+								paginatorTemplate="#{msg.modele_datatable_paginator}" 
+								rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+								currentPageReportTemplate="#{msg.modele_datatable_page_courante}">
+
+
+		  		<f:facet name="{Exporters}">
+		            <h:commandLink>
+		                <p:graphicImage library="images" name="excel.png" width="24"/>
+		                <p:dataExporter type="xls" target="datatablegrilleReference1" fileName="grille_reference" />
+		            </h:commandLink>
+		 
+		            <h:commandLink>
+		                <p:graphicImage  library="images" name="pdf.png"  width="24"/>
+		                <p:dataExporter type="pdf" target="datatablegrilleReference1" fileName="grille_reference"/>
+		            </h:commandLink>
+		 
+		            <h:commandLink>
+		                <p:graphicImage  library="images" name="csv.png"  width="24"/>
+		                <p:dataExporter type="csv" target="datatablegrilleReference1" fileName="grille_reference" options="#{separateurCsvController.csvOptions}" />
+		            </h:commandLink>
+		 
+		            <h:commandLink>
+		                <p:graphicImage  library="images" name="xml.png"  width="24"/>
+		                <p:dataExporter type="xml" target="datatablegrilleReference1" fileName="grille_reference" />
+		            </h:commandLink>
+		        </f:facet>
+
+
+									<p:ajax event="cellEdit" listener="#{grilleReferenceController.onCellEdit}"
+										update="@widgetVar(wvMenuBoutonGestGrilleReference),@widgetVar(widgetVarDataTableLigneGrilleReference),@widgetVar(wVSaisieHT)" />
+									<!-- 			<p:ajax event="rowEdit" listener="#{grilleReferenceController.onRowEdit}" update="@widgetVar(wvMenuBoutonGestGrilleReference),@widgetVar(widgetVarDataTableLigneGrilleReference)" /> -->
+									<!-- 			<p:ajax event="rowEditCancel" listener="#{grilleReferenceController.onRowCancel}" update="@widgetVar(wvMenuBoutonGestGrilleReference),@widgetVar(widgetVarDataTableLigneGrilleReference)" /> -->
+									<!-- 			<p:ajax event="rowSelect" listener="#{grilleReferenceController.onRowSelectLigne}" /> -->
+
+									<!-- 			<p:column style="width:16px" > -->
+									<!-- 				<p:rowEditor rendered="true" styleClass="row-editor-debut"/> -->
+									<!-- 			</p:column> -->
+
+									<p:column headerText="Code famille" sortBy="#{ligne.articleDTO.codeFamille}" >
+										<h:outputText value="#{ligne.articleDTO.codeFamille}" />
+									</p:column>
+
+									<p:column headerText="Code article" sortBy="#{ligne.dto.codeArticle}" >
+										<!-- 				<h:outputText value="#{ligne.dto.codeArticle}" /> -->
+										<p:commandLink value="#{ligne.dto.codeArticle}"
+											action="#{ouvertureDocumentBean.detailArticle(ouvertureDocumentBean.recupCodeArticle(ligne.dto.codeArticle))}" update=":form:tabView"
+											oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');"  process="@this">
+										</p:commandLink>
+									</p:column>
+
+									<p:column headerText="libellé" sortBy="#{ligne.dto.libellecArticle}" >
+										<h:outputText value="#{ligne.dto.libellecArticle}" />
+									</p:column>
+
+
+									<p:column headerText="Taux Tva" sortBy="#{ligne.dto.tauxTva}" >
+										<h:outputText value="#{ligne.dto.tauxTva}" />
+									</p:column>
+
+
+									<p:column headerText="Prix HT" rendered="#{grilleReferenceController.saisieHT}" styleClass="ui-cell-editor-exclu-click-selection"  sortBy="#{ligne.dto.prixPrix}" >
+										<p:cellEditor>
+											<f:facet name="output">
+												<h:outputText value="#{ligne.dto.prixPrix}" />
+											</f:facet>
+											<f:facet name="input">
+												<p:inputText id="idPrixHT" value="#{ligne.dto.prixPrix}" style="width:96%">
+													<!--                   <f:attribute name="nomChamp" value="#{const.C_PRIX_PRIX}" /> -->
+													<!--                   <p:ajax event="blur" listener="#{grilleReferenceController.majPrixHT(ligne.dto.prixPrix)}" update="@this" />                   -->
+												</p:inputText>
+											</f:facet>
+										</p:cellEditor>
+									</p:column>
+
+									<p:column headerText="Prix TTC" rendered="#{!grilleReferenceController.saisieHT}" styleClass="ui-cell-editor-exclu-click-selection"  sortBy="#{ligne.dto.prixttcPrix}" >
+										<p:cellEditor>
+											<f:facet name="output">
+												<h:outputText value="#{ligne.dto.prixttcPrix}" />
+											</f:facet>
+											<f:facet name="input">
+												<p:inputText id="idPrixTtc" value="#{ligne.dto.prixttcPrix}" style="width:96%">
+													<!--                   <f:attribute name="nomChamp" value="#{const.C_PRIXTTC_PRIX}" /> -->
+													<!--                   <p:ajax event="blur" listener="#{grilleReferenceController.majPrixTTC(ligne.dto.prixttcPrix)}" update="@this" />                   -->
+												</p:inputText>
+											</f:facet>
+										</p:cellEditor>
+									</p:column>
+
+
+									<p:column style="width:16px"  exportable="false">
+										<f:facet name="header">
+											<h:outputText value="" />
+										</f:facet>
+										<p:cellEditor>
+											<f:facet name="output">
+												<p:commandButton title="Supprimer" styleClass="icon-delete icon icon-grille" action="#{grilleReferenceController.actSupprimerLigne}"
+													rendered="#{!ligne.suppression}" process="@this"
+													update="@widgetVar(wvPanelRenderedGrilleReference),@widgetVar(wvMenuBoutonGestGrilleReference)">
+													<f:setPropertyActionListener target="#{grilleReferenceController.selectionLigne}" value="#{ligne}" />
+												</p:commandButton>
+											</f:facet>
+											<f:facet name="input">
+												<h:outputText value="" />
+											</f:facet>
+										</p:cellEditor>
+									</p:column>
+
+
+								</p:dataTable>
+								<p:dataTable 
+								var="ligne" 
+								id="datatablegrilleReference2"
+								value="#{grilleReferenceController.valuesLignes}" 
+								editable="true" 
+								rowKey="#{ligne.dto.idArticle}" 
+								selection="#{grilleReferenceController.selectionLigne}" 
+								selectionMode="single"
+								dblClickSelect="true"	
+								widgetVar="widgetVarDataTableLigneGrilleReference" 
+								styleClass="datatable mt10" 
+								emptyMessage="#{msg.message_datatable_vide}"
+								rendered="#{grilleReferenceController.saisieDetail}"
+								paginator="true" 
+								rows="#{msg.modele_datatable_ligne_par_page_debut}"
+								paginatorTemplate="#{msg.modele_datatable_paginator}" 
+								rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+								currentPageReportTemplate="#{msg.modele_datatable_page_courante}">								
+
+
+
+		  		<f:facet name="{Exporters}">
+		            <h:commandLink>
+		                <p:graphicImage library="images" name="excel.png" width="24"/>
+		                <p:dataExporter type="xls" target="datatablegrilleReference2" fileName="grille_reference" />
+		            </h:commandLink>
+		 
+		            <h:commandLink>
+		                <p:graphicImage  library="images" name="pdf.png"  width="24"/>
+		                <p:dataExporter type="pdf" target="datatablegrilleReference2" fileName="grille_reference"/>
+		            </h:commandLink>
+		 
+		            <h:commandLink>
+		                <p:graphicImage  library="images" name="csv.png"  width="24"/>
+		                <p:dataExporter type="csv" target="datatablegrilleReference2" fileName="grille_reference" />
+		            </h:commandLink>
+		 
+		            <h:commandLink>
+		                <p:graphicImage  library="images" name="xml.png"  width="24"/>
+		                <p:dataExporter type="xml" target="datatablegrilleReference2" fileName="grille_reference" />
+		            </h:commandLink>
+		        </f:facet>
+
+<!-- 									<p:ajax event="cellEdit" listener="#{grilleReferenceController.onCellEdit}" -->
+<!-- 										update="@widgetVar(wvMenuBoutonGestGrilleReference),@widgetVar(widgetVarDataTableLigneGrilleReference),@widgetVar(wVSaisieHT)" /> -->
+												<p:ajax event="rowEdit" listener="#{grilleReferenceController.onRowEdit}" update="@widgetVar(wvMenuBoutonGestGrilleReference),@widgetVar(widgetVarDataTableLigneGrilleReference),@widgetVar(wVSaisieHT)" />
+												<p:ajax event="rowEditCancel" listener="#{grilleReferenceController.onRowCancel}" update="@widgetVar(wvMenuBoutonGestGrilleReference),@widgetVar(widgetVarDataTableLigneGrilleReference),@widgetVar(wVSaisieHT)" />
+												<p:ajax event="rowSelect" listener="#{grilleReferenceController.onRowSelectLigne}" />
+
+												<p:column style="width:16px"  exportable="false">
+													<p:rowEditor rendered="true" styleClass="row-editor-debut"/>
+												</p:column>
+
+									<p:column headerText="Code famille" sortBy="#{ligne.articleDTO.codeFamille}" >
+										<h:outputText value="#{ligne.articleDTO.codeFamille}" />
+									</p:column>
+
+									<p:column headerText="Code article" sortBy="#{ligne.dto.codeArticle}" >
+										<!-- 				<h:outputText value="#{ligne.dto.codeArticle}" /> -->
+										<p:commandLink value="#{ligne.dto.codeArticle}"
+											action="#{ouvertureDocumentBean.detailArticle(ouvertureDocumentBean.recupCodeArticle(ligne.dto.codeArticle))}" update=":form:tabView"
+											oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');" process="@this">
+										</p:commandLink>
+									</p:column>
+
+									<p:column headerText="libellé" sortBy="#{ligne.dto.libellecArticle}" >
+										<h:outputText value="#{ligne.dto.libellecArticle}" />
+									</p:column>
+
+
+									<p:column headerText="Taux Tva" sortBy="#{ligne.dto.tauxTva}" >
+										<h:outputText value="#{ligne.dto.tauxTva}" />
+									</p:column>
+
+
+									<p:column headerText="Prix HT"  styleClass="ui-cell-editor-exclu-click-selection" sortBy="#{ligne.dto.prixPrix}" >
+										<p:cellEditor>
+											<f:facet name="output">
+												<h:outputText value="#{ligne.dto.prixPrix}" />
+											</f:facet>
+											<f:facet name="input">
+												<p:inputText id="idPrixHT" value="#{ligne.dto.prixPrix}" style="width:96%">
+													                  <f:attribute name="nomChamp" value="#{const.C_PRIX_PRIX}" />
+													                  <p:ajax event="blur" listener="#{grilleReferenceController.majPrixHT(ligne.dto.prixPrix)}" update="idPrixHT,idPrixTtc" />                  
+												</p:inputText>
+											</f:facet>
+										</p:cellEditor>
+									</p:column>
+
+									<p:column headerText="Prix TTC"  styleClass="ui-cell-editor-exclu-click-selection" sortBy="#{ligne.dto.prixttcPrix}" >
+										<p:cellEditor>
+											<f:facet name="output">
+												<h:outputText value="#{ligne.dto.prixttcPrix}" />
+											</f:facet>
+											<f:facet name="input">
+												<p:inputText id="idPrixTtc" value="#{ligne.dto.prixttcPrix}" style="width:96%">
+													                  <f:attribute name="nomChamp" value="#{const.C_PRIXTTC_PRIX}" />
+													                  <p:ajax event="blur" listener="#{grilleReferenceController.majPrixTTC(ligne.dto.prixttcPrix)}" update="idPrixHT,idPrixTtc" />                                   
+												</p:inputText>
+											</f:facet>
+										</p:cellEditor>
+									</p:column>
+
+
+									<p:column style="width:16px"  exportable="false">
+										<f:facet name="header">
+											<h:outputText value="" />
+										</f:facet>
+										<p:cellEditor>
+											<f:facet name="output">
+												<p:commandButton title="Supprimer" styleClass="icon-delete icon icon-grille" action="#{grilleReferenceController.actSupprimerLigne}"
+													rendered="#{!ligne.suppression}" process="@this"
+													update="@widgetVar(wvPanelRenderedGrilleReference),@widgetVar(wvMenuBoutonGestGrilleReference)">
+													<f:setPropertyActionListener target="#{grilleReferenceController.selectionLigne}" value="#{ligne}" />
+												</p:commandButton>
+											</f:facet>
+											<f:facet name="input">
+												<h:outputText value="" />
+											</f:facet>
+										</p:cellEditor>
+									</p:column>
+									<p:column style="width:26px" exportable="false">
+										<p:rowEditor  styleClass="row-editor-fin"/>
+									</p:column>
+
+								</p:dataTable>								
+							</div>
+						</div>
+					</p:panel>
+				</p:fieldset>
+			</div>
+		</p:panel>
+	</div>
+
+</ui:composition>

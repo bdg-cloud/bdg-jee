@@ -1,0 +1,236 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<!-- 	<f:metadata> -->
+	<!-- 		<f:viewParam name="modeEcranDefaut" value="#{typeTiersController.modeEcranDefaut}" /> -->
+	<!-- 		<f:event type="preRenderView" listener="#{typeTiersController.refresh}" /> -->
+	<!-- 	</f:metadata> -->
+
+	<p:panel id="typeTiersFormPrincipal" widgetVar="widgetVarTypeTiersForm">
+
+
+		<p class="subtitle">
+			<p:outputLabel value="Gestion des types de tiers" style="position:relative;"
+				rendered="#{dansDialogue == null ? true : false}" />
+		</p>
+		
+		<!-- bouton -->
+		<p:panel id="typeTiersDataTableF" styleClass="mt30"
+			rendered="#{dansDialogue == null ? true : false}">
+			
+			<p:commandButton id="idInsererTypeTiers" value="Ajouter" title="Insérer" process="@this"
+				update=":form:tabView,:form:messages,:form" 
+				actionListener="#{typeTiersController.actDialogTypes}"
+				styleClass="icon-insert icon" >
+				<p:ajax event="dialogReturn" listener="#{typeTiersController.handleReturnDialogTypes}" 
+					update=":form"/>
+			</p:commandButton>
+			
+<!-- 			<p:commandButton id="typeTiersInserer" value="Insérer" process="@this" -->
+<!-- 				disabled="#{typeTiersController.etatBouton('inserer')}" -->
+<!-- 				update="@widgetVar(varTypeTiersPanel), @this, @parent:typeTiersModifier, @parent:typeTiersSupprimer" -->
+<!-- 				actionListener="#{typeTiersController.actInserer}" styleClass="btn-insert btn" /> -->
+
+			<p:commandButton id="idModifierTypeTiers" value="Modifier" title="Modifier" process="@this"
+				update=":form:tabView,:form:messages,:form" 
+				actionListener="#{typeTiersController.actDialogModifier}"
+				styleClass="icon-update icon " >
+				<p:ajax event="dialogReturn" listener="#{typeTiersController.handleReturnDialogTypes}" update=":form"/>
+			</p:commandButton>
+			
+<!-- 			<p:commandButton id="typeTiersModifier" value="Modifier" -->
+<!-- 				process="@this" class="btn-update btn" -->
+<!-- 				disabled="#{typeTiersController.etatBouton('modifier')}" -->
+<!-- 				update="@widgetVar(varTypeTiersPanel), @parent:typeTiersInserer, @this, @parent:typeTiersSupprimer" -->
+<!-- 				actionListener="#{typeTiersController.actModifier}" /> -->
+
+			<p:commandButton id="typeTiersSupprimer" value="Supprimer"
+				styleClass="icon-delete icon menuitem-poubelle-droite"
+				disabled="#{typeTiersController.etatBouton('supprimer')}"
+				actionListener="#{typeTiersController.actSupprimer}"
+				update="@widgetVar(wvTypeTiersDataTable)" process="@this"
+				 >
+<!-- 				type="button" onclick="PF('famillecd1').show()" -->
+				<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer cet enregistrement ?" icon="ui-icon-alert" />
+			</p:commandButton>
+
+			<p:commandButton id="typeTiersFermer" title="Fermer"
+				class="icon-close icon menuitem-fermer-droite"
+				rendered="#{dansDialogue == null ? true : false}" onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())">
+<!-- 				type="button" onclick="PF('famillecd2').show()" -->
+				<p:confirm header="Confirmation" message="#{msg_diag.alert_fermeture_onglet}" icon="ui-icon-alert" disabled="#{!typeTiersController.modeEcran.dataSetEnModif()}"/>
+			</p:commandButton>
+
+			<p:commandButton id="typeTiersFermerDialogue" title="Fermer"
+				process="@this" class="icon-close icon menuitem-fermer-droite"
+				actionListener="#{typeTiersController.actFermerDialog}"
+				rendered="#{dansDialogue != null ? true : false}" />
+
+<!-- 			<p:confirmDialog message="#{msg_diag.alert_suppresion}" -->
+<!-- 				header="Confirmation" severity="alert" appendTo="@(body)" -->
+<!-- 				widgetVar="typeTierscd1"> -->
+<!-- 				<p:commandButton value="#{msg_diag.Oui}" update="@form" -->
+<!-- 					oncomplete="PF('typeTierscd1').hide()"> -->
+<!-- 					<p:ajax listener="#{typeTiersController.actSupprimer}" /> -->
+<!-- 				</p:commandButton> -->
+<!-- 				<p:commandButton value="#{msg_diag.Non}" -->
+<!-- 					onclick="PF('typeTierscd1').hide();" type="button" /> -->
+<!-- 			</p:confirmDialog> -->
+
+<!-- 			<p:confirmDialog message="#{msg_diag.alert_fermeture_onglet}" -->
+<!-- 				header="Confirmation" severity="alert" widgetVar="typeTierscd2" -->
+<!-- 				appendTo="@(body)"> -->
+<!-- 				<p:commandButton value="#{msg_diag.Oui}" -->
+<!-- 					onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())" -->
+<!-- 					oncomplete="PF('typeTierscd2').hide()" /> -->
+
+<!-- 				<p:commandButton value="#{msg_diag.Non}" -->
+<!-- 					onclick="PF('typeTierscd2').hide();" type="button" /> -->
+<!-- 			</p:confirmDialog> -->
+		</p:panel>
+
+		<!-- 		rendered="#{dansDialogue == null ? true : false}" -->
+		<p:dataTable id="typeTiersDataTable" widgetVar="wvTypeTiersDataTable" var="table"
+			rendered="#{dansDialogue == null ? true : false}"
+			value="#{typeTiersController.values}" rowKey="#{table.id}"
+			selectionMode="single" styleClass="datatable"
+			selection="#{typeTiersController.selection}" paginator="false"
+			rows="#{msg.modele_datatable_ligne_par_page_debut}"
+			paginatorTemplate="#{msg.modele_datatable_paginator}"
+			rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+			emptyMessage="#{msg.message_datatable_vide}"
+			currentPageReportTemplate="#{msg.modele_datatable_page_courante}">
+
+			<p:ajax event="rowSelect" listener="#{typeTiersController.onRowSelect}" />
+
+			<f:facet name="{Exporters}">
+				<h:commandLink>
+					<p:graphicImage library="images" name="excel.png" width="24" />
+					<p:dataExporter type="xls" target="typeTiersDataTable"
+						fileName="type_tiers" />
+				</h:commandLink>
+
+				<h:commandLink>
+					<p:graphicImage library="images" name="pdf.png" width="24" />
+					<p:dataExporter type="pdf" target="typeTiersDataTable"
+						fileName="type_tiers" />
+				</h:commandLink>
+
+				<h:commandLink>
+					<p:graphicImage library="images" name="csv.png" width="24" />
+					<p:dataExporter type="csv" target="typeTiersDataTable"
+						fileName="type_tiers" />
+				</h:commandLink>
+
+				<h:commandLink>
+					<p:graphicImage library="images" name="xml.png" width="24" />
+					<p:dataExporter type="xml" target="typeTiersDataTable"
+						fileName="type_tiers" />
+				</h:commandLink>
+			</f:facet>
+
+			<p:column sortBy="#{table.codeTTiers}">
+<!-- 			 filterBy="#{table.codeTTiers}" filterMatchMode="contains"> -->
+				<f:facet name="header">
+					<h:outputText value="Code" />
+				</f:facet>
+				<h:outputText value="#{table.codeTTiers}" />
+			</p:column>
+
+			<p:column sortBy="#{table.libelleTTiers}">
+<!-- 				filterBy="#{table.libelleTTiers}" filterMatchMode="contains"> -->
+				<f:facet name="header">
+					<h:outputText value="Libellé" />
+				</f:facet>
+				<h:outputText value="#{table.libelleTTiers}" />
+			</p:column>
+
+			<p:column sortBy="#{table.compteTTiers}">
+<!-- 				filterBy="#{table.compteTTiers}" filterMatchMode="contains"> -->
+				<f:facet name="header">
+					<h:outputText value="compte" />
+				</f:facet>
+				<h:outputText value="#{table.compteTTiers}" />
+			</p:column>
+		</p:dataTable>
+	</p:panel>
+
+	<p:messages id="typeTiersMessages" showDetail="true" autoUpdate="true"
+		closable="true" />
+
+	<p:panel id="typeTiersPanel" visible="true" widgetVar="varTypeTiersPanel">
+		<p:panel resizable="false" id="typeTiersPanelCache"
+			rendered="#{typeTiersController.modeEcran.dataSetEnModif()}">
+			<!-- 			<h:form id="typeTiersFormCreation"> -->
+			<f:validateBean disabled="true">
+				<div class="ui-grid ui-grid-responsive" id="typeTiersGridResp">
+					<div class="ui-grid-row">
+						<div class="ui-grid-col-4">
+							<h:outputText value="Code :"></h:outputText>
+						</div>
+						<div class="ui-grid-col-8">
+							<h:inputText id="idTxtCodeTypeTiers" value="#{typeTiersController.nouveau.codeTTiers}" styleClass="Input50"
+								required="true"
+								requiredMessage="#{msg_diag.alert_champs_obligatoir}" validator="#{typeTiersController.validateObject}">
+									<f:attribute name="nomChamp" value="#{const.C_CODE_T_TIERS}" />
+									<p:ajax event="blur" update="@this"/>
+							</h:inputText>
+						</div>
+					</div>
+					<div class="ui-grid-row">
+						<div class="ui-grid-col-4">
+							<h:outputText value="Libelle :" ></h:outputText>
+						</div>
+						<div class="ui-grid-col-8">
+							<h:inputText id="idTxtLibelleTypeTiers" value="#{typeTiersController.nouveau.libelleTTiers}" styleClass="Input100"
+								required="true"
+								requiredMessage="#{msg_diag.alert_champs_obligatoir}" validator="#{typeTiersController.validateObject}">
+									<f:attribute name="nomChamp" value="#{const.C_LIBELLE_T_TIERS}" />
+									<p:ajax event="blur" update="@this"/>
+							</h:inputText>
+						</div>
+					</div>
+					<div class="ui-grid-row">
+						<div class="ui-grid-col-4">
+							<h:outputText value="Compte :"></h:outputText>
+						</div>
+						<div class="ui-grid-col-8">
+							<h:inputText id="idTxtCompteTypeTiers" value="#{typeTiersController.nouveau.compteTTiers}"
+								required="true"
+								requiredMessage="#{msg_diag.alert_champs_obligatoir}" validator="#{typeTiersController.validateObject}">
+									<f:attribute name="nomChamp" value="#{const.C_COMPTE_T_TIERS}" />
+									<p:ajax event="blur" update="@this"/>
+							</h:inputText>
+						</div>
+					</div>
+	
+					<div class="ui-grid-row">
+						<div class="ui-grid-col-12 text-center">
+							<p:commandButton id="idEnregistrerTypeTiers" value="Enregistrer" styleClass="btn-save btn"
+								disabled="#{typeTiersController.etatBouton('enregistrer')}"
+								update="@widgetVar(widgetVarTypeTiersForm), @widgetVar(varTypeTiersPanel)"
+								actionListener="#{typeTiersController.actEnregistrer}" />
+							
+							<p:commandButton id="typeTiersAnnuler" value="Annuler"
+								styleClass="btn-cancel btn"
+								disabled="#{typeTiersController.etatBouton('annuler')}"
+								update="@widgetVar(widgetVarTypeTiersForm), @widgetVar(varTypeTiersPanel)"
+								actionListener="#{typeTiersController.actAnnuler}"
+								rendered="#{dansDialogue != null ? false : true}" />
+
+							<p:commandButton id="typeTiersAnnulerDialogue" value="Annuler"
+								styleClass="btn-cancel btn" process="@this"
+								disabled="#{typeTiersController.etatBouton('annuler')}"
+								actionListener="#{typeTiersController.actFermerDialog}"
+								rendered="#{dansDialogue != null ? true : false}" />
+						</div>
+					</div>
+				</div>
+			</f:validateBean>
+			<!-- 			</h:form> -->
+		</p:panel>
+	</p:panel>
+</ui:composition>

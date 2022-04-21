@@ -1,0 +1,212 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<p:panel id="typeEntiteFormPrincipal" widgetVar="widgetVarTypeEntiteForm">
+		<p class="subtitle">
+			<p:outputLabel value="Gestion des formes juridiques" rendered="#{dansDialogue == null ? true : false}" />
+		</p>
+		
+		<!-- bouton -->
+		<p:panel id="typeEntiteDataTableF"
+			styleClass="mt30" style="position:relative;"
+			rendered="#{dansDialogue == null ? true : false}">
+
+			<p:commandButton id="idInsererTypeEntite"  value="Ajouter" title="Insérer" process="@this"
+				update=":form:tabView,:form:messages,:form" 
+				actionListener="#{typeEntiteController.actDialogTypes}"
+				styleClass="icon-insert icon" >
+				<p:ajax event="dialogReturn" listener="#{typeEntiteController.handleReturnDialogTypes}" 
+					update=":form"/>
+			</p:commandButton>
+			
+<!-- 			<p:commandButton id="typeEntiteInserer" value="Insérer" -->
+<!-- 				process="@this" -->
+<!-- 				disabled="#{typeEntiteController.etatBouton('inserer')}" -->
+<!-- 				update="@widgetVar(varTypeEntitePanel), @this, @parent:typeEntiteModifier, @parent:typeEntiteSupprimer" -->
+<!-- 				actionListener="#{typeEntiteController.actInserer}" -->
+<!-- 				styleClass="btn-insert btn" /> -->
+
+			<p:commandButton id="idModifierTypeEntite"   value="Modifier" title="Modifier" process="@this"
+				update=":form:tabView,:form:messages,:form" 
+				actionListener="#{typeEntiteController.actDialogModifier}"
+				styleClass="icon-update icon" >
+				<p:ajax event="dialogReturn" listener="#{typeEntiteController.handleReturnDialogTypes}" update=":form"/>
+			</p:commandButton>
+			
+<!-- 			<p:commandButton id="typeEntiteModifier" value="Modifier" -->
+<!-- 				process="@this" class="btn-update btn" -->
+<!-- 				disabled="#{typeEntiteController.etatBouton('modifier')}" -->
+<!-- 				update="@widgetVar(varTypeEntitePanel), @parent:typeEntiteInserer, @this, @parent:typeEntiteSupprimer" -->
+<!-- 				actionListener="#{typeEntiteController.actModifier}" /> -->
+
+			<p:commandButton id="typeEntiteSupprimer" value="Supprimer"
+				styleClass="icon-delete icon menuitem-poubelle-droite"
+				disabled="#{typeEntiteController.etatBouton('supprimer')}"
+				actionListener="#{typeEntiteController.actSupprimer}"
+				update="@widgetVar(wvTypeEntiteDataTable)" process="@this"
+				 >
+<!-- 				type="button" onclick="PF('famillecd1').show()" -->
+				<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer cet enregistrement ?" icon="ui-icon-alert" />
+			</p:commandButton>
+
+			<p:commandButton id="typeEntiteFermer" title="Fermer"
+				styleClass="icon-close icon menuitem-fermer-droite" 
+				rendered="#{dansDialogue != null ? false : true}" onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())">
+<!-- 				type="button" onclick="PF('famillecd2').show()" -->
+				<p:confirm header="Confirmation" message="#{msg_diag.alert_fermeture_onglet}" icon="ui-icon-alert" disabled="#{!typeEntiteController.modeEcran.dataSetEnModif()}"/>
+			</p:commandButton>
+
+			<p:commandButton id="typeEntiteFermerDialogue" title="Fermer"
+				process="@this" class="icon-close icon menuitem-fermer-droite"
+				actionListener="#{typeEntiteController.actFermerDialog}"
+				rendered="#{dansDialogue != null ? true : false}" />
+
+<!-- 			<p:confirmDialog -->
+<!-- 				message="Etes-vous sûr de vouloir supprimer l'enregistrement?" -->
+<!-- 				header="Confirmation" severity="alert" appendTo="@(body)" -->
+<!-- 				widgetVar="typeEntitecd1"> -->
+
+<!-- 				<p:commandButton value="Oui" update="@form" -->
+<!-- 					oncomplete="PF('typeEntitecd1').hide()"> -->
+<!-- 					<p:ajax listener="#{typeEntiteController.actSupprimer()}" /> -->
+<!-- 				</p:commandButton> -->
+<!-- 				<p:commandButton value="Non" onclick="PF('typeEntitecd1').hide();" -->
+<!-- 					type="button" /> -->
+<!-- 			</p:confirmDialog> -->
+
+<!-- 			<p:confirmDialog -->
+<!-- 				message="Etes-vous sûr de vouloir fermer l'onglet ? (les modifications en cours ne seront pas sauvegardées) " -->
+<!-- 				header="Confirmation" severity="alert" widgetVar="typeEntitecd2" -->
+<!-- 				appendTo="@(body)"> -->
+<!-- 				<p:commandButton value="Oui" -->
+<!-- 					onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())" -->
+<!-- 					oncomplete="PF('typeEntitecd2').hide()" /> -->
+<!-- 				<p:commandButton value="Non" onclick="PF('typeEntitecd2').hide();" -->
+<!-- 					type="button" /> -->
+<!-- 			</p:confirmDialog> -->
+		</p:panel>
+		<!-- 	 -->
+
+		<p:dataTable id="typeEntiteDataTable" widgetVar="wvTypeEntiteDataTable" var="table"
+			rendered="#{dansDialogue == null ? true : false}"
+			value="#{typeEntiteController.values}" rowKey="#{table.id}"
+			selectionMode="single" class="datatable"
+			selection="#{typeEntiteController.selection}" paginator="false"
+			rows="#{msg.modele_datatable_ligne_par_page_debut}"
+			paginatorTemplate="#{msg.modele_datatable_paginator}"
+			rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+			emptyMessage="#{msg.message_datatable_vide}"
+			currentPageReportTemplate="#{msg.modele_datatable_page_courante}">
+			<p:ajax event="rowSelect" listener="#{typeEntiteController.onRowSelect}" />
+
+			<f:facet name="{Exporters}">
+				<h:commandLink>
+					<p:graphicImage library="images" name="excel.png" width="24" />
+					<p:dataExporter type="xls" target="typeEntiteDataTable"
+						fileName="type_tiers" />
+				</h:commandLink>
+
+				<h:commandLink>
+					<p:graphicImage library="images" name="pdf.png" width="24" />
+					<p:dataExporter type="pdf" target="typeEntiteDataTable"
+						fileName="type_tiers" />
+				</h:commandLink>
+
+				<h:commandLink>
+					<p:graphicImage library="images" name="csv.png" width="24" />
+					<p:dataExporter type="csv" target="typeEntiteDataTable"
+						fileName="type_tiers" />
+				</h:commandLink>
+
+				<h:commandLink>
+					<p:graphicImage library="images" name="xml.png" width="24" />
+					<p:dataExporter type="xml" target="typeEntiteDataTable"
+						fileName="type_tiers" />
+				</h:commandLink>
+			</f:facet>
+
+			<p:column sortBy="#{table.codeTEntite}">
+<!-- 				filterBy="#{table.codeTEntite}" filterMatchMode="contains"> -->
+				<f:facet name="header">
+					<h:outputText value="Code" />
+				</f:facet>
+				<h:outputText value="#{table.codeTEntite}" />
+			</p:column>
+
+			<p:column sortBy="#{table.liblTEntite}">
+<!-- 				filterBy="#{table.liblTEntite}" filterMatchMode="contains"> -->
+				<f:facet name="header">
+					<h:outputText value="Libellé" />
+				</f:facet>
+				<h:outputText value="#{table.liblTEntite}" />
+			</p:column>
+		</p:dataTable>
+
+		
+	</p:panel>
+
+	<p:messages id="typeEntiteMessages" showDetail="true" autoUpdate="true" closable="true" />
+
+	<p:panel id="typeEntitePanel" visible="true"
+		widgetVar="varTypeEntitePanel">
+		<p:panel resizable="false" id="typeEntitePanelCache"
+			rendered="#{typeEntiteController.modeEcran.dataSetEnModif()}">
+			<!-- 					<h:form id="typeEntiteFormCreation"> -->
+			<f:validateBean disabled="true">
+				<div class="ui-grid ui-grid-responsive" id="typeEntiteGridResp">
+					<div class="ui-grid-row">
+						<div class="ui-grid-col-4">
+							<h:outputText value="Code :"></h:outputText>
+						</div>
+						<div class="ui-grid-col-8">
+							<h:inputText  id="idTxtCodeTypeEntite" value="#{typeEntiteController.nouveau.codeTEntite}" styleClass="Input50"
+								required="true" requiredMessage="Champs obligatoire!" validator="#{typeEntiteController.validateObject}">
+									<f:attribute name="nomChamp" value="#{const.C_CODE_T_ENTITE}" />
+ 									<p:ajax event="blur" update="@this"/> 	
+							</h:inputText>
+						</div>
+					</div>
+
+					<div class="ui-grid-row">
+						<div class="ui-grid-col-4">
+							<h:outputText value="Libelle :" />
+						</div>
+						<div class="ui-grid-col-8">
+							<h:inputText  id="idTxtLibelleTypeEntite"  value="#{typeEntiteController.nouveau.liblTEntite}" styleClass="Input100"
+								required="true" requiredMessage="Champs obligatoire!" validator="#{typeEntiteController.validateObject}">
+									<f:attribute name="nomChamp" value="#{const.C_LIBL_T_ENTITE}" />
+ 									<p:ajax event="blur" update="@this"/> 	
+							</h:inputText>
+						</div>
+					</div>
+
+					<div class="ui-grid-row">
+						<div class="ui-grid-col-12 text-center">
+							<p:commandButton  id="idEnregistrerTypeEntite" value="Enregistrer" styleClass="btn-save btn"
+								disabled="#{typeEntiteController.etatBouton('enregistrer')}"
+								update="@widgetVar(widgetVarTypeEntiteForm), @widgetVar(varTypeEntitePanel)"
+								actionListener="#{typeEntiteController.actEnregistrer}" />
+
+							<p:commandButton id="typeEntiteAnnuler" value="Annuler"
+								styleClass="btn-cancel btn" process="@this"
+								disabled="#{typeEntiteController.etatBouton('annuler')}"
+								update="@widgetVar(widgetVarTypeEntiteForm), @widgetVar(varTypeEntitePanel)"
+								actionListener="#{typeEntiteController.actAnnuler}"
+								rendered="#{dansDialogue != null ? false : true}" />
+
+							<p:commandButton id="typeEntiteAnnulerDialogue" value="Annuler"
+								styleClass="btn-cancel btn" process="@this"
+								disabled="#{typeEntiteController.etatBouton('annuler')}"
+								actionListener="#{typeEntiteController.actFermerDialog}"
+								rendered="#{dansDialogue != null ? true : false}" />
+						</div>
+					</div>
+				</div>
+			</f:validateBean>
+			<!-- 					</h:form> -->
+		</p:panel>
+	</p:panel>
+</ui:composition>

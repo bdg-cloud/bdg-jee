@@ -1,0 +1,175 @@
+Installation d'un certificat GrandiPro Wildcard dans WildFly 8.2
+
+https://wiki.gandi.net/fr/ssl/intermediate#certificats_intermediaires_sha2
+
+Commande pour vérifier la "configuration" SSL d'un domaine :
+openssl s_client -connect bdg.cloud:443 -showcerts -CApath /etc/ssl/certs -servername bdg.cloud
+
+Dans le cas ou le CSR a été généré avec OpenSSL -formulaire Gandi- (il pourrait aussi avoir été généré pour le keytool du JRE)
+On obtien un fichier *.csr et un fichier *.key qui servent à demander un certificat à l'autorité de certification, il faut absolument les conservés
+Le fichier *.key est la clé privé pour le CSR et pour le certificat final
+En retour Gandi donne un fichier *.crt et un fichier *.pem (GandiProSSLCA.pem), le fichier *.pem semble inutile pour notre cas (peut être un certificat temporaire)
+le fichier CRT est le certificat public
+Les fichiers pem et crt ont des extensions différentes mais sont au meme format.
+A partir du certificat public et le la clé privé on peu généré le certifcat privé pour le stocké dans le keystore Java
+
+Ici l'exemple est pour le domaine "*.bdg.cloud"
+
+Copier les fichiers *.csr, *.key, *.pem et *.crt dans le répertoire de configuration de WildFly
+cd /var/lgr/wildfly-8.2.0.Final/standalone/configuration
+
+On doit avoir les fichiers suivant :               
+Clé privée : bdg.cloud.key      
+Certificat pour le serveur : certificate-00000.crt 
+Certificat intermédiare Gandi SHA2 : GandiProSSLCA2.pem    contenu récupéré sur le site de Gandi
+Certificat intermédiare Comodo : "Certificat_Cross_Signed_Comodo.pem" contenu récupéré sur le site de Gandi
+serveur.csr 
+
+Générer un keystore java : bdg.cloud.jks
+/var/lgr/java/jdk1.8.0_65/bin/keytool -genkey -alias bdg.cloud -keyalg RSA -keystore bdg.cloud.keystore
+Bien conserver le mot de passe du keystore : "xxxxxxxx"  cf secret
+
+**** Pour certificat auto généré (local-dev) ****
+Générer un keystore java : bdg.dev.jks
+/donnees/java/jdk1.8.0_73_x64/bin/keytool -genkey -alias bdg.dev -keyalg RSA -keystore bdg.dev.jks -validity 10950
+Bien conserver le mot de passe du keystore : "xxxxxxxx" cf secret
+Faire directement la configuration pou le SSL dans le standalone.xml
+**********
+
+Si on ne souhaite pas gérer la chaine de certificat, on peu importer directement le certificat du serveur avec sa clé dans le keystore java.
+Dans ce cas, les navigateur qui ne possède pas déjà les certificat "racine" utilisé, ici celui de Comodo et de Gandi afficheront un message d'avertissement
+pour une connexion non sécurisé car ils ne pourront pas suivre la "chaine de certificat" jusqu'au bout. 
+Entre autre les navigateur les plus anciens et ceux sur mobiles (moins de cerificat de base) risque d'être concernés.
+
+Généraion du fichier pcks12 pour pouvoir l'importer dans le keystore : bdg.cloud.p12
+openssl pkcs12 -export -name bdg.cloud -in certificate-340165.crt -inkey bdg.cloud.key -out bdg.cloud.p12
+
+*OU* on peut créer la "chaine de certificat" manuellement dans un fichier pem (texte) : intermediaire.pem
+L'ordre est important, du certificat le plus spécifique (celui du serveru) au certificat le plus général (celui de l'autorité de certification)
+Contenu du fichier :
+
+-----BEGIN CERTIFICATE-----
+XXXXXXXXX   <- certificat du serveur (certificate-340165.crt )
+-----END CERTIFICATE-----
+-----BEGIN CERTIFICATE-----
+XXXXXXXXX   <- certificat intermédiaire Gandi (GandiProSSLCA2.pem)
+-----END CERTIFICATE-----
+-----BEGIN CERTIFICATE-----
+XXXXXXXXX   <- certificat cross-signed Comodo
+-----END CERTIFICATE-----
+
+Dans ce cas, c'est ce fichier contenant la chaine de tous les certificat que l'on importera dans le keystore:
+openssl pkcs12 -export -name bdg.cloud -in intermediaire.pem -inkey bdg.cloud.key -out bdg.cloud.p12
+
+
+Importation du fichier pcks12 dans le keystore
+/var/lgr/java/jdk1.8.0_65/bin/keytool -importkeystore -destkeystore bdg.cloud.keystore -srckeystore bdg.cloud.p12 -srcstoretype pkcs12 -alias bdg.cloud
+
+Vérification de la présence du certificat  dans le keystore
+/var/lgr/java/jdk1.8.0_65/bin/keytool -list -v -keystore bdg.cloud.keystore
+
+Redémarrer le serveur Wildfly (même dans le cas d'une mise à jour du certificat)
+
+
+Dans le fichier standalone.xml de WildFly :
+
+<security-realm name="MyRealm">
+    <server-identities>
+        <ssl>
+            <keystore path="bdg.cloud.jks" relative-to="jboss.server.config.dir" keystore-password="dahGhu1e"/>
+        </ssl>
+    </server-identities>
+    <authentication>
+        <local default-user="$local"/>
+        <jaas name="BDGRealm"/>
+    </authentication>
+</security-realm>
+......
+......
+<!-- <subsystem xmlns="urn:jboss:domain:undertow:1.2"> -->
+<server name="default-server">
+    <http-listener name="default" socket-binding="http"/>
+    <https-listener name="default-ssl" socket-binding="https" security-realm="MyRealm"/>
+    <host name="default-host" alias="localhost">
+        <filter-ref name="server-header"/>
+        <filter-ref name="x-powered-by-header"/>
+    </host>
+</server>
+......
+......
+<socket-binding name="http" port="${jboss.http.port:80}"/>
+<socket-binding name="https" port="${jboss.https.port:443}"/>
+
+
+
+
+Make sure you add this in your web.xml
+
+<security-constraint>
+  <web-resource-collection>
+      <url-pattern>/*</url-pattern>
+  </web-resource-collection>
+  <user-data-constraint>
+      <transport-guarantee>CONFIDENTIAL</transport-guarantee>
+  </user-data-constraint>
+</security-constraint>
+
+This will allow the redirection for any URL.
+
+
+
+
+
+
+/*///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+Les Commandes de Java Keytool pour la Création et l'Import
+
+Ces commandes vous permettent de générer un nouveau fichier keystore Java Keytool, créer un CSR, et importer des certificats. Tout type de certificats root ou intermédiaire auront besoin d'être importé avant d'importer le certificat primaire pour votre domaine.
+
+    Générer un Keystore Java et une paire de clef
+
+    keytool -genkey -alias mydomain -keyalg RSA -keystore keystore.jks
+    Générer un Certificate Signing Request (CSR) pour un Java Keystore existant
+
+    keytool -certreq -alias "mydomain" -keystore keystore.jks -file mydomain.csr
+    Importer un Certificat CA racine ou intermédiaire à un Keystore Java existant
+
+    keytool -import -trustcacerts -alias root -file Thawte.crt -keystore keystore.jks
+    Importer un certificat primaire signé à un keystore Java existant
+
+    keytool -import -trustcacerts -alias mydomain -file mydomain.crt -keystore keystore.jks
+    Générer un keystore et certificat auto-signé
+
+    keytool -genkey -keyalg RSA -alias "selfsigned" -keystore keystore.jks -storepass "password" -validity 360
+
+Les Commandes Java Keytool pour le Checking
+
+Si vous avez besoin de vérifier l'information au sein du certificat, ou Java Keystore, utilisez les commandes suivantes.
+
+    Vérifier un certificat stand-alone
+
+    keytool -printcert -v -file mydomain.crt
+    Vérifier quels certificats se trouvent dans un keystore Java
+
+    keytool -list -v -keystore keystore.jks
+    Vérifier l'entrée d'un keystore particulier en utilisant un alias 
+
+    keytool -list -v -keystore keystore.jks -alias mydomain
+
+D'autres Commandes Java Keytool
+
+    Supprimer un certificat d'un keystore Java Keytool
+
+    keytool -delete -alias "mydomain" -keystore keystore.jks
+    Changer un mot de passe Java keystore
+
+    keytool -storepasswd -new new_storepass -keystore keystore.jks
+    Exporter un certificat d'un keystore
+
+    keytool -export -alias mydomain -file mydomain.crt
+    La liste des Certificats CA de Confiance
+
+    keytool -list -v -keystore $JAVA_HOME/jre/lib/security/cacerts
+    Importer un Nouveau CA dans les Certificats de Confiance
+
+    keytool -import -trustcacerts -file /path/to/ca/ca.pem -alias CA_ALIAS -keystore $JAVA_HOME/jre/lib/security/cacerts

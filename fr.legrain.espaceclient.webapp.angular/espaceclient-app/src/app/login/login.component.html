@@ -1,0 +1,87 @@
+<style>
+<!--
+/* :host >>> .ui-carousel::ng-deep { */
+/* 	width: 1318px !important; */
+/* } */
+  :host >>> .login-body {
+  position:fixed;
+    padding:0;
+    margin:0;
+
+    top:0;
+    left:0;
+
+    width: 100%;
+    height: 100%;
+    
+/*     background: url("assets/layout/images/pages/bg-login.jpg"); */
+    background-size: cover;
+  }
+  
+-->
+</style>
+
+<!-- [style.background]="backgroundImage"  -->
+<div class="login-body" [ngStyle]="backgroundStyle">
+<div class="login-panel"></div>
+
+        <div class="login-content">
+            <!--  <img src="../../assets/layout/images/logo-black.png" alt="babylon-layout"/>-->
+             
+             <img id="layout-menu-logo" [src]='image' style="width: auto; height: auto; margin:auto;" *ngIf="image;else image_defaut">
+<!--              <img id="layout-menu-logo" [src]='image' library="babylon-layout" style="width: 235px; height: 113px; margin:auto;" *ngIf="image;else image_defaut"> -->
+             <ng-template #image_defaut>
+<!--              	<img id="layout-menu-logo" src="assets/layout/images/logo-bdg-esp-client.png" style="width: 235px; height: 113px; margin:auto;"> -->
+				<img id="layout-menu-logo" src="assets/images/bdg-espace-client.svg" style="width: auto; height: auto; margin:auto;">
+<!--              	<img id="layout-menu-logo" src="assets/images/bdg-espace-client.svg" style="width: 235px; height: 132px; margin:auto;"> -->
+             </ng-template>
+                
+            <h1>
+				<span *ngIf="texteAccueil===null || texteAccueil===''">Espace Client </span>
+				<span *ngIf="texteAccueil!==null && texteAccueil!==''">{{texteAccueil}} </span>
+				<div *ngIf="texte1!==null && texte1!==''" style="display: inline;">{{texte1}}</div>
+			</h1>
+<!--             <h1><span> Espace Client </span>Bureau de Gestion</h1> -->
+            <p *ngIf="texte2===null || texte2===''" i18n="An introduction header for this sample@@introductionHeader">Bienvenue</p>
+            <p *ngIf="texte2!==null && texte2!==''" >{{texte2}}</p>
+
+<!--             <div class="login-input-wrapper"> -->
+<!--                 <input type="text" autocomplete="off" placeholder="Username" class="ui-inputtext ui-widget"> -->
+<!--             </div> -->
+
+<!--             <div class="login-input-wrapper"> -->
+<!--                 <input type="password" autocomplete="off" placeholder="Password" class="ui-inputtext ui-widget"> -->
+<!--             </div> -->
+
+<!--             <button type="button" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" > -->
+<!--                 <span class="ui-button-text ui-c">Sign In</span> -->
+<!--             </button> -->
+            
+            <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+                <div class="form-group login-input-wrapper">
+<!--                     <label for="username">Username</label> -->
+                    <input pInputText type="text" formControlName="username" placeholder="Email" class="form-control ui-inputtext ui-widget" [ngClass]="{ 'is-invalid': submitted && f.username.errors }" />
+                    <div *ngIf="submitted && f.username.errors" class="invalid-feedback">
+                        <div *ngIf="f.username.errors.required">Username is required</div>
+                    </div>
+                </div>
+                <div class="form-group login-input-wrapper">
+<!--                     <label for="password">Password</label> -->
+                    <input pPassword type="password" formControlName="password" [feedback]="false" placeholder="Mot de passe" class="form-control ui-inputtext ui-widget" [ngClass]="{ 'is-invalid': submitted && f.password.errors }" />
+                    <div *ngIf="submitted && f.password.errors" class="invalid-feedback">
+                        <div *ngIf="f.password.errors.required">Password is required</div>
+                    </div>
+                </div>
+                <button pButton [disabled]="loading" label="Connexion" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only">
+                    <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+                    <!--<span class="ui-button-text ui-c">Connexion</span>-->
+                </button>
+                <div *ngIf="error" class="alert alert-danger mt-3 mb-0">{{error}}</div>
+            </form>
+            <br/>
+            <br/>
+            <a routerLink='/creer-compte' routerLinkActive="active" *ngIf="creationDeCompte">Créer un compte</a>
+            <br/>
+            <a routerLink='/mot-de-passe-oublie' routerLinkActive="active">Mot de passe oublié</a>
+        </div>
+        </div>

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<title>Dev - Génération de données</title>
+	<link rel="shortcut icon" type="image/x-icon" href="#{resource['images:solstyce.ico']}" />
+
+	<f:facet name="first">
+	</f:facet>
+</h:head>
+<h:body>
+	<f:facet name="last">
+		<!-- surcharge des CSS primefaces -->
+		<h:outputStylesheet library="css" name="hacks.css" />
+	</f:facet>
+
+	<p:layout fullPage="true" widgetVar="widgetLayoutPage">
+
+		<!-- 		<p:ajax event="toggle" listener="#{leftBean.handleToggle}"/> -->
+
+		<p:layoutUnit position="north" size="100" gutter="0" class="north">
+			<div class="ui-grid ui-grid-responsive">
+				<div class="ui-grid-col-2">
+					<p:link href="/index.xhtml">
+						<p:graphicImage library="images" name="solstyce_32x32.png" />
+						<h:outputText value="Solstyce" />
+					</p:link>
+				</div>
+				<div class="ui-grid-col-3">
+					<p:ajaxStatus>
+						<f:facet name="start">
+							<p:graphicImage library="images" name="ajax-loader.gif" />
+						</f:facet>
+						<f:facet name="complete">
+							<!-- 							<h:outputText value="Done!" /> -->
+						</f:facet>
+					</p:ajaxStatus>
+				</div>
+				<div class="ui-grid-col-10 text-right">
+					Mon compte -
+					<p:commandLink value="déconnexion" actionListener="#{auth.logout}" />
+				</div>
+
+
+			</div>
+			<!-- 			<ui:include src="../../menu.xhtml" /> -->
+		</p:layoutUnit>
+		<!-- 
+		<p:layoutUnit position="south" size="100" resizable="true">
+		</p:layoutUnit>
+ -->
+		<!-- 		<p:layoutUnit id="idWestUnit" position="west" size="550" resizable="true" collapsed="#{leftBean.collapsed}"  -->
+		<!-- 			collapsible="true" header="" gutter="4" class="west"> -->
+
+
+		<!-- 		</p:layoutUnit> -->
+
+		<!-- 		<p:layoutUnit position="east" size="200" resizable="true" -->
+		<!-- 			collapsible="true" collapsed="true" header="" gutter="2" class="east"> -->
+		<!-- 		</p:layoutUnit> -->
+
+		<p:layoutUnit position="center" gutter="4" class="center">
+
+			<h:form id="form">
+				<p:growl id="growl1" showDetail="true" sticky="true" />
+				
+				
+				<p:panelGrid columns="2">
+					<h:outputText value="Article"/>	
+					<p:spinner value="#{generationDonneesBean.nbArticle}"/>
+					<h:outputText value="Tiers"/>	
+					<p:spinner value="#{generationDonneesBean.nbTiers}"/>
+					<h:outputText value="Fabrication"/>	
+					<p:spinner value="#{generationDonneesBean.nbFAB}"/>
+					<h:outputText value="Bon de réception"/>	
+					<p:spinner value="#{generationDonneesBean.nbBR}"/>
+					<h:outputText value="Controle de conformité"/>	
+					<p:spinner value="#{generationDonneesBean.nbControleConf}"/>
+				</p:panelGrid>
+
+				<p:commandButton value="Génration de données" onclick="PF('pbAjax').start();" update="@form" styleClass="btn" actionListener="#{generationDonneesBean.genData}" />
+
+
+			<p:panel id="idPanelParametreArticle" header="Paramètre Articles" toggleable="true" widgetVar="panelParametreArticle">	
+				<p:panelGrid columns="2" header="Paramètre Articles" >	
+					<h:outputText value="FamilleArticle"/>	
+					<p:commandButton value="BtnFamilleArticle" onclick="PF('pbAjax').start();" update="@form" styleClass="btn" actionListener="#{generationDonneesBean.genFamilleArticle}" />
+					<h:outputText value="Unités"/>	
+					<p:commandButton value="BtnUnites" onclick="PF('pbAjax').start();" update="@form" styleClass="btn" actionListener="#{generationDonneesBean.genUnites}" />
+				</p:panelGrid>
+			</p:panel>	
+
+			<p:panel id="idPanelParametreTiers" header="Paramètre Tiers" toggleable="true" widgetVar="panelParametreTiers">
+				<p:panelGrid columns="2"  >
+					<h:outputText value="TypeAdresse"/>	
+					<p:commandButton value="BtnTypeAdresse" onclick="PF('pbAjax').start();" update="@form" styleClass="btn" actionListener="#{generationDonneesBean.genTypeAdresse}" />
+					<h:outputText value="TypeCivilite"/>	
+					<p:commandButton value="BtnTypeCivilite" onclick="PF('pbAjax').start();" update="@form" styleClass="btn" actionListener="#{generationDonneesBean.genTypeCivilite}" />
+					<h:outputText value="TypeEntite"/>	
+					<p:commandButton value="BtnTypeEntite" onclick="PF('pbAjax').start();" update="@form" styleClass="btn" actionListener="#{generationDonneesBean.genTypeEntite}" />
+					<h:outputText value="TypeTelephone"/>	
+					<p:commandButton value="BtnTypeTelephone" onclick="PF('pbAjax').start();" update="@form" styleClass="btn" actionListener="#{generationDonneesBean.genTypeTelephone}" />
+					<h:outputText value="TypeTiers"/>	
+					<p:commandButton value="BtnTypeTiers" onclick="PF('pbAjax').start();" update="@form" styleClass="btn" actionListener="#{generationDonneesBean.genTypeTiers}" />
+					<h:outputText value="TypeWeb"/>	
+					<p:commandButton value="BtnTypeWeb" onclick="PF('pbAjax').start();" update="@form" styleClass="btn" actionListener="#{generationDonneesBean.genTypeWeb}" />
+					<h:outputText value="TypeEmail"/>	
+					<p:commandButton value="BtnTypeEmail" onclick="PF('pbAjax').start();" update="@form" styleClass="btn" actionListener="#{generationDonneesBean.genTypeEmail}" />
+					<h:outputText value="FamilleTiers"/>	
+					<p:commandButton value="BtnFamilleTiers" onclick="PF('pbAjax').start();" update="@form" styleClass="btn" actionListener="#{generationDonneesBean.genFamilleTiers}" />
+				</p:panelGrid>
+			</p:panel>
+
+			<p:panel id="idPanelParametreSolstyce" header="Paramètre Solstyce" toggleable="true" widgetVar="panelParametreSolstyce">	
+				<p:panelGrid columns="2" header="Paramètre Solstyce" >
+					<h:outputText value="Entrepot"/>	
+					<p:commandButton value="BtnEntrepot" onclick="PF('pbAjax').start();" update="@form" styleClass="btn" actionListener="#{generationDonneesBean.genEntrepot}" />
+					<h:outputText value="TypeFabrication"/>	
+					<p:commandButton value="BtnTypeFabrication" onclick="PF('pbAjax').start();" update="@form" styleClass="btn" actionListener="#{generationDonneesBean.genTypeFabrication}" />
+					<h:outputText value="TypeReception"/>	
+					<p:commandButton value="BtnTypeReception" onclick="PF('pbAjax').start();" update="@form" styleClass="btn" actionListener="#{generationDonneesBean.genTypeReception}" />
+					<h:outputText value="TypecodeBarre"/>	
+					<p:commandButton value="BtnTypecodeBarre" onclick="PF('pbAjax').start();" update="@form" styleClass="btn" actionListener="#{generationDonneesBean.genTypeCodeBarre}" />
+					<h:outputText value="GroupeControles"/>	
+					<p:commandButton value="BtnGroupeControles" onclick="PF('pbAjax').start();" update="@form" styleClass="btn" actionListener="#{generationDonneesBean.genGroupeControles}" />					
+				</p:panelGrid>
+			</p:panel>	
+			
+				<p:commandButton value="Tous" onclick="PF('pbAjax').start();" update="@form" styleClass="btn" actionListener="#{generationDonneesBean.genTousLesParametres}" />
+
+
+					<br />
+<!-- 				<p:commandButton value="Start" type="button" onclick="PF('pbAjax').start();PF('startButton2').disable();" widgetVar="startButton2" /> -->
+<!-- 				<p:commandButton value="Cancel" actionListener="#{generationDonneesBean.cancel}" oncomplete="PF('pbAjax').cancel();PF('startButton2').enable();" /> -->
+<!-- 				<br /> -->
+<!-- 				<br /> -->
+				<p:progressBar widgetVar="pbAjax" ajax="true" value="#{generationDonneesBean.progress}" labelTemplate="{value}%" styleClass="animated" global="false">
+					<p:ajax event="complete" listener="#{generationDonneesBean.onComplete}" update="growl1" oncomplete="PF('startButton2').enable()" />
+				</p:progressBar>
+			</h:form>
+
+		</p:layoutUnit>
+
+	</p:layout>
+
+</h:body>
+</html>

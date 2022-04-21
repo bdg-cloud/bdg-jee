@@ -1,0 +1,59 @@
+Pour utiliser une nouvelle police True Type dans un PDF BIRT (webviewer/Servlet pour les API du BIRT Report Engine le procede semble différent)
+
+Récupérer le fichier TTF et l'installé sur le système.
+Dans Linux : /usr/share/fonts/truetype
+
+Exemple : Intallation de la police Myriad Pro Condensed
+On télécharge un fichier Myriad-Pro-Condensed_31633.ttf (le nom peut varier suivant les sites)
+On le copie ici : /usr/share/fonts/truetype/Myriad-Pro-Condensed_31633.ttf
+
+Paramétrage de BIRT
+Il faut modifier le plugin/JAR birt qui contient la servlet de rendu et les fichier de configuration : org.eclipse.birt.runtime_4.3.2.v20140225-1404.jar
+
+fontsConfig.xml est le fichier de configuration principal
+fontsConfig_pdf.xml est spécifique pour les sorties PDF sont contenu surcharge celui du fichier principal lorsqu'il sagit d'un PDF
+
+fichier_extention (fontsConfig_pdf.xml) > fichier_plateforme (fontsConfig_linux.xml) > fichier_principal (fontsConfig.xml)
+
+Fichier principal : fontsConfig.xml
+	<font-aliases>
+		<mapping name="serif" font-family="Myriad Pro Cond" />
+		....
+	</font-aliases>
+	
+	<composite-font name="all-fonts" font-family="Myriad Pro Cond">
+	</composite-font>
+	
+	</font-paths>
+		....
+		<path path="/usr/share/fonts/truetype/tlwg" />
+		<path path="/usr/share/fonts/truetype/Myriad-Pro-Condensed_31633.ttf" />
+	</font-paths>
+
+Fichier pour PDF : fontsConfig_pdf.xml
+	<font-aliases>
+		<mapping name="serif" font-family="Myriad Pro Cond" />
+		<mapping name="Abyssinica SIL" font-family="Myriad Pro Cond" />
+		<mapping name="Loma" font-family="Myriad Pro Cond" />
+		....
+	</font-aliases>
+
+************
+ATTENTION :
+************
+Dans "font-family" il faut mettre le nom "offciel" de la police,
+ce n'est pas forcément le nom du fichier, ni le nom le plus courant de celle ci.
+On peut trouver ces noms sur des sites spécialiés
+OU
+commande : fc-list | grep Myriad
+-------------
+Ex : https://www.myfonts.com/fonts/adobe/myriad/cond/specs.html
+https://everythingfonts.com/font/abyssinica-sil-regular
+-------------
+Full Font Name: MyriadPro-Cond
+Family name: Myriad Pro Cond
+Sub-family name: Regular
+PostScript name: MyriadPro-Cond
+-------------
+Pour la Myriad Pro Condensed, le nom a utilisé est "Myriad Pro Cond", tous les autres noms ne fonctionneront pas
+

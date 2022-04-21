@@ -1,0 +1,265 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:p="http://primefaces.org/ui">
+	
+	<o:importConstants type="fr.legrain.bdg.webapp.app.LgrTab" />
+	
+<!-- 	<h:form> -->
+
+<!-- <p:ajax event="rowSelect" listener="#{clientController.onRowSelect}" update=":form:tabView,:form:messages" oncomplete="PF('wvOverlayListeClient').hide();"/>  -->
+
+
+<!-- 	<p:commandButton id="movieBtn" value="Dynamic" type="button" /> -->
+	<p:commandLink id="listeTicketCaisseBtn" >
+		<i class="top-submenu-icon fa fa-fw fa-file-text-o"></i>
+<!-- 		<i class="top-bar-badge animated rubberBand"><h:outputText value="#{topBarController.nbClient}"/></i> -->
+<!-- 		<i class="fa fa-book animated swing" aria-hidden="true"></i> -->
+		<span><h:outputText value="Liste des tickets de caisse" /></span>
+	</p:commandLink>
+	
+<!-- 	<p:overlayPanel id="moviePanel" for="movieBtn" hideEffect="fade" dynamic="true"  -->
+<!-- 		dismissable="true" appendTo="@(body)" widgetVar="wvOverlayListeProduit" showCloseIcon="true"> -->
+	
+	<p:overlayPanel id="idListeTicketCaissePanel" for="listeTicketCaisseBtn" hideEffect="fade" dynamic="true" 
+		dismissable="true" appendTo="@(body)" widgetVar="wvOverlayListeTicketCaisse" showCloseIcon="true">
+		<h:form>
+		<div class="dashboard-title" style="background:#f6f6f6;">
+              <h:panelGrid columns="3" cellpadding="5">
+            	<h:graphicImage name="dashboard/facture.svg" library="images" height="35px" style="margin-top:1px;" />
+                <p:outputLabel value="Liste des tickets de caisse" style="font-size:20px;"/>
+              </h:panelGrid>  
+              <p:separator/>
+        </div>
+	<p:menubar styleClass="menu-onglet" widgetVar="wvMenuListeTicketCaisse" id="idMenuListeTicketCaisse">
+		<p:menuitem title="Créer une nouvelle facture" update=":form:tabView,:form:messages,@widgetVar(wvMenuListeTicketCaisse),@widgetVar(wvDataTableListeTicketCaisse)" 
+		actionListener="#{ticketDeCaisseController.nouveau}" styleClass="icon icon-insert" disabled="#{ticketDeCaisseController.etatBouton('inserer')}" oncomplete="PF('wvOverlayListeTicketCaisse').hide();"/>
+<!-- 	 	<p:menuitem title="Détail" update=":form:tabView,:form:messages" actionListener="#{ticketDeCaisseController.detail}" styleClass="icon icon-detail" disabled="#{ticketDeCaisseController.modeEcran.dataSetEnModif()}" oncomplete="PF('wvOverlayListeTicketCaisse').hide();"/> -->
+<!-- 	 	<p:menuitem title="Supprimer les factures sélectionnées" update=":form:tabView,@widgetVar(wvDataTableListeTicketCaisse),@widgetVar(wvMenuListeTicketCaisse),:form:messages,@form"  -->
+<!-- 	 	actionListener="#{ticketDeCaisseController.supprimer}" styleClass="icon icon-delete" disabled="#{ticketDeCaisseController.etatBouton('supprimerListe')}"> -->
+<!-- 	 		<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer les factures sélectionnées ?" icon="ui-icon-alert" /> -->
+<!-- 	 	</p:menuitem> -->
+	 	<p:menuitem title="Rafraîchir la liste" update="@form,@widgetVar(wvDataTableListeTicketCaisse),@widgetVar(wvMenuListeTicketCaisse),:form:messages" actionListener="#{ticketDeCaisseController.refresh}" styleClass="icon icon-refresh" disabled="#{ticketDeCaisseController.modeEcran.dataSetEnModif()}"/>
+	</p:menubar>
+	<p:sticky target="idMenuListeTicketCaisse" />
+	 
+	<p:dataTable id="dataTableListeTicketCaisse" var="facture"
+				widgetVar="wvDataTableListeTicketCaisse"
+				value="#{ticketDeCaisseController.values}"
+				rowKey="#{facture.id}"
+				selection="#{ticketDeCaisseController.selectedDocumentDTOs}"
+				dblClickSelect="true"
+				styleClass="datatable mt10"
+				resizableColumns="true"
+				paginator="true" 
+				rows="#{msg.modele_datatable_ligne_par_page_debut}"
+				paginatorTemplate="#{msg.modele_datatable_paginator}"
+				rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+				emptyMessage="#{msg.message_datatable_vide}"
+				currentPageReportTemplate="#{msg.modele_datatable_page_courante}"
+				disabledSelection="#{ticketDeCaisseController.modeEcran.dataSetEnModif()}">
+				
+<!-- 				<p:ajax event="rowDblselect" listener="#{ticketDeCaisseController.onRowSelect}" update=":form:tabView,:form:messages,@form"/>  -->
+<!-- 				<p:ajax event="rowSelect" listener="#{ticketDeCaisseController.onRowSelect}" update=":form:tabView,:form:messages" oncomplete="PF('wvOverlayListeTicketCaisse').hide();"/> -->
+				
+<!-- 				<p:ajax event="rowDblselect" listener="#{ticketDeCaisseController.onRowSelect}" update=":form:tabView,:form:messages" /> -->
+				<p:ajax event="rowSelect" delay="#{msg.datatable_rowselect_delay}" listener="#{ticketDeCaisseController.onRowSelect}" update=":form:tabView,:form:messages,@widgetVar(wvTableauComplementaireFac)" oncomplete="activeTabCenter('#{LgrTab.CSS_CLASS_TAB_TICKET_DE_CAISSE}');PF('wvOverlayListeTicketCaisse').hide();scrollToTop();"/>
+			
+				<f:facet name="header">  
+           			<h:outputText value="Ticket de caisse" />
+           			<span style="float:right;" class="searchbar_list">
+			            <p:outputPanel>
+				                <p:inputText id="globalFilter" onkeyup="PF('wvDataTableListeTicketCaisse').filter()" style="width:150px" placeholder="Rechercher"/>
+				            </p:outputPanel>
+			        </span>
+        		</f:facet>
+
+  		<f:facet name="{Exporters}">
+            <h:commandLink>
+                <p:graphicImage library="images" name="excel.png" width="24"/>
+                <p:dataExporter type="xls" target="dataTableListeTicketCaisse" fileName="liste_facture" />
+            </h:commandLink>
+ 
+ 			<p:commandLink onsuccess="window.open('#{request.contextPath}/output?__report=/reports/caisse/ListeDesTicketsDeCaisse.rptdesign&amp;__format=pdf')"
+			actionListener="#{ticketDeCaisseController.actImprimerListeDesTicketsDeCaisse}" process="@this">
+		                <p:graphicImage  library="images" name="pdf.png"  width="24"/>
+<!-- 		                <p:dataExporter type="pdf" target="dataTableListeTiers" fileName="liste_tiers" /> -->
+		    </p:commandLink>
+		            
+<!--             <h:commandLink> -->
+<!--                 <p:graphicImage  library="images" name="pdf.png"  width="24"/> -->
+<!--                 <p:dataExporter type="pdf" target="dataTableListeTicketCaisse" fileName="liste_facture"/> -->
+<!--             </h:commandLink> -->
+ 
+            <h:commandLink>
+                <p:graphicImage  library="images" name="csv.png"  width="24"/>
+                <p:dataExporter type="csv" target="dataTableListeTicketCaisse" fileName="liste_facture" options="#{separateurCsvController.csvOptions}" />
+            </h:commandLink>
+ 
+            <h:commandLink>
+                <p:graphicImage  library="images" name="xml.png"  width="24"/>
+                <p:dataExporter type="xml" target="dataTableListeTicketCaisse" fileName="liste_facture" />
+            </h:commandLink>
+        </f:facet>
+        
+        <p:column selectionMode="multiple" style="width:16px;text-align:center" exportable="false" />
+			
+				<p:column style="width:16px" exportable="false">
+					<f:facet name="header">
+						<h:outputText value="" />
+					</f:facet>
+					<p:commandButton title="Détail" update=":form:tabView,:form:messages" 
+						action="#{ticketDeCaisseController.detail}" styleClass="icon icon-detail icon-grille" 
+						disabled="#{ticketDeCaisseController.modeEcran.dataSetEnModif()}" oncomplete="PF('wvOverlayListeTicketCaisse').hide();">
+						<f:setPropertyActionListener target="#{ticketDeCaisseController.selectedDocumentDTO}" value="#{facture}" />
+					</p:commandButton>
+				</p:column>
+        
+<!-- 				<p:column sortBy="#{facture.id}"> -->
+<!-- 					<f:facet name="header"> -->
+<!-- 						<h:outputText value="ID" /> -->
+<!-- 					</f:facet> -->
+<!-- 					<h:outputText value="#{facture.id}" /> -->
+<!-- 				</p:column> -->
+
+				<p:column sortBy="#{facture.codeDocument}"
+							filterMatchMode="contains" 
+							filterBy="#{facture.codeDocument}">
+					<f:facet name="header">
+						<h:outputText value="Code" />
+					</f:facet>
+					<h:outputText value="#{facture.codeDocument}" />
+				</p:column>
+				
+				<p:column 	styleClass="center"
+							sortBy="#{facture.dateDocument}"
+							filterMatchMode="contains" 
+							filterBy="#{ticketDeCaisseController.customFormatDate(facture.dateDocument)}">
+					<f:facet name="header">
+						<h:outputText value="Date" />
+					</f:facet>
+					<h:outputText value="#{facture.dateDocument}">
+						<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+					</h:outputText>
+				</p:column>
+				
+				<p:column sortBy="#{facture.codeTiers}"
+							filterMatchMode="contains" 
+							filterBy="#{facture.codeTiers}">
+					<f:facet name="header">
+						<h:outputText value="Code tiers" />
+					</f:facet>
+					<h:outputText value="#{facture.codeTiers}" />
+				</p:column>
+
+				<p:column 	sortBy="#{facture.nomTiers}"
+							filterMatchMode="contains" 
+							filterBy="#{facture.nomTiers}">
+					<f:facet name="header">
+						<h:outputText value="Nom" />
+					</f:facet>
+					<h:outputText value="#{facture.nomTiers}" />
+				</p:column>
+				
+				<p:column 	sortBy="#{facture.prenomTiers}"
+							filterMatchMode="contains" 
+							filterBy="#{facture.prenomTiers}">
+					<f:facet name="header">
+						<h:outputText value="Prénom" />
+					</f:facet>
+					<h:outputText value="#{facture.prenomTiers}" />
+				</p:column>
+
+				<p:column 	sortBy="#{facture.nomEntreprise}"
+							filterMatchMode="contains" 
+							filterBy="#{facture.nomEntreprise}" >
+					<f:facet name="header">
+						<h:outputText value="Entreprise" />
+					</f:facet>
+					<h:outputText value="#{facture.nomEntreprise}" />
+				</p:column>
+
+				<p:column 	styleClass="right" 
+							filterMatchMode="contains" 
+							filterBy="#{facture.netHtCalc}" 
+							sortBy="#{facture.netHtCalc}"
+							exportFunction="#{separateurCsvController.exportNumber}">
+				
+					<f:facet name="header">
+						<h:outputText value="HT" />
+					</f:facet>
+					<h:outputText value="#{facture.netHtCalc}" >
+						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+					</h:outputText>
+				</p:column>
+				
+				<p:column 	styleClass="right" 
+							filterMatchMode="contains" 
+							filterBy="#{facture.netTvaCalc}" 
+							sortBy="#{facture.netTvaCalc}"
+							exportFunction="#{separateurCsvController.exportNumber}">
+					<f:facet name="header">
+						<h:outputText value="TVA" />
+					</f:facet>
+					<h:outputText value="#{facture.netTvaCalc}" >
+						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+					</h:outputText>
+				</p:column>
+
+				<p:column 	styleClass="right" 
+							filterMatchMode="contains" 
+							filterBy="#{facture.netTtcCalc}" 
+							sortBy="#{facture.netTtcCalc}"
+							exportFunction="#{separateurCsvController.exportNumber}">
+					<f:facet name="header">
+						<h:outputText value="TTC" />
+					</f:facet>
+					<h:outputText value="#{facture.netTtcCalc}">
+						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+					</h:outputText>
+				</p:column>
+
+				<p:column 	styleClass="center" 
+							filterMatchMode="contains" 
+							filterBy="#{ticketDeCaisseController.customFormatDate(facture.dateEchDocument)}" 
+							sortBy="#{facture.dateEchDocument}">
+					<f:facet name="header">
+						<h:outputText value="Date échéance :" />
+					</f:facet>
+					<h:outputText value="#{facture.dateEchDocument}" >
+					<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+					</h:outputText>
+				</p:column>
+
+				<p:column style="width:16px" exportable="false">
+					<f:facet name="header">
+						<h:outputText value="" />
+					</f:facet>
+<!--
+commentaire :  déclenche un bouton invisible pour mettre à jour le message personnalisé
+ -->					
+					<p:commandButton title="Supprimer" styleClass="icon-delete icon icon-grille" widgetVar="widgetVarBtnSupprimerTicketCaisseListe"
+						action="#{ticketDeCaisseController.actBeforeSupprimer(facture)}" oncomplete="$('.classHiddenCommandForSuppressionTKC').click()"
+						disabled="#{ticketDeCaisseController.documentDTOEstVerrouille(facture).verrouille}"
+						process="@this"
+						update="@widgetVar(widgetVarBtnSupprimerTicketCaisseListe2)">
+						<f:setPropertyActionListener target="#{ticketDeCaisseController.selectedDocumentDTO}" value="#{facture}" />
+<!-- 						<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer cette facture ?" icon="ui-icon-alert" /> -->
+<!-- 			<p:confirm header="Confirmation de la suppression" message="#{ticketDeCaisseController.messageSuppression}" icon="ui-icon-alert" /> -->
+					</p:commandButton>
+				</p:column>
+				
+			</p:dataTable>
+		<p:commandButton styleClass="classHiddenCommandForSuppressionTKC" widgetVar="widgetVarBtnSupprimerTicketCaisseListe2" 
+		actionListener="#{ticketDeCaisseController.actSupprimer}" style="display:none" process="@this" 
+		 update="@widgetVar(wvDataTableListeTicketCaisse)" >
+        <p:confirm header="Confirmation de la suppression" message="#{ticketDeCaisseController.messageSuppression}" icon="ui-icon-alert" /> 
+    </p:commandButton>	
+		</h:form>
+	</p:overlayPanel>
+	
+<!-- 	</h:form> -->
+
+</ui:composition>

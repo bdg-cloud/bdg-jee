@@ -1,0 +1,304 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
+xmlns:f="http://java.sun.com/jsf/core" 
+xmlns:h="http://java.sun.com/jsf/html"
+xmlns:ui="http://java.sun.com/jsf/facelets" 
+xmlns:o="http://omnifaces.org/ui" 
+xmlns:p="http://primefaces.org/ui">
+
+					<div class="ui-g-12 ui-md-12">
+		<h:panelGrid columns="2" cellpadding="0">
+			<p:outputLabel value="Votre dossier est très volumineux, Cliquez sur le bouton pour raffraîchir les données" style="font-weight : bold;"
+				rendered="#{articleController.dashBoardParArticleController.grosFichierArticles}">
+			</p:outputLabel>
+			<p:commandButton process="@this" rendered="#{articleController.dashBoardParArticleController.grosFichierArticles}"
+				update="@this,idZoneTotauxGeneral, @widgetVar(wvArticleListeGeneral),@widgetVar(wvRappelPeriodePanelArticleGeneral)"
+				action="#{articleController.dashBoardParArticleController.initAllValueGeneral(articleController.selectedTaArticleDTO.getCodeArticle())}"
+				value="Raffraîchir" styleClass="ui-orange" style="width:100%;" />
+		</h:panelGrid>
+	</div>
+ 				<div class="ui-g-12 ui-md-12">
+					<p:panel header="Critères et paramètres du tableau de bord" collapsed="true" toggleable="true" toggleOrientation="horizontal" >
+						<div class="ui-g-12 ui-md-4">
+						<p:fieldset style="margin-bottom:20px;">
+			
+							<p:panel header="Période" styleClass="panelgrey">
+							<f:facet name="footer">
+								<p:commandButton  
+								process="@this"
+								update="@this,idZoneTotauxProformaArticle,@widgetVar(wvRappelPeriodePanelArticleProforma)" 
+								action="#{articleController.dashBoardParArticleController.initAllValueProforma(articleController.selectedTaArticleDTO.getCodeArticle())}" value="Appliquer" styleClass="ui-orange" 
+								style="width:100%;" />
+								<!-- @widgetVar(wvArticlesListeProforma),idGraphiqueParArticlesProforma -->
+								
+							</f:facet>
+							 <div class="ui-g-12 ui-md-2" >
+							<i class="fa fa-calendar fa-3x" aria-hidden="true"></i>
+							 </div>
+							 <div class="ui-g-12 ui-md-10">
+				        	<h:panelGrid columns="2" cellpadding="0">
+							 <p:outputLabel value="Du"/>
+												<p:calendar value="#{articleController.dashBoardParArticleController.dateDebutProforma}"
+													showOn="button" 
+													navigator="true" 
+													pattern="#{msg.date_pattern}" 
+													mask="true" 
+													locale="fr" 
+													timeZone="#{msg.time_zone}" >
+													<p:ajax event="dateSelect"/>
+													<p:ajax event="change"/>
+												</p:calendar>
+	
+	
+							 <p:outputLabel value="au"/>
+												<p:calendar value="#{articleController.dashBoardParArticleController.dateFinProforma}"
+													showOn="button" 
+													navigator="true" 
+													pattern="#{msg.date_pattern}" 
+													mask="true" 
+													locale="fr" 
+													timeZone="#{msg.time_zone}" >
+													<p:ajax event="dateSelect"/>
+													<p:ajax event="change"/>
+												</p:calendar>
+	
+	        				</h:panelGrid>
+	        				</div>
+	        				 <p:separator />
+	
+	
+									</p:panel>
+	    				</p:fieldset>
+	    				</div>
+	
+						<div class="ui-g-12 ui-md-4">
+	
+	    				</div>
+						<div class="ui-g-12 ui-md-4">
+	
+	    				</div>
+					</p:panel>
+					<p:panel widgetVar="wvRappelPeriodePanelArticleProforma"  style="font-size : 20px;">
+						<p:outputLabel>Période du </p:outputLabel>
+						 <h:outputText value="#{articleController.dashBoardParArticleController.dateDebutProforma}"  style="font-weight : bold;">
+						 	<f:convertDateTime type="date" pattern="dd MMMM yyyy" timeZone="#{msg.time_zone}"/>
+						 </h:outputText>
+						 <p:outputLabel> au  </p:outputLabel>
+						 <h:outputText value="#{articleController.dashBoardParArticleController.dateFinProforma}"  style="font-weight : bold;">
+						 	<f:convertDateTime type="date" pattern="dd MMMM yyyy" timeZone="#{msg.time_zone}"/>
+						 </h:outputText>
+				 
+					</p:panel>
+				</div>
+				
+				<div class="ui-g-12 ui-md-12 ui-lg-8">
+				<p:outputPanel deferred="true" id="idZoneTotauxProformaArticle">
+				<div class="card-group">
+					<div class="card  card-dash">
+						<h3 align="center card-title"><span style="font-size: 30px;">#{articleController.dashBoardParArticleController.nbProforma}</span> proforma réalisés</h3><br></br>
+						<div class="card-body"></div>
+						<div class="card-footer">
+							<p:outputLabel value="Total HT : "/> 
+							<p:outputLabel value="#{articleController.dashBoardParArticleController.montantTotalHtProforma}" >
+							<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+							</p:outputLabel>
+							<br/>
+							<p:outputLabel value="Total TTC : "/> 
+							<p:outputLabel value="#{articleController.dashBoardParArticleController.montantTotalTtcProforma}" >
+							<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+							</p:outputLabel>
+							<!-- <p:separator></p:separator>
+							<p:outputLabel value="Nombre : "/> 
+							<p:outputLabel value="#{articleController.dashBoardParArticleController.nbProforma}"/> -->
+						
+						   <p:commandButton title="Détails" style="width:100%" styleClass="btn-liste btn"
+								update="@this,@widgetVar(wvArticlesListeProforma),idGraphiqueParArticlesProforma"
+								process="@this"
+								actionListener="#{articleController.dashBoardParArticleController.initValueLignesProforma(articleController.selectedTaArticleDTO.getCodeArticle())}"
+								  >
+							</p:commandButton>
+						</div>
+					</div>
+					<div class="card card-dash">
+						
+						<h3 align="center card-title"><span style="font-size: 30px;">#{articleController.dashBoardParArticleController.nbProformaNonTransforme}</span> proforma non transformés</h3>
+						<div class="card-body"></div>
+						<div class="card-footer">
+							<p:outputLabel value="Total HT : "/> 
+							<p:outputLabel value="#{articleController.dashBoardParArticleController.montantTotalHtNonTransfoProforma}">
+							<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+							</p:outputLabel>
+							<br/>
+							<p:outputLabel value="Total TTC : "/> 
+							<p:outputLabel value="#{articleController.dashBoardParArticleController.montantTotalTtcNonTransfoProforma}">
+							<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+							</p:outputLabel>
+							<!-- <p:separator></p:separator>
+							<p:outputLabel value="Nombre : "/> 
+							<p:outputLabel value="#{articleController.dashBoardParArticleController.nbProformaNonTransforme}"/> -->
+						
+							 <p:commandButton title="Détails" style="width:100%" styleClass="btn-liste btn"
+								update="@this,@widgetVar(wvArticlesListeProforma),idGraphiqueParArticlesProforma"
+								process="@this"
+								actionListener="#{articleController.dashBoardParArticleController.initValueLignesProformaNonTransforme(articleController.selectedTaArticleDTO.getCodeArticle())}" >
+							</p:commandButton> 
+						</div>
+					</div>			
+					<div class="card card-dash">
+						<h3 align="center card-title"><span style="font-size: 30px;">#{articleController.dashBoardParArticleController.nbProformaNonTransformeARelancer}</span> proforma à relancer <h:outputLink id="tooltipProformaARelancer" value="#">
+	        						<i class="fa fa-question-circle"></i>
+	    						</h:outputLink></h3>
+                            <p:tooltip id="toolTipFadeProformaARelancer" for="tooltipProformaARelancer"
+                             value="Il reste moins de #{articleController.dashBoardParArticleController.deltaJourARelancer} jours avant l'échéance "
+                             position="top"/>
+                             <div class="card-body"></div>
+						<div class="card-footer">
+							<p:outputLabel value="Total HT : "/> 
+							<p:outputLabel value="#{articleController.dashBoardParArticleController.montantTotalHtNonTransfoARelancerProforma}">
+							<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+							</p:outputLabel>
+							<br/>
+							<p:outputLabel value="Total TTC : "/> 
+							<p:outputLabel value="#{articleController.dashBoardParArticleController.montantTotalTtcNonTransfoARelancerProforma}">
+							<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+							</p:outputLabel>
+							<!-- <p:separator></p:separator>
+							<p:outputLabel value="Nombre : "/> 
+							<p:outputLabel value="#{articleController.dashBoardParArticleController.nbProformaNonTransformeARelancer}"/> -->
+						
+							 <p:commandButton title="Détails" style="width:100%" styleClass="btn-liste btn"
+							 	process="@this"
+								update="@this,idArticlesListeProforma,idGraphiqueParArticlesProforma"
+								actionListener="#{articleController.dashBoardParArticleController.initValueLignesProformaNonTransformeARelancer(articleController.selectedTaArticleDTO.getCodeArticle())}" >
+							</p:commandButton> 
+						</div>	
+					</div>			
+					<div class="card card-dash">
+						<h3 align="center card-title"><span style="font-size: 30px;">#{articleController.dashBoardParArticleController.nbProformaTransforme}</span> proforma tranformés</h3><br></br>
+						<div class="card-body"></div>
+						<div class="card-footer">
+							<p:outputLabel value="Total HT : "/> 
+							<p:outputLabel value="#{articleController.dashBoardParArticleController.montantTotalHtTransfoProforma}">
+							<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+							</p:outputLabel>
+							<br/>
+							<p:outputLabel value="Total TTC : "/> 
+							<p:outputLabel value="#{articleController.dashBoardParArticleController.montantTotalTtcTransfoProforma}">
+							<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+							</p:outputLabel>
+							<!-- <p:separator></p:separator>
+							<p:outputLabel value="Nombre : "/> 
+							<p:outputLabel value="#{articleController.dashBoardParArticleController.nbProformaTransforme}"/> -->
+						
+						   <p:commandButton title="Détails" style="width:100%" styleClass="btn-liste btn"
+						   		process="@this"
+								update="@this,@widgetVar(wvArticlesListeProforma),idGraphiqueParArticlesProforma"
+								actionListener="#{articleController.dashBoardParArticleController.initValueLignesProformaTransforme(articleController.selectedTaArticleDTO.getCodeArticle())}" >
+							</p:commandButton> 	
+					 </div>	
+					</div>	
+
+				</div>
+				</p:outputPanel>
+				</div>
+
+				<div class="ui-g-12 ui-md-12">
+				
+				<div class="ui-g-12 ui-md-12 ui-lg-8 ">
+					<div class="card">
+						<h3 align="center">Liste des proforma contenant cet article</h3>
+		<p:dataTable id="idArticlesListeProforma"
+					 sortBy="#{listeProforma.dateDocument}" 
+					 sortOrder="descending" 
+					 var="listeProforma" 
+					 value="#{articleController.dashBoardParArticleController.valueLignesProforma}"
+					 scrollable="true"
+					 scrollHeight="300"
+					 liveResize="true" 
+					 widgetVar="wvArticlesListeProforma">
+			<p:ajax event="rowToggle" listener="#{articleController.onRowToggle}" update=":@this"/>
+		
+        <f:facet name="header">
+        <div class="list-header-button-print">
+        <span style="float:left">
+									        <p:commandButton id="idBtnListePrintEcranDasboardListeLignesParArticleProforma"
+							 title="Imprimer la liste" 
+			onsuccess="window.open('#{request.contextPath}/output?__report=/reports/article/ListeDashboardListeLignesParArticleProforma.rptdesign&amp;__format=pdf')"
+			actionListener="#{dashBoardParArticleController.actImprimerListeLignesParArticle(articleController.selectedTaArticleDTO.getLibellecArticle())}" styleClass="ui-priority-primary boutonPrint" style="color : white;" icon="fa fa-print"
+			process="@this" ></p:commandButton>
+									    </span>
+        
+            Cliquez pour afficher le détail d'un document
+            </div>
+        </f:facet>
+        <p:column style="width:16px">
+            <p:rowToggler />
+        </p:column>
+        <p:column headerText="Code" sortBy="#{listeProforma.codeDocument}" filterBy="#{listeProforma.codeDocument}" filterMatchMode="contains">
+								<p:commandLink value="#{listeProforma.codeDocument}"
+									action="#{ouvertureDocumentBean.detailDocument(ouvertureDocumentBean.recupCodeDocument(listeProforma.codeDocument,ouvertureDocumentBean.getTypeDocumentProforma()))}" 
+									update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+								</p:commandLink>            
+        </p:column>
+        <p:column headerText="Libellé" sortBy="#{listeProforma.libelleDocument}" filterBy="#{listeProforma.libelleDocument}" filterMatchMode="contains">
+            <h:outputText value="#{listeProforma.libelleDocument}" id="idListeLibelleProformaOngletTiers"/>
+			<p:tooltip id="toolTipListeLibelleProformaOngletTiers" value="#{listeProforma.libelleDocument}" shared="true" for="idListeLibelleProformaOngletTiers" showEffect="clip" position="top"/>
+        </p:column>
+        <p:column headerText="HT" sortBy="#{listeProforma.netHtCalc}" filterBy="#{listeProforma.netHtCalc}" filterMatchMode="contains">
+            <h:outputText value="#{listeProforma.netHtCalc}">
+			<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+			</h:outputText>
+        </p:column>
+        <!-- <p:column headerText="TVA" sortBy="#{listeProforma.netTvaCalc}" filterBy="#{listeProforma.netTvaCalc}" filterMatchMode="contains">
+            <h:outputText value="#{listeProforma.netTvaCalc}" >
+			<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+			</h:outputText>
+        </p:column> -->
+        <p:column headerText="TTC" sortBy="#{listeProforma.netTtcCalc}" filterBy="#{listeProforma.netTtcCalc}" filterMatchMode="contains">
+            <h:outputText value="#{listeProforma.netTtcCalc}" >
+			<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+			</h:outputText>
+        </p:column>
+        <p:column headerText="Date" sortBy="#{listeProforma.dateDocument}" filterBy="#{listeProforma.dateDocument}" filterMatchMode="contains">
+            <h:outputText value="#{listeProforma.dateDocument}" >
+            		<f:convertDateTime pattern="#{msg.date_pattern}"
+					timeZone="#{msg.time_zone}" />
+            </h:outputText>
+        </p:column>
+        <p:column headerText="Echéance" sortBy="#{listeProforma.dateEchDocument}" filterBy="#{listeProforma.dateEchDocument}" filterMatchMode="contains">
+            <h:outputText value="#{listeProforma.dateEchDocument}" >
+            		<f:convertDateTime pattern="#{msg.date_pattern}"
+					timeZone="#{msg.time_zone}" />
+            </h:outputText>
+        </p:column>
+         <p:column headerText="Tiers" sortBy="#{listeProforma.codeTiers}" filterBy="#{listeProforma.codeTiers}" filterMatchMode="contains">
+            <p:commandLink value="#{listeProforma.codeTiers}"
+						action="#{articleController.dashBoardParArticleController.ouvertureDocumentBean.detailTiers(dashBoardFactureController.ouvertureDocumentBean.recupCodetiers(listeProforma.codeTiers))}" 
+						update=":form:tabView" oncomplete="activeTabCenter('#{articleController.dashBoardParArticleController.ouvertureDocumentBean.event.cssLgrTab}');">
+					</p:commandLink> 
+        </p:column>
+ 
+    </p:dataTable>
+					</div>				
+				</div>
+				<div class="ui-g-12 ui-md-12 ui-lg-4 ">
+					<div class="card">
+					<p:tab title="Proforma" rendered="true">
+					
+						<h3 align="center">Graphique des lignes des Proforma <h:outputLink id="tooltipGraphProforma" value="#">
+	        						<i class="fa fa-question-circle"></i>
+	    						</h:outputLink></h3>
+	    						<p:tooltip id="toolTipFadeGraphProforma" for="tooltipGraphProforma"
+                             value="sommes des montants des lignes des Proforma pour cet article"
+                             position="top"/>
+								<p:chart type="bar" model="#{articleController.dashBoardParArticleController.barChartModelProforma}"
+								id="idGraphiqueParArticlesProforma" 
+								widgetVar="wvGraphiqueParArticlesProforma"
+								responsive="true" 
+								style="height:300px;">
+								</p:chart>
+					</p:tab>
+					</div>				
+				</div>
+				</div>  
+				
+</ui:composition>

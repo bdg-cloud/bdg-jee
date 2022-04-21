@@ -1,0 +1,222 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:p="http://primefaces.org/ui">
+	
+	<o:importConstants type="fr.legrain.bdg.webapp.app.LgrTab" />
+	
+<!-- 	<h:form> -->
+
+<!-- <p:ajax event="rowSelect" listener="#{clientController.onRowSelect}" update=":form:tabView,:form:messages" oncomplete="PF('wvOverlayListeClient').hide();"/>  -->
+
+
+<!-- 	<p:commandButton id="movieBtn" value="Dynamic" type="button" /> -->
+	<p:commandLink id="listeApporteurBtn" >
+		<i class="top-submenu-icon fa fa-fw fa-file-text-o"></i>
+<!-- 		<i class="top-bar-badge animated rubberBand"><h:outputText value="#{topBarController.nbClient}"/></i> -->
+<!-- 		<i class="fa fa-book animated swing" aria-hidden="true"></i> -->
+		<span><h:outputText value="Liste des factures apporteurs" /></span>
+	</p:commandLink>
+	
+<!-- 	<p:overlayPanel id="moviePanel" for="movieBtn" hideEffect="fade" dynamic="true"  -->
+<!-- 		dismissable="true" appendTo="@(body)" widgetVar="wvOverlayListeProduit" showCloseIcon="true"> -->
+	
+	<p:overlayPanel id="idListeApporteurPanel" for="listeApporteurBtn" hideEffect="fade" dynamic="true" 
+		dismissable="true" appendTo="@(body)" widgetVar="wvOverlayListeApporteur" showCloseIcon="true">
+		<h:form>
+		<div class="dashboard-title" style="background:#f6f6f6;">
+              <h:panelGrid columns="3" cellpadding="5">
+            	<h:graphicImage name="dashboard/fact-apporteur.svg" library="images" height="35px" style="margin-top:1px;" />
+                <p:outputLabel value="Liste des factures apporteur" style="font-size:20px;"/>
+              </h:panelGrid>  
+              <p:separator/>
+        </div>
+	<p:menubar styleClass="menu-onglet" widgetVar="wvMenuListeApporteur" id="idMenuListeApporteur">
+		<p:menuitem title="Créer une nouvelle facture apporteur" update=":form:tabView,:form:messages,@widgetVar(wvMenuListeApporteur),@widgetVar(wvDataTableListeApporteur)" 
+		actionListener="#{apporteurController.nouveau}" styleClass="icon icon-insert" disabled="#{apporteurController.etatBouton('inserer')}" oncomplete="PF('wvOverlayListeApporteur').hide();"/>
+<!-- 	 	<p:menuitem title="Détail" update=":form:tabView,:form:messages" actionListener="#{apporteurController.detail}" styleClass="icon icon-detail" disabled="#{apporteurController.modeEcran.dataSetEnModif()}" oncomplete="PF('wvOverlayListeApporteur').hide();"/> -->
+<!-- 	 	<p:menuitem title="Supprimer les apporteurs sélectionnées" update=":form:tabView,@widgetVar(wvDataTableListeApporteur),@widgetVar(wvMenuListeApporteur),:form:messages,@form"  -->
+<!-- 	 	actionListener="#{apporteurController.supprimer}" styleClass="icon icon-delete" disabled="#{apporteurController.etatBouton('supprimerListe')}"> -->
+<!-- 	 		<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer les factures apporteurs sélectionnées ?" icon="ui-icon-alert" /> -->
+<!-- 	 	</p:menuitem> -->
+	 	<p:menuitem title="Rafraîchir la liste" update="@form,@widgetVar(wvDataTableListeApporteur),@widgetVar(wvMenuListeApporteur),:form:messages" actionListener="#{apporteurController.refresh}" styleClass="icon icon-refresh" disabled="#{apporteurController.modeEcran.dataSetEnModif()}"/>
+	</p:menubar>
+	<p:sticky target="idMenuListeApporteur" />
+	 
+	<p:dataTable id="dataTableListeApporteur" var="apporteur"
+				widgetVar="wvDataTableListeApporteur"
+				value="#{apporteurController.values}"
+				rowKey="#{apporteur.id}"
+				selection="#{apporteurController.selectedDocumentDTOs}"
+				dblClickSelect="true"
+				styleClass="datatable mt10"
+				resizableColumns="true"
+				paginator="true" 
+				rows="#{msg.modele_datatable_ligne_par_page_debut}"
+				paginatorTemplate="#{msg.modele_datatable_paginator}"
+				rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+				emptyMessage="#{msg.message_datatable_vide}"
+				currentPageReportTemplate="#{msg.modele_datatable_page_courante}"
+				disabledSelection="#{apporteurController.modeEcran.dataSetEnModif()}">
+				
+<!-- 				<p:ajax event="rowDblselect" listener="#{apporteurController.onRowSelect}" update=":form:tabView,:form:messages,@form"/>  -->
+<!-- 				<p:ajax event="rowSelect" listener="#{apporteurController.onRowSelect}" update=":form:tabView,:form:messages" oncomplete="PF('wvOverlayListeApporteur').hide();"/> -->
+				
+<!-- 				<p:ajax event="rowDblselect" listener="#{apporteurController.onRowSelect}" update=":form:tabView,:form:messages" /> -->
+				<p:ajax event="rowSelect" delay="#{msg.datatable_rowselect_delay}" listener="#{apporteurController.onRowSelect}" update=":form:tabView,:form:messages" oncomplete="activeTabCenter('#{LgrTab.CSS_CLASS_TAB_FACTURE}');PF('wvOverlayListeApporteur').hide();scrollToTop();"/>
+			
+				<f:facet name="header">  
+           			<h:outputText value="Facture apporteur" />
+           			<span style="float:right;" class="searchbar_list">
+			            <p:outputPanel>
+				                <p:inputText id="globalFilter" onkeyup="PF('wvDataTableListeApporteur').filter()" style="width:150px" placeholder="Rechercher"/>
+				            </p:outputPanel>
+			        </span>
+        		</f:facet>
+
+  		<f:facet name="{Exporters}">
+            <h:commandLink>
+                <p:graphicImage library="images" name="excel.png" width="24"/>
+                <p:dataExporter type="xls" target="dataTableListeApporteur" fileName="liste_apporteur" />
+            </h:commandLink>
+ 
+            <p:commandLink onsuccess="window.open('#{request.contextPath}/output?__report=/reports/documents/apporteur/ListeDesFacturesApporteur.rptdesign&amp;__format=pdf')"
+			actionListener="#{apporteurController.actImprimerListeDesFacturesApporteur}" process="@this">
+		                <p:graphicImage  library="images" name="pdf.png"  width="24"/>
+<!-- 		                <p:dataExporter type="pdf" target="dataTableListeTiers" fileName="liste_tiers" /> -->
+		            </p:commandLink>
+ 
+            <h:commandLink>
+                <p:graphicImage  library="images" name="csv.png"  width="24"/>
+                <p:dataExporter type="csv" target="dataTableListeApporteur" fileName="liste_apporteur" options="#{separateurCsvController.csvOptions}" />
+            </h:commandLink>
+ 
+            <h:commandLink>
+                <p:graphicImage  library="images" name="xml.png"  width="24"/>
+                <p:dataExporter type="xml" target="dataTableListeApporteur" fileName="liste_apporteur" />
+            </h:commandLink>
+        </f:facet>
+        
+        <p:column selectionMode="multiple" style="width:16px;text-align:center" exportable="false"/>
+			
+				<p:column style="width:16px" exportable="false">
+					<f:facet name="header">
+						<h:outputText value="" />
+					</f:facet>
+					<p:commandButton title="Détail" update=":form:tabView,:form:messages" 
+						action="#{apporteurController.detail}" styleClass="icon icon-detail icon-grille" 
+						disabled="#{apporteurController.modeEcran.dataSetEnModif()}" oncomplete="PF('wvOverlayListeApporteur').hide();">
+						<f:setPropertyActionListener target="#{apporteurController.selectedDocumentDTO}" value="#{apporteur}" />
+					</p:commandButton>
+				</p:column>
+        
+<!-- 				<p:column sortBy="#{apporteur.id}"> -->
+<!-- 					<f:facet name="header"> -->
+<!-- 						<h:outputText value="ID" /> -->
+<!-- 					</f:facet> -->
+<!-- 					<h:outputText value="#{apporteur.id}" /> -->
+<!-- 				</p:column> -->
+
+				<p:column sortBy="#{apporteur.codeDocument}" filterBy="#{apporteur.codeDocument}" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="Code" />
+					</f:facet>
+					<h:outputText value="#{apporteur.codeDocument}" />
+				</p:column>
+				<p:column sortBy="#{apporteur.libelleDocument}" filterBy="#{apporteur.libelleDocument}" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="libelle" />
+					</f:facet>
+					<h:outputText value="#{apporteur.libelleDocument}" />
+				</p:column>
+				
+				<p:column sortBy="#{apporteur.dateDocument}" filterBy="#{apporteurController.customFormatDate(apporteur.dateDocument)}" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="Date" />
+					</f:facet>
+					<h:outputText value="#{apporteur.dateDocument}">
+						<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+					</h:outputText>
+				</p:column>
+				
+				<p:column sortBy="#{apporteur.codeTiers}" filterBy="#{apporteur.codeTiers}" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="Code tiers" />
+					</f:facet>
+					<h:outputText value="#{apporteur.codeTiers}" />
+				</p:column>
+				
+				<p:column sortBy="#{apporteur.nomTiers}" filterBy="#{apporteur.nomTiers}" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="Nom tiers" />
+					</f:facet>
+					<h:outputText value="#{apporteur.nomTiers}" />
+				</p:column>
+				
+				<p:column 	styleClass="right" 
+							filterMatchMode="contains" 
+							filterBy="#{apporteur.netHtCalc}" 
+							sortBy="#{apporteur.netHtCalc}"
+							exportFunction="#{separateurCsvController.exportNumber}">
+					<f:facet name="header">
+						<h:outputText value="HT" />
+					</f:facet>
+					<h:outputText value="#{apporteur.netHtCalc}" >
+						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+					</h:outputText>
+				</p:column>
+				
+				<p:column 	styleClass="right" 
+							filterMatchMode="contains" 
+							filterBy="#{apporteur.netTtcCalc}" 
+							sortBy="#{apporteur.netTtcCalc}"
+							exportFunction="#{separateurCsvController.exportNumber}">
+					<f:facet name="header">
+						<h:outputText value="TTC" />
+					</f:facet>
+					<h:outputText value="#{apporteur.netTtcCalc}">
+						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+					</h:outputText>
+				</p:column>
+				
+				
+				<p:column sortBy="#{apporteur.dateEchDocument}" filterBy="#{apporteurController.customFormatDate(apporteur.dateEchDocument)}" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="Date échéance" />
+					</f:facet>
+					<h:outputText value="#{apporteur.dateEchDocument}">
+						<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+					</h:outputText>
+				</p:column>
+
+				<p:column style="width:16px" exportable="false">
+					<f:facet name="header">
+						<h:outputText value="" />
+					</f:facet>
+<!--
+commentaire :  déclenche un bouton invisible pour mettre à jour le message personnalisé
+ -->					
+					<p:commandButton title="Supprimer" styleClass="icon-delete icon icon-grille" widgetVar="widgetVarBtnSupprimerApporteurListe"
+						action="#{apporteurController.actBeforeSupprimer(apporteur)}" oncomplete="$('.classHiddenCommandForSuppressionAP').click()"
+						process="@this"
+						disabled="#{apporteurController.documentDTOEstVerrouille(apporteur).verrouille}" update="@widgetVar(widgetVarBtnSupprimerApporteurListe2)">
+						<f:setPropertyActionListener target="#{apporteurController.selectedDocumentDTO}" value="#{apporteur}" />
+<!-- 						<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer cette facture apporteur ?" icon="ui-icon-alert" /> -->
+<!-- 			<p:confirm header="Confirmation de la suppression" message="#{apporteurController.messageSuppression}" icon="ui-icon-alert" /> -->
+					</p:commandButton>
+				</p:column>
+				
+			</p:dataTable>
+		<p:commandButton styleClass="classHiddenCommandForSuppressionAP" widgetVar="widgetVarBtnSupprimerApporteurListe2" 
+		actionListener="#{apporteurController.actSupprimer}" style="display:none" process="@this" 
+		 update="@widgetVar(wvDataTableListeApporteur)" >
+        <p:confirm header="Confirmation de la suppression" message="#{apporteurController.messageSuppression}" icon="ui-icon-alert" /> 
+    </p:commandButton>	
+		</h:form>
+	</p:overlayPanel>
+	
+<!-- 	</h:form> -->
+
+</ui:composition>

@@ -1,0 +1,384 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:pe="http://primefaces.org/ui/extensions" 
+	xmlns:p="http://primefaces.org/ui">
+
+	<p:menubar styleClass="menu-onglet" style="margin-bottom:40px;">
+<!-- 		<p:menuitem title="Annuler" styleClass="icon icon-cancel" actionListener="#{preferencesBean.actAnnuler}"  -->
+<!-- 		process="@this"	update=":form:messages,@form"> -->
+<!-- 		</p:menuitem> -->
+			
+<!-- 		<p:menuitem title="Enregistrer" styleClass="icon icon-save" -->
+<!-- 			actionListener="#{preferencesBean.actEnregistrer}" -->
+<!-- 			update=":form:messages,:formLeft:tabViewLeft,@form" > -->
+<!-- 		</p:menuitem> -->
+
+
+		<p:menuitem title="Fermer" styleClass="icon icon-close menuitem-fermer-droite"
+			actionListener="#{partenariatBean.actFermer}"
+			process="@this" update=":form:messages,@form" 
+			onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())">
+
+		</p:menuitem>	
+	</p:menubar>
+
+	<h:graphicImage library="images" name="logo alliance.svg" style="height:50px;"/>
+
+	<p:panel header="Partenariat" toggleable="true">
+		<p>
+			<h2> Bienvenue dans le programme de partenariat Alliance</h2>
+			<p:outputLabel value="Cliquez sur l'onglet correspondant au type de partenariat qui vous intéresse."/>
+			Vous ne pouvez choisir qu'un seul type de partenariat.
+		</p>
+		<p:tabView>
+			<p:tab title="Revendeurs / Prescripteurs">
+				<p>
+					<h3>Partenariat Revendeurs / Prescripteurs</h3>
+					
+					<p:outputLabel value="Ce partenariat est destiné à tous ceux qui désirent promouvoir le Bureau de Gestion et obtenir une rémunération."/>
+				</p>
+				<br/>
+				<p:commandButton value="Je demande un code Alliance - Revendeurs / Prescripteurs" 
+					actionListener="#{partenariatBean.actSaisieDetailRevendeur}"
+					process="@this"		
+					update="@parent"			
+					oncomplete="PF('wvBtnValideDemCodeAllianceRevendeur').disable();" disabled="#{partenariatBean.demandePartenariatEnCours or partenariatBean.partenariatActif}"/>
+					
+				<p:panel header="RIB" rendered="#{partenariatBean.saisieDetailRevendeur}">
+					<h:panelGrid columns="2" cellpadding="10" width="100%" >
+						<p:outputLabel value="Nom de la banque : " />
+						<p:inputText value="#{partenariatBean.client.taPartenaire.nomBanque}">
+							<p:ajax event="blur" update="@this"/>
+						</p:inputText>
+						
+						<p:outputLabel value="Titulaire du compte : " />
+						<p:inputText value="#{partenariatBean.client.taPartenaire.titulaireCompteBanque}">
+							<p:ajax event="blur" update="@this"/>
+						</p:inputText>
+						
+						<p:outputLabel value="Adresse 1 : " />
+						<p:inputText value="#{partenariatBean.client.taPartenaire.adresse1Banque}">
+							<p:ajax event="blur" update="@this"/>
+						</p:inputText>
+						
+						<p:outputLabel value="Adresse 2 : " />
+						<p:inputText value="#{partenariatBean.client.taPartenaire.adresse2Banque}">
+							<p:ajax event="blur" update="@this"/>
+						</p:inputText>
+						
+						<p:outputLabel value="Code postal : " />
+						<p:inputText value="#{partenariatBean.client.taPartenaire.cpBanque}">
+							<p:ajax event="blur" update="@this"/>
+						</p:inputText>
+						
+						<p:outputLabel value="Ville : " />
+						<p:inputText value="#{partenariatBean.client.taPartenaire.villeBanque}">
+							<p:ajax event="blur" update="@this"/>
+						</p:inputText>
+						
+						<p:outputLabel value="IBAN : " />
+						<p:inputText value="#{partenariatBean.client.taPartenaire.ibanBanque}">
+							<p:ajax event="blur" update="@this"/>
+						</p:inputText>
+						
+						<p:outputLabel value="BIC/SWIFT : " />
+						<p:inputText value="#{partenariatBean.client.taPartenaire.bicSwiftBanque}">
+							<p:ajax event="blur" update="@this"/>
+						</p:inputText>
+					</h:panelGrid>
+					
+					<div style="margin: auto; margin-top: 20px; text-align: center;">
+						<p:commandLink value="Lire les conditions générales de partenariat." actionListener="#{partenariatBean.actDialogCg}" />
+						<p:outputLabel value=" - " />
+						<p:commandLink value="Télécharger" ajax="false">
+							<p:fileDownload value="#{partenariatBean.fichierCg}" />
+						</p:commandLink>
+						<br />
+						<p:outputLabel for="cg" value="J'ai lu et j'accepte les conditions générales de partenariat. " />
+
+						<p:selectBooleanCheckbox id="cg" value="#{partenariatBean.cgPartenaire}" widgetVar="wvCheckboxCg">
+							<p:ajax event="change" update="@this"
+								oncomplete="if(PF('wvCheckboxCg').input.is(':checked')) {PF('wvBtnValideDemCodeAllianceRevendeur').enable();} else {PF('wvBtnValideDemCodeAllianceRevendeur').disable();}" />
+						</p:selectBooleanCheckbox>
+						<br />
+						<p:commandButton value="Je valide ma demande de code Alliance" widgetVar="wvBtnValideDemCodeAllianceRevendeur"
+							process="@this"
+							onclick="PF('wvBtnValideDemCodeAllianceRevendeur').disable()"
+							actionListener="#{partenariatBean.actDemandeCodeRevendeurPrescripteur}"
+							disabled="#{partenariatBean.demandePartenariatEnCours or partenariatBean.partenariatActif}"
+							rendered="#{!partenariatBean.partenariatActif}"
+							/>
+						<p:commandButton value="Je modifie mes informations" widgetVar="wvBtnValideModifInfosRevendeur"
+							process="@this"
+							onclick="PF('wvBtnValideModifInfosRevendeur').disable()"
+							actionListener="#{partenariatBean.actModifInfosRevendeurPrescripteur}"
+							rendered="#{partenariatBean.partenariatActif}"
+							/>
+					</div>
+					
+				</p:panel>
+			</p:tab>
+			<p:tab title="Parrainages">
+				<p>
+					<h3>Partenariat Parrainage</h3>
+					<p:outputLabel value="Réservé aux utilisateurs payants du Bureau de Gestion, le Partenariat Parrainage vous permet d'obtenir une réduction sur le prix de vos modules."/>
+				</p>
+				<br/>
+				<p:commandButton value="Je demande un code Alliance - Parrainages" 
+					actionListener="#{partenariatBean.actDemandeCodeParrainage}"
+					process="@this"		
+					update="@parent"			
+					oncomplete="PF('wvBtnValideDemCodeAllianceParrain').disable();" disabled="#{partenariatBean.demandePartenariatEnCours or partenariatBean.partenariatActif}"/>
+					
+				<p:panel header="RIB" rendered="#{partenariatBean.saisieDetailParrain}">
+					<h:panelGrid columns="2" cellpadding="10" width="100%" >
+						<p:outputLabel value="Nom de la banque : " />
+						<p:inputText value="#{partenariatBean.client.taPartenaire.nomBanque}">
+							<p:ajax event="blur" update="@this"/>
+						</p:inputText>
+						
+						<p:outputLabel value="Titulaire du compte : " />
+						<p:inputText value="#{partenariatBean.client.taPartenaire.titulaireCompteBanque}">
+							<p:ajax event="blur" update="@this"/>
+						</p:inputText>
+						
+						<p:outputLabel value="Adresse 1 : " />
+						<p:inputText value="#{partenariatBean.client.taPartenaire.adresse1Banque}">
+							<p:ajax event="blur" update="@this"/>
+						</p:inputText>
+						
+						<p:outputLabel value="Adresse 2 : " />
+						<p:inputText value="#{partenariatBean.client.taPartenaire.adresse2Banque}">
+							<p:ajax event="blur" update="@this"/>
+						</p:inputText>
+						
+						<p:outputLabel value="Code postal : " />
+						<p:inputText value="#{partenariatBean.client.taPartenaire.cpBanque}">
+							<p:ajax event="blur" update="@this"/>
+						</p:inputText>
+						
+						<p:outputLabel value="Ville : " />
+						<p:inputText value="#{partenariatBean.client.taPartenaire.villeBanque}">
+							<p:ajax event="blur" update="@this"/>
+						</p:inputText>
+						
+						<p:outputLabel value="IBAN : " />
+						<p:inputText value="#{partenariatBean.client.taPartenaire.ibanBanque}">
+							<p:ajax event="blur" update="@this"/>
+						</p:inputText>
+						
+						<p:outputLabel value="BIC/SWIFT : " />
+						<p:inputText value="#{partenariatBean.client.taPartenaire.bicSwiftBanque}">
+							<p:ajax event="blur" update="@this"/>
+						</p:inputText>
+					</h:panelGrid>
+					
+					<div style="margin: auto; margin-top: 20px; text-align: center;">
+						<p:commandLink value="Lire les conditions générales de partenariat." actionListener="#{partenariatBean.actDialogCg}" />
+						<p:outputLabel value=" - " />
+						<p:commandLink value="Télécharger" ajax="false">
+							<p:fileDownload value="#{partenariatBean.fichierCg}" />
+						</p:commandLink>
+						<br />
+						<p:outputLabel for="cgParrain" value="J'ai lu et j'accepte les conditions générales de partenariat. " />
+
+						<p:selectBooleanCheckbox id="cgParrain" value="#{partenariatBean.cgPartenaire}" widgetVar="wvCheckboxCgParrain">
+							<p:ajax event="change" update="@this"
+								oncomplete="if(PF('wvCheckboxCgParrain').input.is(':checked')) {PF('wvBtnValideDemCodeAllianceRevendeur').enable();} else {PF('wvBtnValideDemCodeAllianceParrain').disable();}" />
+						</p:selectBooleanCheckbox>
+
+					</div>
+					<p:commandButton value="Je valide ma demande de code Alliance" widgetVar="wvBtnValideDemCodeAllianceParrain"
+						process="@this"
+						onclick="PF('wvBtnValideDemCodeAllianceParrain').disable()"
+						actionListener="#{partenariatBean.actDemandeCodeParrainage}"
+						disabled="#{partenariatBean.demandePartenariatEnCours or partenariatBean.partenariatActif}"
+						rendered="#{!partenariatBean.partenariatActif}"
+						/>
+					<p:commandButton value="Je modifie mes informations" widgetVar="wvBtnValideModifInfosParrain"
+						process="@this"
+						onclick="PF('wvBtnValideModifInfosParrain').disable()"
+						actionListener="#{partenariatBean.actModifInfosParrain}"
+						rendered="#{partenariatBean.partenariatActif}"
+						/>
+				</p:panel>
+			</p:tab>
+			<p:tab title="Groupements">
+				<p>
+					<h3>Partenariat Groupements</h3>
+					<p:outputLabel value="Vous êtes responsables d'un GIE, d'un groupement (Par exemple une association de Gestion) quelconque, faites profiter de conditions avantageuses les membres de votre groupement. en demandant un code Alliance Groupement."/>
+				</p>
+			</p:tab>
+		</p:tabView>
+	</p:panel>
+	
+	<p:panel header="Mes informations partenaires" toggleable="true" rendered="#{partenariatBean.partenariatActif}">
+		<div class="ui-g">
+			<div class="ui-g-12 ui-md-12 ui-lg-6">
+				<p:outputLabel value="Demande en cours ..." rendered="#{partenariatBean.demandePartenariatEnCours}"/>
+				
+				<p:panelGrid  columns="2" rendered="#{partenariatBean.partenariatActif}">
+	                <f:facet name="header">
+	                    Informations
+	                </f:facet>
+	                
+					<p:outputLabel value="Mon code Alliance" />
+					<p:outputLabel value="#{partenariatBean.client.taPartenaire.codePartenaire}" />
+
+					<p:outputLabel value="Type de partenariat"/>
+					<p:outputLabel value="#{partenariatBean.client.taPartenaire.taTypePartenaire.libelle}"/>
+			
+					<p:outputLabel value="Date dernier dossier validant : "/>
+					<h:outputText value="#{partenariatBean.datePaiementDernierDossierValidant}">
+						<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+					</h:outputText>
+					
+					<p:outputLabel value="Période de référence"/>
+					<h:panelGroup>
+						Du 
+						<h:outputText value="#{partenariatBean.debutPeriodeReference}">
+							<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+						</h:outputText>
+						au
+						<h:outputText value="#{partenariatBean.finPeriodeReference}">
+							<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+						</h:outputText>
+					</h:panelGroup>
+					
+					<p:outputLabel value="Total ventes sur la période de référence"/>
+					<h:outputText value="#{partenariatBean.chiffreAffaireReference}">	
+						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+					</h:outputText>
+					
+					<p:outputLabel value="Taux de commission"/>
+					<p:outputLabel value="#{partenariatBean.tauxCommissionReference}"/>
+					
+					<p:outputLabel value="Décote"/>
+					<p:outputLabel value="#{partenariatBean.decoteTauxCommissionReference}"/>
+				</p:panelGrid>
+			</div>
+			<div class="ui-g-12 ui-md-12 ui-lg-6">
+		    	<p:panelGrid  columns="2" rendered="#{partenariatBean.partenariatActif}">
+	                <f:facet name="header">
+	                    Promotion 
+	                </f:facet>
+				
+					<p:outputLabel value="Lien personnalisé"/>
+					<p:link value="#{partenariatBean.lienPartenaire}" href="#{partenariatBean.lienPartenaire}"  />
+					
+<!-- 					<p:outputLabel value="Code HTML"/> -->
+<!-- 					<p:outputLabel value="&lt;a href=&quot;#{partenariatBean.lienPartenaire}&quot;&gt; BDG &lt;#{'\\'}a&gt;"  /> -->
+					
+					<p:outputLabel value="QR Code"/>
+					<pe:qrCode id="qrCodeElem" 
+			           	renderMethod="canvas"   
+			           	renderMode="2"   
+			           	text="#{partenariatBean.lienPartenaire}"  
+			           	label="BDG"  
+			           	size="100"                   
+			           	fillColor="#7d767d"  
+			           	fontName="Ubuntu"  
+			          	fontColor="#01A9DB"  
+			           	ecLevel="H"                     
+			           	radius="0.5"/>   
+				</p:panelGrid>
+			</div>
+		</div>
+	</p:panel>
+	
+	<p:panel header="Tableau de bord partenaire" toggleable="true" rendered="#{partenariatBean.partenariatActif}">
+		<p>
+			<p:outputLabel value="Suivi de votre compte"/>
+		</p>
+		
+		Du <p:calendar value="#{partenariatBean.debutRechercheCom}" />
+		au <p:calendar value="#{partenariatBean.finRechercheCom}" />
+		<p:commandButton value="Rechercher" actionListener="#{partenariatBean.actRechercheCom}" update="@widgetVar(wvDataTableListeCommission)"/>
+	
+		
+		<p:dataTable id="dataTableCommission" 
+			var="com" 
+			widgetVar="wvDataTableListeCommission"
+			styleClass="datatable mt10" 
+			value="#{partenariatBean.listeCommission}" 
+			rowKey="#{com.id}"
+			selection="#{partenariatBean.selectedCommission}"
+			selectionMode="single" 
+			dblClickSelect="true"
+			resizableColumns="true" 
+			paginator="true" 
+			rows="#{msg.modele_datatable_ligne_par_page_debut}"
+			paginatorTemplate="#{msg.modele_datatable_paginator}" 
+			rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+			emptyMessage="#{msg.message_datatable_vide}" 
+			currentPageReportTemplate="#{msg.modele_datatable_page_courante}">
+
+			<!-- 				<p:ajax event="rowDblselect" listener="#{clientController.onRowSelect}" update=":form:tabView,:form:messages,@form" oncomplete="activeLastTabCenter()"/> -->
+			<!-- 				<p:ajax event="rowSelect" listener="#{clientController.onRowSelect}" disabled="#{clientController.pasDejaOuvert()}" update=":form:tabView,:form:messages,@form" />  -->
+	
+			 <p:column style="width:16px">
+	            <p:rowToggler />
+	        </p:column>
+	
+			<p:column sortBy="#{com.quandCree}">
+				<f:facet name="header">
+					<h:outputText value="Date" />
+				</f:facet>
+				<h:outputText value="#{com.quandCree.toGregorianCalendar().time}" >
+					<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+				</h:outputText>
+			</p:column>
+	
+			<p:column sortBy="#{com.montantReference}" styleClass="right">
+				<f:facet name="header">
+					<h:outputText value="Montant référence" />
+				</f:facet>
+				<h:outputText value="#{com.montantReference}">	
+					<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+				</h:outputText>
+			</p:column>
+			
+			<p:column sortBy="#{com.pourcentageCommission}" styleClass="center">
+				<f:facet name="header">
+					<h:outputText value="%" />
+				</f:facet>
+				<h:outputText value="#{com.pourcentageCommission}" />
+			</p:column>
+			
+			<p:column sortBy="#{com.montantCommission}" styleClass="right">
+				<f:facet name="header">
+					<h:outputText value="Montant commission" />
+				</f:facet>
+				<h:outputText value="#{com.montantCommission}">	
+					<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+				</h:outputText>
+			</p:column>
+	
+			<p:column sortBy="#{com.commissionPayee}" styleClass="center">
+				<f:facet name="header">
+					<h:outputText value="Payé" />
+				</f:facet>
+				<p:selectBooleanCheckbox value="#{com.commissionPayee}" disabled="true" />
+			</p:column>
+			
+			<p:rowExpansion>
+	            <p:panelGrid  columns="2" >
+	                <f:facet name="header">
+	                    Détail
+	                </f:facet>
+	 
+	                <h:outputText value="Commentaire" />
+	                <h:outputText value="#{com.commentairePartenaire}" />
+	               
+	            </p:panelGrid>
+	        </p:rowExpansion>
+
+		</p:dataTable>
+	</p:panel>
+	
+	
+
+
+</ui:composition>

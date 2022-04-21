@@ -1,0 +1,1 @@
+select * from update_etat_tout_doc_lie();

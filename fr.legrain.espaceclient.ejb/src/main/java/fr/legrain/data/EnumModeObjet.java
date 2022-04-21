@@ -1,0 +1,5 @@
+package fr.legrain.data;
+
+
+public enum EnumModeObjet {C_MO_CONSULTATION,C_MO_EDITION,C_MO_INSERTION,C_MO_IMPORTATION,C_MO_ERREUR,C_MO_SUPPRESSION};
+

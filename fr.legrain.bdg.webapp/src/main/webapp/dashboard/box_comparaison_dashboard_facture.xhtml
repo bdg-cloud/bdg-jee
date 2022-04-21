@@ -1,0 +1,413 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                    	xmlns:o="http://omnifaces.org/ui"
+                xmlns:p="http://primefaces.org/ui">
+    
+    	<o:importConstants type="fr.legrain.document.model.TaFacture" />
+    	
+    <ui:define name="head">
+        <script type="text/javascript">
+            //<![CDATA[
+            function skinChart() {
+                this.cfg.shadow = false;
+                this.cfg.title = '';
+                this.cfg.seriesColors = ['#EA9624', '#5BA5D8'];
+                this.cfg.grid = {
+                    background: '#ffffff',
+                    borderColor: '#ffffff',
+                    gridLineColor: '#F5F5F5',
+                    shadow: false
+                };
+                this.cfg.axesDefaults = {
+                    rendererOptions: {
+                        textColor: '#666F77'
+                    }
+                };
+                this.cfg.seriesDefaults = {
+                    shadow: false,
+                    lineWidth: 1,
+                    markerOptions: {
+                        shadow: false,
+                        size: 7,
+                        style: 'circle'
+                    }
+                }
+            }
+            //]]>  
+        </script>
+        
+    </ui:define>
+    
+    
+    <p:panel widgetVar="wvPanelBlocBoxPeriode2" styleClass="panel-no-style" rendered="#{dashBoardFactureController.comparaison}"><!-- PANEL POUR LA PERIODE 2 -->
+					
+						
+						<div class="ui-g-12 ui-md-12" style="background:#ebebeb; padding:0;">
+						
+						
+						<div class="ui-g-12 ui-md-6 ui-lg-3"><!-- DEBUT PANEL BOX 1 COMPARAISON -->
+							
+							<p:panel style="background:#ebebeb;" widgetVar="wvCountNbFacturePayeComp">
+								<div class="box #{dashBoardFactureController.cSbNbDocumentSurPeriode} box-comparaison" >
+								<h2>Factures réalisées HT</h2>
+								<h4>&#160;</h4>
+								
+								<p:panelGrid columns="2" layout="grid" styleClass="panelGridComparaison" columnClasses="col1GridCompFacture,col2GridCompFacture">
+								
+									<h:panelGroup>
+										<h:outputText value="#{dashBoardFactureController.dateDebut}">
+								    		<f:convertDateTime pattern="#{msg.date_pattern}"
+														               timeZone="#{msg.time_zone}" type="localDate"/>
+								    	</h:outputText>
+								    	au
+									    <h:outputText value="#{dashBoardFactureController.dateFin}">
+									    	<f:convertDateTime pattern="#{msg.date_pattern}"
+															               timeZone="#{msg.time_zone}" type="localDate"/>
+									    </h:outputText>
+									
+									</h:panelGroup>
+									
+									<h:panelGroup>
+										<h:outputText value="#{dashBoardFactureController.dateDebutComp}">
+								    		<f:convertDateTime pattern="#{msg.date_pattern}"
+														               timeZone="#{msg.time_zone}" type="localDate"/>
+								    	</h:outputText>
+								    	au
+									    <h:outputText value="#{dashBoardFactureController.dateFinComp}">
+									    	<f:convertDateTime pattern="#{msg.date_pattern}"
+															               timeZone="#{msg.time_zone}" type="localDate"/>
+									    </h:outputText>
+									
+									</h:panelGroup>
+									
+							
+								     
+								    <h:outputText value="#{dashBoardFactureController.nbFactureSurPeriode}" styleClass="bold font-x-large"/>
+								    <h:outputText value="#{dashBoardFactureController.nbFactureSurPeriodeComp}" styleClass="bold font-x-large" />
+								     
+								     
+								    <h:outputText value="#{dashBoardFactureController.totauxCaPeriodeFacture.mtHtCalc}" styleClass="bold font-x-large">
+								    	<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								    </h:outputText>
+								    <h:outputText value="#{dashBoardFactureController.totauxCaPeriodeFactureComp.mtHtCalc}" styleClass="bold font-x-large">
+								    	<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								    </h:outputText>
+								     
+								    
+								</p:panelGrid>
+
+	
+								
+	
+							<p:selectBooleanButton style="width:50%;" id="Facturetous" 
+													value="true" onLabel="Sélection active"
+													widgetVar="wvFactureTous" 
+													offLabel="Afficher" onIcon="ui-icon-check" offIcon="ui-icon-close">
+									<p:ajax oncomplete="PF('wvListeFacture').filter()" 
+											update="@this,
+													@widgetVar(wvDashFacturePanelFacture),
+													@widgetVar(wvCountNbFactureNonPaye),
+													@widgetVar(wvCountNbFacturePaye),
+													@widgetVar(wvListeFacture),
+													@widgetVar(wvListeFactureParTiers),
+													@widgetVar(wvListeFactureMois),
+													@widgetVar(wvGraphiqueFacture),
+													@widgetVar(wvCountNbFactureNonPayeARelancer),
+													@widgetVar(wvTauxFacturePaye),
+													@widgetVar(wvTabViewFactureJour),
+													@widgetVar(wvPanelFactureJourDataTable),
+													@widgetVar(wvListeFactureMoisArticles),
+													@widgetVar(wvListeFactureJour),
+													@widgetVar(wvListeFactureJourArticles),
+													@widgetVar(wvPanelBlocBoxPeriode2),
+													@widgetVar(wvPanelBlocBox),
+								 					@widgetVar(wvPanelMensuelTitrePeriodeFacture),
+													@widgetVar(wvTabViewListeMois)"
+													
+								 
+											listener="#{dashBoardFactureController.refreshDashBoard('tous')}"/>	 
+	        					</p:selectBooleanButton>
+								</div> 
+							</p:panel>
+							</div><!-- FIN PANEL BOX COMPARAISON -->
+							
+							<div class="ui-g-12 ui-md-6 ui-lg-3"><!-- DEBUT PANEL BOX 2 COMPARAISON -->
+							
+							<p:panel style="background:#ebebeb;" widgetVar="wvCountNbFactureNonPayeARelancerComp">
+								<div class="box #{dashBoardFactureController.cSbNbDocumentNonTransformeARelancerSurPeriode} box-comparaison" >
+								<h2>Facture à relancer </h2>
+								<h4>Factures arrivant à échéance dans moins de 15 jours</h4>
+								<p:panelGrid columns="2" layout="grid" styleClass="panelGridComparaison" columnClasses="col1GridCompFacture,col2GridCompFacture">
+								
+									<h:panelGroup>
+										<h:outputText value="#{dashBoardFactureController.dateDebut}">
+								    		<f:convertDateTime pattern="#{msg.date_pattern}"
+														               timeZone="#{msg.time_zone}" type="localDate"/>
+								    	</h:outputText>
+								    	au
+									    <h:outputText value="#{dashBoardFactureController.dateFin}">
+									    	<f:convertDateTime pattern="#{msg.date_pattern}"
+															               timeZone="#{msg.time_zone}" type="localDate"/>
+									    </h:outputText>
+									
+									</h:panelGroup>
+									
+									<h:panelGroup>
+										<h:outputText value="#{dashBoardFactureController.dateDebutComp}">
+								    		<f:convertDateTime pattern="#{msg.date_pattern}"
+														               timeZone="#{msg.time_zone}" type="localDate"/>
+								    	</h:outputText>
+								    	au
+									    <h:outputText value="#{dashBoardFactureController.dateFinComp}">
+									    	<f:convertDateTime pattern="#{msg.date_pattern}"
+															               timeZone="#{msg.time_zone}" type="localDate"/>
+									    </h:outputText>
+									
+									</h:panelGroup>
+									
+							
+								     
+								    <h:outputText value="#{dashBoardFactureController.nbFactureNonTotalementPayesARelancerSurPeriode}" styleClass="bold font-x-large"/>
+								    <h:outputText value="#{dashBoardFactureController.nbFactureNonTotalementPayesARelancerSurPeriodeComp}" styleClass="bold font-x-large" />
+								     
+								     
+								    <h:outputText value="#{dashBoardFactureController.totauxCaPeriodeFactureNonTotalementPayeeARelancer.resteAReglerComplet}" styleClass="bold font-x-large">
+								    	<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								    </h:outputText>
+								    <h:outputText value="#{dashBoardFactureController.totauxCaPeriodeFactureNonTotalementPayeeARelancerComp.resteAReglerComplet}" styleClass="bold font-x-large">
+								    	<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								    </h:outputText>
+								     
+								    
+								</p:panelGrid>
+
+	
+								
+	
+							<p:selectBooleanButton style="width:50%;" id="Facture15jours" 
+													value="false" onLabel="Sélection active"
+													offLabel="Afficher" onIcon="ui-icon-check" offIcon="ui-icon-close">
+									<p:ajax oncomplete="PF('wvListeFacture').filter()" 
+											update="@this,
+													@widgetVar(wvDashFacturePanelFacture),
+													@widgetVar(wvCountNbFactureNonPaye),
+													@widgetVar(wvCountNbFacturePaye),
+													@widgetVar(wvListeFacture),
+													@widgetVar(wvListeFactureParTiers),
+													@widgetVar(wvListeFactureMois),
+													@widgetVar(wvGraphiqueFacture),
+													@widgetVar(wvCountNbFactureNonPayeARelancer),
+													@widgetVar(wvTauxFacturePaye),
+													@widgetVar(wvTabViewFactureJour),
+													@widgetVar(wvPanelFactureJourDataTable),
+													@widgetVar(wvListeFactureMoisArticles),
+													@widgetVar(wvListeFactureJour),
+													@widgetVar(wvListeFactureJourArticles),
+													@widgetVar(wvPanelBlocBoxPeriode2),
+													@widgetVar(wvPanelBlocBox),
+								 					@widgetVar(wvPanelMensuelTitrePeriodeFacture),
+													@widgetVar(wvTabViewListeMois)"
+											listener="#{dashBoardFactureController.refreshDashBoard('nontransformearelancer')}"/>	 
+	        					</p:selectBooleanButton>
+								</div> 
+							</p:panel>
+							</div><!-- FIN PANEL BOX 2 COMPARAISON -->
+							
+							<div class="ui-g-12 ui-md-6 ui-lg-3"><!-- DEBUT PANEL BOX 3 COMPARAISON -->
+							
+							<p:panel style="background:#ebebeb;" widgetVar="wvCountNbFactureNonPayeComp">
+								<div class="box #{dashBoardFactureController.cSbNbDocumentNonTransformeSurPeriode} box-comparaison" >
+								<h2>Factures non payées </h2>
+								<h4>&#160;</h4>
+								<p:panelGrid columns="2" layout="grid" styleClass="panelGridComparaison" columnClasses="col1GridCompFacture,col2GridCompFacture">
+								
+									<h:panelGroup>
+										<h:outputText value="#{dashBoardFactureController.dateDebut}">
+								    		<f:convertDateTime pattern="#{msg.date_pattern}"
+														               timeZone="#{msg.time_zone}" type="localDate"/>
+								    	</h:outputText>
+								    	au
+									    <h:outputText value="#{dashBoardFactureController.dateFin}">
+									    	<f:convertDateTime pattern="#{msg.date_pattern}"
+															               timeZone="#{msg.time_zone}" type="localDate"/>
+									    </h:outputText>
+									
+									</h:panelGroup>
+									
+									<h:panelGroup>
+										<h:outputText value="#{dashBoardFactureController.dateDebutComp}">
+								    		<f:convertDateTime pattern="#{msg.date_pattern}"
+														               timeZone="#{msg.time_zone}" type="localDate"/>
+								    	</h:outputText>
+								    	au
+									    <h:outputText value="#{dashBoardFactureController.dateFinComp}">
+									    	<f:convertDateTime pattern="#{msg.date_pattern}"
+															               timeZone="#{msg.time_zone}" type="localDate"/>
+									    </h:outputText>
+									
+									</h:panelGroup>
+									
+							
+								     
+								    <h:outputText value="#{dashBoardFactureController.nbFactureNonTotalementPayesSurPeriode}" styleClass="bold font-x-large"/>
+								    <h:outputText value="#{dashBoardFactureController.nbFactureNonTotalementPayesSurPeriodeComp}" styleClass="bold font-x-large" />
+								     
+								     
+								    <h:outputText value="#{dashBoardFactureController.totauxCaPeriodeFactureNonTotalementPayee.resteAReglerComplet}" styleClass="bold font-x-large">
+								    	<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								    </h:outputText>
+								    <h:outputText value="#{dashBoardFactureController.totauxCaPeriodeFactureNonTotalementPayeeComp.resteAReglerComplet}" styleClass="bold font-x-large">
+								    	<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								    </h:outputText>
+								     
+								    
+								</p:panelGrid>
+
+	
+								
+	
+							<p:selectBooleanButton style="width:50%;" id="Facturenontrans" 
+													value="false" onLabel="Sélection active"
+													offLabel="Afficher" onIcon="ui-icon-check" offIcon="ui-icon-close">
+									<p:ajax oncomplete="PF('wvListeFacture').filter()" 
+											update="@this,
+													@widgetVar(wvDashFacturePanelFacture),
+													@widgetVar(wvCountNbFactureNonPaye),
+													@widgetVar(wvCountNbFacturePaye),
+													@widgetVar(wvListeFacture),
+													@widgetVar(wvListeFactureParTiers),
+													@widgetVar(wvListeFactureMois),
+													@widgetVar(wvGraphiqueFacture),
+													@widgetVar(wvCountNbFactureNonPayeARelancer),
+													@widgetVar(wvTauxFacturePaye),
+													@widgetVar(wvTabViewFactureJour),
+													@widgetVar(wvPanelFactureJourDataTable),
+													@widgetVar(wvListeFactureMoisArticles),
+													@widgetVar(wvListeFactureJour),
+													@widgetVar(wvListeFactureJourArticles),
+													@widgetVar(wvPanelBlocBoxPeriode2),
+													@widgetVar(wvPanelBlocBox),
+								 					@widgetVar(wvPanelMensuelTitrePeriodeFacture),
+													@widgetVar(wvTabViewListeMois)"
+											listener="#{dashBoardFactureController.refreshDashBoard('nontransforme')}"/>	 
+	        					</p:selectBooleanButton>
+								</div> 
+							</p:panel>
+							</div><!-- FIN PANEL BOX 3 COMPARAISON -->
+							
+							<!-- PANEL BOX 4 COMPARAISON -->
+							<div class="ui-g-12 ui-md-6 ui-lg-3 " style="background:#ebebeb;"> 
+							<p:panel  widgetVar="wvTauxFacturePayeComp" 
+							style="background:#ebebeb;">
+								<div class="box #{dashBoardFactureController.cSbNbDocumentTransformeSurPeriode} box-comparaison" >
+									<p:tabView style="text-align:left;">
+										<p:tab title="Montant " >
+										<h4>Taux de règlement (entièrement réglée)</h4>
+										<p:panelGrid columns="2" layout="grid" styleClass="panelGridComparaison" columnClasses="col1GridCompFacture,col2GridCompFacture">
+											<h:panelGroup>
+											<h3 style="text-align:center;">Déjà réglée  : <br></br><p:outputLabel value="#{dashBoardFactureController.totauxCaPeriodeFactureTotalementPayee.mtTtcCalc}">
+												<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />		
+											</p:outputLabel></h3>
+											</h:panelGroup>
+											
+											<h:panelGroup>
+											<h3 style="text-align:center;">Déjà réglée  : <br></br><p:outputLabel value="#{dashBoardFactureController.totauxCaPeriodeFactureTotalementPayeeComp.mtTtcCalc}">
+											<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />		
+											</p:outputLabel></h3>
+											</h:panelGroup>
+											<h:panelGroup>
+											<div class="knob-container  ui-corner-all" style="text-align:center;">
+											<p:knob labelTemplate="{value}%" value="#{dashBoardFactureController.tauxTotalementPayesCa}" height="70"
+												width="70" disabled="true"/>
+											</div>
+											</h:panelGroup>
+											<h:panelGroup>
+											<div class="knob-container  ui-corner-all" style="text-align:center;">
+											<p:knob labelTemplate="{value}%" value="#{dashBoardFactureController.tauxTotalementPayesCaComp}" height="70"
+												width="70" disabled="true"/>
+											</div>
+											</h:panelGroup>
+										
+										</p:panelGrid>
+										
+									
+										
+										
+										
+										
+										</p:tab>
+										<p:tab title="Nombre de Factures" >
+										<h4>Taux de règlement (entièrement réglée)</h4>
+										<p:panelGrid columns="2" layout="grid" styleClass="panelGridComparaison" columnClasses="col1GridCompFacture,col2GridCompFacture">
+											<h:panelGroup><h3 style="text-align:center;">#{dashBoardFactureController.nbFactureTotalementPayesSurPeriode} Factures payées</h3></h:panelGroup>
+											<h:panelGroup><h3 style="text-align:center;">#{dashBoardFactureController.nbFactureTotalementPayesSurPeriodeComp} Factures payées</h3></h:panelGroup>
+											<h:panelGroup>
+											<div class="knob-container  ui-corner-all" style="text-align:center;">
+												<p:knob labelTemplate="{value}%" value="#{dashBoardFactureController.tauxTotalementPayesNb}" height="70"
+													width="70" disabled="true" />
+											</div>
+											</h:panelGroup>
+											<h:panelGroup>
+											<div class="knob-container  ui-corner-all" style="text-align:center;">
+													<p:knob labelTemplate="{value}%" value="#{dashBoardFactureController.tauxTotalementPayesNbComp}" height="70"
+														width="70" disabled="true" />
+											</div>
+											</h:panelGroup>
+										</p:panelGrid>
+										
+										
+										</p:tab>
+									</p:tabView>
+									<p:selectBooleanButton  style="width:50%;" id="FacturePaye" value="false" onLabel="Sélection active" offLabel="Afficher" onIcon="ui-icon-check" offIcon="ui-icon-close" >
+									<p:ajax oncomplete="PF('wvListeFacture').filter()" event="change" 
+											update="@this,
+													@widgetVar(wvDashFacturePanelFacture),
+													@widgetVar(wvCountNbFactureNonPaye),
+													@widgetVar(wvCountNbFacturePaye),
+													@widgetVar(wvListeFacture),
+													@widgetVar(wvListeFactureParTiers),
+													@widgetVar(wvListeFactureMois),
+													@widgetVar(wvGraphiqueFacture),
+													@widgetVar(wvCountNbFactureNonPayeARelancer),
+													@widgetVar(wvTauxFacturePaye),
+													@widgetVar(wvTabViewFactureJour),
+													@widgetVar(wvPanelFactureJourDataTable),
+													@widgetVar(wvListeFactureMoisArticles),
+													@widgetVar(wvListeFactureJour),
+													@widgetVar(wvListeFactureJourArticles),
+													@widgetVar(wvPanelBlocBoxPeriode2),
+													@widgetVar(wvPanelBlocBox),
+								 					@widgetVar(wvPanelMensuelTitrePeriodeFacture),
+													@widgetVar(wvTabViewListeMois)"
+									listener="#{dashBoardFactureController.refreshDashBoard('transforme')}"/>	 
+	        					</p:selectBooleanButton>
+								</div> 
+							</p:panel>
+						</div>
+							<!-- FIN PANEL BOX COMPARAISON -->
+							
+							
+							
+							
+							
+		
+							
+							
+							
+							
+							
+							</div><!-- FIN UI-G -->
+							
+							
+							
+							
+							
+					
+					</p:panel><!-- FIN PANEL PERIODE 2 -->
+    
+        
+
+    
+</ui:composition>

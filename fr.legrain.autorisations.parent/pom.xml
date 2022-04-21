@@ -1,0 +1,211 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>fr.legrain</groupId>
+	<artifactId>fr.legrain.autorisations.parent</artifactId>
+
+	<packaging>pom</packaging>
+	<version>0.0.1-SNAPSHOT</version>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<tycho-version>1.4.0</tycho-version>
+<!-- 		<tycho-version>0.26.0</tycho-version> -->
+<!-- 		<tycho-version>0.21.0</tycho-version> -->
+		<!-- <tycho-version>0.18.1</tycho-version> -->
+
+		<!-- maven-compiler-plugin -->
+		<maven.compiler.target>1.8</maven.compiler.target>
+		<maven.compiler.source>1.8</maven.compiler.source>
+
+		<!-- other plugin versions -->
+		<version.compiler.plugin>2.3.1</version.compiler.plugin>
+
+		<kepler-repo.url>http://download.eclipse.org/releases/kepler</kepler-repo.url>
+		<neon-repo.url>http://download.eclipse.org/releases/neon</neon-repo.url>
+
+	</properties>
+
+	<repositories>
+		<!-- configure p2 repository to resolve against -->
+		<!-- <repository> -->
+		<!-- <id>juno</id> -->
+		<!-- <layout>p2</layout> -->
+		<!-- <url>http://download.eclipse.org/releases/juno/</url> -->
+		<!-- </repository> -->
+
+		<repository>
+			<id>neon</id>
+<!-- 			<url>${kepler-repo.url}</url> -->
+<!-- 			<url>${neon-repo.url}</url> -->
+			<url>https://download.eclipse.org/releases/2019-06/</url>
+			<layout>p2</layout>
+		</repository>
+
+		<repository>
+			<!-- wiki.eclipse.org/Tycho/How_Tos/Dependency_on_pom-first_artifacts#It_is_not_possible_to_mix_pom-first_and_manifest-first_projects_in_the_same_reactor_build -->
+			<id>orbit</id>
+			<layout>p2</layout>
+			<url>http://download.eclipse.org/tools/orbit/downloads/drops/R20130517111416/repository/</url>
+		</repository>
+
+		<repository>
+			<id>jboss</id>
+			<url>https://repository.jboss.org/nexus/content/groups/public-jboss/</url>
+		</repository>
+
+		<!-- <repository> -->
+		<!-- <id>glassfish</id> -->
+		<!-- <name>Glassfish</name> -->
+		<!-- <url>https://repository.jboss.org/nexus/content/repositories/glassfish</url> -->
+		<!-- </repository> -->
+
+		<repository>
+			<id>p2-babel</id>
+			<layout>p2</layout>
+			<!-- <url>http://download.eclipse.org/technology/babel/update-site/R0.11.1/kepler</url> -->
+			<url>http://archive.eclipse.org/technology/babel/update-site/R0.11.1/kepler/</url>
+		</repository>
+		
+		
+
+	</repositories>
+
+	<profiles>
+
+		<profile>
+			<id>prod</id>
+			<activation>
+				<!-- this profile is active by default -->
+				<activeByDefault>true</activeByDefault>
+				<!-- activate if system properties 'env=dev' -->
+				<property>
+					<name>env</name>
+					<value>prod</value>
+				</property>
+			</activation>
+			<modules>
+				<module>../Lib</module>
+				<module>../org.hibernate</module>
+				<module>../fr.legrain.bdg.lib.osgi</module>
+		<!-- 		<module>../../lib-legrain/fr.legrain.bdg.lib.osgi</module> -->
+				<module>../fr.legrain.autorisations.ejb.lib.osgi</module>		
+				<module>../fr.legrain.bdg.preferences.osgi</module>
+				<module>../fr.legrain.autorisations.model.osgi</module>
+				<module>../fr.legrain.autorisation.xml.osgi</module>
+				<module>../fr.legrain.autorisations.ws</module>
+				<module>../fr.legrain.autorisations.service.interface.osgi</module>
+				<module>../fr.legrain.autorisations.ejb</module>
+				<module>../fr.legrain.autorisations.webapp</module>
+				<module>../fr.legrain.autorisations.ear</module>
+			</modules>
+		</profile>
+	
+		<profile>
+			<id>dev</id>
+			<modules>
+				<module>../Lib</module>
+				<module>../org.hibernate</module>
+<!-- 				<module>../fr.legrain.bdg.lib.osgi</module> -->
+				<module>../../lib-legrain/fr.legrain.bdg.lib.osgi</module>
+				<module>../fr.legrain.autorisations.ejb.lib.osgi</module>		
+				<module>../fr.legrain.bdg.preferences.osgi</module>
+				<module>../fr.legrain.autorisations.model.osgi</module>
+				<module>../fr.legrain.autorisation.xml.osgi</module>
+				<module>../fr.legrain.autorisations.ws</module>
+				<module>../fr.legrain.autorisations.service.interface.osgi</module>
+				<module>../fr.legrain.autorisations.ejb</module>
+				<module>../fr.legrain.autorisations.webapp</module>
+				<module>../fr.legrain.autorisations.ear</module>
+			</modules>
+		</profile>
+
+	</profiles>
+
+	<!-- <modules> <module>../fr.legrain.bdg.ejb.mvn.osgi</module> </modules> -->
+
+	<build>
+		<plugins>
+			<plugin>
+				<!-- enable tycho build extension -->
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-maven-plugin</artifactId>
+				<version>${tycho-version}</version>
+				<extensions>true</extensions>
+			</plugin>
+
+			<!-- <plugin> -->
+			<!-- <groupId>org.eclipse.tycho</groupId> -->
+			<!-- <artifactId>tycho-p2-director-plugin</artifactId> -->
+			<!-- <version>${tycho-version}</version> -->
+
+			<!-- <executions> -->
+			<!-- <execution> -->
+			<!-- <id>create-product-distributions</id> -->
+			<!-- <goals> -->
+			<!-- <goal>materialize-products</goal> -->
+			<!-- <goal>archive-products</goal> -->
+			<!-- </goals> -->
+			<!-- </execution> -->
+			<!-- </executions> -->
+
+			<!-- <configuration> -->
+			<!-- <includeAllDependencies>true</includeAllDependencies> -->
+			<!-- <products> -->
+			<!-- <product> -->
+			<!-- <id>JEE_GestionCommercialeN1_contact</id> -->
+			<!-- <rootFolder></rootFolder> -->
+			<!-- <rootFolders> -->
+			<!-- <macosx></macosx> -->
+			<!-- <win32></win32> -->
+			<!-- </rootFolders> -->
+			<!-- </product> -->
+			<!-- </products> -->
+			<!-- <installFeatures>true</installFeatures> -->
+			<!-- <profile>DefaultProfile</profile> -->
+			<!-- </configuration> -->
+
+			<!-- </plugin> -->
+
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-compiler-plugin</artifactId>
+				<version>${tycho-version}</version>
+				<configuration>
+					<compilerArgument>-warn:-forbidden</compilerArgument>
+					<compilerArgument>-err:-forbidden</compilerArgument>
+					<!-- <fork>true</fork> -->
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>target-platform-configuration</artifactId>
+				<version>${tycho-version}</version>
+				<configuration>
+					<environments>
+						<environment>
+							<os>linux</os>
+							<ws>gtk</ws>
+							<arch>x86_64</arch>
+						</environment>
+						<!-- <environment> -->
+						<!-- <os>win32</os> -->
+						<!-- <ws>win32</ws> -->
+						<!-- <arch>x86</arch> -->
+						<!-- </environment> -->
+					</environments>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>${version.compiler.plugin}</version>
+				<configuration>
+					<source>${maven.compiler.source}</source>
+					<target>${maven.compiler.target}</target>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>

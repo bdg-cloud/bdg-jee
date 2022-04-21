@@ -1,0 +1,69 @@
+
+<form class="formulaire" [formGroup]="mdpOublieForm" (ngSubmit)="onSubmit()" *ngIf="saisie;else encours">
+
+	<div class="fond">
+		<div class="centre">
+			<div class="cercle">
+
+				<div class="int">
+					<a class="logo" routerLink='/' routerLinkActive="active">
+<!--                 <img src="../assets/images/logo-bdg-cloud-2.jpg"/> -->
+                
+		                <img  [src]='image' style="width: auto; height: auto; margin:auto;" *ngIf="image;else image_defaut">
+			             <ng-template #image_defaut>
+							<img src="../assets/images/logo-bdg-cloud-2.jpg"/>
+			             </ng-template>
+		            </a>
+
+					<div class="form-group login-input-wrapper">
+						<input pInputText type="text" formControlName="email" placeholder="Email"
+							class="form-control ui-inputtext ui-widget"
+							[ngClass]="{ 'is-invalid': submitted && f.email.errors }" />
+						<div *ngIf="submitted && f.email.errors" class="invalid-feedback">
+							<div *ngIf="f.email.errors.required">Email obligatoire</div>
+						</div>
+					</div>
+
+					<button pButton class="btn-valider" [disabled]="loading" label="Réinitialiser mon mot de passe"
+						class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only">
+						<span *ngIf="loading"
+							class="spinner-border spinner-border-sm mr-1"></span> 
+							<!--<span
+							class="ui-button-text ui-c">Réinitialiser mon mot de passe</span>-->
+					</button>
+
+				</div>
+			</div>
+
+			<p-button class="btn-annuler" label="Annuler" (onClick)="actAnnuler($event)"></p-button>
+			<div *ngIf="error" class="alert alert-danger mt-3 mb-0">{{error}}</div>
+		</div>
+	</div>
+</form>
+
+<ng-template #encours>
+
+<div class="fond">
+	<div class="centre">
+		<div class="cercle">
+
+			<div class="int">
+				<a class="logo" routerLink='/' routerLinkActive="active"> <img
+					src="../assets/images/logo-bdg-cloud-2.jpg" />
+				</a>
+				<p class="titre" style="width: 355px;">Confirmation</p>
+				<p class="message" style="width: 355px;">Vous allez recevoir un
+					courriel qui contiendra un lien pour finaliser la réinitialisation de votre mot de passe.</p>
+
+			</div>
+
+			<p-button label="Accueil" (onClick)="actAnnuler($event)"></p-button>
+		</div>
+
+	</div>
+
+</div>
+
+
+</ng-template>
+

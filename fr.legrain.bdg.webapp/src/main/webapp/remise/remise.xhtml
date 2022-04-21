@@ -1,0 +1,381 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions">
+
+	<p:menubar styleClass="menu-onglet" id="idMenuBoutonGestRemise" widgetVar="wvMenuBoutonGestRemise">
+
+		<p:menuitem title="Enregistrer la remise en cours de saisie" value="Enregistrer" styleClass="icon icon-save" process="@this"
+			actionListener="#{remiseController.actEnregistrer}"
+			update=":form:messages,@form,@widgetVar(wvMenuListeRemise),@widgetVar(wvDataTableListeGestRemise),@widgetVar(wvDataTableListeGestRemise2),@widgetVar(wvPanelRenderedRemise),@widgetVar(wvInfosComplementairesRemise)"
+			disabled="#{remiseController.etatBouton('enregistrer')}" />
+
+		<p:menuitem title="Créer une nouvelle remise" value="Insérer" styleClass="icon icon-insert" actionListener="#{remiseController.actInitInserer}"
+			process="@this"
+			update=":form:messages,@form,@widgetVar(wvMenuListeRemise),@widgetVar(wvDataTableListeGestRemise),@widgetVar(wvDataTableListeGestRemise2),@widgetVar(wvPanelRenderedRemise),@widgetVar(wvPanelTotauxRemise),@widgetVar(wvInfosComplementairesRemise)"
+			disabled="#{remiseController.etatBouton('inserer')}" />
+
+		<!-- 		<p:menuitem title="Modifier l'avoir courant" value="Modifier" styleClass="icon icon-update" -->
+		<!-- 			actionListener="#{remiseController.actModifier}" -->
+		<!-- 			process="@this" -->
+		<!-- 			update=":form:messages,@form,@widgetVar(wvMenuListeRemise),@widgetVar(wvDataTableListeGestRemise2),@widgetVar(wvPanelRenderedRemise)" -->
+		<!-- 			disabled="#{remiseController.etatBouton('modifier')}" /> -->
+
+		<p:menuitem title="Annuler les modifications en cours" value="Annuler" styleClass="icon icon-cancel" actionListener="#{remiseController.actAnnuler}"
+			process="@this"
+			update=":form:messages,@form,@widgetVar(wvMenuListeRemise),@widgetVar(wvDataTableListeGestRemise),@widgetVar(wvDataTableListeGestRemise2),@widgetVar(wvPanelRenderedRemise),@widgetVar(wvInfosComplementairesRemise)"
+			disabled="#{remiseController.etatBouton('annuler')}">
+			<p:confirm header="Confirmation" message="Etes vous sur de vouloir annuler les modifications en cours ?" icon="ui-icon-alert" />
+		</p:menuitem>
+
+		<!-- 		<p:separator styleClass="separateur-menu-vertical"/> -->
+		<p:menuitem title="Supprimer la remise courante" value="Supprimer" styleClass="icon icon-delete menuitem-poubelle-droite"
+			actionListener="#{remiseController.actSupprimer}" process="@this"
+			update=":form:messages,@form,@widgetVar(wvMenuListeRemise),@widgetVar(wvDataTableListeGestRemise),@widgetVar(wvDataTableListeGestRemise2),@widgetVar(wvPanelRenderedRemise),@widgetVar(wvInfosComplementairesRemise)"
+			disabled="#{remiseController.etatBouton('supprimer') or remiseController.remiseExporte  or remiseController.documentDTOEstVerrouille().verrouille}">
+			<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer cet enregistrement ?" icon="ui-icon-alert" />
+		</p:menuitem>
+
+
+		<p:menuitem title="Imprimer la remise courante" value="Imprimer" styleClass="icon icon-print"
+			onsuccess="window.open('#{request.contextPath}/output?__report=/reports/remise/FicheRemise.rptdesign&amp;__format=pdf')"
+			actionListener="#{remiseController.actImprimer}" disabled="#{remiseController.etatBouton('imprimer')}" />
+
+		<p:menuitem title="Fermer l'écran" value="Fermer" styleClass="icon icon-close menuitem-fermer-droite" process="@this"
+			actionListener="#{remiseController.actFermer}" update=":form:messages,@widgetVar(wvMenuListeRemise),@widgetVar(wvDataTableListeGestRemise2)" disabled="#{remiseController.etatBouton('fermer')}"
+			onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())">
+
+			<p:confirm header="Confirmation" message="#{msg_diag.alert_fermeture_onglet}" icon="ui-icon-alert"
+				disabled="#{!remiseController.modeEcran.dataSetEnModif()}" />
+		</p:menuitem>
+		<p:separator styleClass="separateur-menu-vertical" />
+
+		<p:menuitem title="Liste des remises" styleClass="icon icon-liste" oncomplete="PF('wvOverlayListeRemise').show();" />
+
+	</p:menubar>
+
+	<p:fieldset style="margin-bottom:20px;" widgetVar="wvInfosComplementairesRemise">
+		<h:panelGrid columns="13" cellpadding="15" >
+<!-- 			<p:panel widgetVar="wvInfosComplementairesRemise"> -->
+<!-- 				<p:graphicImage name="btn/exporter.svg" title="La remise en cours est exportée. Elle ne peut pas être supprimée ou modifiée." library="images" -->
+<!-- 					width="20px" rendered="#{remiseController.remiseExporte}" /> -->
+<!-- 			</p:panel> -->
+		<p:graphicImage value="Document verrouillé !!!" title="#{remiseController.documentDTOEstVerrouille().message}" library="images" name="verrouiller.svg" width="28"  rendered="#{remiseController.documentDTOEstVerrouille().verrouille}"/> 
+		</h:panelGrid>
+	</p:fieldset>
+
+	<div class="container">
+		<p:panel id="idPanelRenderedRemise" widgetVar="wvPanelRenderedRemise">
+			<div class="container">
+				<p:fieldset legend="#{remiseController.titreEtape1}" id="idCriteresFiltresGestRemise" toggleable="true" toggleSpeed="50"
+					rendered="#{remiseController.afficheCritere}">
+
+					<div class="ui-g">
+
+						<div class="ui-g-12 ui-lg-4">
+							<div class="card">
+								<p:panel header="Période" style="width:100%;text-align: center;">
+									<p:panelGrid columns="2" columnClasses="ui-grid-col-4 right,ui-grid-col-8" styleClass="ui-panelgrid-blank" layout="grid">
+										<i class="fa fa-calendar fa-3x" aria-hidden="true"></i>
+										<p:panelGrid columns="2" cellpadding="0">
+											<p:outputLabel value="Du" />
+											<p:calendar value="#{remiseController.dateDeb}" showOn="button" navigator="true" pattern="#{msg.date_pattern}" mask="true" locale="fr"
+												timeZone="#{msg.time_zone}">
+												<p:ajax event="dateSelect" update="@this" />
+												<p:ajax event="change" update="@this" />
+											</p:calendar>
+
+											<p:outputLabel value="au" />
+											<p:calendar value="#{remiseController.dateFin}" showOn="button" navigator="true" pattern="#{msg.date_pattern}" mask="true" locale="fr"
+												timeZone="#{msg.time_zone}">
+												<p:ajax event="dateSelect" update="@this" />
+												<p:ajax event="change" update="@this" />
+											</p:calendar>
+										</p:panelGrid>
+									</p:panelGrid>
+								</p:panel>
+							</div>
+							<!--Fin div card-->
+						</div>
+						<div class="ui-g-12 ui-lg-8">
+							<div class="ui-g-12 ui-lg-6">
+								<div class="card">
+									<p:panel header="Retrouver un règlement à partir d'un type de paiement" >
+										<p:panelGrid columns="2" columnClasses="ui-grid-col-3,ui-grid-col-3,ui-grid-col-3,ui-grid-col-3" styleClass="ui-panelgrid-blank"
+											layout="grid">
+											<p:outputLabel value="Le type de paiement" />
+											<p:autoComplete value="#{remiseController.taTPaiment}" converter="entityConverter"
+												completeMethod="#{remiseController.typePaiementAutoComplete}" var="tiers" itemLabel="#{tiers.codeTPaiement}" itemValue="#{tiers}"
+												forceSelection="true" dropdown="true" placeholder="Type paiement">
+												<p:column>
+													<h:outputText value="#{tiers.codeTPaiement}" />
+												</p:column>
+
+												<p:column>
+													<h:outputText value="#{tiers.libTPaiement}" />
+												</p:column>
+
+												<p:column>
+													<h:outputText value="#{tiers.compte}" />
+												</p:column>
+												<f:attribute name="nomChamp" value="#{const.C_CODE_T_PAIEMENT}" />
+												<p:ajax event="itemSelect" listener="#{remiseController.autcompleteSelection}" update="idPanelCompteBanqueGestRemise" />
+											</p:autoComplete>
+
+										</p:panelGrid>
+									</p:panel>
+								</div>
+								<div class="card">
+									<p:panel header="Nombre de lignes maximum dans la remise" >
+										<p:panelGrid columns="2" columnClasses="ui-grid-col-3,ui-grid-col-3,ui-grid-col-3,ui-grid-col-3" styleClass="ui-panelgrid-blank"
+											layout="grid">
+											<p:outputLabel value="Nb de lignes" />
+											<p:spinner id="minMax" value="#{remiseController.nbMaxLigne}" min="1" max="100" />
+
+										</p:panelGrid>
+									</p:panel>
+								</div>								
+							</div>
+							<div class="ui-g-12 ui-lg-6">
+								<div class="card">
+									<p:panel header="Retrouver un règlement à partir d'un compte bancaire" id="idPanelCompteBanqueGestRemise">
+										<p:panelGrid columns="2" columnClasses="ui-grid-col-4 right,ui-grid-col-8" styleClass="ui-panelgrid-blank" layout="grid">
+											<i class="fa fa-file-text-o fa-3x" aria-hidden="true"></i>
+											<p:panelGrid columns="1" cellpadding="0">
+												<p:outputLabel value="Le compte bancaire" />
+												<p:autoComplete value="#{remiseController.taCompteBanque}" id="idCompteBanque" converter="entityConverter"
+													completeMethod="#{remiseController.compteBancaireAutoComplete}" var="doc" itemLabel="#{doc.iban}" itemValue="#{doc}"
+													forceSelection="true" dropdown="true" placeholder="Compte bancaire">
+													<p:column>
+														<h:outputText value="#{doc.codeBanque}" />
+													</p:column>
+
+													<p:column>
+														<h:outputText value="#{doc.nomBanque}" />
+													</p:column>
+
+													<p:column>
+														<h:outputText value="#{doc.compte}" />
+													</p:column>
+
+													<p:column>
+														<h:outputText value="#{doc.iban}" />
+													</p:column>
+
+													<p:column>
+														<h:outputText value="#{doc.cptcomptable}" />
+													</p:column>
+													<f:attribute name="nomChamp" value="#{const.C_IBAN_BANQUE}" />
+													<p:ajax event="itemSelect" listener="#{remiseController.autcompleteSelection}" update="" />
+												</p:autoComplete>
+											</p:panelGrid>
+										</p:panelGrid>
+									</p:panel>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="card" style="text-align: center;">
+						<p:commandButton value="Valider les critères" actionListener="#{remiseController.actInserer}"
+							update="idPanelListeTiersGestRemise,idPanelEnteteRemise,@widgetVar(wvPanelTotauxRemise)" style="width:20%; height:45px;" icon="fa fa-check" />
+					</div>
+
+				</p:fieldset>
+			</div>
+			<div class="container">
+
+				<p:fieldset legend="#{remiseController.titreEcran}" id="idListesDocGestRemise" toggleable="true" toggleSpeed="50">
+					<div class="ui-g">
+						<div class="ui-g-12 ui-lg-7">
+							<p:panel header="Entête de la remise" id="idPanelEnteteRemise">
+								<h:panelGrid columns="4" cellpadding="10">
+									<p:outputLabel id="idlabelCodeRemise" value="Code remise" title="La référence de la remise" styleClass="labelchob" />
+									<p:inputText id="idCodeRemise" value="#{remiseController.selection.dto.codeDocument}" validator="#{remiseController.validateObject}"
+										disabled="#{remiseController.editable()}">
+										<f:attribute name="nomChamp" value="#{const.C_CODE_DOCUMENT}" />
+										<p:ajax event="blur" update="@this" />
+									</p:inputText>
+									<p:outputLabel id="idlabelLibelleRemise" value="libellé remise" title="Le libellé de la remise" styleClass="labelchob" />
+									<p:inputText id="idLibelleRemise" value="#{remiseController.selection.dto.libelleDocument}" validator="#{remiseController.validateObject}"
+										disabled="#{remiseController.editable()}" style="width:200%">
+										<f:attribute name="nomChamp" value="#{const.C_LIBELLE_DOCUMENT}" />
+										<p:ajax event="blur" update="@this" />
+									</p:inputText>
+									<p:outputLabel id="idlabelDateRemise" value="date remise" title="La date de la remise" styleClass="labelchob" />
+									<p:inputText id="idDateRemise" value="#{remiseController.selection.dto.dateDocument}" validator="#{remiseController.validateObject}"
+										disabled="#{remiseController.editable()}">
+										<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}" />
+										<f:attribute name="nomChamp" value="#{const.C_DATE_DOCUMENT}" />
+										<p:ajax event="blur" update="@this" />
+									</p:inputText>
+									<p:outputLabel id="idlabelTypePaiementRemise" value="type paiement" title="Le type de paiement" styleClass="labelchob" />
+									<p:inputText id="idTypePaiementRemise" value="#{remiseController.selection.dto.codeTPaiement}" validator="#{remiseController.validateObject}"
+										disabled="#{remiseController.editable()}">
+										<f:attribute name="nomChamp" value="#{const.C_CODE_T_PAIEMENT}" />
+										<p:ajax event="blur" update="@this" />
+									</p:inputText>
+									<p:outputLabel value="Le compte bancaire de dépôt" />
+									<p:autoComplete value="#{remiseController.taCompteBanqueFinal}" id="idCompteBanqueFinal" converter="entityConverter"
+										completeMethod="#{remiseController.compteBancaireAutoCompleteFinal}" var="doc" itemLabel="#{doc.iban}" itemValue="#{doc}" forceSelection="true"
+										dropdown="true" placeholder="Compte bancaire" disabled="#{remiseController.editable()}">
+										<p:column>
+											<h:outputText value="#{doc.codeBanque}" />
+										</p:column>
+
+										<p:column>
+											<h:outputText value="#{doc.nomBanque}" />
+										</p:column>
+
+										<p:column>
+											<h:outputText value="#{doc.compte}" />
+										</p:column>
+
+										<p:column>
+											<h:outputText value="#{doc.iban}" />
+										</p:column>
+
+										<p:column>
+											<h:outputText value="#{doc.cptcomptable}" />
+										</p:column>
+										<f:attribute name="nomChamp" value="#{const.C_IBAN_BANQUE}" />
+										<p:ajax event="itemSelect" listener="#{remiseController.autcompleteSelection}" update="" />
+									</p:autoComplete>
+								</h:panelGrid>
+							</p:panel>
+						</div>
+						<div class="ui-g-12 ui-lg-5">
+							<p:panel header="Totaux de la remise"  widgetVar="wvPanelTotauxRemise">
+								<h:panelGrid columns="4" cellpadding="10">
+									<h:outputText  value="Nombre de lignes" />
+									<p:inputText value="#{remiseController.nbLigne}" disabled="true"/>
+									<h:outputText value="Net TTC" />
+									<p:inputText value="#{remiseController.totalTTC}" disabled="true"/>
+								</h:panelGrid>
+							</p:panel>
+						</div>
+					</div>
+					<p:panel header="Liste des règlements" id="idPanelListeTiersGestRemise">
+						<div class="ui-g">
+							<div class="ui-g-12">
+								<p:dataTable 
+								id="dataTableListeGestRemise" 
+								var="doc" 
+								widgetVar="wvDataTableListeGestRemise" 
+								class="datatable"
+								value="#{remiseController.valuesLignes}" 
+								rowKey="#{doc.dto.id}" 
+								selection="#{remiseController.selectionLignes}" 
+								dblClickSelect="true"
+								resizableColumns="true" 
+								paginator="true" 
+								rows="#{msg.modele_datatable_ligne_par_page_debut}"
+								paginatorTemplate="#{msg.modele_datatable_paginator}" 
+								rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+								emptyMessage="#{msg.message_datatable_vide}" 
+								currentPageReportTemplate="#{msg.modele_datatable_page_courante}">
+
+									<p:ajax event="rowSelect"  listener="#{remiseController.onRowSelectLigne}" update="@widgetVar(wvPanelTotauxRemise)" />
+									<p:ajax event="toggleSelect"  listener="#{remiseController.actSelectLigne}" update="@widgetVar(wvPanelTotauxRemise)" />
+									<p:ajax event="rowSelectCheckbox"  listener="#{remiseController.onRowSelectLigne}" update="@widgetVar(wvPanelTotauxRemise)" />
+									<p:ajax event="rowUnselectCheckbox"  listener="#{remiseController.onRowUnSelectLigne}" update="@widgetVar(wvPanelTotauxRemise)" />
+								
+					
+									<p:column headerText="Accepté" selectionMode="multiple" style="width:40px;text-align:center" rendered="#{remiseController.modeEcran.dataSetEnInsertion()}">
+<!-- 										<p:ajax  listener="#{remiseController.initTotaux}" /> -->
+									</p:column>
+
+									<p:column sortBy="#{doc.dto.codeReglement}" filterBy="#{doc.dto.codeReglement}" filterMatchMode="contains">
+										<f:facet name="header">
+											<h:outputText value="Code règlement" />
+										</f:facet>
+<!-- 										<h:outputText value="#{doc.dto.codeReglement}" /> -->
+										<p:commandLink value="#{doc.dto.codeReglement}"
+											action="#{ouvertureDocumentBean.detailDocument(ouvertureDocumentBean.recupCodeDocument(doc.dto.codeReglement,ouvertureDocumentBean.getTypeDocumentReglement))}"
+											update=":form:tabView"
+											oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+										</p:commandLink>
+									</p:column>
+									<p:column sortBy="#{doc.dto.dateReglement}" filterBy="#{doc.dto.dateReglement}" filterMatchMode="contains">
+										<f:facet name="header">
+											<h:outputText value="Date règlement" />
+										</f:facet>
+										<h:outputText value="#{doc.dto.dateReglement}">
+											<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}" />
+										</h:outputText>
+									</p:column>
+
+									<p:column sortBy="#{doc.dto.codeTiers}" filterBy="#{doc.dto.codeTiers}" filterMatchMode="contains">
+										<f:facet name="header">
+											<h:outputText value="Code tiers" />
+										</f:facet>
+										<p:commandLink value="#{doc.dto.codeTiers}"
+											action="#{ouvertureDocumentBean.detailTiers(remiseController.recupCodetiers(doc.dto.codeTiers))}" update=":form:tabView"
+											oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+										</p:commandLink>
+									</p:column>
+
+									<p:column sortBy="#{doc.dto.nomTiers}" filterBy="#{doc.dto.nomTiers}" filterMatchMode="contains">
+										<f:facet name="header">
+											<h:outputText value="nom tiers" />
+										</f:facet>
+										<h:outputText value="#{doc.dto.nomTiers}">
+											<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}" />
+										</h:outputText>
+									</p:column>
+
+									<p:column sortBy="#{doc.dto.netTTC}" filterBy="#{doc.dto.netTTC}" filterMatchMode="contains">
+										<f:facet name="header">
+											<h:outputText value="Net TTC" />
+										</f:facet>
+										<h:outputText value="#{doc.dto.netTTC}" />
+									</p:column>
+
+									<p:column sortBy="#{doc.dto.libelleReglement}" filterBy="#{doc.dto.libelleReglement}" filterMatchMode="contains">
+										<f:facet name="header">
+											<h:outputText value="Libellé" />
+										</f:facet>
+										<h:outputText value="#{doc.dto.libelleReglement}" />
+									</p:column>
+
+									<p:column sortBy="#{doc.dto.nomBanque}" filterBy="#{doc.dto.nomBanque}" filterMatchMode="contains">
+										<f:facet name="header">
+											<h:outputText value="Banque" />
+										</f:facet>
+										<h:outputText value="#{doc.dto.nomBanque}" />
+									</p:column>
+
+									<p:column sortBy="#{doc.dto.iban}" filterBy="#{doc.dto.iban}" filterMatchMode="contains">
+										<f:facet name="header">
+											<h:outputText value="Iban" />
+										</f:facet>
+										<h:outputText value="#{doc.dto.iban}" />
+									</p:column>
+
+									<p:column sortBy="#{doc.dto.codeTPaiement}" filterBy="#{doc.dto.codeTPaiement}" filterMatchMode="contains">
+										<f:facet name="header">
+											<h:outputText value="Type paiement" />
+										</f:facet>
+										<h:outputText value="#{doc.dto.codeTPaiement}" />
+									</p:column>
+
+									<p:column style="width:16px">
+										<f:facet name="header">
+											<h:outputText value="" />
+										</f:facet>
+
+										<p:commandButton title="Supprimer" styleClass="icon-delete icon icon-grille" action="#{remiseController.actSupprimerLigne}" process="@this"
+											update="@widgetVar(wvDataTableListeGestRemise),@widgetVar(wvMenuBoutonGestRemise),@widgetVar(wvMenuListeRemise),@widgetVar(wvDataTableListeGestRemise2)" 
+											renderDisabledClick="#{remiseController.editable()}" disabled="#{remiseController.remiseExporte   or remiseController.documentDTOEstVerrouille().verrouille}">
+											<f:setPropertyActionListener target="#{remiseController.selectionLigne}" value="#{doc}" />
+											<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer cette ligne de remise ?" icon="ui-icon-alert" />
+										</p:commandButton>
+									</p:column>
+								</p:dataTable>
+							</div>
+						</div>
+					</p:panel>
+				</p:fieldset>
+			</div>
+		</p:panel>
+	</div>
+
+</ui:composition>

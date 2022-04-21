@@ -1,0 +1,201 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:p="http://primefaces.org/ui">
+	
+	<o:methodParam name="rowSelectParam" value="#{rowSelect}" />
+	
+
+	<p:panel id="emailEnvoyeFormPrincipal" widgetVar="emailEnvoyeForm">
+
+		<p:outputLabel value="Gestion des emails envoyés" rendered="#{dansDialogue == null ? true : false}" />
+
+		<p:panel id="emailEnvoyeDataTableF" class="mt30" style="position:relative;" rendered="#{dansDialogue == null ? true : false}">
+			
+			<p:commandButton value="Rafraîchir" title="Rafraîchir" actionListener="#{actionBean[refresh]}" disabled="#{actionBean[modeEcran.dataSetEnModif()]}"
+				styleClass="icon-refresh icon" process="@this" update=":form:tabView,:form:messages,:form" >
+			</p:commandButton>		
+			
+			<p:commandButton title="Envoyer par email" styleClass="icon icon-envoi-mail" actionListener="#{envoyerEmailController.actDialogEmail}"
+			process="@this" 
+			update=":form:messages">
+				<p:ajax event="dialogReturn" listener="#{envoyerEmailController.handleReturnDialogEmail}" update=":form:messages"  />  
+			</p:commandButton>	
+
+			<p:commandButton id="emailEnvoyeFermer" title="Fermer"
+				styleClass="icon-close icon menuitem-fermer-droite" onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())">
+				 <p:confirm header="Confirmation" message="#{msg_diag.alert_fermeture_onglet}" icon="ui-icon-alert" disabled="#{!actionBean[modeEcran.dataSetEnModif()]}"/>
+			</p:commandButton>
+				 
+			<p:commandButton id="emailEnvoyeFermerDialogue" title="Fermer"
+				process="@this" styleClass="icon-close icon menuitem-fermer-droite"
+				actionListener="#{actionBean[actFermerDialog]}"
+				rendered="#{dansDialogue != null ? true : false}" />
+		</p:panel>
+		
+<!-- 		<p:sticky target="emailEnvoyeDataTableF" /> -->
+		
+		<p:dataTable id="emailEnvoyeDataTable" 
+			var="table"
+		
+			value="#{actionBean.values}"
+			rowKey="#{table.id}" 
+			selectionMode="single"
+			class="datatable" 
+			selection="#{actionBean.selectedTaMessageEmailDTO}"
+			scrollable="true" scrollHeight="250"
+			paginator="true" 
+			rows="#{msg.modele_datatable_ligne_par_page_debut}"
+			paginatorTemplate="#{msg.modele_datatable_paginator}"
+			rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+			emptyMessage="#{msg.message_datatable_vide}"
+			currentPageReportTemplate="#{msg.modele_datatable_page_courante}">
+
+			<p:ajax event="rowSelect" listener="#{rowSelectParam}" update="@widgetVar(wvDetailEmailEnvoye)"/>
+
+			<f:facet name="{Exporters}">
+				<h:commandLink>
+					<p:graphicImage library="images" name="excel.png" width="24" />
+					<p:dataExporter type="xls" target="emailEnvoyeDataTable"
+						fileName="email_envoye" />
+				</h:commandLink>
+
+				<h:commandLink>
+					<p:graphicImage library="images" name="pdf.png" width="24" />
+					<p:dataExporter type="pdf" target="emailEnvoyeDataTable"
+						fileName="email_envoye" />
+				</h:commandLink>
+
+				<h:commandLink>
+					<p:graphicImage library="images" name="csv.png" width="24" />
+					<p:dataExporter type="csv" target="emailEnvoyeDataTable"
+						fileName="email_envoye" />
+				</h:commandLink>
+
+				<h:commandLink>
+					<p:graphicImage library="images" name="xml.png" width="24" />
+					<p:dataExporter type="xml" target="emailEnvoyeDataTable"
+						fileName="email_envoye" />
+				</h:commandLink>
+
+			</f:facet>
+
+			<p:column sortBy="#{table.dateEnvoi}"
+				filterBy="#{table.dateEnvoi}" filterMatchMode="contains" styleClass="center">
+				<f:facet name="header">
+					<h:outputText value="Date" />
+				</f:facet>
+				<h:outputText value="#{table.dateEnvoi}" >
+					<f:convertDateTime pattern="#{msg.datetime_pattern}" timeZone="#{msg.time_zone}"/>
+				</h:outputText>
+			</p:column>
+
+			<p:column sortBy="#{table.subject}" filterBy="#{table.subject}" filterMatchMode="contains" >
+				<f:facet name="header">
+					<h:outputText value="Sujet" />
+				</f:facet>
+				<h:outputText value="#{table.subject}" />
+			</p:column>
+
+			<p:column sortBy="#{table.bodyPlain}" filterBy="#{table.bodyPlain}" filterMatchMode="contains" styleClass="center">
+				<f:facet name="header" >
+					<h:outputText value="Corps" />
+				</f:facet>
+				<h:outputText value="#{table.bodyPlain}" />
+			</p:column>
+
+			<p:column styleClass="center">
+				<f:facet name="header" >
+					<h:outputText value="Destinataire" />
+				</f:facet>
+				<p:repeat value="${table.destinataires}" var="item">
+					<h:outputText value="#{item.adresseEmail}, " />
+				</p:repeat>
+			</p:column>
+			
+			<p:column styleClass="center">
+				<f:facet name="header" >
+					<h:outputText value="Pieces jointes" />
+				</f:facet>
+				<h:outputText value="#{table.piecesJointes.size()}" />
+			</p:column>
+			
+<!-- 			<p:column sortBy="#{table.codeDocument}" filterBy="#{table.codeDocument}" filterMatchMode="contains" styleClass="center"> -->
+<!-- 				<f:facet name="header" > -->
+<!-- 					<h:outputText value="Code document" /> -->
+<!-- 				</f:facet> -->
+<!-- 				<h:outputText value="#{table.codeDocument}" /> -->
+<!-- 			</p:column> -->
+			
+		</p:dataTable>
+		
+		<p:resizable for="idDetailEmailEnvoye" />
+		
+		<p:panel id="idDetailEmailEnvoye" header="Détail" widgetVar="wvDetailEmailEnvoye">
+			<p:panelGrid columns="2">
+				<h:outputText value="Date" />
+				<h:outputText value="#{actionBean.selectedTaMessageEmailDTO.dateEnvoi}" >
+					<f:convertDateTime pattern="#{msg.datetime_pattern}" timeZone="#{msg.time_zone}"/>
+				</h:outputText>
+				
+				<h:outputText value="Sujet " />
+				<h:outputText value="#{actionBean.selectedTaMessageEmailDTO.subject}" />
+				
+				<h:outputText value="Destinataire " />
+				<p:repeat value="${actionBean.selectedTaMessageEmailDTO.destinataires}" var="item">
+					<h:outputText value="#{item.adresseEmail}, " />
+				</p:repeat>
+				
+				<h:outputText value="Cc " />
+				<ui:repeat value="${actionBean.selectedTaMessageEmailDTO.cc}" var="item">
+					<h:outputText value="#{item.adresseEmail}, " />
+				</ui:repeat>
+				
+				<h:outputText value="Bcc " />
+				<ui:repeat value="${actionBean.selectedTaMessageEmailDTO.bcc}" var="item">
+					<h:outputText value="#{item.adresseEmail}, " />
+				</ui:repeat>
+			</p:panelGrid>
+			
+			<p:separator/>
+			
+			<h:outputText value="#{actionBean.selectedTaMessageEmailDTO.bodyPlain}" />
+			
+			<p:separator/>
+			
+			<p:panel  >
+				
+				 <p:dataGrid 
+				 	var="pj" 
+				 	value="#{actionBean.selectedTaMessageEmailDTO.piecesJointes}" 
+				 	columns="3" layout="grid" rows="12" 
+				 	emptyMessage="">
+
+			        <p:panel header="#{pj.nomFichier}" style="text-align:center">
+			            <h:panelGrid columns="1" style="width:100%">
+			 
+			                <p:commandLink update="@this" oncomplete="PF('carDialog').show()" title="View Detail">
+			                    <h:outputText styleClass="ui-icon ui-icon-document" style="margin:0 auto;" />
+<!-- 			                    <i class="#{pj.iconFileType()}" aria-hidden="true" style="display: inline;margin:0 auto;"/> -->
+			                </p:commandLink>
+			                
+			                 <p:commandButton value="Télécharger" ajax="false" icon="ui-icon-arrowthick-1-s">
+			                 	<f:setPropertyActionListener value="#{pj}" target="#{actionBean.selectedTaPieceJointeEmailDTO}" />
+						        <p:fileDownload value="#{actionBean[streamedPieceJointe]}" />
+						    </p:commandButton>
+			            </h:panelGrid>
+			        </p:panel>
+ 
+    			</p:dataGrid>
+				
+			</p:panel>
+
+		</p:panel>
+
+		
+	</p:panel>
+
+	
+</ui:composition>

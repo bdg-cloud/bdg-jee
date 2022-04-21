@@ -1,0 +1,196 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<p:panel  id="typeAdresseFormPrincipal" widgetVar="widgetVarTypeAdresseForm">
+
+		<p class="subtitle">Gestion des types d'adresses</p>
+
+
+		<p:panel id="typeAdresseDataTableF" styleClass="mt30" style="position:relative;"
+			rendered="#{dansDialogue == null ? true : false}">
+			
+			<p:commandButton id="idInsererTypeAdresse"   value="Ajouter" title="Insérer" process="@this"
+				update=":form:tabView,:form:messages,:form" 
+				actionListener="#{typeAdresseController.actDialogTypes}"
+				styleClass="icon-insert icon" >
+				<p:ajax event="dialogReturn" listener="#{typeAdresseController.handleReturnDialogTypes}" 
+					update=":form"/>
+			</p:commandButton>
+			
+<!-- 			<p:commandButton id="typeAdresseInserer" value="Insérer" -->
+<!-- 				process="@this" disabled="#{typeAdresseController.etatBouton('inserer')}" -->
+<!-- 				update="@widgetVar(varTypeAdressePanel), @this, @parent:typeAdresseModifier, @parent:typeAdresseSupprimer" -->
+<!-- 				actionListener="#{typeAdresseController.actInserer}" -->
+<!-- 				class="btn-insert btn" /> -->
+
+			<p:commandButton id="idModifierTypeAdresse"   value="Modifier" title="Modifier" process="@this"
+				update=":form:tabView,:form:messages,:form" 
+				actionListener="#{typeAdresseController.actDialogModifier}"
+				styleClass="icon-update icon" >
+				<p:ajax event="dialogReturn" listener="#{typeAdresseController.handleReturnDialogTypes}" update=":form"/>
+			</p:commandButton>
+			
+<!-- 			<p:commandButton id="typeAdresseModifier" value="Modifier" -->
+<!-- 				process="@this" class="btn-update btn" -->
+<!-- 				disabled="#{typeAdresseController.etatBouton('modifier')}" -->
+<!-- 				update="@widgetVar(varTypeAdressePanel), @parent:typeAdresseInserer, @this, @parent:typeAdresseSupprimer" -->
+<!-- 				actionListener="#{typeAdresseController.actModifier}" /> -->
+
+			<p:commandButton id="typeAdresseSupprimer" value="Supprimer"
+				styleClass="icon-delete icon menuitem-poubelle-droite"
+				disabled="#{typeAdresseController.etatBouton('supprimer')}"
+				actionListener="#{typeAdresseController.actSupprimer}"
+				update="@widgetVar(wvTypeAdresseDataTable)" process="@this"
+				 >
+<!-- 				type="button" onclick="PF('famillecd1').show()" -->
+				<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer cet enregistrement ?" icon="ui-icon-alert" />
+			</p:commandButton>
+
+			<p:commandButton id="typeAdresseFermer" title="Fermer"
+				styleClass="icon-close icon menuitem-fermer-droite" onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())">
+<!-- 				type="button" onclick="PF('famillecd2').show()" -->
+				<p:confirm header="Confirmation" message="#{msg_diag.alert_fermeture_onglet}" icon="ui-icon-alert" disabled="#{!typeAdresseController.modeEcran.dataSetEnModif()}"/>
+			</p:commandButton>
+				
+			<p:commandButton id="typeAdresseFermerDialogue" title="Fermer"
+				process="@this" class="icon-close icon menuitem-fermer-droite"
+				actionListener="#{typeAdresseController.actFermerDialog}"
+				rendered="#{dansDialogue != null ? true : false}" />
+
+<!-- 			<p:confirmDialog -->
+<!-- 				message="Etes-vous sûr de vouloir supprimer l'enregistrement ?" -->
+<!-- 				header="Confirmation" severity="alert" appendTo="@(body)" -->
+<!-- 				widgetVar="typeAdressecd1"> -->
+<!-- 				<p:commandButton value="Oui" update="@form" oncomplete="PF('typeAdressecd1').hide()"> -->
+<!-- 					<p:ajax listener="#{typeAdresseController.actSupprimer}" /> -->
+<!-- 				</p:commandButton> -->
+<!-- 				<p:commandButton value="Non" onclick="PF('typeAdressecd1').hide();" type="button" /> -->
+<!-- 			</p:confirmDialog> -->
+
+<!-- 			<p:confirmDialog -->
+<!-- 				message="Etes-vous sûr de vouloir fermer l'onglet ? (Les modifications en cours ne seront pas sauvegardées) " -->
+<!-- 				header="Confirmation" severity="alert" widgetVar="typeAdressecd2" -->
+<!-- 				appendTo="@(body)"> -->
+<!-- 				<p:commandButton value="Oui" -->
+<!-- 					onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())" -->
+<!-- 					oncomplete="PF('typeAdressecd2').hide()" /> -->
+<!-- 				<p:commandButton value="Non" onclick="PF('typeAdressecd2').hide();" type="button"/> -->
+<!-- 			</p:confirmDialog> -->
+		</p:panel>
+
+		<p:dataTable id="typeAdresseDataTable" widgetVar="wvTypeAdresseDataTable" var="table"
+			rendered="#{dansDialogue == null ? true : false}"
+			value="#{typeAdresseController.values}" rowKey="#{table.id}"
+			selectionMode="single" styleClass="datatable"
+			selection="#{typeAdresseController.selection}" 
+			paginator="false"
+			rows="#{msg.modele_datatable_ligne_par_page_debut}"
+			paginatorTemplate="#{msg.modele_datatable_paginator}"
+			rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+			emptyMessage="#{msg.message_datatable_vide}"
+			currentPageReportTemplate="#{msg.modele_datatable_page_courante}">
+
+			<p:ajax event="rowSelect" listener="#{typeAdresseController.onRowSelect}" />
+
+			<f:facet name="{Exporters}">
+				<h:commandLink>
+					<p:graphicImage library="images" name="excel.png" width="24" />
+					<p:dataExporter type="xls" target="typeAdresseDataTable" fileName="type_adresse" />
+				</h:commandLink>
+				<h:commandLink>
+					<p:graphicImage library="images" name="pdf.png" width="24" />
+					<p:dataExporter type="pdf" target="typeAdresseDataTable" fileName="type_adresse" />
+				</h:commandLink>
+				<h:commandLink>
+					<p:graphicImage library="images" name="csv.png" width="24" />
+					<p:dataExporter type="csv" target="typeAdresseDataTable" fileName="type_adresse" />
+				</h:commandLink>
+				<h:commandLink>
+					<p:graphicImage library="images" name="xml.png" width="24" />
+					<p:dataExporter type="xml" target="typeAdresseDataTable" fileName="type_adresse" />
+				</h:commandLink>
+			</f:facet>
+			<p:column sortBy="#{table.codeTAdr}">
+<!-- 			 filterBy="#{table.codeTAdr}" filterMatchMode="contains"> -->
+				<f:facet name="header">
+					<h:outputText value="Code" />
+				</f:facet>
+				<h:outputText value="#{table.codeTAdr}" />
+			</p:column>
+			<p:column sortBy="#{table.liblTAdr}">
+<!-- 			 filterBy="#{table.liblTAdr}" filterMatchMode="contains"> -->
+				<f:facet name="header">
+					<h:outputText value="Libellé" />
+				</f:facet>
+				<h:outputText value="#{table.liblTAdr}" />
+			</p:column>
+		</p:dataTable>
+
+	</p:panel>
+
+	<p:messages id="typeAdresseMessages" showDetail="true" autoUpdate="true" closable="true" />
+
+	<p:panel id="typeAdressePanel" visible="true" widgetVar="varTypeAdressePanel">
+		<p:panel resizable="false" id="typeAdressePanelCache" rendered="#{typeAdresseController.modeEcran.dataSetEnModif()}">
+<!-- 		rendered="#{typeAdresseController.creation}" -->
+<!-- 			<h:form id="typeAdresseFormCreation"> -->
+				<f:validateBean disabled="true">
+					<div class="ui-grid ui-grid-responsive" id="typeAdresseGridResp">
+						<div class="ui-grid-row">
+							<div class="ui-grid-col-4">
+								<h:outputText value="Code :"/>
+							</div>
+							<div class="ui-grid-col-8">
+								<h:inputText   id="idTxtCodeTypeAdresse" value="#{typeAdresseController.nouveau.codeTAdr}" styleClass="Input50"
+									required="true" requiredMessage="Champs obligatoire!" validator="#{typeAdresseController.validateObject}">
+									<f:attribute name="nomChamp" value="#{const.C_CODE_T_ADR}" />
+									<p:ajax event="blur" update="@this"/>
+								</h:inputText>
+							</div>
+							
+						</div>
+						<div class="ui-grid-row">
+							<div class="ui-grid-col-4">
+								<h:outputText value="Libelle :"/>
+							</div>
+							<div class="ui-grid-col-8">
+								<h:inputText id="idTxtLibelleTypeAdresse"  value="#{typeAdresseController.nouveau.liblTAdr}" styleClass="Input100"
+									required="true" requiredMessage="Champs obligatoire!" validator="#{typeAdresseController.validateObject}">
+									<f:attribute name="nomChamp" value="#{const.C_LIBL_T_ADR}" />
+									<p:ajax event="blur" update="@this"/>
+								</h:inputText>
+							</div>
+						</div>
+
+						<div class="ui-grid-row">
+							<div class="ui-grid-col-12 text-center">
+								<p:commandButton id="idEnregistrerTypeAdresse" value="Enregistrer"
+									class="btn-save btn" 
+									disabled="#{typeAdresseController.etatBouton('enregistrer')}"
+									update="@widgetVar(widgetVarTypeAdresseForm), @widgetVar(varTypeAdressePanel)"
+									actionListener="#{typeAdresseController.actEnregistrer}" />
+
+								<p:commandButton id="typeAdresseAnnuler" value="Annuler"
+									class="btn-cancel btn" process="@this"
+									disabled="#{typeAdresseController.etatBouton('annuler')}"
+									update="@widgetVar(widgetVarTypeAdresseForm), @widgetVar(varTypeAdressePanel)"
+									actionListener="#{typeAdresseController.actAnnuler}"
+									rendered="#{dansDialogue != null ? false : true}" />
+
+							<p:commandButton id="typeAdresseAnnulerDialogue" value="Annuler"
+								styleClass="btn-cancel btn" process="@this"
+								disabled="#{typeAdresseController.etatBouton('annuler')}"
+								actionListener="#{typeAdresseController.actFermerDialog}"
+								rendered="#{dansDialogue != null ? true : false}" >	
+							</p:commandButton>	
+							</div>
+						</div>
+					</div>
+				</f:validateBean>
+<!-- 			</h:form> -->
+		</p:panel>
+	</p:panel>
+</ui:composition>

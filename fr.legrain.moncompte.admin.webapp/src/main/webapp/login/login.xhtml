@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+        <f:facet name="first">
+            <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+            <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+            <meta name="apple-mobile-web-app-capable" content="yes" />
+        </f:facet>
+        <title>Mon compte (admin)</title>
+    </h:head>
+
+    <h:body styleClass="containerLogin">
+    <h:form id="loginForm">
+        <div class="logo-container">
+<!--             <h:graphicImage name="images/logo.svg" id="PageLogo" library="icarus-layout"/> -->
+<!-- 				<p:graphicImage library="images" name="legrain_new.ico"/> -->
+				<h:graphicImage library="images" id="PageLogo" height="300" width="400" name="logo_lgr.svg"/>
+        </div>
+        <div class="ui-g">
+            <p:panel header="Login" styleClass="panel-login">
+                <div class="ui-g-12" style="padding-top:35px;">
+<!--                     <p:inputText placeholder="Your Email" style="width:60%;"/><br/> -->
+                    <p:inputText value="#{auth.username}" styleClass="Wid90" id="j_username" size="25" />
+                </div>
+                <div class="ui-g-12" style="padding-top:10px;">
+<!--                     <p:inputText placeholder="Your Password" style="width:60%"/> -->
+                    <p:password value="#{auth.password}" styleClass="Wid90" id="j_password" size="25" autocomplete="on" />
+                </div>
+                <div class="ui-g-2"></div>
+                <div class="ui-g-8 login-input-container">
+<!--                     <div class="ui-g-12 ui-md-6 ui-lg-6"> -->
+<!--                         <p:selectBooleanCheckbox value="#{selectBooleanView.value1}" style="padding-left:10px;"/> -->
+<!--                         <h:outputText value="Remember me" style="padding-left:5px;"/> -->
+<!--                     </div> -->
+<!--                     <div class="ui-g-12 ui-md-6 ui-lg-6"> -->
+<!--                         <p:commandLink styleClass="link-decoration" value="Forget Password?" /> -->
+<!--                     </div> -->
+                </div>
+                <div class="ui-g-2"></div>
+<!--                 <p:button id="loginButton" value="Login" outcome="dashboard"></p:button> -->
+                <p:commandButton action="#{auth.login}" ajax="false" value="Log In" />
+            </p:panel>
+            <div class="ui-g-12 footer-login">
+                <span>Legrain informatique</span><br/>
+                <span>All rights reserved.</span>
+            </div>
+        </div>
+
+        <style type="text/css">
+            html {height: 100%;}
+            .ui-button-text, .ui-button-text-only .ui-button-text{padding:8px !important; transition:none !important;}
+            .ui-panel .ui-panel-title {font-size: 17px;}
+        </style>
+
+        <h:outputStylesheet name="css/layout-#{auth.theme}.css" library="icarus-layout" />
+        </h:form>
+    </h:body>
+
+</html>

@@ -1,0 +1,41 @@
+<ui:composition 
+	xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:o="http://omnifaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+	
+<!-- 		<c:set var="id" value="#{id}" /> -->
+<!--     	<c:set var="maj" value="@this" /> -->
+<!--     	<c:set var="pour" value="#{pour}" /> -->
+<!-- 	<c:set var="mode" value="#{pour}" /> -->
+ 
+<!--     	<p:commandButton id="#{id}" styleClass="fghgfhf" actionListener="#{actionBean[actionMethod]}" style="display:none" process="@this"  > -->
+<!--         	<p:ajax event="dialogReturn" update="#{maj}"  />   -->
+<!--         </p:commandButton> -->
+<!--         #{sortActionBean['sortActionMethod']} -->
+
+<ui:fragment rendered="#{empty statusObject}">
+	<p:graphicImage library="images" name="btn/controle-valide.svg" title="Tous les contrôles obligatoire sont effectués et valide" height="16" rendered="#{codeStatus eq  'ok'}"/>
+	<p:graphicImage library="images" name="btn/controle-action-corrective-effectuee-avec-succes.svg" title="Tous les contrôles obligatoires sont effectués et valide après correction" height="16" rendered="#{codeStatus eq 'ok_apres_correction'}"/>
+	<p:graphicImage library="images" name="btn/controle-action-corrective-invalide.svg" title="Tous les contrôles obligatoire sont effectués mais certains controle sont encore faux" height="16" rendered="#{codeStatus eq 'invalide_meme_apres_correction'}"/>
+	<p:graphicImage library="images" name="btn/controle-action-corrective-a-faire.svg" title="Au moins un controle est faux" height="16" rendered="#{codeStatus eq 'invalide_a_corrige'}"/>
+	<p:graphicImage library="images" name="btn/controle-obligatoire.svg" title="Au moins un controle obligatoire n'est pas fait" height="16" rendered="#{codeStatus eq  'non_fait'}"/>
+	<p:graphicImage library="images" name="btn/valide-sans-controle.svg" title="Aucun contrôle définit sur ce lot" height="16" rendered="#{codeStatus eq  'aucun_controle'}"/>
+	<p:graphicImage library="images" name="btn/controle-a-faire.svg" title="Aucun controle n'est fait" height="16" rendered="#{codeStatus == null}"/>
+</ui:fragment>
+
+<ui:fragment rendered="#{not empty statusObject}">
+	<p:graphicImage library="images" name="btn/controle-valide.svg" title="Tous les contrôles obligatoire sont effectués et valide" height="16" rendered="#{statusObject.codeStatusConformite eq  'ok'}"/>
+	<p:graphicImage library="images" name="btn/controle-action-corrective-effectuee-avec-succes.svg" title="Tous les contrôles obligatoires sont effectués et valide après correction" height="16" rendered="#{statusObject.codeStatusConformite eq 'ok_apres_correction'}"/>
+	<p:graphicImage library="images" name="btn/controle-action-corrective-invalide.svg" title="Tous les contrôles obligatoire sont effectués mais certains controle sont encore faux" height="16" rendered="#{statusObject.codeStatusConformite eq 'invalide_meme_apres_correction'}"/>
+	<p:graphicImage library="images" name="btn/controle-action-corrective-a-faire.svg" title="Au moins un controle est faux" height="16" rendered="#{statusObject.codeStatusConformite eq 'invalide_a_corrige'}"/>
+	<p:graphicImage library="images" name="btn/controle-obligatoire.svg" title="Au moins un controle obligatoire n'est pas fait" height="16" rendered="#{statusObject.codeStatusConformite eq  'non_fait'}"/>
+	<p:graphicImage library="images" name="btn/valide-sans-controle.svg" title="Aucun contrôle définit sur ce lot" height="16" rendered="#{statusObject.codeStatusConformite eq  'aucun_controle'}"/>
+	<p:graphicImage library="images" name="btn/controle-a-faire.svg" title="Aucun controle n'est fait" height="16" rendered="#{statusObject == null}"/>
+</ui:fragment>					
+    	
+</ui:composition>
+

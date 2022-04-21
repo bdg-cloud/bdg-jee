@@ -1,0 +1,167 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:o="http://omnifaces.org/ui" xmlns:p="http://primefaces.org/ui">
+
+	<o:importConstants type="fr.legrain.bdg.webapp.app.LgrTab" />
+
+	<p:commandLink id="listeRemiseBtn">
+		<i class="top-submenu-icon fa fa-fw fa-user"></i>
+		<span><h:outputText value="Liste des remises" /></span>
+	</p:commandLink>
+
+	<p:overlayPanel id="idListeRemisePanel" for="listeRemiseBtn" hideEffect="fade" dynamic="true" dismissable="true" appendTo="@(body)"
+		widgetVar="wvOverlayListeRemise" showCloseIcon="true" >
+		<h:form>
+			<div class="dashboard-title" style="background: #f6f6f6;">
+				<h:panelGrid columns="3" cellpadding="5">
+					<h:graphicImage name="dashboard/tier.svg" library="images" height="35px" style="margin-top:1px;" />
+					<p:outputLabel value="Liste des Remises" style="font-size:20px;" />
+				</h:panelGrid>
+				<p:separator />
+			</div>
+			<p:menubar styleClass="menu-onglet" widgetVar="wvMenuListeRemise" id="idMenuListeRemise">
+				<p:menuitem title="Ajouter une nouvelle Remise"
+					update=":form:tabView,:form:messages,@widgetVar(wvMenuListeRemise),@widgetVar(wvDataTableListeGestRemise2)
+					 @widgetVar(wvDataTableListeRemise),@widgetVar(wvBandeauActionRemise),@widgetVar(wvPanelRenderedRemise)"
+					actionListener="#{remiseController.nouveau}" styleClass="icon icon-insert" disabled="#{remiseController.etatBouton('inserer')}"
+					oncomplete="PF('wvOverlayListeRemise').hide();" />
+
+				<p:menuitem title="Rafraîchir la liste" update="@form,:form:messages" actionListener="#{remiseController.refresh}" styleClass="icon icon-refresh"
+					disabled="#{remiseController.modeEcran.dataSetEnModif()}" />
+
+				<!-- 		 <p:menuitem title="Exporter la liste" ajax="false" styleClass="icon icon-export"> -->
+				<!-- 			<p:fileDownload value="#{remiseController.exportationRemise}"/> -->
+				<!-- 		 </p:menuitem> -->
+			</p:menubar>
+
+			<p:sticky target="idMenuListeRemise" />
+
+
+			<!-- 	stickyHeader="true" -->
+
+			<p:dataTable id="dataTableListeGestRemise2" var="doc" widgetVar="wvDataTableListeGestRemise2" class="datatable" value="#{remiseController.values}"
+				rowKey="#{doc.dto.id}" selection="#{remiseController.selection}" dblClickSelect="true" resizableColumns="true" selectionMode="single"
+				paginator="true" rows="#{msg.modele_datatable_ligne_par_page_debut}" paginatorTemplate="#{msg.modele_datatable_paginator}"
+				rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}" emptyMessage="#{msg.message_datatable_vide}"
+				currentPageReportTemplate="#{msg.modele_datatable_page_courante}" disabledSelection="#{remiseController.modeEcran.dataSetEnModif()}">
+
+				<p:ajax event="rowSelect" delay="#{msg.datatable_rowselect_delay}" listener="#{remiseController.onRowSelect}"
+					update=":form:tabView,:form:messages,@widgetVar(wvBandeauActionRemise)"
+					oncomplete="activeTabCenter('#{LgrTab.CSS_CLASS_TAB_REMISE}');PF('wvOverlayListeRemise').hide();scrollToTop();" />
+
+				<f:facet name="header">
+					<h:outputText value="Remise" />
+
+				</f:facet>
+
+				<f:facet name="{Exporters}">
+					<h:commandLink>
+						<p:graphicImage library="images" name="excel.png" width="24" />
+						<p:dataExporter type="xls" target="dataTableListeGestRemise2" fileName="liste_remises" />
+					</h:commandLink>
+
+					<p:commandLink onsuccess="window.open('#{request.contextPath}/output?__report=/reports/remise/ListeDesRemises.rptdesign&amp;__format=pdf')"
+			actionListener="#{remiseController.actImprimerListeDesRemises}" process="@this">
+		                <p:graphicImage  library="images" name="pdf.png"  width="24"/>
+<!-- 		                <p:dataExporter type="pdf" target="dataTableListeTiers" fileName="liste_tiers" /> -->
+		            </p:commandLink>
+
+					<h:commandLink>
+						<p:graphicImage library="images" name="csv.png" width="24" />
+						<p:dataExporter type="csv" target="dataTableListeGestRemise2" fileName="liste_remises" options="#{separateurCsvController.csvOptions}" />
+					</h:commandLink>
+
+					<h:commandLink>
+						<p:graphicImage library="images" name="xml.png" width="24" />
+						<p:dataExporter type="xml" target="dataTableListeGestRemise2" fileName="liste_remises" />
+					</h:commandLink>
+				</f:facet>
+
+
+				<p:column style="width:16px" exportable="false">
+					<f:facet name="header">
+						<h:outputText value="" />
+					</f:facet>
+					<p:commandButton title="Détail" update=":form:tabView,:form:messages,@widgetVar(wvBandeauActionRemise),@widgetVar(wvPanelRenderedRemise)"
+						action="#{remiseController.detail}" styleClass="icon icon-detail icon-grille" disabled="#{remiseController.modeEcran.dataSetEnModif()}"
+						oncomplete="PF('wvOverlayListeRemise').hide();">
+						<f:setPropertyActionListener target="#{remiseController.selection}" value="#{doc}" />
+					</p:commandButton>
+				</p:column>
+
+				<p:column sortBy="#{doc.dto.codeDocument}" filterBy="#{doc.dto.codeDocument}" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="Code remise" />
+					</f:facet>
+					<h:outputText value="#{doc.dto.codeDocument}" />
+				</p:column>
+				<p:column sortBy="#{doc.dto.dateDocument}" filterBy="#{doc.dto.dateDocument}" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="Date remise" />
+					</f:facet>
+					<h:outputText value="#{doc.dto.dateDocument}">
+						<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}" />
+					</h:outputText>
+				</p:column>
+
+
+				<p:column sortBy="#{doc.dto.netTtcCalc}" filterBy="#{doc.dto.netTtcCalc}" filterMatchMode="contains"
+							exportFunction="#{separateurCsvController.exportNumber}">
+					<f:facet name="header">
+						<h:outputText value="Net TTC" />
+					</f:facet>
+					<h:outputText value="#{doc.dto.netTtcCalc}" />
+				</p:column>
+
+				<p:column sortBy="#{doc.dto.libelleDocument}" filterBy="#{doc.dto.libelleDocument}" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="Libellé" />
+					</f:facet>
+					<h:outputText value="#{doc.dto.libelleDocument}" />
+				</p:column>
+
+				<p:column sortBy="#{doc.dto.codeTPaiement}" filterBy="#{doc.dto.codeTPaiement}" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="Type paiement" />
+					</f:facet>
+					<h:outputText value="#{doc.dto.codeTPaiement}" />
+				</p:column>
+
+				<p:column sortBy="#{doc.dto.iban}" filterBy="#{doc.dto.iban}" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="Compte bancaire (iban)" />
+					</f:facet>
+					<h:outputText value="#{doc.dto.iban}" />
+				</p:column>
+				
+				<p:column sortBy="#{doc.dto.dateExport}" filterBy="#{doc.dto.dateExport}" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="Exporté" />
+					</f:facet>
+					<h:outputText value="#{doc.dto.dateExport}">
+						<f:convertDateTime pattern="#{msg.date_pattern}"
+							timeZone="#{msg.time_zone}" />
+					</h:outputText>
+				</p:column>
+
+				<p:column style="width:16px" exportable="false">
+					<f:facet name="header">
+						<h:outputText value="" />
+					</f:facet>
+
+					<p:commandButton title="Supprimer" styleClass="icon-delete icon icon-grille" widgetVar="widgetVarBtnSupprimerListeRemise"
+					disabled="#{doc.dto.dateExport!=null or remiseController.documentDTOEstVerrouille(doc).verrouille}"
+						action="#{remiseController.actSupprimer}" process="@this" update="@widgetVar(wvDataTableListeGestRemise2)">
+						<f:setPropertyActionListener target="#{remiseController.selection}" value="#{doc}" />
+						<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer cette remise ?" icon="ui-icon-alert" />
+					</p:commandButton>
+				</p:column>
+
+
+			</p:dataTable>
+
+
+
+		</h:form>
+	</p:overlayPanel>
+
+</ui:composition>

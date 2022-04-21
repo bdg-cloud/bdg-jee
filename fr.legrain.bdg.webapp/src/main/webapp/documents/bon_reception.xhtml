@@ -1,0 +1,1021 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:lgr="http://legrain.fr/ui"
+    xmlns:pe="http://primefaces.org/ui/extensions">
+
+	<!-- <f:validateBean disabled="true"> -->
+		<ui:define name="metadata">
+		<f:metadata>
+			<f:viewParam name="variableEcran" value="BR" />
+		</f:metadata>
+	</ui:define>
+	
+	<p:menubar styleClass="menu-onglet" id="idMenuBoutonBonReception" widgetVar="wvMenuBoutonBR">
+	
+		<p:menuitem title="Enregistrer" styleClass="icon-save icon" process="@this"
+			actionListener="#{bonReceptionController.actEnregistrer}"
+			update="idPanelEntete,idPanelLignes,:form:messages,@widgetVar(wvMenuListeBR),@widgetVar(wvDataTableListeBR),@widgetVar(wvMenuBoutonBR),@widgetVar(wvBRPanelLignes),@widgetVar(wvTableauComplementaireBr)"
+			disabled="#{bonReceptionController.etatBouton('enregistrer')}" />
+			
+		<p:menuitem title="Insérer" styleClass="icon-insert icon"
+			actionListener="#{bonReceptionController.actInserer}" process="@this"
+			update="idPanelEntete,idPanelLignes,:form:messages,,@widgetVar(wvMenuListeBR),@widgetVar(wvDataTableListeBR),@widgetVar(wvMenuBoutonBR),@widgetVar(wvBRPanelLignes),@widgetVar(wvBRPanelLignes),@widgetVar(wvTableauComplementaireBr)"
+			disabled="#{bonReceptionController.etatBouton('inserer')}" />
+			
+		<p:menuitem title="Modifier" styleClass="icon-update icon"
+			actionListener="#{bonReceptionController.actModifier}"
+			process="@this"
+			update="idPanelEntete,idPanelLignes,:form:messages,@widgetVar(wvMenuListeBR),@widgetVar(wvDataTableListeBR),@widgetVar(wvMenuBoutonBR),@widgetVar(wvBRPanelLignes),@widgetVar(wvBRPanelLignes),@widgetVar(wvTableauComplementaireBr)"
+			disabled="#{bonReceptionController.etatBouton('modifier')}" />
+			
+		<p:menuitem title="Annuler" styleClass="icon-cancel icon"
+			actionListener="#{bonReceptionController.actAnnuler}" process="@this"
+			update="idPanelEntete,idPanelLignes,:form:messages,@widgetVar(wvMenuListeBR),@widgetVar(wvDataTableListeBR),@widgetVar(wvMenuBoutonBR),@widgetVar(wvBRPanelLignes),@widgetVar(wvBRPanelLignes),@widgetVar(wvTableauComplementaireBr)"
+			disabled="#{bonReceptionController.etatBouton('annuler')}" >
+			<p:confirm header="Confirmation" message="Etes vous sur de vouloir annuler les modifications en cours ?"  icon="ui-icon-alert" />
+		</p:menuitem>	
+			
+		<p:menuitem title="Supprimer" styleClass="icon-delete icon menuitem-poubelle-droite"
+			actionListener="#{bonReceptionController.actSupprimer}"
+			process="@this"
+			update="idPanelEntete,idPanelLignes,:form:messages,@widgetVar(wvMenuListeBR),@widgetVar(wvDataTableListeBR),@widgetVar(wvMenuBoutonBR),@widgetVar(wvBRPanelLignes),@widgetVar(wvBRPanelLignes),@widgetVar(wvTableauComplementaireBr)"
+			disabled="#{bonReceptionController.etatBouton('supprimer')}" >
+			<p:confirm header="Confirmation de la suppression" message="#{bonReceptionController.messageSuppression}" icon="ui-icon-alert" />
+<!-- 			<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer cet enregistrement ?" icon="ui-icon-alert" /> -->
+		</p:menuitem>
+			
+			
+		<p:menuitem title="Fermer" styleClass="icon icon-close menuitem-fermer-droite"
+			actionListener="#{bonReceptionController.actFermer}"
+			process="@this" 
+			update=":form:messages,@widgetVar(wvMenuListeBR),@widgetVar(wvDataTableListeBR)"
+			disabled="#{bonReceptionController.etatBouton('fermer')}"
+			onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())">
+			
+			<p:confirm header="Confirmation" message="#{msg_diag.alert_fermeture_onglet}" icon="ui-icon-alert" disabled="#{!bonReceptionController.modeEcran.dataSetEnModif()}"/>
+		</p:menuitem>
+
+		<p:menuitem title="Créer un évènement" styleClass="icon-agenda icon" 
+			
+			oncomplete="$('.classHiddenCommandForDialogAgendaReturnBR').click()"
+			process="@this" 
+			update="@this" 
+			disabled="#{bonReceptionController.etatBouton('modifier')}"/>
+
+		<p:separator styleClass="separateur-menu-vertical"/>
+		
+		<p:menuitem title="Imprimer" styleClass="icon-print icon"
+			onsuccess="window.open('#{request.contextPath}/output?__report=/reports/documents/br/Fiche_BonReception.rptdesign&amp;__format=pdf')"
+			actionListener="#{bonReceptionController.actImprimer}"
+			disabled="#{bonReceptionController.etatBouton('imprimer')}" />
+			
+		<p:menuitem title="Imprimer étiquette code barre" styleClass="icon-barcode icon"
+			onsuccess="window.open('#{request.contextPath}/articles/etiquette_cb.xhtml')"
+			actionListener="#{bonReceptionController.actImprimerEtiquetteCB}"/>	
+			
+		<p:menuitem title="Envoyer par email" styleClass="icon icon-envoi-mail"
+			oncomplete="$('.classHiddenCommandForDialogEmailReturnBR').click()"
+			process="@this" 
+			update=":form:messages" 
+			disabled="#{bonReceptionController.etatBouton('modifier')}"/>
+
+		<p:separator styleClass="separateur-menu-vertical" />
+						
+		<p:menuitem title="Liste" styleClass="icon icon-liste" oncomplete="PF('wvOverlayListeBR').show();"/>
+
+<!-- 		<p:separator styleClass="separateur-menu-vertical" />		 -->
+<!-- 		<p:menuitem title="Documents liés" styleClass="icon icon-documents-lies" oncomplete="$('.classHiddenCommandForDialogDocumentLieReturnBR').click()" -->
+<!-- 			process="@this" update="@this" disabled="#bonCdeAchatController.etatBouton('imprimer') }" rendered="#{auth.isDevLgr()}" /> -->
+
+	</p:menubar>
+	    
+    <p:commandButton styleClass="classHiddenCommandForDialogDocumentLieReturnBR" actionListener="#{bonReceptionController.actDialogGenerationDocumentLie}" style="display:none" process="@this"  >
+        <p:ajax event="dialogReturn" update="@form"  listener="#{bonReceptionController.handleReturnDialogDocumentLie}"/>  
+    </p:commandButton>
+	<p:commandButton styleClass="classHiddenCommandForDialogAgendaReturnBR" actionListener="#{bonReceptionController.actDialogEvenement}" style="display:none" process="@this"  >
+        <p:ajax event="dialogReturn" update="@widgetVar(wvAgenda)"  />  
+    </p:commandButton>
+    	<p:commandButton styleClass="classHiddenCommandForDialogEmailReturnBR" actionListener="#{bonReceptionController.actDialogEmail}" style="display:none" process="@this"  >
+        <p:ajax event="dialogReturn" listener="#{bonReceptionController.handleReturnDialogEmail}" update=":form:messages"  />  
+    </p:commandButton>    
+	<!-- 	<div class="ui-grid ui-grid-responsive"> -->
+	<!-- 		<div class="ui-grid-row"> -->
+	<!-- 			<div class="ui-grid-col-12"> -->
+<!-- 	flowListener="#{bonReceptionController.onFlowProcess}" -->
+
+<!-- 	<p:wizard nextLabel="Suivant" backLabel="Précédent" showStepStatus="false" widgetVar="widgetVarLigneBR" > -->
+
+<!-- 		<p:tab id="idEntete" title="Entête"> -->
+		
+	<p:fieldset style="margin-bottom:20px;" id="idTableauComplementaireBr" widgetVar="wvTableauComplementaireBr"  rendered="#{auth.isDevLgr()}">
+		<h:panelGrid columns="9" cellpadding="15">
+				<p:commandButton process="@this" rendered="#{auth.isDevLgr()}"
+					alt="Valider le document" 
+					title="Valider le document"
+					label="Valider le document" 
+					value="Valider le document"
+				icon="ui-icon-link"
+					action="#{bonReceptionController.actValiderDocument}" 
+					disabled="#{bonReceptionController.modeEcran.dataSetEnModif()}"
+					update="idPanelEntete,idPanelLignes,:form:messages,@widgetVar(wvMenuListeBR),@widgetVar(wvTableauComplementaireBr),@widgetVar(wvDataTableListeBR),@widgetVar(wvMenuBoutonBR),@widgetVar(wvBRPanelLignes)" >
+				</p:commandButton>
+							
+					<p:outputLabel value="Etat du document" rendered="#{auth.isDevLgr()}"/>
+						<p:panel styleClass="panel-aide-contextuelle" rendered="#{auth.isDevLgr()}">
+							<p:autoComplete value="#{bonReceptionController.selectedEtatDocument}" 
+								converter="entityConverter"
+								completeMethod="#{bonReceptionController.etatAutoComplete}"
+								disabled="true" var="etat"
+								itemLabel="#{etat.codeEtat}" itemValue="#{etat}"
+								forceSelection="true" dropdown="true" placeholder="Etat du document">
+								<p:column>
+									<h:outputText value="#{etat.codeEtat}" />
+								</p:column>
+
+								<p:column>
+									<h:outputText value="#{etat.liblEtat}" />
+								</p:column>
+
+<!-- 								<f:attribute name="nomChamp" value="#{const.C_CODE_ETAT}" /> -->
+<!-- 								  <p:ajax event="clear" listener="#{bonReceptionController.onClearEtat}"  -->
+<!-- 								 	update="idPanelEnteteBoncdeAchat,idPanelLignesBoncdeAchat,idTableauComplementaireBcde,:form:messages,@widgetVar(#{bonReceptionController.wvEcran}),@widgetVar(wvMenuListeBoncdeAchat),@widgetVar(wvDataTableListeBoncdeAchat)"/> -->
+<!-- 								<p:ajax event="itemSelect" -->
+<!-- 									listener="#{bonReceptionController.autcompleteSelection}" -->
+<!-- 									update="idPanelEnteteBoncdeAchat,idPanelLignesBoncdeAchat,idTableauComplementaireBcde,:form:messages,@widgetVar(#{bonReceptionController.wvEcran}),@widgetVar(wvMenuListeBoncdeAchat),@widgetVar(wvDataTableListeBoncdeAchat)"/> -->
+							</p:autoComplete>
+						</p:panel>
+			
+		</h:panelGrid>
+	</p:fieldset>
+		
+		
+			<p:panel id="idPanelEntete" header="Entête" toggleable="true" widgetVar="panelEntete" styleClass="panel-reception">
+				<h:panelGrid columns="2" cellpadding="10">
+					
+					<p:outputLabel value="Fournisseur : " styleClass="labelchob"/>
+					<p:panel styleClass="panel-autocomplete">
+					<p:focus>
+
+					<p:autoComplete value="#{bonReceptionController.taTiersDTO}"
+					    id="idtiers" converter="entityConverter"
+						completeMethod="#{bonReceptionController.tiersAutoCompleteDTOLight}"
+						required="true" requiredMessage="#{msg_diag.alert_champs_obligatoir}" 
+						disabled="#{bonReceptionController.editable()}" var="tiers"
+						itemLabel="#{tiers.codeTiers}" itemValue="#{tiers}"
+						forceSelection="true" dropdown="true" placeholder="Tiers" >
+						<p:column>
+							<!-- 				             	<f:facet name="header"> -->
+							<!-- 				            		<p:commandButton value="Ajouter" title="Insérer" -->
+							<!-- 										process="@this" -->
+							<!-- 										update=":form:tabView,:form:messages" -->
+							<!-- 										actionListener="#{bonReceptionController.actDialogTiers}" -->
+							<!-- 										styleClass="btn-insert btn" > -->
+							<!-- 											<p:ajax event="dialogReturn" listener="#{bonReceptionController.handleReturnDialogTiers}" update="@parent:@parent"/> -->
+							<!-- 										</p:commandButton> -->
+							<!-- 				            	</f:facet> -->
+							<h:outputText value="#{tiers.codeTiers}" required="true" requiredMessage="#{msg_diag.alert_champs_obligatoir}"/>
+						</p:column>
+						
+						<p:column>
+							<h:outputText value="#{tiers.nomTiers}" />
+						</p:column>
+		
+						<p:column>
+							<h:outputText value="#{tiers.prenomTiers}" />
+						</p:column>
+
+						<p:column>
+							<h:outputText value="#{tiers.nomEntreprise}" />
+						</p:column>
+
+						<f:attribute name="nomChamp" value="#{const.C_CODE_TIERS}" />
+						<p:ajax event="itemSelect" listener="#{bonReceptionController.autcompleteSelection}" update="@this , idCode, idNomTiers, idLibelleBR" />
+					</p:autoComplete>
+					</p:focus>
+					
+					<p:outputLabel id="idNomTiers" value="#{bonReceptionController.taTiersDTO.nomTiers}" />
+					</p:panel>
+					
+					<p:outputLabel value="Type : " />
+
+					<p:autoComplete value="#{bonReceptionController.taTReceptionDTO}"
+					    id="idtypeReception" converter="entityConverter"
+						completeMethod="#{bonReceptionController.typeReceptionAutoCompleteDTOLight}"
+						disabled="#{bonReceptionController.editable()}" var="treception"
+						itemLabel="#{treception.codeTReception}" itemValue="#{treception}"
+						forceSelection="true" dropdown="true" placeholder="Type de réception" >
+						<p:column>
+							<h:outputText value="#{treception.codeTReception}"/>
+						</p:column>
+						
+						<p:column>
+							<h:outputText value="#{treception.liblTReception}" />
+						</p:column>
+		
+						<f:attribute name="nomChamp" value="#{const.C_CODE_T_RECEPTION}" />
+						<p:ajax event="itemSelect" listener="#{bonReceptionController.autcompleteSelection}" update="@this , idCode" />
+					</p:autoComplete>
+
+					<p:outputLabel value="N° de réception : " styleClass="labelchob"/>
+					<p:inputText id="idCode"
+					
+						value="#{bonReceptionController.selectedDocumentDTO.codeDocument}"
+						validator="#{bonReceptionController.validateBonReception}"
+						disabled="#{bonReceptionController.editable()}">
+						<f:attribute name="nomChamp" value="#{const.C_CODE_DOCUMENT}" />
+						<p:ajax event="blur" update="@this" />
+						
+					</p:inputText>
+
+					<p:outputLabel value="Date : " styleClass="labelchob"/>
+					<p:calendar
+						value="#{bonReceptionController.selectedDocumentDTO.dateDocument}"
+						pattern="dd/MM/yyyy" mask="true" locale="fr" navigator="true" showOn="button" timeZone="#{msg.time_zone}" 
+						validator="#{bonReceptionController.validateBonReception}"
+						disabled="#{bonReceptionController.editable()}">
+						<f:attribute name="nomChamp" value="#{const.C_DATE_DOCUMENT}" />
+						<p:ajax event="dateSelect" update="@this" />
+						<p:ajax event="change"  update="@this"/>
+						
+					</p:calendar>
+					
+					<p:outputLabel value="Heure : " styleClass="labelchob"/>
+					<p:calendar
+						value="#{bonReceptionController.selectedDocumentDTO.heureDocument}"
+						pattern="HH:mm" timeOnly="true"  timeZone="#{msg.time_zone}" navigator="true" showOn="button" mask="true"
+						validator="#{bonReceptionController.validateBonReception}"
+						disabled="#{bonReceptionController.editable()}"	>
+						<f:attribute name="nomChamp" value="#{const.C_DATE_DOCUMENT}" />
+<!-- 						<p:ajax event="dateSelect" update="@this" /> -->
+						<p:ajax event="change"  update="@this"/>
+						
+					</p:calendar>
+					
+					<p:outputLabel value="Réserver les lots pour " />
+						<p:panel styleClass="panel-autocomplete">
+	
+						<p:autoComplete value="#{bonReceptionController.taTiersPrestationServiceDTO}"
+						    id="idtiers" converter="entityConverter"
+							completeMethod="#{bonReceptionController.tiersAutoCompleteDTOLight}"
+							disabled="#{!bonReceptionController.modeEcran.dataSetEnModif()}" var="tiers"
+							itemLabel="#{tiers.codeTiers}" itemValue="#{tiers}"
+							forceSelection="true" dropdown="true" placeholder="Tiers" >
+							<p:column>
+								<h:outputText value="#{tiers.codeTiers}" required="true" requiredMessage="#{msg_diag.alert_champs_obligatoir}"/>
+							</p:column>
+							
+							<p:column>
+								<h:outputText value="#{tiers.nomTiers}" />
+							</p:column>
+			
+							<p:column>
+								<h:outputText value="#{tiers.prenomTiers}" />
+							</p:column>
+
+							<p:column>
+								<h:outputText value="#{tiers.nomEntreprise}" />
+							</p:column>
+
+							<f:attribute name="nomChamp" value="#{const.C_CODE_TIERS_PRESTATION}" />
+							<p:ajax event="itemSelect" listener="#{bonReceptionController.autcompleteSelection}" update="@this, idNomPresta" />
+						</p:autoComplete>
+						<p:outputLabel id="idNomPresta" value="#{bonReceptionController.taTiersPrestationServiceDTO.nomTiers}" />
+						</p:panel>
+
+					<p:outputLabel value="Libellé : " styleClass="labelchob"/>
+					<p:inputText id="idLibelleBR"
+						value="#{bonReceptionController.selectedDocumentDTO.libelleDocument}"
+						validator="#{bonReceptionController.validateBonReception}" style="width:300%"
+						disabled="#{bonReceptionController.editable()}">
+						<f:attribute name="nomChamp" value="#{const.C_LIBELLE_DOCUMENT}" />
+						<p:ajax event="blur" update="@this" />
+					</p:inputText>
+
+					<p:outputLabel value="Observation : " />
+					<p:inputTextarea
+						value="#{bonReceptionController.selectedDocumentDTO.commentaire}"
+						validator="#{bonReceptionController.validateBonReception}" style="width:300%"
+						disabled="#{bonReceptionController.editable()}">
+						<f:attribute name="nomChamp" value="#{const.C_COMMENTAIRE}" />
+						<p:ajax event="blur" update="@this" />
+					</p:inputTextarea>
+					
+					<p:outputLabel value="Certification : " />
+					<p:autoComplete 
+						value="#{bonReceptionController.selectedDocumentDTO.taLabelArticleDTOs}"
+						multiple="true"
+						completeMethod="#{bonReceptionController.certificationAutoCompleteLight}"
+						disabled="#{!bonReceptionController.modeEcran.dataSetEnModif()}"
+						var="famille" itemLabel="#{famille.codeLabelArticle}"
+						itemValue="#{famille}" forceSelection="true" dropdown="true"
+						placeholder="Certification" converter="entityConverter">
+						
+						<p:column>
+							<h:outputText value="#{famille.codeLabelArticle}" />
+						</p:column>
+						<p:column>
+							<h:outputText value="#{famille.desciptionLabelArticle}" />
+						</p:column>
+						<p:column styleClass="center">
+							<p:graphicImage value="/image_label_article/#{famille.id}"  height="20"/>
+						</p:column>
+						
+						<f:attribute name="nomChamp" value="#{const.C_CODE_LABEL_ARTICLE}" />
+						<p:ajax event="itemSelect" listener="#{bonReceptionController.autcompleteSelection}" update="@this" />
+						<p:ajax event="itemUnselect" listener="#{bonReceptionController.autcompleteUnSelect}" update="@this" />
+					</p:autoComplete>
+
+					<p:outputLabel value="Saisie par code barre : " />
+					<p:selectBooleanButton value="#{bonReceptionController.modeScanCodeBarre}" onLabel="Oui" offLabel="Non" 
+						onIcon="ui-icon-check" offIcon="ui-icon-close" style="width:60px" disabled="#{bonReceptionController.editable()}">
+		           		<p:ajax update="@this,@widgetVar(widgetVarDataTableLigneBonReception)" listener="#{bonReceptionController.changeModeSaisieCodeBarre}" />
+		        	</p:selectBooleanButton>
+		        	
+		        	<p:outputLabel value="Gestion des lots : " />
+					<p:inputSwitch value="#{bonReceptionController.selectedDocumentDTO.gestionLot}" onLabel="Oui" offLabel="Non" 
+					disabled="#{bonReceptionController.editable() or bonReceptionController.disableTtc()}">
+						<p:ajax update="@widgetVar(widgetVarDataTableLigneBonReception)" />
+<!-- 						<p:ajax listener="#{bonReceptionController.validateDocument}" update="@widgetVar(widgetVarDataTableLigneBonReception)" /> -->
+					</p:inputSwitch>
+					
+					<p:outputLabel value="Avec gestion des unités de saisie : " />
+					<p:inputSwitch value="#{bonReceptionController.selectedDocumentDTO.utiliseUniteSaisie}" onLabel="Oui" offLabel="Non" disabled="#{bonReceptionController.editable()}">
+						<p:ajax  update="@this,@widgetVar(wvIduSaisieLBr),@widgetVar(wvIdQteSaisieLBR)" />
+					</p:inputSwitch>
+					
+				</h:panelGrid>
+				
+			</p:panel>
+
+			<!-- 			</div> -->
+			<!-- 		</div> -->
+			
+<!-- 		</p:tab> -->
+
+		<!-- 		<div class="ui-grid-row"> -->
+		<!-- 			<div class="ui-grid-col-12"> -->
+
+<!-- 		<p:tab id="idLignes" title="Ligne"> -->
+		<p:panel widgetVar="wvLigneBRMessages">
+			<p:messages id="idLigneBRMessages" showDetail="true" closable="true" autoUpdate="false"/>
+		</p:panel>
+			<p:panel id="idPanelLignes" header="Lignes" toggleable="true" widgetVar="wvBRPanelLignes" >
+<!-- 			styleClass="panel-reception" -->
+				
+				<p:menubar styleClass="menu-onglet" widgetVar="wvMenuLigneBr">
+				
+					<p:menuitem title="Insérer" styleClass="icon-insert icon"
+						actionListener="#{bonReceptionController.actInsererLigne}"
+						process="@this"
+						update="@this,@widgetVar(widgetVarDataTableLigneBonReception),:form:messages,@widgetVar(wvMenuLigneBr)"
+						disabled="#{bonReceptionController.etatBoutonLigne('inserer')}"
+						oncomplete="editionDerniereLigne('myclass2');" />
+						
+					<p:menuitem title="Supprimer" styleClass="icon-delete icon" widgetVar="widgetVarBtnSupprimer"
+						actionListener="#{bonReceptionController.actSupprimerLigne}"
+						process="@this"
+						update="@this,@widgetVar(wvBRPanelLignes),:form:messages,@widgetVar(wvMenuLigneBr)"
+						disabled="#{bonReceptionController.etatBoutonLigne('supprimer')}" >
+						<p:confirm header="Confirmation de la suppression" message="#{bonReceptionController.messageSuppression}" icon="ui-icon-alert" />
+					</p:menuitem>
+				</p:menubar>
+		
+				<p:dataTable 
+					id="dataTableLigneBonReception" 
+					var="ligne"
+					widgetVar="widgetVarDataTableLigneBonReception"
+					value="#{bonReceptionController.valuesLigne}"
+					rowKey="#{ligne.dto.numLigneLDocument}"
+					selection="#{bonReceptionController.selectedLigneJSF}"
+					selectionMode="single" 
+					editable="true" 
+					dblClickSelect="true"
+					styleClass="datatable mt10 myclass2" 
+					resizableColumns="true"
+					draggableRows="true">
+
+				
+
+					<p:ajax event="rowEdit" listener="#{bonReceptionController.onRowEdit}" update="@widgetVar(wvLigneBRMessages),@widgetVar(wvMenuLigneBr)" 
+						oncomplete="if(!handleCompleteValidationError(xhr, status, args)) {increment();};autreLigneModifiable('myclass2');" />
+					<p:ajax event="rowEditCancel" listener="#{bonReceptionController.onRowCancel}" update="@widgetVar(wvMenuLigneBr)" 
+						oncomplete="autreLigneModifiable('myclass2');"/>
+					<p:ajax event="rowSelect" listener="#{bonReceptionController.onRowSelectLigne}" />
+					<p:ajax event="rowEditInit" listener="#{bonReceptionController.onRowEditInit}"  update="@widgetVar(wvMenuLigneBr),@widgetVar(wvIduSaisieLBr),@widgetVar(wvIdQteSaisieLBr)"
+						oncomplete="autreLigneNonModifiable('myclass2');verifModeScanCodeBarreBonReception();"/>
+										<p:ajax event="toggleSelect" process="@this" />
+					<p:ajax event="rowToggle" process="@this" oncomplete="ligneSeperationExpend()" />
+					
+					<p:column style="width:16px" >
+						<p:rowEditor rendered="#{bonReceptionController.etatBoutonLigne('rowEditor')}" styleClass="row-editor-debut"/>
+					</p:column>
+					
+					<p:column style="width:8px" styleClass="center" >
+						<p:rowToggler  rendered="#{ligne.ligneLieeFils!=null or ligne.ligneLieeMere!=null or ligne.ligneAbonnement!=null}"/>
+					</p:column>
+					
+<!-- 							<p:column sortBy="#{ligne.dto.numLigneLDocument}"> -->
+<!-- 								<f:facet name="header"> -->
+<!-- 									<h:outputText value="Num" /> -->
+<!-- 								</f:facet> -->
+<!-- 								<p:cellEditor > -->
+<!-- 									<f:facet name="output"> -->
+<!-- 										<h:outputText value="#{ligne.dto.numLigneLDocument}"/>	 -->
+<!-- 									</f:facet> -->
+<!-- 									<f:facet name="input" > -->
+<!-- 										<p:inputText value="#{ligne.dto.numLigneLDocument}" > -->
+<!-- 										 </p:inputText>	 -->
+<!-- 									</f:facet> -->
+<!-- 								</p:cellEditor> -->
+<!-- 							</p:column>							 -->
+
+					
+					<p:column style="width:100px" rendered="#{bonReceptionController.modeScanCodeBarre}">
+						<f:facet name="header">
+							<h:outputText value="Code barre frs." title="Code barre fournisseur"/>
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.codeBarre}" />
+							</f:facet>
+							<f:facet name="input">
+								<p:inputText value="#{ligne.dto.codeBarre}" id="idCodeBarre" class="focus-defaut-ligne zone-scan-codebarre"
+								validator="#{bonReceptionController.validateLignesBonReception}">
+								<f:attribute name="nomChamp" value="#{const.C_CODE_BARRE}" />
+								<p:ajax event="blur" />
+								<p:ajax event="keyup" />
+								</p:inputText>
+							</f:facet>
+						</p:cellEditor>
+					</p:column>	
+									
+					<p:column style="width:10px" styleClass="center" rendered="#{bonReceptionController.modeScanCodeBarre}">
+						<f:facet name="header">
+							<h:outputText value="" />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="" />
+<!-- 								fa-check -->
+							</f:facet>
+							<f:facet name="input">
+								<p:commandButton title="Valider code barre" icon="fa fa-fw fa-check" styleClass="btn-cb-bonreception"
+									actionListener="#{bonReceptionController.actValiderCodeBarre}"
+									process="@this"
+									disabled="#{!bonReceptionController.modeEcran.dataSetEnModif()}"
+									update="idCodeArticle,idarticle,lib,u1,u2,dluo,idLotBr,idQte1,qte2,idEntrepotBR,idEmplacementBR"
+									oncomplete="$('.myclass2 .ui-cell-editor-input .focus-defaut-apres-scan-ligne').focus(function() { $(this).select(); });
+									$('.myclass2 .ui-cell-editor-input .focus-defaut-apres-scan-ligne').focus();">
+									<f:setPropertyActionListener target="#{bonReceptionController.selectedLigneJSF}" value="#{ligne}" />
+									<p:ajax event="dialogReturn" listener="#{bonReceptionController.handleReturnDialogRefArticleFournisseur}" 
+										update="idCodeArticle,idarticle,lib,u1,u2,dluo,idLotBr,idQte1,qte2,idEntrepotBR,idEmplacementBR"  />  
+								</p:commandButton>
+							</f:facet>
+						</p:cellEditor>						
+					</p:column>	
+							
+					<p:column style="width:140px">
+						<f:facet name="header">
+							<h:outputText value="Code article" />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{ligne.taArticle.codeArticle}" id="idCodeArticle"/>
+							</f:facet>
+							<f:facet name="input">
+							<p:focus>
+								<p:autoComplete value="#{ligne.taArticleDTO}"
+									completeMethod="#{bonReceptionController.articleAutoCompleteDTOLight}"
+									id="idarticle" converter="entityConverter"
+									var="art" itemLabel="#{art.codeArticle}" itemValue="#{art}"
+									forceSelection="true" dropdown="true" 
+									maxResults="#{bonReceptionController.taPreferencesService.nbMaxChargeListeArticle()}"
+									moreText="Il y a #{component.maxResults} affichés sur #{component.suggestions.size()} au total, Veuillez affiner votre recherche ou cliquer ici pour en afficher plus ..."
+									 placeholder="Article" 
+									style="width:100%">
+									
+									<p:column>
+										<h:outputText value="#{art.codeArticle}" />
+									</p:column>
+									
+									<p:column>
+										<h:outputText value="#{art.libellecArticle}" />
+									</p:column>
+									<p:column >
+										<h:outputText value="#{art.commentaireArticle}" rendered="#{bonReceptionController.rechercheAvecCommentaire(false)}"/>
+									</p:column>
+
+									<f:attribute name="nomChamp" value="#{const.C_CODE_ARTICLE}" />
+									<p:ajax event="clear" listener="#{bonReceptionController.onClearArticle}" update="@parent:idQte1,qte2,u2,u1,iduSaisieLBr,idQteSaisieLBR,dluo,idEmplacementBR,idEntrepotBR,idLotBr,lib"/>
+									
+									<p:ajax event="itemSelect" listener="#{bonReceptionController.autcompleteSelection}" update="@parent:idQte1,qte2,u2,u1,iduSaisieLBr,idQteSaisieLBR,dluo,idEmplacementBR,idEntrepotBR,idLotBr,lib"/>
+									<p:ajax event="moreText" listener="#{bonReceptionController.onMoreTextArticle}" />
+
+								</p:autoComplete>
+							</p:focus>
+							</f:facet>
+						</p:cellEditor >
+					</p:column >
+
+					<p:column style="width:140px">
+						<f:facet name="header">
+							<h:outputText value="Libellé" />
+						</f:facet>
+<!-- 						<h:outputText value="#{ligne.dto.libLDocument}" /> -->
+<!-- 						<h:outputText value="#{ligne.taArticle.libellecArticle}" id="lib" /> -->
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.libelleLot}" />
+							</f:facet>
+							<f:facet name="input">
+								<p:inputText value="#{ligne.dto.libelleLot}" id="lib"
+								validator="#{bonReceptionController.validateLignesBonReception}">
+								<f:attribute name="nomChamp" value="#{const.C_LIB_L_DOCUMENT}" />
+								<p:ajax event="blur" />
+								</p:inputText>
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+
+					<p:column style="width:120px"  rendered="#{bonReceptionController.selectedDocumentDTO.gestionLot}">
+						<f:facet name="header">
+							<h:outputText value="N° de lot" />
+						</f:facet>
+						<!-- combo -->
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.numLot}" />
+							</f:facet>
+							<f:facet name="input">
+								<p:inputText value="#{ligne.dto.numLot}" required="true" id="idLotBr"
+								requiredMessage="#{msg_diag.alert_champs_obligatoir}" style="width:100%" 
+								validator="#{bonReceptionController.validateLignesBonReception}" disabled="#{!bonReceptionController.lotEstUnique(ligne.taLot)}" >
+								<f:attribute name="nomChamp" value="#{const.C_NUM_LOT}" />
+								<p:ajax event="blur" />
+								</p:inputText>
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+
+					<p:column style="width:140px">
+						<f:facet name="header">
+							<h:outputText value="Entrepot" />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{ligne.taEntrepot.codeEntrepot}" />
+							</f:facet>
+							<f:facet name="input">
+								<p:autoComplete value="#{ligne.taEntrepot}" id="idEntrepotBR"
+									completeMethod="#{bonReceptionController.entrepotAutoComplete}"
+									var="ent" itemLabel="#{ent.codeEntrepot}" itemValue="#{ent}"
+									forceSelection="true" dropdown="true"
+									placeholder="Entrepot" style="width:100%">
+									<p:column>
+										<h:outputText value="#{ent.codeEntrepot}" />
+									</p:column>
+									
+									<f:attribute name="nomChamp" value="#{const.C_CODE_ENTREPOT}" />
+									<p:ajax event="itemSelect" listener="#{bonReceptionController.autcompleteSelection}" />
+								</p:autoComplete>
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+
+					<p:column style="width:140px">
+						<f:facet name="header">
+							<h:outputText value="Emplacement" />
+						</f:facet>
+						<!-- combo -->
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.emplacement}" />
+							</f:facet>
+							<f:facet name="input">
+								<p:autoComplete value="#{ligne.dto.emplacement}" id="idEmplacementBR"
+									completeMethod="#{bonReceptionController.emplacementAutoComplete}"
+									dropdown="true" 
+									placeholder="Emplacement" style="width:100%">
+									<f:attribute name="nomChamp" value="#{const.C_EMPLACEMENT}" />
+									<p:ajax event="itemSelect" listener="#{bonReceptionController.autcompleteSelection}" />
+									 <p:ajax event="change" listener="#{bonReceptionController.actionChangeEmplacement}" /> 									
+								</p:autoComplete>
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+
+					<p:column style="width:80px">
+						<f:facet name="header">
+							<h:outputText value="DDM/DLC" />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.dluo}">
+									<f:convertDateTime pattern="dd/MM/yyyy" timeZone="#{msg.time_zone}"  />
+								</h:outputText>
+							</f:facet>
+							<f:facet name="input">
+								<p:calendar value="#{ligne.dto.dluo}" pattern="dd/MM/yyyy" mask="true" mode="popup"  timeZone="#{msg.time_zone}" 
+									locale="fr" navigator="true" id="dluo"/>
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+
+
+					<p:column  style="width:5%" styleClass="right" rendered="#{bonReceptionController.selectedDocumentDTO.utiliseUniteSaisie}">
+						<f:facet name="header">
+							<h:outputText value="Qté Saisie" />
+						</f:facet>
+						<p:cellEditor >
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.qteSaisieLDocument}"/>	
+							</f:facet>
+							<f:facet name="input" >
+								<p:inputText id="idQteSaisieLBR" widgetVar="wvIdQteSaisieLBr" value="#{ligne.dto.qteSaisieLDocument}"  style="width:100%" 
+										validator="#{bonReceptionController.validateLignesBonReception}" disabled="#{ligne.ligneCommentaire() or !bonReceptionController.enabledUniteSaisie()}">
+									<f:attribute name="nomChamp" value="#{const.C_QTE_SAISIE_L_DOCUMENT}" /> 
+									<p:ajax event="blur" update="@parent:idQte1,qte2,u2,u1"/>
+								</p:inputText>                  
+							</f:facet >
+						</p:cellEditor>
+					</p:column>
+
+
+					<p:column style="width:5%"  styleClass="center" rendered="#{bonReceptionController.selectedDocumentDTO.utiliseUniteSaisie}">
+						<f:facet name="header">
+							<h:outputText value="U. Saisie" />
+						</f:facet>
+						<p:cellEditor >
+							<f:facet name="output">
+								<h:outputText value="#{ligne.taUniteSaisie.codeUnite}" />
+							</f:facet>
+							<f:facet name="input">
+<!-- 								<p:inputText value="#{ligne.taUnite1.codeUnite}" style="width:100%" id="u1"/> -->
+								<p:autoComplete value="#{ligne.taUniteSaisie}"
+									completeMethod="#{bonReceptionController.uniteAutoCompleteLightUniteSaisie}"
+									var="unit" itemLabel="#{unit.codeUnite}" itemValue="#{unit}"
+									forceSelection="true" dropdown="true"
+									placeholder="USaisie" style="width:100%" id="iduSaisieLBr" widgetVar="wvIduSaisieLBr" disabled="#{ligne.ligneCommentaire() or !bonReceptionController.enabledUniteSaisie()}" >
+									<p:column>
+										<h:outputText value="#{unit.codeUnite}" />
+									</p:column>
+									
+									<f:attribute name="nomChamp" value="#{const.C_U_SAISIE_L_DOCUMENT}" />
+									<p:ajax event="itemSelect" listener="#{bonReceptionController.autcompleteSelection}" update="@parent:idQteSaisieLBR,idQte1,qte2,u2,u1"/>
+								</p:autoComplete>
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+
+
+
+					<p:column  style="width:80px">
+						<f:facet name="header">
+							<h:outputText value="Qté 1" />
+						</f:facet>
+						<p:cellEditor >
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.qteLDocument}"/>	
+							</f:facet>
+							<f:facet name="input" >
+								<p:inputText id="idQte1"  value="#{ligne.dto.qteLDocument}"  style="width:100%" class="focus-defaut-apres-scan-ligne"
+								validator="#{bonReceptionController.validateLignesBonReception}">
+								<f:attribute name="nomChamp" value="#{const.C_QTE_L_DOCUMENT}" /> 
+								<p:ajax event="blur" update="@parent:qte2"/>
+								 </p:inputText>	
+<!-- 								 <pe:keyFilter  for="idQte1"  mask="num"/>						 -->
+							</f:facet >
+							
+						</p:cellEditor>
+						
+					</p:column>
+
+					<p:column >
+						<f:facet name="header">
+							<h:outputText value="Unité 1" />
+						</f:facet>
+						<p:cellEditor >
+							<f:facet name="output">
+								<h:outputText value="#{ligne.taUnite1.codeUnite}" />
+							</f:facet>
+							<f:facet name="input">
+<!-- 								<p:inputText value="#{ligne.taUnite1.codeUnite}" style="width:100%" id="u1"/> -->
+								<p:autoComplete value="#{ligne.taUnite1}"
+									completeMethod="#{bonReceptionController.uniteAutoComplete}"
+									var="unit" itemLabel="#{unit.codeUnite}" itemValue="#{unit}"
+									forceSelection="true" dropdown="true"
+									placeholder="U1" style="width:100%" id="u1">
+									<p:column>
+										<h:outputText value="#{unit.codeUnite}" />
+									</p:column>
+									
+									<f:attribute name="nomChamp" value="#{const.C_U1_L_DOCUMENT}" />
+									<p:ajax event="itemSelect" listener="#{bonReceptionController.autcompleteSelection}" />
+								</p:autoComplete>
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+
+					<p:column  style="width:80px">
+						<f:facet name="header">
+							<h:outputText value="Qté 2" />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.qte2LDocument}"/>
+							</f:facet>
+							<f:facet name="input">
+								<p:inputText value="#{ligne.dto.qte2LDocument}"	style="width:100%" id="qte2"/>
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+
+					<p:column >
+						<f:facet name="header">
+							<h:outputText value="Unité 2" />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{ligne.taUnite2.codeUnite}"/>
+							</f:facet>
+							<f:facet name="input">
+<!-- 								<p:inputText value="#{ligne.taUnite2.codeUnite}" style="width:100%" id="u2"/> -->
+								<p:autoComplete value="#{ligne.taUnite2}"
+									completeMethod="#{bonReceptionController.uniteAutoCompleteAll}"
+									var="unit" itemLabel="#{unit.codeUnite}" itemValue="#{unit}"
+									forceSelection="true" dropdown="true"
+									placeholder="U2" style="width:100%" id="u2">
+									<p:column>
+										<h:outputText value="#{unit.codeUnite}" />
+									</p:column>
+									
+									<f:attribute name="nomChamp" value="#{const.C_U2_L_DOCUMENT}" />
+									<p:ajax event="itemSelect" listener="#{bonReceptionController.autcompleteSelection}" />
+								</p:autoComplete>
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+					
+					<p:column styleClass="center">
+								<f:facet name="header">
+									<h:outputText value="Certif" />
+								</f:facet>
+								<p:cellEditor>
+									<f:facet name="output">
+										<h:outputText value="#{ligne.listeCertificationDTO.size() gt 0 ? 'X':''}"/>
+									</f:facet>
+									<f:facet name="input">
+										<p:selectCheckboxMenu value="#{ligne.listeCertificationDTO}" label="Certif" style="width:100%"
+									          filter="true" filterMatchMode="startsWith" panelStyle="width:250px" converter="entityConverter">
+									    	<f:selectItems value="#{bonReceptionController.listeToutesCertification}" var="a" itemLabel="#{a.libelleLabelArticle}" itemDescription="#{a.desciptionLabelArticle}"/>
+									    	<p:ajax listener="#{bonReceptionController.actChangeCertificationLot}" />
+									    </p:selectCheckboxMenu>
+									</f:facet>
+								</p:cellEditor>
+					</p:column>
+					
+					<p:column style="width:32px">
+						<f:facet name="header">
+							<p:outputLabel value="Ctrl" title="Contrôles de conformité"/>
+						</f:facet>
+						
+						<p:cellEditor>
+							<f:facet name="output">
+						
+							<p:commandLink process="@this" update=":form:messages" 
+								actionListener="#{bonReceptionController.actDialogControleLot}"
+								disabled="#{ligne.taLot.idLot == null or ligne.taLot.idLot==0}"
+								 >
+								<p:graphicImage library="images" name="report.png" title="Controles" alt="Controles" height="16"/>
+					
+								<lgr:iconStatusConformite id="dd" statusObject="#{ligne.taLot.taStatusConformite}"/>
+
+								<f:attribute name="lot" value="#{ligne.dto.numLot}" />
+								<p:ajax event="dialogReturn" listener="#{bonReceptionController.handleReturnDialogControleLot}" update="@parent"/>
+							</p:commandLink>
+							<!-- <p:graphicImage library="images" name="accept.png" title="Controles" alt="Controles" height="16"/> -->
+							<!-- <p:graphicImage library="images" name="cancel.png" title="Controles" alt="Controles" height="16"/> -->
+	
+							</f:facet>
+							
+							<f:facet name="input">
+								<h:outputText value="" />
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+					<p:column style="width:1%">
+						<f:facet name="header">
+							<h:outputText value="Etat" />
+						</f:facet>
+								<h:outputText value="#{ligne.codeEtat}"  id="idListeSyntheseEtat#{variableEcran}"/>
+								<p:tooltip  value="#{ligne.codeEtat.concat(ligne.libelleEtat)}" shared="true" for="idListeSyntheseEtat#{variableEcran}" showEffect="clip" position="top"/>
+					</p:column>					
+					
+					<p:column style="width:16px">
+						<f:facet name="header">
+							<h:outputText value="" />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<p:commandButton title="Supprimer" styleClass="icon-delete icon icon-grille" widgetVar="widgetVarBtnSupprimer"
+									action="#{bonReceptionController.actSupprimerLigne}"
+									process="@this"
+									disabled="#{!bonReceptionController.modeEcran.dataSetEnModif() or bonReceptionController.etatBoutonLigne('supprimer')}"
+									update="@widgetVar(wvBRPanelLignes)">
+<!-- 									<f:attribute name="idLigne" value="#{ligne.dto.id}" /> -->
+									<f:setPropertyActionListener target="#{bonReceptionController.selectedLigneJSF}" value="#{ligne}" />
+									<p:confirm header="Confirmation de la suppression" message="#{bonReceptionController.messageSuppression}" icon="ui-icon-alert" />
+								</p:commandButton>
+							</f:facet>
+							<f:facet name="input">
+								<h:outputText value="" />
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+
+					<p:column style="width:26px">
+						<p:rowEditor rendered="#{bonReceptionController.etatBoutonLigne('rowEditor')}" styleClass="row-editor-fin"/>
+					</p:column>
+
+
+					<p:rowExpansion>
+					<p:panelGrid columns="2"  columnClasses="ui-grid-col-6,ui-grid-col-6" styleClass="ui-panelgrid-blank" layout="grid" rendered="#{ligne.ligneLieeFils!=null or ligne.ligneLieeMere!=null}">
+					<p:panel header="document ayant servi à générer le document courant" style="width:100%;" >
+						<p:dataTable value="#{ligne.ligneLieeMere}" id="dataTableLigneLieeMere" var="lien" selectionMode="single" editable="true"
+							selection="#{bonReceptionController.selectedLigneALigneDTO}" rowKey="#{lien.id}" widgetVar="wvdataTableLigneLieeMere" 
+							emptyMessage="#{msg.message_datatable_vide}" resizableColumns="true">
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="code document" />
+								</f:facet>
+								<p:commandLink value="#{lien.codeDocumentDest}"
+									action="#{bonReceptionController.duplicationDocumentBean.ouvertureDocumentBean.detailDocument(bonReceptionController.duplicationDocumentBean.ouvertureDocumentBean.recupCodeDocument(lien.codeDocumentDest,lien.typeDocument))}"
+									update=":form:tabView"
+									oncomplete="activeTabCenter('#{bonReceptionController.duplicationDocumentBean.ouvertureDocumentBean.event.cssLgrTab}');">>
+								</p:commandLink>
+								<!-- 								<h:outputText value="#{lien.codeDocumentDest}" /> -->
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="libellé ligne" />
+								</f:facet>
+								<h:outputText value="#{lien.libelleLigne}" />
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="lot" />
+								</f:facet>
+								<h:outputText value="#{lien.numLot}" />
+							</p:column>
+							<p:column styleClass="right">
+								<f:facet name="header">
+									<h:outputText value="Qté. reçue" />
+								</f:facet>
+								<h:outputText value="#{lien.qteRecue}" />
+							</p:column>
+<!-- 							<p:column> -->
+<!-- 								<f:facet name="header"> -->
+<!-- 									<h:outputText value="Etat" /> -->
+<!-- 								</f:facet> -->
+<!-- 								<h:outputText value="#{lien.etat}" /> -->
+<!-- 							</p:column>							 -->
+
+						</p:dataTable>
+						</p:panel>
+						<p:panel header="document généré à partir du document courant" style="width:100%;" >
+						<p:dataTable value="#{ligne.ligneLieeFils}" id="dataTableLigneLieeFils" var="lien" selectionMode="single" editable="true"
+							selection="#{bonReceptionController.selectedLigneALigneDTO}" rowKey="#{lien.id}" widgetVar="wvdataTableLigneLieeFils" 
+							emptyMessage="#{msg.message_datatable_vide}" resizableColumns="true">
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="code document" />
+								</f:facet>
+								<p:commandLink value="#{lien.codeDocumentDest}"
+									action="#{bonReceptionController.duplicationDocumentBean.ouvertureDocumentBean.detailDocument(bonReceptionController.duplicationDocumentBean.ouvertureDocumentBean.recupCodeDocument(lien.codeDocumentDest,lien.typeDocument))}"
+									update=":form:tabView"
+									oncomplete="activeTabCenter('#{bonReceptionController.duplicationDocumentBean.ouvertureDocumentBean.event.cssLgrTab}');">>
+								</p:commandLink>
+								<!-- 								<h:outputText value="#{lien.codeDocumentDest}" /> -->
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="libellé ligne" />
+								</f:facet>
+								<h:outputText value="#{lien.libelleLigne}" />
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="lot" />
+								</f:facet>
+								<h:outputText value="#{lien.numLot}" />
+							</p:column>
+							<p:column styleClass="right">
+								<f:facet name="header">
+									<h:outputText value="Qté. reçue" />
+								</f:facet>
+								<h:outputText value="#{lien.qteRecue}" />
+							</p:column>
+<!-- 							<p:column> -->
+<!-- 								<f:facet name="header"> -->
+<!-- 									<h:outputText value="Etat" /> -->
+<!-- 								</f:facet> -->
+<!-- 								<h:outputText value="#{lien.etat}" /> -->
+<!-- 							</p:column>							 -->
+
+						</p:dataTable>
+						</p:panel>
+					</p:panelGrid>
+					<p:panel header="Infos de l'abonnement" style="width:100%;" rendered="#{ligne.ligneAbonnement!=null}">
+
+						<p:dataTable value="#{ligne.ligneAbonnement}" id="dataTableLigneAbonnement" var="lien" selectionMode="single" editable="true"
+							selection="#{bonReceptionController.selectedLigneALigneDTO}" rowKey="#{lien.id}" widgetVar="wvdataTableLigneAbonnement" 
+							emptyMessage="#{msg.message_datatable_vide}" resizableColumns="true">
+								<p:column  style="width:80px" >
+									<p:commandButton value="" actionListener="#{bonReceptionController.actDialogDetailLigneAbonnement}" process="@this"
+										styleClass="icon-medium icon-reglement" title="Détail de la ligne d'abonnement">
+										<f:attribute name="taLigneALigneEcheanceDTO" value="#{lien}" />
+										<p:ajax event="dialogReturn" listener="#{bonReceptionController.handleReturnDialogDetailLigneAbonnement}" />
+									</p:commandButton>
+								</p:column>
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="code document" />
+								</f:facet>
+								<p:commandLink value="#{lien.codeDocumentDest}"
+									action="#{bonReceptionController.duplicationDocumentBean.ouvertureDocumentBean.detailAbonnement(bonReceptionController.duplicationDocumentBean.ouvertureDocumentBean.recupCodeDocument(lien.codeDocumentDest,lien.typeDocument))}"
+									update=":form:tabView"
+									oncomplete="activeTabCenter('#{bonReceptionController.duplicationDocumentBean.ouvertureDocumentBean.event.cssLgrTab}');">>
+								</p:commandLink>
+
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="libellé ligne" />
+								</f:facet>
+								<h:outputText value="#{lien.libelleLigne}" />
+							</p:column>
+						</p:dataTable>
+</p:panel>
+
+
+					</p:rowExpansion>
+				
+
+				</p:dataTable>
+
+
+			</p:panel>
+		
+<!-- 	</p:wizard> -->
+
+	<!-- 			</div> -->
+	<!-- 		</div> -->
+	<!-- 	</div> -->
+
+	<p:remoteCommand name="increment" binding="#{bonReceptionController.rc}"
+		actionListener="#{bonReceptionController.actAutoInsererLigne}"
+		process="@this" update="@widgetVar(wvBRPanelLignes)"
+		disabled="#{bonReceptionController.insertAuto}"
+		 />
+<!-- oncomplete="jQuery('.myclass .ui-datatable-data tr').last().find('span.ui-icon-pencil').each(function(){jQuery(this).click()});" -->
+
+<!-- 	<p:remoteCommand name="vcb"  -->
+<!-- 		actionListener="#{bonReceptionController.actValiderCodeBarre}" -->
+<!-- 		process="@this" update="@widgetVar(wvBRPanelLignes)"> -->
+<!-- 		<f:setPropertyActionListener target="#{bonReceptionController.selectedLigneJSF}" value="#{ligne}" /> -->
+<!-- 	</p:remoteCommand> -->
+
+<!-- btn-cb-bonreception-click -->
+	<p:remoteCommand name="scanCodeBarreLigneBonReception" 
+		oncomplete="if($('.ui-datatable.myclass2:visible').length > 0) {$('.btn-cb-bonreception').click();}"
+		process="@this">
+	</p:remoteCommand>
+	
+	<p:remoteCommand name="verifModeScanCodeBarreBonReception" 
+		actionListener="#{bonReceptionController.changeModeSaisieCodeBarre}"
+		process="@this" />
+<!-- 		update="@widgetVar(wvBRPanelLignes)"	  -->
+		
+	
+	<!-- </f:validateBean> -->
+
+	<p:dialog header="Cohérence de la qté 2" widgetVar="wVdialogQte2BonReception" modal="true" appendTo="@(body)" showEffect="clip" hideEffect="clip" width="900"
+		height="200">
+		<p:panelGrid columns="1">
+			<p:outputLabel value="La qté 2 n'est pas cohérente par rapport au coefficient applicable, voulez vous la conserver ?" />
+		</p:panelGrid>
+		<p:panelGrid columns="2">
+			<p:commandButton value="Conserver la valeur" process="@this" onstart="PF('wVdialogQte2BonReception').hide()" />
+			<p:commandButton value="Appliquer le coefficient" process="@this" actionListener="#{bonReceptionController.actArreterEnregistrementEtFocusQte2()}"
+				oncomplete="PF('wVdialogQte2BonReception').hide()" update="@widgetVar(widgetVarDataTableLigneBonReception)" />
+		</p:panelGrid>
+	</p:dialog>
+
+
+</ui:composition>

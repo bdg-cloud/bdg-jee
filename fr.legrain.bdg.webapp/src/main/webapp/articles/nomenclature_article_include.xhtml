@@ -1,0 +1,272 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
+xmlns:f="http://java.sun.com/jsf/core" 
+xmlns:h="http://java.sun.com/jsf/html"
+xmlns:ui="http://java.sun.com/jsf/facelets" 
+xmlns:o="http://omnifaces.org/ui" 
+xmlns:p="http://primefaces.org/ui">
+
+
+
+	<p:panel widgetVar="nomenclatureArticleForm">
+	<!-- LISTE SOURCE -->
+	
+	<div class="ui-g">
+		<div class="ui-g-12 ui-md-6 ui-lg-4">
+			<p:panel header="Articles disponibles" widgetVar="wvpanelListeNomenclatureArticleDispo" toggleable="true">
+				<p:commandButton title="Ajouter les articles séléctionnés" value="Ajouter les #{nomenclatureArticleController.selectedArticlesSource.size()} article(s) séléctionné(s)" widgetVar="widgetVarBtnAjouterArticleNomenclature"
+								action="#{nomenclatureArticleController.actAjouter}"
+								process="@this"
+								update="@widgetVar(wvDatatableNomenclatureArticleDispo), @widgetVar(wvDatatableNomenclatureArticle),@widgetVar(widgetVarBtnSupprimerArticleNomenclature), @widgetVar(widgetVarBtnAjouterArticleNomenclature)">
+				</p:commandButton>
+				
+				<p:dataTable id="idDatatableNomenclatureArticleDispo"
+				 widgetVar="wvDatatableNomenclatureArticleDispo"
+				 rowKey="#{articleDispo.codeArticle}" selection="#{nomenclatureArticleController.selectedArticlesSource}"
+				  draggableRows="false"
+				  value="#{nomenclatureArticleController.sourceCompose}" paginator="true" 
+				   var="articleDispo">
+				   
+				   <p:ajax event="rowSelectCheckbox" update="@widgetVar(widgetVarBtnAjouterArticleNomenclature)" />
+				   <p:ajax event="rowSelect" update="@widgetVar(widgetVarBtnAjouterArticleNomenclature)" /> 
+				   <p:ajax event="rowUnselectCheckbox"  update="@widgetVar(widgetVarBtnAjouterArticleNomenclature)" />
+				   <p:ajax event="toggleSelect" update="@widgetVar(widgetVarBtnAjouterArticleNomenclature)" /> 
+				   
+				   <f:facet name="header">  
+	           			Ajouter des articles 
+	           			<span style="float:right;" class="searchbar_list">
+		           			<p:outputPanel>
+				                <p:inputText id="globalFilter" onkeyup="PF('wvDatatableNomenclatureArticleDispo').filter()" style="width:150px" placeholder="Rechercher"/>
+				            </p:outputPanel>
+			            </span>
+	        		</f:facet>
+	        		<p:column selectionMode="multiple" style="width:16px;text-align:center"/>
+				   
+						
+					<p:column headerText="Code" sortBy="#{articleDispo.codeArticle}" filterBy="#{articleDispo.codeArticle}" filterMatchMode="contains">
+			            <h:outputText value="#{articleDispo.codeArticle}" />
+			        </p:column>
+			        <p:column headerText="Libelle" sortBy="#{articleDispo.libellecArticle}" filterBy="#{articleDispo.libellecArticle}" filterMatchMode="contains">
+			            <h:outputText value="#{articleDispo.libellecArticle}" />
+			        </p:column>
+			       <!--  <p:column style="width:16px">
+			            <p:commandButton title="Ajouter" styleClass="icon-insert icon icon-grille" widgetVar="widgetVarBtnAjouterArticleNomenclature"
+							action="#{nomenclatureArticleController.actAjouter}"
+							process="@this"
+							update="@widgetVar(wvDatatableNomenclatureArticleDispo)">
+						 <f:setPropertyActionListener target="#{nomenclatureArticleController.selectedArticleSource}" value="#{article}" /> 
+						</p:commandButton>
+			        </p:column> -->
+			       
+				 </p:dataTable>
+			</p:panel>
+		</div>
+		<div class="ui-g-12 ui-md-6 ui-lg-8">
+		
+				<!-- LISTE TARGET -->
+			<p:panel header="Listes (nomenclature)" widgetVar="wvpanelListeNomenclatureArticle">
+	
+	
+						<!--  <p:ajax event="rowReorder" listener="#{factureController.onRowReorder}" update="@this,@widgetVar(wvMenuBoutonFacture)" />
+						<p:ajax event="rowEdit" listener="#{factureController.onRowEdit}"
+							update="@widgetVar(wvLigneFactureMesssages),@parent:idTotauxLFacture,@parent:idReglementFacture"
+							oncomplete="if(!handleCompleteValidationError(xhr, status, args)) {increment();};autreLigneModifiable('myclassFacture');" />
+						<p:ajax event="rowEditCancel" listener="#{factureController.onRowCancel}" update="@widgetVar(widgetVarBtnSupprimer)"
+							oncomplete="autreLigneModifiable('myclassFacture');" />
+						<p:ajax event="rowSelect" listener="#{factureController.onRowSelectLigne}" />
+						<p:ajax event="rowEditInit" listener="#{factureController.onRowEditInit}" oncomplete="autreLigneNonModifiable('myclassFacture');" /> -->
+			
+			<p:commandButton title="Supprimer les articles séléctionnés " value="Supprimer les #{nomenclatureArticleController.selectedTaArticlesComposeDTO.size()} article(s) séléctionné(s)" widgetVar="widgetVarBtnSupprimerArticleNomenclature"
+								action="#{nomenclatureArticleController.actSupprimer}"
+								process="@this"
+								update="@widgetVar(wvDatatableNomenclatureArticleDispo), @widgetVar(wvDatatableNomenclatureArticle), @widgetVar(widgetVarBtnSupprimerArticleNomenclature), @widgetVar(widgetVarBtnAjouterArticleNomenclature)">
+				<p:confirm header="Confirmation" message="Etes-vous sur de vouloir supprimer les articles séléctionnés de la nomenclature ?" icon="pi pi-exclamation-triangle" />
+				</p:commandButton>
+				
+				<p:selectOneMenu id="idSelectOneMenuTypeComportement" value="#{nomenclatureArticleController.selectedComportement}" widgetVar="wvSelectTypeComportement" converter="entityConverter">
+		        	<f:selectItems value="#{nomenclatureArticleController.comportements}" var="comp" itemLabel="#{comp.liblComportement}" itemValue="#{comp}"/>
+		        	 <p:ajax update="@this, @widgetVar(wvSelectTypeComportement), @widgetVar(wvpanelAideContextuelleComportementNomenclature)" event="change" listener="#{nomenclatureArticleController.changeComportement}"/> 
+		        </p:selectOneMenu>
+		        <p:panel styleClass="panel-aide-contextuelle" style="display : inline-block;" widgetVar="wvpanelAideContextuelleComportementNomenclature">
+					<p:commandLink id="idLinkAideArticleComportementNomenclature"
+						styleClass="lien-aide-contextuelle">
+						<i class="fa fa-info-circle animated swing"></i>
+					</p:commandLink>
+					<p:overlayPanel for="idLinkAideArticleComportementNomenclature" hideEffect="fade"
+						dynamic="true" showCloseIcon="true"
+						styleClass="overlay-aide-contextuelle">
+						<p:panel header="Aide">
+							<h3>
+								<i class="fa fa-info-circle animated swing"></i> #{nomenclatureArticleController.selectedComportement.liblComportement}
+							</h3>
+							<p:outputLabel value="#{nomenclatureArticleController.selectedComportement.descComportement}" ></p:outputLabel>
+						</p:panel>
+						
+					</p:overlayPanel>
+				</p:panel>
+			
+				<p:dataTable id="idDatatableNomenclatureArticle"
+				 widgetVar="wvDatatableNomenclatureArticle"
+				 rowKey="#{article.codeArticle}" selection="#{nomenclatureArticleController.selectedTaArticlesComposeDTO}" 
+				  editable="true" draggableRows="false" paginator="true" 
+				  value="#{nomenclatureArticleController.selectedTaArticleDTO.nomenclature}"
+				   var="article">
+				   
+				   <p:ajax event="rowSelectCheckbox" update="@widgetVar(widgetVarBtnSupprimerArticleNomenclature)" />
+				   <p:ajax event="rowUnselectCheckbox"  update="@widgetVar(widgetVarBtnSupprimerArticleNomenclature)" />
+				   <p:ajax event="toggleSelect" update="@widgetVar(widgetVarBtnSupprimerArticleNomenclature)" />
+				   
+						<!-- <p:ajax event="rowReorder" listener="#{nomenclatureArticleController.onRowReorder}" update="@this" /> -->
+					<p:ajax event="rowEdit" listener="#{nomenclatureArticleController.onRowEdit}"
+						update="@this, @widgetVar(widgetVarBtnSupprimerArticleNomenclature)"
+						 />
+					<p:ajax event="rowEditCancel" listener="#{nomenclatureArticleController.onRowCancel}" update="@widgetVar(widgetVarBtnSupprimerArticleNomenclature)"
+						 />
+					<p:ajax event="rowSelect" listener="#{nomenclatureArticleController.onRowSelectLigne}" update="@widgetVar(widgetVarBtnSupprimerArticleNomenclature)"/>
+					<p:ajax event="rowEditInit" listener="#{nomenclatureArticleController.onRowEditInit}" oncomplete="autreLigneNonModifiable('myclassFacture');" /> 
+				   
+				   <!-- <p:column style="width:16px">
+							<p:rowEditor rendered="#{nomenclatureArticleController.etatBoutonLigne('rowEditor')}" styleClass="row-editor-debut" />
+							<p:rowEditor styleClass="row-editor-debut" />
+						</p:column> -->
+						
+					<f:facet name="header">  
+	           			Articles présents dans la nomenclature 
+	           			<span style="float:right;" class="searchbar_list">
+		           			<p:outputPanel>
+				                <p:inputText id="globalFilter" onkeyup="PF('wvDatatableNomenclatureArticle').filter()" style="width:150px" placeholder="Rechercher"/>
+				            </p:outputPanel>
+			            </span>
+	        		</f:facet>
+	        		
+					<p:column selectionMode="multiple" style="width:16px;text-align:center"/>
+						
+					<p:column headerText="Code" sortBy="#{article.codeArticle}" filterBy="#{article.codeArticle}" filterMatchMode="contains">
+			            <h:outputText value="#{article.codeArticle}" />
+			        </p:column>
+			        <p:column headerText="Libelle" sortBy="#{article.libellecArticle}" filterBy="#{article.libellecArticle}" filterMatchMode="contains">
+			            <h:outputText value="#{article.libellecArticle}" />
+			        </p:column>
+			        <p:column headerText="Quantité 1">
+			            <p:cellEditor>
+								<f:facet name="output">
+									<h:outputText value="#{article.qte}" />
+								</f:facet>
+								<f:facet name="input">
+									<p:inputText id="idQteNomenclatureArticle" value="#{article.qte}" style="width:100%" validator="#{nomenclatureArticleController.validateLignesNomenclature}">
+										<f:attribute name="nomChamp" value="#{const.C_QTE_L_DOCUMENT}" /> 
+										<f:attribute name="articleComposeDTO" value="#{article}" /> 
+										<p:ajax event="blur" update="@parent, @this" />
+										
+									</p:inputText>
+								</f:facet>
+							</p:cellEditor>
+			        </p:column>
+			         <p:column headerText="Unité 1">
+			         	<p:cellEditor>
+			         		<f:facet name="output">
+			         			<h:outputText value="#{article.u1}" />
+			         		</f:facet>
+			         		<f:facet name="input">
+			         			<p:autoComplete value="#{article.u1}" completeMethod="#{nomenclatureArticleController.uniteAutoComplete(article)}" var="unit" itemLabel="#{unit}"
+									itemValue="#{unit}" forceSelection="true" dropdown="true" placeholder="U1" style="width:100%" id="idu1">
+									<p:column>
+										<h:outputText value="#{unit}" />
+									</p:column>
+			
+									<f:attribute name="nomChamp" value="#{const.C_U1_L_DOCUMENT}" />
+									<f:attribute name="articleComposeDTO" value="#{article}" /> 
+									<p:ajax event="itemSelect" listener="#{nomenclatureArticleController.autcompleteSelection}" update="@parent:idQte2NomenclatureArticle"/> 
+								</p:autoComplete>
+			         		</f:facet>
+			         	
+			         	</p:cellEditor>
+			            
+			        </p:column>
+			        <p:column headerText="Quantité 2 ">
+			            <p:cellEditor>
+								<f:facet name="output">
+									<h:outputText value="#{article.qte2}" />
+								</f:facet>
+								<f:facet name="input">
+									<p:inputText id="idQte2NomenclatureArticle" value="#{article.qte2}" style="width:100%">
+										<p:ajax event="blur" update="@parent, @this" />
+									</p:inputText>
+								</f:facet>
+							</p:cellEditor>
+			        </p:column>
+			        
+			        <p:column headerText="Unité 2 ">
+			            <p:cellEditor>
+			         		<f:facet name="output">
+			         			<h:outputText value="#{article.u2}" />
+			         		</f:facet>
+			         		<f:facet name="input">
+			         			<p:autoComplete value="#{article.u2}" completeMethod="#{nomenclatureArticleController.uniteAutoComplete(article)}" var="unit" itemLabel="#{unit}"
+									itemValue="#{unit}" forceSelection="true" dropdown="true" placeholder="U2" style="width:100%" id="idu2LFacture">
+									<p:column>
+										<h:outputText value="#{unit}" />
+									</p:column>
+			
+									<f:attribute name="nomChamp" value="#{const.C_U2_L_DOCUMENT}" />
+									<f:attribute name="articleComposeDTO" value="#{article}" /> 
+									<p:ajax event="itemSelect" listener="#{nomenclatureArticleController.autcompleteSelection}" update="@parent:idQte2NomenclatureArticle"/> 
+								</p:autoComplete>
+			         		</f:facet>
+			         	
+			         	</p:cellEditor>
+			        </p:column>
+			        
+			        <p:column style="width:35px">
+			            <p:rowEditor />
+			        </p:column>
+			        <p:column style="width:35px">
+			        	<p:commandButton title="Supprimer" styleClass="icon-delete icon icon-grille" widgetVar="widgetVarBtnSupprimerArticleNomenclatureListe"
+							action="#{nomenclatureArticleController.actSupprimerLigne(article)}"
+							process="@this"
+							update="@widgetVar(wvDatatableNomenclatureArticle), @widgetVar(wvDatatableNomenclatureArticleDispo),@widgetVar(widgetVarBtnSupprimerArticleNomenclature), @widgetVar(widgetVarBtnAjouterArticleNomenclature)">
+							<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer cet article de la nomenclature ?" icon="ui-icon-alert" />
+						</p:commandButton>
+			        </p:column>
+				 </p:dataTable>
+			</p:panel>
+		
+		</div>
+		
+		
+		
+	</div>
+		
+		
+		
+		
+	
+		<!-- <p:panel header="Ajouters des articles" widgetVar="panelListeNomenclatureArticle" toggleable="true" rendered="false" collapsed="#{!nomenclatureArticleController.selectedTaArticleDTO.nomenclature.isEmpty()}">
+		
+			<p:commandButton value="Annuler" icon="fa fa-undo" actionListener="#{nomenclatureArticleController.actAnnuler}"
+					process="@this"
+					update=":form:messages,@form, @widgetVar(wvpanelListeNomenclatureArticle), @widgetVar(panelListeNomenclatureArticle), @widgetVar(wvDatatableNomenclatureArticle)" />
+				<p:commandButton value="Enregistrer" icon="fa fa-save"
+					actionListener="#{nomenclatureArticleController.actEnregistrer}" process="@this"
+					update=":form:messages,@form, @widgetVar(wvpanelListeNomenclatureArticle), @widgetVar(panelListeNomenclatureArticle), @widgetVar(wvDatatableNomenclatureArticle)" />
+				
+				<p:pickList value="#{nomenclatureArticleController.listeArticleCompose}" var="ctrl2" effect="bounce"
+					itemValue="#{ctrl2}" itemLabel="#{ctrl2.libellecArticle}" 
+					showCheckbox="true" responsive="true" showSourceFilter="true" showTargetFilter="true" filterMatchMode="contains" converter="entityConverter">
+					converter="entityConverter"
+
+					<f:facet name="sourceCaption">Articles disponibles</f:facet>
+					<f:facet name="targetCaption">Articles sélectionnés</f:facet>
+
+					        <p:ajax event="transfer" listener="#{nomenclatureArticleController.onTransfer}" update=":form:messages" />
+
+					<p:column  style="width:100%">
+						<h:outputText value= "#{ctrl2.libellecArticle}" />
+					</p:column>
+				</p:pickList>
+		</p:panel> -->
+		
+	</p:panel>
+
+		
+		
+</ui:composition>

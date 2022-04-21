@@ -1,0 +1,63 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
+xmlns:f="http://java.sun.com/jsf/core" 
+xmlns:h="http://java.sun.com/jsf/html"
+xmlns:ui="http://java.sun.com/jsf/facelets" 
+xmlns:o="http://omnifaces.org/ui" 
+xmlns:p="http://primefaces.org/ui">
+
+	<p:panel id="EtatStockCapsuleFormPrincipal" >
+		<div class="ui-g">
+		<div class="ui-g-6">
+			<p:fieldset legend="Paramètres">
+				<p:panelGrid columns="4">
+					<p:outputLabel value="Date fin"/>
+					<p:calendar value="#{etatStockCapsuleController.dateCalcul}" pattern="dd/MM/yyyy"
+						 mask="true" locale="fr" navigator="true" showOn="button" timeZone="#{msg.time_zone}"> 
+					</p:calendar>
+					
+						<p:outputLabel value="Code CRD"/>
+						<p:autoComplete value="#{etatStockCapsuleController.titreTransportDTO}" converter="entityConverter"
+								completeMethod="#{etatStockCapsuleController.titreTransportAutoCompleteDTOLight}"
+								var="tiers"
+								itemLabel="#{tiers.codeTitreTransport}" 
+								itemValue="#{tiers}"
+								forceSelection="true" dropdown="true" placeholder="Code CRD" >
+								<p:column>
+									<h:outputText value="#{tiers.codeTitreTransport}"/>
+								</p:column>
+						</p:autoComplete>						
+
+<!-- 						<p:outputLabel value="libellé"/> -->
+<!-- 						<p:autoComplete value="#{etatStockCapsuleController.familleDTO}" converter="entityConverter" -->
+<!-- 								completeMethod="#{etatStockCapsuleController.famillesAutoCompleteDTOLight}" -->
+<!-- 								var="tiers" -->
+<!-- 								itemLabel="#{tiers.codeFamille}"  -->
+<!-- 								itemValue="#{tiers}" -->
+<!-- 								forceSelection="true" dropdown="true" placeholder="Famille" > -->
+<!-- 								<p:column> -->
+<!-- 									<h:outputText value="#{tiers.codeFamille}"/> -->
+<!-- 								</p:column> -->
+<!-- 						</p:autoComplete>						 -->
+
+
+
+				</p:panelGrid>
+				<p:commandButton value="Edition synthèse" 
+				actionListener="#{etatStockCapsuleController.actImprimer('synthese')}" 
+				onsuccess="window.open('#{request.contextPath}/output?__report=/reports/capsules/EtatStocksCapsules.rptdesign&amp;__format=pdf')"
+				/>
+				<p:commandButton value="Edition mouvements par date" 
+				actionListener="#{etatStockCapsuleController.actImprimer('mouvement_date')}" 
+				onsuccess="window.open('#{request.contextPath}/output?__report=/reports/capsules/EtatStocksCapsulesMouvementsDate.rptdesign&amp;__format=pdf')"				
+				/>		
+				<p:commandButton value="Edition mouvements par type" 
+				actionListener="#{etatStockCapsuleController.actImprimer('mouvement_type')}" 
+				onsuccess="window.open('#{request.contextPath}/output?__report=/reports/capsules/EtatStocksCapsulesMouvementsType.rptdesign&amp;__format=pdf')"
+				/>
+			</p:fieldset>
+		</div>	
+	</div>
+</p:panel>
+
+		
+</ui:composition>

@@ -1,0 +1,343 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<p:panel id="idModeleCtrlFormPrincipal" widgetVar="widgetVarModeleCtrlForm">
+
+<!-- 		<p class="subtitle"> -->
+<!-- 			<p:outputLabel value="Modèle de controle" -->
+<!-- 				rendered="#{dansDialogue == null ? true : false}" /> -->
+<!-- 		</p> -->
+
+
+	</p:panel>
+				<p:menubar styleClass="menu-onglet">
+					
+					<p:menuitem label="Enregistrer" styleClass="icon-save icon" process="@this idModeleCtrlPanel"
+						actionListener="#{modeleControleController.actEnregistrer}"
+						update=":form:messages,@form,@widgetVar(wvMenuListeModeleControle),@widgetVar(wvDataTableListeModeleControle)"
+						disabled="#{modeleControleController.etatBouton('enregistrer')}" />
+						
+					<p:menuitem label="Insérer" styleClass="icon-insert icon"
+						actionListener="#{modeleControleController.actInserer}" process="@this"
+						update=":form:messages,@form,@widgetVar(wvMenuListeModeleControle),@widgetVar(wvDataTableListeModeleControle)"
+						disabled="#{modeleControleController.etatBouton('inserer')}" />
+
+					<p:menuitem label="Modifier" styleClass="icon-update icon"
+						actionListener="#{modeleControleController.actModifier}"
+						process="@this"
+						update=":form:messages,@form,@widgetVar(wvMenuListeModeleControle),@widgetVar(wvDataTableListeModeleControle)"
+						disabled="#{modeleControleController.etatBouton('modifier')}" />
+						
+					<p:menuitem label="Annuler" styleClass="icon-cancel icon"
+						actionListener="#{modeleControleController.actAnnuler}" process="@this"
+						update=":form:messages,@form,@widgetVar(wvMenuListeModeleControle),@widgetVar(wvDataTableListeModeleControle)"
+						disabled="#{modeleControleController.etatBouton('annuler')}" >
+						<p:confirm header="Confirmation" message="Etes vous sur de vouloir annuler les modifications en cours ?"  icon="ui-icon-alert" />
+					</p:menuitem>	
+
+					<p:menuitem label="Supprimer" styleClass="icon-delete icon menuitem-poubelle-droite"
+						actionListener="#{modeleControleController.actSupprimer}"
+						process="@this"
+						update=":form:messages,@form,@widgetVar(wvMenuListeModeleControle),@widgetVar(wvDataTableListeModeleControle)"
+						disabled="#{modeleControleController.etatBouton('supprimer')}" >
+						<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer cet enregistrement ?" icon="ui-icon-alert" />
+					</p:menuitem>	
+
+					<p:menuitem label="Fermer" styleClass="icon icon-close menuitem-fermer-droite"
+					actionListener="#{modeleControleController.actFermer}"
+						process="@this" update=":form:messages,@widgetVar(wvMenuListeModeleControle),@widgetVar(wvDataTableListeModeleControle)"
+						disabled="#{modeleControleController.etatBouton('fermer')}"
+						onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())">
+						<p:confirm header="Confirmation" message="#{msg_diag.alert_fermeture_onglet}" icon="ui-icon-alert" disabled="#{!modeleControleController.modeEcran.dataSetEnModif()}"/>
+					</p:menuitem>
+
+<!-- 					<p:menuitem label="Imprimer" styleClass="icon-print icon" -->
+<!-- 						onsuccess="window.open('#{request.contextPath}/output?__report=/reports/Fiche_Fabrication.rptdesign&amp;__format=pdf')" -->
+<!-- 						actionListener="#{modeleControleController.actImprimer}" -->
+<!-- 						disabled="#{modeleControleController.etatBouton('imprimer')}" /> -->
+<!-- 					</p:menuitem>	 -->
+
+					<p:separator styleClass="separateur-menu-vertical"/>
+					<p:menuitem title="Liste" styleClass="icon icon-liste" oncomplete="PF('wvOverlayListeModeleCtrl').show();"/>
+				   </p:menubar>
+				   
+	<p:messages id="idModeleCtrlMessages" showDetail="true" autoUpdate="true"
+		closable="true" />
+
+	<p:panel id="idModeleCtrlPanel" visible="true" widgetVar="widgetVarModeleCtrlPanel">
+			<p:panel resizable="false" id="idModeleCtrlPanelCache">
+<!-- 		<p:panel resizable="false" id="idModeleCtrlPanelCache" -->
+<!-- 			rendered="#{modeleControleController.modeEcran.dataSetEnModif()}"> -->
+				<f:validateBean disabled="true">
+					<div class="ui-grid ui-grid-responsive" id="idModeleCtrlGridResp">
+
+						<div class="ui-grid-row">
+							<div class="ui-grid-col-12">
+							</div>
+						</div>
+						<div class="ui-grid-row">
+							<div class="ui-grid-col-2">
+								<h:outputText value="Groupe controle :" />
+							</div>
+							<div class="ui-grid-col-10">
+								<p:autoComplete value="#{modeleControleController.nouveau.taGroupe}" completeMethod="#{modeleControleController.groupeAutoComplete}"
+						                        var="grp" itemLabel="#{grp.codeGroupe}" itemValue="#{grp}"  forceSelection="true" dropdown="true" placeholder="Groupe"
+						                        disabled="#{modeleControleController.editable()}">
+						            <p:column>
+						            	<f:facet name="header">
+						            		<p:commandButton value="Ajouter" title="Insérer"
+												process="@this"
+												update=":form:tabView,:form:messages"
+												actionListener="#{modeleControleController.actDialogGroupeControle}"
+												styleClass="btn-insert btn" >
+													<p:ajax event="dialogReturn" listener="#{modeleControleController.handleReturnDialogGroupeControle}" update="@parent:@parent"/>
+												</p:commandButton>
+						            	</f:facet>
+						                <h:outputText value="#{grp.codeGroupe}" />
+						            </p:column>
+						            <p:column>
+						                <h:outputText value="#{grp.libelle}" />
+						            </p:column>
+						            <p:ajax event="itemSelect" update="@this" />
+						        </p:autoComplete>
+							</div>
+						</div>
+						<div class="ui-grid-row">
+							<div class="ui-grid-col-2">
+								<h:outputText value="Code :" />
+							</div>
+							<div class="ui-grid-col-10">
+								<p:inputText value="#{modeleControleController.nouveau.code}" disabled="#{modeleControleController.editable()}">
+									<p:ajax event="blur" update="@this"/>
+								</p:inputText>
+							</div>
+						</div>
+						<div class="ui-grid-row">
+							<div class="ui-grid-col-2">
+								<h:outputText value="Libellé :" />
+							</div>
+							<div class="ui-grid-col-10">
+								<p:inputText value="#{modeleControleController.nouveau.libelleConformite}" disabled="#{modeleControleController.editable()}" style="width:100%">
+									<p:ajax event="blur" update="@this"/>
+								</p:inputText>
+							</div>
+						</div>
+						<div class="ui-grid-row">
+							<div class="ui-grid-col-2">
+								<h:outputText value="Type :" />
+							</div>
+							<div class="ui-grid-col-10">
+								<p:selectOneMenu value="#{modeleControleController.nouveau.taTypeConformite}" style="width:125px" disabled="#{modeleControleController.editable()}">
+									<f:selectItem itemLabel="Type" noSelectionOption="true"/>
+									<f:selectItems value="#{modeleControleController.listeTypeControle}" var="a" itemLabel="#{a.libelle}" itemValue="#{a}"/>
+									<p:ajax update="idLibelleModele2, idValeurModele2"/>
+						        </p:selectOneMenu>
+							</div>
+						</div>
+						<div class="ui-grid-row">
+							<div class="ui-grid-col-2">
+								<h:outputText value="Valeur par défaut :" />
+							</div>
+							<div class="ui-grid-col-10">
+								<p:inputText value="#{modeleControleController.nouveau.valeurDefaut}" disabled="#{modeleControleController.editable()}">
+									<p:ajax event="blur" update="@this"/>
+								</p:inputText>
+							</div>
+						</div>
+						<div class="ui-grid-row">
+							<div class="ui-grid-col-2">
+								<h:outputText id="idLibelleModele2" value="#{modeleControleController.nouveau.taTypeConformite.libelleDeuxieme}" />
+							</div>
+							<div class="ui-grid-col-10">
+								<p:inputText id="idValeurModele2" value="#{modeleControleController.nouveau.deuxiemeValeur}" disabled="#{(modeleControleController.nouveau.taTypeConformite.libelleDeuxieme==null) or modeleControleController.editable()}">
+									<p:ajax event="blur" update="@this"/>
+								</p:inputText>
+							</div>
+						</div>
+<!-- 						<div class="ui-grid-row"> -->
+<!-- 							<div class="ui-grid-col-2"> -->
+<!-- 								<h:outputText value="Bloquant :" /> -->
+<!-- 							</div> -->
+<!-- 							<div class="ui-grid-col-10"> -->
+<!-- 								<p:selectBooleanCheckbox value="#{modeleControleController.nouveau.ctrlBloquant}" disabled="#{modeleControleController.editable()}"> -->
+<!-- 									<p:ajax listener="#{modeleControleController.actCtrlBloquantChangeEvent}" update="@this,@widgetVar(wvCbModeleControleFacultatif)"/> -->
+<!-- 								</p:selectBooleanCheckbox> -->
+<!-- 							</div> -->
+<!-- 						</div> -->
+						<div class="ui-grid-row">
+							<div class="ui-grid-col-2">
+								<h:outputText value="Facultatif :" />
+							</div>
+							<div class="ui-grid-col-10">
+								<p:selectBooleanCheckbox widgetVar="wvCbModeleControleFacultatif" value="#{modeleControleController.nouveau.ctrlFacultatif}" disabled="#{modeleControleController.editable() or modeleControleController.nouveau.ctrlBloquant}">	
+									<p:ajax update="@this"/>
+								</p:selectBooleanCheckbox>
+							</div>
+						</div>
+						
+						
+						<div class="ui-grid-row">
+							<div class="ui-grid-col-12">
+								<div class="text-center">	
+									<p:separator/>			
+									<p:commandButton widgetVar="wvBtnInsererModeleBareme" value="Ajouter une limite critique" process="@this"
+										disabled="#{modeleControleController.etatBoutonBareme('inserer')}"
+										update="@widgetVar(widgetVarModeleBaremePanel), @this"
+										actionListener="#{modeleControleController.actInsererBareme}"
+										class="btn-insert btn" />
+
+									<p:commandButton widgetVar="wvBtnModifierModeleBareme" value="Modifier" styleClass="btn-update btn" actionListener="#{modeleControleController.actModifierBareme}" 
+										process="@this" update="@widgetVar(widgetVarModeleBaremePanel), @this" disabled="#{modeleControleController.etatBoutonBareme('modifier')}" />
+									<p:commandButton widgetVar="wvBtnSupprimerModeleBareme" value="Supprimer" styleClass="btn-delete btn" actionListener="#{modeleControleController.actSupprimerBareme}" 
+										process="@this" update="@widgetVar(widgetVarModeleBaremePanel),@widgetVar(wvDataTableModeleBareme), @this" disabled="#{modeleControleController.etatBoutonBareme('supprimer')}" />
+								</div>
+							</div>
+						</div>
+						<div class="ui-grid-row">
+							<div class="ui-grid-col-12">
+								<p:dataTable id="dataTableModeleBareme" 
+									var="controle" 
+									styleClass="datatable mt10"
+									widgetVar="wvDataTableModeleBareme"
+									value="#{modeleControleController.nouveau.taModeleBaremes}" 
+									rowKey="#{controle.idModeleBareme}"
+									selection="#{modeleControleController.selectionBareme}" 
+									selectionMode="single" 
+									dblClickSelect="true"
+									resizableColumns="true"
+									paginator="true" 
+									rows="#{msg.modele_datatable_ligne_par_page_debut}"
+									paginatorTemplate="#{msg.modele_datatable_paginator_sans_exporter}"
+									rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+									emptyMessage="#{msg.message_datatable_vide}"
+									currentPageReportTemplate="#{msg.modele_datatable_page_courante}">
+									
+									<p:ajax event="rowSelect" listener="#{modeleControleController.onRowSelectBareme}" update="@widgetVar(wvBtnInsererModeleBareme),@widgetVar(wvBtnModifierModeleBareme),@widgetVar(wvBtnSupprimerModeleBareme)"/>
+
+									<f:facet name="header">
+										<h:outputText value="Limite critique pour le controle" />
+									</f:facet>
+
+									<p:column sortBy="#{controle.expressionVerifiee}">
+										<f:facet name="header">
+											<h:outputText value="Expression" />
+										</f:facet>
+										<h:outputText value="#{controle.expressionVerifiee}" />
+									</p:column>
+									<p:column sortBy="#{controle.forcage}">
+										<f:facet name="header">
+											<h:outputText value="Conformité" />
+										</f:facet>
+										<p:selectBooleanCheckbox value="#{controle.forcage}" disabled="true"/>
+									</p:column>
+									<p:column sortBy="#{controle.cheminDoc}">
+										<f:facet name="header">
+											<h:outputText value="Document lié" />
+										</f:facet>
+										<h:outputText value="#{controle.cheminDoc}" />
+									</p:column>
+									<p:column sortBy="#{controle.actioncorrective}">
+										<f:facet name="header">
+											<h:outputText value="Action corrective" />
+										</f:facet>
+										<h:outputText value="#{controle.actioncorrective}" />
+									</p:column>
+								</p:dataTable>
+								
+								<p:panel id="idModeleBaremePanel" visible="true" widgetVar="widgetVarModeleBaremePanel">
+									<p:panel resizable="false" id="modeleBaremePanelCache" rendered="#{modeleControleController.modeEcranBareme.dataSetEnModif()}">
+
+										<f:validateBean disabled="true">
+											<div class="ui-grid ui-grid-responsive">
+												<div class="ui-grid-row">
+													<div class="ui-grid-col-2">
+														<h:outputText value="Code :" />
+													</div>
+													<div class="ui-grid-col-10">
+														<p:panel>
+															<h:inputText value="#{modeleControleController.nouveauBareme.code}"/>
+				    									</p:panel>
+													</div>
+												</div>
+												<div class="ui-grid-row">
+													<div class="ui-grid-col-2">
+														<h:outputText value="Expression à vérifier :" />
+													</div>
+													<div class="ui-grid-col-10">
+														<h:inputText value="#{modeleControleController.nouveauBareme.expressionVerifiee}"/>
+														<p:commandButton id="idAideModeleBaremeBtn" value="Aide" type="button" />
+														<p:overlayPanel id="idAideModeleBaremePanel" for="idAideModeleBaremeBtn" hideEffect="fade">
+																							    	Valeur constatée : val <br />
+																							        Opération possible : + - * / () et ou <br />
+																							        Exemple : <br />
+																							        val=1 <br />
+																							        val=OK <br />
+																							        val&gt;5 et val&lt;10 <br />
+														</p:overlayPanel>
+													</div>
+												</div>
+<!-- 												<div class="ui-grid-row"> -->
+<!-- 													<div class="ui-grid-col-2"> -->
+<!-- 														<h:outputText value="Le résultat est quand même considéré comme conforme :" /> -->
+<!-- 													</div> -->
+<!-- 													<div class="ui-grid-col-10"> -->
+<!-- 															<p:selectBooleanCheckbox value="#{modeleControleController.nouveauBareme.forcage}" /> -->
+<!-- 													</div> -->
+<!-- 												</div> -->
+												<div class="ui-grid-row">
+													<div class="ui-grid-col-2">
+														<h:outputText value="Le document suivant est proposé :" />
+													</div>
+													<div class="ui-grid-col-10">
+														<p:panel>
+															<h:inputText value="#{modeleControleController.nouveauBareme.cheminDoc}" disabled="true" rendered="#{modeleControleController.nouveauBareme.blobFichier!=null}"/>
+															<p:fileUpload listener="#{modeleControleController.handleFileUpload}" mode="advanced" dragDropSupport="false" auto="true" label="Parcourrir"
+          														sizeLimit="5000000" fileLimit="1" allowTypes="/(\.|\/)(gif|jpe?g|png|pdf|txt)$/"  update="@parent" rendered="#{modeleControleController.nouveauBareme.blobFichier==null}"/>
+					          								
+					          								<p:commandButton value="Télécharger" ajax="false" process="@this" onclick="PrimeFaces.monitorDownload(start, stop);" icon="ui-icon-arrowthick-1-s" update="@parent" rendered="#{modeleControleController.nouveauBareme.blobFichier!=null}">
+					        									<p:fileDownload value="#{modeleControleController.file}" />
+					    									</p:commandButton>
+					    									
+					    									<p:commandButton value="Supprimer" actionListener="#{modeleControleController.actSupprimerFichier}" update="@parent" rendered="#{modeleControleController.nouveauBareme.blobFichier!=null}"/>
+				    									</p:panel>
+													</div>
+												</div>
+												<div class="ui-grid-row">
+													<div class="ui-grid-col-2">
+														<h:outputText value="L'action corrective suivante doit être menée :" />
+													</div>
+													<div class="ui-grid-col-10">
+														<p:inputTextarea value="#{modeleControleController.nouveauBareme.actioncorrective}" style="width:100%" />
+													</div>
+												</div>
+												
+												<div class="ui-grid-row">
+													<div class="ui-grid-col-12 text-center">
+														<p:commandButton value="Enregistrer la limite critique" styleClass="btn-save btn"
+														process="@this idModeleBaremePanel"
+															disabled="#{modeleControleController.etatBouton('enregistrer')}"
+															update="@widgetVar(widgetVarModeleBaremePanel), @widgetVar(widgetVarModeleCtrlPanel)"
+															actionListener="#{modeleControleController.actEnregistrerBareme}" />
+														<p:commandButton id="btnAnnulerModeleBareme" value="Annuler" styleClass="btn-cancel btn"
+															disabled="#{modeleControleController.etatBouton('annuler')}" process="@this"
+															update="@widgetVar(widgetVarModeleBaremePanel), @widgetVar(widgetVarModeleCtrlPanel)"
+															actionListener="#{modeleControleController.actAnnulerBareme}" />
+
+													</div>
+												</div>
+											</div>
+										</f:validateBean>
+									</p:panel>
+
+								</p:panel>
+							</div>
+						</div>
+					</div>
+				</f:validateBean>
+<!-- 			</h:form> -->
+		</p:panel>
+	</p:panel>
+</ui:composition>

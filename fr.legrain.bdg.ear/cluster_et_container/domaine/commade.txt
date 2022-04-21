@@ -1,0 +1,80 @@
+sudo docker build -t test_bdg -f ./bdg.Dockerfile .
+
+sudo docker run -it -p 80:80 modcluster
+
+sudo docker build -t modcluster -f ./Dockerfile.apache.balancing .
+
+sudo docker ps
+
+sudo docker stop 1007bbec2d67
+
+sudo docker exec -it 1007bbec2d67 /bin/bash
+
+sudo docker run --net=host -p 8080:8080 -p 5432:5432 -it test_bdg
+
+sudo docker rmi 1007bbec2d67
+
+sudo docker images
+
+sudo docker run --net=host -e DB_HOST_IP=$DB_HOST_IP -p 8080:8080 -p 5432:5432 -it test_bdg
+
+sudo docker network ls 
+
+sudo docker network create -d bridge my_bridge
+
+https://towardsdatascience.com/15-docker-commands-you-should-know-970ea5203421
+
+sudo docker kill 1007bbec2d67
+
+docker system prune -a
+
+
+
+
+sudo docker build -t test_bdg-domain .
+*****************************************************************************************
+sudo DB_HOST_IP=hostname -I | awk '{print $1}'; sudo docker run -i -t -p 9990:9990 -p 9999:9999 --name=DC --rm test_bdg-domain
+
+DB_HOST_IP=$(hostname -I | awk '{print $1}');LGR_JAVA_OPTS="-DdbHostIp=${DB_HOST_IP}"; sudo docker run -i -t -p 9990:9990 -p 9999:9999 --name=DC -e LGR_JAVA_OPTS=$LGR_JAVA_OPTS -e dbHostIp=$DB_HOST_IP --rm test_bdg-domain
+
+*****************************************************************************************
+sudo docker run -i -t -p 8080:8080 --link=DC:DOMAIN_CONTROLLER --name=HC-1 --rm test_bdg-domain --host-config host-slave.xml -b 0.0.0.0 -bmanagement 0.0.0.0
+
+DB_HOST_IP=$(hostname -I | awk '{print $1}');LGR_JAVA_OPTS="-DdbHostIp=${DB_HOST_IP}";sudo docker run -i -t -p 8080:8080 -p 8443:8443 --link=DC:DOMAIN_CONTROLLER -e LGR_JAVA_OPTS=$LGR_JAVA_OPTS -e dbHostIp=$DB_HOST_IP --name=HC-1 --rm test_bdg-domain --host-config host-slave.xml -b 0.0.0.0 -bmanagement 0.0.0.0
+
+DB_HOST_IP=$(hostname -I | awk '{print $1}');LGR_JAVA_OPTS="-DdbHostIp=${DB_HOST_IP}";sudo docker run -i -t -p 8081:8081 -p 8444:8444 --link=DC:DOMAIN_CONTROLLER -e LGR_JAVA_OPTS=$LGR_JAVA_OPTS -e dbHostIp=$DB_HOST_IP --name=HC-1 --rm test_bdg-domain --host-config host-slave.xml -b 0.0.0.0 -bmanagement 0.0.0.0
+
+*****************************************************************************************
+
+DB_HOST_IP=$(hostname -I | awk '{print $1}');LGR_JAVA_OPTS="-DdbHostIp=${DB_HOST_IP}";sudo docker run -i -t -p 8080:8080 -p 8443:8443 --link=DC:DOMAIN_CONTROLLER -e LGR_JAVA_OPTS=$LGR_JAVA_OPTS -e dbHostIp=$DB_HOST_IP --name=HC-2 --rm test_bdg-domain --host-config host-balancing.xml -b 0.0.0.0 -bmanagement 0.0.0.0
+
+*****************************************************************************************
+DB_HOST_IP=$(hostname -I | awk '{print $1}');echo "DB_HOST_IP=$DB_HOST_IP" > .env;echo "LGR_JAVA_OPTS=-DdbHostIp=$DB_HOST_IP" >> .env;export LGR_JAVA_OPTS;sudo docker-compose up --build
+
+*****************************************************************************************
+
+DB_HOST_IP=$(hostname -I | awk '{print $1}');echo "DB_HOST_IP=$DB_HOST_IP" > .env;echo "LGR_JAVA_OPTS=-DdbHostIp=$DB_HOST_IP -Dmode.domaine=true" >> .env;export LGR_JAVA_OPTS;sudo docker-compose up --build
+*****************************************************************************************
+DB_HOST_IP=$(hostname -I | awk '{print $1}')
+DB_HOST_IP=hostname -I | awk '{print $1}'
+
+
+
+
+https://blog.alexis-hassler.com/2014/08/20/compiler-modcluster-pour-apache24.html
+
+git clone https://github.com/modcluster/mod_cluster.git
+cd mod_cluster
+git checkout 1.3.10.Final
+
+sudo apt install libtool-bin
+sudo apt install apache2-dev
+
+============================================
+http://localhost:7777/mod_cluster-manager
+https://dev.demo.promethee.biz/index.xhtml
+http://localhost:9990/
+
+
+
+

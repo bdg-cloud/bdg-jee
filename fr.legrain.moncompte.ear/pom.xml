@@ -1,0 +1,165 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>fr.legrain</groupId>
+	<artifactId>fr.legrain.moncompte.ear</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>ear</packaging>
+
+	<parent>
+		<groupId>fr.legrain</groupId>
+		<artifactId>fr.legrain.moncompte.parent</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+		<relativePath>../fr.legrain.moncompte.parent/pom.xml</relativePath>
+	</parent>
+
+	<dependencies>
+	
+		<dependency>
+			<groupId>org.osgi</groupId>
+			<artifactId>org.osgi.core</artifactId>
+			<version>5.0.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>net.sf.dozer</groupId>
+			<artifactId>dozer</artifactId>
+			<version>5.5.1</version>
+		</dependency>
+		
+		<dependency>
+		    <groupId>org.eclipse.persistence</groupId>
+		    <artifactId>org.eclipse.persistence.asm</artifactId>
+		    <version>2.7.4</version>
+		</dependency>
+		
+		<dependency>
+		    <groupId>org.eclipse.persistence</groupId>
+		    <artifactId>org.eclipse.persistence.moxy</artifactId>
+		    <version>2.7.4</version>
+		</dependency>
+		
+		<dependency>
+		    <groupId>org.eclipse.persistence</groupId>
+		    <artifactId>org.eclipse.persistence.core</artifactId>
+		    <version>2.7.4</version>
+		</dependency>
+
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>3.8.1</version>
+			<scope>test</scope>
+		</dependency>
+
+
+		<!-- Dependencies on the ejb and web modules so that they can be found 
+			by the ear plugin -->
+
+		<dependency>
+			<groupId>fr.legrain</groupId>
+			<artifactId>fr.legrain.moncompte.ejb</artifactId>
+			<type>ejb</type>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+
+<!-- 		<dependency> -->
+<!-- 			<groupId>fr.legrain</groupId> -->
+<!-- 			<artifactId>fr.legrain.bdg.webapp</artifactId> -->
+<!-- 			<type>war</type> -->
+<!-- 			<version>0.0.1-SNAPSHOT</version> -->
+<!-- 		</dependency> -->
+		
+		<dependency>
+			<groupId>fr.legrain</groupId>
+			<artifactId>fr.legrain.moncompte.admin.webapp</artifactId>
+			<type>war</type>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>fr.legrain</groupId>
+			<artifactId>fr.legrain.moncompte.client.webapp</artifactId>
+			<type>war</type>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>fr.legrain</groupId>
+			<artifactId>fr.legrain.autorisation.xml.osgi</artifactId>
+			<version>2.0.13-SNAPSHOT</version>
+			<type>jar</type>
+		</dependency>
+		
+		<dependency>
+			<groupId>fr.legrain</groupId>
+			<artifactId>fr.legrain.bdg.ws</artifactId>
+			<version>2.0.13-SNAPSHOT</version>
+			<type>jar</type>
+		</dependency>
+		
+		 <dependency>
+              <groupId>org.jboss.resteasy</groupId>
+              <artifactId>resteasy-client</artifactId>
+              <version>3.0.10.Final</version>
+              <scope>provided</scope>
+        </dependency>
+        <dependency>
+              <groupId>org.jboss.resteasy</groupId>
+              <artifactId>resteasy-multipart-provider</artifactId>
+              <version>3.0.10.Final</version>
+              <scope>provided</scope>
+        </dependency>
+		
+	</dependencies>
+
+	<build>
+	
+		<finalName>${project.artifactId}</finalName>
+
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.wildfly.plugins</groupId>
+					<artifactId>wildfly-maven-plugin</artifactId>
+					<version>2.0.1.Final</version>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-ear-plugin</artifactId>
+				<version>2.9.1</version>
+				<configuration>
+					<defaultLibBundleDir>/lib</defaultLibBundleDir>
+					<skinnyWars>true</skinnyWars>
+					<modules>
+						<ejbModule>
+							<groupId>fr.legrain</groupId>
+							<artifactId>fr.legrain.moncompte.ejb</artifactId>
+							<bundleFileName>fr.legrain.moncompte.ejb.jar</bundleFileName>
+						</ejbModule>
+						<webModule>
+							<groupId>fr.legrain</groupId>
+							<bundleFileName>fr.legrain.moncompte.admin.webapp.war</bundleFileName>
+							<artifactId>fr.legrain.moncompte.admin.webapp</artifactId>
+<!-- 							<contextRoot>moncompte-admin</contextRoot> -->
+							<contextRoot>/</contextRoot>
+						</webModule>
+						<webModule>
+							<groupId>fr.legrain</groupId>
+							<bundleFileName>fr.legrain.moncompte.client.webapp.war</bundleFileName>
+							<artifactId>fr.legrain.moncompte.client.webapp</artifactId>
+<!-- 							<contextRoot>moncompte-client</contextRoot> -->
+							<contextRoot>/</contextRoot>
+						</webModule>
+					</modules>
+				</configuration>
+			</plugin>
+
+		</plugins>
+	</build>
+</project>

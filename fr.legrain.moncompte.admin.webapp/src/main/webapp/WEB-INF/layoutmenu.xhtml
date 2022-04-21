@@ -1,0 +1,61 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:pi="http://primefaces.org/icarus"
+    xmlns:o="http://omnifaces.org/ui">
+	
+	<o:importConstants type="fr.legrain.moncompte.admin.webapp.app.LgrTab" />
+
+
+    <h:form id="menuform">
+
+        <pi:menu widgetVar="IcarusMenu">
+        
+            <p:submenu id="rm_dashboards" label="Produit" icon="fa fa-book">
+				<p:menuitem oncomplete="PF('wvOverlayListeProduit').show()" value="Liste produit"    />
+				<p:menuitem value="Type de produit" actionListener="#{menuBean.openTypeProduit}" update=":form:tabView" oncomplete="activeLastTabCenter()"/>
+            </p:submenu>
+           
+            <p:submenu label="Client" icon="fa fa-user">
+				<p:menuitem value="Liste client" oncomplete="PF('wvOverlayListeClient').show()" />
+				<p:menuitem value="Liste utilisateur" oncomplete="PF('wvOverlayListeUtilisateur').show()"   />
+				<p:menuitem value="Liste dossier" oncomplete="PF('wvOverlayListeDossier').show()"/>
+			</p:submenu>
+            
+            <p:submenu label="Paniers" icon="fa fa-shopping-cart">
+				<p:menuitem value="Paniers" actionListener="#{menuBean.openPanier}" update=":form:tabView"  oncomplete="activeTabCenter('#{LgrTab.CSS_CLASS_TAB_PANIER}');"/>
+			</p:submenu>
+			
+			<p:submenu label="Divers" icon="fa fa-asterisk">
+				<p:menuitem value="CGV" actionListener="#{menuBean.openConditionGeneraleVente}" onclick="alert('Non implémenté')" update=":form:tabView"  oncomplete="activeLastTabCenter()"/>
+				<p:menuitem value="Catégorie pro" actionListener="#{menuBean.openCategoriePro}" onclick="alert('Non implémenté')" update=":form:tabView"  oncomplete="activeLastTabCenter()"/>
+			</p:submenu>
+			
+			<p:submenu label="Partenariat" icon="fa fa-group">
+				<p:menuitem value="Demandes en attente" actionListener="#{menuBean.openPartenariatDemande}" update=":form:tabView"  oncomplete="activeLastTabCenter()"/>
+				<p:menuitem value="Partenaires" actionListener="#{menuBean.openPartenariatPartenaire}" update=":form:tabView"  oncomplete="activeTabCenter('#{LgrTab.CSS_CLASS_TAB_PARTENAIRES}');"/>
+				<p:menuitem value="Conditions générales" actionListener="#{menuBean.openPartenariatConditionGenerale}" onclick="alert('Non implémenté')" update=":form:tabView"  oncomplete="activeLastTabCenter()"/>
+			</p:submenu>
+			
+			<p:submenu label="Autorisations" icon="fa fa-cog">
+<!-- 				<p:menuitem value="Autorisations" actionListener="#{menuBean.openAutorisation}" update=":form:tabView"  oncomplete="activeLastTabCenter()" /> -->
+				<p:menuitem value="Liste Autorisations" oncomplete="PF('wvOverlayListeAutorisation').show()" />
+				<p:menuitem value="Autorisations" onclick="window.open('http://#{!empty adminBean.prefixeSousDomaine ? adminBean.prefixeSousDomaine : &#39;&#39;}autorisations.#{adminBean.nomDomaine}');" />
+			</p:submenu>
+			
+			<p:submenu label="Administration" icon="fa fa-cogs">
+				<p:menuitem value="Administration" actionListener="#{menuBean.openAdministration}" update=":form:tabView"  oncomplete="activeLastTabCenter()" />
+			</p:submenu>
+			
+			<p:submenu label="Aide" icon="fa fa-info-circle">
+				<p:menuitem value="A propos" actionListener="#{aProposBean.actAbout}" />
+			</p:submenu>
+			
+        </pi:menu>
+        
+    </h:form>
+    
+</ui:composition>

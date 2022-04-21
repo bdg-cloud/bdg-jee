@@ -1,0 +1,225 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
+xmlns:f="http://java.sun.com/jsf/core" 
+xmlns:h="http://java.sun.com/jsf/html"
+xmlns:ui="http://java.sun.com/jsf/facelets" 
+xmlns:o="http://omnifaces.org/ui" 
+xmlns:p="http://primefaces.org/ui">
+
+
+
+	<p:panel id="refArticleFournisseurFormPrincipal" widgetVar="refArticleFournisseurForm#{variableNomWvIDUnique}">
+
+		<p:menubar styleClass="menu-onglet" widgetVar="wvMenuRefArticleFournisseur#{variableNomWvIDUnique}">
+			<p:menuitem title="Enregistrer les modifications en cours" styleClass="icon-save icon" actionListener="#{refArticleFournisseurController.actEnregistrer}"
+				process="@this" 
+				update="@widgetVar(panelListeRefArticleFournisseur#{variableNomWvIDUnique}),@widgetVar(wvMenuRefArticleFournisseur#{variableNomWvIDUnique}),
+				@widgetVar(wvDetailRefArticleFournisseur#{variableNomWvIDUnique}}),@widgetVar(wvBanqueDataTable#{variableNomWvIDUnique})" 
+				disabled="#{refArticleFournisseurController.etatBouton('enregistrer')}" />
+
+			<p:menuitem title="Ajouter une nouvelle référence" styleClass="icon-insert icon" actionListener="#{refArticleFournisseurController.actInserer}"
+				process="@this" 
+				update="@widgetVar(panelListeRefArticleFournisseur#{variableNomWvIDUnique}),@widgetVar(wvMenuRefArticleFournisseur#{variableNomWvIDUnique}),
+				@widgetVar(wvDetailRefArticleFournisseur#{variableNomWvIDUnique}}),@widgetVar(wvBanqueDataTable#{variableNomWvIDUnique})" 
+				disabled="#{refArticleFournisseurController.etatBouton('inserer')}" />
+
+			<p:menuitem title="Modifier la référence courante" styleClass="icon-update icon" actionListener="#{refArticleFournisseurController.actModifier}" process="@this"
+				update="@widgetVar(panelListeRefArticleFournisseur#{variableNomWvIDUnique}),@widgetVar(wvMenuRefArticleFournisseur#{variableNomWvIDUnique}),
+				@widgetVar(wvDetailRefArticleFournisseur#{variableNomWvIDUnique}}),@widgetVar(wvBanqueDataTable#{variableNomWvIDUnique})" 
+				disabled="#{refArticleFournisseurController.etatBouton('modifier')}" />
+
+			<p:menuitem title="Annuler les modifications en cours" styleClass="icon-cancel icon" actionListener="#{refArticleFournisseurController.actAnnuler}"
+				process="@this" 
+				update="@widgetVar(panelListeRefArticleFournisseur#{variableNomWvIDUnique}),@widgetVar(wvMenuRefArticleFournisseur#{variableNomWvIDUnique}),
+				@widgetVar(wvDetailRefArticleFournisseur#{variableNomWvIDUnique}}),@widgetVar(wvBanqueDataTable#{variableNomWvIDUnique})" 
+				disabled="#{refArticleFournisseurController.etatBouton('annuler')}" />
+
+			<p:menuitem title="Supprimer la référence courante" styleClass="icon icon-delete menuitem-poubelle-droite"
+				actionListener="#{refArticleFournisseurController.actSupprimer}" process="@this" 
+				update="@widgetVar(panelListeRefArticleFournisseur#{variableNomWvIDUnique}),@widgetVar(wvMenuRefArticleFournisseur#{variableNomWvIDUnique}),
+				@widgetVar(wvDetailRefArticleFournisseur#{variableNomWvIDUnique}}),@widgetVar(wvBanqueDataTable#{variableNomWvIDUnique})" 
+				disabled="#{refArticleFournisseurController.etatBouton('supprimer')}">
+				<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer cette référence ?" icon="ui-icon-alert" />
+			</p:menuitem>
+		</p:menubar>
+
+		<p:panel header="Liste des références fournisseur pour l'article" widgetVar="panelListeRefArticleFournisseur#{variableNomWvIDUnique}">
+			<p:dataTable 
+			widgetVar="wvBanqueDataTable#{variableNomWvIDUnique}" 
+			var="table" value="#{refArticleFournisseurController.values}" 
+			rowKey="#{table.id}" 
+			selectionMode="single" 
+			selection="#{refArticleFournisseurController.selectedTaRefArticleFournisseurDTO}"
+			scrollable="true" 
+			scrollHeight="100"
+			rows="#{msg.modele_datatable_ligne_par_page_debut}"
+			paginatorTemplate="#{msg.modele_datatable_paginator}" 
+			rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+			emptyMessage="#{msg.message_datatable_vide}" 
+			currentPageReportTemplate="#{msg.modele_datatable_page_courante}">
+
+				<p:ajax event="rowSelect" listener="#{refArticleFournisseurController.onRowSelect}" update="@widgetVar(wvDetailRefArticleFournisseur#{variableNomWvIDUnique}),@widgetVar(wvMenuRefArticleFournisseur#{variableNomWvIDUnique})" />
+<!-- 				<p:ajax event="rowEdit" listener="#{refArticleFournisseurController.onRowEdit}" -->
+<!-- 					update="@widgetVar(wvDetailRefArticleFournisseur#{variableNomWvIDUnique}),@widgetVar(wvMenuRefArticleFournisseur#{variableNomWvIDUnique})" /> -->
+<!-- 				<p:ajax event="rowEditCancel" listener="#{refArticleFournisseurController.onRowCancel}" -->
+<!-- 					update="@widgetVar(wvDetailRefArticleFournisseur#{variableNomWvIDUnique}),@widgetVar(wvMenuRefArticleFournisseur#{variableNomWvIDUnique})" /> -->
+
+<!-- 				<p:column style="width:16px"> -->
+<!-- 					<p:rowEditor rendered="true" styleClass="row-editor-debut" /> -->
+<!-- 				</p:column> -->
+
+				<f:facet name="{Exporters}">
+					<h:commandLink>
+						<p:graphicImage library="images" name="excel.png" width="24" />
+						<p:dataExporter type="xls" target="refArticleFournisseurDataTable" fileName="référence_fournisseur_pour_article" />
+					</h:commandLink>
+
+					<h:commandLink>
+						<p:graphicImage library="images" name="pdf.png" width="24" />
+						<p:dataExporter type="pdf" target="refArticleFournisseurDataTable" fileName="référence_fournisseur_pour_article" />
+					</h:commandLink>
+
+					<h:commandLink>
+						<p:graphicImage library="images" name="csv.png" width="24" />
+						<p:dataExporter type="csv" target="refArticleFournisseurDataTable" fileName="référence_fournisseur_pour_article" options="#{separateurCsvController.csvOptions}" />
+					</h:commandLink>
+
+					<h:commandLink>
+						<p:graphicImage library="images" name="xml.png" width="24" />
+						<p:dataExporter type="xml" target="refArticleFournisseurDataTable" fileName="référence_fournisseur_pour_article" />
+					</h:commandLink>
+
+				</f:facet>
+
+				<f:facet name="header">
+					<h:outputText value="#{refArticleFournisseurController.values.size()} référence(s) fournisseur(s)" />
+				</f:facet>
+
+				<p:column sortBy="#{table.codeFournisseur}" filterBy="#{table.codeFournisseur}" filterMatchMode="contains" styleClass="center">
+					<f:facet name="header">
+						<h:outputText value="fournisseur" />
+					</f:facet>
+					<h:outputText value="#{table.codeFournisseur}">
+					</h:outputText>
+				</p:column>
+				
+				<p:column sortBy="#{table.codeArticleFournisseur}" filterBy="#{table.codeArticleFournisseur}" filterMatchMode="contains" styleClass="center">
+					<f:facet name="header">
+						<h:outputText value="code article du fournisseur" />
+					</f:facet>
+					<h:outputText value="#{table.codeArticleFournisseur}">
+					</h:outputText>
+				</p:column>
+
+				<p:column sortBy="#{table.codeBarreFournisseur}" filterBy="#{table.codeBarreFournisseur}" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="code barre du fournisseur" />
+					</f:facet>
+					<h:outputText value="#{table.codeBarreFournisseur}" />
+				</p:column>
+
+				<p:column sortBy="#{table.descriptif}"  styleClass="center">
+					<f:facet name="header">
+						<h:outputText value="Descriptif" />
+					</f:facet>
+					<h:outputText value="#{table.descriptif}" />
+				</p:column>
+
+				
+			</p:dataTable>
+
+
+			<p:panel  header="Détail" widgetVar="wvDetailRefArticleFournisseur#{variableNomWvIDUnique}">
+				<div class="ui-grid ui-grid-responsive">
+					<div class="ui-grid-row">
+						<div class="ui-grid-col-6">
+<!-- 							<p:panel  header="Infos Générales" toggleable="true" > -->
+								<h:panelGrid columns="2" cellpadding="10">
+
+									<p:outputLabel value="Fournisseur : " />
+									<p:autoComplete value="#{refArticleFournisseurController.taFournisseurDTO}" required="true"
+										completeMethod="#{refArticleFournisseurController.fournisseurAutoCompleteLight}" disabled="#{refArticleFournisseurController.editable()}" var="type"
+										itemLabel="#{type.codeTiers}" itemValue="#{type}" forceSelection="true" dropdown="true" placeholder="Fournisseur"
+										converter="entityConverter">
+										<p:column>
+											<h:outputText value="#{type.codeTiers}" />
+										</p:column>
+										<p:column>
+											<h:outputText value="#{type.nomTiers}" />
+										</p:column>
+										<f:attribute name="nomChamp" value="#{const.C_CODE_TIERS}" />
+										<p:ajax event="itemSelect" listener="#{refArticleFournisseurController.autcompleteSelection}" 
+										update="@this,@widgetVar(wvMenuRefArticleFournisseur#{variableNomWvIDUnique})" />
+									</p:autoComplete>
+
+
+									<p:outputLabel value="Code article fournisseur" />
+									<p:inputText value="#{refArticleFournisseurController.selectedTaRefArticleFournisseurDTO.codeArticleFournisseur}" validator="#{refArticleFournisseurController.validateCompteBanque}"
+										disabled="#{refArticleFournisseurController.editable()}">
+										<f:attribute name="nomChamp" value="#{const.C_CODE_ARTICLE}" />
+										<p:ajax event="blur" update="@this,@widgetVar(wvMenuRefArticleFournisseur#{variableNomWvIDUnique})" />
+									</p:inputText>
+										<p:outputLabel value="Code barre fournisseur" />
+										<p:inputText value="#{refArticleFournisseurController.selectedTaRefArticleFournisseurDTO.codeBarreFournisseur}" validator="#{refArticleFournisseurController.validateCompteBanque}"
+											disabled="#{refArticleFournisseurController.editable()}">
+											<f:attribute name="nomChamp" value="#{const.C_CODE_BARRE_ARTICLE}" />
+											<p:ajax event="blur" update="@this,@widgetVar(wvMenuRefArticleFournisseur#{variableNomWvIDUnique})" />
+										</p:inputText>									
+										<p:outputLabel value="Descriptif" />
+										<p:inputTextarea value="#{refArticleFournisseurController.selectedTaRefArticleFournisseurDTO.descriptif}" validator="#{refArticleFournisseurController.validateCompteBanque}"
+											disabled="#{refArticleFournisseurController.editable()}" styleClass="large-input-100">
+											<f:attribute name="nomChamp" value="#{const.C_DESCRIPTION}" />
+											<p:ajax event="blur" update="@this,@widgetVar(wvMenuRefArticleFournisseur#{variableNomWvIDUnique})" />
+										</p:inputTextarea>	
+							</h:panelGrid>
+<!-- 							</p:panel> -->
+						</div>
+					
+					</div>
+
+					
+				</div>
+			</p:panel>
+
+
+		</p:panel>
+	</p:panel>
+
+		<p:dialog header="Nouvelle référence" widgetVar="nouvelleRefArticleFournisseur" resizable="false" rendered="false"
+			id="idRefArticleFournisseur">
+			<h:form id="idRefArticleFournisseurForm">
+				<p:panelGrid id="display" columns="2" cellpadding="4"
+					style="margin:0 auto;">
+					<f:validateBean disabled="true">
+
+									<p:outputLabel value="Code article fournisseur" />
+									<p:inputText value="#{refArticleFournisseurController.selectedTaRefArticleFournisseurDTO.codeArticleFournisseur}" validator="#{refArticleFournisseurController.validateCompteBanque}"
+										disabled="#{refArticleFournisseurController.editable()}">
+										<f:attribute name="nomChamp" value="#{const.C_CODE_ARTICLE}" />
+										<p:ajax event="blur" update="@this,@widgetVar(wvMenuRefArticleFournisseur#{variableNomWvIDUnique})" />
+									</p:inputText>
+										<p:outputLabel value="Code barre fournisseur" />
+										<p:inputText value="#{refArticleFournisseurController.selectedTaRefArticleFournisseurDTO.codeBarreFournisseur}" validator="#{refArticleFournisseurController.validateCompteBanque}"
+											disabled="#{refArticleFournisseurController.editable()}">
+											<f:attribute name="nomChamp" value="#{const.C_CODE_BARRE_ARTICLE}" />
+											<p:ajax event="blur" update="@this,@widgetVar(wvMenuRefArticleFournisseur#{variableNomWvIDUnique})" />
+										</p:inputText>									
+										<p:outputLabel value="Descriptif" />
+										<p:inputTextarea value="#{refArticleFournisseurController.selectedTaRefArticleFournisseurDTO.descriptif}" validator="#{refArticleFournisseurController.validateCompteBanque}"
+											disabled="#{refArticleFournisseurController.editable()}" styleClass="large-input-100">
+											<f:attribute name="nomChamp" value="#{const.C_DESCRIPTION}" />
+											<p:ajax event="blur" update="@this,@widgetVar(wvMenuRefArticleFournisseur#{variableNomWvIDUnique})" />
+										</p:inputTextarea>	
+
+
+					</f:validateBean>
+
+					<f:facet name="footer">
+						<p:commandButton value="Enregistrer" styleClass="icon-save icon" actionListener="#{refArticleFournisseurController.actEnregistrer}"
+							update="@this"
+							oncomplete="handleSubmitRequest(xhr, status, args, 'controleDlg','newControleForm'); " />
+					</f:facet>
+				</p:panelGrid>
+			</h:form>
+		</p:dialog>
+		
+</ui:composition>

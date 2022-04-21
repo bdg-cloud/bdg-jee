@@ -1,0 +1,255 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:p="http://primefaces.org/ui">
+	
+<!-- 	<o:methodParam name="bbb" value="#{aaa}" /> -->
+	
+	<f:metadata>
+		<f:viewParam name="idTiers" value="#{emailController.paramId}"/>
+<!-- 		<f:event type="preRenderView" listener="#{emailController.refresh}"  /> -->
+		<f:viewAction action="#{emailController.refresh}" />
+	</f:metadata>
+	
+	<style type="text/css">
+    	#{emailController.cssEtiquetteEmail}
+    </style>
+
+	<p:panel id="emailEnvoyeFormPrincipal" widgetVar="emailEnvoyeForm">
+
+		<p:outputLabel value="Gestion des emails envoyés" rendered="#{dansDialogue == null ? true : false}" />
+
+		<p:panel id="emailEnvoyeDataTableF" style="position:relative;" rendered="#{dansDialogue == null ? true : false}">
+			
+			<p:commandButton value="Rafraîchir" title="Rafraîchir" actionListener="#{emailController.refresh}" disabled="#{emailController.modeEcran.dataSetEnModif()}"
+				styleClass="icon-refresh icon" process="@this" update=":form:tabView" >
+			</p:commandButton>		
+			
+			<p:commandButton title="Envoyer par email" styleClass="icon icon-envoi-mail" actionListener="#{envoyerEmailController.actDialogEmail}"
+			process="@this" 
+			update=":form:messages">
+				<p:ajax event="dialogReturn" listener="#{envoyerEmailController.handleReturnDialogEmail}" update=":form:messages"  />  
+			</p:commandButton>	
+
+			<p:commandButton id="emailEnvoyeFermer" title="Fermer"
+				styleClass="icon-close icon menuitem-fermer-droite" onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())">
+				 <p:confirm header="Confirmation" message="#{msg_diag.alert_fermeture_onglet}" icon="ui-icon-alert" disabled="#{!emailController.modeEcran.dataSetEnModif()}"/>
+			</p:commandButton>
+				 
+			<p:commandButton id="emailEnvoyeFermerDialogue" title="Fermer"
+				process="@this" styleClass="icon-close icon menuitem-fermer-droite"
+				actionListener="#{emailController.actFermerDialog}"
+				rendered="#{dansDialogue != null ? true : false}" />
+		</p:panel>
+		
+<!-- 		<p:sticky target="emailEnvoyeDataTableF" /> -->
+		<p:dataTable id="emailEnvoyeDataTable" 
+			var="table"
+			value="#{emailController.values}"
+			rowKey="#{table.id}" 
+			selectionMode="single"
+			class="datatable" 
+			selection="#{emailController.selectedTaMessageEmailDTO}"
+			scrollable="true" scrollHeight="250"
+			paginator="true" 
+			rowStyleClass="#{table.styleClass ? null : table.styleClass}"
+			rows="#{msg.modele_datatable_ligne_par_page_debut}"
+			paginatorTemplate="#{msg.modele_datatable_paginator}"
+			rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+			emptyMessage="#{msg.message_datatable_vide}"
+			currentPageReportTemplate="#{msg.modele_datatable_page_courante}">
+
+<!-- 			<p:ajax event="rowSelect" listener="#{bbb}" update="@widgetVar(wvDetailEmailEnvoye)"/> -->
+			<p:ajax event="rowSelect" listener="#{emailController.onRowSelect}" update="@widgetVar(wvDetailEmailEnvoye#{variableNomWvIDUnique})"/>
+			
+<!-- 			<p:ajax event="contextMenu" listener="#{emailController.onContextMenu}"/> -->
+<!-- 			<p:ajax event="contextMenu" listener="#{emailController.onContextMenu}" oncomplete="PF('wvContextMenuEtiquetteEmailEnvoye').show();" update="@widgetVar(wvContextMenuEtiquetteEmailEnvoye)" /> -->
+			
+
+			<f:facet name="{Exporters}">
+				<h:commandLink>
+					<p:graphicImage library="images" name="excel.png" width="24" />
+					<p:dataExporter type="xls" target="emailEnvoyeDataTable"
+						fileName="email_envoye" />
+				</h:commandLink>
+
+				<h:commandLink>
+					<p:graphicImage library="images" name="pdf.png" width="24" />
+					<p:dataExporter type="pdf" target="emailEnvoyeDataTable"
+						fileName="email_envoye" />
+				</h:commandLink>
+
+				<h:commandLink>
+					<p:graphicImage library="images" name="csv.png" width="24" />
+					<p:dataExporter type="csv" target="emailEnvoyeDataTable"
+						fileName="email_envoye" options="#{separateurCsvController.csvOptions}" />
+				</h:commandLink>
+
+				<h:commandLink>
+					<p:graphicImage library="images" name="xml.png" width="24" />
+					<p:dataExporter type="xml" target="emailEnvoyeDataTable"
+						fileName="email_envoye" />
+				</h:commandLink>
+
+			</f:facet>
+			
+			<f:facet name="header">  
+           			<h:outputText value="#{emailController.values.size()} emails" />
+        	</f:facet>
+
+			<p:column sortBy="#{table.dateEnvoi}"
+				filterBy="#{table.dateEnvoi}" filterMatchMode="contains" styleClass="center">
+				<f:facet name="header">
+					<h:outputText value="Date" />
+				</f:facet>
+				<h:outputText value="#{table.dateEnvoi}" >
+					<f:convertDateTime pattern="#{msg.datetime_pattern}" timeZone="#{msg.time_zone}"/>
+				</h:outputText>
+			</p:column>
+
+			<p:column sortBy="#{table.subject}" filterBy="#{table.subject}" filterMatchMode="contains" >
+				<f:facet name="header">
+					<h:outputText value="Sujet" />
+				</f:facet>
+				<h:outputText value="#{table.subject}" />
+			</p:column>
+
+			<p:column sortBy="#{table.bodyPlain}" filterBy="#{table.bodyPlain}" filterMatchMode="contains" styleClass="center">
+				<f:facet name="header" >
+					<h:outputText value="Corps" />
+				</f:facet>
+				<h:outputText value="#{table.bodyPlain}"/>
+			</p:column>
+
+			<p:column styleClass="center">
+				<f:facet name="header" >
+					<h:outputText value="Destinataire" />
+				</f:facet>
+				<h:outputText value="#{table.listeAdresseEmail}"/>
+<!-- 				<p:repeat value="${table.destinataires}" var="item"> -->
+<!-- 					<h:outputText value="#{item.adresseEmail}, " /> -->
+<!-- 				</p:repeat> -->
+			</p:column>
+			
+			<p:column styleClass="center">
+				<f:facet name="header" >
+					<h:outputText value="Pieces jointes" />
+				</f:facet>
+				<h:outputText value="#{table.nbPiecesJointes}"/>
+<!-- 				<h:outputText value="#{table.piecesJointes.size()}" /> -->
+			</p:column>
+			
+			<p:column styleClass="center">
+				<f:facet name="header" >
+					<h:outputText value="Etiquettes" />
+				</f:facet>
+				<h:outputText value="#{table.listeEtiquette}"/>
+<!-- 				<p:repeat value="#{table.etiquettes}" var="item"> -->
+<!-- 					<h:outputText value="#{item.code}," /> -->
+<!-- 				</p:repeat> -->
+			</p:column>
+			
+			
+<!-- 			<p:column sortBy="#{table.codeDocument}" filterBy="#{table.codeDocument}" filterMatchMode="contains" styleClass="center"> -->
+<!-- 				<f:facet name="header" > -->
+<!-- 					<h:outputText value="Code document" /> -->
+<!-- 				</f:facet> -->
+<!-- 				<h:outputText value="#{table.codeDocument}" /> -->
+<!-- 			</p:column> -->
+			
+		</p:dataTable>
+		
+		<p:contextMenu for="emailEnvoyeDataTable" model="#{emailController.model}" widgetVar="wvContextMenuEtiquetteEmailEnvoye" id="idContextMenuEtiquetteEmailEnvoye">
+<!-- 	        <p:menuitem value="View" update="carDetail" icon="ui-icon-search" oncomplete="PF('carDialog').show()"/> -->
+<!-- 	        <p:menuitem value="Delete" update="cars" icon="ui-icon-close" actionListener="#{dtContextMenuView.deleteCar}"/> -->
+    	</p:contextMenu>
+		
+		<p:resizable for="idDetailEmailEnvoye" />
+		
+		<p:panel id="idDetailEmailEnvoye" header="Détail" widgetVar="wvDetailEmailEnvoye#{variableNomWvIDUnique}">
+			<p:panelGrid columns="2">
+				<h:outputText value="Etiquette " />
+				<p:repeat value="${emailController.selectedTaMessageEmailDTO.etiquettes}" var="item">
+					<div style="margin:auto; width: 15px; height: 15px; background-color: ##{item.couleur}; display: inline; margin-right: 5px;"><h:outputText value="#{item.code}" /></div>
+				</p:repeat>
+				
+				<h:outputText value="Date" />
+				<h:outputText value="#{emailController.selectedTaMessageEmailDTO.dateEnvoi}" >
+					<f:convertDateTime pattern="#{msg.datetime_pattern}" timeZone="#{msg.time_zone}"/>
+				</h:outputText>
+				
+				<h:outputText value="Sujet " />
+				<h:outputText value="#{emailController.selectedTaMessageEmailDTO.subject}" />
+				
+				<h:outputText value="Status " />
+				<h:panelGroup>
+					<p:panelGrid columns="2">
+						<h:outputText value="#{emailController.selectedTaMessageEmailDTO.statusServiceExterne}" />
+						<p:panel header="Détails techniques" toggleable="true" collapsed="true">
+							<p:outputLabel value="#{emailController.selectedTaMessageEmailDTO.infosTechniques}" escape="false" />
+						</p:panel>
+					</p:panelGrid>
+<!-- 					<p:commandButton value="?" type="button" onclick="PF('wvPanelOverlayDetailTechniques#{variableNomWvIDUnique}').show()" /> -->
+				</h:panelGroup>
+			    
+				
+				<h:outputText value="Destinataire " />
+				<p:repeat value="${emailController.selectedTaMessageEmailDTO.destinataires}" var="item">
+					<h:outputText value="#{item.adresseEmail}, " />
+				</p:repeat>
+				
+				<h:outputText value="Cc " />
+				<ui:repeat value="${emailController.selectedTaMessageEmailDTO.cc}" var="item">
+					<h:outputText value="#{item.adresseEmail}, " />
+				</ui:repeat>
+				
+				<h:outputText value="Bcc " />
+				<ui:repeat value="${emailController.selectedTaMessageEmailDTO.bcc}" var="item">
+					<h:outputText value="#{item.adresseEmail}, " />
+				</ui:repeat>
+			</p:panelGrid>
+			
+			<p:separator/>
+			
+			<h:outputText value="#{emailController.selectedTaMessageEmailDTO.bodyPlain}" escape="false"/>
+			
+			<p:separator/>
+			
+			<p:panel  >
+				
+				 <p:dataGrid 
+				 	var="pj" 
+				 	value="#{emailController.selectedTaMessageEmailDTO.piecesJointes}" 
+				 	columns="3" layout="grid" rows="12" 
+				 	emptyMessage="">
+
+			        <p:panel header="#{pj.nomFichier}" style="text-align:center">
+			            <h:panelGrid columns="1" style="width:100%">
+			 
+<!-- 			                <p:commandLink update="@this" oncomplete="PF('carDialog').show()" title="View Detail"> -->
+<!-- 			                    <h:outputText styleClass="ui-icon ui-icon-document" style="margin:0 auto;" /> -->
+<!-- 			                    <i class="#{pj.iconFileType()}" aria-hidden="true" style="display: inline;margin:0 auto;"/> -->
+<!-- 			                </p:commandLink> -->
+
+<!-- 			                actionListener="#{emailController.prepareDownloadPj}" -->
+			                 <p:commandButton value="Télécharger" ajax="false" icon="ui-icon-arrowthick-1-s" >
+			                 	<f:setPropertyActionListener value="#{pj}" target="#{emailController.selectedTaPieceJointeEmailDTO}" />
+<!-- 									<f:attribute name="pjdto" value="#{pj}"/> -->
+						        <p:fileDownload value="#{emailController.streamedPieceJointe}" />
+						    </p:commandButton>
+			            </h:panelGrid>
+			        </p:panel>
+ 
+    			</p:dataGrid>
+				
+			</p:panel>
+
+		</p:panel>
+
+		
+	</p:panel>
+
+	
+</ui:composition>

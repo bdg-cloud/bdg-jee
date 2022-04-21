@@ -1,0 +1,736 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:xforms="http://www.w3.org/1999/xhtml">
+
+	<p:menubar styleClass="menu-onglet" id="idMenuBoutonGestReglement" widgetVar="wvMenuBoutonGestReglement">
+
+		<p:menuitem title="Enregistrer le règlement en cours de saisie" value="Enregistrer" styleClass="icon icon-save" process="@this"
+			actionListener="#{reglementController.actEnregistrer}"
+			update=":form:messages,@form,@widgetVar(wvMenuListeReglement),@widgetVar(wvDataTableListeGestReglement),@widgetVar(wvDataTableListeGestReglement2),@widgetVar(wvPanelRenderedReglement),@widgetVar(wvInfosComplementairesReglement)"
+			disabled="#{reglementController.etatBouton('enregistrer') }" />
+
+		<p:menuitem title="Créer un nouveau règlement" value="Insérer" styleClass="icon icon-insert" actionListener="#{reglementController.actInitInserer}"
+			process="@this"
+			update=":form:messages,@form,@widgetVar(wvMenuListeReglement),@widgetVar(wvDataTableListeGestReglement),@widgetVar(wvDataTableListeGestReglement2),@widgetVar(wvPanelRenderedReglement),@widgetVar(wvPanelTotauxReglement),@widgetVar(wvInfosComplementairesReglement)"
+			disabled="#{reglementController.etatBouton('inserer')}" />
+
+		<p:menuitem title="Modifier le règlement en cours" label="Modifier" styleClass="icon-update icon" actionListener="#{reglementController.actModifier}"
+			process="@this"
+			update=":form:messages,@form,@widgetVar(wvMenuListeReglement),@widgetVar(wvDataTableListeGestReglement),@widgetVar(wvDataTableListeGestReglement2),@widgetVar(wvPanelRenderedReglement),@widgetVar(wvInfosComplementairesReglement)"
+			disabled="#{reglementController.etatBouton('modifier')}">
+		</p:menuitem>	
+		<p:menuitem title="Annuler les modifications en cours" value="Annuler" styleClass="icon icon-cancel" actionListener="#{reglementController.actAnnuler}"
+			process="@this"
+			update=":form:messages,@form,@widgetVar(wvMenuListeReglement),@widgetVar(wvDataTableListeGestReglement),@widgetVar(wvDataTableListeGestReglement2),@widgetVar(wvPanelRenderedReglement),@widgetVar(wvInfosComplementairesReglement)"
+			disabled="#{reglementController.etatBouton('annuler')}">
+			<p:confirm header="Confirmation" message="Etes vous sur de vouloir annuler les modifications en cours ?" icon="ui-icon-alert" />
+		</p:menuitem>
+
+
+		<p:menuitem title="Supprimer le règlement courant" value="Supprimer" styleClass="icon icon-delete menuitem-poubelle-droite"
+			actionListener="#{reglementController.actSupprimer}" process="@this"
+			update=":form:messages,@form,@widgetVar(wvMenuListeReglement),@widgetVar(wvDataTableListeGestReglement),@widgetVar(wvDataTableListeGestReglement2),@widgetVar(wvPanelRenderedReglement),@widgetVar(wvInfosComplementairesReglement)"
+			disabled="#{reglementController.etatBouton('supprimer') or reglementController.documentDTOEstVerrouille().verrouille}">
+			<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer cet enregistrement ?" icon="ui-icon-alert" />
+		</p:menuitem>
+
+
+		<p:menuitem title="Imprimer le règlement courant" value="Imprimer" styleClass="icon icon-print"
+			onsuccess="window.open('#{request.contextPath}/output?__report=/reports/reglement/FicheReglement.rptdesign&amp;__format=pdf')"
+			actionListener="#{reglementController.actImprimer}" disabled="#{reglementController.etatBouton('imprimer')}" />
+
+		<p:menuitem title="Fermer l'écran" value="Fermer" styleClass="icon icon-close menuitem-fermer-droite" process="@this"
+			actionListener="#{reglementController.actFermer}" update=":form:messages,@widgetVar(wvMenuListeReglement),@widgetVar(wvDataTableListeGestReglement2)" disabled="#{reglementController.etatBouton('fermer')}"
+			onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())">
+
+			<p:confirm header="Confirmation" message="#{msg_diag.alert_fermeture_onglet}" icon="ui-icon-alert"
+				disabled="#{!reglementController.modeEcran.dataSetEnModif()}" />
+		</p:menuitem>
+		<p:separator styleClass="separateur-menu-vertical" />
+
+		<p:menuitem title="Liste des factures" styleClass="icon icon-liste" oncomplete="PF('wvOverlayListeReglement').show();" />
+
+	</p:menubar>
+
+	<p:fieldset style="margin-bottom:20px;" widgetVar="wvInfosComplementairesReglement">
+		<h:panelGrid columns="13" cellpadding="15" >
+
+<!-- 				<p:graphicImage name="btn/exporter.svg" title="Le règlement en cours est exporté. Il ne peut pas être supprimé ou modifié." library="images" -->
+<!-- 					width="20px" rendered="#{reglementController.remiseExporte}" /> -->
+		<p:graphicImage value="Document verrouillé !!!" title="#{reglementController.documentDTOEstVerrouille().message}" library="images" name="verrouiller.svg" width="28"  rendered="#{reglementController.documentDTOEstVerrouille().verrouille}"/> 
+		</h:panelGrid>
+	</p:fieldset>
+
+	<div class="container">
+		<p:panel id="idPanelRenderedReglement" widgetVar="wvPanelRenderedReglement">
+			<div class="container">
+				<p:panel header="#{reglementController.titreEtape1}" toggleable="true" toggleSpeed="50" rendered="#{reglementController.afficheCritere}" id="idCriteresFiltresGestReglement" >
+			
+<!-- 				<p:fieldset legend="#{reglementController.titreEtape1}" id="idCriteresFiltresGestReglement" toggleable="true" toggleSpeed="50" -->
+<!-- 					rendered="#{reglementController.afficheCritere}"> -->
+
+					<div class="ui-g">
+
+						<div class="ui-g-12 ui-lg-3">
+<!-- 							<div class="card"> -->
+								<p:panel header="Période"  styleClass="panelgrey" style="width:100%;text-align: center;">
+								<div class="ui-g-12 ui-md-2" >
+						<i class="fa fa-calendar fa-3x" aria-hidden="true"></i>
+<!-- 						 <h:graphicImage name="dashboard/periode.png" library="images" /> -->
+						 </div>
+						 <div class="ui-g-12 ui-md-10">
+			        	<h:panelGrid columns="2" cellpadding="0">
+						 <p:outputLabel value="Du"/>
+											<p:calendar value="#{reglementController.dateDeb}"
+												showOn="button" 
+												navigator="true" 
+												pattern="#{msg.date_pattern}" 
+												mask="true" 
+												locale="fr" 
+												timeZone="#{msg.time_zone}" >
+												<p:ajax event="dateSelect" update="@this" />
+												<p:ajax event="change" update="@this" />												
+											</p:calendar>
+<!-- 												<f:convertDateTime pattern="#{msg.date_pattern}" -->
+<!-- 													timeZone="#{msg.time_zone}" /> -->
+
+						 <p:outputLabel value="au"/>
+											<p:calendar value="#{reglementController.dateFin}"
+												showOn="button" 
+												navigator="true" 
+												pattern="#{msg.date_pattern}" 
+												mask="true" 
+												locale="fr" 
+												timeZone="#{msg.time_zone}" >
+												<p:ajax event="dateSelect" update="@this" />
+												<p:ajax event="change" update="@this" />
+											</p:calendar>
+<!-- 												<f:convertDateTime pattern="#{msg.date_pattern}" -->
+<!-- 													timeZone="#{msg.time_zone}" /> -->
+        				</h:panelGrid>
+        				</div>
+<!-- 									<p:panelGrid columns="2" columnClasses="ui-grid-col-4 right,ui-grid-col-8" styleClass="ui-panelgrid-blank" layout="grid"> -->
+<!-- 										<i class="fa fa-calendar fa-3x" aria-hidden="true"></i> -->
+<!-- 										<p:panelGrid columns="2" cellpadding="0"> -->
+<!-- 											<p:outputLabel value="Du" /> -->
+<!-- 											<p:calendar value="#{reglementController.dateDeb}" showOn="button" navigator="true" pattern="#{msg.date_pattern}" mask="true" locale="fr" -->
+<!-- 												timeZone="#{msg.time_zone}"> -->
+<!-- 												<p:ajax event="dateSelect" update="@this" /> -->
+<!-- 												<f:ajax event="blur" update="@this" /> -->
+<!-- 											</p:calendar> -->
+
+<!-- 											<p:outputLabel value="au" /> -->
+<!-- 											<p:calendar value="#{reglementController.dateFin}" showOn="button" navigator="true" pattern="#{msg.date_pattern}" mask="true" locale="fr" -->
+<!-- 												timeZone="#{msg.time_zone}"> -->
+<!-- 												<p:ajax event="dateSelect" update="@this" /> -->
+<!-- 												<f:ajax event="blur" update="@this" /> -->
+<!-- 											</p:calendar> -->
+<!-- 										</p:panelGrid> -->
+<!-- 									</p:panelGrid> -->
+								</p:panel>
+<!-- 							</div> -->
+							<!--Fin div card-->
+						</div>
+						<div class="ui-g-12 ui-lg-5">
+						<p:panel header="Sélection du tiers qui fait le réglement" >
+							<div class="card">
+										<p:panelGrid columns="2" columnClasses="ui-grid-col-3,ui-grid-col-3,ui-grid-col-3,ui-grid-col-3" styleClass="ui-panelgrid-blank"
+											layout="grid">
+											<p:outputLabel value="Le tiers" />
+											<p:autoComplete value="#{reglementController.taTiers}" converter="entityConverter"
+												completeMethod="#{reglementController.tiersAutoComplete}" var="t" itemLabel="#{t.codeTiers}" itemValue="#{t}"
+												forceSelection="true" dropdown="true" placeholder="Code Tiers">
+												<p:column>
+													<h:outputText value="#{t.codeTiers}" />
+												</p:column>
+												<p:column>
+													<h:outputText value="#{t.nomEntreprise}" />
+												</p:column>
+												<p:column>
+													<h:outputText value="#{t.nomTiers}" />
+												</p:column>
+
+												<p:column>
+													<h:outputText value="#{t.compte}" />
+												</p:column>
+												<f:attribute name="nomChamp" value="#{const.C_CODE_TIERS}" />
+												<p:ajax event="itemSelect" listener="#{reglementController.autcompleteSelection}" 
+														update="idBtnValider,
+																idTiersFinal,
+																idRaisonSocialeTiers,
+																idPrenomTiers,
+																idNomTiers,
+																idlocaliteTiers,
+																idTelephoneTiers,
+																idemailTiers"  />
+											</p:autoComplete>
+											<p:outputLabel value="Raison sociale"/>
+											<p:outputLabel value="#{reglementController.raisonSocialeTiers}" id="idRaisonSocialeTiers"  style="font-size:15px;"/>
+											<p:outputLabel value="Nom" />
+											<p:outputLabel value="#{reglementController.nomTiers}" id="idNomTiers"/>
+											<p:outputLabel value="Prénom" />
+											<p:outputLabel value="#{reglementController.prenomTiers}" id="idPrenomTiers" />
+											<p:outputLabel value="Localité" />
+											<p:outputLabel value="#{reglementController.cpTiers} #{reglementController.villeTiers}" id="idlocaliteTiers"/>
+											<p:outputLabel value="Téléphone" />
+											<p:outputLabel value="#{reglementController.telephoneTiers}" id="idTelephoneTiers" />
+
+											<p:outputLabel value="Email" />
+<!-- 											update="growl"  -->
+											    <p:commandLink id="ajax" oncomplete="$('.classHiddenCommandForDialogEmailReturnTiers').click()" >
+        											<h:outputText value="#{reglementController.emailTiers}" id="idemailTiers"/>
+    											</p:commandLink>
+<!--     											<p:outputLabel value="#{reglementController.emailTiers}" id="idemailTiers" /> -->
+<!-- 											<p:outputLabel value="Solde" /> -->
+<!-- 											<p:outputLabel value="Valeur solde" /> -->
+				
+										</p:panelGrid>
+									<p:commandButton styleClass="classHiddenCommandForDialogEmailReturnTiers" actionListener="#{reglementController.actDialogEmail}" 
+													style="display:none"
+													process="@this">
+													<p:ajax event="dialogReturn" listener="#{reglementController.handleReturnDialogEmail}" update=":form:messages" />
+			</p:commandButton>										
+								</div>
+									</p:panel>
+						</div>
+						
+						<div class="ui-g-12 ui-lg-4">
+							<p:panel header="Compléments" >
+							
+							<div class="ui-g-12 ui-lg-12">
+<!-- 								<p:panelGrid columns="2" columnClasses="ui-grid-col-9,ui-grid-col-3" styleClass="ui-panelgrid-blank" -->
+<!--  											layout="grid"> -->
+<!-- 											<p:outputLabel value="n avoir pour un montant HT de" style="font-size:15px;"/> -->
+<!-- 											<p:outputLabel value="0" /> -->
+<!-- 											<p:outputLabel value="n acompte pour un montant HT de" style="font-size:15px;"/> -->
+<!-- 											<p:outputLabel value="0" /> -->
+<!-- 											<p:outputLabel value="Solde HT de" style="font-size:15px;"/> -->
+<!-- 											<p:outputLabel value="0" /> -->
+<!--  								</p:panelGrid> -->
+<!-- 								<div class="card"> -->
+<!-- 									<p:panel header="Retrouver une facture à partir d'un type de paiement" > -->
+<!-- 										<p:panelGrid columns="2" columnClasses="ui-grid-col-3,ui-grid-col-3,ui-grid-col-3,ui-grid-col-3" styleClass="ui-panelgrid-blank" -->
+<!-- 											layout="grid"> -->
+<!-- 											<p:outputLabel value="Le type de paiement" /> -->
+<!-- 											<p:autoComplete value="#{reglementController.taTPaiment}" converter="entityConverter" -->
+<!-- 												completeMethod="#{reglementController.typePaiementAutoComplete}" var="tiers" itemLabel="#{tiers.codeTPaiement}" itemValue="#{tiers}" -->
+<!-- 												forceSelection="true" dropdown="true" placeholder="Type paiement"> -->
+<!-- 												<p:column> -->
+<!-- 													<h:outputText value="#{tiers.codeTPaiement}" /> -->
+<!-- 												</p:column> -->
+
+<!-- 												<p:column> -->
+<!-- 													<h:outputText value="#{tiers.libTPaiement}" /> -->
+<!-- 												</p:column> -->
+
+<!-- 												<p:column> -->
+<!-- 													<h:outputText value="#{tiers.compte}" /> -->
+<!-- 												</p:column> -->
+<!-- 												<f:attribute name="nomChamp" value="#{const.C_CODE_T_PAIEMENT}" /> -->
+<!-- 												<p:ajax event="itemSelect" listener="#{reglementController.autcompleteSelection}" update="idCompteBanque" /> -->
+<!-- 											</p:autoComplete> -->
+
+<!-- 										</p:panelGrid> -->
+<!-- 									</p:panel> -->
+<!-- 								</div> -->
+
+							</div>
+<!-- 							<div class="ui-g-12 ui-lg-12"> -->
+<!-- 								<div class="card"> -->
+<!-- 									<p:panel header="Retrouver une facture à partir d'un compte bancaire" id="idPanelCompteBanqueGestReglement"> -->
+<!-- 										<p:panelGrid columns="2" columnClasses="ui-grid-col-4 right,ui-grid-col-8" styleClass="ui-panelgrid-blank" layout="grid"> -->
+<!-- 											<i class="fa fa-file-text-o fa-3x" aria-hidden="true"></i> -->
+<!-- 											<p:panelGrid columns="1" cellpadding="0"> -->
+<!-- 												<p:outputLabel value="Le compte bancaire" /> -->
+<!-- 												<p:autoComplete value="#{reglementController.taCompteBanqueFinal}" id="idCompteBanque" converter="entityConverter" -->
+<!-- 													completeMethod="#{reglementController.compteBancaireAutoComplete}" var="doc" itemLabel="#{doc.iban}" itemValue="#{doc}" -->
+<!-- 													forceSelection="true" dropdown="true" placeholder="Compte bancaire"> -->
+<!-- 													<p:column> -->
+<!-- 														<h:outputText value="#{doc.codeBanque}" /> -->
+<!-- 													</p:column> -->
+
+<!-- 													<p:column> -->
+<!-- 														<h:outputText value="#{doc.nomBanque}" /> -->
+<!-- 													</p:column> -->
+
+<!-- 													<p:column> -->
+<!-- 														<h:outputText value="#{doc.compte}" /> -->
+<!-- 													</p:column> -->
+
+<!-- 													<p:column> -->
+<!-- 														<h:outputText value="#{doc.iban}" /> -->
+<!-- 													</p:column> -->
+
+<!-- 													<p:column> -->
+<!-- 														<h:outputText value="#{doc.cptcomptable}" /> -->
+<!-- 													</p:column> -->
+<!-- 													<f:attribute name="nomChamp" value="#{const.C_IBAN_BANQUE}" /> -->
+<!-- 													<p:ajax event="itemSelect" listener="#{reglementController.autcompleteSelection}" update="idCompteBanqueFinal" /> -->
+<!-- 												</p:autoComplete> -->
+<!-- 											</p:panelGrid> -->
+<!-- 										</p:panelGrid> -->
+<!-- 									</p:panel> -->
+<!-- 								</div> -->
+<!-- 							</div> -->
+							</p:panel>
+						</div>
+					</div>
+
+					<div style="text-align: center;">
+						<p:commandButton value="Création du réglement" actionListener="#{reglementController.actInserer}" id="idBtnValider" disabled="#{reglementController.taTiers ==null}"
+							update="idPanelListeTiersGestReglement,idPanelEnteteReglement,@widgetVar(wvPanelTotauxReglement),@widgetVar(wvPanelReglement)" style="width:20%; height:45px;" icon="fa fa-check" />
+					</div>
+			</p:panel>
+<!-- 				</p:fieldset> -->
+			</div>
+			<div class="container">
+
+<!-- 				<p:fieldset legend="#{reglementController.titreEcran}" id="idListesDocGestReglement" toggleable="true" toggleSpeed="50"> -->
+				<p:panel header="#{reglementController.titreEcran}" widgetVar="wvPanelReglement" visible="#{!reglementController.preInsertion}">
+					<div class="ui-g">
+						<div class="ui-g-12 ui-lg-12" >
+							<p:panel header="Entête du règlement" id="idPanelEnteteReglement" >
+								<div class="ui-g-12 ui-lg-4">
+									<div class="card">
+									<h:panelGrid columns="2" cellpadding="10"  style="width:100%">
+									<p:outputLabel id="idlabelCodeReglement" value="Code règlement" title="La référence du règlement" styleClass="labelchob" />
+									<p:inputText id="idCodeReglement" value="#{reglementController.selection.dto.codeDocument}" validator="#{reglementController.validateObject}"
+										disabled="#{reglementController.editable() or  reglementController.documentDTOEstVerrouille().verrouille}"  style="width:100%">
+										<f:attribute name="nomChamp" value="#{const.C_CODE_DOCUMENT}" />
+										<p:ajax event="blur" update="@this" />
+									</p:inputText>
+									<p:outputLabel value="Le tiers" />
+									<p:inputText id="idTiersFinal" value="#{reglementController.selection.dto.codeTiers}"  validator="#{reglementController.validateObject}"
+										disabled="#{reglementController.editable() or  reglementController.documentDTOEstVerrouille().verrouille}" style="width:100%">
+										<f:attribute name="nomChamp" value="#{const.C_CODE_TIERS}" />
+										<p:ajax event="blur" update="@this" />
+									</p:inputText>									
+									<p:outputLabel value="Remise" />
+									<p:commandLink value="#{reglementController.selection.dto.codeRemise}"
+										action="#{reglementController.ouvertureDocumentBean.detailDocument(reglementController.ouvertureDocumentBean.recupCodeDocument(reglementController.selection.dto.codeRemise,reglementController.ouvertureDocumentBean.getTypeDocumentRemise()))}" 
+										update=":form:tabView" oncomplete="activeTabCenter('#{reglementController.ouvertureDocumentBean.event.cssLgrTab}');">
+									</p:commandLink>
+									</h:panelGrid>									
+									</div>
+								</div>
+								<div class="ui-g-12 ui-lg-4">
+									<div class="card">
+									<h:panelGrid columns="2" cellpadding="10"  style="width:100%">
+									<p:outputLabel id="idlabelMontantReglement" 
+													value="Montant du règlement" 
+													title="Montant du règlement" 
+													styleClass="labelchob" style="font-size:15px;"/>
+									<p:inputText id="idMontantReglement" value="#{reglementController.selection.dto.netTtcCalc}" 
+										disabled="#{reglementController.editable() or  reglementController.documentDTOEstVerrouille().verrouille}" style="font-size:15px;width:100%;">
+										<p:ajax event="blur"
+												listener="#{reglementController.validateUIField(const.C_MONTANT_REGLEMENT,reglementController.selection.dto.netTtcCalc)}"
+												update="@this,@widgetVar(wvPanelTotauxReglement)" />
+									</p:inputText>
+									
+									<p:outputLabel id="idlabelTypePaiementReglement" value="Moyen de paiement" title="Moyen de paiement" styleClass="labelchob" />
+											<p:autoComplete id="idTypePaiementFinal" value="#{reglementController.taTPaiment}" converter="entityConverter" 
+											disabled="#{reglementController.editable() or  reglementController.documentDTOEstVerrouille().verrouille}"
+												completeMethod="#{reglementController.typePaiementAutoComplete}" var="tiers" itemLabel="#{tiers.codeTPaiement}" itemValue="#{tiers}"
+												forceSelection="true" dropdown="true" placeholder="Type paiement" style="width:100%">
+												<p:column>
+													<h:outputText value="#{tiers.codeTPaiement}" />
+												</p:column>
+
+												<p:column>
+													<h:outputText value="#{tiers.libTPaiement}" />
+												</p:column>
+
+												<p:column>
+													<h:outputText value="#{tiers.compte}" />
+												</p:column>
+												<f:attribute name="nomChamp" value="#{const.C_CODE_T_PAIEMENT}" />
+												<p:ajax event="itemSelect" listener="#{reglementController.autcompleteSelection}" update="idCompteBanqueFinal,idLibelleReglement" />
+											</p:autoComplete>
+									<p:outputLabel id="idlabelLibelleReglement" value="Libellé règlement" title="Le libellé du règlement" styleClass="labelchob" />
+									<p:inputText id="idLibelleReglement" value="#{reglementController.selection.dto.libelleDocument}" validator="#{reglementController.validateObject}"
+										disabled="#{reglementController.editable() or  reglementController.documentDTOEstVerrouille().verrouille}" style="width:100%">
+										<f:attribute name="nomChamp" value="#{const.C_LIBELLE_DOCUMENT}" />
+										<p:ajax event="blur" update="@this" />
+									</p:inputText>
+									</h:panelGrid>									
+									</div>
+								</div>
+								<div class="ui-g-12 ui-lg-4">
+									<div class="card">
+									<h:panelGrid columns="2" cellpadding="10"  style="width:100%">
+									<p:outputLabel id="idlabelDateReglement" value="Date du règlement" title="La date du règlement" styleClass="labelchob" />
+									<p:calendar value="#{reglementController.selection.dto.dateDocument}" pattern="dd/MM/yyyy" mask="true" locale="fr" navigator="true"
+										showOn="button" timeZone="#{msg.time_zone}" validator="#{reglementController.validateObject}" disabled="#{reglementController.editable() or  reglementController.documentDTOEstVerrouille().verrouille}" style="width:100%">
+
+										<f:attribute name="nomChamp" value="#{const.C_DATE_DOCUMENT}" />
+										<p:ajax event="dateSelect" update="@this" />
+										<p:ajax event="change" update="@this" />
+									</p:calendar>
+
+									<p:outputLabel id="idlabelDateEncaissement" value="Date d'encaissement" title="La date d'encaissement" styleClass="labelchob" />
+									<p:calendar id="idDateEncaissement" value="#{reglementController.selection.dto.dateLivDocument}" pattern="dd/MM/yyyy" mask="true" locale="fr"
+										navigator="true" showOn="button" timeZone="#{msg.time_zone}" validator="#{reglementController.validateObject}"
+										disabled="#{reglementController.editable() or  reglementController.documentDTOEstVerrouille().verrouille}" style="width:100%">
+
+										<f:attribute name="nomChamp" value="#{const.C_DATE_LIV_DOCUMENT}" />
+										<p:ajax event="dateSelect" update="@this" />
+										<p:ajax event="change" update="@this" />
+									</p:calendar>
+									
+									<p:outputLabel value="Compte bancaire" />
+									<p:autoComplete value="#{reglementController.taCompteBanqueFinal}" id="idCompteBanqueFinal" converter="entityConverter" 									
+										completeMethod="#{reglementController.compteBancaireAutoCompleteFinal}" var="doc" itemLabel="#{doc.iban}" itemValue="#{doc}" forceSelection="true"
+										dropdown="true" placeholder="Compte bancaire" disabled="#{reglementController.editable()  or reglementController.documentDTOEstVerrouille().verrouille}">
+										<p:column>
+											<h:outputText value="#{doc.codeBanque}" />
+										</p:column>
+
+										<p:column>
+											<h:outputText value="#{doc.nomBanque}" />
+										</p:column>
+
+										<p:column>
+											<h:outputText value="#{doc.compte}" />
+										</p:column>
+
+										<p:column>
+											<h:outputText value="#{doc.iban}" />
+										</p:column>
+
+										<p:column>
+											<h:outputText value="#{doc.cptcomptable}" />
+										</p:column>
+										<f:attribute name="nomChamp" value="#{const.C_IBAN_BANQUE}" />
+										<p:ajax event="itemSelect" listener="#{reglementController.autcompleteSelection}" update="" />
+									</p:autoComplete>									
+									</h:panelGrid>
+									</div>
+								</div>
+<!-- 									<h:panelGrid columns="4" cellpadding="10"> -->
+<!-- 									<p:outputLabel id="idlabelCodeReglement" value="Code règlement" title="La référence du règlement" styleClass="labelchob" /> -->
+<!-- 									<p:inputText id="idCodeReglement" value="#{reglementController.selection.dto.codeDocument}" validator="#{reglementController.validateObject}" -->
+<!-- 										disabled="#{reglementController.editable() or reglementController.remiseExporte}"> -->
+<!-- 										<f:attribute name="nomChamp" value="#{const.C_CODE_DOCUMENT}" /> -->
+<!-- 										<p:ajax event="blur" update="@this" /> -->
+<!-- 									</p:inputText> -->
+<!-- 									<p:outputLabel id="idlabelLibelleReglement" value="Libellé règlement" title="Le libellé du règlement" styleClass="labelchob" /> -->
+<!-- 									<p:inputText id="idLibelleReglement" value="#{reglementController.selection.dto.libelleDocument}" validator="#{reglementController.validateObject}" -->
+<!-- 										disabled="#{reglementController.editable() or reglementController.remiseExporte}" style="width:200%"> -->
+<!-- 										<f:attribute name="nomChamp" value="#{const.C_LIBELLE_DOCUMENT}" /> -->
+<!-- 										<p:ajax event="blur" update="@this" /> -->
+<!-- 									</p:inputText> -->
+<!-- 									</h:panelGrid> -->
+<!-- 								<h:panelGrid columns="6" cellpadding="10"> -->
+									
+<!-- 									<p:outputLabel id="idlabelDateReglement" value="date du règlement" title="La date du règlement" styleClass="labelchob" /> -->
+<!-- 									<p:calendar value="#{reglementController.selection.dto.dateDocument}" pattern="dd/MM/yyyy" mask="true" locale="fr" navigator="true" -->
+<!-- 										showOn="button" timeZone="#{msg.time_zone}" validator="#{reglementController.validateObject}" disabled="#{reglementController.editable() or reglementController.remiseExporte}"> -->
+
+<!-- 										<f:attribute name="nomChamp" value="#{const.C_DATE_DOCUMENT}" /> -->
+<!-- 										<p:ajax event="dateSelect" update="@this" /> -->
+<!-- 										<f:ajax event="blur" update="@this" /> -->
+<!-- 									</p:calendar> -->
+
+<!-- 									<p:outputLabel id="idlabelDateEncaissement" value="date d'encaissement" title="La date d'encaissement" styleClass="labelchob" /> -->
+<!-- 									<p:calendar id="idDateEncaissement" value="#{reglementController.selection.dto.dateLivDocument}" pattern="dd/MM/yyyy" mask="true" locale="fr" -->
+<!-- 										navigator="true" showOn="button" timeZone="#{msg.time_zone}" validator="#{reglementController.validateObject}" -->
+<!-- 										disabled="#{reglementController.editable() or reglementController.remiseExporte}"> -->
+
+<!-- 										<f:attribute name="nomChamp" value="#{const.C_DATE_LIV_DOCUMENT}" /> -->
+<!-- 										<p:ajax event="dateSelect" update="@this" /> -->
+<!-- 										<f:ajax event="blur" update="@this" /> -->
+<!-- 									</p:calendar> -->
+<!-- 									<p:outputLabel id="idlabelMontantReglement" value="Montant du règlement" title="Montant du règlement" styleClass="labelchob" /> -->
+<!-- 									<p:inputText id="idMontantReglement" value="#{reglementController.selection.dto.netTtcCalc}"  -->
+<!-- 										disabled="#{reglementController.editable() or reglementController.remiseExporte}"> -->
+<!-- 										<p:ajax event="blur" -->
+<!-- 												listener="#{reglementController.validateUIField(const.C_MONTANT_REGLEMENT,reglementController.selection.dto.netTtcCalc)}" -->
+<!-- 												update="@this,@widgetVar(wvPanelTotauxReglement)" /> -->
+<!-- 									</p:inputText> -->
+																				
+<!-- 										<p:outputLabel value="Le tiers" /> -->
+<!-- 											<p:autoComplete value="#{reglementController.taTiers}" converter="entityConverter" id="idTiersFinal" -->
+<!-- 											disabled="#{reglementController.editable() or reglementController.remiseExporte}" -->
+<!-- 												completeMethod="#{reglementController.tiersAutoComplete}" var="t" itemLabel="#{t.codeTiers}" itemValue="#{t}" -->
+<!-- 												forceSelection="true" dropdown="true" placeholder="Tiers"> -->
+<!-- 												<p:column> -->
+<!-- 													<h:outputText value="#{t.codeTiers}" /> -->
+<!-- 												</p:column> -->
+
+<!-- 												<p:column> -->
+<!-- 													<h:outputText value="#{t.nomTiers}" /> -->
+<!-- 												</p:column> -->
+
+<!-- 												<p:column> -->
+<!-- 													<h:outputText value="#{t.compte}" /> -->
+<!-- 												</p:column> -->
+<!-- 												<f:attribute name="nomChamp" value="#{const.C_CODE_TIERS}" /> -->
+<!-- 												<p:ajax event="itemSelect" listener="#{reglementController.autcompleteSelection}" update="idBtnValider"  /> -->
+<!-- 											</p:autoComplete> -->
+<!-- 									<p:outputLabel id="idlabelTypePaiementReglement" value="Le type de paiement" title="Le type de paiement" styleClass="labelchob" /> -->
+<!-- 											<p:autoComplete id="idTypePaiementFinal" value="#{reglementController.taTPaiment}" converter="entityConverter"  -->
+<!-- 											disabled="#{reglementController.editable() or reglementController.remiseExporte}" -->
+<!-- 												completeMethod="#{reglementController.typePaiementAutoComplete}" var="tiers" itemLabel="#{tiers.codeTPaiement}" itemValue="#{tiers}" -->
+<!-- 												forceSelection="true" dropdown="true" placeholder="Type paiement"> -->
+<!-- 												<p:column> -->
+<!-- 													<h:outputText value="#{tiers.codeTPaiement}" /> -->
+<!-- 												</p:column> -->
+
+<!-- 												<p:column> -->
+<!-- 													<h:outputText value="#{tiers.libTPaiement}" /> -->
+<!-- 												</p:column> -->
+
+<!-- 												<p:column> -->
+<!-- 													<h:outputText value="#{tiers.compte}" /> -->
+<!-- 												</p:column> -->
+<!-- 												<f:attribute name="nomChamp" value="#{const.C_CODE_T_PAIEMENT}" /> -->
+<!-- 												<p:ajax event="itemSelect" listener="#{reglementController.autcompleteSelection}" update="idCompteBanqueFinal" /> -->
+<!-- 											</p:autoComplete> -->
+									
+<!-- 									<p:outputLabel value="Le compte bancaire" /> -->
+<!-- 									<p:autoComplete value="#{reglementController.taCompteBanqueFinal}" id="idCompteBanqueFinal" converter="entityConverter" 									 -->
+<!-- 										completeMethod="#{reglementController.compteBancaireAutoCompleteFinal}" var="doc" itemLabel="#{doc.iban}" itemValue="#{doc}" forceSelection="true" -->
+<!-- 										dropdown="true" placeholder="Compte bancaire" disabled="#{reglementController.editable() or reglementController.remiseExporte}"> -->
+<!-- 										<p:column> -->
+<!-- 											<h:outputText value="#{doc.codeBanque}" /> -->
+<!-- 										</p:column> -->
+
+<!-- 										<p:column> -->
+<!-- 											<h:outputText value="#{doc.nomBanque}" /> -->
+<!-- 										</p:column> -->
+
+<!-- 										<p:column> -->
+<!-- 											<h:outputText value="#{doc.compte}" /> -->
+<!-- 										</p:column> -->
+
+<!-- 										<p:column> -->
+<!-- 											<h:outputText value="#{doc.iban}" /> -->
+<!-- 										</p:column> -->
+
+<!-- 										<p:column> -->
+<!-- 											<h:outputText value="#{doc.cptcomptable}" /> -->
+<!-- 										</p:column> -->
+<!-- 										<f:attribute name="nomChamp" value="#{const.C_IBAN_BANQUE}" /> -->
+<!-- 										<p:ajax event="itemSelect" listener="#{reglementController.autcompleteSelection}" update="" /> -->
+<!-- 									</p:autoComplete>			 -->
+<!-- 								</h:panelGrid> -->
+
+							</p:panel>
+						</div>
+
+					</div>
+					<p:panel header="Liste des factures réglées" id="idPanelListeTiersGestReglement">
+					<f:validateBean disabled="true">
+						<div class="ui-g">
+							<div class="ui-g-12">
+								<p:dataTable id="dataTableListeGestReglement" 
+									var="doc" 
+									widgetVar="wvDataTableListeGestReglement"
+									value="#{reglementController.valuesLignes}" 
+									rowKey="#{doc.dto.id}" 
+									selectionMode="single"
+									selection="#{reglementController.selectionLigne}" 
+									emptyMessage="#{msg.message_datatable_vide}" 
+									disabled="#{!reglementController.modeEcran.dataSetEnModif()}"
+									editable="true"
+									dblClickSelect="true" 
+									styleClass="datatable mt10 myclass" 
+									resizableColumns="true" 
+									draggableRows="true"
+									rowStyleClass="#{doc.dto.affectation.signum()>0 ? 'row-affecte-a-facture' : null}">
+
+									<p:ajax event="rowSelect"  listener="#{reglementController.onRowSelectLigne}" update="@widgetVar(wvPanelTotauxReglement)" />
+									<p:ajax event="toggleSelect"  listener="#{reglementController.actSelectLigne}" update="@widgetVar(wvPanelTotauxReglement)" />
+									<p:ajax event="rowSelectCheckbox"  listener="#{reglementController.onRowSelectLigne}" update="@widgetVar(wvPanelTotauxReglement)" />
+									<p:ajax event="rowUnselectCheckbox"  listener="#{reglementController.onRowUnSelectLigne}" update="@widgetVar(wvPanelTotauxReglement)" />
+								    <p:ajax event="rowEdit" listener="#{reglementController.onRowEdit(doc)}"  update="@widgetVar(wvPanelTotauxReglement),@widgetVar(wvDataTableListeGestReglement)" oncomplete="autreLigneModifiable('myclass');" />
+									<p:ajax event="rowEditCancel"  update="@widgetVar(widgetVarBtnSupprimer)" oncomplete="autreLigneModifiable('myclass');" />
+									<p:ajax event="rowEditInit" listener="#{reglementController.onRowEditInit}"  oncomplete="autreLigneNonModifiable('myclass');" />
+					
+			<p:column style="width:16px" >
+				<p:rowEditor rendered="#{reglementController.etatBouton('rowEditor')  and not reglementController.rAffectaionDTOEstVerrouille(doc).verrouille}" styleClass="row-editor-debut" />
+
+			</p:column>
+
+									<p:column sortBy="#{doc.dto.codeFacture}" filterBy="#{doc.dto.codeFacture}" filterMatchMode="contains">
+										<f:facet name="header">
+											<h:outputText value="Code facture" />
+										</f:facet>
+<!-- 										<h:outputText value="#{doc.dto.codeFacture}" /> -->
+										<p:commandLink value="#{doc.dto.codeFacture}"
+											action="#{ouvertureDocumentBean.detailDocument(ouvertureDocumentBean.recupCodeDocument(doc.dto.codeFacture,ouvertureDocumentBean.getTypeDocumentFacture()))}" update=":form:tabView"
+											oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+										</p:commandLink>
+									</p:column>
+
+									<p:column sortBy="#{doc.dto.codeTiers}" filterBy="#{doc.dto.codeTiers}" filterMatchMode="contains">
+										<f:facet name="header">
+											<h:outputText value="Code tiers" />
+										</f:facet>
+										<p:commandLink value="#{doc.dto.codeTiers}"
+											action="#{ouvertureDocumentBean.detailTiers(ouvertureDocumentBean.recupCodetiers(doc.dto.codeTiers))}" update=":form:tabView"
+											oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+										</p:commandLink>
+									</p:column>
+									
+									<p:column sortBy="#{doc.dto.libelleFacture}" filterBy="#{doc.dto.libelleFacture}" filterMatchMode="contains">
+										<f:facet name="header">
+											<h:outputText value="libellé" />
+										</f:facet>
+										<h:outputText value="#{doc.dto.libelleFacture}">
+										</h:outputText>
+									</p:column>
+									
+									<p:column sortBy="#{doc.dto.nomTiers}" filterBy="#{doc.dto.nomTiers}" filterMatchMode="contains">
+										<f:facet name="header">
+											<h:outputText value="nom tiers" />
+										</f:facet>
+										<h:outputText value="#{doc.dto.nomTiers}">
+										</h:outputText>
+									</p:column>
+
+									<p:column sortBy="#{doc.dto.dateFacture}" filterBy="#{doc.dto.dateFacture}" filterMatchMode="contains">
+										<f:facet name="header">
+											<h:outputText value="date facture" />
+										</f:facet>
+										<h:outputText value="#{doc.dto.dateFacture}">
+											<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}" />
+										</h:outputText>
+									</p:column>
+									
+									<p:column sortBy="#{doc.dto.netTtcCalc}" filterBy="#{doc.dto.netTtcCalc}" filterMatchMode="contains">
+										<f:facet name="header">
+											<h:outputText value="net TTC facture" />
+										</f:facet>
+										<h:outputText value="#{doc.dto.netTtcCalc}" />
+									</p:column>
+									
+																											
+									<p:column sortBy="#{doc.dto.resteAReglerFacture}" filterBy="#{doc.dto.resteAReglerFacture}" filterMatchMode="contains">
+										<f:facet name="header">
+											<h:outputText value="Reste à régler" />
+										</f:facet>
+										<h:outputText value="#{doc.dto.resteAReglerFacture}" id="idResteARegler"/>
+									</p:column>
+
+									<p:column headerText="Affectation" sortBy="#{doc.dto.affectation}" filterBy="#{doc.dto.affectation}" filterMatchMode="contains">
+										<p:cellEditor>
+											<f:facet name="output">
+												<h:outputText value="#{doc.dto.affectation}" />
+											</f:facet>
+
+												<f:facet name="input">
+													<p:inputText value="#{doc.dto.affectation}" style="width:100%" id="idAffectationFacture">
+														<!-- j'utilise un listener à la place du validator car on est amené à modifier ce que l'on saisi si l'affectation est supérieur à ce qu'il reste à affecter au niveau
+															de la facture ou du règlement lui même, et le validator ne permet pas cela-->
+														<p:ajax event="blur"
+															listener="#{reglementController.validateUIField(const.C_MONTANT_AFFECTE,doc.dto.affectation)}"
+															update="@this,idResteARegler" />
+														<!-- 													<p:ajax event="blur" update="@this" /> -->
+													</p:inputText>
+
+												</f:facet>
+											</p:cellEditor>
+									</p:column>
+
+					<h:outputText value="#{doc.dto.dateExport}">
+						<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}" />
+					</h:outputText>
+									<p:column  sortBy="#{doc.dto.dateExport}" filterBy="#{doc.dto.dateExport}" filterMatchMode="contains">
+										<f:facet name="header">
+											<h:outputText value="exporté" />
+										</f:facet>
+										<h:outputText value="#{doc.dto.dateExport}" >
+										<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}" />
+										</h:outputText>
+									</p:column>
+
+									<p:column style="width:26px">
+										<p:rowEditor   rendered="#{reglementController.etatBouton('rowEditor')}"  styleClass="row-editor-fin" />
+									</p:column>
+
+
+									<p:column style="width:16px">
+										<f:facet name="header">
+											<h:outputText value="" />
+										</f:facet>
+										<p:commandButton title="Affectation automatique" styleClass="icon icon-affectation-intelligente icon-grille"										    
+ 											action="#{reglementController.actAffecter(doc)}"
+ 											process="@this" update="@widgetVar(wvPanelTotauxReglement),@widgetVar(wvDataTableListeGestReglement)"
+											renderDisabledClick="#{reglementController.editable()}" disabled="#{ reglementController.rAffectaionDTOEstVerrouille(doc).verrouille}">
+											<f:setPropertyActionListener target="#{reglementController.selectionLigne}" value="#{doc}" />
+										</p:commandButton>
+										<f:facet name="input">
+											<h:outputText value="" />
+										</f:facet>
+									</p:column>	
+									
+									
+									<p:column style="width:16px">
+										<f:facet name="header">
+											<h:outputText value="" />
+										</f:facet>
+
+										<p:commandButton title="Supprimer" styleClass="icon-delete icon icon-grille" action="#{reglementController.actSupprimerLigne}"
+											process="@this"
+											update="@widgetVar(wvDataTableListeGestReglement),@widgetVar(wvPanelTotauxReglement),@widgetVar(wvMenuBoutonGestReglement),@widgetVar(wvMenuListeReglement),@widgetVar(wvDataTableListeGestReglement2)"
+											renderDisabledClick="#{reglementController.editable()}" disabled="#{ reglementController.rAffectaionDTOEstVerrouille(doc).verrouille}">
+											<f:setPropertyActionListener target="#{reglementController.selectionLigne}" value="#{doc}" />
+<!-- 											<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer cette ligne de facture ?" icon="ui-icon-alert" /> -->
+										</p:commandButton>
+										<f:facet name="input">
+											<h:outputText value="" />
+										</f:facet>
+									</p:column>
+									<p:column style="width:16px">
+										<f:facet name="header">
+											<h:outputText value="" />
+										</f:facet>
+										<p:commandButton title="Détail règlement" styleClass="icon icon-detail icon-grille"										    
+ 											action="#{reglementController.actDialogGenerationReglement}"
+ 											process="@this"
+											>
+											<f:setPropertyActionListener target="#{reglementController.selectionLigne}" value="#{doc}" />
+										</p:commandButton>
+										<f:facet name="input">
+											<h:outputText value="" />
+										</f:facet>
+									</p:column>									
+									<p:column style="width:16px">
+										<f:facet name="header">
+											<h:outputText value="" />
+										</f:facet>
+<!-- 										<p:commandButton title="#{reglementController.rAffectaionDTOEstVerrouille().message}" styleClass="icon icon-detail icon-grille"  > -->
+<!-- 											<f:setPropertyActionListener target="#{reglementController.selectionLigne}" value="#{doc}" /> -->
+<!-- 										</p:commandButton>										 -->
+										<p:graphicImage  title="#{reglementController.rAffectaionDTOEstVerrouille(doc).message}" library="images" name="verrouiller.svg" width="20"  rendered="#{reglementController.rAffectaionDTOEstVerrouille(doc).verrouille}"/> 		
+										<f:facet name="input">
+											<h:outputText value="" />
+										</f:facet>
+									</p:column>
+
+
+								</p:dataTable>
+							</div>
+						</div>
+						</f:validateBean>
+					</p:panel>
+						<div class="ui-g-12 ui-lg-8" >
+							<p:panel header="Totaux des affectations du règlement"  widgetVar="wvPanelTotauxReglement">
+								<h:panelGrid columns="6" cellpadding="10">
+									<h:outputText  value="Nombre de lignes" />
+									<p:inputText value="#{reglementController.nbLigne}" disabled="true"/>
+									<h:outputText value="Net TTC affecté" />
+									<p:inputText value="#{reglementController.totalTTC}" disabled="true"/>
+									<h:outputText value="Reste à affecter" />
+									<p:inputText value="#{reglementController.resteAAffecter}" disabled="true"/>									
+								</h:panelGrid>
+							</p:panel>
+						</div>
+				</p:panel>
+<!-- 				</p:fieldset> -->
+			</div>
+		</p:panel>
+	</div>
+
+</ui:composition>

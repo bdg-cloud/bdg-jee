@@ -1,0 +1,116 @@
+<form class="formulaire" [formGroup]="creerCompteForm" (ngSubmit)="onSubmit()" *ngIf="saisie;else encours">
+<div class="fond">
+    <div class="centre">
+    <div class="cercle">
+        
+        <div class="int">
+            <a class="logo" routerLink='/' routerLinkActive="active">
+<!--                 <img src="../assets/images/logo-bdg-cloud-2.jpg"/> -->
+                
+                <img  [src]='image' style="width: auto; height: auto; margin:auto;" *ngIf="image;else image_defaut">
+	             <ng-template #image_defaut>
+					<img src="../assets/images/logo-bdg-cloud-2.jpg"/>
+	             </ng-template>
+            </a>
+
+            
+
+            
+                <div class="form-group login-input-wrapper">
+                    <input pInputText type="text" formControlName="nom" placeholder="Nom" class="form-control ui-inputtext ui-widget" [ngClass]="{ 'is-invalid': submitted && f.nom.errors }" />
+                    <div *ngIf="submitted && f.nom.errors" class="invalid-feedback">
+                        <div *ngIf="f.nom.errors.required">Nom obligatoire</div>
+                    </div>
+                </div>
+                
+                <div class="form-group login-input-wrapper">
+                    <input pInputText type="text" formControlName="prenom" placeholder="Prénom" class="form-control ui-inputtext ui-widget" [ngClass]="{ 'is-invalid': submitted && f.prenom.errors }" />
+                    <div *ngIf="submitted && f.prenom.errors" class="invalid-feedback">
+                        <div *ngIf="f.prenom.errors.required">Prénom obligatoire</div>
+                    </div>
+                </div>
+                
+                <div class="form-group login-input-wrapper">
+                    <input pInputText type="text" formControlName="email" placeholder="Email" class="form-control ui-inputtext ui-widget" [ngClass]="{ 'is-invalid': submitted && f.email.errors }" />
+                    <div *ngIf="submitted && f.email.errors" class="invalid-feedback">
+                        <div *ngIf="f.email.errors.required">Email obligatoire</div>
+                    </div>
+                </div>
+                
+                <div class="form-group login-input-wrapper">
+<!--                     <input type="text" formControlName="mdp" placeholder="Mot de passe" class="form-control ui-inputtext ui-widget" [ngClass]="{ 'is-invalid': submitted && f.mdp.errors }" /> -->
+                    <input pPassword type="password" formControlName="mdp" placeholder="Mot de passe" 
+                    	[feedback]=false
+                    	promptLabel="Veuillez saisir un mot de passe." weakLabel="Sécurité faible" mediumLabel="Sécurité moyenne" strongLabel="Sécurité forte" 
+                    	class="form-control ui-inputtext ui-widget" [ngClass]="{ 'is-invalid': submitted && f.mdp.errors }" />
+                    <div *ngIf="submitted && f.mdp.errors" class="invalid-feedback">
+                        <div *ngIf="f.mdp.errors.required">Mot de passe obligatoire</div>
+                    </div>
+                </div>
+                
+                <div class="form-group login-input-wrapper">
+<!--                     <input type="text" formControlName="mdpVerif" placeholder="Mot de passe (Vérification)" class="form-control ui-inputtext ui-widget" [ngClass]="{ 'is-invalid': submitted && f.mdpVerif.errors }" /> -->
+					<input pPassword type="password" formControlName="mdpVerif" placeholder="Mot de passe (Vérification)" 
+						[feedback]=false
+                    	class="form-control ui-inputtext ui-widget" [ngClass]="{ 'is-invalid': submitted && f.mdp.errors }" 
+                    	promptLabel="Veuillez confirmer votre mot de passe." weakLabel="Sécurité faible" mediumLabel="Sécurité moyenne" strongLabel="Sécurité forte" 
+                    	feedback="{{false}}"
+                    	/>
+                    <div *ngIf="submitted && f.mdpVerif.errors" class="invalid-feedback">
+                        <div *ngIf="f.mdpVerif.errors.required">Vérification du mot de passe obligatoire</div>
+                    </div>
+                </div>
+                
+<!--                 <div class="form-group login-input-wrapper"> -->
+<!--                     <input pInputText type="text" formControlName="codeTiers" placeholder="Code client" class="form-control ui-inputtext ui-widget" [ngClass]="{ 'is-invalid': submitted && f.codeTiers.errors }" /> -->
+<!--                     <div *ngIf="submitted && f.codeTiers.errors" class="invalid-feedback"> -->
+<!--                         <div *ngIf="f.codeTiers.errors.required">Code client obligatoire</div> -->
+<!--                     </div> -->
+<!--                 </div> -->
+
+                <button pButton class="btn-valider" [disabled]="loading" class="ui-button ui-widget ui-state-default ui-corner-all " label="Créer le compte">
+                    <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+                    <!--<span class="ui-button-text ui-c">Créer le compte</span>-->
+                </button>
+                
+                
+            
+
+            
+        </div>
+    </div>
+    
+    <p-button class="btn-annuler"  label="Annuler" (onClick)="actAnnuler($event)"></p-button>
+                <div *ngIf="error" class="alert alert-danger mt-3 mb-0">{{error}}</div>
+                </div>
+</div>
+</form>
+
+<ng-template #encours>
+
+    <div class="fond">
+    <div class="centre">
+    <div class="cercle">
+        
+        <div class="int">
+            <a class="logo" routerLink='/' routerLinkActive="active">
+                <img src="../assets/images/logo-bdg-cloud-2.jpg"/>
+            </a>
+                <p class="titre" style="width: 355px;">
+                Confirmation 
+                </p>
+                <p class="message" style="width: 355px;">
+                Vous allez recevoir un courriel qui contiendra un lien pour finaliser la création de votre votre compte sur l'espace client. 
+                </p>
+
+                </div>
+        
+                <p-button label="Accueil" (onClick)="actAnnuler($event)"></p-button>
+                </div>
+        
+                </div>
+        
+                </div>
+        
+        
+            </ng-template>

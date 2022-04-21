@@ -1,0 +1,136 @@
+<p-accordion>
+<!--     <p-accordionTab header="Espace client"> -->
+<!--        <form class="formulaire" [formGroup]="creerCompteForm" (ngSubmit)="onSubmit()" *ngIf="saisie;else encours"> -->
+<!-- 			<div class="fond"> -->
+<!-- 			    <div class="centre"> -->
+<!-- 			    <div class="cercle"> -->
+			        
+<!-- 			        <div class="int"> -->
+<!-- 			            <a class="logo" routerLink='/mes-fournisseurs' routerLinkActive="active"> -->
+<!-- 			                <img src="../assets/images/logo-bdg-cloud-2.jpg"/> -->
+<!-- 			            </a> -->
+           
+			
+			            
+<!-- 			                <div class="form-group login-input-wrapper"> -->
+<!-- 			                    <input type="text" formControlName="nom" placeholder="Nom" class="form-control ui-inputtext ui-widget" [ngClass]="{ 'is-invalid': submitted && f.nom.errors }" /> -->
+<!-- 			                    <div *ngIf="submitted && f.nom.errors" class="invalid-feedback"> -->
+<!-- 			                        <div *ngIf="f.nom.errors.required">Nom obligatoire</div> -->
+<!-- 			                    </div> -->
+<!-- 			                </div> -->
+			                
+<!-- 			                <div class="form-group login-input-wrapper"> -->
+<!-- 			                    <input type="text" formControlName="prenom" placeholder="Prénom" class="form-control ui-inputtext ui-widget" [ngClass]="{ 'is-invalid': submitted && f.prenom.errors }" /> -->
+<!-- 			                    <div *ngIf="submitted && f.prenom.errors" class="invalid-feedback"> -->
+<!-- 			                        <div *ngIf="f.prenom.errors.required">Prénom obligatoire</div> -->
+<!-- 			                    </div> -->
+<!-- 			                </div> -->
+			                
+<!-- 			                <div class="form-group login-input-wrapper"> -->
+<!-- 			                    <input type="text" formControlName="email" placeholder="Email" class="form-control ui-inputtext ui-widget" [ngClass]="{ 'is-invalid': submitted && f.email.errors }" /> -->
+<!-- 			                    <div *ngIf="submitted && f.email.errors" class="invalid-feedback"> -->
+<!-- 			                        <div *ngIf="f.email.errors.required">Email obligatoire</div> -->
+<!-- 			                    </div> -->
+<!-- 			                </div> -->
+			                
+<!-- 			                <div class="form-group login-input-wrapper"> -->
+<!-- 			                    <input type="text" formControlName="mdp" placeholder="Mot de passe" class="form-control ui-inputtext ui-widget" [ngClass]="{ 'is-invalid': submitted && f.mdp.errors }" /> -->
+<!-- 			                    <div *ngIf="submitted && f.mdp.errors" class="invalid-feedback"> -->
+<!-- 			                        <div *ngIf="f.mdp.errors.required">Mot de passe obligatoire</div> -->
+<!-- 			                    </div> -->
+<!-- 			                </div> -->
+			                
+<!-- 			                <div class="form-group login-input-wrapper"> -->
+<!-- 			                    <input type="text" formControlName="mdpVerif" placeholder="Mot de passe (Vérification)" class="form-control ui-inputtext ui-widget" [ngClass]="{ 'is-invalid': submitted && f.mdpVerif.errors }" /> -->
+<!-- 			                    <div *ngIf="submitted && f.mdpVerif.errors" class="invalid-feedback"> -->
+<!-- 			                        <div *ngIf="f.mdpVerif.errors.required">Vérification du mot de passe obligatoire</div> -->
+<!-- 			                    </div> -->
+<!-- 			                </div> -->
+			                
+<!-- 			                <div class="form-group login-input-wrapper"> -->
+<!-- 			                    <input type="text" formControlName="codeTiers" placeholder="Code Tiers" class="form-control ui-inputtext ui-widget" [ngClass]="{ 'is-invalid': submitted && f.codeTiers.errors }" /> -->
+<!-- 			                    <div *ngIf="submitted && f.codeTiers.errors" class="invalid-feedback"> -->
+<!-- 			                        <div *ngIf="f.codeTiers.errors.required">Code tiers obligatoire</div> -->
+<!-- 			                    </div> -->
+<!-- 			                </div> -->
+			
+<!-- 			                <button class="btn-valider" [disabled]="true" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only"> -->
+<!--  			 ---               <button class="btn-valider" [disabled]="loading" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only">  -->
+<!-- 			                    <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span> -->
+<!-- 			                    <span class="ui-button-text ui-c">Modifier le compte</span> -->
+<!-- 			                </button> -->
+			                
+			                
+			            
+			
+			            
+<!-- 			        </div> -->
+<!-- 			    </div> -->
+			    
+<!-- 			    <p-button class="btn-annuler"  label="Annuler" (onClick)="actAnnuler($event)"></p-button> -->
+<!-- 			                <div *ngIf="error" class="alert alert-danger mt-3 mb-0">{{error}}</div> -->
+<!-- 			                </div> -->
+<!-- 			</div> -->
+<!-- 			</form> -->
+			
+<!-- 			<ng-template #encours> -->
+			
+<!-- 			    <div class="fond"> -->
+<!-- 			    <div class="centre"> -->
+<!-- 			    <div class="cercle"> -->
+			        
+<!-- 			        <div class="int"> -->
+<!-- 			            <a class="logo" routerLink='/mes-fournisseurs' routerLinkActive="active"> -->
+<!-- 			                <img src="../assets/images/logo-bdg-cloud-2.jpg"/> -->
+<!-- 			            </a> -->
+<!-- 			                <p class="titre"> -->
+<!-- 			                Email de validation envoyé. -->
+<!-- 			                </p> -->
+<!-- 			                <p class="message"> -->
+<!-- 			                Email de validation envoyé. -->
+<!-- 			                </p> -->
+			
+<!-- 			                </div> -->
+			        
+<!-- 			                <p-button label="Accueil" (onClick)="actAnnuler($event)"></p-button> -->
+<!-- 			                </div> -->
+			        
+<!-- 			                </div> -->
+			        
+<!-- 			                </div> -->
+			        
+			        
+<!-- 			            </ng-template> -->
+<!--     </p-accordionTab> -->
+    <p-accordionTab header="Mes coordonnées">
+        <p-fieldset legend="Identitée">
+	   		<p *ngIf="tiers && tiers.codeTiers">Code tiers : {{tiers.codeTiers}}</p>
+	       
+	        <p>Entreprise : {{tiers.codeTEntite?tiers.codeTEntite:''}} {{tiers.nomEntreprise?tiers.nomEntreprise:(tiers.nomTiers?tiers.nomTiers:'')}}</p>       
+	      
+	        <p>Nom : {{tiers.codeTCivilite?tiers.codeTCivilite:''}} {{tiers.nomTiers?tiers.nomTiers:''}} {{tiers.prenomTiers?tiers.prenomTiers:''}}</p>   
+        </p-fieldset> 
+
+		<p-fieldset legend="Adresse">
+	      	<p *ngIf="tiers && tiers.adresse1Adresse">{{tiers.adresse1Adresse}}</p>
+	      	<p *ngIf="tiers && tiers.adresse2Adresse">{{tiers.adresse2Adresse}}</p>   
+	      	<p *ngIf="tiers && tiers.adresse3Adresse">{{tiers.adresse3Adresse}}</p>   
+	      	<p *ngIf="tiers && tiers.codepostalAdresse">{{tiers.codepostalAdresse}}</p>   
+	      	<p *ngIf="tiers && tiers.villeAdresse">{{tiers.villeAdresse}}</p>   
+	      	<p *ngIf="tiers && tiers.paysAdresse">{{tiers.paysAdresse}}</p>
+      	</p-fieldset>
+      	
+      	<p-fieldset legend="Communication">
+	      	<p *ngIf="tiers && tiers.numeroTelephone">Téléphone : {{tiers.numeroTelephone}}</p> 
+	      	<p *ngIf="tiers && tiers.adresseEmail">Email : {{tiers.adresseEmail}}</p>
+	      	<p *ngIf="tiers && tiers.adresseWeb">Web : {{tiers.adresseWeb}}</p>    
+      	</p-fieldset>   
+      	
+      	<p-fieldset legend="Divers">
+	      	<p *ngIf="tiers && tiers.siretCompl">SIRET : {{tiers.siretCompl}}</p>    
+	      	<p *ngIf="tiers && tiers.tvaIComCompl">Num TVA : {{tiers.tvaIComCompl}}</p>     
+      	</p-fieldset>     
+
+    </p-accordionTab>
+</p-accordion>
+

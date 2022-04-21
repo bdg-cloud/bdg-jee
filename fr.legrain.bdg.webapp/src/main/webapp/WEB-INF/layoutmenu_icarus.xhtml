@@ -1,0 +1,507 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:o="http://omnifaces.org/ui"
+    xmlns:pi="http://primefaces.org/icarus">
+    
+<!--     <o:importConstants type="fr.legrain.bdg.webapp.app.AutorisationBean" /> -->
+<p:importConstants type="fr.legrain.bdg.webapp.app.AutorisationBean" var="PFConstants" />
+
+
+    <h:form id="menuform">
+    
+<!--     		<p:socket onMessage="handleMessage" channel="/notifications" /> -->
+		
+		<p:idleMonitor timeout="#{auth.sessionTimeIdle}" >
+    		<p:ajax event="idle" listener="#{auth.timeout()}" oncomplete="alert('Votre session à expiré (Elle est restée inactive trop longtemps).')"/>
+		</p:idleMonitor>
+		
+<!-- 		<p:socket channel="/notifications"> -->
+<!-- 			<p:ajax event="message" update="messages" /> -->
+<!-- 		</p:socket> -->
+	
+<!-- 		<p:remoteCommand name="rc" actionListener="#{leftBean.remoteCommandToggleList}" oncomplete="handleCompleteToggleList(xhr, status, args)"/> -->
+
+        <pi:menu widgetVar="IcarusMenu">
+        
+<!-- 				<p:menuitem value="Liste client" oncomplete="PF('wvOverlayListeTiers').show()" update="@widgetVar(left)" /> -->
+		
+
+<!-- 		<p:growl id="messages" widgetVar="growl" /> -->
+		
+<!-- 		<p:menubar class="topmenu mt10"> -->
+<!-- 			<p:menuitem value="Accueil" url="/index.xhtml" /> -->
+			
+			<p:submenu id="idMenuDossier" label="Dossier" icon="fa fa-book">
+				<p:menuitem id="idMenuInfosEntreprise" value="Infos entreprise" actionListener="#{menuBean.openInfoEntreprise}" update=":form:tabView"  disabled="#{!autorisationBean.autoriseMenu(autorisationBean.idModuleTiers)}" styleClass="#{autorisationBean.classeCssMenu(autorisationBean.idModuleTiers)}"/>
+				<p:menuitem id="idMenuDashboard" value="Accueil" actionListener="#{menuBean.openTableauDeBord}" update=":form:tabView"/>
+				<p:menuitem id="idMenuAgenda" value="Agenda" actionListener="#{menuBean.openMonAgenda}" update=":form:tabView" />
+				<p:menuitem id="idMenuRechercheParCritere" value="Recherche par critères" actionListener="#{menuBean.openRechercheParCriteres}" update=":form:tabView"/>
+			</p:submenu>
+			
+				
+			
+			<p:submenu id="idMenuTiers" label="Tiers" icon="fa fa-user" >
+				<p:menuitem id="idMenuTiersTiers" value="Tiers" oncomplete="PF('wvOverlayListeTiers').show();" disabled="#{!autorisationBean.autoriseMenu(autorisationBean.idModuleTiers)}" styleClass="#{autorisationBean.classeCssMenu(autorisationBean.idModuleTiers)}"/>
+				<p:menuitem id="idDashBoardTiers" value="Tableau de bord tiers" actionListener="#{menuBean.openDashBoardTiers}" update=":form:tabView" />
+			</p:submenu>
+			
+			<p:submenu id="idMenuArticle" label="Articles" icon="fa fa-cube">
+				<p:menuitem id="idMenuArticleArticle" value="Article" oncomplete="PF('wvOverlayListeArticle').show();" actionListener="#{menuBean.openListeArticle}" disabled="#{!autorisationBean.autoriseMenu(autorisationBean.idModuleArticle)}" styleClass="#{autorisationBean.classeCssMenu(autorisationBean.idModuleArticle)}"/>
+				<p:menuitem id="idDashBoardArticle" value="Tableau de bord articles" actionListener="#{menuBean.openDashBoardArticle}" update=":form:tabView" />
+				<p:submenu id="idMenuMultiTarif" label="Multi-tarifs" rendered="#{autorisationBean.autoriseMenu(autorisationBean.idModuleMultiTarifs)}">
+							<p:menuitem id="idGrilleReference" value="Grille de référence" actionListener="#{menuBean.openGrilleReference}" update=":form:tabView"/>
+							<p:menuitem id="idGrilleTarifaire" value="Grille tarifaire" actionListener="#{menuBean.openGrilleTarifaire}" update=":form:tabView"/>
+							<p:menuitem id="idListeTiersGrilleTarifaires" value="Grille tarifaire pour un tiers" oncomplete="PF('wvOverlayListeTiersGrilleTarifaire').show();"/>
+							<p:menuitem id="idRemplacementGrilleTarifaireTiers" value="Remplacement Grille tarifaire tiers" actionListener="#{menuBean.openRemplacementGrilleTarifaireTiers}" update=":form:tabView"/>
+				</p:submenu>
+				
+			</p:submenu>
+			
+			<p:submenu id="idMenuAchat" label="Achat" icon="fa fa-cube">
+				<p:submenu id="idMenuBoncdeAchat" label="Bon de commande achat" rendered="#{autorisationBean.autoriseMenu(autorisationBean.idModuleAchat)}"> 
+					<p:menuitem id="idMenuListeBoncdeAchat" value="Liste des bons de commande Achat" oncomplete="PF('wvOverlayListeBoncdeAchat').show();" />
+					<p:menuitem id="idMenuNouveauBoncdeAchat" value="Bon de commande Achat" actionListener="#{menuBean.openBoncdeAchat}" update=":form:tabView" />
+<!-- 					<p:menuitem id="idDashBoardBoncdeAchat" value="Tableau de bord bon de commande Achat" actionListener="#{menuBean.openDashBoardBoncdeAchat}" update=":form:tabView"/> -->
+				</p:submenu>				
+			</p:submenu>
+			
+			<p:submenu id="idMenuDocuments" label="Documents" icon="fa fa-file-text-o" rendered="#{autorisationBean.autoriseMenu(autorisationBean.idModuleFacture)}">
+				<p:submenu id="idMenuDevis" label="Devis" rendered="#{autorisationBean.autoriseMenu(autorisationBean.idModuleDevis)}">
+					<p:menuitem id="idMenuListeDevis" value="Liste des devis" oncomplete="PF('wvOverlayListeDevis').show();" />
+					<p:menuitem id="idMenuNouveauDevis" value="Devis" actionListener="#{menuBean.openDevis}" update=":form:tabView" />
+					<p:menuitem id="idDashBoardDevis" value="Tableau de bord devis" actionListener="#{menuBean.openDashBoardDevis}" update=":form:tabView" />
+				</p:submenu>
+				<p:submenu id="idMenuFacture" label="Facture" rendered="#{autorisationBean.autoriseMenu(autorisationBean.idModuleFacture)}">
+					<p:menuitem id="idMenuListeFacture" value="Liste des factures" oncomplete="PF('wvOverlayListeFacture').show();"/>	
+					<p:menuitem id="idMenuNouvelleFacture" value="Facture" actionListener="#{menuBean.openFacture}" update=":form:tabView" />
+					<p:menuitem id="idDashBoardFactureAvecEtat" value="Tableau de bord facture" actionListener="#{menuBean.openDashBoardFactureAvecEtat}" update=":form:tabView"/>
+<!-- 					<p:menuitem id="idDashBoardFacture" value="Tableau de bord facture" actionListener="#{menuBean.openDashBoardFacture}" update=":form:tabView"/> -->
+				</p:submenu>
+				<p:submenu id="idMenuBonLivraison" label="Bon de livraison" rendered="#{autorisationBean.autoriseMenu(autorisationBean.idModuleBonLivraison)}"> 
+					<p:menuitem id="idMenuListeBonLivraison" value="Liste des bons de livraison" oncomplete="PF('wvOverlayListeBL').show();"/>
+					<p:menuitem id="idMenuNouveauBonLivraison" value="Bon de livraison" actionListener="#{menuBean.openBonLivraison}" update=":form:tabView" />
+					<p:menuitem id="idDashBoardBonliv" value="Tableau de bord bon de livraison" actionListener="#{menuBean.openDashBoardBonliv}" update=":form:tabView"/>
+				</p:submenu>
+				<p:submenu id="idMenuBoncde" label="Bon de commande" rendered="#{autorisationBean.autoriseMenu(autorisationBean.idModuleBonCommande)}"> 
+					<p:menuitem id="idMenuListeBoncde" value="Liste des bons de commande" oncomplete="PF('wvOverlayListeBoncde').show();" />
+					<p:menuitem id="idMenuNouveauBoncde" value="Bon de commande" actionListener="#{menuBean.openBoncde}" update=":form:tabView" />
+<!-- 				    <p:menuitem id="idMenuGenerationLALFlashPrepa" value="Préparation des commandes (scan)" actionListener="#{menuBean.openGenerationLALFlashPrepaMultiple}"   -->
+<!-- 				      disabled="#{!autorisationBean.autoriseMenu(autorisationBean.idModuleBonCommande)}" styleClass="#{autorisationBean.classeCssMenu(autorisationBean.idModuleBonCommande)}"  update=":form:tabView" />  							 -->
+					<p:menuitem id="idDashBoardBoncde" value="Tableau de bord bon de commande" actionListener="#{menuBean.openDashBoardBoncde}" update=":form:tabView"/>
+				</p:submenu>
+				<p:submenu id="idMenuPreparation" label="Bon de préparation" rendered="#{autorisationBean.autoriseMenu(autorisationBean.idModuleBonPreparation)}"> 
+					<p:menuitem id="idMenuListeBonPreparation" value="Liste des bons de preparation" oncomplete="PF('wvOverlayListePreparation').show();" />
+					<p:menuitem id="idMenuNouveauBonPreparation" value="Bon de préparation" actionListener="#{menuBean.openBonPreparation}" update=":form:tabView" />
+				    <p:menuitem id="idMenuGenerationLALFlashPrepa" value="Préparation des commandes (scan)" actionListener="#{menuBean.openGenerationLALFlashPrepaMultiple}"  
+				      disabled="#{!autorisationBean.autoriseMenu(autorisationBean.idModuleBonPreparation)}" styleClass="#{autorisationBean.classeCssMenu(autorisationBean.idModuleBonPreparation)}"  update=":form:tabView" />  							
+
+<!-- 					<p:menuitem id="idDashBoardBonPreparation" value="Tableau de bord bon de préparation" actionListener="#{menuBean.openDashBoardBonPreparation}" update=":form:tabView"/> -->
+				</p:submenu>
+				
+				<p:submenu id="idMenuAcompte" label="Acompte" rendered="#{autorisationBean.autoriseMenu(autorisationBean.idModuleAcompte)}"> 
+					<p:menuitem id="idMenuListeAcompte" value="Liste des acomptes" oncomplete="PF('wvOverlayListeAcompte').show();" />
+					<p:menuitem id="idMenuNouveauAcompte" value="Acompte" actionListener="#{menuBean.openAcompte}" update=":form:tabView" />
+					<p:menuitem id="idDashBoardAcompte" value="Tableau de bord acompte" actionListener="#{menuBean.openDashBoardAcompte}" update=":form:tabView" rendered="#{auth.isDevLgr()}"/>
+				</p:submenu>
+				<p:submenu id="idMenuAvoir" label="Facture d'avoir" rendered="#{autorisationBean.autoriseMenu(autorisationBean.idModuleAvoir)}"> 
+					<p:menuitem id="idMenuListeAvoir" value="Liste des factures d'avoir" oncomplete="PF('wvOverlayListeAvoir').show();" />
+					<p:menuitem id="idMenuNouveauAvoir" value="Facture d'avoir" actionListener="#{menuBean.openAvoir}" update=":form:tabView" />
+					<p:menuitem id="idDashBoardAvoir" value="Tableau de bord avoir" actionListener="#{menuBean.openDashBoardAvoir}" update=":form:tabView"/>
+				</p:submenu>
+				<p:submenu id="idMenuApporteur" label="Facture apporteur" rendered="#{autorisationBean.autoriseMenu(autorisationBean.idModuleApporteur)}"> 
+					<p:menuitem id="idMenuListeApporteur" value="Liste des factures apporteur" oncomplete="PF('wvOverlayListeApporteur').show();" />
+					<p:menuitem id="idMenuNouveauApporteur" value="Facture apporteur" actionListener="#{menuBean.openApporteur}" update=":form:tabView" />
+					<p:menuitem id="idDashBoardApporteur" value="Tableau de bord apporteur" actionListener="#{menuBean.openDashBoardApporteur}" update=":form:tabView" rendered="#{auth.isDevLgr()}"/>
+				
+				</p:submenu>
+				<p:submenu id="idMenuProforma" label="Facture proforma" rendered="#{autorisationBean.autoriseMenu(autorisationBean.idModuleProforma)}"> 
+					<p:menuitem id="idMenuListeProforma" value="Liste des factures proforma" oncomplete="PF('wvOverlayListeProforma').show();" />
+					<p:menuitem id="idMenuNouveauProforma" value="Facture proforma" actionListener="#{menuBean.openProforma}" update=":form:tabView" />
+					<p:menuitem id="idDashBoardProforma" value="Tableau de bord proforma" actionListener="#{menuBean.openDashBoardProforma}" update=":form:tabView"/>
+				</p:submenu>												
+				<p:submenu id="idMenuPrelevement" label="Prélèvement" rendered="#{autorisationBean.autoriseMenu(autorisationBean.idModulePrelevement)}"> 
+					<p:menuitem id="idMenuListePrelevement" value="Liste des prélèvements" oncomplete="PF('wvOverlayListePrelevement').show();" />
+					<p:menuitem id="idMenuNouveauPrelevement" value="Prélèvement" actionListener="#{menuBean.openPrelevement}" update=":form:tabView" />
+					<p:menuitem id="idDashBoardPrelevement" value="Tableau de bord prélèvement" actionListener="#{menuBean.openDashBoardPrelevement}" update=":form:tabView"  rendered="#{auth.isDevLgr()}"/>
+				</p:submenu>
+				<p:submenu id="idMenuAvisEcheance" label="Avis d'échéance" rendered="#{autorisationBean.autoriseMenu(autorisationBean.idModuleAvisEcheance)}"> 
+					<p:menuitem id="idMenuListeAvisEcheance" value="Liste des avis d'échéances" oncomplete="PF('wvOverlayListeAvisEcheance').show();" />
+					<p:menuitem id="idMenuNouveauAvisEcheance" value="Avis d'échéance" actionListener="#{menuBean.openAvisEcheance}" update=":form:tabView" />
+ 					<p:menuitem id="idDashBoardAvisEcheance" value="Tableau de bord Avis d'échéance" actionListener="#{menuBean.openDashBoardAvisEcheance}" update=":form:tabView"/> 
+				</p:submenu>	
+								
+				<p:menuitem id="idMenuGenerationDocMultiple" value="Génération documents multiple" actionListener="#{menuBean.openGenerationDocumentMultiple}" update=":form:tabView"/>		
+<!-- 				<p:menuitem id="idMenuGenerationLigneALigneMultiple" value="Génération ligne à ligne multiple" actionListener="#{menuBean.openGenerationLigneALigneMultiple}" update=":form:tabView"/>		 -->
+				
+				
+				<p:submenu id="idMenuGestionReglement" label="Gestion règlement" rendered="#{autorisationBean.autoriseMenu(autorisationBean.idModuleGestionReglement)}"> 
+					<p:menuitem id="idMenuReglementMultiple" value="Régler une facture" actionListener="#{menuBean.openReglementMultiple}" update=":form:tabView" />
+					<p:menuitem id="idMenuListeReglement" value="Liste des règlements" oncomplete="PF('wvOverlayListeReglement').show();" />
+					<p:menuitem id="idDashBoardReglement" value="Tableau de bord règlement" actionListener="#{menuBean.openDashBoardReglement}" update=":form:tabView"/>
+
+<!-- 					<p:menuitem id="idMenuReglement" value="Réglement" actionListener="#{menuBean.openReglement}" update=":form:tabView" /> -->
+				</p:submenu>
+				
+				<p:submenu id="idMenuGestionRemise" label="Gestion des remises" rendered="#{autorisationBean.autoriseMenu(autorisationBean.idModuleRemise)}"> 
+					<p:menuitem id="idMenuListeRemise" value="Liste des remises" oncomplete="PF('wvOverlayListeRemise').show();" />
+					<p:menuitem id="idMenuRemise" value="Remise" actionListener="#{menuBean.openRemise}" update=":form:tabView" />
+				</p:submenu>
+				
+				<p:submenu id="idMenuGestionRelance" label="Gestion des relances"> 
+					<p:menuitem id="idMenuListeRelance" value="Liste des relances" oncomplete="PF('wvOverlayListeRelance').show();" />
+					<p:menuitem id="idMenuRelance" value="Relance" actionListener="#{menuBean.openRelance}" update=":form:tabView" />
+				</p:submenu>
+				
+				<p:menuitem id="idMenuImprimerDocument" value="Imprimer" actionListener="#{menuBean.openImprimerDocument}" update=":form:tabView"/>
+									
+			</p:submenu>
+			
+			<p:submenu id="idMenuCaisse" label="Caisse" icon="fa fa-shopping-basket" rendered="#{autorisationBean.autoriseMenu(autorisationBean.idModuleCaisse) or auth.isDevLgr()}">
+				<p:menuitem id="idMenuListeTicketCaisse" value="Liste des tickets de caisse" oncomplete="PF('wvOverlayListeTicketCaisse').show();" />
+				<p:menuitem id="idMenuNouveauTicketCaisseComplet" value="Caisse complète" actionListener="#{menuBean.openCaisseComplete}" update=":form:tabView" />
+				<p:menuitem id="idMenuNouveauTicketCaisse" value="Caisse" 
+					onsuccess="window.open('#{request.contextPath}/caisse_enregistreuse.xhtml')" />
+				<p:menuitem id="idMenuSessionCaisse" value="Session de caisse" actionListener="#{menuBean.openSessionCaisse}" update=":form:tabView"/>
+			</p:submenu>
+			
+			<p:submenu id="idMenuBoutique" label="Boutique" icon="fa fa-shopping-cart" rendered="#{autorisationBean.autoriseMenu(autorisationBean.idModuleBoutique)}">
+				<p:menuitem id="idMenuArticleArticleBoutique"   value="Article Boutique" oncomplete="PF('wvOverlayListeArticle').show();"  actionListener="#{menuBean.openListeArticleBoutique}" disabled="#{!autorisationBean.autoriseMenu(autorisationBean.idModuleArticle)}" styleClass="#{autorisationBean.classeCssMenu(autorisationBean.idModuleArticle)}"/>
+				<p:menuitem id="idMenuTiersBoutique"   value="Tiers visiteur Boutique" oncomplete="PF('wvOverlayListeTiers').show();"  actionListener="#{menuBean.openListeTiersVisiteurBoutique}" disabled="#{!autorisationBean.autoriseMenu(autorisationBean.idModuleTiers)}" styleClass="#{autorisationBean.classeCssMenu(autorisationBean.idModuleTiers)}"/>
+				<p:submenu id="idMenuPanier" label="Panier" rendered="#{autorisationBean.autoriseMenu(autorisationBean.idModulePanier)}">
+					<p:menuitem id="idMenuListePanier" value="Liste des paniers" oncomplete="PF('wvOverlayListePanier').show();" />
+					<p:menuitem id="idMenuNouveauPanier" value="Panier" actionListener="#{menuBean.openPanier}" update=":form:tabView" />
+<!-- 					<p:menuitem id="idDashBoardPanier" value="Tableau de bord panier" actionListener="#{menuBean.openDashBoardPanier}" update=":form:tabView" /> -->
+				</p:submenu>
+			</p:submenu>
+			
+			<p:submenu id="idMenuSolstyce" label="Solstyce" icon="fa fa-exchange">
+			
+				<p:submenu id="idMenuFab" label="Fabrications" icon="fa fa-cogs">
+					<p:menuitem id="idMenuListeFabrication"  value="Liste des fabrications" oncomplete="PF('wvOverlayListeFabrication').show();" 
+					  disabled="#{!autorisationBean.autoriseMenu(autorisationBean.idModuleFabrication)}" styleClass="#{autorisationBean.classeCssMenu(autorisationBean.idModuleFabrication)}"/>
+					  
+					<p:menuitem id="idMenuDashFabrication"  value="Tableau de bord des fabrications" 
+					  disabled="#{!autorisationBean.autoriseMenu(autorisationBean.idModuleFabrication)}" 
+					  rendered="#{auth.isDevLgr()}" actionListener="#{menuBean.openDashBoardFabrication}" update=":form:tabView" styleClass="#{autorisationBean.classeCssMenu(autorisationBean.idModuleFabrication)}"/>
+					  
+					<p:menuitem id="idMenuNouvelleFabrication"  value="Fabrication" actionListener="#{menuBean.openCreationFabrication}" update=":form:tabView" 
+					  disabled="#{!autorisationBean.autoriseMenu(autorisationBean.idModuleFabrication)}" styleClass="#{autorisationBean.classeCssMenu(autorisationBean.idModuleFabrication)}"/>
+					  <p:separator/>
+					<p:menuitem id="idMenuListeModeleFabrication"  value="Liste des modèles" oncomplete="PF('wvOverlayListeModeleFabrication').show();" 
+					  disabled="#{!autorisationBean.autoriseMenu(autorisationBean.idModuleFabrication)}" styleClass="#{autorisationBean.classeCssMenu(autorisationBean.idModuleFabrication)}"/>
+					<p:menuitem id="idMenuNouveauModeleFabrication"  value="Modèle" actionListener="#{menuBean.openCreationModeleFabrication}" update=":form:tabView" 
+					  disabled="#{!autorisationBean.autoriseMenu(autorisationBean.idModuleFabrication)}" styleClass="#{autorisationBean.classeCssMenu(autorisationBean.idModuleFabrication)}"/>
+				</p:submenu>
+				
+				<p:submenu label="Contrôles de conformité">
+					<p:submenu label="Modèles">
+						<p:menuitem id="idMenuModeleControles"  value="Modèle de contrôles" oncomplete="PF('wvOverlayListeModeleCtrl').show();" disabled="#{!autorisationBean.autoriseMenu(autorisationBean.idModuleFabrication)}" styleClass="#{autorisationBean.classeCssMenu(autorisationBean.idModuleFabrication)}"/>
+						<p:menuitem value="Modèle de groupe de controles" oncomplete="PF('wvOverlayListeModeleGrpCtrl').show();" disabled="#{!autorisationBean.autoriseMenu(autorisationBean.idModuleFabrication)}" styleClass="#{autorisationBean.classeCssMenu(autorisationBean.idModuleFabrication)}" />
+					</p:submenu>
+					
+					<p:menuitem id="idMenuEtatNonConformite"  value="Résultat des controles de conformités" actionListener="#{menuBean.openEtatNonConformite}" update=":form:tabView"  
+					  disabled="#{!autorisationBean.autoriseMenu(autorisationBean.idModuleFabrication)}" styleClass="#{autorisationBean.classeCssMenu(autorisationBean.idModuleFabrication)}"/>	
+
+				</p:submenu>
+				
+				<p:submenu label="Etats">
+					<p:menuitem id="idMenuEtats"  value="Etats" actionListener="#{menuBean.openEtatTracabiliteFabrication}" update=":form:tabView" 
+					  disabled="#{!autorisationBean.autoriseMenu(autorisationBean.idModuleFabrication)}" styleClass="#{autorisationBean.classeCssMenu(autorisationBean.idModuleFabrication)}"/>
+				</p:submenu>
+
+			</p:submenu>
+			
+			<p:submenu id="idMenuStocksLots" label="Stocks / Lots" icon="fa fa-th-large">
+
+				<p:submenu id="idMenuBR" label="Réception" icon="fa fa-truck">
+					<p:menuitem id="idMenuListeBR" value="Liste des réceptions" oncomplete="PF('wvOverlayListeBR').show();" 
+					  disabled="#{!autorisationBean.autoriseMenu(autorisationBean.idModuleBonReception)}" styleClass="#{autorisationBean.classeCssMenu(autorisationBean.idModuleBonReception)}"/>
+					<p:menuitem id="idDashBoardReception" value="Tableau de bord Réceptions" actionListener="#{menuBean.openDashBoardReception}"
+					  disabled="#{!autorisationBean.autoriseMenu(autorisationBean.idModuleBonReception)}" styleClass="#{autorisationBean.classeCssMenu(autorisationBean.idModuleBonReception)}" rendered="#{auth.isDevLgr()}" update=":form:tabView" />
+					<p:menuitem id="idMenuBRBR" value="Bon de réception" actionListener="#{menuBean.openBonReception}" update=":form:tabView"  
+					  disabled="#{!autorisationBean.autoriseMenu(autorisationBean.idModuleBonReception)}" styleClass="#{autorisationBean.classeCssMenu(autorisationBean.idModuleBonReception)}"/>
+				    <p:menuitem id="idMenuGenerationLALBcaBr" value="Réception des commandes" actionListener="#{menuBean.openGenerationLALBcaBrMultiple}"  
+				      disabled="#{!autorisationBean.autoriseMenu(autorisationBean.idModuleAchat)}" styleClass="#{autorisationBean.classeCssMenu(autorisationBean.idModuleAchat)}"  update=":form:tabView" />  		
+
+				</p:submenu>
+				
+				<p:submenu id="idMenuEtatStock" label="Etat des stocks" icon="fa fa-cubes">
+					<p:menuitem id="idMenuEtatStocksEntrepot"  value="Stocks entrepôt" actionListener="#{menuBean.openEtatStocks}" update=":form:tabView"  
+					  disabled="#{!autorisationBean.autoriseMenu(autorisationBean.idModuleMouvementStock)}" styleClass="#{autorisationBean.classeCssMenu(autorisationBean.idModuleMouvementStock)}"/>
+					<p:menuitem id="idMenuEtatFournisseursProduit"  value="Fournisseurs d'un article" actionListener="#{menuBean.openEtatFournisseursProduit}" 
+					update=":form:tabView"	  disabled="#{!autorisationBean.autoriseMenu(autorisationBean.idModuleMouvementStock)}" styleClass="#{autorisationBean.classeCssMenu(autorisationBean.idModuleMouvementStock)}"/>					  
+					<p:menuitem id="idMenuEtatProduitsFournisseur"  value="Articles d'un fournisseur" actionListener="#{menuBean.openEtatProduitsFournisseur}" 
+					update=":form:tabView"	  disabled="#{!autorisationBean.autoriseMenu(autorisationBean.idModuleMouvementStock)}" styleClass="#{autorisationBean.classeCssMenu(autorisationBean.idModuleMouvementStock)}"/>	
+					
+				</p:submenu>
+
+				<p:submenu id="idMenuLot" label="Lots" icon="fa fa-cubes">
+					<p:menuitem id="idMenuGestionLot"  value="Gestion des lots" actionListener="#{menuBean.openGestionLot}" update=":form:tabView"  
+					  disabled="#{!autorisationBean.autoriseMenu(autorisationBean.idModuleGestionLots)}" styleClass="#{autorisationBean.classeCssMenu(autorisationBean.idModuleGestionLots)}"/>
+				</p:submenu>
+
+				<p:submenu label="Stock / Inventaire" icon="fa fa-cubes">  
+					<p:menuitem id="idMenuListeMouvement"  value="Liste des Mouvements" oncomplete="PF('wvOverlayListeMouvStock').show();" 
+					  disabled="#{!autorisationBean.autoriseMenu(autorisationBean.idModuleMouvementStock)}" styleClass="#{autorisationBean.classeCssMenu(autorisationBean.idModuleMouvementStock)}"/>
+					<p:menuitem id="idMenuNouveauMouvement"  value="Mouvement" actionListener="#{menuBean.openMouvementStock}" update=":form:tabView"  
+					  disabled="#{!autorisationBean.autoriseMenu(autorisationBean.idModuleMouvementStock)}" styleClass="#{autorisationBean.classeCssMenu(autorisationBean.idModuleMouvementStock)}"/>
+					<p:separator/>
+					<p:menuitem id="idMenuListeInventaire"  value="Liste des inventaires" oncomplete="PF('wvOverlayListeInventaire').show();" 
+					  disabled="#{!autorisationBean.autoriseMenu(autorisationBean.idModuleInventaire)}" styleClass="#{autorisationBean.classeCssMenu(autorisationBean.idModuleInventaire)}"/>
+					<p:menuitem id="idMenuNouvelInventaire"  value="Inventaire" actionListener="#{menuBean.openMouvementInventaire}" update=":form:tabView"  
+					  disabled="#{!autorisationBean.autoriseMenu(autorisationBean.idModuleInventaire)}" styleClass="#{autorisationBean.classeCssMenu(autorisationBean.idModuleInventaire)}"/>
+				</p:submenu>
+				
+
+				<p:submenu id="idMenuDms" label="Drm" icon="fa fa-cubes">
+					<p:menuitem id="idMenuGestiondms"  value="Gestion des drm" actionListener="#{menuBean.openGestionDms}" update=":form:tabView"  
+					  disabled="#{!autorisationBean.autoriseMenu(autorisationBean.idModuleGestionDms)}" styleClass="#{autorisationBean.classeCssMenu(autorisationBean.idModuleGestionDms)}"/>
+				</p:submenu>
+					
+					
+				<p:submenu id="idMenuCapsules" label="Capsules" icon="fa fa-cubes">
+					<p:menuitem id="idMenuGestionCapsules"  value="Gestion des capsules" actionListener="#{menuBean.openGestionCapsules}" update=":form:tabView"  
+					  disabled="#{!autorisationBean.autoriseMenu(autorisationBean.idModuleGestionCapsules)}" styleClass="#{autorisationBean.classeCssMenu(autorisationBean.idModuleGestionCapsules)}"/>
+				</p:submenu>
+												
+			</p:submenu>
+
+			<p:submenu id="idMenuParam" label="Paramètres" icon="fa fa-tags">
+				<p:submenu id="idMenuParamArticle" label="Articles" icon="fa fa-cube">
+
+					<p:menuitem id="idMenuParamFamilleArticle" value="Famille d'articles" actionListener="#{menuBean.openFamilleArticle}" update=":form:tabView"  
+					  disabled="#{!autorisationBean.autoriseMenu(autorisationBean.idModuleArticle)}" styleClass="#{autorisationBean.classeCssMenu(autorisationBean.idModuleArticle)}"/>
+
+					<p:menuitem value="Codes Tva" actionListener="#{menuBean.openTva}" update=":form:tabView"  
+					  disabled="#{!autorisationBean.autoriseMenu(autorisationBean.idModuleArticle)}" rendred="#{autorisationBean.modeFacturation}" styleClass="#{autorisationBean.classeCssMenu(autorisationBean.idModuleArticle)}"/>
+					  
+					<p:menuitem id="idMenuParamUniteArticle" value="Unités" actionListener="#{menuBean.openUnite}" update=":form:tabView"  
+					  disabled="#{!autorisationBean.autoriseMenu(autorisationBean.idModuleArticle)}" styleClass="#{autorisationBean.classeCssMenu(autorisationBean.idModuleArticle)}"/>
+					  
+					<p:menuitem id="idMenuParamCoefficientUniteArticle" value="Coefficient unités" actionListener="#{menuBean.openCoefficientUnite}" update=":form:tabView"  
+					  disabled="#{!autorisationBean.autoriseMenu(autorisationBean.idModuleArticle)}" styleClass="#{autorisationBean.classeCssMenu(autorisationBean.idModuleArticle)}"/>
+					  
+					<p:menuitem id="idMenuParamFamilleUniteArticle" value="Famille d'unités" actionListener="#{menuBean.openFamilleUnite}" update=":form:tabView"  
+					  disabled="#{!autorisationBean.autoriseMenu(autorisationBean.idModuleArticle)}" styleClass="#{autorisationBean.classeCssMenu(autorisationBean.idModuleArticle)}"/>
+
+					<p:menuitem id="idMenuParamMarqueArticle" value="Marque" actionListener="#{menuBean.openMarque}" update=":form:tabView"  
+					  disabled="#{!autorisationBean.autoriseMenu(autorisationBean.idModuleArticle)}" styleClass="#{autorisationBean.classeCssMenu(autorisationBean.idModuleArticle)}"/>
+					  
+					<p:menuitem id="idMenuParamCertificationArticle" value="Certification" actionListener="#{menuBean.openLabelArticle}" update=":form:tabView"  
+					  disabled="#{!autorisationBean.autoriseMenu(autorisationBean.idModuleArticle)}" styleClass="#{autorisationBean.classeCssMenu(autorisationBean.idModuleArticle)}"/>
+					  
+					<p:menuitem id="idMenuParamTitreTransport" value="Titre transport" actionListener="#{menuBean.openTitreTransport}" update=":form:tabView"  
+					  disabled="#{!autorisationBean.autoriseMenu(autorisationBean.idModuleArticle)}" styleClass="#{autorisationBean.classeCssMenu(autorisationBean.idModuleArticle)}"/>					  
+					
+					<p:menuitem id="idMenuParamTypeTarif"  value="Grilles tarifaires" actionListener="#{menuBean.openTypeTarif}" update=":form:tabView"  
+					  disabled="#{!autorisationBean.autoriseMenu(autorisationBean.idModuleTiers)}" styleClass="#{autorisationBean.classeCssMenu(autorisationBean.idModuleArticle)}"/>					  
+					  
+					<p:menuitem id="idMenuParamCategorieArticle" value="Catégorie" actionListener="#{menuBean.openCategorieArticle}" update=":form:tabView"  
+					  disabled="#{!autorisationBean.autoriseMenu(autorisationBean.idModuleTiers)}" styleClass="#{autorisationBean.classeCssMenu(autorisationBean.idModuleArticle)}"/>
+				
+				</p:submenu>
+				
+					
+				<p:submenu label="Documents"  icon="fa fa-book">
+					<p:menuitem value="Type Paiement" actionListener="#{menuBean.openTypePaiement}" update=":form:tabView"  
+					  disabled="#{!autorisationBean.autoriseMenu(autorisationBean.idModuleDocument)}" rendred="#{autorisationBean.modeFacturation}" styleClass="#{autorisationBean.classeCssMenu(autorisationBean.idModuleDocument)}"/>
+
+					<p:menuitem id="idMenuParamCPaiementDoc"  value="Paiement - Echéance" actionListener="#{menuBean.openConditionPaiementDoc}" update=":form:tabView"  
+					  disabled="#{!autorisationBean.autoriseMenu(autorisationBean.idModuleDocument)}" styleClass="#{autorisationBean.classeCssMenu(autorisationBean.idModuleDocument)}"/>
+
+					<p:menuitem id="idMenuParamEtatDoc"  value="Etat Document" actionListener="#{menuBean.openEtatDoc}" update=":form:tabView"  
+					  disabled="#{!autorisationBean.autoriseMenu(autorisationBean.idModuleDocument)}" styleClass="#{autorisationBean.classeCssMenu(autorisationBean.idModuleDocument)}"/>
+					  					  
+				</p:submenu>
+				
+				<p:submenu label="Transport"  icon="fa fa-truck">
+					<p:menuitem value="Type transport" actionListener="#{menuBean.openTypeTransport}" update=":form:tabView"  
+					  disabled="#{!autorisationBean.autoriseMenu(autorisationBean.idModuleDocument)}" rendred="#{autorisationBean.modeFacturation}" styleClass="#{autorisationBean.classeCssMenu(autorisationBean.idModuleDocument)}"/>
+
+					<p:menuitem id="idMenuParamTransporteur"  value="Transporteur" actionListener="#{menuBean.openTransporteur}" update=":form:tabView"  
+					  disabled="#{!autorisationBean.autoriseMenu(autorisationBean.idModuleDocument)}" styleClass="#{autorisationBean.classeCssMenu(autorisationBean.idModuleDocument)}"/>
+				</p:submenu>
+
+				<p:submenu id="idMenuParamTiers" label="Tiers" icon="fa fa-user">
+
+					<p:menuitem id="idMenuParamTypeAdresse"  value="Type adresse" actionListener="#{menuBean.openTypeAdresse}" update=":form:tabView" 
+					  disabled="#{!autorisationBean.autoriseMenu(autorisationBean.idModuleTiers)}" styleClass="#{autorisationBean.classeCssMenu(autorisationBean.idModuleTiers)}"/>
+
+					<p:menuitem id="idMenuParamTypeCivilite"  value="Civilite Titre Qualité" actionListener="#{menuBean.openTypeCivilite}" update=":form:tabView" 
+					  disabled="#{!autorisationBean.autoriseMenu(autorisationBean.idModuleTiers)}" styleClass="#{autorisationBean.classeCssMenu(autorisationBean.idModuleTiers)}"/>
+					<p:menuitem id="idMenuParamTypeEntite"  value="Forme juridique" actionListener="#{menuBean.openTypeEntite}" update=":form:tabView" 
+					  disabled="#{!autorisationBean.autoriseMenu(autorisationBean.idModuleTiers)}" styleClass="#{autorisationBean.classeCssMenu(autorisationBean.idModuleTiers)}"/>
+					<p:menuitem id="idMenuParamTypeTel"  value="Type telephone" actionListener="#{menuBean.openTypeTelephone}" update=":form:tabView" 
+					  disabled="#{!autorisationBean.autoriseMenu(autorisationBean.idModuleTiers)}" styleClass="#{autorisationBean.classeCssMenu(autorisationBean.idModuleTiers)}"/>
+					
+					<p:menuitem id="idMenuParamTypeTiers"  value="Type tiers" actionListener="#{menuBean.openTypeTiers}" update=":form:tabView"  
+					  disabled="#{!autorisationBean.autoriseMenu(autorisationBean.idModuleTiers)}" styleClass="#{autorisationBean.classeCssMenu(autorisationBean.idModuleTiers)}"/>
+					<p:menuitem id="idMenuParamTypeWeb"  value="Type de site web" actionListener="#{menuBean.openTypeWeb}" update=":form:tabView"  
+					  disabled="#{!autorisationBean.autoriseMenu(autorisationBean.idModuleTiers)}" styleClass="#{autorisationBean.classeCssMenu(autorisationBean.idModuleTiers)}"/>
+
+					<p:menuitem id="idMenuParamTypeEmail"  value="Type email" actionListener="#{menuBean.openTypeEmail}" update=":form:tabView"  
+					  disabled="#{!autorisationBean.autoriseMenu(autorisationBean.idModuleTiers)}" styleClass="#{autorisationBean.classeCssMenu(autorisationBean.idModuleTiers)}"/>
+
+					<p:menuitem id="idMenuParamCPaiementTiers"  value="Condition de paiement" actionListener="#{menuBean.openConditionPaiementTiers}" update=":form:tabView"  
+					  disabled="#{!autorisationBean.autoriseMenu(autorisationBean.idModuleTiers)}" styleClass="#{autorisationBean.classeCssMenu(autorisationBean.idModuleTiers)}"/>
+					<p:menuitem id="idMenuParamFamilleTiers"  value="Famille de tiers" actionListener="#{menuBean.openFamilleTiers}" update=":form:tabView"  
+					  disabled="#{!autorisationBean.autoriseMenu(autorisationBean.idModuleTiers)}" styleClass="#{autorisationBean.classeCssMenu(autorisationBean.idModuleTiers)}"/>
+				</p:submenu>
+				
+				<p:submenu id="idMenuParamSolstyce"  label="Solstyce" icon="fa fa-exchange">
+					<p:menuitem id="idMenuEntrepot"  value="Entrepot" actionListener="#{menuBean.openEntrepot}" update=":form:tabView" 
+					  disabled="#{!autorisationBean.autoriseMenu(autorisationBean.idModuleEntrepot)}" styleClass="#{autorisationBean.classeCssMenu(autorisationBean.idModuleEntrepot)}"/>
+					<p:menuitem id="idMenuTypeFabrication"  value="Type fabrication" actionListener="#{menuBean.openTypeFabrication}" update=":form:tabView" 
+					  disabled="#{!autorisationBean.autoriseMenu(autorisationBean.idModuleFabrication)}" styleClass="#{autorisationBean.classeCssMenu(autorisationBean.idModuleFabrication)}"/>
+					<p:menuitem id="idMenuTypeReception"  value="Type réception" actionListener="#{menuBean.openTypeReception}" update=":form:tabView" 
+					  disabled="#{!autorisationBean.autoriseMenu(autorisationBean.idModuleBonReception)}" styleClass="#{autorisationBean.classeCssMenu(autorisationBean.idModuleBonReception)}"/>
+					<p:menuitem id="idMenuTypeCodeBarre"  value="Type code barre" actionListener="#{menuBean.openTypeCodeBarre}" update=":form:tabView" 
+					  disabled="#{!autorisationBean.autoriseMenu(autorisationBean.idModuleCodeBarre)}" styleClass="#{autorisationBean.classeCssMenu(autorisationBean.idModuleCodeBarre)}"/>
+					<p:menuitem id="idMenuGroupeControles"  value="Groupe de controles" actionListener="#{menuBean.openGroupeControle}" update=":form:tabView"  
+						disabled="#{!autorisationBean.autoriseMenu(autorisationBean.idModuleFabrication)}" styleClass="#{autorisationBean.classeCssMenu(autorisationBean.idModuleFabrication)}"/>
+				</p:submenu>
+				
+				<p:submenu label="Agenda"  icon="fa fa-calendar">
+					<p:menuitem id="idMenuParamTypeEvenement" value="Type évènement" actionListener="#{menuBean.openTypeEvenement}" update=":form:tabView"  />
+					<p:menuitem id="idMenuParamAgenda"  value="Agenda" actionListener="#{menuBean.openAgenda}" update=":form:tabView"  />
+				</p:submenu>
+				
+				<p:menuitem id="idMenuParamEtiquetteEmail" icon="fa fa-tags" value="Etiquette email" actionListener="#{menuBean.openEtiquetteEmail}" update=":form:tabView" />
+				
+				<p:submenu label="Edition"  icon="fa fa-print">
+					<p:menuitem id="idMenuParamEditionDossier" value="Edition du dossier / Catalogue" actionListener="#{menuBean.openEditionDuDossier}" update=":form:tabView" />
+					<p:menuitem id="idMenuParamGestionEditionDossier" value="Gestion édition dossier" actionListener="#{menuBean.openEditionDossier}" update=":form:tabView" />
+				</p:submenu>
+				
+				<p:submenu label="Relance"  icon="fa fa-level-up">
+					<p:menuitem id="idMenuParamNiveauRelance" value="Niveau de relance" actionListener="#{menuBean.openNiveauRelance}" update=":form:tabView"/>
+				</p:submenu>
+				
+			</p:submenu>
+			
+			<p:submenu id="idMenuAbonnements" label="Abonnements" icon="fa fa-refresh" rendered="#{autorisationBean.autoriseMenu(autorisationBean.idModuleAbonnement)}">
+				<p:submenu id="idMenuAbonnement" label="Abonnement" >
+					<p:menuitem id="idMenuListeAbonnements" value="Liste des abonnements" oncomplete="PF('wvOverlayListeAbonnement').show();" />
+					<p:menuitem id="idMenuNouvelAbonnements" value="Abonnement" actionListener="#{menuBean.openAbonnement}" update=":form:tabView" />
+					<p:menuitem id="idDashBoardAbonnements" value="Tableau de bord abonnement" actionListener="#{menuBean.openDashBoardAbonnement}" update=":form:tabView" /> 
+				</p:submenu>
+				
+				<p:menuitem id="idMenuGestionAbonnement"  value="Gestion des abonnements" actionListener="#{menuBean.openGestionAbonnement}" update=":form:tabView"/>
+				<p:menuitem id="idMenuCronDossier" value="Tâches planifiées" actionListener="#{menuBean.openCronDossier}" update=":form:tabView" />
+			</p:submenu>
+			
+			<p:submenu label="Import/Export" icon="fa fa-download" rendered="#{autorisationBean.autoriseMenu(autorisationBean.idModuleExportation)}">
+				<p:submenu label="Exportation en comptabilité" icon="fa fa-exchange" >
+					<p:menuitem id="idMenuExportComptaEpicea"  value="Epicéa" actionListener="#{menuBean.openExportComptaEpicea}" update=":form:tabView" rendered="#{autorisationBean.autoriseMenu(autorisationBean.idModuleExportationEpicea)}" />
+					<p:menuitem id="idMenuExportComptaAgrigest"  value="Agrigest" actionListener="#{menuBean.openExportComptaAgrigest}" update=":form:tabView"  rendered="#{autorisationBean.autoriseMenu(autorisationBean.idModuleExportationEpicea)}" />
+					<p:menuitem id="idMenuExportComptaCegid"  value="Cegid" actionListener="#{menuBean.openExportComptaCegid}" update=":form:tabView"  rendered="#{autorisationBean.autoriseMenu(autorisationBean.idModuleExportationEpicea)}" />
+					<p:menuitem id="idMenuExportComptaSage"  value="Sage" actionListener="#{menuBean.openExportComptaSage}" update=":form:tabView"  rendered="#{autorisationBean.autoriseMenu(autorisationBean.idModuleExportationEpicea)}" />
+<!-- 					<p:menuitem id="idMenuExportComptaIsagri1"  value="Isagri1" actionListener="#{menuBean.openExportComptaIsagri1}" update=":form:tabView"  rendered="#{auth.isDevLgr()}"/> -->
+<!-- 					<p:menuitem id="idMenuExportComptaIsagri2"  value="Isagri2" actionListener="#{menuBean.openExportComptaIsagri2}" update=":form:tabView"  rendered="#{auth.isDevLgr()}"/> -->
+					<p:menuitem id="idMenuExportComptaIsagriFinal"  value="Isagri Défaut" actionListener="#{menuBean.openExportComptaIsagriFinal}" update=":form:tabView" rendered="#{autorisationBean.autoriseMenu(autorisationBean.idModuleExportationEpicea)}" />		
+				</p:submenu>
+				<p:submenu label="Importation" icon="fa fa-exchange" rendered="#{auth.isDevLgr()}" >
+					<p:menuitem id="idMenuImportation"  value="Tiers et articles" actionListener="#{menuBean.openImportation}" update=":form:tabView" rendered="#{auth.isDevLgr()}"/>
+				</p:submenu>		
+				<p:submenu label="Synchronisation" icon="fa fa-exchange" >
+					<p:menuitem id="idMenuSynchronisationShippingBo"  value="ShippingBo" actionListener="#{menuBean.openSynchronisationShippingBo}" update=":form:tabView" rendered="#{autorisationBean.autoriseMenu(autorisationBean.idModuleImportationShippingBo)}"/>
+					<p:menuitem id="idMenuSynchronisationWooCommerce"  value="WooCommerce" actionListener="#{menuBean.openSynchronisationWooCommerce}" update=":form:tabView" rendered="#{autorisationBean.autoriseMenu(autorisationBean.idModuleImportationWooCommerce)}"/>
+					<p:menuitem id="idMenuSynchronisationPrestashop"  value="Prestashop" actionListener="#{menuBean.openSynchronisationPrestashop}" update=":form:tabView" rendered="#{autorisationBean.autoriseMenu(autorisationBean.idModuleImportationPrestashop)}"/>
+					<p:menuitem id="idMenuSynchronisationMensura"  value="Mensura" actionListener="#{menuBean.openSynchronisationMensura}" update=":form:tabView" rendered="#{autorisationBean.autoriseMenu(autorisationBean.idModuleImportationMensura)}"/>
+				</p:submenu>	
+				<p:menuitem id="idMenuGestionLiaisonExterne"  value="Gestion des liaisons externes" actionListener="#{menuBean.openGestionLiaisonExterne}" update=":form:tabView"/>			
+			</p:submenu>
+			
+			<p:submenu label="Aide" icon="fa fa-info-circle">
+				<p:menuitem value="A propos" actionListener="#{aProposBean.actAbout}" />
+			</p:submenu>
+			
+			
+			<p:submenu id="idMenuAdministration"  label="Administration" icon="fa fa-cogs" rendered="#{auth.isDevLgr() or auth.isAdminDossier()}">
+				<p:menuitem id="idMenuUtilisateur"  value="Utilisateurs" actionListener="#{menuBean.openUtilisateur}" update=":form:tabView"   />
+				<p:menuitem id="idMenuRoles"  value="Roles" actionListener="#{menuBean.openRole}" update=":form:tabView"   />
+				<p:menuitem id="idMenuPreferences" value="Préférences" actionListener="#{menuBean.openPreferences}" update=":form:tabView"   />
+				<p:menuitem id="idMenuGenerationCode" value="Gestion génération des codes" actionListener="#{menuBean.openGenCodeEx}" update=":form:tabView" />
+<!-- 				<p:menuitem id="idMenuGestionCompteClient" value="Gestion des comptes clients" actionListener="#{menuBean.openGestionCompteEspaceClient}" update=":form:tabView" rendered="#{autorisationBean.autoriseMenu(autorisationBean.idModuleCompteClient)}"/> -->
+				<p:menuitem id="idMenuVerrouillageManuel" value="Verrouillage Manuel" actionListener="#{menuBean.openVerrouillageManuel}" update=":form:tabView"   />
+				<p:submenu label="Espace Client" icon="fa fa-puzzle-piece" rendered="#{autorisationBean.autoriseMenu(autorisationBean.idModuleCompteClient)}">
+					<p:menuitem id="idMenuGestionCompteClient" value="Gestion des comptes" actionListener="#{menuBean.openGestionCompteEspaceClient}" update=":form:tabView" />
+					<p:menuitem id="idMenuParamCompteClient" value="Paramètres" actionListener="#{menuBean.openParametreEspaceClient}" update=":form:tabView" />
+				</p:submenu>
+				<p:menuitem id="idMenuBugs" value="Bugs" actionListener="#{menuBean.openBugs}" update=":form:tabView"   />
+				<p:menuitem id="idMenuGestionEmailsEnvoyes" value="Gestion des emails envoyés" actionListener="#{menuBean.openGestionEmailEnvoyes}" update=":form:tabView"/>
+				
+				<p:submenu label="Service web externe" icon="fa fa-puzzle-piece">
+					<p:menuitem id="idMenuCompteServiceWebExterne" value="Compte service externe"  oncomplete="PF('wvOverlayListeCompteServiceExterne').show();"/>
+					<p:menuitem id="idMenuGestionPaiementInternet"  value="Gestion des paiements internet" actionListener="#{menuBean.openGestionPaiementInternet}" update=":form:tabView"/>
+				</p:submenu>
+				<p:submenu label="Développeurs" icon="fa fa-code">
+					<p:menuitem id="idMenuUtilisateurWebService"  value="Utilisateurs web services" actionListener="#{menuBean.openUtilisateurWebService}" update=":form:tabView"   />
+					<p:menuitem id="idMenuLogDossier" value="Log dossier" actionListener="#{menuBean.openLogDossier}" update=":form:tabView"   />
+					<p:menuitem id="idMenuDevSwaggerUI" value="Swagger UI - API" url="/swagger/index.xhtml" />
+				</p:submenu>
+				<p:submenu id="idMenuGwiHosting" label="Gwi-Hosting" icon="" rendered="#{auth.isDevLgr()}">
+					<p:submenu id="idMenuGwiHostingGandi" label="Gandi" icon="">
+						<p:menuitem id="idMenuDevGandiServer" value="Gandi Server" actionListener="#{menuBean.openGandiServer}" update=":form:tabView" />
+						<p:menuitem id="idMenuDevGandiDomain" value="Gandi Domaine" actionListener="#{menuBean.openGandiDomain}" update=":form:tabView" />
+						<p:menuitem id="idMenuDevGandiSimpleHosting" value="Gandi Simple Hosting" actionListener="#{menuBean.openGandiSimpleHosting}" update=":form:tabView"/>
+						<p:menuitem id="idMenuDevGandiCertifSSL" value="Gandi Certificat SSL" actionListener="#{menuBean.openGandiCertifSSL}" update=":form:tabView" />
+					</p:submenu>
+				</p:submenu>
+				<p:submenu id="idMenuDev" label="Dev" icon="ui-icon-gear" rendered="#{auth.isDevLgr()}">
+					<p:menuitem id="idMenuDevControlesSaisie" value="Controles saisie" url="/admin/dev/controle_saisie.xhtml" />
+					<p:menuitem id="idMenuDevGenerationCode" value="Génération de code" url="/admin/dev/gencode.xhtml" />
+					<p:menuitem id="idMenuDevLog" value="Log" url="/admin/dev/log.xhtml" />
+					<p:menuitem id="idMenuDevChangeLog" value="Changelog" update=":form:tabView" actionListener="#{menuBean.openChangelog}" />
+					<p:menuitem id="idMenuDevSvg" value="Sauvegarde/Restauration" update=":form:tabView" actionListener="#{menuBean.openSvg}" />
+					<p:menuitem id="idMenuDevMajBdd" value="MAJ BDD" update=":form:tabView" actionListener="#{menuBean.openMajBdd}" />
+					<p:menuitem id="idMenuDevScript" value="Scripts" url="/admin/dev/scripts.xhtml" />
+					<p:menuitem id="idMenuDevInfos" value="Infos" url="/admin/dev/infos_dev.xhtml" />
+					<p:menuitem id="idMenuDevAdmin" value="Admin" url="/admin/dev/admin_dev.xhtml" />
+					<p:menuitem id="idMenuDevGenerationDonnees" value="Génération données" url="/admin/dev/generation_donnees.xhtml" />
+					<p:menuitem id="idMenuDevBugzilla" value="Bugzilla" onclick="window.open('http://bugs.legrain.fr')" />
+					<p:menuitem id="idMenuDevMajDossierDiverses" value="Diverses mise à jour des dossiers" update=":form:tabView" actionListener="#{menuBean.openMajDossierDiverses}" /> 
+					<p:separator/>
+					<p:menuitem id="idMenuDevMonitoring" value="Monitoring" onclick="window.open('#{request.contextPath}/monitoring')" /> 
+					<p:menuitem id="idMenuDevUtilisateursLogins" value="Utilisateurs Logins" actionListener="#{menuBean.openUtilisateurLogin}" update=":form:tabView"   />
+					<p:submenu label="Test" icon="ui-icon-gear">
+						<p:menuitem id="idMenuDevPageTest" value="Page de test" url="/admin/dev/test_dev.xhtml" />
+						<p:menuitem id="idMenuDevPageTestOAuth" value="Page de test OAuth" url="/admin/dev/oauth_test_dev.xhtml" />
+						<p:menuitem id="idMenuDevPageTestStripe" value="Page de test Stripe" url="/admin/dev/test_stripe.xhtml" />
+					</p:submenu>
+					<p:submenu label="Liens" icon="fa fa-external-link">
+						<p:menuitem value="Autorisations" onclick="window.open('http://#{!empty menuBean.prefixeSousDomaine ? menuBean.prefixeSousDomaine : &#39;&#39;}autorisations.#{menuBean.nomDomaine}:#{menuBean.portHttp}');" />
+						<p:menuitem value="Mon compte" onclick="window.open('http://#{!empty menuBean.prefixeSousDomaine ? menuBean.prefixeSousDomaine : &#39;&#39;}admin.moncompte.#{menuBean.nomDomaine}:#{menuBean.portHttp}');" />
+						<p:menuitem value="Espace client" onclick="window.open('http://#{!empty menuBean.prefixeSousDomaine ? menuBean.prefixeSousDomaine : &#39;&#39;}espaceclient.#{menuBean.nomDomaine}:#{menuBean.portHttp}');" />
+					</p:submenu>
+					<p:submenu label="Config service web externe" icon="fa fa-puzzle-piece">
+						<p:menuitem id="idMenuTypeAuthentification" value="Type authentification" update=":form:tabView" actionListener="#{menuBean.openTypeAuthentification}" />
+						<p:menuitem id="idMenuTypeServiceWebExterne" value="Type service" update=":form:tabView" actionListener="#{menuBean.openTypeServiceWebExterne}" />
+						<p:menuitem id="idMenuServiceWebExterne" value="Service Web Externe"  oncomplete="PF('wvOverlayListeServiceWebExterne').show();"/>
+					</p:submenu>
+					<p:submenu label="Edition" icon="fa fa-print">
+						<p:menuitem id="idMenuTypeEditionDossier"  value="Type édition dossier" actionListener="#{menuBean.openTypeEditionDossier}" update=":form:tabView"/>
+						<p:separator/>
+						<p:menuitem id="idMenuTypeEditionCatalogue"  value="Type édition catalogue" actionListener="#{menuBean.openTypeEditionCatalogue}" update=":form:tabView"/>
+						<p:menuitem id="idMenuGestionCatalogueEdition" icon="fa fa-print" value="Gestion catalogue édition" actionListener="#{menuBean.openGestionCatalogueEdition}" update=":form:tabView" />
+						
+						<p:menuitem id="idMenuParamActionInterneProg" value="Action interne prog" actionListener="#{menuBean.openGestionActionInterneProg}" update=":form:tabView" />
+					</p:submenu>
+				</p:submenu>
+			</p:submenu> 
+			
+<!-- 			<p:submenu label="Partenariat" icon="ui-icon menu-item-alliance" rendered="#{autorisationBean.autoriseMenu(PFConstants.ID_MODULE_PARTENARIAT)}"> -->
+			<p:submenu label="Partenariat" icon="ui-icon menu-item-alliance" rendered="#{autorisationBean.autoriseMenu(autorisationBean.idModulePartenariat)}">
+				<p:menuitem id="idMenuPartenariat"  value="Partenaire" actionListener="#{menuBean.openPartenariat}" update=":form:tabView"/>
+			</p:submenu>
+        </pi:menu>
+        
+<!--         <p:tooltip value="Dossier" for="idMenuDossier" /> -->
+        
+    </h:form>
+    
+</ui:composition>

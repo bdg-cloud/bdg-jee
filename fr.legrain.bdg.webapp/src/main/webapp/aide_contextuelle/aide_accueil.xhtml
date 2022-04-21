@@ -1,0 +1,36 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui">
+ <p:panel header="Aide">
+  <h3><i class="fa fa-info-circle animated swing"></i> Prise en main rapide</h3>
+   <p><span style="font-weight: bold;">Partout dans le programme : </span> pour accéder à un écran, cliquez sur le menu à gauche de votre écran.</p>
+   <p><span style="font-weight: bold;">Dans tous les écrans : </span>vous trouverez une barre d'icone pour effectuer les opérations d'insertion, de modification, de suppression et de plusieurs autres actions.</p>
+   <p>Exemple de barre d'icone : </p><h:graphicImage name="barre-icones.png" library="images" />
+<p:dataTable var="menu" value="#{aideContextuelleController.liste}">
+        <f:facet name="header">
+            Principales fonctions Barres d'icônes
+        </f:facet>
+            <p:columnGroup type="header">
+            <p:row>
+                <p:column colspan="2" headerText="Icônes" style="width:100px; text-align:center;"/>
+                <p:column rowspan="2" headerText="Fonctions" />
+            </p:row>
+            <p:row>
+               <p:column headerText="Active" style="text-align:center;"/>
+                <p:column headerText="Inactive" style="text-align:center;"/>
+            </p:row>
+        </p:columnGroup>
+        
+    <p:column>
+        <h:graphicImage name="#{menu.images}" library="images" style="width:28px;height:28px;" />
+    </p:column>
+    <p:column>
+        <h:graphicImage name="#{menu.imagesGris}" library="images" style="width:28px;height:28px;opacity: .5;" />
+    </p:column>
+ 
+    <p:column headerText="Fonction">
+        <h:outputText value="#{menu.definitionmenus}" />
+    </p:column>
+</p:dataTable>
+  
+</p:panel>
+</ui:composition>

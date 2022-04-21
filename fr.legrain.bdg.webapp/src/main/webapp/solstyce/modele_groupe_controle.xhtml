@@ -1,0 +1,174 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<p:panel id="idModeleGroupeCtrlFormPrincipal" widgetVar="widgetVarModeleGroupeCtrlForm">
+
+
+	</p:panel>
+				<p:menubar styleClass="menu-onglet">
+				
+					<p:menuitem label="Enregistrer" styleClass="icon-save icon" process="@this idModeleGroupeCtrlPanel"
+						actionListener="#{modeleGroupeControleController.actEnregistrer}"
+						update=":form:messages,@form,@widgetVar(wvMenuListeModeleGroupeCtrl),@widgetVar(wigetVarGroupeCtrlPanel),@widgetVar(wvDataTableListeModeleGroupeCtrl)"
+						disabled="#{modeleGroupeControleController.etatBouton('enregistrer')}" />
+						
+					<p:menuitem label="Insérer" styleClass="icon-insert icon"
+						actionListener="#{modeleGroupeControleController.actInserer}" process="@this"
+						update=":form:messages,@form,@widgetVar(wvMenuListeModeleGroupeCtrl),@widgetVar(wigetVarGroupeCtrlPanel)"
+						disabled="#{modeleGroupeControleController.etatBouton('inserer')}" />
+						
+					<p:menuitem label="Modifier" styleClass="icon-update icon"
+						actionListener="#{modeleGroupeControleController.actModifier}"
+						process="@this"
+						update=":form:messages,@form,@widgetVar(wvMenuListeModeleGroupeCtrl),@widgetVar(wigetVarGroupeCtrlPanel)"
+						disabled="#{modeleGroupeControleController.etatBouton('modifier')}" />
+						
+					<p:menuitem label="Annuler" styleClass="icon-cancel icon"
+						actionListener="#{modeleGroupeControleController.actAnnuler}" process="@this"
+						update=":form:messages,@form,@widgetVar(wvMenuListeModeleGroupeCtrl),@widgetVar(wigetVarGroupeCtrlPanel)"
+						disabled="#{modeleGroupeControleController.etatBouton('annuler')}" >
+						<p:confirm header="Confirmation" message="Etes vous sur de vouloir annuler les modifications en cours ?"  icon="ui-icon-alert" />
+					</p:menuitem>	
+
+					<p:menuitem label="Supprimer" styleClass="icon-delete icon menuitem-poubelle-droite"
+						actionListener="#{modeleGroupeControleController.actSupprimer}"
+						process="@this"
+						update=":form:messages,@widgetVar(wvMenuListeModeleGroupeCtrl),@widgetVar(wigetVarGroupeCtrlPanel),@widgetVar(wvDataTableListeModeleGroupeCtrl),@form"
+						disabled="#{modeleGroupeControleController.etatBouton('supprimer')}" >
+						<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer cet enregistrement ?" icon="ui-icon-alert" />
+					</p:menuitem>	
+
+					<p:menuitem label="Fermer" styleClass="icon icon-close menuitem-fermer-droite"
+					actionListener="#{modeleGroupeControleController.actFermer}"
+						process="@this" update=":form:messages,@widgetVar(wvMenuListeModeleGroupeCtrl),@widgetVar(wigetVarGroupeCtrlPanel),@widgetVar(wvDataTableListeModeleGroupeCtrl)"
+						disabled="#{modeleGroupeControleController.etatBouton('fermer')}"
+						onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())">
+						<p:confirm header="Confirmation" message="#{msg_diag.alert_fermeture_onglet}" icon="ui-icon-alert" disabled="#{!modeleGroupeControleController.modeEcran.dataSetEnModif()}"/>
+					</p:menuitem>
+
+<!-- 					<p:menuitem label="Imprimer" styleClass="icon-print icon" -->
+<!-- 						onsuccess="window.open('#{request.contextPath}/output?__report=/reports/Fiche_Fabrication.rptdesign&amp;__format=pdf')" -->
+<!-- 						actionListener="#{modeleGroupeControleController.actImprimer}" -->
+<!-- 						disabled="#{modeleGroupeControleController.etatBouton('imprimer')}" /> -->
+<!-- 					</p:menuitem>	 -->
+						<p:separator styleClass="separateur-menu-vertical"/>
+						<p:menuitem title="Liste" styleClass="icon icon-liste" process="@this" oncomplete="PF('wvOverlayListeModeleGrpCtrl').show();"/>
+				   </p:menubar>
+
+	<p:messages id="idModeleGroupeCtrlMessages" showDetail="true" autoUpdate="true"
+		closable="true" />
+
+	<p:panel id="idModeleGroupeCtrlPanel" visible="true" widgetVar="wigetVarGroupeCtrlPanel">
+		<p:panel resizable="false" id="idModeleGroupeCtrlPanelCache">
+				<f:validateBean disabled="true">
+					<div class="ui-grid ui-grid-responsive" id="idGroupeCtrlGridResp">
+						<div class="ui-grid-row">
+							<div class="ui-grid-col-4">
+								<h:outputText value="Code :"/>
+							</div>
+							<div class="ui-grid-col-8">
+								<h:inputText
+									value="#{modeleGroupeControleController.nouveau.codeGroupe}"
+									required="true" requiredMessage="#{msg_diag.alert_champs_obligatoir}" disabled="#{modeleGroupeControleController.editable()}">
+								</h:inputText>
+							</div>
+						</div>
+						<div class="ui-grid-row">
+							<div class="ui-grid-col-4">
+								<h:outputText value="Libellé :"/>
+							</div>
+							<div class="ui-grid-col-8">
+								<h:inputText
+									value="#{modeleGroupeControleController.nouveau.libelle}"
+									required="true" requiredMessage="#{msg_diag.alert_champs_obligatoir}" disabled="#{modeleGroupeControleController.editable()}">
+								</h:inputText>
+							</div>
+						</div>
+					<div class="ui-grid-row">
+						<div class="ui-grid-col-12">
+							<p:pickList id="PojoPickList" 
+								value="#{modeleGroupeControleController.listeModeleConformite}" 
+								var="ctrl"
+								effect="bounce" itemValue="#{ctrl}" 
+								itemLabel="#{ctrl.libelleConformite}" 
+								showSourceControls="true"
+								showTargetControls="true" 
+								showCheckbox="true" 
+								responsive="true" 
+								
+								showSourceFilter="true" showTargetFilter="true"
+								filterMatchMode="contains" 
+								converter="modeleConformitePickListConverter" 
+								disabled="#{modeleGroupeControleController.editable()}">
+
+								<f:facet name="sourceCaption">Controles disponibles</f:facet>
+								<f:facet name="targetCaption">Controles sélectionnés</f:facet>
+
+								<!--         <p:ajax event="transfer" listener="#{pickListView.onTransfer}" update="msg" /> -->
+								        <p:ajax event="select" listener="#{modeleGroupeControleController.onSelect}" update="@widgetVar(wigetVarPanelDetailConformite)"/>
+								<!--         <p:ajax event="unselect" listener="#{pickListView.onUnselect}" update="msg" /> -->
+								<!--         <p:ajax event="reorder" listener="#{pickListView.onReorder}" update="msg" /> -->
+
+								<p:column style="width:10%" >
+									<h:outputText styleClass="ui-ctrl ui-ctrl-#{ctrl.libelleConformite}" />
+								</p:column>
+
+								<p:column style="width:80%;" headerText="Lib.">
+									<h:outputText value="#{ctrl.libelleConformite} (#{ctrl.taGroupe.codeGroupe})" />
+								</p:column>
+								
+								<p:column style="width:10%;" headerText="Id">
+									<h:outputText value="#{ctrl.idModeleConformite}" />
+								</p:column>
+								
+<!-- 								<p:column style="width:10%;" headerText="Grp"> -->
+<!-- 									<h:outputText value="#{ctrl.taGroupe.codeGroupe}" /> -->
+<!-- 								</p:column> -->
+							</p:pickList>
+						</div>
+					</div>
+					<div class="ui-grid-row">
+						<div class="ui-grid-col-12">
+							<p:panel widgetVar="wigetVarPanelDetailConformite" header="Détail" >
+								<p:outputLabel value="Groupe : "/> <p:outputLabel value="#{modeleGroupeControleController.detailConformite.taGroupe.libelle}"/>
+								<br/>
+								<p:outputLabel value="Libellé : "/> <p:outputLabel value="#{modeleGroupeControleController.detailConformite.libelleConformite}"/>
+								<br/> 
+								<p:outputLabel value="Type : "/> <p:outputLabel value="#{modeleGroupeControleController.detailConformite.taTypeConformite.libelle}"/>
+								<br/>
+								<ui:fragment rendered="#{modeleGroupeControleController.detailConformite.findListeIdControleDependant().size() gt 0}">
+									<p:outputLabel value="Dépends de : "/>
+										<ui:repeat var="o" value="#{modeleGroupeControleController.detailConformite.findListeIdControleDependant()}" varStatus="status">
+											<p:outputLabel value="#{o} "/>
+										</ui:repeat>
+								</ui:fragment>
+							</p:panel>
+						</div>
+					</div>
+<!-- 					<div class="ui-grid-row"> -->
+<!-- 							<div class="ui-grid-col-12 text-center"> -->
+<!-- 								<p:commandButton value="Enregistrer" styleClass="btn-save btn" -->
+<!-- 									disabled="#{modeleGroupeControleController.etatBouton('enregistrer')}" -->
+<!-- 									update="@widgetVar(widgetVarModeleGroupeCtrlForm), @widgetVar(wigetVarGroupeCtrlPanel)" -->
+<!-- 									actionListener="#{modeleGroupeControleController.actEnregistrer}" /> -->
+<!-- 								<p:commandButton id="idModeleBaremeAnnuler" value="Annuler" styleClass="btn-cancel btn" -->
+<!-- 									disabled="#{modeleGroupeControleController.etatBouton('annuler')}" -->
+<!-- 									update="@widgetVar(widgetVarModeleGroupeCtrlForm), @widgetVar(wigetVarGroupeCtrlPanel)" -->
+<!-- 									actionListener="#{modeleGroupeControleController.actAnnuler}" /> -->
+									
+<!-- 								<p:commandButton id="idModeleGroupeCtrlAnnulerDialogue" value="Annuler" -->
+<!-- 								styleClass="btn-cancel btn" process="@this" -->
+<!-- 								disabled="#{modeleGroupeControleController.etatBouton('annuler')}" -->
+<!-- 								actionListener="#{modeleGroupeControleController.actFermerDialog}" -->
+<!-- 								rendered="#{dansDialogue != null ? true : false}" /> -->
+<!-- 							</div> -->
+<!-- 						</div> -->
+					</div>
+				</f:validateBean>
+<!-- 			</h:form> -->
+		</p:panel>
+	</p:panel>
+</ui:composition>

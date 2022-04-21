@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<jaxb:bindings version="2.1" 
+	xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+	xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc" 
+	xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" 
+	xmlns:annox="http://annox.dev.java.net"
+	jaxb:extensionBindingPrefixes="annox"
+	xmlns:inheritance="http://jaxb2-commons.dev.java.net/basic/inheritance">
+	
+	<!-- Use below jaxb:bindings for CXF -->
+	<jaxb:bindings
+		schemaLocation="http://localhost:8080/fr.legrain.bdg.ejb/CompteClientFinalService?wsdl#types1" 
+		node="/xs:schema">
+		
+		<!-- Tiers -->
+		<jaxb:bindings node="//xs:complexType[@name='taAdresse']/xs:sequence/xs:element[@name='taTiers']">
+			<annox:annotate target="field">
+				<annox:annotate annox:class="org.eclipse.persistence.oxm.annotations.XmlInverseReference" mappedBy="taAdresses" />
+			</annox:annotate>
+			<annox:annotate target="field">
+				<annox:annotate annox:class="javax.xml.bind.annotation.XmlElement" />
+			</annox:annotate>
+		</jaxb:bindings>
+		
+		<jaxb:bindings node="//xs:complexType[@name='taEmail']/xs:sequence/xs:element[@name='taTiers']">
+			<annox:annotate target="field">
+				<annox:annotate annox:class="org.eclipse.persistence.oxm.annotations.XmlInverseReference" mappedBy="taEmails" />
+			</annox:annotate>
+			<annox:annotate target="field">
+				<annox:annotate annox:class="javax.xml.bind.annotation.XmlElement" />
+			</annox:annotate>
+		</jaxb:bindings>
+		
+		<jaxb:bindings node="//xs:complexType[@name='taCompteBanque']/xs:sequence/xs:element[@name='taTiers']">
+			<annox:annotate target="field">
+				<annox:annotate annox:class="org.eclipse.persistence.oxm.annotations.XmlInverseReference" mappedBy="taCompteBanques" />
+			</annox:annotate>
+			<annox:annotate target="field">
+				<annox:annotate annox:class="javax.xml.bind.annotation.XmlElement" />
+			</annox:annotate>
+		</jaxb:bindings>
+		
+		<jaxb:bindings node="//xs:complexType[@name='taTelephone']/xs:sequence/xs:element[@name='taTiers']">
+			<annox:annotate target="field">
+				<annox:annotate annox:class="org.eclipse.persistence.oxm.annotations.XmlInverseReference" mappedBy="taTelephones" />
+			</annox:annotate>
+			<annox:annotate target="field">
+				<annox:annotate annox:class="javax.xml.bind.annotation.XmlElement" />
+			</annox:annotate>
+		</jaxb:bindings>
+		
+		<jaxb:bindings node="//xs:complexType[@name='taWeb']/xs:sequence/xs:element[@name='taTiers']">
+			<annox:annotate target="field">
+				<annox:annotate annox:class="org.eclipse.persistence.oxm.annotations.XmlInverseReference" mappedBy="taWebs" />
+			</annox:annotate>
+			<annox:annotate target="field">
+				<annox:annotate annox:class="javax.xml.bind.annotation.XmlElement" />
+			</annox:annotate>
+		</jaxb:bindings>
+		
+		<!-- Articles -->
+		<jaxb:bindings node="//xs:complexType[@name='taPrix']/xs:sequence/xs:element[@name='taArticle']">
+			<annox:annotate target="field">
+				<annox:annotate annox:class="org.eclipse.persistence.oxm.annotations.XmlInverseReference" mappedBy="taPrixes" />
+			</annox:annotate>
+			<annox:annotate target="field">
+				<annox:annotate annox:class="javax.xml.bind.annotation.XmlElement" />
+			</annox:annotate>
+		</jaxb:bindings>
+
+		<jaxb:bindings node="//xs:complexType[@name='taConformite']/xs:sequence/xs:element[@name='taArticle']">
+			<annox:annotate target="field">
+				<annox:annotate annox:class="org.eclipse.persistence.oxm.annotations.XmlInverseReference" mappedBy="taConformites" />
+			</annox:annotate>
+			<annox:annotate target="field">
+				<annox:annotate annox:class="javax.xml.bind.annotation.XmlElement" />
+			</annox:annotate>
+		</jaxb:bindings>
+		
+		<jaxb:bindings node="//xs:complexType[@name='taRecette']/xs:sequence/xs:element[@name='taArticle']">
+			<annox:annotate target="field">
+				<annox:annotate annox:class="org.eclipse.persistence.oxm.annotations.XmlInverseReference" mappedBy="taRecetteArticle" />
+			</annox:annotate>
+			<annox:annotate target="field">
+				<annox:annotate annox:class="javax.xml.bind.annotation.XmlElement" />
+			</annox:annotate>
+		</jaxb:bindings>
+		
+						
+		<!-- Prix -->		
+		<jaxb:bindings node="//xs:complexType[@name='taRPrix']/xs:sequence/xs:element[@name='taPrix']">
+			<annox:annotate target="field">
+				<annox:annotate annox:class="org.eclipse.persistence.oxm.annotations.XmlInverseReference" mappedBy="taRPrixes" />
+			</annox:annotate>
+			<annox:annotate target="field">
+				<annox:annotate annox:class="javax.xml.bind.annotation.XmlElement" />
+			</annox:annotate>
+		</jaxb:bindings>
+				
+		<jaxb:bindings node="//xs:complexType[@name='taRPrixTiers']/xs:sequence/xs:element[@name='taPrix']">
+			<annox:annotate target="field">
+				<annox:annotate annox:class="org.eclipse.persistence.oxm.annotations.XmlInverseReference" mappedBy="taRPrixesTiers" />
+			</annox:annotate>
+			<annox:annotate target="field">
+				<annox:annotate annox:class="javax.xml.bind.annotation.XmlElement" />
+			</annox:annotate>
+		</jaxb:bindings>
+				
+						
+		<!-- Recette article -->
+		<jaxb:bindings node="//xs:complexType[@name='taLRecette']/xs:sequence/xs:element[@name='taRecette']">
+			<annox:annotate target="field">
+				<annox:annotate annox:class="org.eclipse.persistence.oxm.annotations.XmlInverseReference" mappedBy="lignes" />
+			</annox:annotate>
+			<annox:annotate target="field">
+				<annox:annotate annox:class="javax.xml.bind.annotation.XmlElement" />
+			</annox:annotate>
+		</jaxb:bindings>
+		
+		<!-- Controle conformite -->
+		<jaxb:bindings node="//xs:complexType[@name='taBareme']/xs:sequence/xs:element[@name='taConformite']">
+			<annox:annotate target="field">
+				<annox:annotate annox:class="org.eclipse.persistence.oxm.annotations.XmlInverseReference" mappedBy="taBaremes" />
+			</annox:annotate>
+			<annox:annotate target="field">
+				<annox:annotate annox:class="javax.xml.bind.annotation.XmlElement" />
+			</annox:annotate>
+		</jaxb:bindings>
+		
+		<!-- 
+			Pour vraiment supprimer un noeud du binding JAXB il faut utiliser XmlTransient sur le champ concerné dans la classe d'origine 
+			et non essayer de généré un XmlTransient sur la classe générée
+		-->
+<!-- 		<jaxb:bindings node="//xs:complexType[@name='taConformite']/xs:sequence/xs:element[@name='taConformiteParentAvantModif']"> -->
+<!-- 			<annox:annotate target="field"> -->
+<!-- 				<annox:annotate annox:class="javax.xml.bind.annotation.XmlTransient" /> -->
+<!-- 			</annox:annotate> -->
+<!-- 		</jaxb:bindings> -->
+		
+		<!-- Modele Controle conformite -->
+		<jaxb:bindings node="//xs:complexType[@name='taModeleBareme']/xs:sequence/xs:element[@name='taConformite']">
+			<annox:annotate target="field">
+				<annox:annotate annox:class="org.eclipse.persistence.oxm.annotations.XmlInverseReference" mappedBy="taModeleBaremes" />
+			</annox:annotate>
+			<annox:annotate target="field">
+				<annox:annotate annox:class="javax.xml.bind.annotation.XmlElement" />
+			</annox:annotate>
+		</jaxb:bindings>
+		
+		<!-- Groupe Modele Controle conformite -->
+		<jaxb:bindings node="//xs:complexType[@name='taRGroupeModeleConformite']/xs:sequence/xs:element[@name='modeleGroupe']">
+			<annox:annotate target="field">
+				<annox:annotate annox:class="org.eclipse.persistence.oxm.annotations.XmlInverseReference" mappedBy="listeModeleConformite" />
+			</annox:annotate>
+			<annox:annotate target="field">
+				<annox:annotate annox:class="javax.xml.bind.annotation.XmlElement" />
+			</annox:annotate>
+		</jaxb:bindings>
+		
+		<!-- Facture -->
+		<jaxb:bindings node="//xs:complexType[@name='taLFacture']/xs:complexContent/xs:extension/xs:sequence/xs:element[@name='taDocument']">
+			<annox:annotate target="field">
+				<annox:annotate annox:class="org.eclipse.persistence.oxm.annotations.XmlInverseReference" mappedBy="lignes" />
+			</annox:annotate>
+			<annox:annotate target="field">
+				<annox:annotate annox:class="javax.xml.bind.annotation.XmlElement" />
+			</annox:annotate>
+		</jaxb:bindings>
+		
+		<jaxb:bindings node="//xs:complexType[@name='taInfosFacture']/xs:complexContent/xs:extension/xs:sequence/xs:element[@name='taDocument']">
+			<annox:annotate target="field">
+				<annox:annotate annox:class="org.eclipse.persistence.oxm.annotations.XmlInverseReference" mappedBy="taInfosDocument" />
+			</annox:annotate>
+			<annox:annotate target="field">
+				<annox:annotate annox:class="javax.xml.bind.annotation.XmlElement" />
+			</annox:annotate>
+		</jaxb:bindings>
+		
+		<!-- Reglements -->
+		<jaxb:bindings node="//xs:complexType[@name='taRReglement']/xs:sequence/xs:element[@name='taFacture']">
+			<annox:annotate target="field">
+				<annox:annotate annox:class="org.eclipse.persistence.oxm.annotations.XmlInverseReference" mappedBy="taRReglements" />
+			</annox:annotate>
+			<annox:annotate target="field">
+				<annox:annotate annox:class="javax.xml.bind.annotation.XmlElement" />
+			</annox:annotate>
+		</jaxb:bindings>
+		
+		<!-- Avoirs -->
+		<jaxb:bindings node="//xs:complexType[@name='taLAvoir']/xs:complexContent/xs:extension/xs:sequence/xs:element[@name='taDocument']">
+			<annox:annotate target="field">
+				<annox:annotate annox:class="org.eclipse.persistence.oxm.annotations.XmlInverseReference" mappedBy="lignes" />
+			</annox:annotate>
+			<annox:annotate target="field">
+				<annox:annotate annox:class="javax.xml.bind.annotation.XmlElement" />
+			</annox:annotate>
+		</jaxb:bindings>
+		
+		<jaxb:bindings node="//xs:complexType[@name='taInfosAvoir']/xs:complexContent/xs:extension/xs:sequence/xs:element[@name='taDocument']">
+			<annox:annotate target="field">
+				<annox:annotate annox:class="org.eclipse.persistence.oxm.annotations.XmlInverseReference" mappedBy="taInfosDocument" />
+			</annox:annotate>
+			<annox:annotate target="field">
+				<annox:annotate annox:class="javax.xml.bind.annotation.XmlElement" />
+			</annox:annotate>
+		</jaxb:bindings>
+		
+		<jaxb:bindings node="//xs:complexType[@name='taRAvoir']/xs:sequence/xs:element[@name='taFacture']">
+			<annox:annotate target="field">
+				<annox:annotate annox:class="org.eclipse.persistence.oxm.annotations.XmlInverseReference" mappedBy="taRAvoirs" />
+			</annox:annotate>
+			<annox:annotate target="field">
+				<annox:annotate annox:class="javax.xml.bind.annotation.XmlElement" />
+			</annox:annotate>
+		</jaxb:bindings>
+		
+		<jaxb:bindings node="//xs:complexType[@name='taRAvoir']/xs:sequence/xs:element[@name='taAvoir']">
+			<annox:annotate target="field">
+				<annox:annotate annox:class="org.eclipse.persistence.oxm.annotations.XmlInverseReference" mappedBy="taRAvoirs" />
+			</annox:annotate>
+			<annox:annotate target="field">
+				<annox:annotate annox:class="javax.xml.bind.annotation.XmlElement" />
+			</annox:annotate>
+		</jaxb:bindings>
+		
+		<!-- Acompte -->
+		<jaxb:bindings node="//xs:complexType[@name='taLAcompte']/xs:complexContent/xs:extension/xs:sequence/xs:element[@name='taDocument']">
+			<annox:annotate target="field">
+				<annox:annotate annox:class="org.eclipse.persistence.oxm.annotations.XmlInverseReference" mappedBy="lignes" />
+			</annox:annotate>
+			<annox:annotate target="field">
+				<annox:annotate annox:class="javax.xml.bind.annotation.XmlElement" />
+			</annox:annotate>
+		</jaxb:bindings>
+		
+		<jaxb:bindings node="//xs:complexType[@name='taInfosAcompte']/xs:complexContent/xs:extension/xs:sequence/xs:element[@name='taDocument']">
+			<annox:annotate target="field">
+				<annox:annotate annox:class="org.eclipse.persistence.oxm.annotations.XmlInverseReference" mappedBy="taInfosDocument" />
+			</annox:annotate>
+			<annox:annotate target="field">
+				<annox:annotate annox:class="javax.xml.bind.annotation.XmlElement" />
+			</annox:annotate>
+		</jaxb:bindings>
+		
+		<jaxb:bindings node="//xs:complexType[@name='taRAcompte']/xs:sequence/xs:element[@name='taFacture']">
+			<annox:annotate target="field">
+				<annox:annotate annox:class="org.eclipse.persistence.oxm.annotations.XmlInverseReference" mappedBy="taRAcomptes" />
+			</annox:annotate>
+			<annox:annotate target="field">
+				<annox:annotate annox:class="javax.xml.bind.annotation.XmlElement" />
+			</annox:annotate>
+		</jaxb:bindings>
+		
+<!-- 		<jaxb:bindings node="//xs:complexType[@name='taReglement']/xs:complexContent/xs:extension/xs:sequence/xs:element[@name='taFactures']"> -->
+<!-- 			<annox:annotate target="field"> -->
+<!-- 				<annox:annotate annox:class="org.eclipse.persistence.oxm.annotations.XmlInverseReference" mappedBy="taReglement" /> -->
+<!-- 			</annox:annotate> -->
+<!-- 			<annox:annotate target="field"> -->
+<!-- 				<annox:annotate annox:class="javax.xml.bind.annotation.XmlElement" /> -->
+<!-- 			</annox:annotate> -->
+<!-- 		</jaxb:bindings> -->
+		
+		
+		
+	</jaxb:bindings>
+</jaxb:bindings>
+

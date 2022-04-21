@@ -1,0 +1,2368 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:lgr="http://legrain.fr/ui"
+    xmlns:pe="http://primefaces.org/ui/extensions">
+
+	<ui:define name="metadata">
+		<f:metadata>
+			<f:viewParam name="variableEcran" value="Bonliv" />
+		</f:metadata>
+	</ui:define>
+
+
+	<!-- <f:validateBean disabled="true"> -->
+			<div class="dashboard-title" style="background: #f0f1f2; margin-bottom: 15px;">
+						<h:panelGroup id="idPanelGroupInfosTiersEnteteBonLivraison" rendered="#{!bonLivraisonController.selectedDocumentDTO.BonlivEstVide()}">
+						<p:spacer width="30" height="5" />
+						<p:outputLabel value="Code : " />
+						<p:outputLabel value="#{bonLivraisonController.selectedDocumentDTO.codeDocument}" style="font-weight: bold;"/>
+						<p:spacer width="30" height="5" />
+						<p:outputLabel value="Code tiers : " />
+<!-- 						<p:outputLabel value="#{bonLivraisonController.selectedDocumentDTO.codeTiers}" style="font-weight: bold;"/> -->
+							<p:commandLink 	value="#{bonLivraisonController.selectedDocumentDTO.codeTiers}"
+											style="font-weight: bold;" 
+											action="#{bonLivraisonController.ouvertureTiersBean.detailTiers(bonLivraisonController.ouvertureTiersBean.recupCodetiers(bonLivraisonController.selectedDocumentDTO.codeTiers))}" update=":form:tabView"
+											oncomplete="activeTabCenter('#{bonLivraisonController.ouvertureTiersBean.event.cssLgrTab}');">
+							</p:commandLink>						
+						<p:spacer width="30" height="5" />
+						<p:outputLabel value="Nom : " />
+						<p:outputLabel value="#{bonLivraisonController.selectedDocumentDTO.nomTiers} #{bonLivraisonController.selectedDocumentDTO.prenomTiers}" style="font-weight: bold;"/>
+						<p:spacer width="30" height="5" />
+						<p:outputLabel value="Raison sociale : " />
+						<p:outputLabel value="#{bonLivraisonController.selectedDocumentDTO.nomEntreprise}" style="font-weight: bold;"/>
+						</h:panelGroup>
+			</div>
+
+	<p:menubar styleClass="menu-onglet" id="idMenuBoutonBonLivraison" widgetVar="wvMenuBoutonBonLivraison">
+
+	<p:menuitem title="Aide" styleClass="icon icon-aidecontextuelle" onstart="PF('wvAideMenuBl').show()" />
+	<p:separator styleClass="separateur-menu-vertical"/>		
+		
+		<p:menuitem title="Enregistrer le bon de livraison en cours de saisie" value="Enregistrer" styleClass="icon icon-save" process="@this idtiersBonLivraison idCodeBonLivraison"
+			actionListener="#{bonLivraisonController.actEnregistrer}" 
+			oncomplete="impressionDirect(PF('wvImpressionDirectBonLivraison'),'#{request.contextPath}/output?__report=/reports/documents/bl/Fiche_bonLiv.rptdesign&amp;__format=pdf')"
+			update="idPanelEnteteBonLivraison,idPanelLignesBonLivraison,idTableauComplementaireBL,:form:messages,@form,@widgetVar(wvMenuListeBL),@widgetVar(wvDataTableListeBL)"
+			disabled="#{bonLivraisonController.etatBouton('enregistrer') or bonLivraisonController.stepEnCours('idLignesBonLivraison')}" />
+			
+		<p:menuitem title="Créer une nouveau bon de livraison" value="Insérer" styleClass="icon icon-insert"
+			actionListener="#{bonLivraisonController.actInserer}" process="@this"
+			oncomplete="if(PF('widgetVarLigneBonLivraison').getStepIndex()!=-1) {PF('widgetVarLigneBonLivraison').loadStep('idEnteteBonLivraison', false)}"
+			update="idPanelEnteteBonLivraison,idPanelLignesBonLivraison,idTableauComplementaireBL,idPrecisionPrixBonLiv,:form:messages,@form,@widgetVar(wvMenuListeBL),@widgetVar(wvDataTableListeBL)"
+			disabled="#{bonLivraisonController.etatBouton('inserer') or bonLivraisonController.stepEnCours('idLignesBonLivraison')}" />
+			
+		<p:menuitem title="Modifier le bon de livraison courant" value="Modifier" styleClass="icon icon-update"
+			actionListener="#{bonLivraisonController.actModifier}"
+			process="@this"
+			update="idPanelEnteteBonLivraison,idPanelLignesBonLivraison,idTableauComplementaireBL,:form:messages,@form,@widgetVar(wvMenuListeBL),@widgetVar(wvDataTableListeBL)"
+			disabled="#{bonLivraisonController.etatBouton('modifier')}" >
+			<p:confirm header="#{bonlivraisonController.titreModification}" message="#{bonLivraisonController.messageModification}" icon="ui-icon-alert" />
+		</p:menuitem>
+			
+			
+		<p:menuitem title="Annuler les modifications en cours" value="Annuler" styleClass="icon icon-cancel"
+			actionListener="#{bonLivraisonController.actAnnuler}" process="@this"
+			update="idPanelEnteteBonLivraison,idPanelLignesBonLivraison,idTableauComplementaireBL,:form:messages,@form,@widgetVar(wvMenuListeBL),@widgetVar(wvDataTableListeBL)"
+			disabled="#{bonLivraisonController.etatBouton('annuler') }" >
+		<p:confirm header="Confirmation" message="Etes vous sur de vouloir annuler les modifications en cours ?"  icon="ui-icon-alert" />
+		</p:menuitem>
+			
+<!-- 		<p:separator styleClass="separateur-menu-vertical"/> -->
+		<p:menuitem title="Supprimer le bon de livraison courant" value="Supprimer" styleClass="icon icon-delete menuitem-poubelle-droite"
+			actionListener="#{bonLivraisonController.actSupprimer}"
+			process="@this"
+			update="idPanelEnteteBonLivraison,idPanelLignesBonLivraison,idTableauComplementaireBL,:form:messages,@form,@widgetVar(wvMenuListeBL),@widgetVar(wvDataTableListeBL)"
+			disabled="#{bonLivraisonController.etatBouton('supprimer') or bonLivraisonController.stepEnCours('idLignesBonLivraison')}" >
+<!-- 			<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer cet enregistrement ?" icon="ui-icon-alert" /> -->
+			<p:confirm header="Confirmation de la suppression" message="#{bonLivraisonController.messageSuppression}"  icon="ui-icon-alert" />
+		</p:menuitem>			
+
+		<p:menuitem title="Créer un évènement" styleClass="icon-agenda icon" 
+			
+			oncomplete="$('.classHiddenCommandForDialogAgendaReturnBonLiv').click()"
+			process="@this" 
+			update="@this" 
+			disabled="#{bonLivraisonController.etatBouton('modifier')}"/>
+
+		<p:separator styleClass="separateur-menu-vertical"/>
+
+		<p:menuitem title="Fermer l'onglet des bons de livraison" value="Fermer" styleClass="icon icon-close menuitem-fermer-droite"
+			process="@this" 
+			actionListener="#{bonLivraisonController.actFermer}"
+			update=":form:messages,@widgetVar(wvMenuListeBL),@widgetVar(wvDataTableListeBL)"
+			disabled="#{bonLivraisonController.etatBouton('fermer')}"
+			onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())">
+			
+			<p:confirm header="Confirmation" message="#{msg_diag.alert_fermeture_onglet}" icon="ui-icon-alert" disabled="#{!bonLivraisonController.modeEcran.dataSetEnModif()}"/>
+		</p:menuitem>
+
+		<!-- <p:menuitem title="Imprimer le bon de livraison courante" value="Imprimer" styleClass="icon icon-print"
+			onsuccess="window.open('#{request.contextPath}/output?__report=/reports/documents/bl/Fiche_bonLiv.rptdesign&amp;__format=pdf')"
+			actionListener="#{bonLivraisonController.actImprimer}"
+			disabled="#{bonLivraisonController.etatBouton('imprimer') or bonLivraisonController.stepEnCours('idLignesBonLivraison')}" /> -->
+			
+		<!-- Menu Imprimer Avec Impression personnalisée YANN -->
+<!-- 		 <lgr:menuItemImprimer title="Imprimer le bon de livraison courante" value="Imprimer" styleClass="icon icon-print" -->
+<!-- 			onsuccess="window.open('#{request.contextPath}/output?__report=/reports/documents/bl/Fiche_bonLiv.rptdesign&amp;__format=pdf')" -->
+<!-- 			oncomplete="$('.classHiddenCommandForDialogImprimerReturnBonliv').click()" -->
+<!-- 			actionBean="#{bonLivraisonController}" -->
+<!-- 			actionMethod="actImprimer" -->
+<!-- 			choixEdition="#{bonLivraisonController.choixEdition}" -->
+<!-- 			disabled="#{bonLivraisonController.etatBouton('imprimer') or bonLivraisonController.stepEnCours('idLignesBonLivraison')}"> -->
+<!-- 			</lgr:menuItemImprimer> -->
+			 
+		<!-- JE TAFF ICI POUR LE CHOIX EDITION A L'IMPRESSION -->
+	<p:submenu  icon="ui-icon-print"  class="ui-icon-print-option">
+	<!-- NEW BUTTON COMME FACTURE AVEC EDITION DEFAUT 29/10/19 -->
+	<p:menuitem title="#{c_bonLivraison.titre_menu_imprimer} pour le client" value="Imprimer pour le client" icon="fa fa-print"
+				disabled="#{(bonLivraisonController.etatBouton('imprimer') or bonLivraisonController.stepEnCours('idLignesBonLivraison')) }"
+				actionListener="#{bonLivraisonController.imprimeEdition(null, 'CLIENT', 'true')}"
+				update="idTableauComplementaireBL">
+				<p:confirm header="Confirmation" disabled="#{bonLivraisonController.selectedDocumentDTO.estMisADisposition}" message="Etes-vous sur de vouloir mettre à disposition du client ce document ? " icon="ui-icon-alert" />
+	</p:menuitem>
+	<p:submenu label="Tous les modèles" disabled="#{(bonLivraisonController.etatBouton('imprimer') or bonLivraisonController.stepEnCours('idLignesBonLivraison'))}">
+		 <c:forEach items="#{bonLivraisonController.listeEdition}" var="edition" varStatus="loop">
+		       <p:menuitem  title="#{edition.libelleEdition}" value="#{edition.libelleEdition}" actionListener="#{bonLivraisonController.imprimeEdition(edition, 'CLIENT', 'true')}" 
+		       update="idTableauComplementaireBL">
+				<p:confirm header="Confirmation" disabled="#{bonLivraisonController.selectedDocumentDTO.estMisADisposition}" message="Etes-vous sur de vouloir mettre à disposition du client ce document ? " icon="ui-icon-alert" />
+				</p:menuitem >
+		   </c:forEach>
+	</p:submenu>
+			
+<!-- 			<p:separator /> -->
+<!-- 	<p:menuitem title="#{c_bonLivraison.titre_menu_imprimer} en Duplicata" value="Duplicata" icon="fa fa-print" -->
+<!-- 		disabled="#{(bonLivraisonController.etatBouton('imprimer') or bonLivraisonController.stepEnCours('idLignesBonLivraison')) or !bonLivraisonController.selectedDocumentDTO.estMisADisposition}" -->
+<!-- 		actionListener="#{bonLivraisonController.imprimeEdition(null, 'DUPLICATA', 'false')}"> -->
+<!-- 	</p:menuitem> -->
+	
+<!-- 	<p:submenu label="Tous les modèles" -->
+<!-- 	 disabled="#{(bonLivraisonController.etatBouton('imprimer') or bonLivraisonController.stepEnCours('idLignesBonLivraison')) or !bonLivraisonController.selectedDocumentDTO.estMisADisposition}"> -->
+<!-- 		 <c:forEach items="#{bonLivraisonController.listeEdition}" var="edition" varStatus="loop"> -->
+<!-- 		       <p:menuitem  title="#{edition.libelleEdition}" value="#{edition.libelleEdition}" actionListener="#{bonLivraisonController.imprimeEdition(edition, 'DUPLICATA', 'false')}"> -->
+<!-- 				</p:menuitem > -->
+<!-- 		   </c:forEach> -->
+<!-- 	</p:submenu> -->
+			
+			<p:separator />
+	<p:menuitem  title="#{c_bonLivraison.titre_menu_imprimer} en brouillon" value="Brouillon" icon="fa fa-print"
+				disabled="#{(bonLivraisonController.etatBouton('imprimer') or bonLivraisonController.stepEnCours('idLignesBonLivraison')) or bonLivraisonController.selectedDocumentDTO.estMisADisposition }"
+				actionListener="#{bonLivraisonController.imprimeEdition(null, 'BROUILLON', 'false')}">
+	</p:menuitem >
+	<p:submenu label="Tous les modèles" disabled="#{(bonLivraisonController.etatBouton('imprimer') or bonLivraisonController.stepEnCours('idLignesBonLivraison')) or bonLivraisonController.selectedDocumentDTO.estMisADisposition }">
+			 <c:forEach items="#{bonLivraisonController.listeEdition}" var="edition" varStatus="loop">
+			       <p:menuitem  title="#{edition.libelleEdition}" value="#{edition.libelleEdition}" actionListener="#{bonLivraisonController.imprimeEdition(edition, 'BROUILLON', 'false')}">
+					</p:menuitem >
+			   </c:forEach>
+	</p:submenu>
+			 
+	</p:submenu>		
+		<!-- FIN NEW BUTTONS -->
+			
+		<p:menuitem title="Imprimer étiquettes code barre" value="Imprimer étiquette code barre" styleClass="icon icon-barcode"
+						onsuccess="window.open('#{request.contextPath}/articles/etiquette_cb.xhtml')"
+						actionListener="#{bonLivraisonController.actImprimerEtiquetteCB}"/>		
+						
+		<p:submenu  icon="ui-icon-mail"  class="ui-icon-mail-option">
+			
+			<p:menuitem  title="Envoyer par email pour le client" value="Envoyer au client" icon="fa fa-paper-plane"
+				disabled="#{bonlivraisonController.etatBouton('modifier')}"
+				oncomplete="$('.classHiddenCommandForDialogEmailReturnBL').click()"
+				update="idPanelEnteteBonLivraison,idPanelLignesBonLivraison,idTableauComplementaireBL,:form:messages,@form,@widgetVar(wvMenuListeBonLivraison),@widgetVar(wvDataTableListeBonLivraison)"
+				actionListener="#{bonLivraisonController.envoiMailEdition(null, 'CLIENT', 'true')}">
+				<p:confirm header="Confirmation" disabled="#{bonLivraisonController.selectedDocumentDTO.estMisADisposition}" message="Etes-vous sur de vouloir mettre à disposition du client ce document? " icon="ui-icon-alert" />
+				</p:menuitem >
+				<p:submenu label="Tous les modèles" disabled="#{bonLivraisonController.etatBouton('modifier')}">
+					 <c:forEach items="#{bonLivraisonController.listeEdition}" var="edition" varStatus="loop">
+					       <p:menuitem  title="#{edition.libelleEdition}" value="#{edition.libelleEdition}"
+					        actionListener="#{bonLivraisonController.envoiMailEdition(edition, 'CLIENT', 'true')}"
+					         oncomplete="$('.classHiddenCommandForDialogEmailReturnBL').click()">
+					         <p:confirm header="Confirmation" disabled="#{bonLivraisonController.selectedDocumentDTO.estMisADisposition}" message="Etes-vous sur de vouloir mettre à disposition du client ce document ? " icon="ui-icon-alert" />
+							</p:menuitem >
+					   </c:forEach>
+				</p:submenu>
+				
+<!-- 				<p:separator /> -->
+				
+<!-- 				<p:menuitem  title="Envoyer par email en duplicata" value="Duplicata" icon="fa fa-paper-plane" -->
+<!-- 				disabled="#{bonLivraisonController.etatBouton('modifier') or !bonLivraisonController.selectedDocumentDTO.estMisADisposition}" -->
+<!-- 				oncomplete="$('.classHiddenCommandForDialogEmailReturnBL').click()" -->
+<!-- 				update="idPanelEnteteBonLivraison,idPanelLignesBonLivraison,idTableauComplementaireBL,:form:messages,@form,@widgetVar(wvMenuListeBonLivraison),@widgetVar(wvDataTableListeBonLivraison)" -->
+<!-- 				actionListener="#{bonLivraisonController.envoiMailEdition(null, 'DUPLICATA', 'false')}"> -->
+<!-- 				</p:menuitem > -->
+<!-- 				<p:submenu label="Tous les modèles" disabled="#{bonLivraisonController.etatBouton('modifier') or !bonLivraisonController.selectedDocumentDTO.estMisADisposition}"> -->
+<!-- 					 <c:forEach items="#{bonLivraisonController.listeEdition}" var="edition" varStatus="loop"> -->
+<!-- 					       <p:menuitem  title="#{edition.libelleEdition}" value="#{edition.libelleEdition}" -->
+<!-- 					        actionListener="#{bonLivraisonController.envoiMailEdition(edition, 'DUPLICATA', 'false')}" -->
+<!-- 					         oncomplete="$('.classHiddenCommandForDialogEmailReturnBL').click()"> -->
+<!-- 							</p:menuitem > -->
+<!-- 					   </c:forEach> -->
+<!-- 				</p:submenu> -->
+				
+				<p:separator />
+				
+				<p:menuitem  title="Envoyer par email en brouillon" value="Brouillon" icon="fa fa-paper-plane"
+				disabled="#{bonLivraisonController.etatBouton('modifier') or bonLivraisonController.selectedDocumentDTO.estMisADisposition}"
+				oncomplete="$('.classHiddenCommandForDialogEmailReturnBL').click()"
+				update="idPanelEnteteBonLivraison,idPanelLignesBonLivraison,idTableauComplementaireBL,:form:messages,@form,@widgetVar(wvMenuListeBonLivraison),@widgetVar(wvDataTableListeBonLivraison)"
+				actionListener="#{bonLivraisonController.envoiMailEdition(null, 'BROUILLON', 'false')}">
+				</p:menuitem >
+				<p:submenu label="Tous les modèles" disabled="#{bonLivraisonController.etatBouton('modifier') or bonLivraisonController.selectedDocumentDTO.estMisADisposition}">
+					 <c:forEach items="#{bonLivraisonController.listeEdition}" var="edition" varStatus="loop">
+					       <p:menuitem  title="#{edition.libelleEdition}" value="#{edition.libelleEdition}"
+					        actionListener="#{bonLivraisonController.envoiMailEdition(edition, 'BROUILLON', 'false')}"
+					         oncomplete="$('.classHiddenCommandForDialogEmailReturnBL').click()">
+							</p:menuitem >
+					   </c:forEach>
+				</p:submenu>
+				
+		</p:submenu>
+
+		<p:separator styleClass="separateur-menu-vertical" />
+
+<!-- 		<p:menuitem title="Liste des factures" icon="fa fa-list" oncomplete="PF('wvOverlayListeBonLivraison').show();"/>	 -->
+		<p:menuitem title="Liste des bons de livraison" styleClass="icon icon-liste" oncomplete="PF('wvOverlayListeBL').show();"/>	
+		
+		<p:separator styleClass="separateur-menu-vertical" />
+
+		<p:menuitem title="Documents liés" styleClass="icon icon-documents-lies"  rendered="#{auth.isDevLgr()}"
+			oncomplete="$('.classHiddenCommandForDialogDocumentLieReturnBonLiv').click()"
+			process="@this" 
+			update="@this" 
+			disabled="#bonLivraisonController.etatBouton('imprimer') }" />				
+	</p:menubar>
+	
+	 <p:commandButton styleClass="classHiddenCommandForDialogImprimerReturnBonliv" actionListener="#{bonLivraisonController.actDialogImprimer}" style="display:none" process="@this"  >
+        <p:ajax event="dialogReturn" listener="#{bonLivraisonController.handleReturnDialogImprimer}" />
+    </p:commandButton> 
+	
+		<p:commandButton styleClass="classHiddenCommandForDialogAgendaReturnBonLiv" actionListener="#{bonLivraisonController.actDialogEvenement}" style="display:none" process="@this"  >
+        <p:ajax event="dialogReturn" update="@widgetVar(wvAgenda)"  />  
+    </p:commandButton>
+    	<p:commandButton styleClass="classHiddenCommandForDialogEmailReturnBL" actionListener="#{bonLivraisonController.actDialogEmailSelectedEdition}" style="display:none" process="@this"  >
+        <p:ajax event="dialogReturn" listener="#{bonLivraisonController.handleReturnDialogEmail}" update=":form:messages, idTableauComplementaireBL"  />  
+    </p:commandButton>
+    
+            
+    <p:commandButton styleClass="classHiddenCommandForDialogDocumentLieReturnBonLiv" actionListener="#{bonLivraisonController.actDialogGenerationDocumentLie}" style="display:none" process="@this"  >
+        <p:ajax event="dialogReturn" update="@form"  listener="#{bonLivraisonController.handleReturnDialogDocumentLie}"/>  
+    </p:commandButton> 
+    
+	<p:overlayPanel widgetVar="wvAideMenuBl" hideEffect="fade"
+								dynamic="true" showCloseIcon="true"
+								styleClass="overlay-aide-contextuelle overlay-aide-contextuelle-big">
+								<ui:include src="/aide_contextuelle/bonlivraison_general.xhtml" />
+	</p:overlayPanel>
+	<!-- 	<div class="ui-grid ui-grid-responsive"> -->
+	<!-- 		<div class="ui-grid-row"> -->
+	<!-- 			<div class="ui-grid-col-12"> -->
+<!-- 	flowListener="#{bonLivraisonController.onFlowProcess}" -->
+
+<p:fieldset style="margin-bottom:20px;"  id="idTableauComplementaireBL" widgetVar="wvTableauComplementaireBl">
+		<h:panelGrid columns="9" cellpadding="15">
+
+			<p:panel styleClass="panel-aide-contextuelle">
+				<p:commandButton process="@this" 
+				alt="#{const_vue.btn_generation_modele}"
+				title="#{const_vue.btn_generation_modele}" 
+				label="#{const_vue.btn_generation_modele}" 
+				value="#{const_vue.btn_generation_modele}"
+				icon="ui-icon-copy" 					
+				action="#{duplicationDocumentBean.actDialogGenerationModeleDocument}" disabled="#{bonLivraisonController.modeEcran.dataSetEnModif()}">
+						<f:setPropertyActionListener target="#{duplicationDocumentBean.doc}" value="#{bonLivraisonController.masterEntity}"/>
+						<p:ajax event="dialogReturn" listener="#{duplicationDocumentBean.handleReturnDialogGenerationDocument}" 
+						update=":form:tabView,@widgetVar(wvMenuListeBL),@widgetVar(wvDataTableListeBL)" oncomplete="activeTabCenter('#{bonLivraisonController.css}');" />
+				</p:commandButton>
+				<p:commandLink id="idLinkAideGenerationModeleDocumentBl"
+					styleClass="lien-aide-contextuelle">
+					<i class="fa fa-info-circle animated"></i>
+				</p:commandLink>
+
+				<p:overlayPanel for="idLinkAideGenerationModeleDocumentBl"
+					hideEffect="fade" dynamic="true" showCloseIcon="true"
+					styleClass="overlay-aide-contextuelle">
+					<ui:include
+						src="/aide_contextuelle/document_generation_modele_document.xhtml" />
+				</p:overlayPanel>
+			</p:panel>
+			<p:separator/>
+			<p:panel styleClass="panel-aide-contextuelle">
+				<p:commandButton process="@this" 
+				title="#{const_vue.btn_generation_document}"
+				alt="#{const_vue.btn_generation_document}" 
+				label="#{const_vue.btn_generation_document}" 
+				value="#{const_vue.btn_generation_document}"
+				icon="ui-icon-link"
+					action="#{duplicationDocumentBean.actDialogGenerationDocument}" disabled="#{bonLivraisonController.modeEcran.dataSetEnModif()}">
+					<f:setPropertyActionListener target="#{duplicationDocumentBean.doc}" value="#{bonLivraisonController.masterEntity}"/>	
+					<f:setPropertyActionListener target="#{duplicationDocumentBean.genereToutesLesLignes}" value="true"/>
+						<p:ajax event="dialogReturn" listener="#{duplicationDocumentBean.handleReturnDialogGenerationDocument}" 
+						update=":form:tabView,@widgetVar(wvMenuListeBL),@widgetVar(wvDataTableListeBL)" oncomplete="activeTabCenter('#{bonLivraisonController.css}');" />
+				</p:commandButton>
+				<p:commandLink id="idLinkAideGenerationDocumentBl"
+					styleClass="lien-aide-contextuelle">
+					<i class="fa fa-info-circle animated"></i>
+				</p:commandLink>
+
+				<p:overlayPanel for="idLinkAideGenerationDocumentBl" hideEffect="fade"
+					dynamic="true" showCloseIcon="true"
+					styleClass="overlay-aide-contextuelle">
+					<ui:include
+						src="/aide_contextuelle/document_generation_document.xhtml" />
+				</p:overlayPanel>
+			</p:panel>
+			<!-- 							<p:separator styleClass="separateur-menu-vertical"/> -->
+			<!-- 							<p:panel> -->
+			<!-- 							<p:outputLabel value="CA HT : " /> -->
+			<!-- 							</p:panel> -->
+			<!-- 							<p:panel> -->
+			<!-- 							<p:outputLabel value="150 €" /> -->
+			<!-- 							</p:panel> -->
+			<!-- 							<p:separator styleClass="separateur-menu-vertical"/> -->
+			<!-- 							<p:panel> -->
+			<!-- 							<p:outputLabel value="CA HT : " /> -->
+			<!-- 							</p:panel> -->
+			<!-- 							<p:panel> -->
+			<!-- 							<p:outputLabel value="150 €" /> -->
+			<!-- 							</p:panel> -->
+									<p:outputLabel value="Etat du document  " rendered="#{auth.isDevLgr()}"/>
+						<p:panel styleClass="panel-aide-contextuelle">
+							<p:autoComplete value="#{bonLivraisonController.selectedEtatDocument}" rendered="#{auth.isDevLgr()}"
+								converter="entityConverter"
+								completeMethod="#{bonLivraisonController.etatAutoComplete}"
+								disabled="true" var="etat"
+								itemLabel="#{etat.codeEtat}" itemValue="#{etat}"
+								forceSelection="true" dropdown="true" placeholder="Etat du document">
+								<p:column>
+									<h:outputText value="#{etat.codeEtat}" />
+								</p:column>
+
+								<p:column>
+									<h:outputText value="#{etat.liblEtat}" />
+								</p:column>
+
+								<f:attribute name="nomChamp" value="#{const.C_CODE_ETAT}" />
+								  <p:ajax event="clear" listener="#{bonLivraisonController.onClearEtat}" 
+								  update="idPanelEnteteBonLivraison,idPanelLignesBonLivraison,idTableauComplementaireBL,:form:messages,@form,@widgetVar(wvMenuListeBL),@widgetVar(wvDataTableListeBL)"/>
+								<p:ajax event="itemSelect"
+									listener="#{bonLivraisonController.autcompleteSelection}"
+												update="idPanelEnteteBonLivraison,idPanelLignesBonLivraison,idTableauComplementaireBL,:form:messages,@form,@widgetVar(wvMenuListeBL),@widgetVar(wvDataTableListeBL)"/>
+							</p:autoComplete>
+						</p:panel>
+					<h:outputLabel value="Document mis à la disposition du client !!!" title="#{bonLivraisonController.documentDTOEstVerrouille().message}" rendered="#{bonLivraisonController.documentDTOEstVerrouille().verrouille}"/>
+						
+					<p:outputLabel value="précision prix : " rendered="#{bonLivraisonController.affichagePrecisionPrixDocument()}"/>
+					<p:outputLabel value="#{bonLivraisonController.masterEntity.nbDecimalesPrix} décimale(s)" style="font-weight: bold;" id="idPrecisionPrixBonLiv" 
+					rendered="#{bonLivraisonController.affichagePrecisionPrixDocument()}"/>
+			
+		</h:panelGrid>
+	</p:fieldset>
+	
+	<p:wizard nextLabel="Suivant" backLabel="Précédent" showStepStatus="false" binding="#{bonLivraisonController.wizardDocument}" step="#{bonLivraisonController.stepCourant()}"
+	widgetVar="widgetVarLigneBonLivraison" flowListener="#{bonLivraisonController.handleFlow}">
+<p:tab id="idSyntheseBonLivraison" title="Synthèse du bon de livraison">
+			<div class="card">
+				<p:panel header="Synthèse du bon de livraison" style="width:100%;" rendered="#{!bonLivraisonController.selectedDocumentDTO.BonlivEstVide()}">
+					<p:panelGrid columns="3" id="idInfosBonLiv" columnClasses="ui-grid-col-4,ui-grid-col-4,ui-grid-col-4" styleClass="ui-panelgrid-blank" layout="grid">
+						<h:panelGroup>
+						<p:outputLabel value="Code bon Livraison : " style="font-weight: bold;"/>
+						<p:outputLabel value="#{bonLivraisonController.selectedDocumentDTO.codeDocument}" />
+						</h:panelGroup>
+						<h:panelGroup>
+						<p:outputLabel value="Code tiers : " style="font-weight: bold;"/>
+							<p:commandLink 	value="#{bonLivraisonController.selectedDocumentDTO.codeTiers}"
+											style="font-weight: bold;" 
+											action="#{bonLivraisonController.ouvertureTiersBean.detailTiers(bonLivraisonController.ouvertureTiersBean.recupCodetiers(bonLivraisonController.selectedDocumentDTO.codeTiers))}" update=":form:tabView"
+											oncomplete="activeTabCenter('#{bonLivraisonController.ouvertureTiersBean.event.cssLgrTab}');">
+							</p:commandLink>						
+<!-- 						<p:outputLabel value="#{bonLivraisonController.selectedDocumentDTO.codeTiers}"/> -->
+						</h:panelGroup>
+						<h:panelGroup>
+						<p:outputLabel value="Adresse livraison : " style="font-weight: bold;"/>
+<!-- 						<p:outputLabel value="#{bonLivraisonController.selectedDocumentDTO.dateDocument}" > -->
+<!-- 							<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/> -->
+<!-- 						</p:outputLabel> -->
+						</h:panelGroup>
+						
+						<h:panelGroup>
+<!-- 						<p:outputLabel value="Libellé : "/> -->
+						<p:outputLabel value="#{bonLivraisonController.selectedDocumentDTO.libelleDocument}" />
+						</h:panelGroup>
+						<h:panelGroup>
+						<p:outputLabel value="Entreprise : " style="font-weight: bold;"/>
+						<p:outputLabel value="#{bonLivraisonController.selectedDocumentDTO.nomEntreprise}"/>
+						<br />
+						<p:outputLabel value="#{bonLivraisonController.selectedDocumentDTO.nomTiers} - #{bonLivraisonController.selectedDocumentDTO.prenomTiers}"/>
+<!-- 						<hr/> -->
+<!-- 						<h:panelGroup> -->
+<!-- 						<p:outputLabel value="Coordonnées : " style="font-weight: bold;"/> -->
+<!-- 						<p:outputLabel value="#{bonLivraisonController.selectedInfosTiers.adresseEmail} - #{bonLivraisonController.selectedInfosTiers.numeroTelephone}"/> -->
+<!-- 						</h:panelGroup> -->
+						</h:panelGroup>
+						<h:panelGroup>
+						<p:outputLabel value="" style="font-weight:bold;"/>
+						<p:outputLabel value="#{bonLivraisonController.taAdresseLiv.adresse1AdresseLiv}" >
+						</p:outputLabel>
+						<br/>
+						<p:outputLabel value="#{bonLivraisonController.taAdresseLiv.adresse2AdresseLiv}" >
+						</p:outputLabel>
+						</h:panelGroup>
+
+						<h:panelGroup>
+						<p:outputLabel value="Date bon Livraison : " style="font-weight: bold;"/>
+						<p:outputLabel value="#{bonLivraisonController.selectedDocumentDTO.dateDocument}" >
+							<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+						</p:outputLabel>
+						</h:panelGroup>
+						<h:panelGroup>
+						<p:outputLabel value="Tèl : " style="font-weight: bold;"/>
+						<p:outputLabel value="#{bonLivraisonController.taTiersDTO.numeroTelephone}"/>
+						</h:panelGroup>
+						<h:panelGroup>
+						<p:outputLabel value="" style="font-weight: bold;"/>
+						<p:outputLabel value="#{bonLivraisonController.taAdresseLiv.adresse3AdresseLiv}" >
+<!-- 						<p:outputLabel value="#{bonLivraisonController.taAdresseFact.codepostalAdresse} #{bonLivraisonController.taAdresseFact.villeAdresse}" > -->
+<!-- 							<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/> -->
+						</p:outputLabel>
+						</h:panelGroup>
+						
+						<h:panelGroup>
+						<p:outputLabel value="Date de livraison : " style="font-weight:bold;"/>
+						<p:outputLabel value="#{bonLivraisonController.selectedDocumentDTO.dateLivDocument}" >
+							<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+						</p:outputLabel>
+						</h:panelGroup>
+
+						
+						<h:panelGroup>
+						<p:outputLabel value="Email : " style="font-weight: bold;"/>
+						<p:commandLink update=":form:messages" actionListener="#{bonLivraisonController.actDialogEmail}">
+        				<h:outputText value="#{bonLivraisonController.taTiersDTO.adresseEmail}" />
+    					</p:commandLink>
+						</h:panelGroup>
+						
+						<h:panelGroup>
+						<p:outputLabel value="Ville : " style="font-weight: bold;"/>
+						<p:outputLabel value="#{bonLivraisonController.taAdresseLiv.codepostalAdresseLiv} #{bonLivraisonController.taAdresseLiv.villeAdresseLiv}" >
+						</p:outputLabel>
+						</h:panelGroup>
+						
+						<h:panelGroup>
+						<p:outputLabel value="N° commande externe : " style="font-weight: bold;"/>
+						<p:outputLabel value="#{bonLivraisonController.selectedDocumentDTO.numeroCommandeFournisseur}" >
+						</p:outputLabel>
+						</h:panelGroup>
+												
+						<h:panelGroup>
+						<p:outputLabel value=""/>
+						<p:outputLabel value="" >
+						</p:outputLabel>
+						</h:panelGroup>
+															
+						<h:panelGroup>
+						<p:outputLabel value="Transporteur : " style="font-weight: bold;"/>
+						<p:outputLabel value="#{bonLivraisonController.selectedDocumentDTO.codeTransporteur}" >
+						</p:outputLabel>
+						</h:panelGroup>
+																					
+  						<h:panelGroup> 
+						<div class="card" style="background:#ebebeb;text-align:center;center;padding: 5px;margin-top: 15px;">
+						<p:outputLabel value="Net TTC" style="font-weight: bold;"/>
+						<p:separator style="color:#9a9a9a"/>
+						<p:outputLabel value="#{bonLivraisonController.selectedDocumentDTO.netTtcCalc}">
+						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+						</p:outputLabel>
+						</div>
+						</h:panelGroup>						
+						
+						<h:panelGroup>
+						<div class="card" style="background:#ebebeb;text-align:center;center;padding: 5px;margin-top: 15px;">
+
+						<p:outputLabel value="Déjà réglé : " style="font-weight: bold;"/>
+						<p:separator style="color:#9a9a9a"/>
+						<p:outputLabel value="#{bonLivraisonController.selectedDocumentDTO.regleDocument}">
+						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+						</p:outputLabel>
+						</div>
+						</h:panelGroup>
+
+						<h:panelGroup>
+						<div class="card" style="background: #ebf9cc;text-align: center;padding: 5px;margin-top: 15px;">
+						<p:outputLabel value="Reste à régler" style="font-weight: bold;"/>
+						<p:separator style="color:#9a9a9a"/>
+						<p:outputLabel value="#{bonLivraisonController.selectedDocumentDTO.resteAReglerComplet}" style="font-weight: bold;" >
+						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+						</p:outputLabel>
+<!-- 						<hr /> -->
+						</div>
+						</h:panelGroup>
+					</p:panelGrid>
+<!-- Début détail ligne synthèse					 -->
+					<p:dataTable id="iddataTableLigneBonLivSynthese" 
+					var="ligne"
+					scrollable="true"
+					scrollHeight="250"					
+					widgetVar="widgetVarDataTableLigneBonLivSynthese"
+					
+					value="#{bonLivraisonController.valuesLigne}"
+					rowKey="#{ligne.dto.numLigneLDocument}"
+					styleClass="datatable mt10 myclassBonliv">
+					
+					<p:ajax event="toggleSelect" process="@this" />
+					<p:ajax event="rowToggle" process="@this" oncomplete="ligneSeperationExpend()" />
+					
+					<p:column style="width:8px" styleClass="center" >
+						<p:rowToggler  rendered="#{ligne.ligneLieeFils!=null or ligne.ligneLieeMere!=null or ligne.ligneAbonnement!=null}"/>
+					</p:column>
+					
+					
+					
+					<p:column style="width:10%">
+						<f:facet name="header">
+							<h:outputText value="Code article" />
+						</f:facet>
+								<p:commandLink 	value="#{ligne.taArticle.codeArticle}"
+											action="#{bonLivraisonController.ouvertureArticleBean.detailArticle(bonLivraisonController.ouvertureArticleBean.recupCodeArticle(ligne.taArticle.codeArticle))}" update=":form:tabView"
+											oncomplete="activeTabCenter('#{bonLivraisonController.ouvertureArticleBean.event.cssLgrTab}');">
+							</p:commandLink>
+<!-- 							<h:outputText value="#{ligne.taArticle.codeArticle}"/> -->
+					</p:column >
+					
+					<p:column style="width:24%">
+						<f:facet name="header">
+							<h:outputText value="Libellé" />
+						</f:facet>
+								<h:outputText value="#{ligne.dto.libLDocument}" id="idListeSyntheseLibelleBonliv"/>
+								<p:tooltip  value="#{ligne.dto.libLDocument}" shared="true" for="idListeSyntheseLibelleBonliv" showEffect="clip" position="top"/>
+					</p:column>
+
+					<p:column  style="width:8%" styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Qté 1" />
+						</f:facet>
+								<h:outputText value="#{ligne.dto.qteLDocument}"/>	
+					</p:column>
+
+					<p:column style="width:5%" styleClass="center">
+						<f:facet name="header">
+							<h:outputText value="U1" />
+						</f:facet>
+
+								<h:outputText value="#{ligne.taUnite1.codeUnite}" />
+					</p:column>
+
+					<p:column  style="width:8%" styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Qté 2" />
+						</f:facet>
+							<h:outputText value="#{ligne.dto.qte2LDocument}" id="idqte2LBonLivSynthese"/>
+					</p:column>
+
+					<p:column style="width:5%" styleClass="center">
+						<f:facet name="header">
+							<h:outputText value="U2" />
+						</f:facet>
+								<h:outputText value="#{ligne.taUnite2.codeUnite}"/>
+					</p:column>
+					
+					<p:column style="width:8%" styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Prix unitaire" />
+						</f:facet>
+								<h:outputText value="#{ligne.dto.prixULDocument}">
+									<f:convertNumber type="currency"  minFractionDigits="#{bonLivraisonController.prefNbDecimalesPrix}" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+					</p:column>
+					
+					<p:column style="width:5%" styleClass="right" >
+						<f:facet name="header">
+							<h:outputText value="Remise %" />
+						</f:facet>
+								<h:outputText value="#{ligne.dto.remTxLDocument}" />
+					</p:column>
+					
+					<p:column style="width:20%" styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Montant HT" />
+						</f:facet>
+								<h:outputText value="#{ligne.dto.mtHtLDocument}" disabled="true">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+					</p:column>
+					
+					<p:column style="width:5%" styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="TVA"/>
+						</f:facet>
+								<h:outputText value="#{ligne.dto.codeTvaLDocument}" disabled="true">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+					</p:column>
+					
+					<p:column style="width:20%" styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Montant TTC" />
+						</f:facet>
+								<h:outputText value="#{ligne.dto.mtTtcLDocument}" disabled="true">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+					</p:column>
+					
+					<p:column style="width:5%" styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Remise globale" />
+						</f:facet>
+								<h:outputText value="#{ligne.dto.txRemHtDocument}" disabled="true">
+								</h:outputText>
+					</p:column>
+					
+					<p:column style="width:5%" styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Qté CRD" rendered="#{bonLivraisonController.gestionCapsules}"/>
+						</f:facet>
+								<h:outputText value="#{ligne.dto.qteTitreTransport}" disabled="true" rendered="#{bonLivraisonController.gestionCapsules}">
+								</h:outputText>
+					</p:column>
+					
+					
+					<p:column style="width:5%" styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Titre CRD" rendered="#{bonLivraisonController.gestionCapsules}"/>
+						</f:facet>
+								<h:outputText value="#{ligne.dto.codeTitreTransport}" disabled="true" rendered="#{bonLivraisonController.gestionCapsules}">
+								</h:outputText>
+					</p:column>
+					
+					
+					<p:column style="width:1%">
+						<f:facet name="header">
+							<h:outputText value="Etat" />
+						</f:facet>
+								<h:outputText value="#{ligne.codeEtat}"  id="idListeSyntheseEtat#{variableEcran}"/>
+								<p:tooltip  value="#{ligne.codeEtat.concat(ligne.libelleEtat)}" shared="true" for="idListeSyntheseEtat#{variableEcran}" showEffect="clip" position="top"/>
+					</p:column>					
+					<p:rowExpansion>
+
+					<p:panelGrid columns="2"  columnClasses="ui-grid-col-6,ui-grid-col-6" styleClass="ui-panelgrid-blank" layout="grid" rendered="#{ligne.ligneLieeFils!=null or ligne.ligneLieeMere!=null}">
+					<p:panel header="document ayant servi à générer le document courant" style="width:100%;" >
+						<p:dataTable value="#{ligne.ligneLieeMere}" id="dataTableLigneLieeMere" var="lien" selectionMode="single" editable="true"
+							selection="#{bonLivraisonController.selectedLigneALigneDTO}" rowKey="#{lien.id}" widgetVar="wvdataTableLigneLieeMere" 
+							emptyMessage="#{msg.message_datatable_vide}" resizableColumns="true">
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="code document" />
+								</f:facet>
+								<p:commandLink value="#{lien.codeDocumentDest}"
+									action="#{bonLivraisonController.duplicationDocumentBean.ouvertureDocumentBean.detailDocument(bonLivraisonController.duplicationDocumentBean.ouvertureDocumentBean.recupCodeDocument(lien.codeDocumentDest,lien.typeDocument))}"
+									update=":form:tabView"
+									oncomplete="activeTabCenter('#{bonLivraisonController.duplicationDocumentBean.ouvertureDocumentBean.event.cssLgrTab}');">>
+								</p:commandLink>
+								<!-- 								<h:outputText value="#{lien.codeDocumentDest}" /> -->
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="libellé ligne" />
+								</f:facet>
+								<h:outputText value="#{lien.libelleLigne}" />
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="lot" />
+								</f:facet>
+								<h:outputText value="#{lien.numLot}" />
+							</p:column>
+							<p:column styleClass="right">
+								<f:facet name="header">
+									<h:outputText value="Qté. reçue" />
+								</f:facet>
+								<h:outputText value="#{lien.qteRecue}" />
+							</p:column>
+<!-- 							<p:column> -->
+<!-- 								<f:facet name="header"> -->
+<!-- 									<h:outputText value="Etat" /> -->
+<!-- 								</f:facet> -->
+<!-- 								<h:outputText value="#{lien.etat}" /> -->
+<!-- 							</p:column>							 -->
+
+						</p:dataTable>
+						</p:panel>
+						<p:panel header="document généré à partir du document courant" style="width:100%;" >
+						<p:dataTable value="#{ligne.ligneLieeFils}" id="dataTableLigneLieeFils" var="lien" selectionMode="single" editable="true"
+							selection="#{bonLivraisonController.selectedLigneALigneDTO}" rowKey="#{lien.id}" widgetVar="wvdataTableLigneLieeFils" 
+							emptyMessage="#{msg.message_datatable_vide}" resizableColumns="true">
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="code document" />
+								</f:facet>
+								<p:commandLink value="#{lien.codeDocumentDest}"
+									action="#{bonLivraisonController.duplicationDocumentBean.ouvertureDocumentBean.detailDocument(bonLivraisonController.duplicationDocumentBean.ouvertureDocumentBean.recupCodeDocument(lien.codeDocumentDest,lien.typeDocument))}"
+									update=":form:tabView"
+									oncomplete="activeTabCenter('#{bonLivraisonController.duplicationDocumentBean.ouvertureDocumentBean.event.cssLgrTab}');">>
+								</p:commandLink>
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="libellé ligne" />
+								</f:facet>
+								<h:outputText value="#{lien.libelleLigne}" />
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="lot" />
+								</f:facet>
+								<h:outputText value="#{lien.numLot}" />
+							</p:column>
+							<p:column styleClass="right">
+								<f:facet name="header">
+									<h:outputText value="Qté. reçue" />
+								</f:facet>
+								<h:outputText value="#{lien.qteRecue}" />
+							</p:column>
+<!-- 							<p:column> -->
+<!-- 								<f:facet name="header"> -->
+<!-- 									<h:outputText value="Etat" /> -->
+<!-- 								</f:facet> -->
+<!-- 								<h:outputText value="#{lien.etat}" /> -->
+<!-- 							</p:column>							 -->
+
+						</p:dataTable>
+						</p:panel>
+					</p:panelGrid>
+					<p:panel header="Infos de l'abonnement" style="width:100%;" rendered="#{ligne.ligneAbonnement!=null}">
+
+						<p:dataTable value="#{ligne.ligneAbonnement}" id="dataTableLigneAbonnement" var="lien" selectionMode="single" editable="true"
+							selection="#{bonLivraisonController.selectedLigneALigneDTO}" rowKey="#{lien.id}" widgetVar="wvdataTableLigneAbonnement" 
+							emptyMessage="#{msg.message_datatable_vide}" resizableColumns="true">
+								<p:column  style="width:80px" >
+									<p:commandButton value="" actionListener="#{bonLivraisonController.actDialogDetailLigneAbonnement}" process="@this"
+										styleClass="icon-medium icon-reglement" title="Détail de la ligne d'abonnement">
+										<f:attribute name="taLigneALigneEcheanceDTO" value="#{lien}" />
+										<p:ajax event="dialogReturn" listener="#{bonLivraisonController.handleReturnDialogDetailLigneAbonnement}" />
+									</p:commandButton>
+								</p:column>
+								<p:column>
+								<f:facet name="header">
+									<h:outputText value="code document" />
+								</f:facet>
+								<p:commandLink value="#{lien.codeDocumentDest}"
+									action="#{bonLivraisonController.duplicationDocumentBean.ouvertureDocumentBean.detailAbonnement(bonLivraisonController.duplicationDocumentBean.ouvertureDocumentBean.recupCodeDocument(lien.codeDocumentDest,lien.typeDocument))}"
+									update=":form:tabView"
+									oncomplete="activeTabCenter('#{bonLivraisonController.duplicationDocumentBean.ouvertureDocumentBean.event.cssLgrTab}');">>
+								</p:commandLink>
+
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="libellé ligne" />
+								</f:facet>
+								<h:outputText value="#{lien.libelleLigne}" />
+							</p:column>
+						</p:dataTable>
+</p:panel>
+
+					</p:rowExpansion>
+
+				</p:dataTable>
+<!-- Fin détail ligne synthèse					 -->
+					<p:panelGrid columns="1" id="idInfosCommentaireBonLiv" columnClasses="ui-grid-col-4" styleClass="ui-panelgrid-blank" layout="grid">
+						<h:panelGroup>
+						<p:outputLabel value="Commentaires" style="font-weight: bold;"/>
+						<br/>
+						<p:outputLabel value="#{bonLivraisonController.selectedDocumentDTO.commentaire}" />
+						</h:panelGroup>
+					</p:panelGrid>
+				</p:panel>
+			</div>
+		</p:tab>
+		<p:tab id="idEnteteBonLivraison" title="Entête">
+		
+			<p:panel id="idPanelEnteteBonLivraison" header="Entête" toggleable="true" widgetVar="panelEnteteBonLivraison">
+
+				<f:facet name="actions">
+				<p:commandLink id="idLinkAideEnteteBl"
+						styleClass="lien-aide-contextuelle">
+						<i class="fa fa-info-circle animated"></i>
+					</p:commandLink>
+
+					<p:overlayPanel for="idLinkAideEnteteBl" hideEffect="fade"
+						dynamic="true" showCloseIcon="true"
+						styleClass="overlay-aide-contextuelle">
+						<ui:include src="/aide_contextuelle/document_entete_document.xhtml" />
+					</p:overlayPanel>
+        		</f:facet>
+        					
+<!-- 			 <p:overlayPanel id="idAideBonLivraison" for="idlabelCode" hideEffect="fade" showCloseIcon="true" dynamic="true" hideEvent="mousedown" style="text-align:center;width:200px;align:center;"> -->
+<!-- 			  <ui:include src="/aide_contextuelle/document_code_document.xhtml" /> -->
+<!--     		 </p:overlayPanel> -->
+    				
+				<h:panelGrid columns="2" cellpadding="10">
+<!-- 				    <p:outputLabel id="idBtn1"  value="" title="La référence de la facture" styleClass="icon icon-print"/> -->
+<!-- 				    <p:button id="idBtn1" icon="ui-icon-star" title="Icon Only"> -->
+<!-- 					</p:button> -->
+
+					<p:outputLabel id="idlabelCode" value="Code bon de livraison " styleClass="labelchob"/>
+					
+					<p:panel styleClass="panel-aide-contextuelle">
+					<p:inputText id="idCodeBonLivraison"
+						
+						value="#{bonLivraisonController.selectedDocumentDTO.codeDocument}"
+						validator="#{bonLivraisonController.validateDocument}"
+						disabled="#{bonLivraisonController.editableEnInsertionUniquement()}">
+						<f:attribute name="nomChamp" value="#{const.C_CODE_DOCUMENT}" minimum="0"/>
+						<p:ajax event="blur" update="@this" />
+						
+					</p:inputText>
+					<p:commandLink id="idLinkAideCodeBl"
+							styleClass="lien-aide-contextuelle">
+							<i class="fa fa-info-circle animated swing"></i>
+						</p:commandLink>
+						<p:overlayPanel for="idLinkAideCodeBl" hideEffect="fade"
+							dynamic="true" showCloseIcon="true"
+							styleClass="overlay-aide-contextuelle">
+							<ui:include src="/aide_contextuelle/document_code_document.xhtml" />
+						</p:overlayPanel>
+					</p:panel>
+					
+					<p:outputLabel  value="Code tiers : " styleClass="labelchob"/>
+					<p:focus >
+					
+					<p:panel styleClass="panel-aide-contextuelle">
+					<p:autoComplete value="#{bonLivraisonController.taTiersDTO}"
+					       id="idtiersBonLivraison" converter="entityConverter"
+					       
+						completeMethod="#{bonLivraisonController.tiersAutoCompleteDTOLight}"
+						required="true" requiredMessage="#{msg_diag.alert_champs_obligatoir}"
+						disabled="#{bonLivraisonController.editable()}" var="tiers"
+						itemLabel="#{tiers.codeTiers}" itemValue="#{tiers}"
+						forceSelection="true" dropdown="true" placeholder="Tiers" >
+						<p:column>
+							<!-- 				             	<f:facet name="header"> -->
+							<!-- 				            		<p:commandButton value="Ajouter" title="Insérer" -->
+							<!-- 										process="@this" -->
+							<!-- 										update=":form:tabView,:form:messages" -->
+							<!-- 										actionListener="#{bonLivraisonController.actDialogTiers}" -->
+							<!-- 										styleClass="btn-insert btn" > -->
+							<!-- 											<p:ajax event="dialogReturn" listener="#{bonLivraisonController.handleReturnDialogTiers}" update="@parent:@parent"/> -->
+							<!-- 										</p:commandButton> -->
+							<!-- 				            	</f:facet> -->
+							<h:outputText  value="#{tiers.codeTiers}" required="true" requiredMessage="#{msg_diag.alert_champs_obligatoir}"/>
+						</p:column>
+						
+						<p:column>
+							<h:outputText value="#{tiers.nomTiers}" />
+						</p:column>
+		
+						<p:column>
+							<h:outputText value="#{tiers.prenomTiers}" />
+						</p:column>
+
+						<p:column>
+							<h:outputText value="#{tiers.nomEntreprise}" />
+						</p:column>
+
+						<f:attribute name="nomChamp" value="#{const.C_CODE_TIERS}" />
+						<p:ajax event="itemSelect" listener="#{bonLivraisonController.autcompleteSelection}" 
+						update="idNomTiersBonLivraison,idLibellePieceBonLivraison,idTTCBonLivraison,idLocalisationTvaDocBonliv,@this,@widgetVar(panelAdresseFacturationBonLivraison),@widgetVar(panelAdresseLivraisonBonLivraison),
+						@widgetVar(panelConditionPaiementBonLivraison),idPanelGroupInfosTiersEnteteBonLivraison,@widgetVar(panelInfosLivraisonSuppBonLivraison)" />
+					</p:autoComplete>
+					<p:commandLink id="idLinkAideCodeTiersBl"
+								styleClass="lien-aide-contextuelle">
+								<i class="fa fa-info-circle animated swing"></i>
+							</p:commandLink>
+
+							<p:overlayPanel for="idLinkAideCodeTiersBl" hideEffect="fade"
+								dynamic="true" showCloseIcon="true"
+								styleClass="overlay-aide-contextuelle">
+								<ui:include src="/aide_contextuelle/document_code_tiers.xhtml" />
+							</p:overlayPanel>
+						</p:panel>
+					</p:focus>
+					
+					<p:outputLabel value="Nom Tiers : " styleClass="labelchob"/>
+	
+					<p:panel styleClass="panel-aide-contextuelle">
+					<p:inputText
+						
+						value="#{bonLivraisonController.selectedDocumentDTO.nomTiers}" id="idNomTiersBonLivraison"
+						validator="#{bonLivraisonController.validateDocument}" 
+						disabled="#{bonLivraisonController.editable()}">
+						<f:attribute name="nomChamp" value="#{const.C_NOM_TIERS}" />
+						<p:ajax event="blur" update="@this" />
+					</p:inputText>
+					<p:commandLink id="idLinkAideNomTiersBl"
+							styleClass="lien-aide-contextuelle">
+							<i class="fa fa-info-circle animated swing"></i>
+						</p:commandLink>
+
+						<p:overlayPanel for="idLinkAideNomTiersBl" hideEffect="fade"
+							dynamic="true" showCloseIcon="true"
+							styleClass="overlay-aide-contextuelle">
+							<ui:include src="/aide_contextuelle/document_nom_tiers.xhtml" />
+						</p:overlayPanel>
+					</p:panel>
+					
+					<p:outputLabel value="Date bon de livraison " styleClass="labelchob"/>
+					<p:panel styleClass="panel-aide-contextuelle">
+					<p:calendar
+						
+						value="#{bonLivraisonController.selectedDocumentDTO.dateDocument}"
+						pattern="dd/MM/yyyy" mask="true" locale="fr" navigator="true" showOn="button"  timeZone="#{msg.time_zone}" 
+						disabled="#{bonLivraisonController.editable()}">
+						
+						<f:attribute name="nomChamp" value="#{const.C_DATE_DOCUMENT}" />
+						<p:ajax event="dateSelect" listener="#{bonLivraisonController.controleDate}" update="@this" />
+						<p:ajax event="change" listener="#{bonLivraisonController.controleDate}"  update="@this" />
+					</p:calendar>
+					<p:commandLink id="idLinkAideDateBl"
+						styleClass="lien-aide-contextuelle">
+						<i class="fa fa-info-circle animated swing"></i>
+					</p:commandLink>
+
+					<p:overlayPanel for="idLinkAideDateBl" hideEffect="fade"
+						dynamic="true" showCloseIcon="true"
+						styleClass="overlay-aide-contextuelle">
+						<ui:include src="/aide_contextuelle/document_date_document.xhtml" />
+					</p:overlayPanel>
+					</p:panel>
+
+					<p:panel styleClass="panel-aide-contextuelle">
+					<p:outputLabel value="Libellé : " />
+					<p:commandLink id="idLinkAideLibelleBl"
+						styleClass="lien-aide-contextuelle">
+						<i class="fa fa-info-circle animated"></i>
+					</p:commandLink>
+
+					<p:overlayPanel for="idLinkAideLibelleBl" hideEffect="fade"
+						dynamic="true" showCloseIcon="true"
+						styleClass="overlay-aide-contextuelle">
+						<ui:include src="/aide_contextuelle/document_libelle_document.xhtml" />
+					</p:overlayPanel>
+					</p:panel>
+					<p:inputText
+						value="#{bonLivraisonController.selectedDocumentDTO.libelleDocument}" id="idLibellePieceBonLivraison"
+						validator="#{bonLivraisonController.validateDocument}" style="width:300%"
+						disabled="#{bonLivraisonController.editable()}">
+						<f:attribute name="nomChamp" value="#{const.C_LIBELLE_DOCUMENT}" />
+						<p:ajax event="blur" update="@this" />
+					</p:inputText>
+					
+					<p:outputLabel value="TTC : " />
+					<p:panel styleClass="panel-aide-contextuelle">
+					<p:selectBooleanCheckbox
+					 	
+						value="#{bonLivraisonController.selectedDocumentDTO.ttc}" id="idTTCBonLivraison" 
+						disabled="#{bonLivraisonController.disableTtc() or bonLivraisonController.disableTtcSiDocSansTVA()}">
+						<f:attribute name="nomChamp" value="#{const.C_TTC}" />
+						<p:ajax event="change" update="@this" />
+					</p:selectBooleanCheckbox>
+					<p:commandLink id="idLinkAideSaisieTtcBl"
+						styleClass="lien-aide-contextuelle">
+						<i class="fa fa-info-circle animated"></i>
+					</p:commandLink>
+
+					<p:overlayPanel for="idLinkAideSaisieTtcBl" hideEffect="fade"
+						dynamic="true" showCloseIcon="true"
+						styleClass="overlay-aide-contextuelle">
+						<ui:include src="/aide_contextuelle/document_saisiettc_document.xhtml" />
+					</p:overlayPanel>
+					</p:panel>
+										
+					<p:outputLabel value="Date de livraison : " />
+					<p:panel styleClass="panel-aide-contextuelle">
+					<p:calendar
+						value="#{bonLivraisonController.selectedDocumentDTO.dateLivDocument}"
+						pattern="dd/MM/yyyy" mask="true" locale="fr" navigator="true"  showOn="button" timeZone="#{msg.time_zone}" 
+						validator="#{bonLivraisonController.validateDocument}"
+						disabled="#{bonLivraisonController.editable()}">
+						
+						<f:attribute name="nomChamp" value="#{const.C_DATE_LIV_DOCUMENT}" />
+						<p:ajax event="dateSelect" update="@this" />
+						<p:ajax event="change"  update="@this"/>
+					</p:calendar>
+					<p:commandLink id="idLinkAideDateLivraisonBl"
+						styleClass="lien-aide-contextuelle">
+						<i class="fa fa-info-circle animated"></i>
+					</p:commandLink>
+
+					<p:overlayPanel for="idLinkAideDateLivraisonBl" hideEffect="fade"
+						dynamic="true" showCloseIcon="true"
+						styleClass="overlay-aide-contextuelle">
+						<ui:include src="/aide_contextuelle/bonlivraison_date_livraison.xhtml" />
+					</p:overlayPanel>
+					</p:panel>
+<!-- 					<p:outputLabel value="Localisation TVA : " /> -->
+<!-- 					<p:selectOneMenu id="console" value="#{bonLivraisonController.selectedDocumentDTO.commentaire}" style="width:125px"> -->
+<!-- 			            <f:selectItem itemLabel="Client en France" itemValue="fr" /> -->
+<!-- 			        </p:selectOneMenu> -->
+			        
+			        <p:outputLabel value="Localisation TVA : " />
+					<p:panel styleClass="panel-aide-contextuelle">
+						<p:autoComplete value="#{bonLivraisonController.taTTvaDoc}" id="idLocalisationTvaDocBonliv"
+							converter="entityConverter" disabled="#{bonLivraisonController.editable() or bonLivraisonController.disableTtc()}"
+							completeMethod="#{bonLivraisonController.typeTvaDocAutoComplete}"
+							var="tp" itemLabel="#{tp.codeTTvaDoc}" itemValue="#{tp}"
+							forceSelection="true" dropdown="true"
+							placeholder="Localisation TVA">
+							<p:column>
+								<h:outputText value="#{tp.codeTTvaDoc}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{tp.libelleTTvaDoc}" />
+							</p:column>
+							<f:attribute name="nomChamp" value="#{const.C_CODE_T_TVA_DOC}" />
+							<p:ajax event="itemSelect" listener="#{bonLivraisonController.autcompleteSelection}" update="idTTCBonLivraison" />
+						</p:autoComplete>
+					<p:commandLink id="idLinkAideLocalidationTvaBl"
+						styleClass="lien-aide-contextuelle">
+						<i class="fa fa-info-circle animated"></i>
+					</p:commandLink>
+
+					<p:overlayPanel for="idLinkAideLocalidationTvaBl" hideEffect="fade"
+						dynamic="true" showCloseIcon="true"
+						styleClass="overlay-aide-contextuelle">
+						<ui:include src="/aide_contextuelle/document_localisationtva_document.xhtml" />
+					</p:overlayPanel>
+					</p:panel>
+					
+					<p:outputLabel value="Observation : " />
+					<p:inputTextarea
+						value="#{bonLivraisonController.selectedDocumentDTO.commentaire}"
+						validator="#{bonLivraisonController.validateDocument}" style="width:300%"
+						disabled="#{bonLivraisonController.editable()}">
+						<f:attribute name="nomChamp" value="#{const.C_COMMENTAIRE}" />
+						<p:ajax event="blur" update="@this" />
+					</p:inputTextarea>
+					
+					<p:outputLabel value="Numéro commande externe : " />
+					<p:inputText
+						value="#{bonLivraisonController.selectedDocumentDTO.numeroCommandeFournisseur}"
+						validator="#{bonLivraisonController.validateDocument}" 
+						disabled="#{bonLivraisonController.editable()}">
+						<f:attribute name="nomChamp" value="#{const.C_NUMERO_COMMANDE_FOURNISSEUR}" />
+						<p:ajax event="blur" update="@this" />
+					</p:inputText>
+					
+					<p:outputLabel value="Transporteur : " />
+					<p:autoComplete value="#{bonLivraisonController.taTransporteurDTO}"
+						converter="entityConverter"
+						completeMethod="#{bonLivraisonController.transporteurAutoCompleteDTOLight}"
+						disabled="#{bonLivraisonController.editable()}" var="transporteur"
+						itemLabel="#{transporteur.codeTransporteur}" itemValue="#{transporteur}"
+						forceSelection="true" dropdown="true" placeholder="Transporteur" >
+						<p:column>
+							<h:outputText value="#{transporteur.codeTransporteur}" required="true" requiredMessage="#{msg_diag.alert_champs_obligatoir}"/>
+						</p:column>
+
+						<p:column>
+							<h:outputText value="#{transporteur.liblTransporteur}" />
+						</p:column>
+		
+						<f:attribute name="nomChamp" value="#{const.C_CODE_TRANSPORTEUR}" />
+						<p:ajax event="itemSelect" listener="#{bonLivraisonController.autcompleteSelection}" update="@this" />
+					</p:autoComplete>
+					
+					<p:outputLabel value="Gestion des lots : " />
+					<p:inputSwitch value="#{bonLivraisonController.selectedDocumentDTO.gestionLot}" onLabel="Oui" offLabel="Non" disabled="#{bonLivraisonController.editable()}">
+			            <p:ajax listener="#{bonLivraisonController.validateDocument}" update="@this" />
+			        </p:inputSwitch>
+			        
+
+<!-- 				<p:commandButton  process="@this" title="Génération modèle"  -->
+<!-- 						styleClass="btn-generation-modele btn" actionListener="#{bonLivraisonController.actDialogGenerationModeleDocument}" > -->
+<!-- 						<p:ajax event="dialogReturn" listener="#{bonLivraisonController.handleReturnDialogGenerationDocument}"  -->
+<!-- 						update=":form:tabView,@widgetVar(wvMenuListeBL),@widgetVar(wvDataTableListeBL)" oncomplete="activeTabCenter('#{bonLivraisonController.css}');" /> -->
+<!-- 				</p:commandButton> -->
+<!-- 				<p:commandButton process="@this" title="Génération document"  -->
+<!-- 						styleClass="btn-generation-document btn" actionListener="#{bonLivraisonController.actDialogGenerationDocument}" > -->
+<!-- 						<p:ajax event="dialogReturn" listener="#{bonLivraisonController.handleReturnDialogGenerationDocument}"  -->
+<!-- 						update=":form:tabView,@widgetVar(wvMenuListeBL),@widgetVar(wvDataTableListeBL)" oncomplete="activeTabCenter('#{bonLivraisonController.css}');" /> -->
+<!-- 				</p:commandButton> -->
+				
+			        <p:outputLabel value="Saisie par code barre : " />
+					<p:selectBooleanButton value="#{bonLivraisonController.modeScanCodeBarre}" onLabel="Oui" offLabel="Non" 
+						onIcon="ui-icon-check" offIcon="ui-icon-close" style="width:60px" disabled="#{bonLivraisonController.editable()}">
+		           		<p:ajax update="@this,@widgetVar(widgetVarDataTableLigneBonLivraison)" listener="#{bonLivraisonController.changeModeSaisieCodeBarre}" />
+		        	</p:selectBooleanButton>
+			        
+			        <p:outputLabel value="Avec gestion des unités de saisie : " />
+					<p:inputSwitch value="#{bonLivraisonController.selectedDocumentDTO.utiliseUniteSaisie}" onLabel="Oui" offLabel="Non" disabled="#{bonLivraisonController.editable()}">
+			        </p:inputSwitch>
+					<!-- Invisible, relier au meme champ que la checkbox du dernier step du wizard, reprise de cette valeur dans le 1er step car le oncomplete du actEnregistrer se declanche apres le retour au 1er, la valeur doit donc etre disponible ici pour le javascript -->
+					<p:selectBooleanCheckbox value="#{bonLivraisonController.impressionDirect}" styleClass="invisible" disabled="#{bonLivraisonController.editable()}" widgetVar="wvImpressionDirectBonLivraison"/>
+
+
+
+				</h:panelGrid>
+
+   		<div class="ui-g">
+    		 <div class="ui-g-5">
+				<p:panel id="idAdresseFacturationBonLiv" header="#{const_vue.titre_panel_adresse_facturation}" toggleable="true" widgetVar="panelAdresseFacturationBonLivraison"
+					collapsed="false">
+					<h:panelGrid columns="2" cellpadding="10" id="idPanelAdresseFacBonLiv">
+						<p:outputLabel value="" />
+						<p:selectOneMenu value="#{bonLivraisonController.taAdresseFact}" converter="entityConverter" var="t" filter="true" filterMatchMode="contains"
+							disabled="#{bonLivraisonController.editable()}">
+							<f:selectItems value="#{bonLivraisonController.listeAdresseInfosFacturationDTO}" var="tt" itemValue="#{t}" itemLabel="sélectionner une adresse" />
+							<p:column>
+								<h:outputText value="#{t.adresse1Adresse}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{t.adresse2Adresse}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{t.adresse3Adresse}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{t.codepostalAdresse}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{t.villeAdresse}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{t.paysAdresse}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{t.codeTAdr}" />
+							</p:column>
+							<p:ajax event="change" listener="#{bonLivraisonController.affecteAdrFactAutoComplete}" update="idPanelAdresseFacBonLiv" />
+						</p:selectOneMenu>
+
+						<p:outputLabel value="Adresse 1" />
+						<p:panel styleClass="panel-autocomplete">
+							<p:inputText value="#{bonLivraisonController.selectedAdresseFact.adresse1Adresse}" disabled="#{bonLivraisonController.editable()}">
+								<p:ajax event="blur" update="@this" />
+							</p:inputText>
+							<p:commandButton value="Raffraîchir" styleClass="icon-refresh btn" disabled="#{bonLivraisonController.editable()}"
+								actionListener="#{bonLivraisonController.actReinitAdrFact}" process="@this" update="idPanelAdresseFacBonLiv,idMenuBoutonBonLivraison" />
+						</p:panel>
+
+						<p:outputLabel value="Adresse 2" />
+						<p:inputText value="#{bonLivraisonController.selectedAdresseFact.adresse2Adresse}" disabled="#{bonLivraisonController.editable()}">
+							<p:ajax event="blur" update="@this" />
+						</p:inputText>
+						<p:outputLabel  value="Adresse 3" />
+						<p:inputText value="#{bonLivraisonController.selectedAdresseFact.adresse3Adresse}" disabled="#{bonLivraisonController.editable()}">
+							<p:ajax event="blur" update="@this" />
+						</p:inputText>
+						<p:outputLabel value="Code postal" />
+						<p:inputText value="#{bonLivraisonController.selectedAdresseFact.codepostalAdresse}" disabled="#{bonLivraisonController.editable()}">
+							<p:ajax event="blur" update="@this" />
+						</p:inputText>
+						<p:outputLabel value="Ville" />
+						<p:inputText value="#{bonLivraisonController.selectedAdresseFact.villeAdresse}" disabled="#{bonLivraisonController.editable()}">
+							<p:ajax event="blur" update="@this" />
+						</p:inputText>
+						<p:outputLabel value="Pays" />
+						<p:inputText value="#{bonLivraisonController.selectedAdresseFact.paysAdresse}" disabled="#{bonLivraisonController.editable()}">
+							<p:ajax event="blur" update="@this" />
+						</p:inputText>
+					</h:panelGrid>
+				</p:panel>
+			</div>
+			
+			<div class="ui-g-5">
+			
+				<p:panel id="idAdresseLivraisonBonLiv" header="Adresse de livraison" toggleable="true" widgetVar="panelAdresseLivraisonBonLivraison">
+					<h:panelGrid columns="2" cellpadding="10" id="idPanelAdresseLivBonLiv">
+
+						<p:outputLabel value="" />
+						<p:selectOneMenu value="#{bonLivraisonController.taAdresseLiv}" converter="entityConverter" var="t" filter="true" filterMatchMode="contains"
+							disabled="#{bonLivraisonController.editable()}">
+							<f:selectItems value="#{bonLivraisonController.listeAdresseInfosLivraisonDTO}" var="tt" itemValue="#{t}" itemLabel="sélectionner une adresse" />
+							<p:column>
+								<h:outputText value="#{t.adresse1AdresseLiv}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{t.adresse2AdresseLiv}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{t.adresse3AdresseLiv}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{t.codepostalAdresseLiv}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{t.villeAdresseLiv}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{t.paysAdresseLiv}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{t.codeTAdr}" />
+							</p:column>
+							<p:ajax event="change" listener="#{bonLivraisonController.affecteAdrLivAutoComplete}" update="idPanelAdresseLivBonLiv" />
+						</p:selectOneMenu>
+					
+
+						<p:outputLabel value="Adresse 1" />
+						<p:panel styleClass="panel-autocomplete">
+							<p:inputText value="#{bonLivraisonController.selectedAdresseLiv.adresse1AdresseLiv}" disabled="#{bonLivraisonController.editable()}">
+								<p:ajax event="blur" update="@this" />
+							</p:inputText>
+							<p:commandButton value="Raffraîchir" styleClass="icon-refresh btn" disabled="#{bonLivraisonController.editable()}"
+								actionListener="#{bonLivraisonController.actReinitAdrLiv}" process="@this" update="idPanelAdresseLivBonLiv,idMenuBoutonBonLivraison" />
+						</p:panel>
+						<p:outputLabel value="Adresse 2" />
+						<p:inputText value="#{bonLivraisonController.selectedAdresseLiv.adresse2AdresseLiv}" disabled="#{bonLivraisonController.editable()}">
+							<p:ajax event="blur" update="@this" />
+						</p:inputText>
+						<p:outputLabel value="Adresse 3" />
+						<p:inputText value="#{bonLivraisonController.selectedAdresseLiv.adresse3AdresseLiv}" disabled="#{bonLivraisonController.editable()}">
+							<p:ajax event="blur" update="@this" />
+						</p:inputText>
+						<p:outputLabel value="Code postal" />
+						<p:inputText value="#{bonLivraisonController.selectedAdresseLiv.codepostalAdresseLiv}" disabled="#{bonLivraisonController.editable()}">
+							<p:ajax event="blur" update="@this" />
+						</p:inputText>
+						<p:outputLabel value="Ville" />
+						<p:inputText value="#{bonLivraisonController.selectedAdresseLiv.villeAdresseLiv}" disabled="#{bonLivraisonController.editable()}">
+							<p:ajax event="blur" update="@this" />
+						</p:inputText>
+						<p:outputLabel value="Pays" />
+						<p:inputText value="#{bonLivraisonController.selectedAdresseLiv.paysAdresseLiv}" disabled="#{bonLivraisonController.editable()}">
+							<p:ajax event="blur" update="@this" />
+						</p:inputText>
+					</h:panelGrid>
+				</p:panel>
+			</div>
+			<div class="ui-g-2">
+			
+				<p:panel  header="infos livraison complémentaires" toggleable="true" widgetVar="panelInfosLivraisonSuppBonLivraison">
+					<h:panelGrid columns="2" cellpadding="10" id="idPanelInfosLivSuppBonLiv">
+
+							<p:outputLabel value="infos Livraison : " />
+							<p:inputTextarea  value="#{bonLivraisonController.selectedAdresseLiv.livraison}"
+								 disabled="#{bonLivraisonController.editable()}">
+								<f:attribute name="nomChamp" value="#{const.C_LIVRAISON}" />
+								<p:ajax event="blur" update="@this" />
+							</p:inputTextarea>
+
+							<p:outputLabel value="latitude : " />
+							<p:inputText  value="#{bonLivraisonController.selectedAdresseLiv.latitudeDec}"
+							 disabled="#{bonLivraisonController.editable()}" >
+								<f:attribute name="nomChamp" value="#{const.C_LATITUDE_DEC}" />
+								<p:ajax event="blur" update="@this" />
+							</p:inputText>
+
+							<p:outputLabel value="longitude  : " />
+							<p:inputText  value="#{bonLivraisonController.selectedAdresseLiv.longitudeDec}"
+								disabled="#{bonLivraisonController.editable()}" >
+								<f:attribute name="nomChamp" value="#{const.C_LONGITUDE_DEC}" />
+								<p:ajax event="blur" update="@this" />
+							</p:inputText>
+					</h:panelGrid>
+				</p:panel>
+			</div>
+
+		</div>
+
+				
+			</p:panel>
+
+			<!-- 			</div> -->
+			<!-- 		</div> -->
+			
+		</p:tab>
+
+		<!-- 		<div class="ui-grid-row"> -->
+		<!-- 			<div class="ui-grid-col-12"> -->
+
+		<p:tab id="idLignesBonLivraison" title="Ligne">
+		<p:panel widgetVar="wvLigneBonLivraisonMesssages">
+			<p:messages id="idLigneBonLivraisonMessages" showDetail="true" closable="true" autoUpdate="false"/>
+		</p:panel>
+			<p:panel id="idPanelLignesBonLivraison" header="Lignes" toggleable="true" widgetVar="panelLignesBonLivraison">
+
+				
+				<p:menubar styleClass="menu-onglet">
+				
+					<p:menuitem title="Insérer" styleClass="icon-insert icon"
+						actionListener="#{bonLivraisonController.actInsererLigne}"
+						process="@this"
+						update="@this,@widgetVar(widgetVarDataTableLigneBonLivraison),:form:messages"
+						disabled="#{!bonLivraisonController.modeEcran.dataSetEnModif() or bonLivraisonController.etatBoutonLigne('inserer')}"
+						oncomplete="editionDerniereLigne('myclassBonliv');" />
+						
+					<p:menuitem title="Supprimer" styleClass="icon-delete icon" widgetVar="widgetVarBtnSupprimer"
+						actionListener="#{bonLivraisonController.actSupprimerLigne}"
+						process="@this"
+						update="@widgetVar(wvBCPanelLignes),:form:messages,@form"
+						disabled="#{!bonLivraisonController.modeEcran.dataSetEnModif() or bonLivraisonController.etatBoutonLigne('supprimer')}" />
+				</p:menubar>
+				<p:confirmDialog widgetVar="wvConfirmSaveRow">
+				     le document est associé à un règlement dont le montant diffère du montant total du document. Vous devrez revalider le règlement.
+				</p:confirmDialog>
+
+				<p:dataTable id="iddataTableLigneBonLivraison" 
+					var="ligne"
+					widgetVar="widgetVarDataTableLigneBonLivraison"
+					
+					value="#{bonLivraisonController.valuesLigne}"
+					rowKey="#{ligne.dto.numLigneLDocument}"
+					selection="#{bonLivraisonController.selectedLigneJSF}"
+					selectionMode="single" 
+					editable="true" 
+					dblClickSelect="true"
+					styleClass="datatable mt10 myclassBonliv" 
+					resizableColumns="true"
+					draggableRows="true">
+<!-- 					paginator="true" -->
+<!-- 					rows="#{msg.modele_datatable_ligne_par_page_debut}" -->
+<!-- 					paginatorTemplate="#{msg.modele_datatable_paginator_sans_exporter}" -->
+<!-- 					rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}" -->
+<!-- 					emptyMessage="#{msg.message_datatable_vide}" -->
+<!-- 					currentPageReportTemplate="#{msg.modele_datatable_page_courante}"> -->
+<!-- onsuccess="increment();"  -->
+
+<!--  					if(reglementDifferentNetTTC(xhr, status, args)){PF('wvConfirmSaveRow').show()}; -->
+							<p:ajax event="toggleSelect" process="@this" />
+					<p:ajax event="rowReorder" listener="#{bonLivraisonController.onRowReorder}" update="@this,@widgetVar(wvMenuBoutonBonLivraison)" />
+<!-- 					update="@widgetVar(wvLigneBonLivraisonMesssages),@parent:idTotauxLBonLivraison,@parent:idReglementBonLivraison"  -->
+					<p:ajax event="rowEdit" listener="#{bonLivraisonController.onRowEdit}"  
+					update="@widgetVar(wvLigneBonLivraisonMesssages),@parent:idTotauxLBonLivraison" 
+					oncomplete="if(!handleCompleteValidationError(xhr, status, args)) {increment();};autreLigneModifiable('myclassBonliv');" />
+					<p:ajax event="rowEditCancel" listener="#{bonLivraisonController.onRowCancel}" update="@widgetVar(widgetVarBtnSupprimer)" oncomplete="autreLigneModifiable('myclassBonliv');"/>
+					<p:ajax event="rowSelect" listener="#{bonLivraisonController.onRowSelectLigne}"/>
+					<p:ajax event="rowEditInit" listener="#{bonLivraisonController.onRowEditInit}"  update="@widgetVar(wvIduSaisieLBonLivraison),@widgetVar(wvIdQteSaisieLBonLivraison)"
+					oncomplete="autreLigneNonModifiable('myclassBonliv');verifModeScanCodeBarreBonLivraison();"/>
+					<p:ajax event="rowToggle" process="@this" oncomplete="ligneSeperationExpend()" />
+					
+<!-- 					<p:overlayPanel widgetVar="wvOverlayPanelDetailLotBonLivraison" hideEffect="fade"> -->
+<!-- 					<p:panelGrid columns="2" widgetVar="wvPanelGridDetailLotBonLivraison">	 -->
+
+					<p:column style="width:16px" >
+						<p:rowEditor rendered="#{bonLivraisonController.etatBoutonLigne('rowEditor')}" styleClass="row-editor-debut"/>
+					</p:column>
+							
+					<p:column style="width:8px" styleClass="center" >
+						<p:rowToggler  rendered="#{ligne.ligneLieeFils!=null or ligne.ligneLieeMere!=null or ligne.ligneAbonnement!=null}"/>
+					</p:column>
+					
+					<p:column style="width:5px">
+						<f:facet name="header">
+							<h:outputText value="N°" />
+						</f:facet>
+						<h:outputText value="#{ligne.dto.numLigneLDocument}" />
+					</p:column>
+					
+					<p:column style="width:140px" rendered="#{bonLivraisonController.modeScanCodeBarre}">
+						<f:facet name="header">
+							<h:outputText value="Code barre" />
+						</f:facet>
+						<p:cellEditor disabled="#{ligne.ligneLieeFils!=null}">
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.codeBarre}" />
+							</f:facet>
+							<f:facet name="input">
+								<p:inputText value="#{ligne.dto.codeBarre}" id="idCodeBarre" class="focus-defaut-ligne zone-scan-codebarre"
+								validator="#{bonLivraisonController.validateLignesDocument}">
+								<f:attribute name="nomChamp" value="#{const.C_CODE_BARRE}" />
+								<p:ajax event="blur" />
+								<p:ajax event="keyup" />
+								</p:inputText>
+							</f:facet>
+						</p:cellEditor>
+					</p:column>	
+									
+					<p:column style="width:10px" styleClass="center" rendered="#{bonLivraisonController.modeScanCodeBarre}">
+						<f:facet name="header">
+							<h:outputText value="" />
+						</f:facet>
+						<p:cellEditor disabled="#{ligne.ligneLieeFils!=null}">
+							<f:facet name="output">
+								<h:outputText value="" />
+							</f:facet>
+							<f:facet name="input">
+								<p:commandButton title="Valider code barre" icon="fa fa-fw fa-check" styleClass="btn-cb-bonliv"
+									actionListener="#{bonLivraisonController.actValiderCodeBarre}"
+									process="@this"
+									disabled="#{!bonLivraisonController.modeEcran.dataSetEnModif()}"
+									update="idarticleBonLivraison,idlibLBonLivraison,idLotMPBonLivraison,idu1LBonLivraison,idu2LBonLivraison,idQte1LBonLivraison,idqte2LBonLivraison,idpuLBonLivraison"
+									oncomplete="PF('wvAutoCompNumLotLigneBL').search('');">
+									<f:setPropertyActionListener target="#{bonLivraisonController.selectedLigneJSF}" value="#{ligne}" /> 
+								</p:commandButton>
+							</f:facet>
+						</p:cellEditor>						
+					</p:column>	
+					
+					<p:column style="width:6%">
+						<f:facet name="header">
+							<h:outputText value="Code article" />
+						</f:facet>
+						<p:cellEditor disabled="#{ligne.ligneLieeFils!=null}">
+							<f:facet name="output">
+								<h:outputText value="#{ligne.taArticle.codeArticle}"/>
+							</f:facet>
+							<f:facet name="input">
+							<p:focus>
+								<p:autoComplete value="#{ligne.taArticleDTO}"
+									completeMethod="#{bonLivraisonController.articleAutoCompleteDTOLight}"
+									id="idarticleBonLivraison" converter="entityConverter"
+									var="art" itemLabel="#{art.codeArticle}" itemValue="#{art}"
+									forceSelection="true" dropdown="true"
+									maxResults="#{bonLivraisonController.taPreferencesService.nbMaxChargeListeArticle()}"
+									moreText="Il y a #{component.maxResults} affichés sur #{component.suggestions.size()} au total, Veuillez affiner votre recherche ou cliquer ici pour en afficher plus ..."
+									 placeholder="Article" 
+									style="width:100%">
+									<!-- 									required="true" requiredMessage="Le code article est obligatoire" -->
+									
+									<p:column>
+										<h:outputText value="#{art.codeArticle}" />
+									</p:column>
+									
+									<p:column>
+										<h:outputText value="#{art.libellecArticle}" />
+									</p:column>
+									<p:column >
+										<h:outputText value="#{art.commentaireArticle}" rendered="#{bonLivraisonController.rechercheAvecCommentaire(false)}"/>
+									</p:column>
+
+									<f:attribute name="nomChamp" value="#{const.C_CODE_ARTICLE}" />
+									<p:ajax event="clear" listener="#{bonLivraisonController.onClearArticle}" 
+									update="@parent:idlibLBonLivraison,idQte1LBonLivraison,idu1LBonLivraison,
+									idu2LBonLivraison,idpuLBonLivraison,idhtLBonLivraison,idttcLBonLivraison,idQteTransportBL,idCodeTransportBL,idtvaLBonLivraison,idLotMPBonLivraison,idLRemiseBonLivraison,idqte2LBonLivraison,idEntrepotBL,iduSaisieLBonLivraison,idQteSaisieLBonLivraison"/>
+									<p:ajax event="itemSelect" listener="#{bonLivraisonController.autcompleteSelection}" 
+									update="@parent:idlibLBonLivraison,idQte1LBonLivraison,idu1LBonLivraison,
+									idu2LBonLivraison,idpuLBonLivraison,idhtLBonLivraison,idttcLBonLivraison,idQteTransportBL,idCodeTransportBL,idtvaLBonLivraison,idLotMPBonLivraison,idLRemiseBonLivraison,idqte2LBonLivraison,idEntrepotBL,iduSaisieLBonLivraison,idQteSaisieLBonLivraison"/>
+																	<p:ajax event="moreText" listener="#{bonLivraisonController.onMoreTextArticle}" />
+								</p:autoComplete>
+							</p:focus>
+							</f:facet>
+						</p:cellEditor >
+					</p:column >
+					
+					<p:column sortBy="#{ligne.taLot.numLot}" style="width:10%" rendered="#{bonLivraisonController.selectedDocumentDTO.gestionLot}">
+								<f:facet name="header">
+									<h:outputText value="Numéro de lot" />
+								</f:facet> 
+								<p:cellEditor disabled="#{ligne.ligneLieeFils!=null}">
+									<f:facet name="output">
+<!-- 										<p:outputLabel id="idNumLot" value="#{ligne.articleLotEntrepotDTO.numLot}" onclick="PF('wvOverlayPanelDetailLotBonLivraison').show()"/> -->
+										<p:commandLink value="#{ligne.articleLotEntrepotDTO.numLot}" process="@this" update="@widgetVar(wvPanelGridDetailLotBonLivraison)" oncomplete="PF('wvOverlayPanelDetailLotBonLivraison').show('#{component.clientId}');">
+											<f:setPropertyActionListener value="#{ligne}" target="#{bonLivraisonController.detailLigneOverLayPanel}" />
+										</p:commandLink>
+									</f:facet>
+									<f:facet name="input"> 
+						
+<!-- 						widgetVar="wvAutoCompNumLotLigneBL"  -->
+<!-- 		
+		Le widgetVar est nécessaire pour l'ouverture automatique de la liste des lots suite à une flashage de code barre 
+       mais pose problème à l'ouverture de l'autocomplete "manuellement"  
+        widgetVar="wvAutoCompNumLotLigneBL"
+ -->
+										<p:autoComplete value="#{ligne.articleLotEntrepotDTO}" completeMethod="#{bonLivraisonController.lotAutoComplete}"
+											converter="#{articleLotEntrepotDTOBonLivConverter}" styleClass="focus-defaut-apres-scan-ligne"
+											var="lot" itemLabel="#{lot.numLot}" itemValue="#{lot}" id="idLotMPBonLivraison" 
+											disabled="#{ligne.ligneCommentaire() or bonLivraisonController.lotEstVirtuelEtAUneSeuleLigne(ligne.taArticle)}"
+								
+											forceSelection="true" dropdown="true"
+											 placeholder="Lot" 
+											style="width:100%">
+											<p:column>
+												<f:facet name="header">
+													<h:outputText value="Numéro de lot" />
+												</f:facet>
+												<h:outputText value="#{lot.numLot}" />
+											</p:column>
+											<p:column>
+												<f:facet name="header">
+													<h:outputText value="Libellé lot" />
+												</f:facet>
+												<h:outputText value="#{lot.libelleLot}" />
+											</p:column>
+											<p:column>
+												<f:facet name="header">
+													<h:outputText value="Code entrepot" />
+												</f:facet>
+												<h:outputText value="#{lot.codeEntrepot}" />
+											</p:column>
+											<p:column>
+												<f:facet name="header">
+													<h:outputText value="Entrepot" />
+												</f:facet>
+												<h:outputText value="#{lot.libelleEntrepot}" />
+											</p:column>
+											<p:column>
+												<f:facet name="header">
+													<h:outputText value="Emplacement" />
+												</f:facet>
+												<h:outputText value="#{lot.emplacement}" />
+											</p:column>
+											<p:column>
+												<f:facet name="header" styleClass="right">
+													<h:outputText value="Qté en stock" />
+												</f:facet>
+												<h:outputText value="#{lot.qte1}" styleClass="#{lot.css}"/>
+											</p:column>
+											<p:column>
+												<f:facet name="header" styleClass="center">
+													<h:outputText value="Unité" />
+												</f:facet>
+												<h:outputText value="#{lot.codeUnite}"/>
+											</p:column>
+											<p:column>
+												<f:facet name="header">
+													<h:outputText value="Date lot" />
+												</f:facet>
+												<h:outputText value="#{lot.dateLot}" />
+											</p:column>		
+											<p:column>
+												<f:facet name="header">
+													<h:outputText value="Dluo" />
+												</f:facet>
+												<h:outputText value="#{lot.dluo}" />
+											</p:column>												
+											<f:attribute name="nomChamp" value="#{const.C_NUM_LOT}" />
+<!-- 												<p:ajax event="itemSelect" listener="#{bonLivraisonController.autcompleteSelectionMP}" update="libLotMP,idEntrepotMP,idEmplcementMP"/> -->
+												<p:ajax event="itemSelect" listener="#{bonLivraisonController.autcompleteSelection}" update="@parent:idlibLBonLivraison,idEntrepotBL"/>
+											</p:autoComplete>
+								
+									</f:facet>
+								</p:cellEditor >
+							</p:column>
+
+					<p:column style="width:28%">
+						<f:facet name="header">
+							<h:outputText value="Libellé" />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.libLDocument}" id="idListeSaisieLibelleBonliv"/>
+								<p:tooltip id="toolTipListeSaisieLibelleBonliv" value="#{ligne.dto.libLDocument}" shared="true" for="idListeSaisieLibelleBonliv" showEffect="clip" position="top"/>
+<!-- 								<h:outputText value="#{ligne.dto.libLDocument}" /> -->
+							</f:facet>
+							<f:facet name="input">
+								<p:inputText value="#{ligne.dto.libLDocument}" id="idlibLBonLivraison"
+								validator="#{bonLivraisonController.validateLignesDocument}">
+								<f:attribute name="nomChamp" value="#{const.C_LIB_L_DOCUMENT}" />
+								<p:ajax event="blur" />
+								</p:inputText>
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+
+
+					<p:column style="width:10%">
+						<f:facet name="header">
+							<h:outputText value="Entrepot" />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{ligne.taEntrepot.codeEntrepot}" />
+							</f:facet>
+							<f:facet name="input">
+							<h:outputText value="#{ligne.taEntrepot.codeEntrepot}" disabled="true" id="idEntrepotBL" />
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+					
+
+					<p:column  style="width:5%" styleClass="right" rendered="#{bonLivraisonController.selectedDocumentDTO.utiliseUniteSaisie}">
+						<f:facet name="header">
+							<h:outputText value="Qté Saisie" />
+						</f:facet>
+						<p:cellEditor >
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.qteSaisieLDocument}"/>	
+							</f:facet>
+							<f:facet name="input" >
+								<p:inputText id="idQteSaisieLBonLivraison" widgetVar="wvIdQteSaisieLBonLivraison" value="#{ligne.dto.qteSaisieLDocument}"  style="width:100%" 
+										validator="#{bonLivraisonController.validateLignesDocument}" disabled="#{ligne.ligneCommentaire() or !bonLivraisonController.enabledUniteSaisie()}">
+									<f:attribute name="nomChamp" value="#{const.C_QTE_SAISIE_L_DOCUMENT}" /> 
+									<p:ajax event="blur" update="@parent:idQte1LBonLivraison,idQteTransportBL,idu1LBonLivraison,idqte2LBonLivraison,idu2LBonLivraison,idhtLBonLivraison,idttcLBonLivraison,idtvaLBonLivraison"/>
+								</p:inputText>
+							</f:facet >
+						</p:cellEditor>
+					</p:column>
+
+
+					<p:column style="width:5%"  styleClass="center" rendered="#{bonLivraisonController.selectedDocumentDTO.utiliseUniteSaisie}">
+						<f:facet name="header">
+							<h:outputText value="U. Saisie" />
+						</f:facet>
+						<p:cellEditor >
+							<f:facet name="output">
+								<h:outputText value="#{ligne.taUniteSaisie.codeUnite}" />
+							</f:facet>
+							<f:facet name="input">
+<!-- 								<p:inputText value="#{ligne.taUnite1.codeUnite}" style="width:100%" id="u1"/> -->
+								<p:autoComplete value="#{ligne.taUniteSaisie}"
+									completeMethod="#{bonLivraisonController.uniteAutoCompleteLightUniteSaisie}"
+									var="unit" itemLabel="#{unit.codeUnite}" itemValue="#{unit}"
+									forceSelection="true" dropdown="true"
+									placeholder="USaisie" style="width:100%" id="iduSaisieLBonLivraison" widgetVar="wvIduSaisieLBonLivraison" disabled="#{ligne.ligneCommentaire() or !bonLivraisonController.enabledUniteSaisie()}" >
+									<p:column>
+										<h:outputText value="#{unit.codeUnite}" />
+									</p:column>
+									
+									<f:attribute name="nomChamp" value="#{const.C_U_SAISIE_L_DOCUMENT}" />
+									<p:ajax event="itemSelect" listener="#{bonLivraisonController.autcompleteSelection}" update="@parent:idQteTransportBL,idQteSaisieLBonLivraison,idQte1LBonLivraison,idu1LBonLivraison,idqte2LBonLivraison,idu2LBonLivraison,idhtLBonLivraison,idttcLBonLivraison,idtvaLBonLivraison"/>
+								</p:autoComplete>
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+
+					
+					<p:column  style="width:4%" styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Qté 1" />
+						</f:facet>
+						<p:cellEditor >
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.qteLDocument}"/>	
+							</f:facet>
+							<f:facet name="input" >
+								<p:inputText id="idQte1LBonLivraison"  value="#{ligne.dto.qteLDocument}"  style="width:100%" 
+										validator="#{bonLivraisonController.validateLignesDocument}" disabled="#{ligne.ligneCommentaire()}">
+									<f:attribute name="nomChamp" value="#{const.C_QTE_L_DOCUMENT}" /> 
+									<p:ajax event="blur" update="@parent:idQteTransportBL,idqte2LBonLivraison,idhtLBonLivraison,idttcLBonLivraison,idtvaLBonLivraison,@this"/>
+								</p:inputText>
+							</f:facet >
+						</p:cellEditor>
+					</p:column>
+
+					<p:column style="width:5%"  styleClass="center">
+						<f:facet name="header">
+							<h:outputText value="Unité 1" />
+						</f:facet>
+<!-- 						<p:cellEditor > -->
+<!-- 							<f:facet name="output"> -->
+<!-- 								<h:outputText value="#{ligne.dto.u1LDocument}" /> -->
+<!-- 							</f:facet> -->
+<!-- 							<f:facet name="input"> -->
+<!-- 								<p:inputText value="#{ligne.dto.u1LDocument}" style="width:100%" id="u1"/> -->
+<!-- 							</f:facet> -->
+<!-- 						</p:cellEditor> -->
+						<p:cellEditor  disabled="#{ligne.ligneLieeFils!=null}">
+							<f:facet name="output">
+								<h:outputText value="#{ligne.taUnite1.codeUnite}" />
+							</f:facet>
+							<f:facet name="input">
+<!-- 								<p:inputText value="#{ligne.taUnite1.codeUnite}" style="width:100%" id="u1"/> -->
+								<p:autoComplete value="#{ligne.taUnite1}"
+									completeMethod="#{bonLivraisonController.uniteAutoComplete}"
+									var="unit" itemLabel="#{unit.codeUnite}" itemValue="#{unit}"
+									forceSelection="true" dropdown="true"
+									placeholder="U1" style="width:100%" id="idu1LBonLivraison" disabled="#{ligne.ligneCommentaire()}">
+									<p:column>
+										<h:outputText value="#{unit.codeUnite}" />
+									</p:column>
+									
+									<f:attribute name="nomChamp" value="#{const.C_U1_L_DOCUMENT}" />
+									<p:ajax event="itemSelect" listener="#{bonLivraisonController.autcompleteSelection}" update="@parent:idqte2LBonLivraison"/>
+								</p:autoComplete>
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+
+					<p:column style="width:4%"  styleClass="center">
+						<f:facet name="header">
+							<h:outputText value="Qté 2" />
+						</f:facet>
+							<p:cellEditor >
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.qte2LDocument}"/>	
+							</f:facet>
+							<f:facet name="input" >
+								<p:inputText id="idqte2LBonLivraison"  value="#{ligne.dto.qte2LDocument}"  style="width:100%" 
+										validator="#{bonLivraisonController.validateLignesDocument}" disabled="#{ligne.ligneCommentaire()}">
+									<f:attribute name="nomChamp" value="#{const.C_QTE2_L_DOCUMENT}" /> 
+									<p:ajax event="blur" update="@parent:idQte1LBonLivraison,idhtLBonLivraison,idttcLBonLivraison,idtvaLBonLivraison,@this"/>
+								</p:inputText>
+							</f:facet >
+						</p:cellEditor>
+					</p:column>
+
+					<p:column style="width:5%"  styleClass="center">
+						<f:facet name="header">
+							<h:outputText value="Unité 2" />
+						</f:facet>
+<!-- 						<h:outputText value="#{ligne.dto.u2LDocument}" id="u2" />					 -->
+						<p:cellEditor disabled="#{ligne.ligneLieeFils!=null}">
+							<f:facet name="output">
+								<h:outputText value="#{ligne.taUnite2.codeUnite}"/>
+							</f:facet>
+							<f:facet name="input">
+<!-- 								<p:inputText value="#{ligne.taUnite2.codeUnite}" style="width:100%" id="u2"/> -->
+								<p:autoComplete value="#{ligne.taUnite2}"
+									completeMethod="#{bonLivraisonController.uniteAutoCompleteAll}"
+									var="unit" itemLabel="#{unit.codeUnite}" itemValue="#{unit}"
+									forceSelection="true" dropdown="true"
+									placeholder="U2" style="width:100%" id="idu2LBonLivraison" disabled="#{ligne.ligneCommentaire()}">
+									<p:column>
+										<h:outputText value="#{unit.codeUnite}" />
+									</p:column>
+									
+									<f:attribute name="nomChamp" value="#{const.C_U2_L_DOCUMENT}" />
+									<p:ajax event="itemSelect" listener="#{bonLivraisonController.autcompleteSelection}" update="@parent:idqte2LBonLivraison" />
+								</p:autoComplete>
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+					
+					<p:column style="width:8%" styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Prix unitaire" />
+						</f:facet>
+						<p:cellEditor disabled="#{ligne.ligneLieeFils!=null}">
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.prixULDocument}">
+									<f:convertNumber type="currency"  minFractionDigits="#{bonLivraisonController.prefNbDecimalesPrix}" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</f:facet>
+							<f:facet name="input">
+								<p:inputText value="#{ligne.dto.prixULDocument}" id="idpuLBonLivraison" style="width:100%" 
+										validator="#{bonLivraisonController.validateLignesDocument}" disabled="#{ligne.ligneCommentaire()}">
+									<f:attribute name="nomChamp" value="#{const.C_PRIX_U_L_DOCUMENT}" /> 
+									<p:ajax event="blur" update="@this,idhtLBonLivraison,idttcLBonLivraison,idtvaLBonLivraison"/>
+								</p:inputText>	
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+					
+					<p:column style="width:5%" styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Remise %" />
+						</f:facet>
+						<p:cellEditor disabled="#{ligne.ligneLieeFils!=null}">
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.remTxLDocument}" />
+							</f:facet>
+							<f:facet name="input">
+								<p:inputText value="#{ligne.dto.remTxLDocument}" style="width:100%" id="idLRemiseBonLivraison"
+										validator="#{bonLivraisonController.validateLignesDocument}" disabled="#{ligne.ligneCommentaire()}">
+									<f:attribute name="nomChamp" value="#{const.C_REM_TX_L_DOCUMENT}" /> 
+									<p:ajax event="blur" update="@this,idhtLBonLivraison,idttcLBonLivraison,idtvaLBonLivraison"/>
+								</p:inputText>	
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+					
+					<p:column style="width:10%" styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Montant HT" />
+						</f:facet>
+						<p:cellEditor disabled="#{ligne.ligneLieeFils!=null}">
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.mtHtLDocument}" disabled="true">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</f:facet>
+							<f:facet name="input">
+								<h:outputText value="#{ligne.dto.mtHtLDocument}" id="idhtLBonLivraison" style="width:100%" disabled="true" />
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+					
+					<p:column style="width:10%" styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Montant TTC" />
+						</f:facet>
+						<p:cellEditor disabled="#{ligne.ligneLieeFils!=null}">
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.mtTtcLDocument}" disabled="true">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</f:facet>
+							<f:facet name="input">
+								<h:outputText value="#{ligne.dto.mtTtcLDocument}" id="idttcLBonLivraison" style="width:100%"  disabled="true" />	
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+					
+					<p:column style="width:3%" styleClass="center">
+						<f:facet name="header">
+							<h:outputText value="TVA"/>
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.codeTvaLDocument}" disabled="true">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</f:facet>
+							<f:facet name="input">
+								<h:outputText value="#{ligne.dto.codeTvaLDocument}" disabled="true" id="idtvaLBonLivraison" style="width:100%"/>
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+
+
+					<p:column style="width:5%" styleClass="right"  rendered="#{bonLivraisonController.gestionCapsules}">
+						<f:facet name="header">
+							<h:outputText value="Qté CRD"  />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.qteTitreTransport}"  />
+							</f:facet>
+							<f:facet name="input">
+								<p:inputText value="#{ligne.dto.qteTitreTransport}"  id="idQteTransportBL" style="width:100%" validator="#{bonLivraisonController.validateLignesDocument}"  disabled="#{ligne.ligneCommentaire()}">
+									<f:attribute name="nomChamp" value="#{const.C_QTE_TITRE_TRANSPORT_L_DOCUMENT}" />
+									<p:ajax event="blur" update="@this"/>
+								</p:inputText>
+							</f:facet>
+						</p:cellEditor>						
+					</p:column>
+
+
+					<p:column  style="width:5%" styleClass="right"  rendered="#{bonLivraisonController.gestionCapsules}">
+						<f:facet name="header">
+							<h:outputText value="Titre CRD" />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.codeTitreTransport}">
+								</h:outputText>
+							</f:facet>
+							<f:facet name="input">
+								<p:autoComplete value="#{ligne.taTitreTransport}" id="idCodeTransportBL"
+								completeMethod="#{bonLivraisonController.titreTransportAutoComplete}" var="unit" itemLabel="#{unit.codeTitreTransport}"
+									itemValue="#{unit}" forceSelection="true" dropdown="true" placeholder="U2" style="width:100%" converter="entityConverter"  disabled="#{ligne.ligneCommentaire()}">
+									<p:column>
+										<h:outputText value="#{unit.codeTitreTransport}" />
+									</p:column>
+
+									<f:attribute name="nomChamp" value="#{const.C_CODE_TITRE_TRANSPORT}" />
+									 <p:ajax event="clear" listener="#{bonLivraisonController.onClearTaTitreTransport}" update="idQteTransportBL"/>
+									<p:ajax event="itemSelect" listener="#{bonLivraisonController.autcompleteSelection}"/>
+								</p:autoComplete>
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+					
+
+
+					<p:column style="width:1%">
+						<f:facet name="header">
+							<h:outputText value="Etat" />
+						</f:facet>
+								<h:outputText value="#{ligne.codeEtat}"  id="idListeSaisieEtat#{variableEcran}"/>
+								<p:tooltip  value="#{ligne.codeEtat.concat(ligne.libelleEtat)}" shared="true" for="idListeSaisieEtat#{variableEcran}" showEffect="clip" position="top"/>
+					</p:column>	
+					
+<!-- 					<p:column styleClass="right"> -->
+<!-- 						<f:facet name="header"> -->
+<!-- 							<h:outputText value="Remise globale" /> -->
+<!-- 						</f:facet> -->
+<!-- 						<p:cellEditor> -->
+<!-- 							<f:facet name="output"> -->
+<!-- 								<h:outputText value="#{ligne.dto.txRemHtDocument}" disabled="true"> -->
+<!-- 								</h:outputText> -->
+<!-- 							</f:facet> -->
+<!-- 							<f:facet name="input"> -->
+<!-- 								<h:outputText value="#{ligne.dto.txRemHtDocument}" disabled="true"  style="width:100%"/> -->
+<!-- 							</f:facet>							 -->
+<!-- 						</p:cellEditor> -->
+<!-- 					</p:column> -->
+					
+					<p:column style="width:16px">
+						<f:facet name="header">
+							<h:outputText value="" />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<p:commandButton title="Supprimer" styleClass="icon-delete icon icon-grille" widgetVar="widgetVarBtnSupprimer"
+									action="#{bonLivraisonController.actSupprimerLigne}"
+									process="@this"
+									disabled="#{!bonLivraisonController.modeEcran.dataSetEnModif() or ligne.ligneLieeFils!=null  or bonLivraisonController.etatBoutonLigne('supprimer')}"
+									update="@widgetVar(panelLignesBonLivraison)">
+<!-- 									<f:attribute name="idLigne" value="#{ligne.dto.id}" /> -->
+									<f:setPropertyActionListener target="#{bonLivraisonController.selectedLigneJSF}" value="#{ligne}" />
+								</p:commandButton>
+							</f:facet>
+							<f:facet name="input">
+								<h:outputText value="" />
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+
+					<p:column style="width:26px">
+						<p:rowEditor rendered="#{bonLivraisonController.etatBoutonLigne('rowEditor')}" styleClass="row-editor-fin"/>
+					</p:column>
+
+					<p:rowExpansion>
+					<p:panelGrid columns="2"  columnClasses="ui-grid-col-6,ui-grid-col-6" styleClass="ui-panelgrid-blank" layout="grid" rendered="#{ligne.ligneLieeFils!=null or ligne.ligneLieeMere!=null}">
+					<p:panel header="document ayant servi à générer le document courant" style="width:100%;" >
+						<p:dataTable value="#{ligne.ligneLieeMere}" id="dataTableLigneLieeMere" var="lien" selectionMode="single" editable="true"
+							selection="#{bonLivraisonController.selectedLigneALigneDTO}" rowKey="#{lien.id}" widgetVar="wvdataTableLigneLieeMere" 
+							emptyMessage="#{msg.message_datatable_vide}" resizableColumns="true">
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="code document" />
+								</f:facet>
+								<p:commandLink value="#{lien.codeDocumentDest}"
+									action="#{bonLivraisonController.duplicationDocumentBean.ouvertureDocumentBean.detailDocument(bonLivraisonController.duplicationDocumentBean.ouvertureDocumentBean.recupCodeDocument(lien.codeDocumentDest,lien.typeDocument))}"
+									update=":form:tabView"
+									oncomplete="activeTabCenter('#{bonLivraisonController.duplicationDocumentBean.ouvertureDocumentBean.event.cssLgrTab}');">>
+								</p:commandLink>
+								<!-- 								<h:outputText value="#{lien.codeDocumentDest}" /> -->
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="libellé ligne" />
+								</f:facet>
+								<h:outputText value="#{lien.libelleLigne}" />
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="lot" />
+								</f:facet>
+								<h:outputText value="#{lien.numLot}" />
+							</p:column>
+							<p:column styleClass="right">
+								<f:facet name="header">
+									<h:outputText value="Qté. reçue" />
+								</f:facet>
+								<h:outputText value="#{lien.qteRecue}" />
+							</p:column>
+<!-- 							<p:column> -->
+<!-- 								<f:facet name="header"> -->
+<!-- 									<h:outputText value="Etat" /> -->
+<!-- 								</f:facet> -->
+<!-- 								<h:outputText value="#{lien.etat}" /> -->
+<!-- 							</p:column>							 -->
+
+						</p:dataTable>
+						</p:panel>
+						<p:panel header="document généré à partir du document courant" style="width:100%;" >
+						<p:dataTable value="#{ligne.ligneLieeFils}" id="dataTableLigneLieeFils" var="lien" selectionMode="single" editable="true"
+							selection="#{bonLivraisonController.selectedLigneALigneDTO}" rowKey="#{lien.id}" widgetVar="wvdataTableLigneLieeFils" 
+							emptyMessage="#{msg.message_datatable_vide}" resizableColumns="true">
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="code document" />
+								</f:facet>
+								<p:commandLink value="#{lien.codeDocumentDest}"
+									action="#{bonLivraisonController.duplicationDocumentBean.ouvertureDocumentBean.detailDocument(bonLivraisonController.duplicationDocumentBean.ouvertureDocumentBean.recupCodeDocument(lien.codeDocumentDest,lien.typeDocument))}"
+									update=":form:tabView"
+									oncomplete="activeTabCenter('#{bonLivraisonController.duplicationDocumentBean.ouvertureDocumentBean.event.cssLgrTab}');">>
+								</p:commandLink>
+								<!-- 								<h:outputText value="#{lien.codeDocumentDest}" /> -->
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="libellé ligne" />
+								</f:facet>
+								<h:outputText value="#{lien.libelleLigne}" />
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="lot" />
+								</f:facet>
+								<h:outputText value="#{lien.numLot}" />
+							</p:column>
+							<p:column styleClass="right">
+								<f:facet name="header">
+									<h:outputText value="Qté. reçue" />
+								</f:facet>
+								<h:outputText value="#{lien.qteRecue}" />
+							</p:column>
+<!-- 							<p:column> -->
+<!-- 								<f:facet name="header"> -->
+<!-- 									<h:outputText value="Etat" /> -->
+<!-- 								</f:facet> -->
+<!-- 								<h:outputText value="#{lien.etat}" /> -->
+<!-- 							</p:column>							 -->
+
+						</p:dataTable>
+						</p:panel>
+					</p:panelGrid>
+					<p:panel header="Infos de l'abonnement....2" style="width:100%;" rendered="#{ligne.ligneAbonnement!=null}">
+
+						<p:dataTable value="#{ligne.ligneAbonnement}" id="dataTableLigneAbonnement" var="lien" selectionMode="single" editable="true"
+							selection="#{bonLivraisonController.selectedLigneALigneDTO}" rowKey="#{lien.id}" widgetVar="wvdataTableLigneAbonnement" 
+							emptyMessage="#{msg.message_datatable_vide}" resizableColumns="true">
+								<p:column  style="width:80px" >
+									<p:commandButton value="" actionListener="#{bonLivraisonController.actDialogDetailLigneAbonnement}" process="@this"
+										styleClass="icon-medium icon-reglement" title="Détail de la ligne d'abonnement">
+										<f:attribute name="taLigneALigneEcheanceDTO" value="#{lien}" />
+										<p:ajax event="dialogReturn" listener="#{bonLivraisonController.handleReturnDialogDetailLigneAbonnement}" />
+									</p:commandButton>
+								</p:column>
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="code document" />
+								</f:facet>
+								<p:commandLink value="#{lien.codeDocumentDest}"
+									action="#{bonLivraisonController.duplicationDocumentBean.ouvertureDocumentBean.detailAbonnement(bonLivraisonController.duplicationDocumentBean.ouvertureDocumentBean.recupCodeDocument(lien.codeDocumentDest,lien.typeDocument))}"
+									update=":form:tabView"
+									oncomplete="activeTabCenter('#{bonLivraisonController.duplicationDocumentBean.ouvertureDocumentBean.event.cssLgrTab}');">>
+								</p:commandLink>
+
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="libellé ligne" />
+								</f:facet>
+								<h:outputText value="#{lien.libelleLigne}" />
+							</p:column>
+						</p:dataTable>
+</p:panel>
+
+					</p:rowExpansion>
+				
+				</p:dataTable>
+
+				<p:overlayPanel widgetVar="wvOverlayPanelDetailLotBonLivraison" hideEffect="fade">
+					<p:panel widgetVar="wvPanelGridDetailLotBonLivraison" style="text-align:center;">
+					<p:panelGrid columns="2" rendered="#{not empty bonLivraisonController.detailLigneOverLayPanel}">
+						<h:outputText value="Lot" />
+						<h:outputText value="#{bonLivraisonController.detailLigneOverLayPanel.dto.numLot} - #{bonLivraisonController.detailLigneOverLayPanel.dto.libelleLot}" />
+
+						<h:outputText value="Entrepot" />
+						<h:outputText value="#{bonLivraisonController.detailLigneOverLayPanel.dto.codeEntrepot}" />
+
+						<h:outputText value="Qte" />
+						<h:outputText value="#{bonLivraisonController.detailLigneOverLayPanel.dto.qteLDocument} #{bonLivraisonController.detailLigneOverLayPanel.dto.u1LDocument}" />
+
+						<h:outputText value="DLUO" />
+						<h:outputText value="#{bonLivraisonController.detailLigneOverLayPanel.dto.dluo}" />
+					</p:panelGrid>
+					</p:panel>
+				</p:overlayPanel>
+
+				<p:panelGrid columns="3" styleClass="totaux-lignes-document" id="idTotauxLBonLivraison">
+					<f:facet name="header">
+							<h:outputText value="Totaux" />
+					</f:facet>
+					
+					<h:outputText value="NET HT" />
+				
+					<h:outputText value="NET TVA" />
+			
+					<h:outputText value="NET TTC" />
+					<h:outputText value="#{bonLivraisonController.selectedDocumentDTO.netHtCalc}">
+						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+					</h:outputText>
+					<h:outputText value="#{bonLivraisonController.selectedDocumentDTO.netTvaCalc}">
+						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+					</h:outputText>
+					<h:outputText value="#{bonLivraisonController.selectedDocumentDTO.netTtcCalc}">
+						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+					</h:outputText>
+					
+				</p:panelGrid>
+				
+
+
+			</p:panel>
+		</p:tab>
+		
+		<p:tab id="idTotauxFormBonLivraison" title="Totaux">
+
+			<p:panel id="idPaneltotauxFormBonLivraison" header="Totaux" toggleable="true" widgetVar="panelTotauxFormBonLivraison">
+			<div class="ui-g">
+				<div class="ui-g-12 ui-md-12 ui-lg-6">
+					<div class="ui-g-12 ui-md-12 ui-lg-6">
+						<p:fieldset legend="Totaux">
+							<h:panelGrid columns="2" cellpadding="10">
+		
+								<p:outputLabel value="HT" />
+								<p:inputText value="#{bonLivraisonController.selectedDocumentDTO.mtHtCalc}" disabled="true">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</p:inputText>
+								
+								<p:outputLabel value="TVA" />
+								<p:inputText value="#{bonLivraisonController.selectedDocumentDTO.mtTvaCalc}" disabled="true">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</p:inputText>
+		
+								<p:outputLabel value="TTC" />
+<!-- 								<p:inputText value="#{bonLivraisonController.selectedDocumentDTO.mtTtcAvantRemiseGlobaleCalc}" disabled="true"> -->
+<!-- 									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" /> -->
+<!-- 								</p:inputText> -->
+		
+		
+							</h:panelGrid>
+						</p:fieldset>
+					</div>
+					<div class="ui-g-12 ui-md-12 ui-lg-6">
+						<p:fieldset legend="Totaux après remise globale">
+							<h:panelGrid columns="2" cellpadding="10">
+		
+								<p:outputLabel value="Montant HT" />
+								<p:inputText value="#{bonLivraisonController.selectedDocumentDTO.netHtCalc}" disabled="true">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</p:inputText>
+								
+								<p:outputLabel value="Montant TVA" />
+								<p:inputText value="#{bonLivraisonController.selectedDocumentDTO.netTvaCalc}" disabled="true">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</p:inputText>
+		
+								<p:outputLabel value="Montant TTC" />
+								<p:inputText value="#{bonLivraisonController.selectedDocumentDTO.netTtcCalc}" disabled="true">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</p:inputText>
+		
+							</h:panelGrid>
+						</p:fieldset>
+					</div>
+				
+					<div class="ui-g-12 ui-md-12 ui-lg-6">
+						<p:fieldset legend="Remise">
+							<h:panelGrid columns="2" cellpadding="10">
+								<p:outputLabel value="Remise globale %" />
+								<p:inputText value="#{bonLivraisonController.selectedDocumentDTO.txRemHtDocument}"
+									disabled="#{bonLivraisonController.editable()}" validator="#{bonLivraisonController.validateDocument}">
+									<f:attribute name="nomChamp" value="#{const.C_TX_REM_HT_DOCUMENT}" />
+									<p:ajax event="blur" update="@this,@widgetVar(panelTotauxFormBonLivraison)" />
+								</p:inputText>
+								
+								<p:outputLabel value="Remise sur HT" />
+								<p:inputText value="#{bonLivraisonController.selectedDocumentDTO.remHtDocument}" disabled="true">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</p:inputText>
+							</h:panelGrid>
+						</p:fieldset>
+					</div>
+					<div class="ui-g-12 ui-md-12 ui-lg-6">
+						<p:fieldset legend="Escompte">
+							<h:panelGrid columns="2" cellpadding="10">
+		
+								<p:outputLabel value="Escompte accordé %" />
+								<p:inputText value="#{bonLivraisonController.selectedDocumentDTO.txRemTtcDocument}"
+									disabled="#{bonLivraisonController.editable()}" validator="#{bonLivraisonController.validateDocument}">
+									<f:attribute name="nomChamp" value="#{const.C_TX_REM_TTC_DOCUMENT}" />
+									<p:ajax event="blur" update="@this,@widgetVar(panelTotauxFormBonLivraison)" />
+								</p:inputText>
+								
+								<p:outputLabel value="Montant escompte" />
+								<p:inputText value="#{bonLivraisonController.selectedDocumentDTO.remTtcDocument}" disabled="true">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</p:inputText>
+		
+							</h:panelGrid>
+						</p:fieldset>
+					</div>
+				</div>
+				<div class="ui-g-12 ui-md-12 ui-lg-6">
+<!-- 					<p:fieldset legend="Règlements" style="height:100%" > -->
+<!-- 						<h:panelGrid columns="2" cellpadding="10" id="idReglementBonLivraison"> -->
+<!-- 							<p:outputLabel value="BonLivraison réglée" disabled="#{bonLivraisonController.editable()}" /> -->
+<!-- 							<p:selectBooleanCheckbox value="#{bonLivraisonController.factureReglee}" title="facture Réglée" widgetVar="idBonLivraisonReglee" disabled="#{bonLivraisonController.editable()}" > -->
+<!-- 							<p:ajax update="idReglementBonLivraison,idResteAPayerBonLivraison" listener="#{bonLivraisonController.actInitReglement}"  /> -->
+<!-- 							</p:selectBooleanCheckbox> -->
+							
+<!-- 							<p:outputLabel value="Accompte" rendered="false"/> -->
+<!-- 							<p:inputText value="#{bonLivraisonController.selectedDocumentDTO.acomptes}" disabled="true" rendered="false"/> -->
+							
+<!-- 							<p:outputLabel value="Avoirs" rendered="false"/> -->
+<!-- 							<p:inputText value="#{bonLivraisonController.selectedDocumentDTO.avoirs}" disabled="true" rendered="false"/> -->
+	
+		
+<!-- 							<p:outputLabel value="Type paiement" /> -->
+<!-- 													<p:inputText value="#{bonLivraisonController.selectedDocumentDTO.compte}"/> -->
+<!-- 							<p:autoComplete value="#{bonLivraisonController.taTPaiement}" converter="entityConverter"  -->
+<!-- 								completeMethod="#{bonLivraisonController.typePaiementAutoComplete}" var="tp" itemLabel="#{tp.codeTPaiement}" -->
+<!-- 								itemValue="#{tp}" forceSelection="true" dropdown="true" disabled="#{bonLivraisonController.editable() || !bonLivraisonController.factureReglee}" -->
+<!-- 								placeholder="Type de paiement" style="width:100%"> -->
+<!-- 								<p:column> -->
+<!-- 									<h:outputText value="#{tp.codeTPaiement}" /> -->
+<!-- 								</p:column> -->
+<!-- 								<p:column> -->
+<!-- 									<h:outputText value="#{tp.libTPaiement}" /> -->
+<!-- 								</p:column> -->
+<!-- 								<f:attribute name="nomChamp" value="#{const.C_CODE_T_PAIEMENT}" /> -->
+<!-- 								<p:ajax event="itemSelect" listener="#{bonLivraisonController.autcompleteSelection}" update="idReglementBonLivraison, idLibPaiementBonLivraison"/> -->
+<!-- 							</p:autoComplete> -->
+
+<!-- 							<p:outputLabel value="Montant paiement" /> -->
+<!-- 							<p:inputText value="#{bonLivraisonController.selectedDocumentDTO.montantReglement}" disabled="true"> -->
+<!-- 								<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" /> -->
+<!-- 							</p:inputText> -->
+							
+<!-- 							<p:outputLabel value="Libellé paiement" /> -->
+<!-- 							<p:inputText id="idLibPaiementBonLivraison" value="#{bonLivraisonController.selectedDocumentDTO.libelleReglement}" disabled="#{bonLivraisonController.editable()}" /> -->
+							
+<!-- 							<p:outputLabel value="Date d'échéance " /> -->
+<!-- 							<p:calendar -->
+<!-- 								value="#{bonLivraisonController.selectedDocumentDTO.dateEchDocument}" id="idDateEchBonLivraison" -->
+<!-- 								pattern="dd/MM/yyyy" mask="true" locale="fr" navigator="true" showOn="button"  timeZone="#{msg.time_zone}"  -->
+<!-- 								validator="#{bonLivraisonController.validateDocument}" -->
+<!-- 								disabled="#{bonLivraisonController.editable()}"> -->
+								
+<!-- 								<f:attribute name="nomChamp" value="#{const.C_DATE_ECH_DOCUMENT}" /> -->
+<!-- 								<p:ajax event="dateSelect" update="@this" /> -->
+<!-- 								<f:ajax event="blur"  update="@this"/> -->
+<!-- 							</p:calendar> -->
+<!-- 						</h:panelGrid> -->
+<!-- 					</p:fieldset> -->
+				</div>
+				
+				<div class="ui-g-12 ui-md-12 ui-lg-6">
+				
+				<p:fieldset legend="">
+							<h:panelGrid columns="2" cellpadding="10" id="idNetAPayerBonLivraison">
+								<p:outputLabel value="Net à payer" />
+								<p:inputText value="#{bonLivraisonController.selectedDocumentDTO.netTtcCalc}" disabled="true">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</p:inputText>
+							</h:panelGrid>
+						</p:fieldset>
+<!-- 					<p:panel id="idConditionPaiementBonLivraison" header="Conditon de paiement" toggleable="true" widgetVar="panelConditionPaiementBonLivraison" collapsed="false"> -->
+<!-- 						<h:panelGrid columns="2" cellpadding="10" id="idPanelConditionPaiementBonLivraison" > -->
+<!-- 								<p:outputLabel value="Code paiement" /> -->
+<!-- 								<h:panelGrid columns="3" cellpadding="10"> -->
+<!-- 									<p:autoComplete value="#{bonLivraisonController.taCPaiementDoc}" converter="entityConverter" id="idCodeCPaiementBonLivraison" -->
+<!-- 										completeMethod="#{bonLivraisonController.typeCPaiementAutoComplete}" var="tp" itemLabel="#{tp.codeCPaiement}" -->
+<!-- 										itemValue="#{tp}" forceSelection="true" dropdown="true" disabled="#{bonLivraisonController.editable()}" -->
+<!-- 										placeholder="Condition de paiement" style="width:100%"> -->
+<!-- 										<p:column> -->
+<!-- 											<h:outputText value="#{tp.codeCPaiement}" /> -->
+<!-- 										</p:column> -->
+<!-- 										<p:column> -->
+<!-- 											<h:outputText value="#{tp.libCPaiement}" /> -->
+<!-- 										</p:column> -->
+<!-- 										<f:attribute name="nomChamp" value="#{const.C_CODE_C_PAIEMENT}" /> -->
+<!-- 										<p:ajax event="itemSelect" listener="#{bonLivraisonController.autcompleteSelection}" -->
+<!-- 											update="idLibelleCPaimentBonLivraison,idReportBonLivraison,idFinMoisBonLivraison,idMenuBoutonBonLivraison" /> -->
+<!-- 									</p:autoComplete> -->
+<!-- 									<p:commandButton value="Appliquer" styleClass="icon-refresh btn" -->
+<!-- 										actionListener="#{bonLivraisonController.actAppliquerCPaiement}" process="@this" -->
+<!-- 										update="idPanelConditionPaiementBonLivraison,idLibelleCPaimentBonLivraison,idReportBonLivraison,idFinMoisBonLivraison,idMenuBoutonBonLivraison" /> -->
+<!-- 								</h:panelGrid> -->
+<!-- 								<p:outputLabel value="Libellé" /> -->
+<!-- 							<p:inputText value="#{bonLivraisonController.selectedCPaiement.libCPaiement}" disabled="#{bonLivraisonController.editable()}" id="idLibelleCPaimentBonLivraison"> -->
+<!-- 							<p:ajax event="blur" update="@this" /> -->
+<!-- 							</p:inputText> -->
+<!-- 							<p:outputLabel value="Report" /> -->
+<!-- 							<p:inputText value="#{bonLivraisonController.selectedCPaiement.reportCPaiement}" disabled="#{bonLivraisonController.editable()}" id="idReportBonLivraison"> -->
+<!-- 							<p:ajax event="blur" update="@this" /> -->
+<!-- 							</p:inputText> -->
+<!-- 							<p:outputLabel value="Fin de mois" /> -->
+<!-- 							<p:inputText value="#{bonLivraisonController.selectedCPaiement.finMoisCPaiement}" disabled="#{bonLivraisonController.editable()}" id="idFinMoisBonLivraison"> -->
+<!-- 							<p:ajax event="blur" update="@this" /> -->
+<!-- 							</p:inputText> -->
+<!-- 						</h:panelGrid> -->
+<!-- 					</p:panel> -->
+				</div>
+				<div class="ui-g-12 ui-md-12 ui-lg-6">
+					<div class="ui-g-12 ui-md-12 ui-lg-6">
+<!-- 						<p:fieldset legend=""> -->
+<!-- 							<h:panelGrid columns="2" cellpadding="10" id="idNetAPayerBonLivraison"> -->
+<!-- 								<p:outputLabel value="Net à payer" /> -->
+<!-- 								<p:inputText value="#{bonLivraisonController.selectedDocumentDTO.netTtcCalc}" disabled="true"> -->
+<!-- 									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" /> -->
+<!-- 								</p:inputText> -->
+<!-- 							</h:panelGrid> -->
+<!-- 						</p:fieldset> -->
+					</div>
+					<div class="ui-g-12 ui-md-12 ui-lg-6">
+<!-- 						<p:fieldset legend=""> -->
+<!-- 							<h:panelGrid columns="2" cellpadding="10" id="idResteAPayerBonLivraison"> -->
+<!-- 								<p:outputLabel value="Reste à régler" /> -->
+<!-- 								<p:inputText value="#{bonLivraisonController.selectedDocumentDTO.resteARegler}" disabled="true"> -->
+<!-- 									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" /> -->
+<!-- 								</p:inputText> -->
+<!-- 							</h:panelGrid> -->
+<!-- 						</p:fieldset> -->
+					</div>
+				</div>	
+				
+				<div class="ui-g-12 ui-md-12 ui-lg-6">
+					<h:panelGrid columns="2" cellpadding="10">
+						<p:outputLabel value="Imprimer" />
+						<p:selectBooleanCheckbox value="#{bonLivraisonController.impressionDirect}" disabled="#{bonLivraisonController.editable()}">
+						<p:ajax event="change" update="@this"/>
+						</p:selectBooleanCheckbox>
+					</h:panelGrid>
+<!-- 					<p:dataTable value="#{bonLivraisonController.masterEntity.lignesTVA}" var="ltva"> -->
+<!-- 						<f:facet name="header"> -->
+<!-- 								<h:outputText value="TVA" /> -->
+<!-- 						</f:facet> -->
+<!-- 						<p:column> -->
+<!-- 							<f:facet name="header"> -->
+<!-- 								<h:outputText value="Code TVA" /> -->
+<!-- 							</f:facet> -->
+<!-- 							<h:outputText value="#{ltva.codeTva}" /> -->
+<!-- 						</p:column> -->
+						
+<!-- 						<p:column> -->
+<!-- 							<f:facet name="header"> -->
+<!-- 								<h:outputText value="Libellé" /> -->
+<!-- 							</f:facet> -->
+<!-- 							<h:outputText value="#{ltva.libelle}" /> -->
+<!-- 						</p:column> -->
+						
+<!-- 						<p:column> -->
+<!-- 							<f:facet name="header"> -->
+<!-- 								<h:outputText value="Taux" /> -->
+<!-- 							</f:facet> -->
+<!-- 							<h:outputText value="#{ltva.tauxTva}" /> -->
+<!-- 						</p:column> -->
+						
+<!-- 						<p:column styleClass="right"> -->
+<!-- 							<f:facet name="header"> -->
+<!-- 								<h:outputText value="Montant" /> -->
+<!-- 							</f:facet> -->
+<!-- 							<h:outputText value="#{ltva.mtTva}"> -->
+<!-- 								<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" /> -->
+<!-- 							</h:outputText> -->
+<!-- 						</p:column> -->
+<!-- 					</p:dataTable> -->
+				</div>
+				
+				<div class="ui-g-12 ui-md-12 ui-lg-6">
+					
+				</div>
+		</div>	
+				
+
+
+	
+						
+						
+			</p:panel>
+			
+		</p:tab>
+		
+
+		
+	</p:wizard>
+
+	<!-- 			</div> -->
+	<!-- 		</div> -->
+	<!-- 	</div> -->
+
+	<p:remoteCommand name="increment" binding="#{bonLivraisonController.rc}"
+		actionListener="#{bonLivraisonController.actAutoInsererLigne}"
+		process="@this" update="@widgetVar(panelLignesBonLivraison)"
+		disabled="#{bonLivraisonController.insertAuto}"
+		 />
+<!-- oncomplete="jQuery('.myclassBonliv .ui-datatable-data tr').last().find('span.ui-icon-pencil').each(function(){jQuery(this).click()});" -->
+	
+	<!-- </f:validateBean> -->
+	<p:remoteCommand name="scanCodeBarreLigneBonLivraison" 
+		oncomplete="if($('.ui-datatable.myclassBonliv:visible').length > 0) {$('.btn-cb-bonliv').click();}"
+		process="@this">
+	</p:remoteCommand>
+	
+	<p:remoteCommand name="verifModeScanCodeBarreBonLivraison" 
+		actionListener="#{bonLivraisonController.changeModeSaisieCodeBarre}"
+		process="@this" />
+		
+		
+
+	<p:dialog header="Cohérence de la qté 2" widgetVar="wVdialogQte2BonLivraison" modal="true" appendTo="@(body)" showEffect="clip" hideEffect="clip" width="900"
+		height="200">
+		<p:panelGrid columns="1">
+			<p:outputLabel value="La qté 2 n'est pas cohérente par rapport au coefficient applicable, voulez vous la conserver ?" />
+		</p:panelGrid>
+		<p:panelGrid columns="2">
+			<p:commandButton value="Conserver la valeur" process="@this" onstart="PF('wVdialogQte2BonLivraison').hide()" />
+			<p:commandButton value="Appliquer le coefficient" process="@this" actionListener="#{bonLivraisonController.actArreterEnregistrementEtFocusQte2()}"
+				oncomplete="PF('wVdialogQte2BonLivraison').hide()" update="@widgetVar(widgetVarDataTableLigneBonLivraison)" />
+		</p:panelGrid>
+	</p:dialog>
+
+		
+
+</ui:composition>

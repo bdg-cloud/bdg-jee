@@ -1,0 +1,128 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html" 
+	xmlns:ui="http://java.sun.com/jsf/facelets" 
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:p="http://primefaces.org/ui">
+	
+	<o:importConstants type="fr.legrain.moncompte.admin.webapp.app.LgrTab" />
+
+
+	<p:commandLink id="listeAutorisationBtn" title="Liste autorisations">
+		<i class="fa fa-book animated swing" aria-hidden="true"></i>
+		<!-- <i class="top-bar-badge animated rubberBand"><h:outputText value="#{topBarController.nbAutorisation}" /></i> -->
+		<!-- 		<span><h:outputText value="Liste produit" /></span> -->
+	</p:commandLink>
+
+
+
+	<p:overlayPanel id="idListeAutorisationPanel" for="listeAutorisationBtn" hideEffect="fade" dynamic="true" dismissable="true"
+		appendTo="@(body)" widgetVar="wvOverlayListeAutorisation" showCloseIcon="true">
+		
+		<h:form>
+		
+			<!-- 		<div class="text-center"> -->
+			<!-- <p:commandButton value="Ajouter" title="Ajouter" update=":form:tabView,:form:messages" actionListener="#{autorisationController.nouveau}" icon="fa fa-plus-circle" oncomplete="PF('wvOverlayListeAutorisation').hide();" />
+			<p:commandButton value="Détail" title="Détail" update=":form:tabView,:form:messages" actionListener="#{autorisationController.detail}" icon="fa fa-eye" oncomplete="PF('wvOverlayListeAutorisation').hide();" />
+			<p:commandButton value="Supprimer" title="Supprimer" update=":form:tabView,:form:messages" actionListener="#{autorisationController.supprimer}" icon="fa fa-trash" /> -->
+			<p:commandButton value="Rafraîchir" title="Rafraîchir" update=":form:messages" actionListener="#{autorisationController.refresh}" icon="fa fa-refresh" />
+			<!-- 		</div> -->
+<!-- selection="#{autorisationController.selectedTaAutorisationDTO}" 
+				selectionMode="single" 
+				dblClickSelect="true" -->
+			<p:dataTable id="dataTableListeAutorisations" 
+				var="taAutorisation" 
+				widgetVar="wvDataTableListeAutorisations"
+				styleClass="datatable mt10" 
+				value="#{autorisationController.values}" 
+				rowKey="#{taAutorisation.id}"
+				resizableColumns="true"
+				paginator="true" 
+				rows="#{msg.modele_datatable_ligne_par_page_debut}"
+				paginatorTemplate="#{msg.modele_datatable_paginator}" 
+				rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+				emptyMessage="#{msg.message_datatable_vide}" 
+				currentPageReportTemplate="#{msg.modele_datatable_page_courante}">
+
+				<p:ajax event="rowSelect" listener="#{autorisationController.onRowSelect}" update=":form:tabView,:form:messages"
+					oncomplete="activeTabCenter('#{LgrTab.CSS_CLASS_TAB_PRODUIT}');PF('wvOverlayListeAutorisation').hide();" />
+
+				<f:facet name="{Exporters}">
+					<h:commandLink>
+						<p:graphicImage library="images" name="excel.png" width="24" />
+						<p:dataExporter type="xls" target="dataTableListeAutorisations" fileName="liste_autorisations" />
+					</h:commandLink>
+
+					<h:commandLink>
+						<p:graphicImage library="images" name="pdf.png" width="24" />
+						<p:dataExporter type="pdf" target="dataTableListeAutorisations" fileName="liste_autorisations" />
+					</h:commandLink>
+
+					<h:commandLink>
+						<p:graphicImage library="images" name="csv.png" width="24" />
+						<p:dataExporter type="csv" target="dataTableListeAutorisations" fileName="liste_autorisations" />
+					</h:commandLink>
+
+					<h:commandLink>
+						<p:graphicImage library="images" name="xml.png" width="24" />
+						<p:dataExporter type="xml" target="dataTableListeAutorisations" fileName="liste_autorisations" />
+					</h:commandLink>
+				</f:facet>
+
+				
+				
+				<!-- <p:column sortBy="#{taAutorisation.id}" filterBy="#{taAutorisation.id}">
+					<f:facet name="header">
+						<h:outputText value="ID" />
+					</f:facet>
+					<h:outputText value="#{taAutorisation.id}" />
+				</p:column> -->
+				<p:column sortBy="#{taAutorisation.code}" filterBy="#{taAutorisation.code}">
+					<f:facet name="header">
+						<h:outputText value="Code du dossier" />
+					</f:facet>
+					<h:outputText value="#{taAutorisation.code}" />
+				</p:column>
+					<p:column sortBy="#{taAutorisation.codeClient}" filterBy="#{taAutorisation.codeClient}">
+					<f:facet name="header">
+						<h:outputText value="Code du client" />
+					</f:facet>
+					<h:outputText value="#{taAutorisation.codeClient}" />
+				</p:column>
+				<p:column sortBy="#{taAutorisation.nomProduit}" filterBy="#{taAutorisation.nomProduit}">
+					<f:facet name="header">
+						<h:outputText value="Nom du produit" />
+					</f:facet>
+					<h:outputText value="#{taAutorisation.nomProduit}" />
+				</p:column>
+				<p:column sortBy="#{taAutorisation.dateFin}" filterBy="#{taAutorisation.dateFin}">
+					<f:facet name="header">
+						<h:outputText value="Date fin" />
+					</f:facet>
+					<h:outputText value="#{taAutorisation.dateFin}" />
+				</p:column>
+				
+
+				<!-- <p:column sortBy="#{taAutorisation.libelle}" filterBy="#{taAutorisation.libelle}">
+					<f:facet name="header">
+						<h:outputText value="Libellé" />
+					</f:facet>
+					<h:outputText value="#{taAutorisation.libelle}" />
+				</p:column> -->
+
+
+				
+				<!-- <p:column sortBy="#{taAutorisation.identifiantModule}" filterBy="#{taAutorisation.identifiantModule}">
+					<f:facet name="header">
+						<h:outputText value="Identifiant" />
+					</f:facet>
+					<h:outputText value="#{taAutorisation.identifiantModule}" />
+				</p:column> -->
+
+			</p:dataTable>
+		</h:form>
+		
+	</p:overlayPanel>
+
+
+</ui:composition>

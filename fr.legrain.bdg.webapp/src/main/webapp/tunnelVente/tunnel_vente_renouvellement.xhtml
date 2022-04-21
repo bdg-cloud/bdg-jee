@@ -1,0 +1,374 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:o="http://omnifaces.org/ui"
+                xmlns:c="http://java.sun.com/jsp/jstl/core">
+                
+                <o:importConstants type="fr.legrain.bdg.webapp.app.LgrTab" />
+    
+
+    		<p:menubar styleClass="menu-onglet">
+			
+			<p:menuitem title="Fermer" styleClass="icon icon-close menuitem-fermer-droite" process="@this" 
+				actionListener="#{tunnelVenteController.actFermer}"
+				onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())">
+				</p:menuitem>
+			</p:menubar>
+			
+	        
+	        <div  id="logo-wrapper" class="ui-g">
+		        <div class="ui-g-12 text-center">
+					<h:graphicImage library="images" name="Bureau de Gestion.svg" title="Solstyce" width="150" height="100" />
+		        </div>
+				<div class="ui-g-12 text-center">
+					<h:outputText value="Logiciel de Gestion d'Entreprise" disabled="false" styleClass="sub-logo-text-renouvellement" >						
+				    </h:outputText>
+		        </div>
+		    </div>
+		    
+		    
+		   <p:panel >
+		   	<p:outputLabel>BETA : Cette fonctionnalité de renouvellement de votre abonnement BDG est en BETA,
+		   	 ce qui signifie qu'elle n'est pas totalement finie, elle est en cours de test. Vous pouvez l'utiliser pour renouveller votre abonnement,
+		   	  mais si vous rencontrez le moindre problème pendant la procédure, n'hesitez pas à nous joindre.</p:outputLabel>
+		   </p:panel>
+    
+    
+				<p:panel widgetVar="wvWizardRenouvellementBDG" nextLabel="Suivant" backLabel="Précédent">
+					<p:wizard flowListener="#{tunnelVenteController.onFlowProcess}">
+			            <p:tab id="version" title="Version BDG">
+			                <p:panel header="Séléctionnez les services que vous voulez renouveller">
+			                   <!--  <p:messages/> -->
+			                    <p:dataTable id="idDatatableEcheanceTunnelVenteRenouvellement" value="#{tunnelVenteController.listeModuleBDG}" var="p" widgetVar="wvDatatableEcheanceTunnelVenteRenouvellement"
+									  paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+								 paginator="false" rows="10"
+								 selectionMode="checkbox" 
+								 selection="#{tunnelVenteController.listeSelectedModuleBDG}"
+								 rowKey="#{p.idLEcheance}" emptyMessage="Vous n'avez rien à renouveller pour le moment">
+
+											<p:column selectionMode="multiple" style="width:16px;text-align:center"/>	
+											
+											<!-- <p:column headerText="id ech" styleClass="center" >
+												<p:outputLabel value="#{p.idLEcheance}" />
+											</p:column>	 -->									
+											
+											<p:column styleClass="center" >
+												<p:outputLabel value="#{p.libelleModule}" />
+											</p:column>
+											
+											<p:column headerText="Début période" styleClass="center" >
+												<h:outputText value="#{p.dateDebutPeriode}">
+													<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+												</h:outputText>
+											</p:column>
+											
+											<p:column headerText="Fin période" styleClass="center" >
+												<h:outputText value="#{p.dateFinPeriode}">
+													<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+												</h:outputText>
+											</p:column>
+												
+											<p:column headerText="Echéance" styleClass="center" >
+												<h:outputText value="#{p.dateEcheance}">
+													<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+												</h:outputText>
+											</p:column>
+											
+											<p:column headerText="Montant TTC" styleClass="center" >
+												<h:outputText value="#{p.prixTTCXMois}">
+													<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+												</h:outputText>
+											</p:column>	
+											<p:column headerText="Etat" styleClass="center" >
+												<h:outputText value="#{p.liblEtat}">
+												</h:outputText>
+											</p:column>										
+										</p:dataTable>
+
+			                </p:panel>
+			            </p:tab>
+			            <!-- <p:tab id="options" title="Options disponibles">
+			                <p:panel header="Options dispnibles avec votre version actuelle">
+			                    <p:messages/>
+			                     <p:dataTable id="idDatatableOptionTunnelVenteRenouvellement"  value="#{tunnelVenteController.listeOptionModuleBDG}" var="p" widgetVar="wvDatatableOptionTunnelVenteRenouvellement"
+									  paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+								 paginator="false" rows="10"
+												rowKey="#{p.codeModuleBDG}">
+												
+												 <p:ajax event="rowSelect" update=""/>
+									            <p:ajax event="rowUnselect" update=""/>
+									            <p:ajax event="rowSelectCheckbox" update=""/>
+									            <p:ajax event="rowUnselectCheckbox" update=""/>
+									            <p:ajax event="toggleSelect" update=""/>
+									
+									            <p:column selectionMode="multiple" exportable="false" width="5%"></p:column>
+
+																						
+											
+											<p:column  styleClass="center" >
+												<p:outputLabel value="#{p.libelleModule}" />
+											</p:column>
+											
+											
+											<p:column  styleClass="center" >
+												<h:outputText value="#{p.liblPrixMois}"/>
+											</p:column>										
+										</p:dataTable>
+
+			                </p:panel>
+			            </p:tab> -->
+			            
+			             <p:tab id="recap" title="Panier">
+       
+			                <p:panel header="Récapitulatif de votre panier" widgetVar="wvPanelRecapPanier">
+			                    <!-- <p:messages/> -->
+			                    
+			                    <p:panel rendered="#{tunnelVenteController.panierPaye}">
+			                    	<div class="ui-g">
+										<div class="ui-g-12 text-center">
+											<p style="font-size: 30px">	Paiement validé !
+											</p>
+											<p style="font-size: 20px">	Merci pour votre achat. La mise à jour de votre dossier sera faite dans les meilleurs délais
+											</p>
+										</div>
+									</div>
+			                    </p:panel>
+			                    
+			                    
+			                    
+			                    <p:dataTable rendered="#{!tunnelVenteController.panierPaye}" id="idDatatableRecapTunnelVenteRenouvellement" value="#{tunnelVenteController.taPanierDTO.lignesDTO}" var="p" widgetVar="wvDatatableRecapTunnelVenteRenouvellement"
+									  paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"	 paginator="false" emptyMessage="Votre panier est vide" >
+												
+										 <p:ajax event="rowSelect" update="@this"/>
+							            <p:ajax event="rowUnselect" update="@this"/>
+							            <p:ajax event="toggleSelect" update="@this"/> 
+							            <f:facet name="header">
+							            	<h:outputText value="#{tunnelVenteController.taPanierDTO.codeDocument}"/>
+							            
+							            </f:facet>
+							            
+<!-- 							            <p:column  style="width:8%" styleClass="right">
+										<f:facet name="header">
+											<h:outputText value="ID" />
+										</f:facet>
+												<h:outputText value="#{p.idLDocument}"/>	
+									</p:column>
+							            
+							            
+									<p:column  style="width:8%" styleClass="right">
+										<f:facet name="header">
+											<h:outputText value="numéro de ligne" />
+										</f:facet>
+												<h:outputText value="#{p.numLigneLDocument}"/>	
+									</p:column>
+									
+									<p:column  style="width:8%" styleClass="right">
+										<f:facet name="header">
+											<h:outputText value="code liaison ligne" />
+										</f:facet>
+												<h:outputText value="#{p.codeLiaisonLigne}"/>	
+									</p:column> -->
+									
+																						
+											
+									<p:column style="width:30%" >
+<!-- 										<f:facet name="header">
+											<h:outputText value="Libellé" />
+										</f:facet> -->
+												<h:outputText value="#{p.libLDocument}" id="idListeSyntheseLibellePanier"  style="#{p.qteLDocument != null ? 'font-weight : 700; font-size:20px':'' }"/>
+												<p:tooltip id="toolTipListeTunnelVenteLibellePanier" value="#{p.libLDocument}" shared="true" for="idListeSyntheseLibellePanier" showEffect="clip" position="top"/>
+									</p:column>
+				
+									<p:column  style="width:8%" styleClass="right">
+										<f:facet name="header">
+											<h:outputText value="Qté 1" />
+										</f:facet>
+												<h:outputText value="#{p.qteLDocument}"/>	
+									</p:column>
+									
+									
+									
+									
+				
+									<!-- <p:column style="width:5%" styleClass="center">
+										<f:facet name="header">
+											<h:outputText value="U1" />
+										</f:facet>
+				
+												<h:outputText value="#{p.codeUnite}" />
+									</p:column> -->
+				
+									
+									<p:column style="width:8%" styleClass="right">
+										<f:facet name="header">
+											<h:outputText value="Prix unitaire" />
+										</f:facet>
+												<h:outputText value="#{p.prixULDocument}">
+													<f:convertNumber type="currency"  minFractionDigits="#{tunnelVenteController.prefNbDecimalesPrix}" currencySymbol="#{msg.currency_code}" />
+												</h:outputText>
+									</p:column>
+									
+									<p:column style="width:10%" styleClass="right">
+										<f:facet name="header">
+											<h:outputText value="Montant HT" />
+										</f:facet>
+												<h:outputText value="#{p.mtHtLDocument}" disabled="true">
+													<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+												</h:outputText>
+									</p:column>
+									
+									<p:column style="width:5%" styleClass="right">
+										<f:facet name="header">
+											<h:outputText value="TVA"/>
+										</f:facet>
+												<h:outputText value="#{p.codeTvaLDocument}" disabled="true">
+													<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+												</h:outputText>
+									</p:column>
+									
+									
+									<p:column style="width:10%" styleClass="right">
+										<f:facet name="header">
+											<h:outputText value="Montant TTC" />
+										</f:facet>
+												<h:outputText value="#{p.mtTtcLDocument}" disabled="true">
+													<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+												</h:outputText>
+									</p:column>
+									
+
+									
+									<p:column headerText="Actions" styleClass="center" >
+										<p:commandButton value="Retirer" action="#{tunnelVenteController.actSupprimerLignePanier}" 
+											update="@widgetVar(wvPanelRecapPanier)" process="@this" rendered="#{p.qteLDocument != null}">
+											<f:setPropertyActionListener target="#{tunnelVenteController.selectedTaLPanierDTO}" value="#{p}" />
+											<p:confirm header="Confirmation" message="Etes vous sur de vouloir retirer cet article de votre panier ?" icon="ui-icon-alert" />
+										</p:commandButton>
+									</p:column>
+
+								</p:dataTable>
+								
+								<p:panel rendered="false">
+									<div class="ui-g">
+										<div class="ui-g-2"></div>
+										<div class="ui-g-8 text-center">
+											<p:repeat id="idDatatableRecapTunnelVenteRenouvellement" value="#{tunnelVenteController.taPanierDTO.lignesDTO}" var="p" widgetVar="wvDatatableRecapTunnelVenteRenouvellement">		
+												<div class="ui-g-12 ui-g-nopad"> 					
+													<div class="ui-g-4 text-left">
+														<!-- <h:outputText value="- "/> -->
+														<h:outputText value="#{p.qteLDocument} " rendered="#{p.qteLDocument != null}">
+															<f:convertNumber maxFractionDigits="1" minFractionDigits="0" />
+														</h:outputText>
+														<h:outputText value=" X " rendered="#{p.qteLDocument != null}"/>
+														<h:outputText value="#{p.libLDocument}" id="idListeSyntheseLibellePanier"  style="#{p.qteLDocument != null ? 'font-weight : 700; font-size:20px':'' }"/>
+													</div>
+													
+													
+													<div class="ui-g-4">
+															<h:outputText value="(#{p.mtHtLDocument} € HT) " rendered="#{p.qteLDocument != null}"/>
+															<h:outputText value="#{p.mtTtcLDocument} € TTC"  style="font-weight : 700; font-size:20px" rendered="#{p.qteLDocument != null}"/>
+													</div>
+													
+													<div class="ui-g-4">
+														<p:commandButton value="Retirer" action="#{tunnelVenteController.actSupprimerLignePanier}" 
+															update="@widgetVar(wvPanelRecapPanier)" process="@this" rendered="#{p.qteLDocument != null}">
+															<f:setPropertyActionListener target="#{tunnelVenteController.selectedTaLPanierDTO}" value="#{p}" />
+															<p:confirm header="Confirmation" message="Etes vous sur de vouloir retirer cet article de votre panier ?" icon="ui-icon-alert" />
+														</p:commandButton>
+													</div>
+												</div>
+												
+												
+			<!-- 									<p:column style="width:8%" styleClass="right">
+													<f:facet name="header">
+														<h:outputText value="Prix unitaire" />
+													</f:facet>
+															<h:outputText value="#{p.prixULDocument}">
+																<f:convertNumber type="currency"  minFractionDigits="#{tunnelVenteController.prefNbDecimalesPrix}" currencySymbol="#{msg.currency_code}" />
+															</h:outputText>
+												</p:column> -->
+			
+												
+												<!-- <p:column style="width:5%" styleClass="right">
+													<f:facet name="header">
+														<h:outputText value="TVA"/>
+													</f:facet>
+															<h:outputText value="#{p.codeTvaLDocument}" disabled="true">
+																<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+															</h:outputText>
+												</p:column> -->
+												
+			
+												
+			
+			
+			
+											</p:repeat>
+										</div>
+										<div class="ui-g-2"></div>
+									</div>
+								</p:panel>
+								
+								
+								<p:panel rendered="#{!tunnelVenteController.panierPaye}">
+								
+									<div class="ui-g">
+										<div class="ui-g-2"></div>
+										<div class="ui-g-8">
+											<div class="ui-g-12">
+											<div class="ui-g-4">
+												<h:outputText value="Total : "  styleClass="text-total-panier" ></h:outputText>
+											</div>
+											<div class="ui-g-4">
+												<h:outputText value="#{tunnelVenteController.taPanierDTO.mtTtcCalc} € TTC"  styleClass="text-total-panier" ></h:outputText>     							
+										     </div>
+											<div class="ui-g-4">
+											
+												<p:commandButton value="Payer" actionListener="#{tunnelVenteController.actInitPaiementCarteBancaireWs}" 
+															update="@widgetVar(wvPanelRecapPanier), @widgetVar(wvDatatableEcheanceTunnelVenteRenouvellement)" process="@this" disabled="#{tunnelVenteController.taPanierDTO.lignesDTO.size() le 0 }">
+															<p:ajax event="dialogReturn" update="@this, @widgetVar(wvPanelRecapPanier)" 
+							                                 listener="#{tunnelVenteController.handleReturnDialoguePaiementParCarte}" />
+												</p:commandButton>
+											</div>
+	
+								       </div> 
+										
+										</div>
+										<div class="ui-g-2"></div>
+										
+										
+										
+	
+								    </div>
+								</p:panel>
+								
+								
+								
+
+			                </p:panel>
+			            </p:tab>
+<!-- 			            <p:tab id="mode_paiement" title="Mode de paiement">
+			                <p:panel header="Choisir votre mode de paiement">
+			                    <p:messages/>
+			                    <h:panelGrid columns="2" columnClasses="label, value">
+			                        <h:outputText value="Option 1  : "/>
+			                        <p:inputText value="option 1" required="true" label="option1"/>
+			                        <h:outputText value="Option 2  : "/>
+			                        <p:inputText value="option 2" required="true" label="option2"/>
+			                        <h:outputText value="Option 3  : "/>
+			                        <p:inputText value="option 3" required="true" label="option3"/>
+			
+
+			                    </h:panelGrid>
+
+			                </p:panel>
+			            </p:tab> -->
+							            
+			        </p:wizard>
+				</p:panel>
+    
+    
+  </ui:composition>  
+ 

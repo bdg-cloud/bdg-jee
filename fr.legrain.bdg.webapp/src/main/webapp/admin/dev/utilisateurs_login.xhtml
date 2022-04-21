@@ -1,0 +1,308 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<p:panel  id="utilisateurFormPrincipal" widgetVar="widgetVarUtilisateurForm" styleClass="testx">
+
+		<p class="subtitle">Gestion des utilisateurs - TABLE DE LOGIN</p>
+
+		<p:dataTable id="utilisateurDataTable" var="table"
+			value="#{utilisateurLoginController.values}" rowKey="#{table.id}"
+			selectionMode="single" styleClass="datatable"
+			selection="#{utilisateurLoginController.selection}" 
+			paginator="true"
+			rows="#{msg.modele_datatable_ligne_par_page_debut}"
+			paginatorTemplate="#{msg.modele_datatable_paginator}"
+			rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+			emptyMessage="#{msg.message_datatable_vide}"
+			currentPageReportTemplate="#{msg.modele_datatable_page_courante}">
+
+			<p:ajax event="rowSelect" listener="#{utilisateurLoginController.onRowSelect}" />
+
+			<f:facet name="{Exporters}">
+				<h:commandLink>
+					<p:graphicImage library="images" name="excel.png" width="24" />
+					<p:dataExporter type="xls" target="utilisateurDataTable" fileName="utilisateurs" />
+				</h:commandLink>
+
+				<h:commandLink>
+					<p:graphicImage library="images" name="pdf.png" width="24" />
+					<p:dataExporter type="pdf" target="utilisateurDataTable" fileName="utilisateurs" />
+				</h:commandLink>
+
+				<h:commandLink>
+					<p:graphicImage library="images" name="csv.png" width="24" />
+					<p:dataExporter type="csv" target="utilisateurDataTable" fileName="utilisateurs" />
+				</h:commandLink>
+
+				<h:commandLink>
+					<p:graphicImage library="images" name="xml.png" width="24" />
+					<p:dataExporter type="xml" target="utilisateurDataTable" fileName="utilisateurs" />
+				</h:commandLink>
+			</f:facet>
+
+			<p:column sortBy="#{table.id}" filterBy="#{table.id}"
+				filterMatchMode="contains">
+				<f:facet name="header">
+					<h:outputText value="ID" />
+				</f:facet>
+
+				<h:outputText value="#{table.id}" />
+			</p:column>
+
+			<p:column sortBy="#{table.username}" filterBy="#{table.username}"
+				filterMatchMode="contains">
+				<f:facet name="header">
+					<h:outputText value="Login" />
+				</f:facet>
+
+				<h:outputText value="#{table.username}" />
+			</p:column>
+			
+			<p:column sortBy="#{table.nom}" filterBy="#{table.nom}"
+				filterMatchMode="contains">
+				<f:facet name="header">
+					<h:outputText value="Nom" />
+				</f:facet>
+
+				<h:outputText value="#{table.nom}" />
+			</p:column>
+			
+			<p:column sortBy="#{table.prenom}" filterBy="#{table.prenom}"
+				filterMatchMode="contains">
+				<f:facet name="header">
+					<h:outputText value="Prénom" />
+				</f:facet>
+
+				<h:outputText value="#{table.prenom}" />
+			</p:column>
+			
+			<p:column sortBy="#{table.email}" filterBy="#{table.email}"
+				filterMatchMode="contains">
+				<f:facet name="header">
+					<h:outputText value="Email" />
+				</f:facet>
+
+				<h:outputText value="#{table.email}" />
+			</p:column>
+			
+			<p:column sortBy="#{table.actif}" filterBy="#{table.actif}"
+				filterMatchMode="contains">
+				<f:facet name="header">
+					<h:outputText value="Actif" />
+				</f:facet>
+
+				<h:outputText value="#{table.actif}" />
+			</p:column>
+
+			<p:column>
+				<f:facet name="header">
+					<h:outputText value="Role" />
+				</f:facet>
+				<ui:repeat value="${table.roles}" var="item">
+					<h:outputText value="#{item.taRole.role}, " />
+				</ui:repeat>
+			</p:column>
+
+			<p:column sortBy="#{table.dernierAcces}">
+				<f:facet name="header">
+					<h:outputText value="Dernier accés" />
+				</f:facet>
+				<h:outputText value="#{table.dernierAcces}" >
+						<f:convertDateTime pattern="dd/MM/yyyy-HH:mm:ss" timeZone="Europe/Paris"/>
+					</h:outputText>
+			</p:column>
+
+<!-- 			<p:column sortBy="#{table.taEntreprise.nom}" -->
+<!-- 				filterBy="#{table.taEntreprise.nom}"> -->
+				<p:column>
+				<f:facet name="header">
+					<h:outputText value="Entreprise - Client" />
+				</f:facet>
+<!-- 				<h:outputText value="#{table.taEntreprise.nom}" /> -->
+			</p:column>
+
+			<p:column>
+				<f:facet name="header">
+					<h:outputText value="Actions" />
+				</f:facet>
+<!-- 				<p:commandLink actionListener="#{userController.resetPassword}" -->
+<!-- 					update=":form:growl" value="reset pwd"> -->
+<!-- 					<f:attribute name="idUser" value="#{user.id}" /> -->					 
+<!-- 				</p:commandLink> -->
+			</p:column>
+	
+		</p:dataTable>
+
+
+		<div id="utilisateurDataTableF" class="text-center mt30 bg-grey">
+			<p:commandButton id="utilisateurInserer" value="Insérer"
+				process="@this" disabled="#{utilisateurLoginController.etatBouton('inserer')}"
+				update="@widgetVar(varUtilisateurPanel), @this, @parent:utilisateurModifier, @parent:utilisateurSupprimer"
+				actionListener="#{utilisateurLoginController.actInserer}"
+				class="btn-insert btn" />
+
+			<p:commandButton id="utilisateurModifier" value="Modifier"
+				process="@this" class="btn-update btn"
+				disabled="#{utilisateurLoginController.etatBouton('modifier')}"
+				update="@widgetVar(varUtilisateurPanel), @parent:utilisateurInserer, @this, @parent:utilisateurSupprimer"
+				actionListener="#{utilisateurLoginController.actModifier}" />
+
+			<p:commandButton id="utilisateurSupprimer" value="Supprimer"
+				class="btn-delete btn"
+				disabled="#{utilisateurLoginController.etatBouton('supprimer')}"
+				type="button" onclick="PF('utilisateurcd1').show()">
+			</p:commandButton>
+
+			<p:commandButton id="utilisateurFermer" value="Fermer"
+				class="btn-close btn" type="button"
+				onclick="PF('utilisateurcd2').show()" />
+				
+			<p:confirmDialog
+				message="Etes-vous sûr de vouloir supprimer l'enregistrement ?"
+				header="Confirmation" severity="alert" appendTo="@(body)"
+				widgetVar="utilisateurcd1">
+				<p:commandButton value="Oui" update="@form" oncomplete="PF('utilisateurcd1').hide()">
+					<p:ajax listener="#{utilisateurLoginController.actSupprimer}" />
+				</p:commandButton>
+				<p:commandButton value="Non" onclick="PF('utilisateurcd1').hide();" type="button" />
+			</p:confirmDialog>
+
+			<p:confirmDialog
+				message="Etes-vous sûr de vouloir fermer l'onglet ? (Les modifications en cours ne seront pas sauvegardées) "
+				header="Confirmation" severity="alert" widgetVar="utilisateurcd2"
+				appendTo="@(body)">
+				<p:commandButton value="Oui"
+					onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())"
+					oncomplete="PF('utilisateurcd2').hide()" />
+
+				<p:commandButton value="Non" onclick="PF('utilisateurcd2').hide();" type="button"/>
+			</p:confirmDialog>
+		</div>
+		
+	</p:panel>
+
+	<p:messages id="utilisateurMessages" showDetail="true" autoUpdate="true" closable="true" />
+
+
+	<p:panel id="utilisateurPanel" visible="true" widgetVar="varUtilisateurPanel">
+	
+		<p:panel resizable="false" id="utilisateurPanelCache" rendered="#{utilisateurLoginController.modeEcran.dataSetEnModif()}">
+<!-- 		rendered="#{utilisateurLoginController.creation}" -->
+			
+<!-- 			<h:form id="utilisateurFormCreation"> -->
+			
+				<f:validateBean disabled="true">
+
+					<div class="ui-grid ui-grid-responsive" id="utilisateurGridResp">
+						<div class="ui-grid-row">
+
+							<div class="ui-grid-col-4">
+								<h:outputText value="Login :"/>
+							</div>
+							<div class="ui-grid-col-8">
+								<p:inputText value="#{utilisateurLoginController.nouveau.username}"
+									required="true" requiredMessage="Champs obligatoire!">
+								</p:inputText>
+							</div>
+							
+						</div>
+						<div class="ui-grid-row">
+
+							<div class="ui-grid-col-4">
+								<h:outputText value="Nom :"/>
+							</div>
+							<div class="ui-grid-col-8">
+								<p:inputText value="#{utilisateurLoginController.nouveau.nom}"
+									required="true" requiredMessage="Champs obligatoire!">
+								</p:inputText>
+							</div>
+						</div>
+						
+						<div class="ui-grid-row">
+
+							<div class="ui-grid-col-4">
+								<h:outputText value="Prénom :"/>
+							</div>
+							<div class="ui-grid-col-8">
+								<p:inputText value="#{utilisateurLoginController.nouveau.prenom}"
+									required="true" requiredMessage="Champs obligatoire!">
+								</p:inputText>
+							</div>
+						</div>
+						
+						<div class="ui-grid-row">
+
+							<div class="ui-grid-col-4">
+								<h:outputText value="Email :"/>
+							</div>
+							<div class="ui-grid-col-8">
+								<p:inputText value="#{utilisateurLoginController.nouveau.email}"
+									required="true" requiredMessage="Champs obligatoire!">
+								</p:inputText>
+							</div>
+						</div>
+						
+						<div class="ui-grid-row">
+
+							<div class="ui-grid-col-4">
+								<h:outputText value="Actif :"/>
+							</div>
+							<div class="ui-grid-col-8">
+								<p:inputText value=""
+									required="true" requiredMessage="Champs obligatoire!">
+								</p:inputText>
+							</div>
+						</div>
+						
+						<div class="ui-grid-row">
+
+							<div class="ui-grid-col-4">
+								<h:outputText value="Mot de passe :"/>
+							</div>
+							<div class="ui-grid-col-8">
+								<p:inputText value=""
+									required="true" requiredMessage="Champs obligatoire!">
+								</p:inputText>
+							</div>
+						</div>
+						
+						<div class="ui-grid-row">
+
+							<div class="ui-grid-col-4">
+								<h:outputText value="Role :"/>
+							</div>
+							<div class="ui-grid-col-8">
+<!-- 								<p:pickList id="pickList" converter="aaa" value="#{utilisateurLoginController.roles}" var="r"  itemLabel="#{r.role}" itemValue="#{r}"/> -->
+							</div>
+						</div>
+
+						<div class="ui-grid-row">
+
+							<div class="ui-grid-col-12 text-center">
+								<p:commandButton value="Enregistrer"
+									class="btn-save btn" 
+									disabled="#{utilisateurLoginController.etatBouton('enregistrer')}"
+									update="@(.testx), @widgetVar(widgetVarUtilisateurForm), @widgetVar(varUtilisateurPanel)"
+									actionListener="#{utilisateurLoginController.actEnregistrer}" />
+								<p:commandButton value="Annuler"
+									class="btn-cancel btn" 
+									disabled="#{utilisateurLoginController.etatBouton('annuler')}"
+									update="@widgetVar(widgetVarUtilisateurForm), @widgetVar(varUtilisateurPanel)"
+									actionListener="#{utilisateurLoginController.actAnnuler}" />
+							</div>
+						</div>
+					</div>
+					
+				</f:validateBean>
+				
+<!-- 			</h:form> -->
+			
+		</p:panel>
+		
+	</p:panel>
+
+
+</ui:composition>

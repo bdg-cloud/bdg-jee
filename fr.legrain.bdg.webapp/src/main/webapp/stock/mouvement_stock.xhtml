@@ -1,0 +1,543 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html" 
+	xmlns:ui="http://java.sun.com/jsf/facelets" 
+	xmlns:p="http://primefaces.org/ui">
+
+	<p:menubar styleClass="menu-onglet">
+	
+		<p:menuitem label="Enregistrer" styleClass="icon-save icon"
+			actionListener="#{mouvementStockController.actEnregistrer}" process="@this idCode idMouvement"
+			update="idPanelEntete,idPanelLignes,:form:messages,@form,@widgetVar(wvMenuListeMouvStock),@widgetVar(wvDataTableListeMouvStock)"
+			disabled="#{mouvementStockController.etatBouton('enregistrer') or mouvementStockController.typeMouvementNonModifiable()}" />
+			
+		<p:menuitem label="Insérer" styleClass="icon-insert icon" actionListener="#{mouvementStockController.actInserer}"
+			process="@this"
+			update="idPanelEntete,idPanelLignes,:form:messages,@form,@widgetVar(wvMenuListeMouvStock),@widgetVar(wvDataTableListeMouvStock)"
+			disabled="#{mouvementStockController.etatBouton('inserer')}" />
+			
+		<p:menuitem label="Modifier" styleClass="icon-update icon" actionListener="#{mouvementStockController.actModifier}"
+			process="@this"
+			update="idPanelEntete,idPanelLignes,:form:messages,@form,@widgetVar(wvMenuListeMouvStock),@widgetVar(wvDataTableListeMouvStock)"
+			disabled="#{mouvementStockController.etatBouton('modifier') or mouvementStockController.typeMouvementNonModifiable()}" />
+			
+		<p:menuitem label="Annuler" styleClass="icon-cancel icon" actionListener="#{mouvementStockController.actAnnuler}"
+			process="@this"
+			update="idPanelEntete,idPanelLignes,:form:messages,@form,@widgetVar(wvMenuListeMouvStock),@widgetVar(wvDataTableListeMouvStock)"
+			disabled="#{mouvementStockController.etatBouton('annuler')}" />
+		
+		
+		
+		<p:menuitem label="Supprimer" styleClass="icon-delete icon menuitem-poubelle-droite" actionListener="#{mouvementStockController.actSupprimer}"
+			process="@this"
+			update="idPanelEntete,idPanelLignes,:form:messages,@widgetVar(wvMenuListeMouvStock),@widgetVar(wvDataTableListeMouvStock),@form"
+			disabled="#{mouvementStockController.etatBouton('supprimer') or mouvementStockController.typeMouvementNonModifiable()}">
+			<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer cet enregistrement ?"
+				icon="ui-icon-alert" />
+		</p:menuitem>
+		
+		<p:menuitem label="Fermer" styleClass="icon icon-close menuitem-fermer-droite" process="@this"
+			actionListener="#{mouvementStockController.actFermer}"
+			update=":form:messages,@widgetVar(wvMenuListeMouvStock),@widgetVar(wvDataTableListeMouvStock)"
+			disabled="#{mouvementStockController.etatBouton('fermer')}"
+			onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())">
+			<p:confirm header="Confirmation" message="#{msg_diag.alert_fermeture_onglet}" icon="ui-icon-alert" disabled="#{!mouvementStockController.modeEcran.dataSetEnModif()}"/>
+		</p:menuitem>
+
+		<p:separator styleClass="separateur-menu-vertical"/>
+		<p:menuitem label="Imprimer" styleClass="icon-print icon"
+			onsuccess="window.open('#{request.contextPath}/output?__report=/reports/stock/Mouvement_du_Stock.rptdesign&amp;id_tiers=#{mouvementStockController.selectedGrMouvStockDTO.id}&amp;__format=pdf')"
+			actionListener="#{mouvementStockController.actImprimer}"
+			disabled="#{mouvementStockController.etatBouton('imprimer')}" />
+		<p:separator styleClass="separateur-menu-vertical"/>
+		<p:menuitem title="Liste" styleClass="icon icon-liste" oncomplete="PF('wvOverlayListeMouvStock').show();" />
+	</p:menubar>
+
+	<p:panel id="idPanelEntete" header="Entête" toggleable="true" widgetVar="panelEntete">
+
+		<!--  <p:ajax event="toggle" listener="#{panelView.onToggle}" update="msgs" /> -->
+
+		<h:panelGrid columns="2" cellpadding="10">
+		
+			<p:outputLabel value="Date : " styleClass="labelchob"/>
+
+			<p:calendar value="#{mouvementStockController.selectedGrMouvStockDTO.dateGrMouvStock}" pattern="dd/MM/yyyy"
+				mask="true" required="true" requiredMessage="#{msg_diag.alert_champs_obligatoir}" locale="fr" navigator="true" showOn="button" 
+				validator="#{mouvementStockController.validateDocument}" disabled="#{mouvementStockController.editable()}">
+				<f:attribute name="nomChamp" value="#{const.C_DATE_DOCUMENT}" />
+				<p:ajax event="dateSelect" listener="#{mouvementStockController.controleDate}"  update="@this,idCode" />
+				<p:ajax event="change"   listener="#{mouvementStockController.controleDate}" update="@this,idCode" />				
+				
+			</p:calendar>
+
+			<p:outputLabel value="Code : " styleClass="labelchob"/>
+			<p:focus>
+				<p:inputText id="idCode" value="#{mouvementStockController.selectedGrMouvStockDTO.codeGrMouvStock}" required="true" 
+					requiredMessage="#{msg_diag.alert_champs_obligatoir}" validator="#{mouvementStockController.validateDocument}"
+					disabled="#{mouvementStockController.editable()}">
+					<f:attribute name="nomChamp" value="#{const.C_CODE_GR_MOUV_STOCK}" />
+					<p:ajax event="blur" update="@this" />
+				</p:inputText>
+			</p:focus>
+
+
+
+			<p:outputLabel value="Type de mouvement : " styleClass="labelchob"/>
+			<p:autoComplete id="idMouvement" value="#{mouvementStockController.taTypeMouvement}" required="true"
+				requiredMessage="#{msg_diag.alert_champs_obligatoir}"
+				completeMethod="#{mouvementStockController.typeMouvementAutoComplete}"
+				disabled="#{mouvementStockController.editable()}" var="typeMouvement" itemLabel="#{typeMouvement.code}"
+				itemValue="#{typeMouvement}" forceSelection="true" dropdown="true" placeholder="Type mouvement">
+				<p:column>
+					<f:facet name="header">
+						<p:commandButton value="Ajouter" title="Insérer" process="@this" update=":form:tabView,:form:messages"
+							actionListener="#{mouvementStockController.actDialogTypeMouvement}" styleClass="btn-insert btn">
+							<p:ajax event="dialogReturn" listener="#{mouvementStockController.handleReturnDialogTypeMouvement}"
+								update="@parent:@parent" />
+						</p:commandButton>
+					</f:facet>
+					<h:outputText value="#{typeMouvement.code}" />
+				</p:column>
+				<p:column>
+					<h:outputText value="#{typeMouvement.libelle}" />
+				</p:column>
+
+				<f:attribute name="nomChamp" value="#{const.C_CODE_TYPE_MOUVEMENT}" />
+				<p:ajax event="itemSelect" listener="#{mouvementStockController.autcompleteSelection}" update="@widgetVar(wVCodeTitreTransportMouvement),@widgetVar(wVQteTransportMouvement)" />
+			</p:autoComplete>
+
+			<p:outputLabel value="Libellé : " styleClass="labelchob"/>
+			<p:inputText value="#{mouvementStockController.selectedGrMouvStockDTO.libelleGrMouvStock}"
+				validator="#{mouvementStockController.validateDocument}" disabled="#{mouvementStockController.editable()}"
+				style="width:300%">
+				<f:attribute name="nomChamp" value="#{const.C_LIBELLE_GR_MOUV_STOCK}" />
+				<p:ajax event="blur" update="@this" />
+			</p:inputText>
+
+
+			<p:outputLabel value="Observation : " />
+			<p:inputTextarea value="#{mouvementStockController.selectedGrMouvStockDTO.commentaire}"
+				validator="#{mouvementStockController.validateDocument}" disabled="#{mouvementStockController.editable()}"
+				style="width:300%">
+				<f:attribute name="nomChamp" value="#{const.C_COMMENTAIRE}" />
+				<p:ajax event="blur" update="@this" />
+			</p:inputTextarea>
+
+
+		</h:panelGrid>
+
+	</p:panel>
+
+	<p:panel widgetVar="wvLigneMouvMessages">
+		<p:messages id="idLigneMouvMessages" showDetail="true" closable="true" autoUpdate="false" />
+	</p:panel>
+	
+	<p:panel id="idPanelLignes" header="Lignes" toggleable="true" widgetVar="wvMouvPanelLignes">
+
+
+		<p:menubar styleClass="menu-onglet">
+			<p:menuitem label="Insérer" styleClass="icon-insert icon"
+				actionListener="#{mouvementStockController.actInsererLigne}" process="@this"
+				update="@this,@widgetVar(widgetVarDataTableLigneMouvement),:form:messages,@widgetVar(wvMouvPanelLignes)"
+				disabled="#{!mouvementStockController.modeEcran.dataSetEnModif() or mouvementStockController.etatBoutonLigne('inserer') }"
+				oncomplete="jQuery('.myclass .ui-datatable-data tr').last().find('span.ui-icon-pencil').each(function(){jQuery(this).click()});" />
+
+			<p:menuitem label="Supprimer" styleClass="icon-delete icon"
+				actionListener="#{mouvementStockController.actSupprimerLigne}" process="@this"
+				update="@this,@widgetVar(wvMouvPanelLignes),:form:messages,@widgetVar(wvMouvPanelLignes)"
+				disabled="#{!mouvementStockController.modeEcran.dataSetEnModif() or mouvementStockController.etatBoutonLigne('supprimer') }" />
+		</p:menubar>
+
+		<!-- editable="#{!mouvementStockController.typeMouvementNonModifiable()}"  -->
+		<p:dataTable id="dataTableLigneMouvementStock" 
+			var="ligne" widgetVar="widgetVarDataTableLigneMouvement"
+			value="#{mouvementStockController.valuesLigne}" 
+			rowKey="#{ligne.dto.id}"
+			selection="#{mouvementStockController.selectedTaMouvementStockDTOJSF}" 
+			selectionMode="single"
+			editable="#{!mouvementStockController.typeMouvementNonModifiable()}" 
+			dblClickSelect="true"
+			styleClass="datatable mt10 myclass" 
+			resizableColumns="true" paginator="true"
+			rows="#{msg.modele_datatable_ligne_par_page_debut}" 
+			paginatorTemplate="#{msg.modele_datatable_paginator}"
+			rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}" 
+			emptyMessage="#{msg.message_datatable_vide}"
+			currentPageReportTemplate="#{msg.modele_datatable_page_courante}">
+
+			<p:ajax event="rowEdit" listener="#{mouvementStockController.onRowEdit}" update="@widgetVar(wvLigneMouvMessages),@widgetVar(wVCodeTitreTransportMouvement),@widgetVar(wVQteTransportMouvement)"
+				oncomplete="if(!handleCompleteValidationError(xhr, status, args)) {increment();};autreLigneModifiable('myclass');" />
+				<p:ajax event="rowEditInit" listener="#{mouvementStockController.onRowEditInit}" update="@widgetVar(wVCodeTitreTransportMouvement),@widgetVar(wVQteTransportMouvement)"  oncomplete="autreLigneNonModifiable('myclass');"/>
+			<p:ajax event="rowEditCancel" listener="#{mouvementStockController.onRowCancel}" update="@widgetVar(widgetVarBtnSupprimer),@widgetVar(wvLigneMouvMessages),@widgetVar(wVCodeTitreTransportMouvement),@widgetVar(wVQteTransportMouvement)" oncomplete="autreLigneModifiable('myclass');"/>
+			<p:ajax event="rowSelect" listener="#{mouvementStockController.onRowSelectLigne}" />
+			<!-- 					<p:ajax event="rowEditInit" listener="#{mouvementStockController.onRowEditInit}" /> -->
+			
+			<p:column style="width:16px" >
+						<p:rowEditor rendered="#{mouvementStockController.etatBoutonLigne('rowEditor')}" styleClass="row-editor-debut"/>
+					</p:column>
+
+			<p:column style="width:120px">
+				<f:facet name="header">
+					<h:outputText value="Code article" />
+				</f:facet>
+				<p:cellEditor>
+					<f:facet name="output">
+						<h:outputText value="#{ligne.taArticleDTO.codeArticle}" />
+					</f:facet>
+					<f:facet name="input">
+						<p:focus>
+							<p:autoComplete value="#{ligne.taArticleDTO}"
+								completeMethod="#{mouvementStockController.articleAutoCompleteDTOLight}" id="idarticle" var="art"
+								itemLabel="#{art.codeArticle}" itemValue="#{art}" forceSelection="true" dropdown="true" placeholder="Article"
+									maxResults="#{mouvementStockController.taPreferencesService.nbMaxChargeListeArticle()}"
+									moreText="Il y a #{component.maxResults} affichés sur #{component.suggestions.size()} au total, Veuillez affiner votre recherche ou cliquer ici pour en afficher plus ..."
+								converter="entityConverter" style="width:100%">
+								<p:column>
+									<h:outputText value="#{art.codeArticle}" />
+								</p:column>
+								<p:column>
+									<h:outputText value="#{art.libellecArticle}" />
+								</p:column>
+									<p:column >
+										<h:outputText value="#{art.commentaireArticle}" rendered="#{mouvementStockController.rechercheAvecCommentaire(false)}"/>
+									</p:column>
+								
+								<f:attribute name="nomChamp" value="#{const.C_CODE_ARTICLE}" />
+								<p:ajax event="itemSelect" listener="#{mouvementStockController.autcompleteSelection}"
+									update="@parent:lib,lot,qte1,u1,qte2,u2,idcodeEntrepotOrg,emplacementOrg,idQteTransportMouvement,idCodeTransportMouvement" />
+								<p:ajax event="moreText" listener="#{mouvementStockController.onMoreTextArticle}" />
+							</p:autoComplete>
+						</p:focus>
+					</f:facet>
+				</p:cellEditor>
+			</p:column>
+
+			<p:column style="width:120px">
+				<f:facet name="header">
+					<h:outputText value="Libellé" />
+				</f:facet>
+
+				<p:cellEditor>
+					<f:facet name="output">
+						<h:outputText value="#{ligne.dto.libelleStock}" />
+					</f:facet>
+					<f:facet name="input">
+						<p:inputText value="#{ligne.dto.libelleStock}" style="width:100%"
+							validator="#{mouvementStockController.validateMouvement}" id="lib">
+							<f:attribute name="nomChamp" value="#{const.C_LIBELLE_STOCK}" />
+							<p:ajax event="blur" update="@this" />
+						</p:inputText>
+					</f:facet>
+				</p:cellEditor>
+			</p:column>
+
+
+
+			<p:column style="width:120px" rendered="#{mouvementStockController.gestionLot}">
+				<f:facet name="header">
+					<h:outputText value="N° de lot" />
+				</f:facet>
+				<p:cellEditor>
+					<f:facet name="output">
+						<h:outputText value="#{ligne.taLot.numLot}" />
+					</f:facet>
+					<f:facet name="input">
+						<p:autoComplete value="#{ligne.articleLotEntrepotDTO}"
+							completeMethod="#{mouvementStockController.lotAutoComplete}" id="lot"
+							converter="#{articleLotEntrepotDTOMouvementStockConverter}" var="lot" itemLabel="#{lot.numLot}"
+							itemValue="#{lot}" forceSelection="true" dropdown="true" placeholder="Lot" style="width:100%">
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="Numéro de lot" />
+								</f:facet>
+								<h:outputText value="#{lot.numLot}" />
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="Libellé lot" />
+								</f:facet>
+								<h:outputText value="#{lot.libelleLot}" />
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="Code entrepot" />
+								</f:facet>
+								<h:outputText value="#{lot.codeEntrepot}" />
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="Entrepot" />
+								</f:facet>
+								<h:outputText value="#{lot.libelleEntrepot}" />
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="Emplacement" />
+								</f:facet>
+								<h:outputText value="#{lot.emplacement}" />
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="Qte en stock" />
+								</f:facet>
+								<h:outputText value="#{lot.qte1}" />
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="Unité" />
+								</f:facet>
+								<h:outputText value="#{lot.codeUnite}" />
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="Date lot" />
+								</f:facet>
+								<h:outputText value="#{lot.dateLot}" />
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="Dluo" />
+								</f:facet>
+								<h:outputText value="#{lot.dluo}" />
+							</p:column>
+							<f:attribute name="nomChamp" value="#{const.C_NUM_LOT}" />
+							<p:ajax event="itemSelect" listener="#{mouvementStockController.autcompleteSelection}"
+								update="idcodeEntrepotOrg,emplacementOrg,u1" />
+						</p:autoComplete>
+
+					</f:facet>
+				</p:cellEditor>
+			</p:column>
+
+<!-- rendered="#{!mouvementStockController.renderedEcranChangementDepot()}" -->
+			<p:column style="width:120px" >
+				<f:facet name="header">
+					<h:outputText value="#{mouvementStockController.renderedEcranChangementDepot()?'Entrepot d\'orgine':'Entrepot'}" />
+				</f:facet>
+				<h:outputText value="#{ligne.taEntrepotOrg.codeEntrepot}" id="idcodeEntrepotOrg"/>
+				
+			</p:column>
+
+			<p:column style="width:120px">
+				<f:facet name="header">
+					<h:outputText value="#{mouvementStockController.renderedEcranChangementDepot()?'Emplacement d\'orgine':'Emplacement'}" />
+				</f:facet>
+				<h:outputText value="#{ligne.dto.emplacement}" id="emplacementOrg"/>
+				
+			</p:column>
+
+			<p:column style="width:130px" rendered="#{mouvementStockController.renderedEcranChangementDepot()}">
+				<f:facet name="header">
+					<h:outputText value="Entrepot destination"/>
+				</f:facet>
+				<p:cellEditor>
+				<f:facet name="output">
+					<h:outputText value="#{ligne.taEntrepotDest.codeEntrepot}" />
+				</f:facet>
+				<f:facet name="input">
+					<p:autoComplete value="#{ligne.taEntrepotDest}" completeMethod="#{mouvementStockController.entrepotAutoCompleteDest}"
+						var="entrepotDest" itemLabel="#{entrepotDest.codeEntrepot}" itemValue="#{entrepotDest}" forceSelection="true"
+						converter="entityConverter"
+						dropdown="true" placeholder="Entrepot dest." style="width:100%">
+						<p:column>
+							<h:outputText value="#{entrepotDest.codeEntrepot}" />
+						</p:column>
+							<f:attribute name="nomChamp" value="#{const.C_CODE_ENTREPOT_DEST}" />
+							<p:ajax event="itemSelect" listener="#{mouvementStockController.autcompleteSelection}"  />
+
+					</p:autoComplete>
+				</f:facet>
+				</p:cellEditor>
+			</p:column>
+
+			<p:column style="width:120px" rendered="#{mouvementStockController.renderedEcranChangementDepot()}">
+				<f:facet name="header">
+					<h:outputText value="Emplacement destination" />
+				</f:facet>
+				<p:cellEditor>
+					<f:facet name="output">
+						<h:outputText value="#{ligne.dto.emplacementDest}" />
+					</f:facet>
+					<f:facet name="input">
+						<p:autoComplete value="#{ligne.dto.emplacementDest}"
+							completeMethod="#{mouvementStockController.emplacementAutoCompleteDest}" dropdown="true"
+							placeholder="Emplacement dest." style="width:100%">
+							<f:attribute name="nomChamp" value="#{const.C_EMPLACEMENT_DEST}" />
+							<p:ajax event="itemSelect" listener="#{mouvementStockController.autcompleteSelection}"  />
+						</p:autoComplete>
+					</f:facet>
+				</p:cellEditor>
+			</p:column>
+
+			<p:column style="width:80px">
+				<f:facet name="header">
+					<h:outputText value="Qté 1" />
+				</f:facet>
+				<!-- 						<h:outputText value="#{ligne.qteLDocument}" /> -->
+				<p:cellEditor>
+					<f:facet name="output">
+						<h:outputText value="#{ligne.dto.qte1Stock}" />
+					</f:facet>
+					<f:facet name="input">
+						<p:inputText value="#{ligne.dto.qte1Stock}" style="width:100%" id="qte1"
+						
+							validator="#{mouvementStockController.validateMouvement}">
+							<f:attribute name="nomChamp" value="#{const.C_QTE1_STOCK}" />
+							<p:ajax event="blur" update="@this,@parent:qte2,idQteTransportMouvement" />
+						</p:inputText>
+					</f:facet>
+				</p:cellEditor>
+			</p:column>
+
+			<p:column style="width:70px">
+				<f:facet name="header">
+					<h:outputText value="Unité 1" />
+				</f:facet>
+				<!-- 						<h:outputText value="#{ligne.dto.u1LDocument}" /> -->
+				<p:cellEditor>
+					<f:facet name="output">
+						<h:outputText value="#{ligne.dto.un1Stock}" />
+					</f:facet>
+					<f:facet name="input">
+						<p:autoComplete value="#{ligne.taUnite1}" id="u1" completeMethod="#{mouvementStockController.uniteAutoComplete}"
+							var="unit" itemLabel="#{unit.codeUnite}" itemValue="#{unit}" forceSelection="true" dropdown="true"
+							placeholder="U1" style="width:100%">
+							<p:column>
+								<h:outputText value="#{unit.codeUnite}" />
+							</p:column>
+
+							<f:attribute name="nomChamp" value="#{const.C_UN1_STOCK}" />
+							<p:ajax event="itemSelect" listener="#{mouvementStockController.autcompleteSelection}" />
+						</p:autoComplete>
+					</f:facet>
+				</p:cellEditor>
+			</p:column>
+
+
+			<p:column style="width:80px" rendered="#{!mouvementStockController.renderedEcranChangementDepot()}">
+				<f:facet name="header">
+					<h:outputText value="Qté 2" />
+				</f:facet>
+				<!-- 						<h:outputText value="#{ligne.qteLDocument}" /> -->
+				<p:cellEditor>
+					<f:facet name="output">
+						<h:outputText value="#{ligne.dto.qte2Stock}" />
+					</f:facet>
+					<f:facet name="input">
+						<p:inputText value="#{ligne.dto.qte2Stock}" style="width:100%" id="qte2"
+						
+							validator="#{mouvementStockController.validateMouvement}">
+							<f:attribute name="nomChamp" value="#{const.C_QTE2_STOCK}" />
+							<p:ajax event="blur" update="@this" />
+						</p:inputText>
+					</f:facet>
+				</p:cellEditor>
+			</p:column>
+
+			<p:column style="width:70px" rendered="#{!mouvementStockController.renderedEcranChangementDepot()}">
+				<f:facet name="header">
+					<h:outputText value="Unité 2" />
+				</f:facet>
+				<!-- 						<h:outputText value="#{ligne.dto.u1LDocument}" /> -->
+				<p:cellEditor>
+					<f:facet name="output">
+						<h:outputText value="#{ligne.dto.un2Stock}" />
+					</f:facet>
+					<f:facet name="input">
+						<p:autoComplete value="#{ligne.taUnite2}" id="u2" completeMethod="#{mouvementStockController.uniteAutoComplete}"
+							var="unit" itemLabel="#{unit.codeUnite}" itemValue="#{unit}" forceSelection="true" dropdown="true"
+							placeholder="U1" style="width:100%">
+							<p:column>
+								<h:outputText value="#{unit.codeUnite}" />
+							</p:column>
+
+							<f:attribute name="nomChamp" value="#{const.C_UN2_STOCK}" />
+							<p:ajax event="itemSelect" listener="#{mouvementStockController.autcompleteSelection}" />
+						</p:autoComplete>
+					</f:facet>
+				</p:cellEditor>
+			</p:column>
+
+
+		
+					<p:column  style="width:5%" styleClass="right"  rendered="#{mouvementStockController.gestionCapsules}">
+						<f:facet name="header">
+							<h:outputText value="Titre CRD" />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.codeTitreTransport}">
+								</h:outputText>
+							</f:facet>
+							<f:facet name="input">
+								<p:autoComplete value="#{ligne.taTitreTransport}" id="idCodeTransportMouvement" disabled="#{!mouvementStockController.afficheCrd()}"
+								widgetVar="wVCodeTitreTransportMouvement" completeMethod="#{mouvementStockController.titreTransportAutoComplete}" var="unit" itemLabel="#{unit.codeTitreTransport}"
+									itemValue="#{unit}" forceSelection="true" dropdown="true" placeholder="U2" style="width:100%" converter="entityConverter"  >
+									<p:column>
+										<h:outputText value="#{unit.codeTitreTransport}" />
+									</p:column>
+
+									<f:attribute name="nomChamp" value="#{const.C_CODE_TITRE_TRANSPORT}" />
+									 <p:ajax event="clear" listener="#{mouvementStockController.onClearTaTitreTransport}" update="idQteTransportMouvement"/>
+									<p:ajax event="itemSelect" listener="#{mouvementStockController.autcompleteSelection}"/>
+								</p:autoComplete>
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+			
+			
+			
+					<p:column style="width:5%" styleClass="right"  rendered="#{mouvementStockController.gestionCapsules}">
+						<f:facet name="header">
+							<h:outputText value="Qté CRD"  />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.qteTitreTransport}"  />
+							</f:facet>
+							<f:facet name="input">
+								<p:inputText value="#{ligne.dto.qteTitreTransport}"  id="idQteTransportMouvement" style="width:100%" 
+								disabled="#{!mouvementStockController.afficheCrd()}"
+								widgetVar="wVQteTransportMouvement"  >
+									<f:attribute name="nomChamp" value="#{const.C_QTE_TITRE_TRANSPORT_L_DOCUMENT}" />
+									<p:ajax event="blur" update="@this"/>
+								</p:inputText>
+							</f:facet>
+						</p:cellEditor>						
+					</p:column>
+
+			
+			<p:column style="width:16px">
+						<f:facet name="header">
+							<h:outputText value="" />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<p:commandButton title="Supprimer" styleClass="icon-delete icon icon-grille" widgetVar="widgetVarBtnSupprimer"
+									action="#{mouvementStockController.actSupprimerLigne}"
+									process="@this"
+									disabled="#{!mouvementStockController.modeEcran.dataSetEnModif() or mouvementStockController.etatBoutonLigne('supprimer')}"
+									update="@widgetVar(wvMouvPanelLignes)">
+<!-- 									<f:attribute name="idLigne" value="#{ligne.dto.id}" /> -->
+									<f:setPropertyActionListener target="#{mouvementStockController.selectedTaMouvementStockDTOJSF}" value="#{ligne}" />
+								</p:commandButton>
+							</f:facet>
+							<f:facet name="input">
+								<h:outputText value="" />
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+
+					<p:column style="width:26px">
+						<p:rowEditor rendered="#{mouvementStockController.etatBoutonLigne('rowEditor')}" styleClass="row-editor-fin"/>
+					</p:column>
+
+		</p:dataTable>
+
+	</p:panel>
+
+	<p:remoteCommand name="increment" binding="#{mouvementStockController.rc}"
+		actionListener="#{mouvementStockController.actAutoInsererLigne}" process="@this"
+		update="@widgetVar(wvMouvPanelLignes)" disabled="#{mouvementStockController.insertAuto}" />
+
+</ui:composition>

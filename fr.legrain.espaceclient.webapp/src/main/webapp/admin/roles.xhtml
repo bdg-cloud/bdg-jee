@@ -1,0 +1,186 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<p:panel  id="roleFormPrincipal" widgetVar="widgetVarRoleForm" styleClass="testx">
+
+		<p class="subtitle">Gestion des roles</p>
+
+		<p:dataTable id="roleDataTable" var="table"
+			value="#{roleController.values}" rowKey="#{table.id}"
+			selectionMode="single" styleClass="datatable"
+			selection="#{roleController.selection}" 
+			paginator="true"
+			rows="#{msg.modele_datatable_ligne_par_page_debut}"
+			paginatorTemplate="#{msg.modele_datatable_paginator}"
+			rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+			emptyMessage="#{msg.message_datatable_vide}"
+			currentPageReportTemplate="#{msg.modele_datatable_page_courante}">
+
+			<p:ajax event="rowSelect" listener="#{roleController.onRowSelect}" />
+
+			<f:facet name="{Exporters}">
+				<h:commandLink>
+					<p:graphicImage library="images" name="excel.png" width="24" />
+					<p:dataExporter type="xls" target="roleDataTable" fileName="roles" />
+				</h:commandLink>
+
+				<h:commandLink>
+					<p:graphicImage library="images" name="pdf.png" width="24" />
+					<p:dataExporter type="pdf" target="roleDataTable" fileName="roles" />
+				</h:commandLink>
+
+				<h:commandLink>
+					<p:graphicImage library="images" name="csv.png" width="24" />
+					<p:dataExporter type="csv" target="roleDataTable" fileName="roles" />
+				</h:commandLink>
+
+				<h:commandLink>
+					<p:graphicImage library="images" name="xml.png" width="24" />
+					<p:dataExporter type="xml" target="roleDataTable" fileName="roles" />
+				</h:commandLink>
+			</f:facet>
+
+			<p:column sortBy="#{table.id}" filterBy="#{table.id}"
+				filterMatchMode="contains">
+				<f:facet name="header">
+					<h:outputText value="ID" />
+				</f:facet>
+
+				<h:outputText value="#{table.id}" />
+			</p:column>
+
+			<p:column sortBy="#{table.role}" filterBy="#{table.role}"
+				filterMatchMode="contains">
+				<f:facet name="header">
+					<h:outputText value="Role" />
+				</f:facet>
+
+				<h:outputText value="#{table.role}" />
+			</p:column>
+			
+			<p:column sortBy="#{table.description}" filterBy="#{table.description}"
+				filterMatchMode="contains">
+				<f:facet name="header">
+					<h:outputText value="Description" />
+				</f:facet>
+
+				<h:outputText value="#{table.description}" />
+			</p:column>
+	
+		</p:dataTable>
+
+
+		<div id="roleDataTableF" class="text-center mt30 bg-grey">
+			<p:commandButton id="roleInserer" value="Insérer"
+				process="@this" disabled="#{roleController.etatBouton('inserer')}"
+				update="@widgetVar(varRolePanel), @this, @parent:roleModifier, @parent:roleSupprimer"
+				actionListener="#{roleController.actInserer}"
+				class="btn-insert btn" />
+
+			<p:commandButton id="roleModifier" value="Modifier"
+				process="@this" class="btn-update btn"
+				disabled="#{roleController.etatBouton('modifier')}"
+				update="@widgetVar(varRolePanel), @parent:roleInserer, @this, @parent:roleSupprimer"
+				actionListener="#{roleController.actModifier}" />
+
+			<p:commandButton id="roleSupprimer" value="Supprimer"
+				class="btn-delete btn"
+				disabled="#{roleController.etatBouton('supprimer')}"
+				type="button" onclick="PF('rolecd1').show()">
+			</p:commandButton>
+
+			<p:commandButton id="roleFermer" value="Fermer"
+				class="btn-close btn" type="button"
+				onclick="PF('rolecd2').show()" />
+				
+			<p:confirmDialog
+				message="Etes-vous sûr de vouloir supprimer l'enregistrement ?"
+				header="Confirmation" severity="alert" appendTo="@(body)"
+				widgetVar="rolecd1">
+				<p:commandButton value="Oui" update="@form" oncomplete="PF('rolecd1').hide()">
+					<p:ajax listener="#{roleController.actSupprimer}" />
+				</p:commandButton>
+				<p:commandButton value="Non" onclick="PF('rolecd1').hide();" type="button" />
+			</p:confirmDialog>
+
+			<p:confirmDialog
+				message="Etes-vous sûr de vouloir fermer l'onglet ? (Les modifications en cours ne seront pas sauvegardées) "
+				header="Confirmation" severity="alert" widgetVar="rolecd2"
+				appendTo="@(body)">
+				<p:commandButton value="Oui"
+					onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())"
+					oncomplete="PF('rolecd2').hide()" />
+
+				<p:commandButton value="Non" onclick="PF('rolecd2').hide();" type="button"/>
+			</p:confirmDialog>
+		</div>
+		
+	</p:panel>
+
+	<p:messages id="roleMessages" showDetail="true" autoUpdate="true" closable="true" />
+
+
+	<p:panel id="rolePanel" visible="true" widgetVar="varRolePanel">
+	
+		<p:panel resizable="false" id="rolePanelCache" rendered="#{roleController.modeEcran.dataSetEnModif()}">
+<!-- 		rendered="#{roleController.creation}" -->
+			
+<!-- 			<h:form id="roleFormCreation"> -->
+			
+				<f:validateBean disabled="true">
+
+					<div class="ui-grid ui-grid-responsive" id="roleGridResp">
+						<div class="ui-grid-row">
+
+							<div class="ui-grid-col-4">
+								<h:outputText value="Role :"/>
+							</div>
+							<div class="ui-grid-col-8">
+								<p:inputText value="#{roleController.nouveau.role}"
+									required="true" requiredMessage="Champs obligatoire!">
+								</p:inputText>
+							</div>
+							
+						</div>
+						<div class="ui-grid-row">
+
+							<div class="ui-grid-col-4">
+								<h:outputText value="Description :"/>
+							</div>
+							<div class="ui-grid-col-8">
+								<p:inputText value="#{roleController.nouveau.description}"
+									required="true" requiredMessage="Champs obligatoire!">
+								</p:inputText>
+							</div>
+						</div>
+						
+						<div class="ui-grid-row">
+
+							<div class="ui-grid-col-12 text-center">
+								<p:commandButton value="Enregistrer"
+									class="btn-save btn" 
+									disabled="#{roleController.etatBouton('enregistrer')}"
+									update="@(.testx), @widgetVar(widgetVarRoleForm), @widgetVar(varRolePanel)"
+									actionListener="#{roleController.actEnregistrer}" />
+								<p:commandButton value="Annuler"
+									class="btn-cancel btn" 
+									disabled="#{roleController.etatBouton('annuler')}"
+									update="@widgetVar(widgetVarRoleForm), @widgetVar(varRolePanel)"
+									actionListener="#{roleController.actAnnuler}" />
+							</div>
+						</div>
+					</div>
+					
+				</f:validateBean>
+				
+<!-- 			</h:form> -->
+			
+		</p:panel>
+		
+	</p:panel>
+
+
+</ui:composition>

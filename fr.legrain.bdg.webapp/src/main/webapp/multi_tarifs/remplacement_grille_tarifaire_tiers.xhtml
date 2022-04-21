@@ -1,0 +1,320 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions">
+
+	<p:menubar styleClass="menu-onglet" id="idMenuBoutonGestGrilleReference" widgetVar="wvMenuBoutonGestGrilleReference">
+
+<!-- 		<p:menuitem title="Enregistrer la grille de référence" value="Enregistrer" styleClass="icon icon-save" process="@this" -->
+<!-- 			actionListener="#{remplacementGrilleTarifaireTiersController.actEnregistrer}" -->
+<!-- 			update=":form:messages,@form,@widgetVar(wvMenuListeGrilleReference),@widgetVar(wvDataTableListeGestGrilleReference), -->
+<!-- 			@widgetVar(wvDataTableListeGestGrilleReference2),@widgetVar(wvPanelRenderedGrilleReference),@widgetVar(wvInfosComplementairesGrilleReference),@widgetVar(wvDataTableListeGestGrilleReference2)" -->
+<!-- 			disabled="#{remplacementGrilleTarifaireTiersController.etatBouton('enregistrer')}" /> -->
+
+
+
+		<p:menuitem title="Annuler les modifications en cours" value="Annuler" styleClass="icon icon-cancel"
+			actionListener="#{remplacementGrilleTarifaireTiersController.actAnnuler}" process="@this"
+			update=":form:messages,@form,@widgetVar(wvMenuListeGrilleReference),@widgetVar(wvDataTableListeGestGrilleReference),@widgetVar(wvDataTableListeGestGrilleReference2),@widgetVar(wvPanelRenderedGrilleReference),@widgetVar(wvInfosComplementairesGrilleReference)"
+			disabled="#{remplacementGrilleTarifaireTiersController.etatBouton('annuler')}">
+			<p:confirm header="Confirmation" message="Etes vous sur de vouloir annuler les modifications en cours ?" icon="ui-icon-alert" />
+		</p:menuitem>
+
+
+<!-- 		<p:menuitem title="Imprimer la grille de référence" value="Imprimer" styleClass="icon icon-print" -->
+<!-- 			onsuccess="window.open('#{request.contextPath}/output?__report=/reports/remise/FicheGrilleReference.rptdesign&amp;__format=pdf')" -->
+<!-- 			actionListener="#{remplacementGrilleTarifaireTiersController.actImprimer}" disabled="#{remplacementGrilleTarifaireTiersController.etatBouton('imprimer')}" /> -->
+
+
+		<p:menuitem title="Fermer l'écran" value="Fermer" styleClass="icon icon-close menuitem-fermer-droite" process="@this"
+			actionListener="#{remplacementGrilleTarifaireTiersController.actFermer}"
+			update=":form:messages,@widgetVar(wvMenuListeGrilleReference),@widgetVar(wvDataTableListeGestGrilleReference2)"
+			disabled="#{remplacementGrilleTarifaireTiersController.etatBouton('fermer')}" onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())">
+
+			<p:confirm header="Confirmation" message="#{msg_diag.alert_fermeture_onglet}" icon="ui-icon-alert"
+				disabled="#{!remplacementGrilleTarifaireTiersController.modeEcran.dataSetEnModif()}" />
+		</p:menuitem>
+
+
+		<p:separator styleClass="separateur-menu-vertical" />
+
+
+	</p:menubar>
+
+<!-- <p:hotkey bind="down" handler="PF('switcher').previous();" /> -->
+
+<!-- 	<p:fieldset style="margin-bottom:20px;" widgetVar="wvInfosComplementairesGrilleReference"> -->
+<!-- 		<h:panelGrid columns="13" cellpadding="15"> -->
+<!-- 			<p:menubar> -->
+<!-- 		<p:menuitem title="Liste des tiers à sélectionner" styleClass="icon icon-liste"   -->
+<!-- 		oncomplete="PF('wvOverlayListeGrilleReference').show();" update="@widgetVar(wvDataTableListeGestGrilleReference2)" disabled="#{remplacementGrilleTarifaireTiersController.modeEcran.dataSetEnModif()}" /> -->
+<!-- 			</p:menubar> -->
+<!-- 		</h:panelGrid> -->
+<!-- 	</p:fieldset> -->
+	<div class="container">
+		<p:fieldset legend="Etape 1/3 : Saisissez les critères de sélection des tiers"  
+			toggleable="true" toggleSpeed="50">
+
+			<div class="ui-g">
+
+				<div class="ui-g-12 ui-lg-12">
+					<div class="ui-g-12 ui-lg-4">
+						<div class="card">
+							<p:panel header="Retrouver une liste de tiers à partir d'une grille tarifaire">
+								<p:panelGrid columns="2" columnClasses="ui-grid-col-3,ui-grid-col-3,ui-grid-col-3,ui-grid-col-3" styleClass="ui-panelgrid-blank" layout="grid">
+									<p:outputLabel value="Grille tarifaire" />
+									<p:autoComplete value="#{remplacementGrilleTarifaireTiersController.taTTarifDTO}" converter="entityConverter"
+										completeMethod="#{remplacementGrilleTarifaireTiersController.tTarifAutoComplete}" var="tTarif" itemLabel="#{tTarif.codeTTarif}" itemValue="#{tTarif}"
+										forceSelection="true" dropdown="true" placeholder="Tiers">
+										<p:column>
+											<h:outputText value="#{tTarif.codeTTarif}" />
+										</p:column>
+
+										<p:column>
+											<h:outputText value="#{tTarif.liblTTarif}" />
+										</p:column>
+
+										<f:attribute name="nomChamp" value="#{const.C_CODE_T_TARIF}" />
+										<p:ajax event="itemSelect" listener="#{remplacementGrilleTarifaireTiersController.autcompleteSelection}" update="@widgetVar(wvPanelRenderedGrilleReference)" />
+									</p:autoComplete>
+
+								</p:panelGrid>
+							</p:panel>
+						</div>
+					</div>
+					<div class="ui-g-12 ui-lg-4">
+						<div class="card">
+							<p:panel header="Retrouver une liste de tiers à partir d'une famille de tiers">
+								<p:panelGrid columns="2" columnClasses="ui-grid-col-4 right,ui-grid-col-8" styleClass="ui-panelgrid-blank" layout="grid">
+									<i class="fa fa-file-text-o fa-3x" aria-hidden="true"></i>
+									<p:panelGrid columns="1" cellpadding="0">
+										<p:outputLabel value="Famille" />
+										<p:autoComplete value="#{remplacementGrilleTarifaireTiersController.taFamilleDTO}" converter="entityConverter"
+											completeMethod="#{remplacementGrilleTarifaireTiersController.familleAutoComplete}" var="famille" itemLabel="#{famille.codeFamille}" itemValue="#{famille}"
+											forceSelection="true" dropdown="true" placeholder="Famille">
+											<p:column>
+												<h:outputText value="#{famille.codeFamille}" />
+											</p:column>
+
+											<p:column>
+												<h:outputText value="#{famille.libcFamille}" />
+											</p:column>
+
+											<f:attribute name="nomChamp" value="#{const.C_CODE_FAMILLE}" />
+											<p:ajax event="itemSelect" listener="#{remplacementGrilleTarifaireTiersController.autcompleteSelection}" update="@widgetVar(wvPanelRenderedGrilleReference)" />
+										</p:autoComplete>
+									</p:panelGrid>
+								</p:panelGrid>
+							</p:panel>
+						</div>
+					</div>
+<!-- 					<div class="ui-g-12 ui-lg-4"> -->
+<!-- 						<div class="card"> -->
+<!-- 							<p:panel header="Sélectionner une grille tarifaire à affecter aux tiers sélectionnés"> -->
+<!-- 								<p:panelGrid columns="2" columnClasses="ui-grid-col-4 right,ui-grid-col-8" styleClass="ui-panelgrid-blank" layout="grid"> -->
+<!-- 									<i class="fa fa-file-text-o fa-3x" aria-hidden="true"></i> -->
+<!-- 									<p:panelGrid columns="1" cellpadding="0"> -->
+<!-- 									<p:outputLabel value="Grille tarifaire" /> -->
+<!-- 									<p:autoComplete value="#{remplacementGrilleTarifaireTiersController.taTTarifRemplacementDTO}" converter="entityConverter" -->
+<!-- 										completeMethod="#{remplacementGrilleTarifaireTiersController.tTarifAutoComplete}" var="tTarif" itemLabel="#{tTarif.codeTTarif}" itemValue="#{tTarif}" -->
+<!-- 										forceSelection="true" dropdown="true" placeholder="Tiers"> -->
+<!-- 										<p:column> -->
+<!-- 											<h:outputText value="#{tTarif.codeTTarif}" /> -->
+<!-- 										</p:column> -->
+
+<!-- 										<p:column> -->
+<!-- 											<h:outputText value="#{tTarif.liblTTarif}" /> -->
+<!-- 										</p:column> -->
+
+<!-- 										<f:attribute name="nomChamp" value="#{const.C_CODE_T_TARIF}" /> -->
+<!-- 										<p:ajax event="itemSelect" listener="#{remplacementGrilleTarifaireTiersController.autcompleteSelection}" update="@widgetVar(wvPanelRenderedGrilleReference)" /> -->
+<!-- 									</p:autoComplete> -->
+<!-- 									</p:panelGrid> -->
+<!-- 								</p:panelGrid> -->
+<!-- 							</p:panel> -->
+<!-- 						</div> -->
+<!-- 					</div> -->
+				</div>
+			</div>
+
+			<div class="card" style="text-align: center;">
+				<p:commandButton value="Valider les critères" actionListener="#{remplacementGrilleTarifaireTiersController.refresh}"
+				onstart="PF('widgetVarDataTableLigneGrilleReference').clearFilters()" 
+				update="idPanelListeTiersGestGrilleReference,@widgetVar(wVPanelTitreGrilleReference)"
+					style="width:20%; height:45px;" icon="fa fa-check" />
+			</div>
+
+		</p:fieldset>
+	</div>
+	<div class="container">
+		<p:panel id="idPanelRenderedGrilleReference" widgetVar="wvPanelRenderedGrilleReference">
+			<div class="container">
+
+				<p:fieldset legend="#{remplacementGrilleTarifaireTiersController.titreEcran}" toggleable="true" toggleSpeed="50">
+
+					<p:panel header="Liste des tiers" id="idPanelListeTiersGestGrilleReference">
+						<div class="ui-g">
+							<div class="ui-g-12">
+									
+								<p:dataTable id="dataTableListeTiers" var="taTiers"
+				widgetVar="widgetVarDataTableLigneGrilleReference"
+				value="#{remplacementGrilleTarifaireTiersController.valuesLignes}"
+				rowKey="#{taTiers.dto.id}"
+				selection="#{remplacementGrilleTarifaireTiersController.filteredValuesLignes}"
+				dblClickSelect="true"
+				styleClass="datatable mt10"
+				resizableColumns="true"
+				paginator="true" rows="10"
+				paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                 rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+				emptyMessage="#{msg.message_datatable_vide}"
+				currentPageReportTemplate="#{msg.modele_datatable_page_courante}"
+				disabledSelection="#{remplacementGrilleTarifaireTiersController.modeEcran.dataSetEnModif()}">
+				
+			
+				<f:facet name="header">  
+           			<h:outputText value="Tiers" />
+        		</f:facet>
+
+<!-- 		  		<f:facet name="{Exporters}"> -->
+<!-- 		            <h:commandLink> -->
+<!-- 		                <p:graphicImage library="images" name="excel.png" width="24"/> -->
+<!-- 		                <p:dataExporter type="xls" target="dataTableListeTiers" fileName="liste_tiers" /> -->
+<!-- 		            </h:commandLink> -->
+		 
+<!-- 		            <h:commandLink> -->
+<!-- 		                <p:graphicImage  library="images" name="pdf.png"  width="24"/> -->
+<!-- 		                <p:dataExporter type="pdf" target="dataTableListeTiers" fileName="liste_tiers"/> -->
+<!-- 		            </h:commandLink> -->
+		 
+<!-- 		            <h:commandLink> -->
+<!-- 		                <p:graphicImage  library="images" name="csv.png"  width="24"/> -->
+<!-- 		                <p:dataExporter type="csv" target="dataTableListeTiers" fileName="liste_tiers" /> -->
+<!-- 		            </h:commandLink> -->
+		 
+<!-- 		            <h:commandLink> -->
+<!-- 		                <p:graphicImage  library="images" name="xml.png"  width="24"/> -->
+<!-- 		                <p:dataExporter type="xml" target="dataTableListeTiers" fileName="liste_tiers" /> -->
+<!-- 		            </h:commandLink> -->
+<!-- 		        </f:facet> -->
+        
+        		<p:column selectionMode="multiple" style="width:16px;text-align:center" exportable="false"/>
+			
+       
+				<p:column sortBy="#{taTiers.dto.codeTiers}" filterBy="#{taTiers.dto.codeTiers}" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="Code" />
+					</f:facet>
+					<h:outputText value="#{taTiers.dto.codeTiers}" />
+				</p:column>
+				
+				<p:column sortBy="#{taTiers.dto.nomEntreprise}" filterBy="#{taTiers.dto.nomEntreprise}">
+					<f:facet name="header">
+						<h:outputText value="Entreprise" />
+					</f:facet>
+					<h:outputText value="#{taTiers.dto.nomEntreprise}" />
+				</p:column>
+				
+				<p:column sortBy="#{taTiers.dto.nomTiers}" filterBy="#{taTiers.dto.nomTiers}" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="Nom" />
+					</f:facet>
+					<h:outputText value="#{taTiers.dto.nomTiers}" />
+				</p:column>
+				
+				<p:column sortBy="#{taTiers.dto.prenomTiers}" filterBy="#{taTiers.dto.prenomTiers}" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="Prénom" />
+					</f:facet>
+					<h:outputText value="#{taTiers.dto.prenomTiers}" />
+				</p:column>
+				
+				<p:column sortBy="#{taTiers.dto.codeTTiers}" filterBy="#{taTiers.dto.codeTTiers}" styleClass="center" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="Type Tiers" />
+					</f:facet>
+					<h:outputText value="#{taTiers.dto.codeTTiers}" />
+				</p:column>
+				
+				<p:column sortBy="#{taTiers.dto.codeTTarif}" filterBy="#{taTiers.dto.codeTTarif}" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="grille tarifaire" />
+					</f:facet>
+					<h:outputText value="#{taTiers.dto.codeTTarif}" />
+				</p:column>
+				
+				<p:column sortBy="#{taTiers.dto.codeFamilleTiers}" filterBy="#{taTiers.dto.codeFamilleTiers}" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="Famille" />
+					</f:facet>
+					<h:outputText value="#{taTiers.dto.codeFamilleTiers}" />
+				</p:column>
+				
+				<p:column sortBy="#{taTiers.dto.codepostalAdresse}" filterBy="#{taTiers.dto.codepostalAdresse}" styleClass="center">
+					<f:facet name="header">
+						<h:outputText value="Code Postal" />
+					</f:facet>
+					<h:outputText value="#{taTiers.dto.codepostalAdresse}" />
+				</p:column>
+				
+				<p:column sortBy="#{taTiers.dto.villeAdresse}" filterBy="#{taTiers.dto.villeAdresse}" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="Ville" />
+					</f:facet>
+					<h:outputText value="#{taTiers.dto.villeAdresse}" />
+				</p:column>
+			</p:dataTable>
+							</div>
+						</div>
+					</p:panel>
+				</p:fieldset>
+			</div>
+		</p:panel>
+	</div>
+	<div class="container">
+		<p:fieldset legend="Etape 3/3 : Sélectionner la grille tarifaire à affecter aux tiers sélectionnés" 
+			toggleable="true" toggleSpeed="50">
+
+			<div class="ui-g">
+
+				<div class="ui-g-12 ui-lg-12">
+
+						<div class="card">
+							<p:panel header="Sélectionner une grille tarifaire à affecter aux tiers sélectionnés">
+								<p:panelGrid columns="2" columnClasses="ui-grid-col-4 right,ui-grid-col-8" styleClass="ui-panelgrid-blank" layout="grid">
+									<i class="fa fa-file-text-o fa-3x" aria-hidden="true"></i>
+									<p:panelGrid columns="1" cellpadding="0">
+									<p:outputLabel value="Grille tarifaire à affecter" />
+									<p:autoComplete value="#{remplacementGrilleTarifaireTiersController.taTTarifRemplacementDTO}" converter="entityConverter"
+										completeMethod="#{remplacementGrilleTarifaireTiersController.tTarifAutoComplete}" var="tTarif" itemLabel="#{tTarif.codeTTarif}" itemValue="#{tTarif}"
+										forceSelection="true" dropdown="true" placeholder="Tiers">
+										<p:column>
+											<h:outputText value="#{tTarif.codeTTarif}" />
+										</p:column>
+
+										<p:column>
+											<h:outputText value="#{tTarif.liblTTarif}" />
+										</p:column>
+
+										<f:attribute name="nomChamp" value="#{const.C_CODE_T_TARIF_REMPLACEMENT}" />
+										<p:ajax event="itemSelect" listener="#{remplacementGrilleTarifaireTiersController.autcompleteSelection}" 
+										update="@widgetVar(wVBtnEnregistrer)" />
+									</p:autoComplete>
+									</p:panelGrid>
+								</p:panelGrid>
+							</p:panel>
+						</div>
+				</div>
+			</div>
+
+			<div class="card" style="text-align: center;" >
+				<p:commandButton value="Enregistrer" actionListener="#{remplacementGrilleTarifaireTiersController.actEnregistrer}" widgetVar="wVBtnEnregistrer"
+				  oncomplete="PF('widgetVarDataTableLigneGrilleReference').filter()"
+				update="idPanelListeTiersGestGrilleReference,@widgetVar(wVPanelTitreGrilleReference),@widgetVar(wvPanelRenderedGrilleReference),@widgetVar(widgetVarDataTableLigneGrilleReference)"
+					style="width:20%; height:45px;" icon="fa fa-check" >
+					<p:confirm header="Confirmation" message="#{remplacementGrilleTarifaireTiersController.titreMessage}" icon="ui-icon-alert" />
+				</p:commandButton>	
+			</div>
+
+		</p:fieldset>
+	</div>
+
+</ui:composition>

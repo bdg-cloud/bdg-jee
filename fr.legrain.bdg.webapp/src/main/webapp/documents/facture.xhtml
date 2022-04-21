@@ -1,0 +1,2554 @@
+<ui:composition 
+	xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:f="http://java.sun.com/jsf/core" 
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets" 
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:p="http://primefaces.org/ui" 
+	xmlns:lgr="http://legrain.fr/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+<!-- 	xmlns:lgrjsf="http://java.sun.com/jsf/composite/lgr-jsf-component" -->
+
+	<!-- <f:validateBean disabled="true"> -->
+	<ui:define name="metadata">
+		<f:metadata>
+<!-- 			<f:viewParam name="variableEcran" value="#{factureController.nomDocument}" /> -->
+				<f:viewParam name="variableEcran" value="Facture" />
+		</f:metadata>
+	</ui:define>
+	
+			<p:panelGrid columns="2" styleClass="grille-cartouche">
+				<h:graphicImage library="images" name="dashboard/facture.svg" styleClass="cartouche-picto" />
+				<p:panelGrid columns="1">
+					<h:panelGroup>
+						<p:outputLabel value="Facture" styleClass="cartouche-titre"/>
+					</h:panelGroup>
+					<h:panelGroup id="idPanelGroupInfosTiersEnteteFacture" rendered="#{!factureController.selectedDocumentDTO.factureEstVide()}">
+<!-- 						<p:spacer width="30" height="5" /> -->
+						<p:outputLabel value="Code : " styleClass="cartouche-detail"/>
+						<p:outputLabel value="#{factureController.selectedDocumentDTO.codeDocument}" styleClass="cartouche-detail"/>
+						<p:spacer width="30" height="5" />
+						<p:outputLabel value="Code tiers : " styleClass="cartouche-detail"/>
+<!-- 						<p:outputLabel value="#{factureController.selectedDocumentDTO.codeTiers}" style="font-weight: bold;"/> -->
+							<p:commandLink 	value="#{factureController.selectedDocumentDTO.codeTiers}"
+											style="font-weight: bold;" 
+											action="#{factureController.ouvertureTiersBean.detailTiers(factureController.ouvertureTiersBean.recupCodetiers(factureController.selectedDocumentDTO.codeTiers))}" update=":form:tabView"
+											oncomplete="activeTabCenter('#{factureController.ouvertureTiersBean.event.cssLgrTab}');">
+							</p:commandLink>						
+						<p:spacer width="30" height="5" />
+						<p:outputLabel value="Nom : " styleClass="cartouche-detail"/>
+						<p:outputLabel value="#{factureController.selectedDocumentDTO.nomTiers} #{factureController.selectedDocumentDTO.prenomTiers}" styleClass="cartouche-detail"/>
+						<p:spacer width="30" height="5" />
+						<p:outputLabel value="Raison sociale : " styleClass="cartouche-detail"/>
+						<p:outputLabel value="#{factureController.selectedDocumentDTO.nomEntreprise}" styleClass="cartouche-detail"/>
+					</h:panelGroup>
+				</p:panelGrid>
+			</p:panelGrid>
+	
+			
+	<p:menubar styleClass="menu-onglet" id="idMenuBoutonFacture" widgetVar="wvMenuBoutonFacture">
+		<p:menuitem title="#{c_facture.titre_menu_aide}" styleClass="icon icon-aidecontextuelle" onstart="PF('wvAideMenuFacture').show()" />
+		<p:separator styleClass="separateur-menu-vertical"/>
+	
+<!-- 	oncomplete="impressionDirect(PF('wvImpressionDirectFacture'),'#{request.contextPath}/output?__report=/reports/documents/facture/FicheFacture.rptdesign&amp;__format=pdf'); -->
+<!-- 			clickBouttonSuivantCheckBox(PF('wvEnvoyerEmailDirectFacture'),'.classHiddenCommandForDialogEmailReturnFacture')" -->
+			
+		<p:menuitem title="#{c_facture.titre_menu_enregistrer}" value="Enregistrer" styleClass="icon icon-save"
+			process="@this idtiersFacture idCodeFacture" actionListener="#{factureController.actEnregistrer}"
+			oncomplete="clickBouttonSuivantCheckBox(PF('wvEnvoyerEmailDirectFacture'),'.classHiddenCommandForDialogEmailReturnFacture')"
+			update="idPanelEnteteFacture,idPanelLignesFacture,idTableauComplementaireFac,:form:messages,@form,@widgetVar(wvMenuListeFacture),@widgetVar(wvDataTableListeFacture)"
+			disabled="#{factureController.etatBouton('enregistrer') or factureController.stepEnCours('idLignesFacture')}" >
+			<p:confirm header="Confirmation enregistrement du document" message="#{factureController.messageConfirmEnregistrement}" icon="ui-icon-alert" disabled="#{!factureController.isLiaisonASupprimerOuMisADispo()}"/>
+			<!-- disabled="#{!factureController.impressionDirectClient}" -->
+		</p:menuitem>
+<!-- 			disabled="#{factureController.etatBouton('enregistrer') or factureController.stepEnCours('idEnteteFacture') or factureController.stepEnCours('idLignesFacture')}" /> -->
+
+		<p:menuitem title="#{c_facture.titre_menu_inserer}" value="Insérer" styleClass="icon icon-insert" actionListener="#{factureController.actInserer}"
+			process="@this" oncomplete="if(PF('widgetVarLigneFacture').getStepIndex()!=-1) {PF('widgetVarLigneFacture').loadStep('idEnteteFacture', false)}"
+			update="idPanelEnteteFacture,idPanelLignesFacture,idTableauComplementaireFac,idPrecisionPrixFact,:form:messages,@form,@widgetVar(wvMenuListeFacture),@widgetVar(wvDataTableListeFacture)"
+			disabled="#{factureController.etatBouton('inserer') or factureController.stepEnCours('idLignesFacture')}" />
+
+		<p:menuitem title="#{c_facture.titre_menu_modifier}" value="Modifier" styleClass="icon icon-update" actionListener="#{factureController.actModifier}"
+			process="@this" 
+			update="idPanelEnteteFacture,idPanelLignesFacture,idTableauComplementaireFac,:form:messages,@form,@widgetVar(wvMenuBoutonFacture),@widgetVar(wvMenuListeFacture),@widgetVar(wvDataTableListeFacture)"
+			disabled="#{factureController.etatBouton('modifier') or factureController.documentDTOEstVerrouille().verrouille}" >
+			<p:confirm header="#{factureController.titreModification}" message="#{factureController.messageModification}" icon="ui-icon-alert" />
+		</p:menuitem>
+
+		<p:menuitem title="#{c_facture.titre_menu_annuler}" value="Annuler" styleClass="icon icon-cancel"
+			actionListener="#{factureController.actAnnuler}" process="@this" 
+			update="idPanelEnteteFacture,idPanelLignesFacture,idTableauComplementaireFac,:form:messages,@form,@widgetVar(wvMenuListeFacture),@widgetVar(wvDataTableListeFacture)"
+			disabled="#{factureController.etatBouton('annuler') }">
+			<p:confirm header="Confirmation" message="#{msg_diag.alert_annulation}" icon="ui-icon-alert" />
+		</p:menuitem>
+
+		<p:menuitem title="Créer un évènement" styleClass="icon-agenda icon" 
+			
+			oncomplete="$('.classHiddenCommandForDialogAgendaReturnFac').click()"
+			process="@this" 
+			update="@this" 
+			disabled="#{factureController.etatBouton('modifier')}"/>
+
+<!-- 		<p:separator styleClass="separateur-menu-vertical"/> -->
+		
+		<p:menuitem title="#{c_facture.titre_menu_supprimer}" value="Supprimer" styleClass="icon icon-delete menuitem-poubelle-droite"
+			actionListener="#{factureController.actSupprimer}" process="@this"
+			update="idPanelEnteteFacture,idPanelLignesFacture,idTableauComplementaireFac,:form:messages,@form,@widgetVar(wvMenuListeFacture),@widgetVar(wvDataTableListeFacture)"
+			disabled="#{factureController.etatBouton('supprimer') or factureController.stepEnCours('idLignesFacture') or factureController.documentDTOEstVerrouille().verrouille}">
+<!-- 			<p:confirm header="Confirmation" message="#{msg_diag.alert_suppresion}" icon="ui-icon-alert" />			 -->
+			<p:confirm header="#{factureController.titreSuppression}" message="#{factureController.messageSuppression}" icon="ui-icon-alert" />
+
+		</p:menuitem>
+
+		<p:separator styleClass="separateur-menu-vertical" />
+
+		<p:menuitem title="#{c_facture.titre_menu_fermer}" value="Fermer" styleClass="icon icon-close menuitem-fermer-droite" process="@this"
+			actionListener="#{factureController.actFermer}" update=":form:messages,@widgetVar(wvMenuListeFacture),@widgetVar(wvDataTableListeFacture)"
+			disabled="#{factureController.etatBouton('fermer')}" onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())">
+
+			<p:confirm header="Confirmation" message="#{msg_diag.alert_fermeture_onglet}" icon="ui-icon-alert"
+				disabled="#{!factureController.modeEcran.dataSetEnModif()}" />
+		</p:menuitem>
+
+<!-- ****************************************** -->
+<!-- 		<lgr:menuItemImprimer title="#{c_facture.titre_menu_imprimer} en mode brouillon" value="Mode Brouillon" styleClass="icon icon-print" -->
+<!-- 			disabled="#{factureController.etatBouton('imprimer') or factureController.stepEnCours('idLignesFacture')}" -->
+<!-- 			onsuccess="window.open('#{request.contextPath}/output?__report=/reports/documents/facture/FicheFacture.rptdesign&amp;__format=pdf')" -->
+<!-- 			oncomplete="$('.classHiddenCommandForDialogImprimerReturnFacture').click()" -->
+<!-- 			actionBean="#{factureController}" -->
+<!-- 			actionMethod="actImprimerBrouillon" -->
+<!-- 			choixEdition="#{factureController.choixEdition}" -->
+<!-- 			/> -->
+			
+			
+<!-- 		<p:menuitem title="#{c_facture.titre_menu_imprimer}" value="Imprimer" styleClass="icon icon-print" -->
+<!-- 			onsuccess="window.open('#{request.contextPath}/output?__report=/reports/documents/facture/FicheFacture.rptdesign&amp;__format=pdf')" -->
+<!-- 			actionListener="#{factureController.actImprimer}" -->
+<!-- 			disabled="#{factureController.etatBouton('imprimer') or factureController.stepEnCours('idLignesFacture')}"  -->
+<!-- 			rendered="#{!factureController.choixEdition}"/> -->
+
+<!-- 		<p:menuitem title="#{c_facture.titre_menu_imprimer}" value="Imprimer" styleClass="icon icon-print" -->
+<!-- 			oncomplete="$('.classHiddenCommandForDialogImprimerReturnFacture').click()" -->
+<!-- 			actionListener="#{factureController.actImprimer}" -->
+<!-- 			disabled="#{factureController.etatBouton('imprimer') or factureController.stepEnCours('idLignesFacture')}"  -->
+<!-- 			rendered="#{factureController.choixEdition}"/> -->
+			
+			
+<!-- 		<p:menuitem title="#{c_facture.titre_menu_imprimer} pour le client" value="Imprimer" styleClass="icon icon-print" -->
+<!-- 			onsuccess="window.open('#{request.contextPath}/output?__report=/reports/documents/facture/FicheFacture.rptdesign&amp;__format=pdf')" -->
+<!-- 			actionListener="#{factureController.actImprimer}" -->
+<!-- 			update="idPanelEnteteFacture,idPanelLignesFacture,idTableauComplementaireFac,:form:messages,@form,@widgetVar(wvMenuListeFacture),@widgetVar(wvDataTableListeFacture)" -->
+<!-- 			disabled="#{factureController.etatBouton('imprimer') or factureController.stepEnCours('idLignesFacture')}"> -->
+<!-- 			<f:attribute name="pour_client" value="true" /> -->
+<!-- 			<p:confirm header="Confirmation" message="Etes-vous sur de vouloir mettre à disposition du client cette facture ?. Ensuite, vous ne pourrez plus la modifier ?" icon="ui-icon-alert" /> -->
+<!-- 		</p:menuitem> -->
+		
+<!-- 			Nouveau menu Impression Jean Marc le 31/05/2018 -->
+		<!-- <p:submenu styleClass="icon icon-print" label="Imprimer"> -->
+		 <p:submenu  icon="ui-icon-print"  class="ui-icon-print-option"> 
+		 
+		 	<p:menuitem title="#{c_facture.titre_menu_imprimer} pour le client" value="Imprimer pour le client" icon="fa fa-print"
+				disabled="#{(factureController.etatBouton('imprimer') or factureController.stepEnCours('idLignesFacture')) }"
+				actionListener="#{factureController.imprimeEdition(null, 'CLIENT', 'true')}"
+				update="idTableauComplementaireFac">
+				<p:confirm header="Confirmation" disabled="#{factureController.selectedDocumentDTO.estMisADisposition}" message="Etes-vous sur de vouloir mettre à disposition du client cette facture ? Ensuite, vous ne pourrez plus la modifier ?" icon="ui-icon-alert" />
+			</p:menuitem>
+			<p:submenu label="Tous les modèles" disabled="#{(factureController.etatBouton('imprimer') or factureController.stepEnCours('idLignesFacture'))}">
+				 <c:forEach items="#{factureController.listeEdition}" var="edition" varStatus="loop">
+				       <p:menuitem  title="#{edition.libelleEdition}" value="#{edition.libelleEdition}" actionListener="#{factureController.imprimeEdition(edition, 'CLIENT', 'true')}" 
+				       update="idTableauComplementaireFac">
+						<p:confirm header="Confirmation" disabled="#{factureController.selectedDocumentDTO.estMisADisposition}" message="Etes-vous sur de vouloir mettre à disposition du client cette facture ? Ensuite, vous ne pourrez plus la modifier ?" icon="ui-icon-alert" />
+						</p:menuitem >
+				   </c:forEach>
+			</p:submenu>
+			
+			<p:separator />
+			
+				<p:menuitem title="#{c_facture.titre_menu_imprimer} en Duplicata" value="Duplicata" icon="fa fa-print"
+				disabled="#{(factureController.etatBouton('imprimer') or factureController.stepEnCours('idLignesFacture')) or !factureController.selectedDocumentDTO.estMisADisposition}"
+				actionListener="#{factureController.imprimeEdition(null, 'DUPLICATA', 'false')}">
+			</p:menuitem>
+			<!-- or !factureController.documentDTOEstVerrouille().verrouille -->
+			<p:submenu label="Tous les modèles" disabled="#{(factureController.etatBouton('imprimer') or factureController.stepEnCours('idLignesFacture')) or !factureController.selectedDocumentDTO.estMisADisposition}"
+				>
+				<!-- or !factureController.documentDTOEstVerrouille().verrouille -->
+					 <c:forEach items="#{factureController.listeEdition}" var="edition" varStatus="loop">
+					       <p:menuitem  title="#{edition.libelleEdition}" value="#{edition.libelleEdition}" actionListener="#{factureController.imprimeEdition(edition, 'DUPLICATA', 'false')}">
+							</p:menuitem >
+					   </c:forEach>
+			</p:submenu>
+			
+			<p:separator />
+			
+		   <p:menuitem title="#{c_facture.titre_menu_imprimer} en Payer" value="Facture acquittée" icon="fa fa-print"
+			disabled="#{((factureController.etatBouton('imprimer') or factureController.stepEnCours('idLignesFacture')) or factureController.differenceReglementResteARegleForPrint or !factureController.selectedDocumentDTO.estMisADisposition) }"
+			actionListener="#{factureController.imprimeEdition(null, 'PAYER', 'false')}">
+			<!-- <f:attribute name="mode_edition" value="PAYER" /> -->
+			<!-- or !factureController.documentDTOEstVerrouille().verrouille -->
+			</p:menuitem>
+			<p:submenu label="Tous les modèles" disabled="#{((factureController.etatBouton('imprimer') or factureController.stepEnCours('idLignesFacture')) or factureController.differenceReglementResteARegleForPrint or !factureController.selectedDocumentDTO.estMisADisposition)}"
+			>
+			<!-- or !factureController.documentDTOEstVerrouille().verrouille -->
+					 <c:forEach items="#{factureController.listeEdition}" var="edition" varStatus="loop">
+					       <p:menuitem  title="#{edition.libelleEdition}" value="#{edition.libelleEdition}" actionListener="#{factureController.imprimeEdition(edition, 'PAYER', 'false')}">
+							</p:menuitem >
+					   </c:forEach>
+			</p:submenu>
+			<p:separator />
+		 
+       		<p:menuitem  title="#{c_facture.titre_menu_imprimer} en brouillon" value="Brouillon" icon="fa fa-print"
+				disabled="#{(factureController.etatBouton('imprimer') or factureController.stepEnCours('idLignesFacture')) or factureController.selectedDocumentDTO.estMisADisposition }"
+				actionListener="#{factureController.imprimeEdition(null, 'BROUILLON', 'false')}">
+				<!--or factureController.documentDTOEstVerrouille().verrouille  -->
+			</p:menuitem >
+			<!-- oncomplete="$('.classHiddenCommandForDialogImprimerReturnFactureBrouillon').click()" -->
+			<p:submenu label="Tous les modèles" disabled="#{(factureController.etatBouton('imprimer') or factureController.stepEnCours('idLignesFacture')) or factureController.selectedDocumentDTO.estMisADisposition }"
+				>
+				<!--or factureController.documentDTOEstVerrouille().verrouille  -->
+				<!-- <p:menu model="#{factureController.menuModelEdition}"></p:menu> -->
+					 <c:forEach items="#{factureController.listeEdition}" var="edition" varStatus="loop">
+					       <p:menuitem  title="#{edition.libelleEdition}" value="#{edition.libelleEdition}" actionListener="#{factureController.imprimeEdition(edition, 'BROUILLON', 'false')}">
+							</p:menuitem >
+					   </c:forEach>
+			</p:submenu>
+			<!-- onsuccess="window.open('#{request.contextPath}/output?__report=/reports/documents/facture/FicheFacture.rptdesign&amp;__format=pdf')" -->
+			
+			
+          
+			
+
+			
+			
+		
+<!-- 							confirmHeader="Confirmation"  -->
+<!-- 				confirmMessage="Etes-vous sur de vouloir mettre à disposition du client cette facture ?. Ensuite, vous ne pourrez plus la modifier ?" -->
+
+<!-- 			<p:menuitem title="#{c_facture.titre_menu_imprimer} pour le client" value="Imprimer Client" -->
+<!-- 				onsuccess="window.open('#{request.contextPath}/output?__report=/reports/documents/facture/FicheFacture.rptdesign&amp;__format=pdf')" -->
+<!-- 				actionListener="#{factureController.actImprimer}" -->
+<!-- 				update="idPanelEnteteFacture,idPanelLignesFacture,idTableauComplementaireFac,:form:messages,@form,@widgetVar(wvMenuListeFacture),@widgetVar(wvDataTableListeFacture)" -->
+<!-- 				disabled="#{(factureController.etatBouton('imprimer') or factureController.stepEnCours('idLignesFacture')) or factureController.documentDTOEstVerrouille().verrouille}"> -->
+<!-- 				<f:attribute name="pour_client" value="true" /> -->
+<!-- 				<p:confirm header="Confirmation" message="Etes-vous sur de vouloir mettre à disposition du client cette facture ?. Ensuite, vous ne pourrez plus la modifier ?" icon="ui-icon-alert" /> -->
+<!-- 			</p:menuitem> -->
+        </p:submenu>
+        
+<!--         <p:submenu icon="ui-icon-print" label="Thème" class="ui-icon-print-option"> -->
+<!--         	<p:menuitem title="Theme graphique" value="Theme1" action="#{factureController.theme1}"/>  -->
+<!--         	<p:menuitem title="Theme graphique" value="Theme2" action="#{factureController.theme2}"/> -->
+<!--         	<p:menuitem title="Theme graphique" value="Theme3" action="#{factureController.theme3}"/>       	 -->
+<!--         </p:submenu> -->
+       
+<!-- ****************************************** -->
+
+		<p:menuitem title="Imprimer étiquettes code barre" value="Imprimer étiquette code barre" styleClass="icon icon-barcode"
+			onsuccess="window.open('#{request.contextPath}/articles/etiquette_cb.xhtml')" actionListener="#{factureController.actImprimerEtiquetteCB}" />
+
+		<!-- 		<p:separator styleClass="separateur-menu-vertical"/> -->
+
+		<!-- 				<p:menuitem value="Generation modèle" title="Génération Modèle document" styleClass="icon icon-insert" -->
+		<!-- 						actionListener="#{factureController.actDialogGenerationModeleDocument}"> -->
+		<!-- 				</p:menuitem> -->
+		<!-- 					<p:menuitem value="Generation document" title="Génération document" styleClass="icon icon-insert" -->
+		<!-- 						actionListener="#{factureController.actDialogGenerationDocument}"> -->
+		<!-- 				</p:menuitem> -->
+
+
+<!-- 		<p:menuitem title="#{c_facture.titre_menu_envoyer_par_email}" value="Envoyer par email" styleClass="icon icon-envoi-mail" -->
+<!-- 			actionListener="#{factureController.actEnvoyerParEmail}" -->
+<!-- 			disabled="#{factureController.etatBouton('imprimer') or factureController.stepEnCours('idLignesFacture')}" /> -->
+			
+			<p:submenu  icon="ui-icon-mail"  class="ui-icon-mail-option">
+			
+			<p:menuitem  title="Envoyer par email pour le client" value="Envoyer au client" icon="fa fa-paper-plane"
+				disabled="#{factureController.etatBouton('modifier')}"
+				oncomplete="$('.classHiddenCommandForDialogEmailReturnFacture').click()"
+				update="idPanelEnteteFacture,idPanelLignesFacture,idTableauComplementaireFac,:form:messages,@form,@widgetVar(wvMenuListeFacture),@widgetVar(wvDataTableListeFacture)"
+				actionListener="#{factureController.envoiMailEdition(null, 'CLIENT', 'true')}">
+				<p:confirm header="Confirmation" disabled="#{factureController.selectedDocumentDTO.estMisADisposition}" message="Etes-vous sur de vouloir mettre à disposition du client cette facture ? Ensuite, vous ne pourrez plus la modifier ?" icon="ui-icon-alert" />
+				</p:menuitem >
+				<p:submenu label="Tous les modèles" disabled="#{factureController.etatBouton('modifier')}">
+					 <c:forEach items="#{factureController.listeEdition}" var="edition" varStatus="loop">
+					       <p:menuitem  title="#{edition.libelleEdition}" value="#{edition.libelleEdition}"
+					        actionListener="#{factureController.envoiMailEdition(edition, 'CLIENT', 'true')}"
+					         oncomplete="$('.classHiddenCommandForDialogEmailReturnFacture').click()">
+					         <p:confirm header="Confirmation" disabled="#{factureController.selectedDocumentDTO.estMisADisposition}" message="Etes-vous sur de vouloir mettre à disposition du client cette facture ? Ensuite, vous ne pourrez plus la modifier ?" icon="ui-icon-alert" />
+							</p:menuitem >
+					   </c:forEach>
+				</p:submenu>
+				
+				<p:separator />
+				
+				<p:menuitem  title="Envoyer par email en duplicata" value="Duplicata" icon="fa fa-paper-plane"
+				disabled="#{factureController.etatBouton('modifier') or !factureController.selectedDocumentDTO.estMisADisposition}"
+				oncomplete="$('.classHiddenCommandForDialogEmailReturnFacture').click()"
+				update="idPanelEnteteFacture,idPanelLignesFacture,idTableauComplementaireFac,:form:messages,@form,@widgetVar(wvMenuListeFacture),@widgetVar(wvDataTableListeFacture)"
+				actionListener="#{factureController.envoiMailEdition(null, 'DUPLICATA', 'false')}">
+				</p:menuitem >
+				<p:submenu label="Tous les modèles" disabled="#{factureController.etatBouton('modifier') or !factureController.selectedDocumentDTO.estMisADisposition}">
+					 <c:forEach items="#{factureController.listeEdition}" var="edition" varStatus="loop">
+					       <p:menuitem  title="#{edition.libelleEdition}" value="#{edition.libelleEdition}"
+					        actionListener="#{factureController.envoiMailEdition(edition, 'DUPLICATA', 'false')}"
+					         oncomplete="$('.classHiddenCommandForDialogEmailReturnFacture').click()">
+							</p:menuitem >
+					   </c:forEach>
+				</p:submenu>
+				
+				<p:separator />
+				
+			<p:menuitem  title="Envoyer par email la facture acquitée" value="Facture acquitée" icon="fa fa-paper-plane"
+				disabled="#{factureController.etatBouton('modifier') or factureController.differenceReglementResteARegleForPrint or !factureController.selectedDocumentDTO.estMisADisposition}"
+				oncomplete="$('.classHiddenCommandForDialogEmailReturnFacture').click()"
+				update="idPanelEnteteFacture,idPanelLignesFacture,idTableauComplementaireFac,:form:messages,@form,@widgetVar(wvMenuListeFacture),@widgetVar(wvDataTableListeFacture)"
+				actionListener="#{factureController.envoiMailEdition(null, 'PAYER', 'false')}">
+				</p:menuitem >
+				<p:submenu label="Tous les modèles" disabled="#{factureController.etatBouton('modifier') or factureController.differenceReglementResteARegleForPrint or !factureController.selectedDocumentDTO.estMisADisposition}">
+					 <c:forEach items="#{factureController.listeEdition}" var="edition" varStatus="loop">
+					       <p:menuitem  title="#{edition.libelleEdition}" value="#{edition.libelleEdition}"
+					        actionListener="#{factureController.envoiMailEdition(edition, 'PAYER', 'false')}"
+					         oncomplete="$('.classHiddenCommandForDialogEmailReturnFacture').click()">
+							</p:menuitem >
+					   </c:forEach>
+				</p:submenu>
+			
+				<p:separator />
+			
+				<p:menuitem  title="Envoyer par email en brouillon" value="Brouillon" icon="fa fa-paper-plane"
+				disabled="#{factureController.etatBouton('modifier') or factureController.selectedDocumentDTO.estMisADisposition}"
+				oncomplete="$('.classHiddenCommandForDialogEmailReturnFacture').click()"
+				update="idPanelEnteteFacture,idPanelLignesFacture,idTableauComplementaireFac,:form:messages,@form,@widgetVar(wvMenuListeFacture),@widgetVar(wvDataTableListeFacture)"
+				actionListener="#{factureController.envoiMailEdition(null, 'BROUILLON', 'false')}">
+				</p:menuitem >
+				<p:submenu label="Tous les modèles" disabled="#{factureController.etatBouton('modifier') or factureController.selectedDocumentDTO.estMisADisposition}">
+					 <c:forEach items="#{factureController.listeEdition}" var="edition" varStatus="loop">
+					       <p:menuitem  title="#{edition.libelleEdition}" value="#{edition.libelleEdition}"
+					        actionListener="#{factureController.envoiMailEdition(edition, 'BROUILLON', 'false')}"
+					         oncomplete="$('.classHiddenCommandForDialogEmailReturnFacture').click()">
+							</p:menuitem >
+					   </c:forEach>
+				</p:submenu>
+				
+				
+				
+				
+				
+			</p:submenu>
+
+			<!-- Old Bouton -->
+			<!--  <p:menuitem title="Envoyer par email" styleClass="icon icon-envoi-mail"
+			oncomplete="$('.classHiddenCommandForDialogEmailReturnFacture').click()"
+			process="@this" 
+			update="idPanelEnteteFacture,idPanelLignesFacture,idTableauComplementaireFac,:form:messages,@form,@widgetVar(wvMenuListeFacture),@widgetVar(wvDataTableListeFacture)"
+			disabled="#{factureController.etatBouton('modifier')}">
+			<p:confirm header="Confirmation" message="Etes-vous sur de vouloir mettre à disposition du client cette facture ?. Ensuite, vous ne pourrez plus la modifier ?" icon="ui-icon-alert" />
+			</p:menuitem>-->
+			
+		<p:menuitem title="Mise à disposition dans l'espace client" value="Mise à disposition dans l'espace client" 
+			styleClass="icon icon-espace-client"
+			process="@this" 
+			update="@this"
+			disabled="#{factureController.masterEntity.taMiseADisposition!= null and factureController.masterEntity.taMiseADisposition.accessibleSurCompteClient!=null}"
+			actionListener="#{factureController.actMiseADispositionServiceClient}" />
+			
+		<p:menuitem title="Envoyer un message Push au tiers" styleClass="icon icon-envoi-message-push"
+					oncomplete="$('.classHiddenCommandForDialogPushReturnFacture').click()" process="@this" update="@this"
+					disabled="#{factureController.etatBouton('imprimer')}" rendered="#{auth.isDevLgr()}"/>
+
+		<p:separator styleClass="separateur-menu-vertical" />
+
+		<p:menuitem title="Paiement CB" styleClass="icon-paiement-cb icon" 
+			oncomplete="$('.classHiddenCommandForDialogPaiementCBReturnFac').click()"
+			process="@this" 
+			update="@this" 
+			disabled="#{factureController.etatBouton('imprimer') or !factureController.factureARegler}"/>
+
+<!-- 			disabled="#{factureController.etatBouton('imprimer') or !factureController.stepEnCours('idSyntheseFacture')}" />	 -->
+		<p:menuitem title="Règlements" styleClass="icon icon-reglement"
+			oncomplete="$('.classHiddenCommandForDialogReglementsReturnFac').click()"
+			process="@this" 
+			update="@this" 
+			disabled="#{factureController.etatBouton('imprimer') }" />			
+			
+		<p:separator styleClass="separateur-menu-vertical" />
+
+		<!-- 		<p:menuitem title="Liste des factures" icon="fa fa-list" oncomplete="PF('wvOverlayListeFacture').show();"/>	 -->
+		<p:menuitem title="#{c_facture.titre_menu_afficher_liste}" styleClass="icon icon-liste" oncomplete="PF('wvOverlayListeFacture').show();" />
+<!-- 			<p:menuitem title="Rafraîchir" actionListener="#{factureController.actRefresh}" process="@this"  update="@form"  styleClass="icon icon-refresh" /> -->
+
+		
+		<p:separator styleClass="separateur-menu-vertical" />
+
+		<p:menuitem title="Documents liés" styleClass="icon icon-documents-lies"  rendered="#{auth.isDevLgr()}"
+			oncomplete="$('.classHiddenCommandForDialogDocumentLieReturnFacture').click()"
+			process="@this" 
+			update="@this" 
+			 />
+			
+	</p:menubar>
+	
+	       <p:commandButton styleClass="classHiddenCommandForDialogDocumentLieReturnFacture" actionListener="#{factureController.actDialogGenerationDocumentLie}" style="display:none" process="@this"  >
+        <p:ajax event="dialogReturn" update="@form"  listener="#{factureController.handleReturnDialogDocumentLie}"/>  
+    </p:commandButton>
+	<p:commandButton styleClass="classHiddenCommandForDialogPaiementCBReturnFac" actionListener="#{factureController.actInitPaiementCarteBancaire}" style="display:none" process="@this"  >
+        <p:ajax event="dialogReturn" update="@form"   listener="#{factureController.handleReturnDialogGestionReglement}"/> 
+    </p:commandButton>
+    
+    <p:commandButton styleClass="classHiddenCommandForDialogReglementsReturnFac" actionListener="#{factureController.actDialogGenerationReglement}" style="display:none" process="@this"  >
+        <p:ajax event="dialogReturn" update="@form"  listener="#{factureController.handleReturnDialogGestionReglement}"/>  
+    </p:commandButton>
+	
+	<p:commandButton styleClass="classHiddenCommandForDialogAgendaReturnFac" actionListener="#{factureController.actDialogEvenement}" style="display:none" process="@this"  >
+        <p:ajax event="dialogReturn" update="@widgetVar(wvAgenda)"  />  
+    </p:commandButton>
+    
+	<p:commandButton styleClass="classHiddenCommandForDialogEmailReturnFacture" actionListener="#{factureController.actDialogEmailSelectedEdition}" style="display:none" process="@this"  >
+        <p:ajax event="dialogReturn" listener="#{factureController.handleReturnDialogEmail}" update=":form:messages,idTableauComplementaireFac"  />  
+    </p:commandButton>
+    
+    <p:commandButton styleClass="classHiddenCommandForDialogPushReturnFacture" actionListener="#{factureController.actDialogPush}" style="display:none" process="@this">
+		<p:ajax event="dialogReturn" listener="#{factureController.handleReturnDialogPush}" update=":form:messages" />
+	</p:commandButton>
+    
+    <!-- PLUS UTILISés -->
+   <!--  <p:commandButton styleClass="classHiddenCommandForDialogImprimerReturnFactureBrouillon" actionListener="#{factureController.actDialogImprimer}" style="display:none" process="@this"  >
+        <p:ajax event="dialogReturn" listener="#{factureController.handleReturnDialogImprimer}" update=":form:messages,idTableauComplementaireFac"  />
+        <f:attribute name="mode_edition" value="BROUILLON" />  
+    </p:commandButton>
+    
+    <p:commandButton styleClass="classHiddenCommandForDialogImprimerReturnFactureDuplicata" actionListener="#{factureController.actDialogImprimer}" style="display:none" process="@this"  >
+        <p:ajax event="dialogReturn" listener="#{factureController.handleReturnDialogImprimer}" update=":form:messages,idTableauComplementaireFac"  />
+        <f:attribute name="mode_edition" value="DUPLICATA" />  
+    </p:commandButton>
+    
+    <p:commandButton styleClass="classHiddenCommandForDialogImprimerReturnFacturePayer" actionListener="#{factureController.actDialogImprimer}" style="display:none" process="@this"  >
+        <p:ajax event="dialogReturn" listener="#{factureController.handleReturnDialogImprimer}" update=":form:messages,idTableauComplementaireFac"  />
+        <f:attribute name="mode_edition" value="PAYER" />  
+    </p:commandButton> -->
+
+<!--     <p:commandButton styleClass="classHiddenCommandForDialogImprimerReturnFactureClient" actionListener="#{factureController.actDialogImprimer}" style="display:none" process="@this"  >
+        <p:ajax event="dialogReturn" listener="#{factureController.handleReturnDialogImprimer}" 
+        	update="idPanelEnteteFacture,idPanelLignesFacture,idTableauComplementaireFac,:form:messages,@form,@widgetVar(wvMenuListeFacture),@widgetVar(wvDataTableListeFacture),@widgetVar(wvMenuBoutonFacture)"  />
+        <f:attribute name="pour_client" value="true" />
+		<p:confirm header="Confirmation" message="Etes-vous sur de vouloir mettre à disposition du client cette facture ?. Ensuite, vous ne pourrez plus la modifier ?" icon="ui-icon-alert" />
+    </p:commandButton> -->
+
+    
+
+	<p:overlayPanel widgetVar="wvAideMenuFacture" hideEffect="fade"
+								dynamic="true" showCloseIcon="true"
+								styleClass="overlay-aide-contextuelle overlay-aide-contextuelle-big">
+								<ui:include src="/aide_contextuelle/facture_general.xhtml" />
+	</p:overlayPanel>
+	
+	<p:fieldset style="margin-bottom:20px;" id="idTableauComplementaireFac" widgetVar="wvTableauComplementaireFac">
+		<h:panelGrid columns="13" cellpadding="15">
+			<p:panel styleClass="panel-aide-contextuelle">
+
+				<p:commandButton process="@this"
+								alt="#{const_vue.btn_generation_modele}" 
+								title="#{const_vue.btn_generation_modele}"
+								value="#{const_vue.btn_generation_modele}" styleClass="icon icon-dupliquer"
+					action="#{duplicationDocumentBean.actDialogGenerationModeleDocument}" disabled="#{factureController.modeEcran.dataSetEnModif()}">
+						<f:setPropertyActionListener target="#{duplicationDocumentBean.doc}" value="#{factureController.masterEntity}"/>
+					<p:ajax event="dialogReturn" listener="#{duplicationDocumentBean.handleReturnDialogGenerationDocument}"
+						update=":form:tabView,@widgetVar(wvMenuListeFacture),@widgetVar(wvDataTableListeFacture)"
+						oncomplete="activeTabCenter('#{factureController.css}');" />
+				</p:commandButton>
+				<!-- icon="ui-icon-copy" label="#{const_vue.btn_generation_modele}" -->
+				<p:commandLink id="idLinkAideGenerationModeleDocumentFacture" styleClass="lien-aide-contextuelle">
+					<i class="fa fa-info-circle animated"></i>
+				</p:commandLink>
+
+				<p:overlayPanel for="idLinkAideGenerationModeleDocumentFacture" hideEffect="fade" dynamic="true" showCloseIcon="true"
+					styleClass="overlay-aide-contextuelle">
+					<ui:include src="/aide_contextuelle/document_generation_modele_document.xhtml" />
+				</p:overlayPanel>
+			</p:panel>
+			<p:separator />
+			<p:panel styleClass="panel-aide-contextuelle">
+
+				<p:commandButton process="@this"
+								title="#{const_vue.btn_generation_document}" 
+								alt="#{const_vue.btn_generation_document}" 
+								value="#{const_vue.btn_generation_document}" styleClass="icon icon-linkdoc"
+					action="#{duplicationDocumentBean.actDialogGenerationDocument}" disabled="#{factureController.modeEcran.dataSetEnModif()}">
+					<f:setPropertyActionListener target="#{duplicationDocumentBean.doc}" value="#{factureController.masterEntity}"/>
+					<f:setPropertyActionListener target="#{duplicationDocumentBean.genereToutesLesLignes}" value="true"/>
+					<p:ajax event="dialogReturn" listener="#{duplicationDocumentBean.handleReturnDialogGenerationDocument}"
+						update=":form:tabView,@widgetVar(wvMenuListeFacture),@widgetVar(wvDataTableListeFacture)"
+						oncomplete="activeTabCenter('#{factureController.css}');" />
+				</p:commandButton>
+				<!-- icon="ui-icon-link" label="#{const_vue.btn_generation_document}" -->
+				<p:commandLink id="idLinkAideGenerationDocumentFacture" styleClass="lien-aide-contextuelle">
+					<i class="fa fa-info-circle animated"></i>
+				</p:commandLink>
+
+				<p:overlayPanel for="idLinkAideGenerationDocumentFacture" hideEffect="fade" dynamic="true" showCloseIcon="true"
+					styleClass="overlay-aide-contextuelle">
+					<ui:include src="/aide_contextuelle/document_generation_document.xhtml" />
+				</p:overlayPanel>
+			</p:panel>
+<!-- 			<p:separator styleClass="separateur-menu-vertical"/> -->
+<!-- 			<p:graphicImage name="paye.svg" title="La facture en cours est payée" library="images" -->
+<!-- 							width="90px" />	 -->
+<!-- 			<p:separator styleClass="separateur-menu-vertical"/> -->
+			<!-- 							<p:panel> -->
+			<!-- 							<p:outputLabel value="CA HT : " /> -->
+			<!-- 							</p:panel> -->
+			<!-- 							<p:panel> -->
+			<!-- 							<p:outputLabel value="150 €" /> -->
+			<!-- 							</p:panel> -->
+			<!-- 							<p:separator styleClass="separateur-menu-vertical"/> -->
+			<!-- 							<p:panel> -->
+			<!-- 							<p:outputLabel value="CA HT : " /> -->
+			<!-- 							</p:panel> -->
+			<!-- 							<p:panel> -->
+			<!-- 							<p:outputLabel value="150 €" /> -->
+			<!-- 							</p:panel> -->
+					    <p:outputLabel value="Etat du document  " rendered="#{auth.isDevLgr()}"/>
+						<p:panel styleClass="panel-aide-contextuelle">
+							<p:autoComplete value="#{factureController.selectedEtatDocument}" rendered="#{auth.isDevLgr()}"
+								converter="entityConverter"								
+								completeMethod="#{factureController.etatAutoComplete}"
+								disabled="true" var="etat"
+								itemLabel="#{etat.codeEtat}" itemValue="#{etat}" 
+								forceSelection="true" dropdown="true" placeholder="Etat du document">
+								<p:column>
+									<h:outputText value="#{etat.codeEtat}" />
+								</p:column>
+
+								<p:column>
+									<h:outputText value="#{etat.liblEtat}" />
+								</p:column>
+
+								<f:attribute name="nomChamp" value="#{const.C_CODE_ETAT}" />
+								  <p:ajax event="clear" listener="#{factureController.onClearEtat}" update="idPanelEnteteFacture,idPanelLignesFacture,idTableauComplementaireFac,:form:messages,@form,@widgetVar(wvMenuBoutonFacture),@widgetVar(wvMenuListeFacture),@widgetVar(wvDataTableListeFacture)"/>
+								<p:ajax event="itemSelect"
+									listener="#{factureController.autcompleteSelection}"
+									update="idPanelEnteteFacture,idPanelLignesFacture,idTableauComplementaireFac,:form:messages,@form,@widgetVar(wvMenuBoutonFacture),@widgetVar(wvMenuListeFacture),@widgetVar(wvDataTableListeFacture)"/>
+							</p:autoComplete>
+						</p:panel>
+						   <p:graphicImage value="Document verrouillé !!!" title="#{factureController.documentDTOEstVerrouille().message}" library="images" name="verrouiller.svg" width="32"  rendered="#{factureController.documentDTOEstVerrouille().verrouille}"/>
+						   
+<!-- 									<p:commandButton  value="Régler la facture" actionListener="#{factureController.actDialogGenerationReglement}" icon="fa fa-check" widgetVar="wVBtnReglerSynthese" -->
+<!-- 									disabled="#{!factureController.editable() or !factureController.stepEnCours('idSyntheseFacture')}" > -->
+<!-- 										<p:ajax event="dialogReturn" listener="#{factureController.handleReturnDialogGestionReglement}"  -->
+<!-- 										update="idResteAPayerFacture,idReglementMultiple,idReglementRapide,@widgetVar(panelTotauxFormFacture),@widgetVar(wvMenuBoutonFacture)" /> -->
+<!-- 									</p:commandButton> -->
+
+					<!-- Invisible, relier au meme champ que la checkbox du dernier step du wizard, reprise de cette valeur dans le 1er step car le oncomplete du actEnregistrer se declanche apres le retour au 1er, la valeur doit donc etre disponible ici pour le javascript -->
+					<p:selectBooleanCheckbox value="#{factureController.impressionDirect}" styleClass="invisible" disabled="#{factureController.editable()}"
+						widgetVar="wvImpressionDirectFacture" />
+					<p:selectBooleanCheckbox value="#{factureController.envoyeParEmail}" styleClass="invisible" disabled="#{factureController.editable()}"
+						widgetVar="wvEnvoyerEmailDirectFacture" />
+					<p:outputLabel value="précision prix : " rendered="#{factureController.affichagePrecisionPrixDocument()}"/>
+					<p:outputLabel value="#{factureController.masterEntity.nbDecimalesPrix} décimale(s)" style="font-weight: bold;" id="idPrecisionPrixFact" 
+					rendered="#{factureController.affichagePrecisionPrixDocument()}"/>
+		</h:panelGrid>
+	</p:fieldset>
+
+	<!-- 	<div class="ui-grid ui-grid-responsive"> -->
+	<!-- 		<div class="ui-grid-row"> -->
+	<!-- 			<div class="ui-grid-col-12"> -->
+	<!-- 	flowListener="#{factureController.onFlowProcess}" -->
+
+	<p:wizard nextLabel="#{const_vue.btn_suivant}" backLabel="#{const_vue.btn_precedent}" showStepStatus="false" binding="#{factureController.wizardDocument}" step="#{factureController.stepCourant()}"
+		widgetVar="widgetVarLigneFacture" flowListener="#{factureController.handleFlow}" showNavBar="false"  >
+<!-- 		 onback="btnWizardBack()" onnext="btnWizardNext()" -->
+<p:tab id="idSyntheseFacture" title="Synthèse de la facture">
+			<div class="card">
+				<p:panel header="Synthèse de la facture" style="width:100%;" rendered="#{!factureController.selectedDocumentDTO.factureEstVide()}">
+					<p:panelGrid columns="3" id="idInfosFacture" columnClasses="ui-grid-col-4,ui-grid-col-4,ui-grid-col-4" styleClass="ui-panelgrid-blank" layout="grid">
+						<h:panelGroup>
+						<p:outputLabel value="Code facture : " style="font-weight: bold;"/>
+						<p:outputLabel value="#{factureController.selectedDocumentDTO.codeDocument}" />
+						</h:panelGroup>
+						<h:panelGroup>
+						<p:outputLabel value="Code tiers : " style="font-weight: bold;"/>
+<!-- 						<p:outputLabel value="#{factureController.selectedDocumentDTO.codeTiers}"> -->
+							<p:commandLink 	value="#{factureController.selectedDocumentDTO.codeTiers}"
+											action="#{factureController.ouvertureTiersBean.detailTiers(factureController.ouvertureTiersBean.recupCodetiers(factureController.selectedDocumentDTO.codeTiers))}" update=":form:tabView"
+											oncomplete="activeTabCenter('#{factureController.ouvertureTiersBean.event.cssLgrTab}');">
+							</p:commandLink>
+<!-- 						</p:outputLabel> -->
+						</h:panelGroup>
+						<h:panelGroup>
+						<p:outputLabel value="Adresse facturation : " style="font-weight: bold;"/>
+<!-- 						<p:outputLabel value="#{factureController.selectedDocumentDTO.dateDocument}" > -->
+<!-- 							<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/> -->
+<!-- 						</p:outputLabel> -->
+						</h:panelGroup>
+						
+						<h:panelGroup>
+<!-- 						<p:outputLabel value="Libellé : "/> -->
+						<p:outputLabel value="#{factureController.selectedDocumentDTO.libelleDocument}" />
+						</h:panelGroup>
+						<h:panelGroup>
+						<p:outputLabel value="Entreprise : " style="font-weight: bold;"/>
+						<p:outputLabel value="#{factureController.selectedDocumentDTO.nomEntreprise}"/>
+						<br />
+						<p:outputLabel value="#{factureController.selectedDocumentDTO.nomTiers} - #{factureController.selectedDocumentDTO.prenomTiers}"/>
+<!-- 						<hr/> -->
+<!-- 						<h:panelGroup> -->
+<!-- 						<p:outputLabel value="Coordonnées : " style="font-weight: bold;"/> -->
+<!-- 						<p:outputLabel value="#{factureController.selectedInfosTiers.adresseEmail} - #{factureController.selectedInfosTiers.numeroTelephone}"/> -->
+<!-- 						</h:panelGroup> -->
+						</h:panelGroup>
+						<h:panelGroup>
+						<p:outputLabel value="" style="font-weight:bold;"/>
+						<p:outputLabel value="#{factureController.taAdresseFact.adresse1Adresse}" >
+						</p:outputLabel>
+						<br/>
+						<p:outputLabel value="#{factureController.taAdresseFact.adresse2Adresse}" >
+						</p:outputLabel>
+						</h:panelGroup>
+
+						<h:panelGroup>
+						<p:outputLabel value="Date facture : " style="font-weight: bold;"/>
+						<p:outputLabel value="#{factureController.selectedDocumentDTO.dateDocument}" >
+							<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+						</p:outputLabel>
+						</h:panelGroup>
+						<h:panelGroup>
+						<p:outputLabel value="Tèl : " style="font-weight: bold;"/>
+						<p:outputLabel value="#{factureController.taTiersDTO.numeroTelephone}"/>
+						</h:panelGroup>
+						<h:panelGroup>
+						<p:outputLabel value="" style="font-weight: bold;"/>
+						<p:outputLabel value="#{factureController.taAdresseFact.adresse3Adresse}" >
+<!-- 						<p:outputLabel value="#{factureController.taAdresseFact.codepostalAdresse} #{factureController.taAdresseFact.villeAdresse}" > -->
+<!-- 							<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/> -->
+						</p:outputLabel>
+						</h:panelGroup>
+						
+						<h:panelGroup>
+						<p:outputLabel value="Date échéance : " style="font-weight:bold;"/>
+						<p:outputLabel value="#{factureController.selectedDocumentDTO.dateEchDocument}" >
+							<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+						</p:outputLabel>
+						</h:panelGroup>
+						<h:panelGroup>
+						<p:outputLabel value="Email : " style="font-weight: bold;"/>
+						 <p:commandLink update=":form:messages" actionListener="#{factureController.actDialogEmail}">
+        						<h:outputText value="#{factureController.taTiersDTO.adresseEmail}" />
+    						</p:commandLink>
+						</h:panelGroup>
+						<h:panelGroup>
+						<p:outputLabel value="Ville : " style="font-weight: bold;"/>
+						<p:outputLabel value="#{factureController.taAdresseFact.codepostalAdresse} #{factureController.taAdresseFact.villeAdresse}" >
+<!-- 							<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/> -->
+						</p:outputLabel>
+						</h:panelGroup>
+										
+										
+																		
+ 						<h:panelGroup> 
+						<div class="card" style="background:#ebebeb;text-align:center;center;padding: 5px;margin-top: 15px;">
+						<p:outputLabel value="Net TTC" style="font-weight: bold;"/>
+						<p:separator style="color:#9a9a9a"/>
+						<p:outputLabel value="#{factureController.selectedDocumentDTO.netTtcCalc}">
+						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+						</p:outputLabel>
+<!-- 						<hr /> -->
+						</div>
+						</h:panelGroup>
+
+						
+						
+						<h:panelGroup>
+						<div class="card" style="background:#ebebeb;text-align:center;center;padding: 5px;margin-top: 15px;">
+
+						<p:outputLabel value="Déjà réglé : " style="font-weight: bold;"/>
+						<p:separator style="color:#9a9a9a"/>
+						<p:outputLabel value="#{factureController.selectedDocumentDTO.regleDocument}">
+						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+						</p:outputLabel>
+						</div>
+						</h:panelGroup>
+<!-- 						</h:panelGroup> -->
+<!--border-style: solid;border-width: thin;padding: 7px; -->
+						<h:panelGroup>
+						<div class="card" style="background: #ebf9cc;text-align: center;padding: 5px;margin-top: 15px;">
+						<p:outputLabel value="Reste à régler" style="font-weight: bold;"/>
+						<p:separator style="color:#9a9a9a"/>
+						<p:outputLabel value="#{factureController.selectedDocumentDTO.resteAReglerComplet}" style="font-weight: bold;" >
+						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+						</p:outputLabel>
+<!-- 						<hr /> -->
+						</div>
+						</h:panelGroup>
+					</p:panelGrid>
+<!-- Début détail ligne synthèse					 -->
+					<p:dataTable id="iddataTableLigneFactureSynthese" 
+					var="ligne"
+					scrollable="true"
+					scrollHeight="250"					
+					widgetVar="widgetVarDataTableLigneFactureSynthese"
+					
+					value="#{factureController.valuesLigne}"
+					rowKey="#{ligne.dto.numLigneLDocument}"
+					styleClass="datatable mt10 myclassFacture">
+					
+					
+										
+										
+					<p:ajax event="toggleSelect" process="@this" />
+					<p:ajax event="rowToggle" process="@this" oncomplete="ligneSeperationExpend()" />
+					
+
+					<p:column style="width:8px" styleClass="center" >
+						<p:rowToggler  rendered="#{ligne.ligneLieeFils!=null or ligne.ligneLieeMere!=null or ligne.ligneAbonnement!=null}"/>
+					</p:column>					
+					
+					
+					<p:column style="width:10%">
+						<f:facet name="header">
+							<h:outputText value="Code article" />
+						</f:facet>
+<!-- 								<h:outputText value="#{ligne.taArticle.codeArticle}"/> -->
+								<p:commandLink 	value="#{ligne.taArticle.codeArticle}"
+											action="#{factureController.ouvertureArticleBean.detailArticle(factureController.ouvertureArticleBean.recupCodeArticle(ligne.taArticle.codeArticle))}" update=":form:tabView"
+											oncomplete="activeTabCenter('#{factureController.ouvertureArticleBean.event.cssLgrTab}');">
+							</p:commandLink>	
+					</p:column >
+					
+					<p:column style="width:24%">
+						<f:facet name="header">
+							<h:outputText value="Libellé" />
+						</f:facet>
+								<h:outputText value="#{ligne.dto.libLDocument}" id="idListeSyntheseLibelleFacture"/>
+								<p:tooltip id="toolTipListeSyntheseLibelleFacture" value="#{ligne.dto.libLDocument}" shared="true" for="idListeSyntheseLibelleFacture" showEffect="clip" position="top"/>
+					</p:column>
+
+					<p:column  style="width:8%" styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Qté 1" />
+						</f:facet>
+								<h:outputText value="#{ligne.dto.qteLDocument}"/>	
+					</p:column>
+
+					<p:column style="width:5%" styleClass="center">
+						<f:facet name="header">
+							<h:outputText value="U1" />
+						</f:facet>
+
+								<h:outputText value="#{ligne.taUnite1.codeUnite}" />
+					</p:column>
+
+					<p:column  style="width:8%" styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Qté 2" />
+						</f:facet>
+							<h:outputText value="#{ligne.dto.qte2LDocument}" id="idqte2LFactureSynthese"/>
+					</p:column>
+
+					<p:column style="width:5%" styleClass="center">
+						<f:facet name="header">
+							<h:outputText value="U2" />
+						</f:facet>
+								<h:outputText value="#{ligne.taUnite2.codeUnite}"/>
+					</p:column>
+					
+					<p:column style="width:8%" styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Prix unitaire" />
+						</f:facet>
+								<h:outputText value="#{ligne.dto.prixULDocument}" id="idPrixOutputSyntheseFac">
+									<f:convertNumber type="currency" minFractionDigits="#{factureController.prefNbDecimalesPrix}"  currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+					</p:column>
+					
+					<p:column style="width:5%" styleClass="right" >
+						<f:facet name="header">
+							<h:outputText value="Remise %" />
+						</f:facet>
+								<h:outputText value="#{ligne.dto.remTxLDocument}" />
+					</p:column>
+					
+					<p:column style="width:20%" styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Montant HT" />
+						</f:facet>
+								<h:outputText value="#{ligne.dto.mtHtLDocument}" disabled="true">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+					</p:column>
+					
+					<p:column style="width:5%" styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="TVA"/>
+						</f:facet>
+								<h:outputText value="#{ligne.dto.codeTvaLDocument}" disabled="true">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+					</p:column>
+					
+					<p:column style="width:20%" styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Montant TTC" />
+						</f:facet>
+								<h:outputText value="#{ligne.dto.mtTtcLDocument}" disabled="true">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+					</p:column>
+					
+					<p:column style="width:5%" styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Remise globale" />
+						</f:facet>
+								<h:outputText value="#{ligne.dto.txRemHtDocument}" disabled="true">
+								</h:outputText>
+					</p:column>
+					
+					<p:column style="width:5%" styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Qté CRD" rendered="#{factureController.gestionCapsules}"/>
+						</f:facet>
+								<h:outputText value="#{ligne.dto.qteTitreTransport}" disabled="true" rendered="#{factureController.gestionCapsules}">
+								</h:outputText>
+					</p:column>
+					
+					
+					<p:column style="width:5%" styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Titre CRD" rendered="#{factureController.gestionCapsules}"/>
+						</f:facet>
+								<h:outputText value="#{ligne.dto.codeTitreTransport}" disabled="true" rendered="#{factureController.gestionCapsules}">
+								</h:outputText>
+					</p:column>
+					
+					<p:column style="width:1%">
+						<f:facet name="header">
+							<h:outputText value="Etat" />
+						</f:facet>
+								<h:outputText value="#{ligne.codeEtat}"  id="idListeSyntheseEtat#{variableEcran}"/>
+								<p:tooltip  value="#{ligne.codeEtat.concat(ligne.libelleEtat)}" shared="true" for="idListeSyntheseEtat#{variableEcran}" showEffect="clip" position="top"/>
+					</p:column>
+
+					<p:rowExpansion>
+
+<!-- 					<p:panel header="Liaisons du document courant" style="width:100%;" > -->
+
+					<p:panelGrid columns="2"  columnClasses="ui-grid-col-6,ui-grid-col-6" styleClass="ui-panelgrid-blank" layout="grid" rendered="#{ligne.ligneLieeFils!=null or ligne.ligneLieeMere!=null}">
+					<p:panel header="document ayant servi à générer le document courant" style="width:100%;" >
+						<p:dataTable value="#{ligne.ligneLieeMere}" id="dataTableLigneLieeMere" var="lien" selectionMode="single" editable="true"
+							selection="#{factureController.selectedLigneALigneDTO}" rowKey="#{lien.id}" widgetVar="wvdataTableLigneLieeMere" 
+							emptyMessage="#{msg.message_datatable_vide}" resizableColumns="true">
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="code document" />
+								</f:facet>
+								<p:commandLink value="#{lien.codeDocumentDest}"
+									action="#{factureController.duplicationDocumentBean.ouvertureDocumentBean.detailDocument(factureController.duplicationDocumentBean.ouvertureDocumentBean.recupCodeDocument(lien.codeDocumentDest,lien.typeDocument))}"
+									update=":form:tabView"
+									oncomplete="activeTabCenter('#{factureController.duplicationDocumentBean.ouvertureDocumentBean.event.cssLgrTab}');">>
+								</p:commandLink>
+								<!-- 								<h:outputText value="#{lien.codeDocumentDest}" /> -->
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="libellé ligne" />
+								</f:facet>
+								<h:outputText value="#{lien.libelleLigne}" />
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="lot" />
+								</f:facet>
+								<h:outputText value="#{lien.numLot}" />
+							</p:column>
+							<p:column styleClass="right">
+								<f:facet name="header">
+									<h:outputText value="Qté. reçue" />
+								</f:facet>
+								<h:outputText value="#{lien.qteRecue}" />
+							</p:column>
+<!-- 							<p:column> -->
+<!-- 								<f:facet name="header"> -->
+<!-- 									<h:outputText value="Etat" /> -->
+<!-- 								</f:facet> -->
+<!-- 								<h:outputText value="#{lien.etat}" /> -->
+<!-- 							</p:column>							 -->
+
+						</p:dataTable>
+						</p:panel>
+						<p:panel header="document généré à partir du document courant" style="width:100%;" >
+						<p:dataTable value="#{ligne.ligneLieeFils}" id="dataTableLigneLieeFils" var="lien" selectionMode="single" editable="true"
+							selection="#{factureController.selectedLigneALigneDTO}" rowKey="#{lien.id}" widgetVar="wvdataTableLigneLieeFils" 
+							emptyMessage="#{msg.message_datatable_vide}" resizableColumns="true">
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="code document" />
+								</f:facet>
+								<p:commandLink value="#{lien.codeDocumentDest}"
+									action="#{factureController.duplicationDocumentBean.ouvertureDocumentBean.detailDocument(factureController.duplicationDocumentBean.ouvertureDocumentBean.recupCodeDocument(lien.codeDocumentDest,lien.typeDocument))}"
+									update=":form:tabView"
+									oncomplete="activeTabCenter('#{factureController.duplicationDocumentBean.ouvertureDocumentBean.event.cssLgrTab}');">>
+								</p:commandLink>
+								<!-- 								<h:outputText value="#{lien.codeDocumentDest}" /> -->
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="libellé ligne" />
+								</f:facet>
+								<h:outputText value="#{lien.libelleLigne}" />
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="lot" />
+								</f:facet>
+								<h:outputText value="#{lien.numLot}" />
+							</p:column>
+							<p:column styleClass="right">
+								<f:facet name="header">
+									<h:outputText value="Qté. reçue" />
+								</f:facet>
+								<h:outputText value="#{lien.qteRecue}" />
+							</p:column>
+<!-- 							<p:column> -->
+<!-- 								<f:facet name="header"> -->
+<!-- 									<h:outputText value="Etat" /> -->
+<!-- 								</f:facet> -->
+<!-- 								<h:outputText value="#{lien.etat}" /> -->
+<!-- 							</p:column>							 -->
+
+						</p:dataTable>
+						</p:panel>
+					</p:panelGrid>
+<!-- 					</p:panel> -->
+					<p:panel header="Infos de l'abonnement" style="width:100%;" rendered="#{ligne.ligneAbonnement!=null}">
+					
+						<p:dataTable value="#{ligne.ligneAbonnement}" id="dataTableLigneAbonnement" var="lien" selectionMode="single" editable="true"
+							selection="#{factureController.selectedLigneALigneDTO}" rowKey="#{lien.id}" widgetVar="wvdataTableLigneAbonnement" 
+							emptyMessage="#{msg.message_datatable_vide}" resizableColumns="true" rendered="#{ligne.ligneAbonnement!=null}">
+								<p:column  style="width:80px" >
+									<p:commandButton value="" actionListener="#{factureController.actDialogDetailLigneAbonnement}" process="@this"
+										styleClass="icon-medium icon-reglement" title="Détail de la ligne d'abonnement">
+										<f:attribute name="taLigneALigneEcheanceDTO" value="#{lien}" />
+										<p:ajax event="dialogReturn" listener="#{factureController.handleReturnDialogDetailLigneAbonnement}" />
+									</p:commandButton>
+								</p:column>
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="code document" />
+								</f:facet>
+								<p:commandLink value="#{lien.codeDocumentDest}"
+									action="#{factureController.duplicationDocumentBean.ouvertureDocumentBean.detailAbonnement(factureController.duplicationDocumentBean.ouvertureDocumentBean.recupCodeDocument(lien.codeDocumentDest,lien.typeDocument))}"
+									update=":form:tabView"
+									oncomplete="activeTabCenter('#{factureController.duplicationDocumentBean.ouvertureDocumentBean.event.cssLgrTab}');">>
+								</p:commandLink>
+
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="libellé ligne" />
+								</f:facet>
+								<h:outputText value="#{lien.libelleLigne}" />
+							</p:column>
+						</p:dataTable>
+						</p:panel>
+					</p:rowExpansion>
+
+					
+					
+
+				</p:dataTable>
+<!-- Fin détail ligne synthèse					 -->
+					<p:panelGrid columns="1" id="idInfosCommentaireFacture" columnClasses="ui-grid-col-4" styleClass="ui-panelgrid-blank" layout="grid">
+						<h:panelGroup>
+						<p:outputLabel value="Commentaires" style="font-weight: bold;"/>
+						<br/>
+						<p:outputLabel value="#{factureController.selectedDocumentDTO.commentaire}" />
+						</h:panelGroup>
+					</p:panelGrid>
+				</p:panel>
+			</div>
+		</p:tab>
+		<p:tab id="idEnteteFacture" title="Entête">
+			<!-- 			<p:ribbon > -->
+			<!-- 				<p:tab title="Extra" > -->
+			<!-- 					<p:ribbonGroup label="Générer"  > -->
+			<!-- 						<p:commandButton value="Modèles" icon="ui-ribbonicon-new" -->
+			<!-- 							styleClass="ui-ribbon-bigbutton" type="button" /> -->
+			<!-- 						<p:commandButton value="Documents" icon="ui-ribbonicon-save" -->
+			<!-- 							styleClass="ui-ribbon-bigbutton" type="button" /> -->
+			<!-- 					</p:ribbonGroup> -->
+			<!-- 				</p:tab> -->
+			<!-- 			</p:ribbon> -->
+
+			<p:panel id="idPanelEnteteFacture" header="#{const_vue.titre_panel_entete}" toggleable="true" widgetVar="panelEnteteFacture">
+			<f:facet name="actions">
+				<p:commandLink id="idLinkAideEnteteFacture"
+						styleClass="lien-aide-contextuelle">
+						<i class="fa fa-info-circle animated"></i>
+					</p:commandLink>
+
+					<p:overlayPanel for="idLinkAideEnteteFacture" hideEffect="fade"
+						dynamic="true" showCloseIcon="true"
+						styleClass="overlay-aide-contextuelle">
+						<ui:include src="/aide_contextuelle/document_entete_document.xhtml" />
+					</p:overlayPanel>
+        		</f:facet>
+
+				<h:panelGrid columns="2" cellpadding="10">
+					<!-- 				    <p:outputLabel id="idBtn1"  value="" title="La référence de la facture" styleClass="icon icon-print"/> -->
+					<!-- 				    <p:button id="idBtn1" icon="ui-icon-star" title="Icon Only"> -->
+					<!-- 					</p:button> -->
+
+					<p:outputLabel id="idlabelCodeFacture" value="Code facture " title="La référence de la facture" styleClass="labelchob" />
+
+					<p:panel styleClass="panel-aide-contextuelle">
+					<p:inputText id="idCodeFacture" value="#{factureController.selectedDocumentDTO.codeDocument}" validator="#{factureController.validateDocument}"
+						disabled="#{factureController.editableEnInsertionUniquement()}">
+						<f:attribute name="nomChamp" value="#{const.C_CODE_DOCUMENT}" minimum="0" />
+						<p:ajax event="blur" update="@this" />
+
+					</p:inputText>
+						<p:commandLink id="idLinkAideCodeFacture"
+							styleClass="lien-aide-contextuelle">
+							<i class="fa fa-info-circle animated swing"></i>
+						</p:commandLink>
+						<p:overlayPanel for="idLinkAideCodeFacture" hideEffect="fade"
+							dynamic="true" showCloseIcon="true"
+							styleClass="overlay-aide-contextuelle">
+							<ui:include src="/aide_contextuelle/document_code_document.xhtml" />
+						</p:overlayPanel>
+					</p:panel>
+					<p:outputLabel value="Code tiers : " styleClass="labelchob" />
+					<p:focus>
+
+
+						<p:panel styleClass="panel-aide-contextuelle">
+						<p:autoComplete value="#{factureController.taTiersDTO}" id="idtiersFacture" converter="entityConverter"
+							completeMethod="#{factureController.tiersAutoCompleteDTOLight}" required="true" requiredMessage="#{msg_diag.alert_champs_obligatoir}"
+							disabled="#{factureController.editable()}" var="tiers" itemLabel="#{tiers.codeTiers}" itemValue="#{tiers}" forceSelection="true"
+							dropdown="true" placeholder="Tiers">
+							<p:column>
+<!-- 									<f:facet name="header"> -->
+<!-- 										<p:commandButton value="Ajouter" title="Insérer" process="@this" update=":form:tabView,:form:messages" -->
+<!-- 											actionListener="#{factureController.actDialogTiers}" styleClass="btn-insert btn"> -->
+<!-- 											<p:ajax event="dialogReturn" listener="#{factureController.handleReturnDialogTiers}" update="@parent:@parent" /> -->
+<!-- 										</p:commandButton> -->
+<!-- 									</f:facet> -->
+									<h:outputText value="#{tiers.codeTiers}" required="true" requiredMessage="#{msg_diag.alert_champs_obligatoir}" />
+							</p:column>	
+
+							<p:column>
+								<h:outputText value="#{tiers.nomTiers}" />
+							</p:column>
+				
+							<p:column>
+								<h:outputText value="#{tiers.prenomTiers}" />
+							</p:column>
+
+							<p:column>
+								<h:outputText value="#{tiers.nomEntreprise}" />
+							</p:column>
+
+
+							<f:attribute name="nomChamp" value="#{const.C_CODE_TIERS}" />
+							<p:ajax event="itemSelect" listener="#{factureController.autcompleteSelection}"
+								update="idNomTiersFacture,idLibellePieceFacture,idTTCFacture,idLocalisationTvaDocFacture,@this,@widgetVar(panelAdresseFacturationFacture),@widgetVar(panelAdresseLivraisonFacture),
+						@widgetVar(panelConditionPaiementFacture),idPanelGroupInfosTiersEnteteFacture" />
+						</p:autoComplete>
+							<p:commandLink id="idLinkAideCodeTiersFacture"
+								styleClass="lien-aide-contextuelle">
+								<i class="fa fa-info-circle animated swing"></i>
+							</p:commandLink>
+
+							<p:overlayPanel for="idLinkAideCodeTiersFacture" hideEffect="fade"
+								dynamic="true" showCloseIcon="true"
+								styleClass="overlay-aide-contextuelle">
+								<ui:include src="/aide_contextuelle/document_code_tiers.xhtml" />
+							</p:overlayPanel>
+						</p:panel>
+						
+						</p:focus>
+
+					<p:outputLabel value="Nom Tiers : " styleClass="labelchob" />
+					<p:panel styleClass="panel-aide-contextuelle">
+					<p:inputText value="#{factureController.selectedDocumentDTO.nomTiers}" id="idNomTiersFacture" validator="#{factureController.validateDocument}"
+						disabled="#{factureController.editable()}">
+						<f:attribute name="nomChamp" value="#{const.C_NOM_TIERS}" />
+						<p:ajax event="blur" update="@this" />
+					</p:inputText>
+
+						<p:commandLink id="idLinkAideNomTiersFacture"
+							styleClass="lien-aide-contextuelle">
+							<i class="fa fa-info-circle animated swing"></i>
+						</p:commandLink>
+
+						<p:overlayPanel for="idLinkAideNomTiersFacture" hideEffect="fade"
+							dynamic="true" showCloseIcon="true"
+							styleClass="overlay-aide-contextuelle">
+							<ui:include src="/aide_contextuelle/document_nom_tiers.xhtml" />
+						</p:overlayPanel>
+					</p:panel>
+					
+					<p:outputLabel value="Date facture: " styleClass="labelchob" />
+					<p:panel styleClass="panel-aide-contextuelle">
+					<p:calendar value="#{factureController.selectedDocumentDTO.dateDocument}" pattern="dd/MM/yyyy" mask="true" locale="fr" navigator="true"
+						mindate="#{factureController.dateMin}"
+						maxdate="#{factureController.dateMax}" 
+						showOn="button" timeZone="#{msg.time_zone}"    disabled="#{factureController.editable()}">
+						<f:attribute name="nomChamp" value="#{const.C_DATE_DOCUMENT}" />
+						<p:ajax event="dateSelect" listener="#{factureController.controleDate}" update="@this,idDateEchFacture" />
+						<p:ajax event="change" listener="#{factureController.controleDate}"  update="@this,idDateEchFacture" />
+					</p:calendar>
+					<p:commandLink id="idLinkAideDateFacture"
+						styleClass="lien-aide-contextuelle">
+						<i class="fa fa-info-circle animated swing"></i>
+					</p:commandLink>
+
+					<p:overlayPanel for="idLinkAideDateFacture" hideEffect="fade"
+						dynamic="true" showCloseIcon="true"
+						styleClass="overlay-aide-contextuelle">
+						<ui:include src="/aide_contextuelle/document_date_document.xhtml" />
+					</p:overlayPanel>
+					</p:panel>
+					
+					<p:panel styleClass="panel-aide-contextuelle">
+					<p:outputLabel value="Libellé : " />
+					<p:commandLink id="idLinkAideLibelleFacture"
+						styleClass="lien-aide-contextuelle">
+						<i class="fa fa-info-circle animated"></i>
+					</p:commandLink>
+
+					<p:overlayPanel for="idLinkAideLibelleFacture" hideEffect="fade"
+						dynamic="true" showCloseIcon="true"
+						styleClass="overlay-aide-contextuelle">
+						<ui:include src="/aide_contextuelle/document_libelle_document.xhtml" />
+					</p:overlayPanel>
+					</p:panel>
+					
+					<p:inputText value="#{factureController.selectedDocumentDTO.libelleDocument}" id="idLibellePieceFacture"
+						validator="#{factureController.validateDocument}" style="width:300%" disabled="#{factureController.editable()}">
+						<f:attribute name="nomChamp" value="#{const.C_LIBELLE_DOCUMENT}" />
+						<p:ajax event="blur" update="@this" />
+					</p:inputText>
+
+					<p:outputLabel value="TTC : " />
+					<p:panel styleClass="panel-aide-contextuelle">
+					<p:selectBooleanCheckbox value="#{factureController.selectedDocumentDTO.ttc}" id="idTTCFacture" disabled="#{factureController.disableTtc() or factureController.disableTtcSiDocSansTVA()}">
+						<f:attribute name="nomChamp" value="#{const.C_TTC}" />
+						<p:ajax event="change"  update="@this" />
+					</p:selectBooleanCheckbox>
+					<p:commandLink id="idLinkAideSaisieTtcFacture"
+						styleClass="lien-aide-contextuelle">
+						<i class="fa fa-info-circle animated"></i>
+					</p:commandLink>
+
+					<p:overlayPanel for="idLinkAideSaisieTtcFacture" hideEffect="fade"
+						dynamic="true" showCloseIcon="true"
+						styleClass="overlay-aide-contextuelle">
+						<ui:include src="/aide_contextuelle/document_saisiettc_document.xhtml" />
+					</p:overlayPanel>
+					</p:panel>
+					
+					<p:outputLabel value="Date de livraison : " />
+					<p:calendar value="#{factureController.selectedDocumentDTO.dateLivDocument}" pattern="dd/MM/yyyy" mask="true" locale="fr" navigator="true"
+						showOn="button" timeZone="#{msg.time_zone}" validator="#{factureController.validateDocument}" disabled="#{factureController.editable()}">
+
+						<f:attribute name="nomChamp" value="#{const.C_DATE_LIV_DOCUMENT}" />
+						<p:ajax event="dateSelect" update="@this" />
+						<p:ajax event="change" update="@this" />
+					</p:calendar>
+
+					<!-- 					<p:outputLabel value="Localisation TVA : " /> -->
+					<!-- 					<p:selectOneMenu id="console" value="#{factureController.selectedDocumentDTO.commentaire}" style="width:125px"> -->
+					<!-- 			            <f:selectItem itemLabel="Client en France" itemValue="fr" /> -->
+					<!-- 			        </p:selectOneMenu> -->
+
+					<p:outputLabel value="Localisation TVA : " />
+					<p:panel styleClass="panel-aide-contextuelle">
+					<p:autoComplete value="#{factureController.taTTvaDoc}" id="idLocalisationTvaDocFacture" converter="entityConverter"
+						disabled="#{factureController.editable() or factureController.disableTtc()}" completeMethod="#{factureController.typeTvaDocAutoComplete}" var="tp" itemLabel="#{tp.codeTTvaDoc}"
+						itemValue="#{tp}" forceSelection="true" dropdown="true" placeholder="Localisation TVA">
+						<p:column>
+							<h:outputText value="#{tp.codeTTvaDoc}" />
+						</p:column>
+						<p:column>
+							<h:outputText value="#{tp.libelleTTvaDoc}" />
+						</p:column>
+						<f:attribute name="nomChamp" value="#{const.C_CODE_T_TVA_DOC}" />
+						<p:ajax event="itemSelect" listener="#{factureController.autcompleteSelection}" update="idTTCFacture" />
+					</p:autoComplete>
+					<p:commandLink id="idLinkAideLocalidationTvaFacture"
+						styleClass="lien-aide-contextuelle">
+						<i class="fa fa-info-circle animated"></i>
+					</p:commandLink>
+
+					<p:overlayPanel for="idLinkAideLocalidationTvaFacture" hideEffect="fade"
+						dynamic="true" showCloseIcon="true"
+						styleClass="overlay-aide-contextuelle">
+						<ui:include src="/aide_contextuelle/document_localisationtva_document.xhtml" />
+					</p:overlayPanel>
+					</p:panel>
+					<p:outputLabel value="Observation : " />
+					<p:inputTextarea value="#{factureController.selectedDocumentDTO.commentaire}" validator="#{factureController.validateDocument}"
+						style="width:300%" disabled="#{factureController.editable()}">
+						<f:attribute name="nomChamp" value="#{const.C_COMMENTAIRE}" />
+						<p:ajax event="blur" update="@this" />
+					</p:inputTextarea>
+					
+					<p:outputLabel value="Numéro commande externe : " />
+					<p:inputText
+						value="#{factureController.selectedDocumentDTO.numeroCommandeFournisseur}"
+						validator="#{factureController.validateDocument}" 
+						disabled="#{factureController.editable()}">
+						<f:attribute name="nomChamp" value="#{const.C_NUMERO_COMMANDE_FOURNISSEUR}" />
+						<p:ajax event="blur" update="@this" />
+					</p:inputText>
+
+					<p:outputLabel value="Gestion des lots : " />
+					<p:inputSwitch value="#{factureController.selectedDocumentDTO.gestionLot}" onLabel="Oui" offLabel="Non" disabled="#{factureController.editable()}">
+						<p:ajax listener="#{factureController.validateDocument}" update="@this" />
+					</p:inputSwitch>
+			        
+			        <p:outputLabel value="Mouvementer les stocks : " />
+					<p:inputSwitch value="#{factureController.selectedDocumentDTO.mouvementerStock}" onLabel="Oui" offLabel="Non" disabled="#{factureController.editable()}">
+			            <p:ajax listener="#{factureController.validateDocument}" update="@this" />
+			        </p:inputSwitch>	
+			        
+			        <p:outputLabel value="Avec gestion des unités de saisie : " />
+					<p:inputSwitch value="#{factureController.selectedDocumentDTO.utiliseUniteSaisie}" onLabel="Oui" offLabel="Non" disabled="#{factureController.editable()}">
+<!-- 						<p:ajax listener="#{devisController.validateDocument}" update="@this" /> -->
+					</p:inputSwitch>
+			        				
+
+					<!-- 				<p:commandButton  process="@this" title="Génération modèle"  -->
+					<!-- 						styleClass="btn-generation-modele btn" actionListener="#{factureController.actDialogGenerationModeleDocument}" > -->
+					<!-- 						<p:ajax event="dialogReturn" listener="#{factureController.handleReturnDialogGenerationDocument}"  -->
+					<!-- 						update=":form:tabView,@widgetVar(wvMenuListeFacture),@widgetVar(wvDataTableListeFacture)" oncomplete="activeTabCenter('#{factureController.css}');" /> -->
+					<!-- 				</p:commandButton> -->
+					<!-- 				<p:commandButton process="@this" title="Génération document"  -->
+					<!-- 						styleClass="btn-generation-document btn" actionListener="#{factureController.actDialogGenerationDocument}" > -->
+					<!-- 						<p:ajax event="dialogReturn" listener="#{factureController.handleReturnDialogGenerationDocument}"  -->
+					<!-- 						update=":form:tabView,@widgetVar(wvMenuListeFacture),@widgetVar(wvDataTableListeFacture)" oncomplete="activeTabCenter('#{factureController.css}');" /> -->
+					<!-- 				</p:commandButton> -->
+
+
+<!-- 					Invisible, relier au meme champ que la checkbox du dernier step du wizard, reprise de cette valeur dans le 1er step car le oncomplete du actEnregistrer se declanche apres le retour au 1er, la valeur doit donc etre disponible ici pour le javascript -->
+<!-- 					<p:selectBooleanCheckbox value="#{factureController.impressionDirect}" styleClass="invisible" disabled="#{factureController.editable()}" -->
+<!-- 						widgetVar="wvImpressionDirectFacture" /> -->
+<!-- 					<p:selectBooleanCheckbox value="#{factureController.envoyeParEmail}" styleClass="invisible" disabled="#{factureController.editable()}" -->
+<!-- 						widgetVar="wvEnvoyerEmailDirectFacture" /> -->
+
+
+
+				</h:panelGrid>
+
+    		<div class="ui-g">
+    		 <div class="ui-g-6">
+				<p:panel id="idAdresseFacturationFacture" header="#{const_vue.titre_panel_adresse_facturation}" toggleable="true" widgetVar="panelAdresseFacturationFacture"
+					collapsed="false">
+					<h:panelGrid columns="2" cellpadding="10" id="idPanelAdresseFacFacture">
+						<p:outputLabel value="" />
+						<p:selectOneMenu value="#{factureController.taAdresseFact}" converter="entityConverter" var="t" filter="true" filterMatchMode="contains"
+							disabled="#{factureController.editable()}">
+							<f:selectItems value="#{factureController.listeAdresseInfosFacturationDTO}" var="tt" itemValue="#{t}" itemLabel="sélectionner une adresse" />
+							<p:column>
+								<h:outputText value="#{t.adresse1Adresse}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{t.adresse2Adresse}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{t.adresse3Adresse}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{t.codepostalAdresse}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{t.villeAdresse}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{t.paysAdresse}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{t.codeTAdr}" />
+							</p:column>
+							<p:ajax event="change" listener="#{factureController.affecteAdrFactAutoComplete}" update="idPanelAdresseFacFacture" />
+						</p:selectOneMenu>
+
+
+						<p:outputLabel value="Adresse 1" />
+						<p:panel styleClass="panel-autocomplete">
+							<p:inputText value="#{factureController.selectedAdresseFact.adresse1Adresse}" disabled="#{factureController.editable()}">
+								<p:ajax event="blur" update="@this" />
+							</p:inputText>
+							<p:commandButton value="Raffraîchir" styleClass="icon-refresh btn" disabled="#{factureController.editable()}"
+								actionListener="#{factureController.actReinitAdrFact}" process="@this" update="idPanelAdresseFacFacture,idMenuBoutonFacture" />
+						</p:panel>
+
+						<p:outputLabel value="Adresse 2" />
+						<p:inputText value="#{factureController.selectedAdresseFact.adresse2Adresse}" disabled="#{factureController.editable()}">
+							<p:ajax event="blur" update="@this" />
+						</p:inputText>
+						<p:outputLabel  value="Adresse 3" />
+						<p:inputText value="#{factureController.selectedAdresseFact.adresse3Adresse}" disabled="#{factureController.editable()}">
+							<p:ajax event="blur" update="@this" />
+						</p:inputText>
+						<p:outputLabel value="Code postal" />
+						<p:inputText value="#{factureController.selectedAdresseFact.codepostalAdresse}" disabled="#{factureController.editable()}">
+							<p:ajax event="blur" update="@this" />
+						</p:inputText>
+						<p:outputLabel value="Ville" />
+						<p:inputText value="#{factureController.selectedAdresseFact.villeAdresse}" disabled="#{factureController.editable()}">
+							<p:ajax event="blur" update="@this" />
+						</p:inputText>
+						<p:outputLabel value="Pays" />
+						<p:inputText value="#{factureController.selectedAdresseFact.paysAdresse}" disabled="#{factureController.editable()}">
+							<p:ajax event="blur" update="@this" />
+						</p:inputText>
+					</h:panelGrid>
+				</p:panel>
+			</div>
+			
+			<div class="ui-g-6">
+			
+				<p:panel id="idAdresseLivraisonFacture" header="Adresse de livraison" widgetVar="panelAdresseLivraisonFacture">
+					<h:panelGrid columns="2" cellpadding="10" id="idPanelAdresseLivFacture">
+
+						<p:outputLabel value="" />
+						<p:selectOneMenu value="#{factureController.taAdresseLiv}" converter="entityConverter" var="t" filter="true" filterMatchMode="contains"
+							disabled="#{factureController.editable()}">
+							<f:selectItems value="#{factureController.listeAdresseInfosLivraisonDTO}" var="tt" itemValue="#{t}" itemLabel="sélectionner une adresse" />
+							<p:column>
+								<h:outputText value="#{t.adresse1AdresseLiv}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{t.adresse2AdresseLiv}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{t.adresse3AdresseLiv}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{t.codepostalAdresseLiv}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{t.villeAdresseLiv}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{t.paysAdresseLiv}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{t.codeTAdr}" />
+							</p:column>
+							<p:ajax event="change" listener="#{factureController.affecteAdrLivAutoComplete}" update="idPanelAdresseLivFacture" />
+						</p:selectOneMenu>
+					
+
+						<p:outputLabel value="Adresse 1" />
+						<p:panel styleClass="panel-autocomplete">
+							<p:inputText value="#{factureController.selectedAdresseLiv.adresse1AdresseLiv}" disabled="#{factureController.editable()}">
+								<p:ajax event="blur" update="@this" />
+							</p:inputText>
+							<p:commandButton value="Raffraîchir" styleClass="icon-refresh btn" disabled="#{factureController.editable()}"
+								actionListener="#{factureController.actReinitAdrLiv}" process="@this" update="idPanelAdresseLivFacture,idMenuBoutonFacture" />
+						</p:panel>
+						<p:outputLabel value="Adresse 2" />
+						<p:inputText value="#{factureController.selectedAdresseLiv.adresse2AdresseLiv}" disabled="#{factureController.editable()}">
+							<p:ajax event="blur" update="@this" />
+						</p:inputText>
+						<p:outputLabel value="Adresse 3" />
+						<p:inputText value="#{factureController.selectedAdresseLiv.adresse3AdresseLiv}" disabled="#{factureController.editable()}">
+							<p:ajax event="blur" update="@this" />
+						</p:inputText>
+						<p:outputLabel value="Code postal" />
+						<p:inputText value="#{factureController.selectedAdresseLiv.codepostalAdresseLiv}" disabled="#{factureController.editable()}">
+							<p:ajax event="blur" update="@this" />
+						</p:inputText>
+						<p:outputLabel value="Ville" />
+						<p:inputText value="#{factureController.selectedAdresseLiv.villeAdresseLiv}" disabled="#{factureController.editable()}">
+							<p:ajax event="blur" update="@this" />
+						</p:inputText>
+						<p:outputLabel value="Pays" />
+						<p:inputText value="#{factureController.selectedAdresseLiv.paysAdresseLiv}" disabled="#{factureController.editable()}">
+							<p:ajax event="blur" update="@this" />
+						</p:inputText>
+					</h:panelGrid>
+				</p:panel>
+			</div>
+		</div>
+
+				<p:panel id="idIdentiteTiersFacture" header="Identité tiers" toggleable="true" widgetVar="panelIdentiteTiersFacture" collapsed="true">
+					<div class="ui-grid-row">
+						<div class="ui-grid-col-6">
+							<p:panel id="idPanelIdentite" header="Identité" toggleable="true" widgetVar="panelIdentite">
+								<h:panelGrid columns="2" cellpadding="10" id="idPanelIdentTiersFacture">
+									<p:outputLabel value="Type entité" />
+									<p:panel styleClass="panel-autocomplete">
+										<p:inputText value="#{factureController.selectedInfosTiers.codeTEntite}" disabled="#{factureController.editable()}">
+											<p:ajax event="blur" update="@this" />
+										</p:inputText>
+										<p:commandButton value="Raffraîchir" styleClass="icon-refresh btn" disabled="#{factureController.editable()}"
+											actionListener="#{factureController.actReinitInfosTiers}" process="@this" update="idPanelIdentTiersFacture,idMenuBoutonFacture" />
+									</p:panel>
+									<p:outputLabel value="Raison sociale" />
+									<p:inputText value="#{factureController.selectedInfosTiers.nomEntreprise}" disabled="#{factureController.editable()}">
+										<p:ajax event="blur" update="@this" />
+									</p:inputText>
+									<p:outputLabel value="Civilité" />
+									<p:inputText value="#{factureController.selectedInfosTiers.codeTCivilite}" disabled="#{factureController.editable()}">
+										<p:ajax event="blur" update="@this" />
+									</p:inputText>
+									<p:outputLabel value="Nom" />
+									<p:inputText value="#{factureController.selectedInfosTiers.nomTiers}" disabled="#{factureController.editable()}">
+										<p:ajax event="blur" update="@this" />
+									</p:inputText>
+									<p:outputLabel value="Prénom" />
+									<p:inputText value="#{factureController.selectedInfosTiers.prenomTiers}" disabled="#{factureController.editable()}">
+										<p:ajax event="blur" update="@this" />
+									</p:inputText>
+									<p:outputLabel value="Tva Intracommunautaire" />
+									<p:inputText value="#{factureController.selectedInfosTiers.tvaIComCompl}" disabled="#{factureController.editable()}">
+										<p:ajax event="blur" update="@this" />
+									</p:inputText>
+									<p:outputLabel value="N° Siret" />
+									<p:inputText value="#{factureController.selectedInfosTiers.siretCompl}" disabled="#{factureController.editable()}">
+										<p:ajax event="blur" update="@this" />
+									</p:inputText>
+								</h:panelGrid>
+							</p:panel>
+						</div>
+
+						<div class="ui-grid-row">
+							<div class="ui-grid-col-6">
+
+								<p:panel id="idPanelContact" header="Contact" toggleable="true">
+									<h:panelGrid columns="2" cellpadding="10">
+										<p:outputLabel value="Téléphone : " />
+										<p:inputText maxlength="20" value="#{factureController.selectedInfosTiers.siretCompl}" disabled="#{factureController.editable()}">
+											<p:ajax event="blur" update="@this" />
+										</p:inputText>
+
+										<p:outputLabel value="Adresse email : " />
+										<p:inputText value="#{factureController.selectedInfosTiers.siretCompl}" disabled="#{factureController.editable()}">
+											<p:ajax event="blur" update="@this" />
+										</p:inputText>
+
+										<p:outputLabel value="Adresse web : " />
+										<p:inputText value="#{factureController.selectedInfosTiers.siretCompl}" disabled="#{factureController.editable()}">
+											<p:ajax event="blur" update="@this" />
+										</p:inputText>
+									</h:panelGrid>
+								</p:panel>
+
+							</div>
+							<div class="ui-grid-row">
+								<div class="ui-grid-col-6">
+
+									<p:panel id="idPanelComptabilite" header="Comptabilité" toggleable="true">
+										<h:panelGrid columns="2" cellpadding="10">
+											<p:outputLabel value="Code compta : " />
+											<p:inputText maxlength="20" value="#{factureController.selectedInfosTiers.codeCompta}" disabled="#{factureController.editable()}">
+												<p:ajax event="blur" update="@this" />
+											</p:inputText>
+
+											<p:outputLabel value="Compte rattaché : " />
+											<p:inputText value="#{factureController.selectedInfosTiers.compte}" disabled="#{factureController.editable()}">
+												<p:ajax event="blur" update="@this" />
+											</p:inputText>
+
+										</h:panelGrid>
+										
+										
+									</p:panel>
+								</div>
+							</div>
+						</div>
+					</div>
+				</p:panel>
+			</p:panel>
+
+			<!-- 			</div> -->
+			<!-- 		</div> -->
+
+		</p:tab>
+
+		<!-- 		<div class="ui-grid-row"> -->
+		<!-- 			<div class="ui-grid-col-12"> -->
+
+		<p:tab id="idLignesFacture" title="Ligne">
+			<p:panel widgetVar="wvLigneFactureMesssages">
+				<p:messages id="idLigneFactureMessages" showDetail="true" closable="true" autoUpdate="false" />
+			</p:panel>
+			<p:panel id="idPanelLignesFacture" header="Lignes" toggleable="true" widgetVar="panelLignesFacture">
+
+
+				<p:menubar styleClass="menu-onglet">
+
+					<p:menuitem title="Insérer" styleClass="icon-insert icon" actionListener="#{factureController.actInsererLigne}" process="@this"
+						update="@this,@widgetVar(widgetVarDataTableLigneFacture),:form:messages"
+						disabled="#{!factureController.modeEcran.dataSetEnModif() or factureController.etatBoutonLigne('inserer')}"
+						oncomplete="editionDerniereLigne('myclassFacture');" />
+
+					<p:menuitem title="Supprimer" styleClass="icon-delete icon" widgetVar="widgetVarBtnSupprimer"
+						actionListener="#{factureController.actSupprimerLigne}" process="@this" update="@widgetVar(wvBCPanelLignes),:form:messages,@form"
+						disabled="#{!factureController.modeEcran.dataSetEnModif() or factureController.etatBoutonLigne('supprimer')}" />
+				</p:menubar>
+				<p:confirmDialog widgetVar="wvConfirmSaveRow">
+				     le document est associé à un règlement dont le montant diffère du montant total du document. Vous devrez revalider le règlement.
+				</p:confirmDialog>
+
+				<p:dataTable id="iddataTableLigneFacture" var="ligne" widgetVar="widgetVarDataTableLigneFacture" value="#{factureController.valuesLigne}"
+					rowKey="#{ligne.dto.numLigneLDocument}" selection="#{factureController.selectedLigneJSF}" selectionMode="single" editable="true"
+					dblClickSelect="true" styleClass="datatable mt10 myclassFacture" resizableColumns="true" draggableRows="true">
+
+					<!--  					if(reglementDifferentNetTTC(xhr, status, args)){PF('wvConfirmSaveRow').show()}; -->
+					<p:ajax event="rowReorder" listener="#{factureController.onRowReorder}" update="@this,@widgetVar(wvMenuBoutonFacture)" />
+					<p:ajax event="rowEdit" listener="#{factureController.onRowEdit}"
+						update="@widgetVar(wvLigneFactureMesssages),@parent:idTotauxLFacture,@parent:idReglementFacture"
+						oncomplete="if(!handleCompleteValidationError(xhr, status, args)) {increment();};autreLigneModifiable('myclassFacture');" />
+					<p:ajax event="rowEditCancel" listener="#{factureController.onRowCancel}" update="@widgetVar(widgetVarBtnSupprimer)"
+						oncomplete="autreLigneModifiable('myclassFacture');" />
+					<p:ajax event="rowSelect" listener="#{factureController.onRowSelectLigne}" />
+					<p:ajax event="rowEditInit" listener="#{factureController.onRowEditInit}"  update="@widgetVar(wvIduSaisieLFacture),@widgetVar(wvIdQteSaisieLFacture)" oncomplete="autreLigneNonModifiable('myclassFacture');" />
+
+					
+					
+										
+					<p:ajax event="toggleSelect" process="@this" />
+					<p:ajax event="rowToggle" process="@this" oncomplete="ligneSeperationExpend()" />
+					
+					<p:column style="width:8px" styleClass="center" >
+						<p:rowToggler  rendered="#{ligne.ligneLieeFils!=null or ligne.ligneLieeMere!=null or ligne.ligneAbonnement!=null}"/>
+					</p:column>
+
+					
+
+					<p:column style="width:16px">
+						<p:rowEditor rendered="#{factureController.etatBoutonLigne('rowEditor')}" styleClass="row-editor-debut" />
+					</p:column>
+
+					<p:column style="width:5px">
+						<f:facet name="header">
+							<h:outputText value="N°" />
+						</f:facet>
+						<h:outputText value="#{ligne.dto.numLigneLDocument}" />
+					</p:column>
+
+					<p:column style="width:8%">
+						<f:facet name="header">
+							<h:outputText value="Code article" />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{ligne.taArticle.codeArticle}" />
+							</f:facet>
+							<f:facet name="input">
+								<p:focus>
+									<p:autoComplete value="#{ligne.taArticleDTO}" completeMethod="#{factureController.articleAutoCompleteDTOLight}" id="idarticleFacture"
+										converter="entityConverter" var="art" itemLabel="#{art.codeArticle}" itemValue="#{art}" forceSelection="true" dropdown="true"
+									maxResults="#{factureController.taPreferencesService.nbMaxChargeListeArticle()}"
+									moreText="Il y a #{component.maxResults} affichés sur #{component.suggestions.size()} au total, Veuillez affiner votre recherche ou cliquer ici 
+									pour en afficher plus ..."
+
+										placeholder="Article" style="width:100%">
+										<!-- 									required="true" requiredMessage="Le code article est obligatoire" -->
+
+										<p:column>
+											<h:outputText value="#{art.codeArticle}" />
+										</p:column>
+
+										<p:column>
+											<h:outputText value="#{art.libellecArticle}" />
+										</p:column>
+									<p:column >
+										<h:outputText value="#{art.commentaireArticle}" rendered="#{factureController.rechercheAvecCommentaire(false)}"/>
+									</p:column>
+
+										<f:attribute name="nomChamp" value="#{const.C_CODE_ARTICLE}" />
+										 <p:ajax event="itemSelect" listener="#{factureController.autcompleteSelection}"
+										 update="@parent:idlibLFacture,idQte1LFacture,idu1LFacture,idLot,idLotMPFacture,idqte2LFacture,idRemiseLFacture,
+											idu2LFacture,idpuLFacture,idhtLFacture,idttcLFacture,idtvaLFacture,idQteTransportFacture,idCodeTransportFacture,idEntrepotFac,iduSaisieLFacture,idQteSaisieLFacture"/>
+										 <p:ajax event="clear" listener="#{factureController.onClearArticle}" 
+										 update="@parent:idlibLFacture,idQte1LFacture,idu1LFacture,idLot,idLotMPFacture,idqte2LFacture,idRemiseLFacture,
+ 											idu2LFacture,idpuLFacture,idhtLFacture,idttcLFacture,idtvaLFacture,idQteTransportFacture,idCodeTransportFacture,idEntrepotFac,iduSaisieLFacture,idQteSaisieLFacture"/>
+ 										<p:ajax event="moreText" listener="#{factureController.onMoreTextArticle}" /> 																		
+									</p:autoComplete>
+								</p:focus>
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+
+					<p:column sortBy="#{ligne.taLot.numLot}" style="width:10%" rendered="#{factureController.selectedDocumentDTO.gestionLot}"  >
+						<f:facet name="header">
+							<h:outputText value="Numéro de lot" />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<!-- 										<p:outputLabel id="idNumLot" value="#{ligne.articleLotEntrepotDTO.numLot}" onclick="PF('wvOverlayPanelDetailLotFacture').show()"/> -->
+								<p:commandLink value="#{ligne.articleLotEntrepotDTO.numLot}" id="idLot" process="@this" update="@widgetVar(wvPanelGridDetailLotFacture)"
+									oncomplete="PF('wvOverlayPanelDetailLotFacture').show('#{component.clientId}');">
+									<f:setPropertyActionListener value="#{ligne}" target="#{factureController.detailLigneOverLayPanel}" />
+								</p:commandLink>
+							</f:facet>
+							<f:facet name="input">
+
+								<p:autoComplete value="#{ligne.articleLotEntrepotDTO}" completeMethod="#{factureController.lotAutoComplete}" 
+									converter="#{articleLotEntrepotDTOFactureConverter}" var="lot" itemLabel="#{lot.numLot}" itemValue="#{lot}" id="idLotMPFacture"
+									forceSelection="true" dropdown="true" placeholder="Lot" style="width:100%"  
+									disabled="#{ligne.ligneCommentaire() or factureController.lotEstVirtuelEtAUneSeuleLigne(ligne.taArticle)}">
+									<p:column>
+										<f:facet name="header">
+											<h:outputText value="Numéro de lot" />
+										</f:facet>
+										<h:outputText value="#{lot.numLot}" />
+									</p:column>
+									<p:column>
+										<f:facet name="header">
+											<h:outputText value="Libellé lot" />
+										</f:facet>
+										<h:outputText value="#{lot.libelleLot}" />
+									</p:column>
+									<p:column>
+										<f:facet name="header">
+											<h:outputText value="Code entrepot" />
+										</f:facet>
+										<h:outputText value="#{lot.codeEntrepot}" />
+									</p:column>
+									<p:column >
+										<f:facet name="header">
+											<h:outputText value="Entrepot" />
+										</f:facet>
+										<h:outputText value="#{lot.libelleEntrepot}" />
+									</p:column>
+									<p:column>
+										<f:facet name="header">
+											<h:outputText value="Emplacement" />
+										</f:facet>
+										<h:outputText value="#{lot.emplacement}" />
+									</p:column>
+									<p:column styleClass="right" >
+										<f:facet name="header">
+											<h:outputText value="Qté en stock"/>
+										</f:facet>
+										<h:outputText value="#{lot.qte1}" styleClass="#{lot.css}" />
+									</p:column>
+									<p:column styleClass="center">
+										<f:facet name="header">
+											<h:outputText value="Unité" />
+										</f:facet>
+										<h:outputText value="#{lot.codeUnite}" />
+									</p:column>
+									<p:column>
+										<f:facet name="header">
+											<h:outputText value="Date lot" />
+										</f:facet>
+										<h:outputText value="#{lot.dateLot}" />
+									</p:column>
+									<p:column>
+										<f:facet name="header">
+											<h:outputText value="Dluo" />
+										</f:facet>
+										<h:outputText value="#{lot.dluo}" />
+									</p:column>
+									<f:attribute name="nomChamp" value="#{const.C_NUM_LOT}" />
+									<!-- 												<p:ajax event="itemSelect" listener="#{factureController.autcompleteSelectionMP}" update="libLotMP,idEntrepotMP,idEmplcementMP"/> -->
+									<p:ajax event="itemSelect" listener="#{factureController.autcompleteSelection}" update="@parent:idlibLFacture,idEntrepotFac"/>
+								</p:autoComplete>
+
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+
+					<p:column style="width:24%">
+						<f:facet name="header">
+							<h:outputText value="Libellé" />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.libLDocument}" id="idListeSaisieLibelleFacture"/>
+								<p:tooltip id="toolTipListeSaisieLibelleFacture" value="#{ligne.dto.libLDocument}" shared="true" for="idListeSaisieLibelleFacture" showEffect="clip" position="top"/>
+<!-- 								<h:outputText value="#{ligne.dto.libLDocument}" /> -->
+							</f:facet>
+							<f:facet name="input">
+								<p:inputText value="#{ligne.dto.libLDocument}" id="idlibLFacture" validator="#{factureController.validateLignesDocument}">
+									<f:attribute name="nomChamp" value="#{const.C_LIB_L_DOCUMENT}" />
+									<p:ajax event="blur" /> 
+								</p:inputText>
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+
+
+					<p:column style="width:10%">
+						<f:facet name="header">
+							<h:outputText value="Entrepot" />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{ligne.taEntrepot.codeEntrepot}" />
+							</f:facet>
+							<f:facet name="input">
+							<h:outputText value="#{ligne.taEntrepot.codeEntrepot}" disabled="true" id="idEntrepotFac" />
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+					
+										<p:column  style="width:5%" styleClass="right" rendered="#{factureController.selectedDocumentDTO.utiliseUniteSaisie}">
+						<f:facet name="header">
+							<h:outputText value="Qté Saisie" />
+						</f:facet>
+						<p:cellEditor >
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.qteSaisieLDocument}"/>	
+							</f:facet>
+							<f:facet name="input" >
+								<p:inputText id="idQteSaisieLFacture" widgetVar="wvIdQteSaisieLFacture"  value="#{ligne.dto.qteSaisieLDocument}"  style="width:100%" 
+										validator="#{factureController.validateLignesDocument}" disabled="#{ligne.ligneCommentaire() or !factureController.enabledUniteSaisie()}">
+									<f:attribute name="nomChamp" value="#{const.C_QTE_SAISIE_L_DOCUMENT}" /> 
+									<p:ajax event="blur" update="@parent:idQte1LFacture,idQteTransportFacture,idu1LFacture,idqte2LFacture,idu2LFacture,idhtLFacture,idttcLFacture,idtvaLFacture"/>
+								</p:inputText>
+							</f:facet >
+						</p:cellEditor>
+					</p:column>
+
+
+					<p:column style="width:5%"  styleClass="center" rendered="#{factureController.selectedDocumentDTO.utiliseUniteSaisie}">
+						<f:facet name="header">
+							<h:outputText value="U. Saisie" />
+						</f:facet>
+						<p:cellEditor >
+							<f:facet name="output">
+								<h:outputText value="#{ligne.taUniteSaisie.codeUnite}" />
+							</f:facet>
+							<f:facet name="input">
+<!-- 								<p:inputText value="#{ligne.taUnite1.codeUnite}" style="width:100%" id="u1"/> -->
+								<p:autoComplete value="#{ligne.taUniteSaisie}"
+									completeMethod="#{factureController.uniteAutoCompleteLightUniteSaisie}"
+									var="unit" itemLabel="#{unit.codeUnite}" itemValue="#{unit}"
+									forceSelection="true" dropdown="true"
+									placeholder="USaisie" style="width:100%" id="iduSaisieLFacture" widgetVar="wvIduSaisieLFacture" disabled="#{ligne.ligneCommentaire() or !factureController.enabledUniteSaisie()}" >
+									<p:column>
+										<h:outputText value="#{unit.codeUnite}" />
+									</p:column>
+									
+									<f:attribute name="nomChamp" value="#{const.C_U_SAISIE_L_DOCUMENT}" />
+									<p:ajax event="itemSelect" listener="#{factureController.autcompleteSelection}" 
+									update="@parent:idQteSaisieLFacture,idQte1LFacture,idQteTransportFacture,idu1LFacture,idqte2LFacture,idu2LFacture,idhtLFacture,idttcLFacture,idtvaLFacture"/>
+								</p:autoComplete>
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+
+					
+					
+					<p:column style="width:6%" styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Qté 1" />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.qteLDocument}" />
+							</f:facet>
+							<f:facet name="input">
+								<p:inputText id="idQte1LFacture" value="#{ligne.dto.qteLDocument}" widgetVar="wvQt2LDocumentFacture" 
+								style="width:100%" validator="#{factureController.validateLignesDocument}"  disabled="#{ligne.ligneCommentaire()}">
+									<f:attribute name="nomChamp" value="#{const.C_QTE_L_DOCUMENT}" />
+									<p:ajax event="blur" update="@parent:idqte2LFacture,idQteTransportFacture,idhtLFacture,idttcLFacture,idtvaLFacture,@this" />
+								</p:inputText>
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+
+					<p:column style="width:5%"  styleClass="center">
+						<f:facet name="header">
+							<h:outputText value="Unité 1" />
+						</f:facet>
+						<!-- 						<p:cellEditor > -->
+						<!-- 							<f:facet name="output"> -->
+						<!-- 								<h:outputText value="#{ligne.dto.u1LDocument}" /> -->
+						<!-- 							</f:facet> -->
+						<!-- 							<f:facet name="input"> -->
+						<!-- 								<p:inputText value="#{ligne.dto.u1LDocument}" style="width:100%" id="u1"/> -->
+						<!-- 							</f:facet> -->
+						<!-- 						</p:cellEditor> -->
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{ligne.taUnite1.codeUnite}" />
+							</f:facet>
+							<f:facet name="input">
+								<!-- 								<p:inputText value="#{ligne.taUnite1.codeUnite}" style="width:100%" id="u1"/> -->
+								<p:autoComplete value="#{ligne.taUnite1}" completeMethod="#{factureController.uniteAutoComplete}" var="unit" itemLabel="#{unit.codeUnite}"
+									itemValue="#{unit}" forceSelection="true" dropdown="true" placeholder="U1" style="width:100%" id="idu1LFacture"  disabled="#{ligne.ligneCommentaire()}">
+									<p:column>
+										<h:outputText value="#{unit.codeUnite}" />
+									</p:column>
+
+									<f:attribute name="nomChamp" value="#{const.C_U1_L_DOCUMENT}" />
+									<p:ajax event="itemSelect" listener="#{factureController.autcompleteSelection}" update="@parent:idqte2LFacture"/>
+								</p:autoComplete>
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+
+					<p:column style="width:6%" styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Qté 2" />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.qte2LDocument}"/>
+							</f:facet>
+							<f:facet name="input">
+<!-- 								<h:outputText value="#{ligne.dto.qte2LDocument}" id="idqte2LFacture" /> -->
+<!-- 								<p:inputText value="#{ligne.dto.qte2LDocument}"	style="width:100%" id="idqte2LFacture"/> -->
+								<p:inputText id="idqte2LFacture" widgetVar="wvQte2LFacture" value="#{ligne.dto.qte2LDocument}" style="width:100%" validator="#{factureController.validateLignesDocument}"  disabled="#{ligne.ligneCommentaire()}">
+									<f:attribute name="nomChamp" value="#{const.C_QTE2_L_DOCUMENT}" />
+									<p:ajax event="blur" update="@parent:idQte1LFacture,idhtLFacture,idttcLFacture,idtvaLFacture,@this" />
+								</p:inputText>
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+
+					<p:column style="width:5%" styleClass="center">
+						<f:facet name="header">
+							<h:outputText value="Unité 2" />
+						</f:facet>
+						<!-- 						<h:outputText value="#{ligne.dto.u2LDocument}" id="u2" />					 -->
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{ligne.taUnite2.codeUnite}" />
+							</f:facet>
+							<f:facet name="input">
+								<!-- 								<p:inputText value="#{ligne.taUnite2.codeUnite}" style="width:100%" id="u2"/> -->
+								<p:autoComplete value="#{ligne.taUnite2}" completeMethod="#{factureController.uniteAutoCompleteAll}" var="unit" itemLabel="#{unit.codeUnite}"
+									itemValue="#{unit}" forceSelection="true" dropdown="true" placeholder="U2" style="width:100%" id="idu2LFacture"  disabled="#{ligne.ligneCommentaire()}">
+									<p:column>
+										<h:outputText value="#{unit.codeUnite}" />
+									</p:column>
+
+									<f:attribute name="nomChamp" value="#{const.C_U2_L_DOCUMENT}" />
+									<p:ajax event="itemSelect" listener="#{factureController.autcompleteSelection}" update="idqte2LFacture"/>
+								</p:autoComplete>
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+
+					<p:column style="width:8%" styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Prix unitaire" />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.prixULDocument}"  id="idPrixOutputFac" >
+									<f:convertNumber type="currency" minFractionDigits="#{factureController.prefNbDecimalesPrix}" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</f:facet>
+							<f:facet name="input">
+								<p:inputText value="#{ligne.dto.prixULDocument}" id="idpuLFacture" style="width:100%" validator="#{factureController.validateLignesDocument}"  disabled="#{ligne.ligneCommentaire()}">
+									<f:attribute name="nomChamp" value="#{const.C_PRIX_U_L_DOCUMENT}" />
+									<p:ajax event="blur" update="@this,idhtLFacture,idttcLFacture,idtvaLFacture" />
+								</p:inputText>
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+
+					<p:column  style="width:5%" styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Remise %" />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.remTxLDocument}" />
+							</f:facet>
+							<f:facet name="input">
+								<p:inputText value="#{ligne.dto.remTxLDocument}" id="idRemiseLFacture" style="width:100%" validator="#{factureController.validateLignesDocument}"  disabled="#{ligne.ligneCommentaire()}">
+									<f:attribute name="nomChamp" value="#{const.C_REM_TX_L_DOCUMENT}" />
+									<p:ajax event="blur" update="@this,idhtLFacture,idttcLFacture,idtvaLFacture" />
+								</p:inputText>
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+
+					<p:column  style="width:10%" styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Montant HT" />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.mtHtLDocument}" disabled="true">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</f:facet>
+							<f:facet name="input">
+								<h:outputText value="#{ligne.dto.mtHtLDocument}" id="idhtLFacture" style="width:100%" disabled="true" />
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+
+					<p:column  style="width:10%" styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Montant TTC" />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.mtTtcLDocument}" disabled="true">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</f:facet>
+							<f:facet name="input">
+								<h:outputText value="#{ligne.dto.mtTtcLDocument}" id="idttcLFacture" style="width:100%" disabled="true" />
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+
+					<p:column  style="width:3%" styleClass="center">
+						<f:facet name="header">
+							<h:outputText value="TVA" />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.codeTvaLDocument}" disabled="true">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</f:facet>
+							<f:facet name="input">
+								<h:outputText value="#{ligne.dto.codeTvaLDocument}" disabled="true" id="idtvaLFacture" style="width:100%" />
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+
+<!-- 					<p:column  style="width:5%" styleClass="right"> -->
+<!-- 						<f:facet name="header"> -->
+<!-- 							<h:outputText value="Remise globale" /> -->
+<!-- 						</f:facet> -->
+<!-- 						<p:cellEditor> -->
+<!-- 							<f:facet name="output"> -->
+<!-- 								<h:outputText value="#{ligne.dto.txRemHtDocument}" disabled="true"> -->
+<!-- 								</h:outputText> -->
+<!-- 							</f:facet> -->
+<!-- 							<f:facet name="input"> -->
+<!-- 								<h:outputText value="#{ligne.dto.txRemHtDocument}" disabled="true" style="width:100%" /> -->
+<!-- 							</f:facet> -->
+<!-- 						</p:cellEditor> -->
+<!-- 					</p:column> -->
+
+					<p:column style="width:5%" styleClass="right"  rendered="#{factureController.gestionCapsules}">
+						<f:facet name="header">
+							<h:outputText value="Qté CRD"  />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.qteTitreTransport}"  />
+							</f:facet>
+							<f:facet name="input">
+								<p:inputText value="#{ligne.dto.qteTitreTransport}"  id="idQteTransportFacture" style="width:100%" validator="#{factureController.validateLignesDocument}"  disabled="#{ligne.ligneCommentaire()}">
+									<f:attribute name="nomChamp" value="#{const.C_QTE_TITRE_TRANSPORT_L_DOCUMENT}" />
+									<p:ajax event="blur" update="@this"/>
+								</p:inputText>
+							</f:facet>
+						</p:cellEditor>						
+					</p:column>
+
+
+					<p:column  style="width:5%" styleClass="right"  rendered="#{factureController.gestionCapsules}">
+						<f:facet name="header">
+							<h:outputText value="Titre CRD" />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.codeTitreTransport}">
+								</h:outputText>
+							</f:facet>
+							<f:facet name="input">
+								<p:autoComplete value="#{ligne.taTitreTransport}" id="idCodeTransportFacture"
+								completeMethod="#{factureController.titreTransportAutoComplete}" var="unit" itemLabel="#{unit.codeTitreTransport}"
+									itemValue="#{unit}" forceSelection="true" dropdown="true" placeholder="U2" style="width:100%" converter="entityConverter"  disabled="#{ligne.ligneCommentaire()}">
+									<p:column>
+										<h:outputText value="#{unit.codeTitreTransport}" />
+									</p:column>
+
+									<f:attribute name="nomChamp" value="#{const.C_CODE_TITRE_TRANSPORT}" />
+									 <p:ajax event="clear" listener="#{factureController.onClearTaTitreTransport}" update="idQteTransportFacture"/>
+									<p:ajax event="itemSelect" listener="#{factureController.autcompleteSelection}"/>
+								</p:autoComplete>
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+					
+
+					<p:column style="width:1%">
+						<f:facet name="header">
+							<h:outputText value="Etat" />
+						</f:facet>
+								<h:outputText value="#{ligne.codeEtat}"  id="idListeSaisieEtat#{variableEcran}"/>
+								<p:tooltip  value="#{ligne.codeEtat.concat(ligne.libelleEtat)}" shared="true" for="idListeSaisieEtat#{variableEcran}" showEffect="clip" position="top"/>
+					</p:column>	
+					
+					<p:column style="width:16px">
+						<f:facet name="header">
+							<h:outputText value="" />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<p:commandButton title="Supprimer" styleClass="icon-delete icon icon-grille" widgetVar="widgetVarBtnSupprimer"
+									action="#{factureController.actSupprimerLigne}" process="@this"
+									disabled="#{!factureController.modeEcran.dataSetEnModif() or factureController.etatBoutonLigne('supprimer')}"
+									update="@widgetVar(panelLignesFacture)">
+									<!-- 									<f:attribute name="idLigne" value="#{ligne.dto.id}" /> -->
+									<f:setPropertyActionListener target="#{factureController.selectedLigneJSF}" value="#{ligne}" />
+								</p:commandButton>
+							</f:facet>
+							<f:facet name="input">
+								<h:outputText value="" />
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+
+					<p:column style="width:26px">
+						<p:rowEditor rendered="#{factureController.etatBoutonLigne('rowEditor')}" styleClass="row-editor-fin"  />
+					</p:column>
+					
+					<p:rowExpansion>
+					<p:panelGrid columns="2"  columnClasses="ui-grid-col-6,ui-grid-col-6" styleClass="ui-panelgrid-blank" layout="grid">
+						<p:dataTable value="#{ligne.ligneLieeMere}" id="dataTableLigneLieeMere" var="lien" selectionMode="single" editable="true"
+							selection="#{factureController.selectedLigneALigneDTO}" rowKey="#{lien.id}" widgetVar="wvdataTableLigneLieeMere" 
+							emptyMessage="#{msg.message_datatable_vide}" resizableColumns="true">
+								<p:column  style="width:80px" >
+									<p:commandButton value="" actionListener="#{factureController.actDialogDetailLigneAbonnement}" process="@this"
+										styleClass="icon-medium icon-reglement" title="Détail de la ligne d'abonnement">
+										<f:attribute name="taLigneALigneEcheanceDTO" value="#{lien}" />
+										<p:ajax event="dialogReturn" listener="#{factureController.handleReturnDialogDetailLigneAbonnement}" />
+									</p:commandButton>
+								</p:column>
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="code document" />
+								</f:facet>
+								<p:commandLink value="#{lien.codeDocumentDest}"
+									action="#{factureController.duplicationDocumentBean.ouvertureDocumentBean.detailDocument(factureController.duplicationDocumentBean.ouvertureDocumentBean.recupCodeDocument(lien.codeDocumentDest,lien.typeDocument))}"
+									update=":form:tabView"
+									oncomplete="activeTabCenter('#{factureController.duplicationDocumentBean.ouvertureDocumentBean.event.cssLgrTab}');">>
+								</p:commandLink>
+								<!-- 								<h:outputText value="#{lien.codeDocumentDest}" /> -->
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="libellé ligne" />
+								</f:facet>
+								<h:outputText value="#{lien.libelleLigne}" />
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="lot" />
+								</f:facet>
+								<h:outputText value="#{lien.numLot}" />
+							</p:column>
+							<p:column styleClass="right">
+								<f:facet name="header">
+									<h:outputText value="Qté. reçue" />
+								</f:facet>
+								<h:outputText value="#{lien.qteRecue}" />
+							</p:column>
+<!-- 							<p:column> -->
+<!-- 								<f:facet name="header"> -->
+<!-- 									<h:outputText value="Etat" /> -->
+<!-- 								</f:facet> -->
+<!-- 								<h:outputText value="#{lien.etat}" /> -->
+<!-- 							</p:column>							 -->
+
+						</p:dataTable>
+						<p:dataTable value="#{ligne.ligneLieeFils}" id="dataTableLigneLieeFils" var="lien" selectionMode="single" editable="true"
+							selection="#{factureController.selectedLigneALigneDTO}" rowKey="#{lien.id}" widgetVar="wvdataTableLigneLieeFils" 
+							emptyMessage="#{msg.message_datatable_vide}" resizableColumns="true">
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="code document" />
+								</f:facet>
+								<p:commandLink value="#{lien.codeDocumentDest}"
+									action="#{factureController.duplicationDocumentBean.ouvertureDocumentBean.detailDocument(factureController.duplicationDocumentBean.ouvertureDocumentBean.recupCodeDocument(lien.codeDocumentDest,lien.typeDocument))}"
+									update=":form:tabView"
+									oncomplete="activeTabCenter('#{factureController.duplicationDocumentBean.ouvertureDocumentBean.event.cssLgrTab}');">>
+								</p:commandLink>
+								<!-- 								<h:outputText value="#{lien.codeDocumentDest}" /> -->
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="libellé ligne" />
+								</f:facet>
+								<h:outputText value="#{lien.libelleLigne}" />
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="lot" />
+								</f:facet>
+								<h:outputText value="#{lien.numLot}" />
+							</p:column>
+							<p:column styleClass="right">
+								<f:facet name="header">
+									<h:outputText value="Qté. reçue" />
+								</f:facet>
+								<h:outputText value="#{lien.qteRecue}" />
+							</p:column>
+<!-- 							<p:column> -->
+<!-- 								<f:facet name="header"> -->
+<!-- 									<h:outputText value="Etat" /> -->
+<!-- 								</f:facet> -->
+<!-- 								<h:outputText value="#{lien.etat}" /> -->
+<!-- 							</p:column>							 -->
+
+						</p:dataTable>
+					</p:panelGrid>
+					<p:panelGrid columns="2"  columnClasses="ui-grid-col-6,ui-grid-col-6" styleClass="ui-panelgrid-blank" layout="grid">
+						
+						<p:dataTable value="#{ligne.ligneAbonnement}" id="dataTableLigneAbonnement" var="lien" selectionMode="single" editable="true"
+							selection="#{factureController.selectedLigneALigneDTO}" rowKey="#{lien.id}" widgetVar="wvdataTableLigneAbonnement" 
+							emptyMessage="#{msg.message_datatable_vide}" resizableColumns="true"  rendered="#{ligne.ligneAbonnement!=null}">
+								<p:column  style="width:80px" >
+									<p:commandButton value="" actionListener="#{factureController.actDialogDetailLigneAbonnement}" process="@this"
+										styleClass="icon-medium icon-reglement" title="Détail de la ligne d'abonnement">
+										<f:attribute name="taLigneALigneEcheanceDTO" value="#{lien}" />
+										<p:ajax event="dialogReturn" listener="#{factureController.handleReturnDialogDetailLigneAbonnement}" />
+									</p:commandButton>
+								</p:column>
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="code document" />
+								</f:facet>
+								<p:commandLink value="#{lien.codeDocumentDest}"
+									action="#{factureController.duplicationDocumentBean.ouvertureDocumentBean.detailAbonnement(factureController.duplicationDocumentBean.ouvertureDocumentBean.recupCodeDocument(lien.codeDocumentDest,lien.typeDocument))}"
+									update=":form:tabView"
+									oncomplete="activeTabCenter('#{factureController.duplicationDocumentBean.ouvertureDocumentBean.event.cssLgrTab}');">>
+								</p:commandLink>
+
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="libellé ligne" />
+								</f:facet>
+								<h:outputText value="#{lien.libelleLigne}" />
+							</p:column>
+						</p:dataTable>
+					</p:panelGrid>
+					</p:rowExpansion>
+				
+
+				</p:dataTable>
+
+				<p:overlayPanel widgetVar="wvOverlayPanelDetailLotFacture" hideEffect="fade">
+					<p:panel widgetVar="wvPanelGridDetailLotFacture" style="text-align:center;">
+						<p:panelGrid columns="2" rendered="#{not empty factureController.detailLigneOverLayPanel}">
+							<h:outputText value="Lot" />
+							<h:outputText value="#{factureController.detailLigneOverLayPanel.dto.numLot} - #{factureController.detailLigneOverLayPanel.dto.libelleLot}" />
+
+							<h:outputText value="Entrepot" />
+							<h:outputText value="#{factureController.detailLigneOverLayPanel.dto.codeEntrepot}" />
+
+							<h:outputText value="Qte" />
+							<h:outputText
+								value="#{factureController.detailLigneOverLayPanel.dto.qteLDocument} #{factureController.detailLigneOverLayPanel.dto.u1LDocument}" />
+
+							<h:outputText value="DLUO" />
+							<h:outputText value="#{factureController.detailLigneOverLayPanel.dto.dluo}" />
+						</p:panelGrid>
+					</p:panel>
+				</p:overlayPanel>
+
+				<p:panelGrid columns="3" styleClass="totaux-lignes-document" id="idTotauxLFacture">
+					<f:facet name="header">
+						<h:outputText value="Totaux" />
+					</f:facet>
+
+					<h:outputText value="NET HT" />
+
+					<h:outputText value="NET TVA" />
+
+					<h:outputText value="NET TTC" />
+					<h:outputText value="#{factureController.selectedDocumentDTO.netHtCalc}">
+						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+					</h:outputText>
+					<h:outputText value="#{factureController.selectedDocumentDTO.netTvaCalc}">
+						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+					</h:outputText>
+					<h:outputText value="#{factureController.selectedDocumentDTO.netTtcCalc}">
+						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+					</h:outputText>
+
+				</p:panelGrid>
+
+
+
+			</p:panel>
+		</p:tab>
+
+		<p:tab id="idTotauxFormFacture" title="Totaux">
+
+			<p:panel id="idPaneltotauxFormFacture" header="Totaux" toggleable="true" widgetVar="panelTotauxFormFacture">
+				<div class="ui-g">
+					<div class="ui-g-12 ui-md-12 ui-lg-6">
+						<div class="ui-g-12 ui-md-12 ui-lg-6">
+							<p:fieldset legend="Totaux">
+								<h:panelGrid columns="2" cellpadding="10">
+
+									<p:outputLabel value="HT" />
+									<p:inputText value="#{factureController.selectedDocumentDTO.mtHtCalc}" disabled="true">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+									</p:inputText>
+
+									<p:outputLabel value="TVA" />
+									<p:inputText value="#{factureController.selectedDocumentDTO.mtTvaCalc}" disabled="true">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+									</p:inputText>
+
+									<p:outputLabel value="TTC" />
+									<p:inputText value="#{factureController.selectedDocumentDTO.mtTtcAvantRemiseGlobaleCalc}" disabled="true">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+									</p:inputText>
+
+
+								</h:panelGrid>
+							</p:fieldset>
+						</div>
+						<div class="ui-g-12 ui-md-12 ui-lg-6">
+							<p:fieldset legend="Totaux après remise globale">
+								<h:panelGrid columns="2" cellpadding="10">
+
+									<p:outputLabel value="Montant HT" />
+									<p:inputText value="#{factureController.selectedDocumentDTO.netHtCalc}" disabled="true">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+									</p:inputText>
+
+									<p:outputLabel value="Montant TVA" />
+									<p:inputText value="#{factureController.selectedDocumentDTO.netTvaCalc}" disabled="true">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+									</p:inputText>
+
+									<p:outputLabel value="Montant TTC" />
+									<p:inputText value="#{factureController.selectedDocumentDTO.netTtcCalc}" disabled="true">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+									</p:inputText>
+
+								</h:panelGrid>
+							</p:fieldset>
+						</div>
+
+						<div class="ui-g-12 ui-md-12 ui-lg-6">
+							<p:fieldset legend="Remise">
+								<h:panelGrid columns="2" cellpadding="10">
+									<p:outputLabel value="Remise globale %" />
+									<p:inputText value="#{factureController.selectedDocumentDTO.txRemHtDocument}" disabled="#{factureController.editable()}" validator="#{factureController.validateDocument}">
+										<f:attribute name="nomChamp" value="#{const.C_TX_REM_HT_DOCUMENT}" />
+										<p:ajax event="blur" update="@this,@widgetVar(panelTotauxFormFacture)" />
+									</p:inputText>
+
+									<p:outputLabel value="Remise sur HT" />
+									<p:inputText value="#{factureController.selectedDocumentDTO.remHtDocument}" disabled="true">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+									</p:inputText>
+								</h:panelGrid>
+							</p:fieldset>
+						</div>
+						<div class="ui-g-12 ui-md-12 ui-lg-6">
+							<p:fieldset legend="Escompte">
+								<h:panelGrid columns="2" cellpadding="10">
+
+									<p:outputLabel value="Escompte accordé %" />
+									<p:inputText value="#{factureController.selectedDocumentDTO.txRemTtcDocument}" disabled="#{factureController.editable()}" validator="#{factureController.validateDocument}">
+										<f:attribute name="nomChamp" value="#{const.C_TX_REM_TTC_DOCUMENT}" />
+										<p:ajax event="blur" update="@this,@widgetVar(panelTotauxFormFacture)" />
+									</p:inputText>
+
+									<p:outputLabel value="Montant escompte" />
+									<p:inputText value="#{factureController.selectedDocumentDTO.remTtcDocument}" disabled="true">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+									</p:inputText>
+
+								</h:panelGrid>
+							</p:fieldset>
+						</div>
+					</div>
+					<div class="ui-g-12 ui-md-12 ui-lg-6">
+						<div class="ui-g-12 ui-md-12 ui-lg-6">
+							<p:fieldset legend="Règlement rapide" style="height:100%" id="idReglementRapide">
+								<h:panelGrid columns="2" cellpadding="10" id="idReglementFacture">
+									<p:outputLabel value="#{factureController.libelleMultipleReglement}" style="color: #FF0000; font-size: 12 pt; font-weight: bold; width: 200%" />
+									<p:outputLabel value="#{factureController.libelleReglementEnAttente}" style="font-size: 12 pt; font-weight: bold; width: 200%" />
+									
+									<p:outputLabel value="Facture réglée" />
+									<p:selectBooleanCheckbox value="#{factureController.factureReglee}" title="facture Réglée" widgetVar="idFactureReglee" disabled="#{factureController.editable() || factureController.masterEntity.reglementExistant()||factureController.masterEntity.multiReglementReel()}">
+										<p:ajax update="idReglementFacture,idResteAPayerFacture" listener="#{factureController.actInitReglement}" />
+									</p:selectBooleanCheckbox>
+
+									<p:outputLabel value="Type paiement" />
+									<!-- 						<p:inputText value="#{factureController.selectedDocumentDTO.compte}"/> -->
+									<p:autoComplete value="#{factureController.taTPaiement}" converter="entityConverter" completeMethod="#{factureController.typePaiementAutoComplete}" var="tp" itemLabel="#{tp.codeTPaiement}" itemValue="#{tp}" forceSelection="true" dropdown="true" disabled="#{factureController.editable() || factureController.masterEntity.reglementExistant() || !factureController.factureReglee || factureController.masterEntity.multiReglementReel()}" placeholder="Type de paiement" style="width:100%">
+										<p:column>
+											<h:outputText value="#{tp.codeTPaiement}" />
+										</p:column>
+										<p:column>
+											<h:outputText value="#{tp.libTPaiement}" />
+										</p:column>
+										<f:attribute name="nomChamp" value="#{const.C_CODE_T_PAIEMENT}" />
+										<p:ajax event="itemSelect" listener="#{factureController.autcompleteSelection}" update="idReglementFacture, idLibPaiementFacture" />
+									</p:autoComplete>
+
+									<p:outputLabel value="Montant paiement" />
+									<p:inputText value="#{factureController.selectedDocumentDTO.montantReglement}" disabled="true">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />					
+									</p:inputText>
+
+									<p:outputLabel value="Libellé paiement" />
+									<p:inputText id="idLibPaiementFacture" value="#{factureController.selectedDocumentDTO.libelleReglement}" validator="#{factureController.validateDocument}" disabled="#{factureController.editable() || factureController.masterEntity.reglementExistant() || factureController.masterEntity.multiReglementReel()}">
+										<f:attribute name="nomChamp" value="#{const.C_LIBELLE_REGLEMENT}" />
+										<p:ajax event="blur" update="@this" />
+									</p:inputText>
+								</h:panelGrid>
+							</p:fieldset>
+						</div>
+						<div class="ui-g-12 ui-md-12 ui-lg-6">
+							<p:fieldset legend="Autres" style="height:100%">
+								<h:panelGrid columns="2" cellpadding="10">
+									<p:outputLabel value="Date d'échéance " />
+									<p:calendar value="#{factureController.selectedDocumentDTO.dateEchDocument}" id="idDateEchFacture" pattern="dd/MM/yyyy" mask="true" locale="fr" navigator="true" showOn="button" timeZone="#{msg.time_zone}" disabled="#{factureController.editable()}">
+
+										<f:attribute name="nomChamp" value="#{const.C_DATE_ECH_DOCUMENT}" />
+						<p:ajax event="dateSelect" listener="#{factureController.controleDate}" update="@this" />
+						<p:ajax event="change" listener="#{factureController.controleDate}" update="@this" />
+									</p:calendar>
+								</h:panelGrid>
+							</p:fieldset>
+						</div>
+						<div class="ui-g-12 ui-md-12 ui-lg-12">
+							<p:fieldset legend="Règlements multiples" style="height:100%" id="idReglementMultiple">
+								<div class="ui-g-12 ui-md-12 ui-lg-3">
+									<p:commandButton value="Régler la facture" actionListener="#{factureController.actDialogGenerationReglement}" icon="fa fa-check">
+										<p:ajax event="dialogReturn" listener="#{factureController.handleReturnDialogGestionReglement}" update="idResteAPayerFacture,idReglementMultiple,idReglementRapide,@widgetVar(panelTotauxFormFacture),@widgetVar(wvMenuBoutonFacture)" />
+									</p:commandButton>
+								</div>
+								<div class="ui-g-12 ui-md-12 ui-lg-9">
+									<p:dataTable var="rReglement" value="#{factureController.listeTaRReglementDTOJSF}" emptyMessage="#{msg.message_datatable_vide}">
+										<p:column headerText="code">
+<!-- 											<h:outputText value="#{rReglement.dto.codeDocument}" /> -->
+								<p:commandLink value="#{rReglement.dto.codeDocument}"
+									action="#{factureController.detailDocument()}" 
+									update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+									<f:setPropertyActionListener value="#{rReglement}" target="#{factureController.detailLigneReglement}" />
+								</p:commandLink>
+
+
+										</p:column>
+
+										<p:column headerText="Date">
+											<h:outputText value="#{rReglement.dto.dateDocument}">
+											<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}" />
+											</h:outputText>
+										</p:column>
+
+										<p:column headerText="Montant">
+											<h:outputText value="#{rReglement.dto.netTtcCalc}" />
+										</p:column>
+
+										<p:column headerText="Affectation">
+											<h:outputText value="#{rReglement.dto.affectation}" />
+										</p:column>
+										
+										<p:column headerText="Int." style="width:30px">
+											<h:selectBooleanCheckbox value="#{rReglement.dto.estDirect}" disabled="true" readonly="true" />
+										</p:column>										
+									</p:dataTable>
+								</div>
+							</p:fieldset>
+
+						</div>
+					</div>
+
+						<div class="ui-g-12 ui-md-12 ui-lg-6">
+						<p:panel id="idConditionPaiementFacture" header="Conditon de paiement" toggleable="true" widgetVar="panelConditionPaiementFacture" collapsed="false">
+							<h:panelGrid columns="2" cellpadding="10" id="idPanelConditionPaiementFacture">
+								<p:outputLabel value="Code paiement" />
+								<h:panelGrid columns="3" cellpadding="10">
+									<p:autoComplete value="#{factureController.taCPaiementDoc}" converter="entityConverter" id="idCodeCPaiementFacture" completeMethod="#{factureController.typeCPaiementAutoComplete}" var="tp" itemLabel="#{tp.codeCPaiement}" itemValue="#{tp}" forceSelection="true" dropdown="true" disabled="#{factureController.editable()}" placeholder="Condition de paiement" style="width:100%">
+										<p:column>
+											<h:outputText value="#{tp.codeCPaiement}" />
+										</p:column>
+										<p:column>
+											<h:outputText value="#{tp.libCPaiement}" />
+										</p:column>
+										<f:attribute name="nomChamp" value="#{const.C_CODE_C_PAIEMENT}" />
+										<p:ajax event="itemSelect" listener="#{factureController.autcompleteSelection}" update="idLibelleCPaimentFacture,idReportFacture,idFinMoisFacture,idDateEchFacture,idMenuBoutonFacture" />
+									</p:autoComplete>
+									<p:commandButton value="Appliquer" styleClass="icon-refresh btn" actionListener="#{factureController.actAppliquerCPaiement}" process="@this" update="idPanelConditionPaiementFacture,idLibelleCPaimentFacture,idReportFacture,idFinMoisFacture,idDateEchFacture,idMenuBoutonFacture" />
+								</h:panelGrid>
+								<p:outputLabel value="Libellé" />
+								<p:inputText value="#{factureController.selectedCPaiement.libCPaiement}" disabled="#{factureController.editable()}" id="idLibelleCPaimentFacture">
+									<p:ajax event="blur" update="@this" />
+								</p:inputText>
+								<p:outputLabel value="Report" />
+								<p:inputText value="#{factureController.selectedCPaiement.reportCPaiement}" disabled="#{factureController.editable()}" id="idReportFacture">
+									<p:ajax event="blur" update="@this" />
+								</p:inputText>
+								<p:outputLabel value="Fin de mois" />
+								<p:inputText value="#{factureController.selectedCPaiement.finMoisCPaiement}" disabled="#{factureController.editable()}" id="idFinMoisFacture">
+									<p:ajax event="blur" update="@this" />
+								</p:inputText>
+							</h:panelGrid>
+						</p:panel>
+					</div>
+					<div class="ui-g-12 ui-md-12 ui-lg-6">
+						<div class="ui-g-12 ui-md-12 ui-lg-6">
+							<p:fieldset legend="">
+								<h:panelGrid columns="2" cellpadding="10" id="idNetAPayerFacture">
+									<p:outputLabel value="Net à payer" />
+									<p:inputText value="#{factureController.selectedDocumentDTO.netTtcCalc}" disabled="true">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+									</p:inputText>
+								</h:panelGrid>
+							</p:fieldset>
+						</div>
+						<div class="ui-g-12 ui-md-12 ui-lg-6">
+							<p:fieldset legend="">
+								<h:panelGrid columns="2" cellpadding="10" id="idResteAPayerFacture">
+									<p:outputLabel value="Reste à régler" />
+									<p:inputText value="#{factureController.selectedDocumentDTO.resteARegler}" disabled="true">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+									</p:inputText>
+								</h:panelGrid>
+							</p:fieldset>
+						</div>
+					</div>
+
+					<div class="ui-g-12 ui-md-12 ui-lg-6">
+						<p:dataTable value="#{factureController.masterEntity.lignesTVA}" var="ltva">
+							<f:facet name="header">
+								<h:outputText value="TVA" />
+							</f:facet>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="Code TVA" />
+								</f:facet>
+								<h:outputText value="#{ltva.codeTva}" />
+							</p:column>
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="Libellé" />
+								</f:facet>
+								<h:outputText value="#{ltva.libelle}" />
+							</p:column>
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="Taux" />
+								</f:facet>
+								<h:outputText value="#{ltva.tauxTva}" />
+							</p:column>
+
+							<p:column styleClass="right">
+								<f:facet name="header">
+									<h:outputText value="Montant" />
+								</f:facet>
+								<h:outputText value="#{ltva.mtTva}">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+						</p:dataTable>
+					</div>
+					<div class="ui-g-12 ui-md-12 ui-lg-6">
+					  <p:fieldset legend="Aperçu" rendered="false">
+							<p:outputLabel value="Imprimer brouillon" /><p:spacer width="5" />
+							<p:selectBooleanCheckbox value="#{factureController.impressionDirect}" disabled="#{factureController.editable()}">
+								<p:ajax event="change" update="@this" />
+							</p:selectBooleanCheckbox>
+					  </p:fieldset>
+					  <p:fieldset legend="Transmettre la facture au client">
+					  
+<!-- 						<h:panelGrid columns="2" cellpadding="10"> -->
+<!-- 							<p:outputLabel value="Imprimer" /> -->
+<!-- 							<p:selectBooleanCheckbox value="#{factureController.impressionDirect}" disabled="#{factureController.editable()}"> -->
+<!-- 								<p:ajax event="change" update="@this,idImprimerFacturePourClient" listener="#{factureController.actImprimerPourClient}"/> -->
+<!-- 							</p:selectBooleanCheckbox> -->
+							<div class="ui-g-4">
+							<p:outputLabel value="Imprimer pour client" /><p:spacer width="5" />
+							<p:selectBooleanCheckbox id="idImprimerFacturePourClient" value="#{factureController.impressionDirectClient}" disabled="#{factureController.editable()}">
+								 <p:ajax event="change" update="@this, @widgetVar(wvMenuBoutonFacture),@widgetVar(wvImpressionDirectFacture)" /> 
+							</p:selectBooleanCheckbox>
+							</div>
+<!-- 							<p:outputLabel value="Imprimer pour client" /> -->
+<!-- 							<p:selectBooleanCheckbox id="idImprimerFacturePourClient" value="#{factureController.impressionDirectClient}" disabled="#{factureController.editable() or !factureController.impressionDirect}"> -->
+<!-- 								<p:ajax event="change" update="@this" /> -->
+<!-- 							</p:selectBooleanCheckbox> -->
+							<div class="ui-g-4">
+							<p:outputLabel value="Envoyer par email" /><p:spacer width="5" />
+							<p:selectBooleanCheckbox value="#{factureController.envoyeParEmail}" disabled="#{factureController.editable()}">
+								<p:ajax event="change" update="@this,@widgetVar(wvEnvoyerEmailDirectFacture),  @widgetVar(wvMenuBoutonFacture)" />
+							</p:selectBooleanCheckbox>
+							</div>
+							
+							<div class="ui-g-4">
+							<p:outputLabel value="Compte client" /><p:spacer width="5" />
+							<p:selectBooleanCheckbox value="#{factureController.miseADispositionCompteClient}" disabled="#{factureController.editable()}">
+								<p:ajax event="change" update="@this" />
+							</p:selectBooleanCheckbox>
+							</div>
+							
+							
+<!-- 						</h:panelGrid> -->
+					 </p:fieldset>
+					</div>
+
+				</div>
+
+
+			</p:panel>
+
+		</p:tab>
+
+
+
+	</p:wizard>
+
+	<p:panel id="idPanelWizardButtonFacture" styleClass="wizard-facture bullseye-btn-wizard-document">
+		<div class="ui-g">
+			<div class="ui-g wizard-facture btn-wizard-document-tous">
+				<div class="ui-g-4">
+					<h:panelGroup id="idBtnWizardButtonPrecedentFacture" styleClass="wizard-facture btn-wizard-document-left btn-wizard-float">
+						<p:commandButton value="#{const_vue.btn_precedent}" style="float: left;" 
+							onstart="PF('widgetVarLigneFacture').back();" rendered="#{factureController.btnPrecedentVisible}"/>
+					</h:panelGroup>
+				</div>
+				<div class="ui-g-4">
+				</div>
+				<div class="ui-g-4">
+					<h:panelGroup id="idBtnWizardButtonSuivantFacture" styleClass="wizard-facture btn-wizard-document-right">
+						<p:commandButton value="#{const_vue.btn_suivant}" style="float: right;" 
+							onstart="PF('widgetVarLigneFacture').next();" rendered="#{factureController.btnSuivantVisible}"/>
+					</h:panelGroup>
+				</div>
+			</div>
+		</div>
+	</p:panel>
+
+	<!-- 			</div> -->
+	<!-- 		</div> -->
+	<!-- 	</div> --> 
+
+	<p:remoteCommand name="increment" binding="#{factureController.rc}" actionListener="#{factureController.actAutoInsererLigne}" process="@this"
+		update="@widgetVar(panelLignesFacture)" disabled="#{factureController.insertAuto}" />
+	<!-- oncomplete="jQuery('.myclassFacture .ui-datatable-data tr').last().find('span.ui-icon-pencil').each(function(){jQuery(this).click()});" -->
+
+	<!-- </f:validateBean> -->
+
+
+	<p:dialog header="Cohérence de la qté 2" widgetVar="wVdialogQte2Facture" modal="true" appendTo="@(body)" showEffect="clip" hideEffect="clip" width="900"
+		height="200">
+		<p:panelGrid columns="1">
+			<p:outputLabel value="La qté 2 n'est pas cohérente par rapport au coefficient applicable, voulez vous la conserver ?" />
+		</p:panelGrid>
+		<p:panelGrid columns="2">
+			<p:commandButton value="Conserver la valeur" process="@this" onstart="PF('wVdialogQte2Facture').hide()" />
+			<p:commandButton value="Appliquer le coefficient" process="@this" actionListener="#{factureController.actArreterEnregistrementEtFocusQte2()}"
+				oncomplete="PF('wVdialogQte2Facture').hide()" update="@widgetVar(widgetVarDataTableLigneFacture)" />
+		</p:panelGrid>
+	</p:dialog>
+
+</ui:composition>

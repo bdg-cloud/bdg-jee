@@ -1,0 +1,61 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+<!-- 	<p:importConstants type="fr.legrain.bdg.dossier.service.remote.ITaPreferencesServiceRemote" var="ConstPreferences" /> -->
+<!-- 	<p:importConstants type="fr.legrain.bdg.webapp.importation.ImportComptaBean" var="ConstController" /> -->
+
+
+	<f:validateBean disabled="true">
+	
+		<p:menubar styleClass="menu-onglet">
+			
+			<p:menuitem title="Fermer" styleClass="icon icon-close menuitem-fermer-droite" process="@this" 
+				actionListener="#{importComptaBean.actFermer}"
+				onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())">
+<!-- 				<p:confirm header="Confirmation" message="#{msg_diag.alert_fermeture_onglet}" icon="ui-icon-alert"/> -->
+			</p:menuitem>
+<!-- 			<p:menuitem title="Rafraîchir" update="@widgetVar(wvTabViewImportCompta1),@widgetVar(wvDateEtatImportation),:form:messages"  process="@this"  -->
+<!-- 			actionListener="#{exportComptaBean.actRefresh}" styleClass="icon icon-refresh" /> -->
+		</p:menubar>
+
+		<p:tabView id="idTabViewImportCompta1" widgetVar="wvTabViewImportCompta1" >
+<!-- 			<p:ajax event="tabChange" listener="#{importComptaBean.onTabChange}" update="@this"/> -->
+			
+			<p:tab title="Importations" id="idImportation">
+				<p:panelGrid columns="2" >
+				<p:fileUpload listener="#{importComptaBean.handleFileUploadFichierArticles}" mode="advanced" dragDropSupport="false" 
+				auto="true" label="Sélectionner le fichier à importer pour les articles" fileLimit="1" allowTypes="/(\.|\/)(csv)$/" update="@this"/>
+				<p:commandButton value="Importer les articles" actionListener="#{importComptaBean.actImporterArticles}"  >
+				<p:confirm header="Confirmation" message="Etes-vous sur de vouloir importer les articles" icon="ui-icon-alert"/> 
+				</p:commandButton>
+				<p:fileUpload listener="#{importComptaBean.handleFileUploadFichierTiers}" mode="advanced" dragDropSupport="false" 
+				auto="true" label="Sélectionner le fichier à importer pour les tiers" fileLimit="1" allowTypes="/(\.|\/)(csv)$/" update="@this"/>
+				<p:commandButton value="Importer les tiers" actionListener="#{importComptaBean.actImporterTiers}">
+				<p:confirm header="Confirmation" message="Etes-vous sur de vouloir importer les tiers" icon="ui-icon-alert"/> 
+				</p:commandButton>
+				<p:fileUpload listener="#{importComptaBean.handleFileUploadFichierBonReception}" mode="advanced" dragDropSupport="false" 
+				auto="true" label="Sélectionner le fichier à importer pour les bons de réception" fileLimit="1" allowTypes="/(\.|\/)(csv)$/" update="@this"/>
+				<p:commandButton value="Importer les bons de réception" actionListener="#{importComptaBean.actImporterBonReception}">
+				<p:confirm header="Confirmation" message="Etes-vous sur de vouloir importer les bons de réception" icon="ui-icon-alert"/> 
+				</p:commandButton>
+				<p:fileUpload listener="#{importComptaBean.handleFileUploadFichierAbonnement}" mode="advanced" dragDropSupport="false" 
+				auto="true" label="Sélectionner le fichier à importer pour les abonnements" fileLimit="1" allowTypes="/(\.|\/)(csv)$/" update="@this"/>
+				<p:commandButton value="Importer les abonnements" actionListener="#{importComptaBean.actImporterAbonnement}">
+				<p:confirm header="Confirmation" message="Etes-vous sur de vouloir importer les abonnements" icon="ui-icon-alert"/> 
+				</p:commandButton>
+
+				
+				</p:panelGrid>
+			</p:tab>
+			
+
+		</p:tabView>
+
+
+
+
+	</f:validateBean>
+
+</ui:composition>

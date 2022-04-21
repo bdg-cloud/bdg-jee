@@ -1,0 +1,329 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core" 
+	xmlns:ui="http://java.sun.com/jsf/facelets" 
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/template_dialog_lgr.xhtml">
+	
+	<ui:define name="head">
+		 <title>Détail de l'évènement</title>
+        <style type="text/css">
+/*             .ui-widget { */
+/*                 font-size: 90%; */
+/*             } */
+        </style>
+	</ui:define>
+
+	<ui:define name="content">
+		<h:form id="idFormDialogEvenement">
+		
+			<p:messages id="messages" autoUpdate="true" showDetail="true"  showSummary="false"/>
+			
+			<p:panel widgetVar="wvDlgEvenementContent">
+				
+				<p:menubar styleClass="menu-onglet">
+					<p:menuitem title="Enregistrer" styleClass="icon-save icon" actionListener="#{evenementAgendaController.actEnregistrerEvenement}" disabled="#{evenementAgendaController.evenementCalendrierExterne}"/>
+						
+	<!-- 				<p:menuitem title="Modifier" styleClass="icon-update icon" actionListener="#{evenementAgendaController.actModifierEvenement}" process="@this" update="@widgetVar(wvAgenda)"/> -->
+	<!-- 				<p:menuitem title="Annuler" styleClass="icon-cancel icon" actionListener="#{evenementAgendaController.actAnnulerEvenement}" process="@this" update="@widgetVar(wvAgenda)"> -->
+	<!-- 					<p:confirm header="Confirmation" message="Etes vous sur de vouloir annuler les modifications en cours ?"  icon="ui-icon-alert" /> -->
+	<!-- 				</p:menuitem> -->
+					<p:menuitem title="Supprimer" styleClass="icon icon-delete menuitem-poubelle-droite" process="@this"
+						actionListener="#{evenementAgendaController.actSupprimerEvenement}" disabled="#{evenementAgendaController.evenementCalendrierExterne}">
+					</p:menuitem>
+	
+					<p:menuitem title="Fermer" styleClass="icon icon-close menuitem-fermer-droite" process="@this"
+						actionListener="#{evenementAgendaController.actFermerDialog}" update=":idFormDialogEvenement:messages" />
+				</p:menubar>
+				
+				<p:tabView>
+					<p:tab title="Evènement">
+						<p:panelGrid id="eventDetails" columns="2">
+						
+							<p:outputLabel value="Agenda" styleClass="labelchob"/>
+							<p:autoComplete value="#{evenementAgendaController.taAgenda}"
+								completeMethod="#{evenementAgendaController.agendaAutoComplete}"
+								 var="agenda" converter="entityConverter"
+								itemLabel="#{agenda.nom}"
+								itemValue="#{agenda}" forceSelection="true"
+								dropdown="true" placeholder="Agenda" disabled="#{evenementAgendaController.evenementCalendrierExterne}">
+								<p:column>
+									<div style="margin:auto; width: 15px; height: 15px; background-color: ##{agenda.couleur}"/>
+								</p:column>
+								<p:column>
+									<h:outputText value="#{agenda.nom}" />
+								</p:column>
+								<p:column>
+									<h:outputText value="#{agenda.description}" />
+								</p:column>
+								<f:attribute name="nomChamp" value="#{const.C_TYPE_CODE_FAMILLE_UNITE}" />
+								<p:ajax event="itemSelect" listener="#{evenementAgendaController.autcompleteSelection}" />
+							</p:autoComplete>
+							
+							<p:outputLabel value="Type evenement" />
+							<p:autoComplete value="#{evenementAgendaController.taTypeEvenement}"
+								completeMethod="#{evenementAgendaController.typeEvenementAutoComplete}"
+								 var="evt" converter="entityConverter"
+								itemLabel="#{evt.codeTypeEvenement}"
+								itemValue="#{evt}" forceSelection="true"
+								dropdown="true" placeholder="Type d'évènement" disabled="#{evenementAgendaController.evenementCalendrierExterne}">
+								<p:column>
+									<h:outputText value="#{evt.codeTypeEvenement}" />
+								</p:column>
+								<p:column>
+									<h:outputText value="#{evt.libelleTypeEvenement}" />
+								</p:column>
+								<f:attribute name="nomChamp" value="#{const.C_TYPE_CODE_FAMILLE_UNITE}" />
+								<p:ajax event="itemSelect" listener="#{evenementAgendaController.autcompleteSelection}" />
+							</p:autoComplete>
+										
+<!-- 							<p:outputLabel for="code" value="Code" /> -->
+<!-- 							<p:inputText id="code" value="#{evenementAgendaController.event.taEvenement.codeEvenement}" required="true" /> -->
+
+							<p:outputLabel value="Origine" rendered="#{evenementAgendaController.event.origine eq 'AGENDA_GOOGLE_CALENDAR'}"/>
+							<p:commandLink onclick="window.open('#{evenementAgendaController.event.urlCalendrierExterne}')" rendered="#{evenementAgendaController.event.origine eq 'AGENDA_GOOGLE_CALENDAR'}">
+								<p:graphicImage library="images" name="google-sign-in-logo.png" 
+									title="Ouvrir dans Google Calendar"
+									height="40px" width="40px" />
+							</p:commandLink>
+							
+							<p:outputLabel value="Origine" rendered="#{evenementAgendaController.event.origine eq 'AGENDA_MICROSOFT_OUTLOOK'}"/>
+							<p:commandLink onclick="window.open('#{evenementAgendaController.event.urlCalendrierExterne}')" rendered="#{evenementAgendaController.event.origine eq 'AGENDA_MICROSOFT_OUTLOOK'}">
+								<p:graphicImage library="images" name="ms-sign-in-logo.png" 
+									title="Ouvrir dans Outlook"
+									height="40px" width="40px" />
+							</p:commandLink>
+							
+							<p:outputLabel for="title" value="Titre" styleClass="labelchob"/>
+							<p:inputText id="title" value="#{evenementAgendaController.event.taEvenement.libelleEvenement}" style="width:100%" disabled="#{evenementAgendaController.evenementCalendrierExterne}"/>
+							
+							<p:outputLabel for="description" value="Description" />
+							<p:textEditor secure="false" id="description" value="#{evenementAgendaController.event.taEvenement.description}" disabled="#{evenementAgendaController.evenementCalendrierExterne}"/>
+			
+							<p:outputLabel for="from" value="Début" styleClass="labelchob"/>
+							<p:calendar id="from" value="#{evenementAgendaController.event.startDate}" timeZone="#{msg.time_zone}" pattern="#{msg.datetime_pattern}" disabled="#{evenementAgendaController.evenementCalendrierExterne}">
+								<p:ajax/>
+							</p:calendar>
+			
+							<p:outputLabel for="to" value="Fin" />
+							<p:calendar id="to" value="#{evenementAgendaController.event.endDate}" timeZone="#{msg.time_zone}" pattern="#{msg.datetime_pattern}" disabled="#{evenementAgendaController.evenementCalendrierExterne}"/>
+			
+							<p:outputLabel for="allDay" value="Toute la journée" />
+							<p:selectBooleanCheckbox id="allDay" value="#{evenementAgendaController.event.taEvenement.touteLaJournee}" disabled="#{evenementAgendaController.evenementCalendrierExterne}"/>
+							
+							<p:outputLabel for="prive" value="Privé" />
+							<p:selectBooleanCheckbox id="prive" value="#{evenementAgendaController.event.taEvenement.prive}" disabled="#{evenementAgendaController.evenementCalendrierExterne}"/>
+							
+							<p:outputLabel for="recurrent" value="Récurrent" />
+							<p:selectBooleanCheckbox id="recurrent" value="#{evenementAgendaController.event.taEvenement.recurrent}" disabled="#{evenementAgendaController.evenementCalendrierExterne}">
+								<p:ajax update="@parent"/>
+							</p:selectBooleanCheckbox>
+							
+							<p:outputLabel value="Du" rendered="#{evenementAgendaController.event.taEvenement.recurrent}"/>
+							<p:calendar value="#{evenementAgendaController.event.startDate}" timeZone="#{msg.time_zone}" pattern="#{msg.datetime_pattern}" rendered="#{evenementAgendaController.event.taEvenement.recurrent}"/>
+			
+							<p:outputLabel value="Au" rendered="#{evenementAgendaController.event.taEvenement.recurrent}"/>
+							<p:calendar value="#{evenementAgendaController.event.endDate}" timeZone="#{msg.time_zone}" pattern="#{msg.datetime_pattern}" rendered="#{evenementAgendaController.event.taEvenement.recurrent}"/>
+							
+			
+<!-- 							<p:commandLink value="#{evenementAgendaController.event.codeObjet}" action="#{evenementAgendaController.openDocument}" update=":form:tabView" -->
+<!-- 								oncomplete="activeTabCenter('#{evenementAgendaController.event.cssLgrTab}');"> -->
+								<!-- <f:setPropertyActionListener target="#{clientController.taClient}" value="#{dossierController.taDossier.taClient}" /> -->
+<!-- 							</p:commandLink> -->
+						</p:panelGrid>
+					</p:tab>
+					<p:tab title="Utilisateur(s) - #{evenementAgendaController.event.taEvenement.listeUtilisateur != null ? evenementAgendaController.event.taEvenement.listeUtilisateur.size() : 0}"
+							rendered="#{!evenementAgendaController.evenementCalendrierExterne}">
+						<h:outputText value="Propriétaire : #{evenementAgendaController.sessionInfo.utilisateur.nom} #{evenementAgendaController.sessionInfo.utilisateur.prenom} (#{evenementAgendaController.sessionInfo.utilisateur.email})" />
+						<br/>
+						<p:autoComplete 
+							value="#{evenementAgendaController.utilisateurDTOAutoComplete}"
+							converter="entityConverter"
+							completeMethod="#{evenementAgendaController.utilisateurAutoCompleteDTOLight}"
+							var="utilisateur" 
+							itemLabel="#{utilisateur.nom}"
+							itemValue="#{utilisateur}" 
+							forceSelection="true" dropdown="true"
+							placeholder="Utilisateur">
+							<p:column>
+								<h:outputText value="#{utilisateur.email}" />
+							</p:column>
+	
+							<p:column>
+								<h:outputText value="#{utilisateur.nom}" />
+							</p:column>
+	
+							<p:column>
+								<h:outputText value="#{utilisateur.prenom}" />
+							</p:column>
+	
+							<f:attribute name="nomChamp" value="C_CHAMP_UTILISATEUR_AC_AGENDA" />
+							<p:ajax event="itemSelect" listener="#{evenementAgendaController.autcompleteSelection}" update="@widgetVar(wvDatatableListeUtilEvenement)" />
+						</p:autoComplete>
+						<p:dataTable value="#{evenementAgendaController.event.taEvenement.listeUtilisateur}" 
+								var="u" 
+								selection="#{evenementAgendaController.selectedUtilisateurs}" rowKey="#{u.id}"
+								widgetVar="wvDatatableListeUtilEvenement"
+								emptyMessage="Uniquement l'utilisateur connecté (vous)"
+								>
+							<p:column selectionMode="multiple" style="width:40px;text-align:center" headerText="Notifier"/>
+<!-- 							<p:column headerText="Notifier"> -->
+<!-- 								<p:selectBooleanCheckbox value="true"></p:selectBooleanCheckbox> -->
+<!-- 							</p:column> -->
+							<p:column headerText="Nom" styleClass="center">
+								<h:outputText value="#{u.nom}" /> <h:outputText value="#{utilisateur.prenom}" />
+							</p:column>
+							<p:column headerText="Email" styleClass="center">
+								<h:outputText value="#{u.email}" />
+							</p:column>
+							<p:column headerText="Action" styleClass="center">
+								<p:commandLink value="Supprimer" process="@this" action="#{evenementAgendaController.actSupprimerUtilisateurListe(u)}" update="@widgetVar(wvDatatableListeUtilEvenement)"/>
+							</p:column>
+						</p:dataTable>
+						<p:panel header="Notification utilisateur" widgetVar="wvParamNotificationUtilisateur">
+							<p:selectManyCheckbox value="#{evenementAgendaController.selectedTypeNotificationDTOUtilisateur}" converter="entityConverter">
+						        <f:selectItems value="#{evenementAgendaController.listeTypeNotificationDTO}" var="typeNotification" itemLabel="#{typeNotification.libelleTypeNotification}" itemValue="#{typeNotification}" />
+						        <p:ajax listener="#{evenementAgendaController.initAffichageNotification()}" update="@widgetVar(wvParamNotificationUtilisateur)"/>
+						    </p:selectManyCheckbox>
+							<p:selectOneRadio value="#{evenementAgendaController.selectedQuandNotificationUtilisateur}" rendered="#{evenementAgendaController.showParamQuandNotificationUtilisateur}">
+					            <f:selectItem itemLabel="Avant l'évènement" itemValue="NOTIFICATION_AVANT_EVENEMENT" />
+					            <f:selectItem itemLabel="Date précise" itemValue="NOTIFICATION_DATE_PRECISE" />
+					            <f:selectItem itemLabel="Au début de l'évènement" itemValue="NOTIFICATION_DEBUT_EVENEMENT" />
+					            <p:ajax listener="#{evenementAgendaController.initAffichageNotification()}" update="@widgetVar(wvParamNotificationUtilisateur)"/>
+					        </p:selectOneRadio>
+					        <p:panel header="Avant" rendered="#{evenementAgendaController.showAvantNotificationUtilisateur}">
+					        	<p:panelGrid columns="2">
+						        	<p:spinner placeholder="Nombre de" value="#{evenementAgendaController.nbXxxAvantEvenementUtilisateur}"/>
+							        <p:selectOneMenu value="#{evenementAgendaController.uniteNbXxxAvantEvenement}">
+							            <f:selectItem itemLabel="Minutes" itemValue="NOTIFICATION_DEBUT_NB_MINUTES" />
+							            <f:selectItem itemLabel="Heures" itemValue="NOTIFICATION_DEBUT_NB_HEURES" />
+							            <f:selectItem itemLabel="Jours" itemValue="NOTIFICATION_DEBUT_NB_JOURS" />
+							            <f:selectItem itemLabel="Semaines" itemValue="NOTIFICATION_DEBUT_NB_SEMAINES" />
+							        </p:selectOneMenu>
+						        </p:panelGrid>
+					        </p:panel>
+					        <p:panel header="Début de l'évènement" rendered="#{evenementAgendaController.showDebutNotificationUtilisateur}">
+					        	<h:outputText value="#{evenementAgendaController.event.startDate}" >
+									<f:convertDateTime pattern="#{msg.datetime_pattern}" timeZone="#{msg.time_zone}"/>
+								</h:outputText>
+					        </p:panel>
+					        <p:panel header="Date précise" rendered="#{evenementAgendaController.showDateNotificationUtilisateur}">
+					        	<p:panelGrid columns="2">
+						        	<h:outputText value="Date" />
+						        	<p:calendar value="#{evenementAgendaController.datePreciseNotificationUtilisateur}" timeZone="#{msg.time_zone}" pattern="#{msg.datetime_pattern}"/>
+					        	</p:panelGrid>
+					        </p:panel>
+					        <p:panel header="Texte" rendered="#{evenementAgendaController.showTexteNotificationUtilisateur}">
+					        	<p:textEditor secure="false" value="#{evenementAgendaController.texteNotificationUtilisateur}"/>
+					        </p:panel>
+						</p:panel>
+					</p:tab>
+					<p:tab title="Tiers - #{evenementAgendaController.event.taEvenement.listeTiers != null ? evenementAgendaController.event.taEvenement.listeTiers.size() : 0}"
+							rendered="#{!evenementAgendaController.evenementCalendrierExterne}">
+						<p:autoComplete value="#{evenementAgendaController.tiersDTOAutoComplete}"
+							converter="entityConverter"
+							completeMethod="#{evenementAgendaController.tiersAutoCompleteDTOLight}"
+							var="tiers"
+							itemLabel="#{tiers.codeTiers}" itemValue="#{tiers}"
+									maxResults="#{evenementAgendaController.taPreferencesService.nbMaxChargeListeTiers()}"
+									moreText="Il y a #{component.maxResults} affichés sur #{component.suggestions.size()} au total, Veuillez affiner votre recherche ou cliquer ici	pour en afficher plus ..."
+                  			forceSelection="true" dropdown="true" placeholder="Tiers">
+							<p:column>
+								<h:outputText value="#{tiers.codeTiers}"  />
+							</p:column>
+	
+							<p:column>
+								<h:outputText value="#{tiers.nomTiers}" />
+							</p:column>
+	
+							<f:attribute name="nomChamp" value="C_CHAMP_TIERS_AC_AGENDA" />
+							<p:ajax event="itemSelect" listener="#{evenementAgendaController.autcompleteSelection}" update="@widgetVar(wvDatatableListeTiersEvenement)"/>
+							<p:ajax event="moreText" listener="#{evenementAgendaController.onMoreTextTiers}" />
+						</p:autoComplete>
+						<p:dataTable value="#{evenementAgendaController.event.taEvenement.listeTiers}"
+							selection="#{evenementAgendaController.selectedTiers}" rowKey="#{t.idTiers}" 
+							var="t" widgetVar="wvDatatableListeTiersEvenement"
+							emptyMessage="Aucun tiers">
+							<p:column selectionMode="multiple" style="width:40px;text-align:center" headerText="Notifier"/>
+							<p:column styleClass="center">
+								<h:outputText value="#{t.nomTiers}" /> <h:outputText value="#{utilisateur.prenom}" />
+							</p:column>
+							<p:column styleClass="center">
+								<h:outputText value="#{t.taEmail.adresseEmail}" />
+							</p:column>
+							<p:column styleClass="center">
+								<p:commandLink value="Supprimer" process="@this" action="#{evenementAgendaController.actSupprimerTiersListe(t)}" update="@widgetVar(wvDatatableListeTiersEvenement)"/>
+							</p:column>
+						</p:dataTable>
+						<p:panel header="Notification tiers" widgetVar="wvParamNotificationTiers">
+							<p:selectManyCheckbox value="#{evenementAgendaController.selectedTypeNotificationDTOTiers}" converter="entityConverter">
+						        <f:selectItems value="#{evenementAgendaController.listeTypeNotificationDTO}" var="typeNotification" itemLabel="#{typeNotification.libelleTypeNotification}" itemValue="#{typeNotification}" />
+						        <p:ajax listener="#{evenementAgendaController.initAffichageNotification()}" update="@widgetVar(wvParamNotificationTiers)"/>
+						    </p:selectManyCheckbox>
+							<p:selectOneRadio value="#{evenementAgendaController.selectedQuandNotificationTiers}" rendered="#{evenementAgendaController.showParamQuandNotificationTiers}">
+					            <f:selectItem itemLabel="Avant l'évènement" itemValue="NOTIFICATION_AVANT_EVENEMENT" />
+					            <f:selectItem itemLabel="Date précise" itemValue="NOTIFICATION_DATE_PRECISE" />
+					            <f:selectItem itemLabel="Au début de l'évènement" itemValue="NOTIFICATION_DEBUT_EVENEMENT" />
+					            <p:ajax listener="#{evenementAgendaController.initAffichageNotification()}" update="@widgetVar(wvParamNotificationTiers)"/>
+					        </p:selectOneRadio>
+					        <p:panel header="Avant" rendered="#{evenementAgendaController.showAvantNotificationTiers}">
+					        	<p:panelGrid columns="2">
+						        	<p:spinner placeholder="Nombre de" value="#{evenementAgendaController.nbXxxAvantEvenementTiers}"/>
+							        <p:selectOneMenu value="#{evenementAgendaController.uniteNbXxxAvantEvenementTiers}">
+							            <f:selectItem itemLabel="Minutes" itemValue="NOTIFICATION_DEBUT_NB_MINUTES" />
+							            <f:selectItem itemLabel="Heures" itemValue="NOTIFICATION_DEBUT_NB_HEURES" />
+							            <f:selectItem itemLabel="Jours" itemValue="NOTIFICATION_DEBUT_NB_JOURS" />
+							            <f:selectItem itemLabel="Semaines" itemValue="NOTIFICATION_DEBUT_NB_SEMAINES" />
+							        </p:selectOneMenu>
+						        </p:panelGrid>
+					        </p:panel>
+					        <p:panel header="Début de l'évènement" rendered="#{evenementAgendaController.showDebutNotificationTiers}">
+					        	<h:outputText value="#{evenementAgendaController.event.startDate}" >
+									<f:convertDateTime pattern="#{msg.datetime_pattern}" timeZone="#{msg.time_zone}"/>
+								</h:outputText>
+					        </p:panel>
+					        <p:panel header="Date précise" rendered="#{evenementAgendaController.showDateNotificationTiers}">
+					        	<p:panelGrid columns="2">
+						        	<h:outputText value="Date" />
+						        	<p:calendar value="#{evenementAgendaController.datePreciseNotificationTiers}" timeZone="#{msg.time_zone}" pattern="#{msg.datetime_pattern}"/>
+					        	</p:panelGrid>
+					        </p:panel>
+					        <p:panel header="Texte" rendered="#{evenementAgendaController.showTexteNotificationTiers}">
+					        	<p:textEditor secure="false" value="#{evenementAgendaController.texteNotificationTiers}"/>
+					        </p:panel>
+						</p:panel>
+					</p:tab>
+					<p:tab title="Document(s) - #{evenementAgendaController.event.taEvenement.listeDocument != null ? evenementAgendaController.event.taEvenement.listeDocument.size() : 0}"
+							rendered="#{!evenementAgendaController.evenementCalendrierExterne}">
+						<p:dataTable value="#{evenementAgendaController.event.taEvenement.listeDocument}" var="t"
+							emptyMessage="Aucun document" 
+							widgetVar="wvDatatableListeDocumentEvenement">
+							<p:column>
+								<h:outputText value="#{t.taDevis!=null ? t.taDevis.codeDocument : ''}" />
+								<h:outputText value="#{t.taFacture!=null ? t.taFacture.codeDocument : ''}" />
+								<h:outputText value="#{t.taAvoir!=null ? t.taAvoir.codeDocument : ''}" />
+								<h:outputText value="#{t.taApporteur!=null ? t.taApporteur.codeDocument : ''}" />
+								<h:outputText value="#{t.taBonliv!=null ? t.taBonliv.codeDocument : ''}" />
+								<h:outputText value="#{t.taBoncde!=null ? t.taBoncde.codeDocument : ''}" />
+								<h:outputText value="#{t.taAcompte!=null ? t.taAcompte.codeDocument : ''}" />
+								<h:outputText value="#{t.taPrelevement!=null ? t.taPrelevement.codeDocument : ''}" />
+								<h:outputText value="#{t.taProforma!=null ? t.taProforma.codeDocument : ''}" />
+								<h:outputText value="#{t.taAvisEcheance!=null ? t.taAvisEcheance.codeDocument : ''}" />
+								<h:outputText value="#{t.taFabrication!=null ? t.taFabrication.codeDocument : ''}" />
+								<h:outputText value="#{t.taBonReception!=null ? t.taBonReception.codeDocument : ''}" />
+							</p:column>
+							<p:column>
+								
+							</p:column>
+							<p:column>
+								<p:commandLink value="Supprimer" process="@this" action="#{evenementAgendaController.actSupprimerDocumentListe(t)}" update="@widgetVar(wvDatatableListeDocumentEvenement)"/>
+							</p:column>
+						</p:dataTable>
+					</p:tab>
+				</p:tabView>
+			</p:panel>
+
+		</h:form>
+	</ui:define>
+     
+</ui:composition>

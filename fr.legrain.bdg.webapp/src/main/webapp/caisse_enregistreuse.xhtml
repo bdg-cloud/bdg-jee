@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+      
+<!-- 	<f:view locale="#{localeManagedBean.localeCode}"/> -->
+
+	<!-- <f:validateBean disabled="true"> -->
+	
+	<f:view locale="#{languageBean.localeCode}"/>
+
+    <h:head>
+        <f:facet name="first">
+            <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+            <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+            <meta name="apple-mobile-web-app-capable" content="yes" />
+        </f:facet>
+        
+        <title>Bureau de Gestion</title>
+        <link rel="shortcut icon" type="image/x-icon" href="#{resource['images:favicon.ico']}" />
+        
+        <script src="#{adresseController.googleMapApiUrlAndKey}" type="text/javascript" async="async" defer="defer"/> 
+        
+        <h:outputScript name="js/nanoscroller.js" library="icarus-layout" />
+        <h:outputScript name="js/layout.js" library="icarus-layout" />
+        <h:outputScript name="/js/push_functions.js"  />
+        
+        <h:outputScript name="/js/jquery.bullseye-1.0-min.js"  />
+        <h:outputScript name="/js/jquery.scannerdetection.js"  />
+  
+        <ui:insert name="head"/>
+    </h:head>
+
+    <h:body>
+    
+	    <f:facet name="last">
+			<!-- surcharge des CSS primefaces -->
+			<h:outputStylesheet library="css" name="bdg.css" />
+			<h:outputStylesheet library="css" name="icarus-bdg.css" />
+<!-- 			<h:outputStylesheet library="css" name="theme-bdg.css" /> -->
+			<h:outputStylesheet library="css" name="theme-caisse-bdg.css" />
+			<ui:insert name="head_css"/>
+<!-- 			<h:outputStylesheet library="css" name="jquery.splitter.css" /> -->
+		</f:facet>
+		
+<!-- <ui:composition xmlns="http://www.w3.org/1999/xhtml"  -->
+<!-- 	xmlns:h="http://java.sun.com/jsf/html" -->
+<!-- 	xmlns:f="http://java.sun.com/jsf/core"  -->
+<!-- 	xmlns:ui="http://java.sun.com/jsf/facelets"  -->
+<!-- 	xmlns:p="http://primefaces.org/ui" -->
+<!-- 	template="/WEB-INF/template.xhtml"> -->
+
+<!-- 	<ui:define name="content"> -->
+		
+		<h:form id="form" prependId="true">
+
+			<p:growl id="messages" showDetail="true" severity="error" widgetVar="growl"/>
+			<p:messages id="messagess" showDetail="true" autoUpdate="true" closable="true" />
+			
+				<ui:include src="documents/ticket_caisse_tactile.xhtml" />
+			
+			<p:confirmDialog global="true" showEffect="fade">
+					<p:commandButton id="idConfirmDialogCenterOui" value="Oui" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+					<p:commandButton id="idConfirmDialogCenterNon" value="Non" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+			</p:confirmDialog>
+			
+		</h:form>
+		
+		<h:outputScript name="/js/functions.js"  />
+						
+<!-- 	</ui:define> -->
+
+<!-- </ui:composition> -->
+
+</h:body>
+</html>
+

@@ -1,0 +1,2022 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:lgr="http://legrain.fr/ui"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:pe="http://primefaces.org/ui/extensions">
+
+	<!-- <f:validateBean disabled="true"> -->
+	<ui:define name="metadata">
+		<f:metadata>
+			<f:viewParam name="variableEcran" value="Avis_echeance" />
+		</f:metadata>
+	</ui:define>
+			<div class="dashboard-title" style="background: #f0f1f2; margin-bottom: 15px;">
+						<h:panelGroup id="idPanelGroupInfosTiersEnteteAvisEcheance" rendered="#{!avisEcheanceController.selectedDocumentDTO.AvisEcheanceEstVide()}">
+						<p:spacer width="30" height="5" />
+						<p:outputLabel value="Code : " />
+						<p:outputLabel value="#{avisEcheanceController.selectedDocumentDTO.codeDocument}" style="font-weight: bold;"/>
+						<p:spacer width="30" height="5" />
+						<p:outputLabel value="Code tiers : " />
+						<p:commandLink value="#{avisEcheanceController.selectedDocumentDTO.codeTiers}" style="font-weight: bold;"
+						action="#{ouvertureDocumentBean.detailTiers(ouvertureDocumentBean.recupCodetiers(avisEcheanceController.selectedDocumentDTO.codeTiers))}" 
+						update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+						</p:commandLink>
+						<p:spacer width="30" height="5" />
+						<p:outputLabel value="Nom : " />
+						<p:outputLabel value="#{avisEcheanceController.selectedDocumentDTO.nomTiers} #{avisEcheanceController.selectedDocumentDTO.prenomTiers}" style="font-weight: bold;"/>
+						<p:spacer width="30" height="5" />
+						<p:outputLabel value="Raison sociale : " />
+						<p:outputLabel value="#{avisEcheanceController.selectedDocumentDTO.nomEntreprise}" style="font-weight: bold;"/>
+						</h:panelGroup>
+			</div>
+	<p:menubar styleClass="menu-onglet" id="idMenuBoutonAvisEcheance" widgetVar="wvMenuBoutonAvisEcheance">
+
+		<p:menuitem title="Enregistrer l'avis d'échéance en cours de saisie" value="Enregistrer" styleClass="icon icon-save" process="@this idtiersAvisEcheance idCodeAvisEcheance"
+			actionListener="#{avisEcheanceController.actEnregistrer}" 
+			oncomplete="impressionDirect(PF('wvImpressionDirectAvisEcheance'),'#{request.contextPath}/output?__report=/reports/documents/avisEcheance/Fiche_avisEcheance.rptdesign&amp;__format=pdf')"
+			update="idPanelEnteteAvisEcheance,idPanelLignesAvisEcheance,idTableauComplementaireAvisEch,:form:messages,@form,@widgetVar(wvMenuListeAvisEcheance),@widgetVar(wvDataTableListeAvisEcheance)"
+			disabled="#{avisEcheanceController.etatBouton('enregistrer') or avisEcheanceController.stepEnCours('idLignesAvisEcheance')}">
+<!-- 			<p:confirm header="Confirmation mise à disposition client" message="Etes-vous sur de vouloir mettre à disposition ce document au client ? Ce document ne sera plus modifiable." icon="ui-icon-alert" disabled="#{!avisEcheanceController.impressionDirectClient and !avisEcheanceController.envoyeParEmail}"/> -->
+			 <p:confirm header="Confirmation enregistrement et suppréssion de ligne du document " message="Vous allez supprimer une ou plusieurs lignes du document, et ainsi la liaison à leur éventuelles lignes d'échéances. Pensez à aller annuler l'abonnement ou les lignes d'abonnements concernés si besoin."
+			  icon="pi pi-exclamation-triangle" disabled="#{avisEcheanceController.listeEcheanceLiaisonASupprimer == null or avisEcheanceController.listeEcheanceLiaisonASupprimer.isEmpty()}" />
+			</p:menuitem>
+			
+		<p:menuitem title="Créer un nouvel avis d'échéance" value="Insérer" styleClass="icon icon-insert"
+			actionListener="#{avisEcheanceController.actInserer}" process="@this"
+			oncomplete="if(PF('widgetVarLigneAvisEcheance').getStepIndex()!=-1) {PF('widgetVarLigneAvisEcheance').loadStep('idEnteteAvisEcheance', false)}"
+			update="idPanelEnteteAvisEcheance,idPanelLignesAvisEcheance,idTableauComplementaireAvisEch,idPrecisionPrixAvisEcheance,:form:messages,@form,@widgetVar(wvMenuListeAvisEcheance),@widgetVar(wvDataTableListeAvisEcheance)"
+			disabled="#{avisEcheanceController.etatBouton('inserer') or avisEcheanceController.stepEnCours('idLignesAvisEcheance')}" />
+			
+		<p:menuitem title="Modifier l'avis d'échéance courant" value="Modifier" styleClass="icon icon-update"
+			actionListener="#{avisEcheanceController.actModifier}"
+			process="@this"
+			update="idPanelEnteteAvisEcheance,idPanelLignesAvisEcheance,idTableauComplementaireAvisEch,:form:messages,@form,@widgetVar(wvMenuListeAvisEcheance),@widgetVar(wvDataTableListeAvisEcheance)"
+			disabled="#{avisEcheanceController.etatBouton('modifier')}">
+			<p:confirm header="#{avisEcheanceController.titreModification}" message="#{avisEcheanceController.messageModification}" icon="ui-icon-alert" />
+		</p:menuitem>
+		<p:menuitem title="Annuler les modifications en cours" value="Annuler" styleClass="icon icon-cancel"
+			actionListener="#{avisEcheanceController.actAnnuler}" process="@this"
+			update="idPanelEnteteAvisEcheance,idPanelLignesAvisEcheance,idTableauComplementaireAvisEch,:form:messages,@form,@widgetVar(wvMenuListeAvisEcheance),@widgetVar(wvDataTableListeAvisEcheance)"
+			disabled="#{avisEcheanceController.etatBouton('annuler') }" >
+		<p:confirm header="Confirmation" message="Etes vous sur de vouloir annuler les modifications en cours ?"  icon="ui-icon-alert" />
+		</p:menuitem>
+			
+<!-- 		<p:separator styleClass="separateur-menu-vertical"/> -->
+		<p:menuitem title="Supprimer l'avis d'échéance courant" value="Supprimer" styleClass="icon icon-delete menuitem-poubelle-droite"
+			actionListener="#{avisEcheanceController.actSupprimer}"
+			process="@this"
+			update="idPanelEnteteAvisEcheance,idPanelLignesAvisEcheance,idTableauComplementaireAvisEch,:form:messages,@form,@widgetVar(wvMenuListeAvisEcheance),@widgetVar(wvDataTableListeAvisEcheance)"
+			disabled="#{avisEcheanceController.etatBouton('supprimer') or avisEcheanceController.stepEnCours('idLignesAvisEcheance')}" >
+			<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer cet enregistrement ?" icon="ui-icon-alert" />
+		</p:menuitem>			
+
+		<p:menuitem title="Créer un évènement" styleClass="icon-agenda icon" 
+			
+			oncomplete="$('.classHiddenCommandForDialogAgendaReturnPro').click()"
+			process="@this" 
+			update="@this" 
+			disabled="#{avisEcheanceController.etatBouton('modifier')}"/>
+
+		<p:separator styleClass="separateur-menu-vertical"/>
+
+		<p:menuitem title="Fermer l'écran des avis d'échéance" value="Fermer" styleClass="icon icon-close menuitem-fermer-droite"
+			process="@this" 
+			actionListener="#{avisEcheanceController.actFermer}"
+			update=":form:messages,@widgetVar(wvMenuListeAvisEcheance),@widgetVar(wvDataTableListeAvisEcheance)"
+			disabled="#{avisEcheanceController.etatBouton('fermer')}"
+			onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())">
+			
+			<p:confirm header="Confirmation" message="#{msg_diag.alert_fermeture_onglet}" icon="ui-icon-alert" disabled="#{!avisEcheanceController.modeEcran.dataSetEnModif()}"/>
+		</p:menuitem>
+
+<!-- 		<p:menuitem title="Imprimer le avisEcheance courant" value="Imprimer" styleClass="icon icon-print" -->
+<!-- 			onsuccess="window.open('#{request.contextPath}/output?__report=/reports/documents/avisEcheance/Fiche_avisEcheance.rptdesign&amp;__format=pdf')" -->
+<!-- 			actionListener="#{avisEcheanceController.actImprimer}" -->
+<!-- 			disabled="#{avisEcheanceController.etatBouton('imprimer') or avisEcheanceController.stepEnCours('idLignesAvisEcheance')}" /> -->
+
+<!-- OLD boutons d'envoi mail et impression -->
+		<!-- <lgr:menuItemImprimer title="Imprimer l'avis d'échéance courant" value="Imprimer" styleClass="icon icon-print"
+			disabled="#{avisEcheanceController.etatBouton('imprimer') or avisEcheanceController.stepEnCours('idLignesAvisEcheance')}"
+			onsuccess="window.open('#{request.contextPath}/output?__report=/reports/documents/avisEcheance/Fiche_avis_echeance_1809.rptdesign&amp;__format=pdf')"
+			oncomplete="$('.classHiddenCommandForDialogImprimerReturnAvisEcheance').click()"
+			actionBean="#{avisEcheanceController}"
+			actionMethod="actImprimer"
+			choixEdition="#{avisEcheanceController.choixEdition}"
+			/>
+			
+		<p:menuitem title="Imprimer étiquettes code barre" value="Imprimer étiquette code barre" styleClass="icon icon-barcode"
+						onsuccess="window.open('#{request.contextPath}/articles/etiquette_cb.xhtml')"
+						actionListener="#{avisEcheanceController.actImprimerEtiquetteCB}"/>		
+						
+		<p:menuitem title="Envoyer par email" styleClass="icon icon-envoi-mail"
+			oncomplete="$('.classHiddenCommandForDialogEmailReturnPro').click()"
+			process="@this" 
+			update=":form:messages" 
+			disabled="#{avisEcheanceController.etatBouton('modifier')}"/> -->
+			
+		<!-- nouveaux boutons d'impression et d'envoi de mail -->
+		<p:submenu  icon="ui-icon-print"  class="ui-icon-print-option"> 
+		 
+		 <p:menuitem title="#{const.avis_ech_titre_menu_imprimer} pour le client" value="Imprimer pour le client" icon="fa fa-print"
+				disabled="#{(avisEcheanceController.etatBouton('imprimer') or avisEcheanceController.stepEnCours('idLignesAvisEcheance')) }"
+				actionListener="#{avisEcheanceController.imprimeEdition(null, 'CLIENT', 'true')}"
+				update="idTableauComplementaireAvisEch">
+				<p:confirm header="Confirmation" disabled="#{avisEcheanceController.selectedDocumentDTO.estMisADisposition}" message="Etes-vous sur de vouloir mettre à disposition du client ce document ?" icon="ui-icon-alert" />
+			</p:menuitem>
+			<p:submenu label="Tous les modèles" disabled="#{(avisEcheanceController.etatBouton('imprimer') or avisEcheanceController.stepEnCours('idLignesAvisEcheance'))}">
+				 <c:forEach items="#{avisEcheanceController.listeEdition}" var="edition" varStatus="loop">
+				       <p:menuitem  title="#{edition.libelleEdition}" value="#{edition.libelleEdition}" actionListener="#{avisEcheanceController.imprimeEdition(edition, 'CLIENT', 'true')}" 
+				       update="idTableauComplementaireAvisEch">
+						<p:confirm header="Confirmation" disabled="#{avisEcheanceController.selectedDocumentDTO.estMisADisposition}" message="Etes-vous sur de vouloir mettre à disposition du client ce document ?" icon="ui-icon-alert" />
+						</p:menuitem >
+				   </c:forEach>
+			</p:submenu>
+			
+<!-- 			<p:separator /> -->
+			
+<!-- 				<p:menuitem title="#{const.avis_ech_titre_menu_imprimer} en Duplicata" value="Duplicata" icon="fa fa-print" -->
+<!-- 				disabled="#{(avisEcheanceController.etatBouton('imprimer') or avisEcheanceController.stepEnCours('idLignesAvisEcheance')) or !avisEcheanceController.selectedDocumentDTO.estMisADisposition}" -->
+<!-- 				actionListener="#{avisEcheanceController.imprimeEdition(null, 'DUPLICATA', 'false')}"> -->
+<!-- 			</p:menuitem> -->
+			
+			<!-- or !avisEcheanceController.documentDTOEstVerrouille().verrouille -->
+			
+<!-- 			<p:submenu label="Tous les modèles" disabled="#{(avisEcheanceController.etatBouton('imprimer') or avisEcheanceController.stepEnCours('idLignesAvisEcheance')) or !avisEcheanceController.selectedDocumentDTO.estMisADisposition}" -->
+<!-- 				> -->
+				
+				<!-- or !avisEcheanceController.documentDTOEstVerrouille().verrouille -->
+				
+<!-- 					 <c:forEach items="#{avisEcheanceController.listeEdition}" var="edition" varStatus="loop"> -->
+<!-- 					       <p:menuitem  title="#{edition.libelleEdition}" value="#{edition.libelleEdition}" actionListener="#{avisEcheanceController.imprimeEdition(edition, 'DUPLICATA', 'false')}"> -->
+<!-- 							</p:menuitem > -->
+<!-- 					   </c:forEach> -->
+<!-- 			</p:submenu> -->
+			
+<!-- 			<p:separator /> -->
+			
+<!-- 		   <p:menuitem title="#{const.avis_ech_titre_menu_imprimer} en Payer" value="Avis d'échéance acquitté" icon="fa fa-print" -->
+<!-- 			disabled="#{((avisEcheanceController.etatBouton('imprimer') or avisEcheanceController.stepEnCours('idLignesAvisEcheance')) or !avisEcheanceController.selectedDocumentDTO.estMisADisposition) }" -->
+<!-- 			actionListener="#{avisEcheanceController.imprimeEdition(null, 'PAYER', 'false')}"> -->
+			
+			<!-- or avisEcheanceController.differenceReglementResteARegleForPrint  -->
+			<!-- <f:attribute name="mode_edition" value="PAYER" /> -->
+			<!-- or !avisEcheanceController.documentDTOEstVerrouille().verrouille -->
+			
+<!-- 			</p:menuitem> -->
+<!-- 			<p:submenu label="Tous les modèles" disabled="#{((avisEcheanceController.etatBouton('imprimer') or avisEcheanceController.stepEnCours('idLignesAvisEcheance'))  or !avisEcheanceController.selectedDocumentDTO.estMisADisposition)}" -->
+<!-- 			> -->
+			
+			<!-- or avisEcheanceController.differenceReglementResteARegleForPrint -->
+			<!-- or !avisEcheanceController.documentDTOEstVerrouille().verrouille -->
+			
+<!-- 					 <c:forEach items="#{avisEcheanceController.listeEdition}" var="edition" varStatus="loop"> -->
+<!-- 					       <p:menuitem  title="#{edition.libelleEdition}" value="#{edition.libelleEdition}" actionListener="#{avisEcheanceController.imprimeEdition(edition, 'PAYER', 'false')}"> -->
+<!-- 							</p:menuitem > -->
+<!-- 					   </c:forEach> -->
+<!-- 			</p:submenu> -->
+			<p:separator />
+		 
+       		<p:menuitem  title="#{const.avis_ech_titre_menu_imprimer} en brouillon" value="Brouillon" icon="fa fa-print"
+				disabled="#{(avisEcheanceController.etatBouton('imprimer') or avisEcheanceController.stepEnCours('idLignesAvisEcheance')) or avisEcheanceController.selectedDocumentDTO.estMisADisposition }"
+				actionListener="#{avisEcheanceController.imprimeEdition(null, 'BROUILLON', 'false')}">
+				<!--or avisEcheanceController.documentDTOEstVerrouille().verrouille  -->
+			</p:menuitem >
+			<!-- oncomplete="$('.classHiddenCommandForDialogImprimerReturnAvisEcheanceBrouillon').click()" -->
+			<p:submenu label="Tous les modèles" disabled="#{(avisEcheanceController.etatBouton('imprimer') or avisEcheanceController.stepEnCours('idLignesAvisEcheance')) or avisEcheanceController.selectedDocumentDTO.estMisADisposition }"
+				>
+				<!--or avisEcheanceController.documentDTOEstVerrouille().verrouille  -->
+				<!-- <p:menu model="#{avisEcheanceController.menuModelEdition}"></p:menu> -->
+					 <c:forEach items="#{avisEcheanceController.listeEdition}" var="edition" varStatus="loop">
+					       <p:menuitem  title="#{edition.libelleEdition}" value="#{edition.libelleEdition}" actionListener="#{avisEcheanceController.imprimeEdition(edition, 'BROUILLON', 'false')}">
+							</p:menuitem >
+					   </c:forEach>
+			</p:submenu>
+        </p:submenu>	
+        
+        
+        <p:submenu  icon="ui-icon-mail"  class="ui-icon-mail-option">
+			
+			<p:menuitem  title="Envoyer par email pour le client" value="Envoyer au client" icon="fa fa-paper-plane"
+				disabled="#{avisEcheanceController.etatBouton('modifier')}"
+				oncomplete="$('.classHiddenCommandForDialogEmailReturnPro').click()"
+				update="idPanelEnteteAvisEcheance,idPanelLignesAvisEcheance,idTableauComplementaireAvisEch,:form:messages,@form,@widgetVar(wvMenuListeAvisEcheance),@widgetVar(wvDataTableListeAvisEcheance)"
+				actionListener="#{avisEcheanceController.envoiMailEdition(null, 'CLIENT', 'true')}">
+				<p:confirm header="Confirmation" disabled="#{avisEcheanceController.selectedDocumentDTO.estMisADisposition}" message="Etes-vous sur de vouloir mettre à disposition du client ce document ?" icon="ui-icon-alert" />
+				</p:menuitem >
+				<p:submenu label="Tous les modèles" disabled="#{avisEcheanceController.etatBouton('modifier')}">
+					 <c:forEach items="#{avisEcheanceController.listeEdition}" var="edition" varStatus="loop">
+					       <p:menuitem  title="#{edition.libelleEdition}" value="#{edition.libelleEdition}"
+					        actionListener="#{avisEcheanceController.envoiMailEdition(edition, 'CLIENT', 'true')}"
+					         oncomplete="$('.classHiddenCommandForDialogEmailReturnPro').click()">
+					         <p:confirm header="Confirmation" disabled="#{avisEcheanceController.selectedDocumentDTO.estMisADisposition}" message="Etes-vous sur de vouloir mettre à disposition du client ce document ?" icon="ui-icon-alert" />
+							</p:menuitem >
+					   </c:forEach>
+				</p:submenu>
+				
+<!-- 				<p:separator /> -->
+				
+<!-- 				<p:menuitem  title="Envoyer par email en duplicata" value="Duplicata" icon="fa fa-paper-plane" -->
+<!-- 				disabled="#{avisEcheanceController.etatBouton('modifier') or !avisEcheanceController.selectedDocumentDTO.estMisADisposition}" -->
+<!-- 				oncomplete="$('.classHiddenCommandForDialogEmailReturnPro').click()" -->
+<!-- 				update="idPanelEnteteAvisEcheance,idPanelLignesAvisEcheance,idTableauComplementaireAvisEch,:form:messages,@form,@widgetVar(wvMenuListeAvisEcheance),@widgetVar(wvDataTableListeAvisEcheance)" -->
+<!-- 				actionListener="#{avisEcheanceController.envoiMailEdition(null, 'DUPLICATA', 'false')}"> -->
+<!-- 				</p:menuitem > -->
+<!-- 				<p:submenu label="Tous les modèles" disabled="#{avisEcheanceController.etatBouton('modifier') or !avisEcheanceController.selectedDocumentDTO.estMisADisposition}"> -->
+<!-- 					 <c:forEach items="#{avisEcheanceController.listeEdition}" var="edition" varStatus="loop"> -->
+<!-- 					       <p:menuitem  title="#{edition.libelleEdition}" value="#{edition.libelleEdition}" -->
+<!-- 					        actionListener="#{avisEcheanceController.envoiMailEdition(edition, 'DUPLICATA', 'false')}" -->
+<!-- 					         oncomplete="$('.classHiddenCommandForDialogEmailReturnPro').click()"> -->
+<!-- 							</p:menuitem > -->
+<!-- 					   </c:forEach> -->
+<!-- 				</p:submenu> -->
+				
+<!-- 				<p:separator /> -->
+				
+<!-- 			<p:menuitem  title="Envoyer par email le document en payer" value="Avis d'échéance acquité" icon="fa fa-paper-plane" -->
+<!-- 				disabled="#{avisEcheanceController.etatBouton('modifier')  or !avisEcheanceController.selectedDocumentDTO.estMisADisposition}" -->
+<!-- 				oncomplete="$('.classHiddenCommandForDialogEmailReturnPro').click()" -->
+<!-- 				update="idPanelEnteteAvisEcheance,idPanelLignesAvisEcheance,idTableauComplementaireAvisEch,:form:messages,@form,@widgetVar(wvMenuListeAvisEcheance),@widgetVar(wvDataTableListeAvisEcheance)" -->
+<!-- 				actionListener="#{avisEcheanceController.envoiMailEdition(null, 'PAYER', 'false')}"> -->
+				
+				<!-- or avisEcheanceController.differenceReglementResteARegleForPrint -->
+				
+<!-- 				</p:menuitem > -->
+<!-- 				<p:submenu label="Tous les modèles" disabled="#{avisEcheanceController.etatBouton('modifier')  or !avisEcheanceController.selectedDocumentDTO.estMisADisposition}"> -->
+<!-- 					 <c:forEach items="#{avisEcheanceController.listeEdition}" var="edition" varStatus="loop"> -->
+<!-- 					       <p:menuitem  title="#{edition.libelleEdition}" value="#{edition.libelleEdition}" -->
+<!-- 					        actionListener="#{avisEcheanceController.envoiMailEdition(edition, 'PAYER', 'false')}" -->
+<!-- 					         oncomplete="$('.classHiddenCommandForDialogEmailReturnPro').click()"> -->
+<!-- 							</p:menuitem > -->
+<!-- 					   </c:forEach> -->
+<!-- 				</p:submenu> -->
+
+				<!-- or avisEcheanceController.differenceReglementResteARegleForPrint -->
+			
+				<p:separator />
+			
+				<p:menuitem  title="Envoyer par email en brouillon" value="Brouillon" icon="fa fa-paper-plane"
+				disabled="#{avisEcheanceController.etatBouton('modifier') or avisEcheanceController.selectedDocumentDTO.estMisADisposition}"
+				oncomplete="$('.classHiddenCommandForDialogEmailReturnPro').click()"
+				update="idPanelEnteteAvisEcheance,idPanelLignesAvisEcheance,idTableauComplementaireAvisEch,:form:messages,@form,@widgetVar(wvMenuListeAvisEcheance),@widgetVar(wvDataTableListeAvisEcheance)"
+				actionListener="#{avisEcheanceController.envoiMailEdition(null, 'BROUILLON', 'false')}">
+				</p:menuitem >
+				<p:submenu label="Tous les modèles" disabled="#{avisEcheanceController.etatBouton('modifier') or avisEcheanceController.selectedDocumentDTO.estMisADisposition}">
+					 <c:forEach items="#{avisEcheanceController.listeEdition}" var="edition" varStatus="loop">
+					       <p:menuitem  title="#{edition.libelleEdition}" value="#{edition.libelleEdition}"
+					        actionListener="#{avisEcheanceController.envoiMailEdition(edition, 'BROUILLON', 'false')}"
+					         oncomplete="$('.classHiddenCommandForDialogEmailReturnPro').click()">
+							</p:menuitem >
+					   </c:forEach>
+				</p:submenu>
+				
+				
+				
+				
+				
+			</p:submenu>
+
+		<p:separator styleClass="separateur-menu-vertical" />
+		
+
+<!-- 		<p:menuitem title="Liste des avisEcheances" icon="fa fa-list" oncomplete="PF('wvOverlayListeAvisEcheance').show();"/>	 -->
+		<p:menuitem title="Liste des avis d'échéance" styleClass="icon icon-liste" oncomplete="PF('wvOverlayListeAvisEcheance').show();"/>	
+		
+		<p:separator styleClass="separateur-menu-vertical" />		
+		
+		<p:menuitem title="Documents liés" styleClass="icon icon-documents-lies"  rendered="#{auth.isDevLgr()}"
+			oncomplete="$('.classHiddenCommandForDialogDocumentLieReturnAvisEcheance').click()"
+			process="@this" 
+			update="@this" 
+			disabled="#avisEcheanceController.etatBouton('imprimer') }" />
+				
+	</p:menubar>
+
+	<p:commandButton styleClass="classHiddenCommandForDialogAgendaReturnPro" actionListener="#{avisEcheanceController.actDialogEvenement}" style="display:none" process="@this"  >
+        <p:ajax event="dialogReturn" update="@widgetVar(wvAgenda)"  />  
+    </p:commandButton>
+    	<p:commandButton styleClass="classHiddenCommandForDialogEmailReturnPro" actionListener="#{avisEcheanceController.actDialogEmailSelectedEdition}" style="display:none" process="@this"  >
+        <p:ajax event="dialogReturn" listener="#{avisEcheanceController.handleReturnDialogEmail}" update=":form:messages, idTableauComplementaireAvisEch"  />  
+    </p:commandButton>   
+            
+    <p:commandButton styleClass="classHiddenCommandForDialogDocumentLieReturnAvisEcheance" actionListener="#{avisEcheanceController.actDialogGenerationDocumentLie}" style="display:none" process="@this"  >
+        <p:ajax event="dialogReturn" update="@form"  listener="#{avisEcheanceController.handleReturnDialogDocumentLie}"/>  
+    </p:commandButton> 
+    
+<!--     <p:commandButton styleClass="classHiddenCommandForDialogImprimerReturnPro" actionListener="#{avisEcheanceController.actDialogImprimer}" style="display:none" process="@this"  >
+        <p:ajax event="dialogReturn" listener="#{avisEcheanceController.handleReturnDialogImprimer}" update=":form:messages"  />  
+    </p:commandButton>  -->
+	<!-- 	<div class="ui-grid ui-grid-responsive"> -->
+	<!-- 		<div class="ui-grid-row"> -->
+	<!-- 			<div class="ui-grid-col-12"> -->
+<!-- 	flowListener="#{avisEcheanceController.onFlowProcess}" -->
+
+		<!-- 					Ajouter le 03/08/2017 Jean Marc -->
+	<p:fieldset style="margin-bottom:20px;" id="idTableauComplementaireAvisEch" widgetVar="wvTableauComplementairePro">
+		<h:panelGrid columns="10" cellpadding="15">
+			<p:panel styleClass="panel-aide-contextuelle">
+				<p:commandButton process="@this" 
+				alt="#{const_vue.btn_generation_modele}"
+				title="#{const_vue.btn_generation_modele}" 
+				label="#{const_vue.btn_generation_modele}" 
+				value="#{const_vue.btn_generation_modele}"
+				styleClass="icon icon-dupliquer"
+					action="#{duplicationDocumentBean.actDialogGenerationModeleDocument}" disabled="#{avisEcheanceController.modeEcran.dataSetEnModif()}">
+						<f:setPropertyActionListener target="#{duplicationDocumentBean.doc}" value="#{avisEcheanceController.masterEntity}"/>
+					<p:ajax event="dialogReturn"
+						listener="#{duplicationDocumentBean.handleReturnDialogGenerationDocument}"
+						update=":form:tabView,@widgetVar(wvMenuListeAvisEcheance),@widgetVar(wvDataTableListeAvisEcheance)"
+						oncomplete="activeTabCenter('#{avisEcheanceController.css}');" />
+				</p:commandButton>
+				<p:commandLink id="idLinkAideGenerationModeleDocumentAvisEcheance"
+					styleClass="lien-aide-contextuelle">
+					<i class="fa fa-info-circle animated"></i>
+				</p:commandLink>
+
+				<p:overlayPanel for="idLinkAideGenerationModeleDocumentAvisEcheance"
+					hideEffect="fade" dynamic="true" showCloseIcon="true"
+					styleClass="overlay-aide-contextuelle">
+					<ui:include
+						src="/aide_contextuelle/document_generation_modele_document.xhtml" />
+				</p:overlayPanel>
+			</p:panel>
+			<p:separator/>
+			<p:panel styleClass="panel-aide-contextuelle">
+				<p:commandButton process="@this" 
+					alt="#{const_vue.btn_generation_document}" 
+					title="#{const_vue.btn_generation_document}"
+					label="#{const_vue.btn_generation_document}" 
+					value="#{const_vue.btn_generation_document}"
+					styleClass="icon icon-linkdoc"
+					action="#{duplicationDocumentBean.actDialogGenerationDocument}" disabled="#{avisEcheanceController.modeEcran.dataSetEnModif()}">
+					<f:setPropertyActionListener target="#{duplicationDocumentBean.doc}" value="#{avisEcheanceController.masterEntity}"/>	
+					<f:setPropertyActionListener target="#{duplicationDocumentBean.genereToutesLesLignes}" value="true"/>
+					<p:ajax event="dialogReturn"
+						listener="#{duplicationDocumentBean.handleReturnDialogGenerationDocument}"
+						update=":form:tabView,@widgetVar(wvMenuListeAvisEcheance),@widgetVar(wvDataTableListeAvisEcheance)"
+						oncomplete="activeTabCenter('#{avisEcheanceController.css}');" />
+				</p:commandButton>
+				<p:commandLink id="idLinkAideGenerationDocumentAvisEcheance"
+					styleClass="lien-aide-contextuelle">
+					<i class="fa fa-info-circle animated"></i>
+				</p:commandLink>
+
+				<p:overlayPanel for="idLinkAideGenerationDocumentAvisEcheance" hideEffect="fade"
+					dynamic="true" showCloseIcon="true"
+					styleClass="overlay-aide-contextuelle">
+					<ui:include
+						src="/aide_contextuelle/document_generation_document.xhtml" />
+				</p:overlayPanel>
+			
+			</p:panel>
+					    <p:outputLabel value="Etat du document  " rendered="#{auth.isDevLgr()}"/>
+						<p:panel styleClass="panel-aide-contextuelle">
+							<p:autoComplete value="#{avisEcheanceController.selectedEtatDocument}" rendered="#{auth.isDevLgr()}"
+								converter="entityConverter"
+								completeMethod="#{avisEcheanceController.etatAutoComplete}"
+								disabled="true" var="etat"
+								itemLabel="#{etat.codeEtat}" itemValue="#{etat}"
+								forceSelection="true" dropdown="true" placeholder="Etat du document">
+								<p:column>
+									<h:outputText value="#{etat.codeEtat}" />
+								</p:column>
+
+								<p:column>
+									<h:outputText value="#{etat.liblEtat}" />
+								</p:column>
+
+								<f:attribute name="nomChamp" value="#{const.C_CODE_ETAT}" />
+								  <p:ajax event="clear" listener="#{avisEcheanceController.onClearEtat}" 
+								  update="idPanelEnteteAvisEcheance,idPanelLignesAvisEcheance,idTableauComplementaireAvisEch,:form:messages,@form,@widgetVar(wvMenuListeAvisEcheance),@widgetVar(wvDataTableListeAvisEcheance)"/>
+								<p:ajax event="itemSelect"
+									listener="#{avisEcheanceController.autcompleteSelection}"
+									update="idPanelEnteteAvisEcheance,idPanelLignesAvisEcheance,idTableauComplementaireAvisEch,:form:messages,@form,@widgetVar(wvMenuListeAvisEcheance),@widgetVar(wvDataTableListeAvisEcheance)"/>
+							</p:autoComplete>
+						</p:panel>
+						<h:outputLabel value="Document mis à la disposition du client !!!" title="#{avisEcheanceController.documentDTOEstVerrouille().message}" rendered="#{avisEcheanceController.documentDTOEstVerrouille().verrouille}"/>		
+<!-- 						<p:graphicImage value="Document verrouillé !!!" title="#{avisEcheanceController.documentDTOEstVerrouille().message}" library="images" name="verrouiller.svg" width="32"  rendered="#{avisEcheanceController.documentDTOEstVerrouille().verrouille}"/> -->
+						
+						<!-- Invisible, relier au meme champ que la checkbox du dernier step du wizard, reprise de cette valeur dans le 1er step car le oncomplete du actEnregistrer se declanche apres le retour au 1er, la valeur doit donc etre disponible ici pour le javascript -->
+					<p:selectBooleanCheckbox value="#{avisEcheanceController.impressionDirect}" styleClass="invisible" disabled="#{avisEcheanceController.editable()}"
+						widgetVar="wvImpressionDirectAvisEcheance" />
+					<p:selectBooleanCheckbox value="#{avisEcheanceController.envoyeParEmail}" styleClass="invisible" disabled="#{avisEcheanceController.editable()}"
+						widgetVar="wvEnvoyerEmailDirectAvisEcheance" />		
+					<p:outputLabel value="précision prix : " rendered="#{avisEcheanceController.affichagePrecisionPrixDocument()}"/>
+					<p:outputLabel value="#{avisEcheanceController.masterEntity.nbDecimalesPrix} décimale(s)" style="font-weight: bold;" id="idPrecisionPrixAvisEcheance" 
+					rendered="#{avisEcheanceController.affichagePrecisionPrixDocument()}"/>
+					
+					
+
+		</h:panelGrid>
+	</p:fieldset>	
+	
+
+	<p:wizard nextLabel="Suivant" backLabel="Précédent" showStepStatus="false" binding="#{avisEcheanceController.wizardDocument}" step="#{avisEcheanceController.stepCourant()}"
+	widgetVar="widgetVarLigneAvisEcheance" flowListener="#{avisEcheanceController.handleFlow}">
+		<p:tab id="idSyntheseAvisEcheance" title="Synthèse de la avisEcheance">
+			<div class="card">
+				<p:panel header="Synthèse de l'avis d'échéance" style="width:100%;" rendered="#{!avisEcheanceController.selectedDocumentDTO.AvisEcheanceEstVide()}">
+					<p:panelGrid columns="3" id="idInfosAvisEcheance" columnClasses="ui-grid-col-4,ui-grid-col-4,ui-grid-col-4" styleClass="ui-panelgrid-blank" layout="grid">
+						<h:panelGroup>
+						<p:outputLabel value="Code avis : " style="font-weight: bold;"/>
+						<p:outputLabel value="#{avisEcheanceController.selectedDocumentDTO.codeDocument}" />
+						</h:panelGroup>
+						<h:panelGroup>
+						<p:outputLabel value="Code tiers : " style="font-weight: bold;"/>
+						<p:commandLink value="#{avisEcheanceController.selectedDocumentDTO.codeTiers}"
+						action="#{ouvertureDocumentBean.detailTiers(ouvertureDocumentBean.recupCodetiers(avisEcheanceController.selectedDocumentDTO.codeTiers))}" 
+						update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+					</p:commandLink>
+						</h:panelGroup>
+						<h:panelGroup>
+						<p:outputLabel value="Adresse facturation : " style="font-weight: bold;"/>
+<!-- 						<p:outputLabel value="#{avisEcheanceController.selectedDocumentDTO.dateDocument}" > -->
+<!-- 							<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/> -->
+<!-- 						</p:outputLabel> -->
+						</h:panelGroup>
+						
+						<h:panelGroup>
+<!-- 						<p:outputLabel value="Libellé : "/> -->
+						<p:outputLabel value="#{avisEcheanceController.selectedDocumentDTO.libelleDocument}" />
+						</h:panelGroup>
+						<h:panelGroup>
+						<p:outputLabel value="Entreprise : " style="font-weight: bold;"/>
+						<p:outputLabel value="#{avisEcheanceController.selectedDocumentDTO.nomEntreprise}"/>
+						<br />
+						<p:outputLabel value="#{avisEcheanceController.selectedDocumentDTO.nomTiers} - #{avisEcheanceController.selectedDocumentDTO.prenomTiers}"/>
+<!-- 						<hr/> -->
+<!-- 						<h:panelGroup> -->
+<!-- 						<p:outputLabel value="Coordonnées : " style="font-weight: bold;"/> -->
+<!-- 						<p:outputLabel value="#{avisEcheanceController.selectedInfosTiers.adresseEmail} - #{avisEcheanceController.selectedInfosTiers.numeroTelephone}"/> -->
+<!-- 						</h:panelGroup> -->
+						</h:panelGroup>
+						<h:panelGroup>
+						<p:outputLabel value="" style="font-weight:bold;"/>
+						<p:outputLabel value="#{avisEcheanceController.taAdresseFact.adresse1Adresse}" >
+						</p:outputLabel>
+						<br/>
+						<p:outputLabel value="#{avisEcheanceController.taAdresseFact.adresse2Adresse}" >
+						</p:outputLabel>
+						</h:panelGroup>
+
+						<h:panelGroup>
+						<p:outputLabel value="Date avis : " style="font-weight: bold;"/>
+						<p:outputLabel value="#{avisEcheanceController.selectedDocumentDTO.dateDocument}" >
+							<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+						</p:outputLabel>
+						</h:panelGroup>
+						<h:panelGroup>
+						<p:outputLabel value="Tèl : " style="font-weight: bold;"/>
+						<p:outputLabel value="#{avisEcheanceController.taTiersDTO.numeroTelephone}"/>
+						</h:panelGroup>
+						<h:panelGroup>
+						<p:outputLabel value="" style="font-weight: bold;"/>
+						<p:outputLabel value="#{avisEcheanceController.taAdresseFact.adresse3Adresse}" >
+<!-- 						<p:outputLabel value="#{avisEcheanceController.taAdresseFact.codepostalAdresse} #{avisEcheanceController.taAdresseFact.villeAdresse}" > -->
+<!-- 							<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/> -->
+						</p:outputLabel>
+						</h:panelGroup>
+						
+						<h:panelGroup>
+						<p:outputLabel value="Date échéance : " style="font-weight:bold;"/>
+						<p:outputLabel value="#{avisEcheanceController.selectedDocumentDTO.dateEchDocument}" >
+							<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+						</p:outputLabel>
+						</h:panelGroup>
+						<h:panelGroup>
+						<p:outputLabel value="Email : " style="font-weight: bold;"/>
+						<p:outputLabel value="#{avisEcheanceController.taTiersDTO.adresseEmail}"/>
+						</h:panelGroup>
+						<h:panelGroup>
+						<p:outputLabel value="Ville : " style="font-weight: bold;"/>
+						<p:outputLabel value="#{avisEcheanceController.taAdresseFact.codepostalAdresse} #{avisEcheanceController.taAdresseFact.villeAdresse}" >
+<!-- 							<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/> -->
+						</p:outputLabel>
+						</h:panelGroup>
+																		
+ 						<h:panelGroup> 
+						<div class="card" style="background:#ebebeb;text-align:center;center;padding: 5px;margin-top: 15px;">
+						<p:outputLabel value="Net TTC" style="font-weight: bold;"/>
+						<p:separator style="color:#9a9a9a"/>
+						<p:outputLabel value="#{avisEcheanceController.selectedDocumentDTO.netTtcCalc}">
+						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+						</p:outputLabel>
+<!-- 						<hr /> -->
+						</div>
+						</h:panelGroup>
+
+						
+						
+						<h:panelGroup>
+						<div class="card" style="background:#ebebeb;text-align:center;center;padding: 5px;margin-top: 15px;">
+<!-- 						<p:outputLabel value="Déjà réglé : " style="font-weight: bold;"/> -->
+<!-- 						<p:separator style="color:#9a9a9a"/> -->
+<!-- 						<p:outputLabel value="#{avisEcheanceController.selectedDocumentDTO.regleDocument}"> -->
+<!-- 						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" /> -->
+<!-- 						</p:outputLabel> -->
+						</div>
+						</h:panelGroup>
+<!-- 						</h:panelGroup> -->
+<!--border-style: solid;border-width: thin;padding: 7px; -->
+						<h:panelGroup>
+						<div class="card" style="background: #ebf9cc;text-align: center;padding: 5px;margin-top: 15px;">
+<!-- 						<p:outputLabel value="Reste à régler" style="font-weight: bold;"/> -->
+<!-- 						<p:separator style="color:#9a9a9a"/> -->
+<!-- 						<p:outputLabel value="#{avisEcheanceController.selectedDocumentDTO.resteAReglerComplet}" style="font-weight: bold;" > -->
+<!-- 						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" /> -->
+<!-- 						</p:outputLabel> -->
+<!-- 						<hr /> -->
+						</div>
+						</h:panelGroup>
+					</p:panelGrid>
+<!-- Début détail ligne synthèse					 -->
+					<p:dataTable id="iddataTableLigneAvisEcheanceSynthese" 
+					var="ligne"
+					scrollable="true"
+					scrollHeight="250"					
+					widgetVar="widgetVarDataTableLigneAvisEcheanceSynthese"
+					
+					value="#{avisEcheanceController.valuesLigne}"
+					rowKey="#{ligne.dto.numLigneLDocument}"
+					styleClass="datatable mt10 myclass">
+					
+															
+					<p:ajax event="toggleSelect" process="@this" />
+					<p:ajax event="rowToggle" process="@this" oncomplete="ligneSeperationExpend()" />
+					
+					<p:column style="width:8px" styleClass="center" >
+						<p:rowToggler  rendered="#{ligne.ligneLieeFils!=null or ligne.ligneLieeMere!=null or ligne.ligneAbonnement!=null}"/>
+					</p:column>
+					
+					<p:column style="width:10%">
+						<f:facet name="header">
+							<h:outputText value="Code article" />
+						</f:facet>
+								<p:commandLink value="#{ligne.taArticle.codeArticle}"
+																action="#{ouvertureDocumentBean.detailArticle(ouvertureDocumentBean.recupCodeArticle(ligne.taArticle.codeArticle))}" 
+																update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+															</p:commandLink>  
+					</p:column >
+					
+					<p:column style="width:24%">
+						<f:facet name="header">
+							<h:outputText value="Libellé" />
+						</f:facet>
+								<h:outputText value="#{ligne.dto.libLDocument}" id="idListeSyntheseLibelleAvisEcheance"/>
+								<p:tooltip id="toolTipListeSyntheseLibelleAvisEcheance" value="#{ligne.dto.libLDocument}" shared="true" for="idListeSyntheseLibelleAvisEcheance" showEffect="clip" position="top"/>
+					</p:column>
+
+					<p:column  style="width:8%" styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Qté 1" />
+						</f:facet>
+								<h:outputText value="#{ligne.dto.qteLDocument}"/>	
+					</p:column>
+
+					<p:column style="width:5%" styleClass="center">
+						<f:facet name="header">
+							<h:outputText value="U1" />
+						</f:facet>
+
+								<h:outputText value="#{ligne.taUnite1.codeUnite}" />
+					</p:column>
+
+					<p:column  style="width:8%" styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Qté 2" />
+						</f:facet>
+							<h:outputText value="#{ligne.dto.qte2LDocument}" id="idqte2LAvisEcheanceSynthese"/>
+					</p:column>
+
+					<p:column style="width:5%" styleClass="center">
+						<f:facet name="header">
+							<h:outputText value="U2" />
+						</f:facet>
+								<h:outputText value="#{ligne.taUnite2.codeUnite}"/>
+					</p:column>
+					
+					<p:column style="width:8%" styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Prix unitaire" />
+						</f:facet>
+								<h:outputText value="#{ligne.dto.prixULDocument}">
+									<f:convertNumber type="currency" minFractionDigits="#{avisEcheanceController.prefNbDecimalesPrix}"  currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+					</p:column>
+					
+					<p:column style="width:5%" styleClass="right" >
+						<f:facet name="header">
+							<h:outputText value="Remise %" />
+						</f:facet>
+								<h:outputText value="#{ligne.dto.remTxLDocument}" />
+					</p:column>
+					
+					<p:column style="width:20%" styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Montant HT" />
+						</f:facet>
+								<h:outputText value="#{ligne.dto.mtHtLDocument}" disabled="true">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+					</p:column>
+					
+					<p:column style="width:5%" styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="TVA"/>
+						</f:facet>
+								<h:outputText value="#{ligne.dto.codeTvaLDocument}" disabled="true">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+					</p:column>
+					
+					<p:column style="width:20%" styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Montant TTC" />
+						</f:facet>
+								<h:outputText value="#{ligne.dto.mtTtcLDocument}" disabled="true">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+					</p:column>
+					
+					<p:column style="width:5%" styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Remise globale" />
+						</f:facet>
+								<h:outputText value="#{ligne.dto.txRemHtDocument}" disabled="true">
+								</h:outputText>
+					</p:column>
+					<p:column style="width:1%">
+						<f:facet name="header">
+							<h:outputText value="Etat" />
+						</f:facet>
+								<h:outputText value="#{ligne.codeEtat}"  id="idListeSyntheseEtat#{variableEcran}"/>
+								<p:tooltip  value="#{ligne.codeEtat.concat(ligne.libelleEtat)}" shared="true" for="idListeSyntheseEtat#{variableEcran}" showEffect="clip" position="top"/>
+					</p:column>					
+					
+										
+					<p:rowExpansion>
+
+					<p:panelGrid columns="2"  columnClasses="ui-grid-col-6,ui-grid-col-6" styleClass="ui-panelgrid-blank" layout="grid" rendered="#{ligne.ligneLieeFils!=null or ligne.ligneLieeMere!=null}">
+					<p:panel header="document ayant servi à générer le document courant" style="width:100%;" >
+						<p:dataTable value="#{ligne.ligneLieeMere}" id="dataTableLigneLieeMere" var="lien" selectionMode="single" editable="true"
+							selection="#{avisEcheanceController.selectedLigneALigneDTO}" rowKey="#{lien.id}" widgetVar="wvdataTableLigneLieeMere" 
+							emptyMessage="#{msg.message_datatable_vide}" resizableColumns="true">
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="code document" />
+								</f:facet>
+								<p:commandLink value="#{lien.codeDocumentDest}"
+									action="#{avisEcheanceController.duplicationDocumentBean.ouvertureDocumentBean.detailDocument(avisEcheanceController.duplicationDocumentBean.ouvertureDocumentBean.recupCodeDocument(lien.codeDocumentDest,lien.typeDocument))}"
+									update=":form:tabView"
+									oncomplete="activeTabCenter('#{avisEcheanceController.duplicationDocumentBean.ouvertureDocumentBean.event.cssLgrTab}');">>
+								</p:commandLink>
+								<!-- 								<h:outputText value="#{lien.codeDocumentDest}" /> -->
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="libellé ligne" />
+								</f:facet>
+								<h:outputText value="#{lien.libelleLigne}" />
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="lot" />
+								</f:facet>
+								<h:outputText value="#{lien.numLot}" />
+							</p:column>
+							<p:column styleClass="right">
+								<f:facet name="header">
+									<h:outputText value="Qté. reçue" />
+								</f:facet>
+								<h:outputText value="#{lien.qteRecue}" />
+							</p:column>
+<!-- 							<p:column> -->
+<!-- 								<f:facet name="header"> -->
+<!-- 									<h:outputText value="Etat" /> -->
+<!-- 								</f:facet> -->
+<!-- 								<h:outputText value="#{lien.etat}" /> -->
+<!-- 							</p:column>							 -->
+
+						</p:dataTable>
+						</p:panel>
+						<p:panel header="document généré à partir du document courant" style="width:100%;" >
+						<p:dataTable value="#{ligne.ligneLieeFils}" id="dataTableLigneLieeFils" var="lien" selectionMode="single" editable="true"
+							selection="#{avisEcheanceController.selectedLigneALigneDTO}" rowKey="#{lien.id}" widgetVar="wvdataTableLigneLieeFils" 
+							emptyMessage="#{msg.message_datatable_vide}" resizableColumns="true">
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="code document" />
+								</f:facet>
+								<p:commandLink value="#{lien.codeDocumentDest}"
+									action="#{avisEcheanceController.duplicationDocumentBean.ouvertureDocumentBean.detailDocument(avisEcheanceController.duplicationDocumentBean.ouvertureDocumentBean.recupCodeDocument(lien.codeDocumentDest,lien.typeDocument))}"
+									update=":form:tabView"
+									oncomplete="activeTabCenter('#{avisEcheanceController.duplicationDocumentBean.ouvertureDocumentBean.event.cssLgrTab}');">>
+								</p:commandLink>
+								<!-- 								<h:outputText value="#{lien.codeDocumentDest}" /> -->
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="libellé ligne" />
+								</f:facet>
+								<h:outputText value="#{lien.libelleLigne}" />
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="lot" />
+								</f:facet>
+								<h:outputText value="#{lien.numLot}" />
+							</p:column>
+							<p:column styleClass="right">
+								<f:facet name="header">
+									<h:outputText value="Qté. reçue" />
+								</f:facet>
+								<h:outputText value="#{lien.qteRecue}" />
+							</p:column>
+<!-- 							<p:column> -->
+<!-- 								<f:facet name="header"> -->
+<!-- 									<h:outputText value="Etat" /> -->
+<!-- 								</f:facet> -->
+<!-- 								<h:outputText value="#{lien.etat}" /> -->
+<!-- 							</p:column>							 -->
+
+						</p:dataTable>
+						</p:panel>
+					</p:panelGrid>
+					<p:panel header="Infos de l'abonnement" style="width:100%;" rendered="#{ligne.ligneAbonnement!=null}">
+						<p:dataTable value="#{ligne.ligneAbonnement}" id="dataTableLigneAbonnement" var="lien" selectionMode="single" editable="true"
+							selection="#{avisEcheanceController.selectedLigneALigneDTO}" rowKey="#{lien.id}" widgetVar="wvdataTableLigneAbonnement" 
+							emptyMessage="#{msg.message_datatable_vide}" resizableColumns="true">
+								<p:column  style="width:80px" >
+									<p:commandButton value="" actionListener="#{avisEcheanceController.actDialogDetailLigneAbonnement}" process="@this"
+										styleClass="icon-medium icon-reglement" title="Détail de la ligne d'abonnement">
+										<f:attribute name="taLigneALigneEcheanceDTO" value="#{lien}" />
+										<p:ajax event="dialogReturn" listener="#{avisEcheanceController.handleReturnDialogDetailLigneAbonnement}" />
+									</p:commandButton>
+								</p:column>
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="code document" />
+								</f:facet>
+								<p:commandLink value="#{lien.codeDocumentDest}"
+									action="#{avisEcheanceController.duplicationDocumentBean.ouvertureDocumentBean.detailAbonnement(avisEcheanceController.duplicationDocumentBean.ouvertureDocumentBean.recupCodeDocument(lien.codeDocumentDest,lien.typeDocument))}"
+									update=":form:tabView"
+									oncomplete="activeTabCenter('#{avisEcheanceController.duplicationDocumentBean.ouvertureDocumentBean.event.cssLgrTab}');">>
+								</p:commandLink>
+
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="libellé ligne" />
+								</f:facet>
+								<h:outputText value="#{lien.libelleLigne}" />
+							</p:column>
+						</p:dataTable>
+</p:panel>
+
+					</p:rowExpansion>
+
+					
+
+				</p:dataTable>
+<!-- Fin détail ligne synthèse					 -->
+					<p:panelGrid columns="1" id="idInfosCommentaireAvisEcheance" columnClasses="ui-grid-col-4" styleClass="ui-panelgrid-blank" layout="grid">
+						<h:panelGroup>
+						<p:outputLabel value="Commentaires" style="font-weight: bold;"/>
+						<br/>
+						<p:outputLabel value="#{avisEcheanceController.selectedDocumentDTO.commentaire}" />
+						</h:panelGroup>
+					</p:panelGrid>
+				</p:panel>
+			</div>
+		</p:tab>
+		<p:tab id="idEnteteAvisEcheance" title="Entête" >
+		
+			<p:panel id="idPanelEnteteAvisEcheance" header="Entête" toggleable="true" widgetVar="panelEnteteAvisEcheance">
+			
+			 <p:overlayPanel id="idAideAvisEcheance" for="idlabelCodeAvisEcheance" hideEffect="fade" showCloseIcon="true" dynamic="true" hideEvent="mousedown" style="text-align:center;width:200px;align:center;">
+			  <ui:include src="/aide_contextuelle/document_code_document.xhtml" />
+    		 </p:overlayPanel>
+    				
+				<h:panelGrid columns="2" cellpadding="10">
+<!-- 				    <p:outputLabel id="idBtn1"  value="" title="La référence de la avisEcheance" styleClass="icon icon-print"/> -->
+<!-- 				    <p:button id="idBtn1" icon="ui-icon-star" title="Icon Only"> -->
+<!-- 					</p:button> -->
+
+					<p:outputLabel id="idlabelCodeAvisEcheance" value="Code avisEcheance " title="La référence de la avisEcheance" styleClass="labelchob"/>
+					
+					<p:inputText id="idCodeAvisEcheance"
+						
+						value="#{avisEcheanceController.selectedDocumentDTO.codeDocument}"
+						validator="#{avisEcheanceController.validateDocument}"
+						disabled="#{avisEcheanceController.editableEnInsertionUniquement()}">
+						<f:attribute name="nomChamp" value="#{const.C_CODE_DOCUMENT}" minimum="0"/>
+						<p:ajax event="blur" update="@this" />
+						
+					</p:inputText>
+					
+					<p:outputLabel  value="Code tiers : " styleClass="labelchob"/>
+					<p:focus >
+					
+					<p:autoComplete value="#{avisEcheanceController.taTiersDTO}"
+					       id="idtiersAvisEcheance" converter="entityConverter"
+					       
+						completeMethod="#{avisEcheanceController.tiersAutoCompleteDTOLight}"
+						required="true" requiredMessage="#{msg_diag.alert_champs_obligatoir}"
+						disabled="#{avisEcheanceController.editable()}" var="tiers"
+						itemLabel="#{tiers.codeTiers}" itemValue="#{tiers}"
+						forceSelection="true" dropdown="true" placeholder="Tiers" >
+						<p:column>
+							<!-- 				             	<f:facet name="header"> -->
+							<!-- 				            		<p:commandButton value="Ajouter" title="Insérer" -->
+							<!-- 										process="@this" -->
+							<!-- 										update=":form:tabView,:form:messages" -->
+							<!-- 										actionListener="#{avisEcheanceController.actDialogTiers}" -->
+							<!-- 										styleClass="btn-insert btn" > -->
+							<!-- 											<p:ajax event="dialogReturn" listener="#{avisEcheanceController.handleReturnDialogTiers}" update="@parent:@parent"/> -->
+							<!-- 										</p:commandButton> -->
+							<!-- 				            	</f:facet> -->
+							<h:outputText  value="#{tiers.codeTiers}" required="true" requiredMessage="#{msg_diag.alert_champs_obligatoir}"/>
+						</p:column>
+						
+						<p:column>
+							<h:outputText value="#{tiers.nomTiers}" />
+						</p:column>
+
+						<p:column>
+							<h:outputText value="#{tiers.prenomTiers}" />
+						</p:column>
+
+						<p:column>
+							<h:outputText value="#{tiers.nomEntreprise}" />
+						</p:column>
+
+						<f:attribute name="nomChamp" value="#{const.C_CODE_TIERS}" />
+						<p:ajax event="itemSelect" listener="#{avisEcheanceController.autcompleteSelection}" 
+						update="idNomTiersAvisEcheance,idLibellePieceAvisEcheance,idTTCAvisEcheance,idLocalisationTvaAvisEcheance,@this,@widgetVar(panelAdresseFacturationAvisEcheance),@widgetVar(panelAdresseLivraisonAvisEcheance),
+						@widgetVar(panelConditionPaiementAvisEcheance),idPanelGroupInfosTiersEnteteAvisEcheance" />
+					</p:autoComplete>
+					</p:focus>
+					
+					<p:outputLabel value="Nom Tiers : " styleClass="labelchob"/>
+					<p:inputText
+						
+						value="#{avisEcheanceController.selectedDocumentDTO.nomTiers}" id="idNomTiersAvisEcheance"
+						validator="#{avisEcheanceController.validateDocument}" 
+						disabled="#{avisEcheanceController.editable()}">
+						<f:attribute name="nomChamp" value="#{const.C_NOM_TIERS}" />
+						<p:ajax event="blur" update="@this" />
+					</p:inputText>
+
+					<p:outputLabel value="Date avis : " styleClass="labelchob"/>
+					<p:calendar
+						
+						value="#{avisEcheanceController.selectedDocumentDTO.dateDocument}"
+						pattern="dd/MM/yyyy" mask="true" locale="fr" navigator="true" showOn="button"  timeZone="#{msg.time_zone}" 
+						mindate="#{avisEcheanceController.dateMin}"
+						maxdate="#{avisEcheanceController.dateMax}"
+						disabled="#{avisEcheanceController.editable()}">
+						
+						<f:attribute name="nomChamp" value="#{const.C_DATE_DOCUMENT}" />
+						<p:ajax event="dateSelect" listener="#{avisEcheanceController.controleDate}" update="@this,idDateEchAvisEcheance" />
+						<p:ajax event="change" listener="#{avisEcheanceController.controleDate}"  update="@this,idDateEchAvisEcheance" />
+					</p:calendar>
+
+					<p:outputLabel value="Libellé : " />
+					<p:inputText
+						value="#{avisEcheanceController.selectedDocumentDTO.libelleDocument}" id="idLibellePieceAvisEcheance"
+						validator="#{avisEcheanceController.validateDocument}" style="width:300%"
+						disabled="#{avisEcheanceController.editable()}">
+						<f:attribute name="nomChamp" value="#{const.C_LIBELLE_DOCUMENT}" />
+						<p:ajax event="blur" update="@this" />
+					</p:inputText>
+					
+					<p:outputLabel value="TTC : " />
+					<p:selectBooleanCheckbox
+					 	
+						value="#{avisEcheanceController.selectedDocumentDTO.ttc}" id="idTTCAvisEcheance" 
+						disabled="#{avisEcheanceController.disableTtc() or avisEcheanceController.disableTtcSiDocSansTVA()}">
+						<f:attribute name="nomChamp" value="#{const.C_TTC}" />
+						<p:ajax event="change" update="@this" />
+					</p:selectBooleanCheckbox>
+					
+					<p:outputLabel value="Date de livraison : " />
+					<p:calendar
+						value="#{avisEcheanceController.selectedDocumentDTO.dateLivDocument}"
+						pattern="dd/MM/yyyy" mask="true" locale="fr" navigator="true"  showOn="button" timeZone="#{msg.time_zone}" 
+						validator="#{avisEcheanceController.validateDocument}"
+						disabled="#{avisEcheanceController.editable()}">
+						
+						<f:attribute name="nomChamp" value="#{const.C_DATE_LIV_DOCUMENT}" />
+						<p:ajax event="dateSelect" update="@this" />
+						<p:ajax event="change"  update="@this"/>
+					</p:calendar>
+					
+<!-- 					<p:outputLabel value="Localisation TVA : " /> -->
+<!-- 					<p:selectOneMenu id="console" value="#{avisEcheanceController.selectedDocumentDTO.commentaire}" style="width:125px"> -->
+<!-- 			            <f:selectItem itemLabel="Client en France" itemValue="fr" /> -->
+<!-- 			        </p:selectOneMenu> -->
+			        
+			        <p:outputLabel value="Localisation TVA : " />
+						<p:autoComplete value="#{avisEcheanceController.taTTvaDoc}" id="idLocalisationTvaAvisEcheance"
+							converter="entityConverter" disabled="#{avisEcheanceController.editable() or avisEcheanceController.disableTtc()}"
+							completeMethod="#{avisEcheanceController.typeTvaDocAutoComplete}"
+							var="tp" itemLabel="#{tp.codeTTvaDoc}" itemValue="#{tp}"
+							forceSelection="true" dropdown="true"
+							placeholder="Localisation TVA" style="width:100%">
+							<p:column>
+								<h:outputText value="#{tp.codeTTvaDoc}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{tp.libelleTTvaDoc}" />
+							</p:column>
+							<f:attribute name="nomChamp" value="#{const.C_CODE_T_TVA_DOC}" />
+							<p:ajax event="itemSelect" listener="#{avisEcheanceController.autcompleteSelection}" update="idTTCAvisEcheance"/>
+						</p:autoComplete>
+
+					<p:outputLabel value="Observation : " />
+					<p:inputTextarea
+						value="#{avisEcheanceController.selectedDocumentDTO.commentaire}"
+						validator="#{avisEcheanceController.validateDocument}" style="width:300%"
+						disabled="#{avisEcheanceController.editable()}">
+						<f:attribute name="nomChamp" value="#{const.C_COMMENTAIRE}" />
+						<p:ajax event="blur" update="@this" />
+					</p:inputTextarea>
+					
+<!-- 					<p:outputLabel value="Gestion des lots : " /> -->
+<!-- 					<p:inputSwitch value="#{avisEcheanceController.gestionLot}" onLabel="Oui" offLabel="Non" disabled="#{avisEcheanceController.editable()}"> -->
+<!-- 			            <p:ajax listener="#{avisEcheanceController.validateDocument}" update="@this" /> -->
+<!-- 			        </p:inputSwitch> -->
+
+<!-- 			        Modifier le 03/08/2017 Jean Marc -->			        
+<!-- 				<p:commandButton  process="@this" title="Génération modèle"  -->
+<!-- 						styleClass="btn-generation-modele btn" actionListener="#{avisEcheanceController.actDialogGenerationModeleDocument}" > -->
+<!-- 						<p:ajax event="dialogReturn" listener="#{avisEcheanceController.handleReturnDialogGenerationDocument}"  -->
+<!-- 						update=":form:tabView,@widgetVar(wvMenuListeAvisEcheance),@widgetVar(wvDataTableListeAvisEcheance)" oncomplete="activeTabCenter('#{avisEcheanceController.css}');" /> -->
+<!-- 				</p:commandButton> -->
+<!-- 				<p:commandButton process="@this" title="Génération document"  -->
+<!-- 						styleClass="btn-generation-document btn" actionListener="#{avisEcheanceController.actDialogGenerationDocument}" > -->
+<!-- 						<p:ajax event="dialogReturn" listener="#{avisEcheanceController.handleReturnDialogGenerationDocument}"  -->
+<!-- 						update=":form:tabView,@widgetVar(wvMenuListeAvisEcheance),@widgetVar(wvDataTableListeAvisEcheance)" oncomplete="activeTabCenter('#{avisEcheanceController.css}');" /> -->
+<!-- 				</p:commandButton> -->
+				
+
+
+					<!-- Invisible, relier au meme champ que la checkbox du dernier step du wizard, reprise de cette valeur dans le 1er step car le oncomplete du actEnregistrer se declanche apres le retour au 1er, la valeur doit donc etre disponible ici pour le javascript -->
+					<p:selectBooleanCheckbox value="#{avisEcheanceController.impressionDirect}" styleClass="invisible" disabled="#{avisEcheanceController.editable()}" widgetVar="wvImpressionDirectAvisEcheance"/>
+
+
+
+				</h:panelGrid>
+				
+    		<div class="ui-g">
+    		 <div class="ui-g-6">
+				<p:panel id="idAdresseFacturationAvisEcheance" header="#{const_vue.titre_panel_adresse_facturation}" toggleable="true" widgetVar="panelAdresseFacturationAvisEcheance"
+					collapsed="false">
+					<h:panelGrid columns="2" cellpadding="10" id="idPanelAdresseFacAvisEcheance">
+						<p:outputLabel value="" />
+						<p:selectOneMenu value="#{avisEcheanceController.taAdresseFact}" converter="entityConverter" var="t" filter="true" filterMatchMode="contains"
+							disabled="#{avisEcheanceController.editable()}">
+							<f:selectItems value="#{avisEcheanceController.listeAdresseInfosFacturationDTO}" var="tt" itemValue="#{t}" itemLabel="sélectionner une adresse" />
+							<p:column>
+								<h:outputText value="#{t.adresse1Adresse}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{t.adresse2Adresse}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{t.adresse3Adresse}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{t.codepostalAdresse}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{t.villeAdresse}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{t.paysAdresse}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{t.codeTAdr}" />
+							</p:column>
+							<p:ajax event="change" listener="#{avisEcheanceController.affecteAdrFactAutoComplete}" update="idPanelAdresseFacAvisEcheance" />
+						</p:selectOneMenu>
+
+
+						<p:outputLabel value="Adresse 1" />
+						<p:panel styleClass="panel-autocomplete">
+							<p:inputText value="#{avisEcheanceController.selectedAdresseFact.adresse1Adresse}" disabled="#{avisEcheanceController.editable()}">
+								<p:ajax event="blur" update="@this" />
+							</p:inputText>
+							<p:commandButton value="Raffraîchir" styleClass="icon-refresh btn" disabled="#{avisEcheanceController.editable()}"
+								actionListener="#{avisEcheanceController.actReinitAdrFact}" process="@this" update="idPanelAdresseFacAvisEcheance,idMenuBoutonAvisEcheance" />
+						</p:panel>
+
+						<p:outputLabel value="Adresse 2" />
+						<p:inputText value="#{avisEcheanceController.selectedAdresseFact.adresse2Adresse}" disabled="#{avisEcheanceController.editable()}">
+							<p:ajax event="blur" update="@this" />
+						</p:inputText>
+						<p:outputLabel  value="Adresse 3" />
+						<p:inputText value="#{avisEcheanceController.selectedAdresseFact.adresse3Adresse}" disabled="#{avisEcheanceController.editable()}">
+							<p:ajax event="blur" update="@this" />
+						</p:inputText>
+						<p:outputLabel value="Code postal" />
+						<p:inputText value="#{avisEcheanceController.selectedAdresseFact.codepostalAdresse}" disabled="#{avisEcheanceController.editable()}">
+							<p:ajax event="blur" update="@this" />
+						</p:inputText>
+						<p:outputLabel value="Ville" />
+						<p:inputText value="#{avisEcheanceController.selectedAdresseFact.villeAdresse}" disabled="#{avisEcheanceController.editable()}">
+							<p:ajax event="blur" update="@this" />
+						</p:inputText>
+						<p:outputLabel value="Pays" />
+						<p:inputText value="#{avisEcheanceController.selectedAdresseFact.paysAdresse}" disabled="#{avisEcheanceController.editable()}">
+							<p:ajax event="blur" update="@this" />
+						</p:inputText>
+					</h:panelGrid>
+				</p:panel>
+			</div>
+			
+			<div class="ui-g-6">
+			
+				<p:panel id="idAdresseLivraisonAvisEcheance" header="Adresse de livraison" widgetVar="panelAdresseLivraisonAvisEcheance">
+					<h:panelGrid columns="2" cellpadding="10" id="idPanelAdresseLivAvisEcheance">
+
+						<p:outputLabel value="" />
+						<p:selectOneMenu value="#{avisEcheanceController.taAdresseLiv}" converter="entityConverter" var="t" filter="true" filterMatchMode="contains"
+							disabled="#{avisEcheanceController.editable()}">
+							<f:selectItems value="#{avisEcheanceController.listeAdresseInfosLivraisonDTO}" var="tt" itemValue="#{t}" itemLabel="sélectionner une adresse" />
+							<p:column>
+								<h:outputText value="#{t.adresse1AdresseLiv}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{t.adresse2AdresseLiv}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{t.adresse3AdresseLiv}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{t.codepostalAdresseLiv}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{t.villeAdresseLiv}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{t.paysAdresseLiv}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{t.codeTAdr}" />
+							</p:column>
+							<p:ajax event="change" listener="#{avisEcheanceController.affecteAdrLivAutoComplete}" update="idPanelAdresseLivAvisEcheance" />
+						</p:selectOneMenu>
+					
+
+						<p:outputLabel value="Adresse 1" />
+						<p:panel styleClass="panel-autocomplete">
+							<p:inputText value="#{avisEcheanceController.selectedAdresseLiv.adresse1AdresseLiv}" disabled="#{avisEcheanceController.editable()}">
+								<p:ajax event="blur" update="@this" />
+							</p:inputText>
+							<p:commandButton value="Raffraîchir" styleClass="icon-refresh btn" disabled="#{avisEcheanceController.editable()}"
+								actionListener="#{avisEcheanceController.actReinitAdrLiv}" process="@this" update="idPanelAdresseLivAvisEcheance,idMenuBoutonAvisEcheance" />
+						</p:panel>
+						<p:outputLabel value="Adresse 2" />
+						<p:inputText value="#{avisEcheanceController.selectedAdresseLiv.adresse2AdresseLiv}" disabled="#{avisEcheanceController.editable()}">
+							<p:ajax event="blur" update="@this" />
+						</p:inputText>
+						<p:outputLabel value="Adresse 3" />
+						<p:inputText value="#{avisEcheanceController.selectedAdresseLiv.adresse3AdresseLiv}" disabled="#{avisEcheanceController.editable()}">
+							<p:ajax event="blur" update="@this" />
+						</p:inputText>
+						<p:outputLabel value="Code postal" />
+						<p:inputText value="#{avisEcheanceController.selectedAdresseLiv.codepostalAdresseLiv}" disabled="#{avisEcheanceController.editable()}">
+							<p:ajax event="blur" update="@this" />
+						</p:inputText>
+						<p:outputLabel value="Ville" />
+						<p:inputText value="#{avisEcheanceController.selectedAdresseLiv.villeAdresseLiv}" disabled="#{avisEcheanceController.editable()}">
+							<p:ajax event="blur" update="@this" />
+						</p:inputText>
+						<p:outputLabel value="Pays" />
+						<p:inputText value="#{avisEcheanceController.selectedAdresseLiv.paysAdresseLiv}" disabled="#{avisEcheanceController.editable()}">
+							<p:ajax event="blur" update="@this" />
+						</p:inputText>
+					</h:panelGrid>
+				</p:panel>
+			</div>
+		</div>
+
+				
+			</p:panel>
+
+			<!-- 			</div> -->
+			<!-- 		</div> -->
+			
+		</p:tab>
+
+		<!-- 		<div class="ui-grid-row"> -->
+		<!-- 			<div class="ui-grid-col-12"> -->
+
+		<p:tab id="idLignesAvisEcheance" title="Ligne" >
+		<p:panel widgetVar="wvLigneAvisEcheanceMesssages">
+			<p:messages id="idLigneAvisEcheanceMessages" showDetail="true" closable="true" autoUpdate="false"/>
+		</p:panel>
+			<p:panel id="idPanelLignesAvisEcheance" header="Lignes" toggleable="true" widgetVar="panelLignesAvisEcheance">
+
+				
+				<p:menubar styleClass="menu-onglet">
+				
+					<p:menuitem title="Insérer" styleClass="icon-insert icon"
+						actionListener="#{avisEcheanceController.actInsererLigne}"
+						process="@this"
+						update="@this,@widgetVar(widgetVarDataTableLigneAvisEcheance),:form:messages"
+						disabled="#{!avisEcheanceController.modeEcran.dataSetEnModif() or avisEcheanceController.etatBoutonLigne('inserer')}"
+						oncomplete="editionDerniereLigne('myclass');" />
+						
+					<p:menuitem title="Supprimer" styleClass="icon-delete icon" widgetVar="widgetVarBtnSupprimer"
+						actionListener="#{avisEcheanceController.actSupprimerLigne}"
+						process="@this"
+						update="@widgetVar(wvBCPanelLignes),:form:messages,@form"
+						disabled="#{!avisEcheanceController.modeEcran.dataSetEnModif() or avisEcheanceController.etatBoutonLigne('supprimer')}" />
+				</p:menubar>
+<!-- 				<p:confirmDialog widgetVar="wvConfirmSaveRow"> -->
+<!-- 				     le document est associé à un règlement dont le montant diffère du montant total du document. Vous devrez revalider le règlement. -->
+<!-- 				</p:confirmDialog> -->
+
+				<p:dataTable id="iddataTableLigneAvisEcheance" 
+					var="ligne"
+					widgetVar="widgetVarDataTableLigneAvisEcheance"
+					
+					value="#{avisEcheanceController.valuesLigne}"
+					rowKey="#{ligne.dto.numLigneLDocument}"
+					selection="#{avisEcheanceController.selectedLigneJSF}"
+					selectionMode="single" 
+					editable="true" 
+					dblClickSelect="true"
+					styleClass="datatable mt10 myclass" 
+					resizableColumns="true"
+					draggableRows="true">
+<!-- 					paginator="true" -->
+<!-- 					rows="#{msg.modele_datatable_ligne_par_page_debut}" -->
+<!-- 					paginatorTemplate="#{msg.modele_datatable_paginator_sans_exporter}" -->
+<!-- 					rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}" -->
+<!-- 					emptyMessage="#{msg.message_datatable_vide}" -->
+<!-- 					currentPageReportTemplate="#{msg.modele_datatable_page_courante}"> -->
+<!-- onsuccess="increment();"  -->
+
+<!--  					if(reglementDifferentNetTTC(xhr, status, args)){PF('wvConfirmSaveRow').show()}; -->
+					<p:ajax event="rowReorder" listener="#{avisEcheanceController.onRowReorder}" update="@this,@widgetVar(wvMenuBoutonAvisEcheance)" />
+					<p:ajax event="rowEdit" listener="#{avisEcheanceController.onRowEdit}"  
+					update="@widgetVar(wvLigneAvisEcheanceMesssages),@parent:idTotauxLAvisEcheance,@parent:idReglementAvisEcheance" 
+					oncomplete="if(!handleCompleteValidationError(xhr, status, args)) {increment();};autreLigneModifiable('myclass');" />
+					<p:ajax event="rowEditCancel" listener="#{avisEcheanceController.onRowCancel}" update="@widgetVar(widgetVarBtnSupprimer)" oncomplete="autreLigneModifiable('myclass');"/>
+					<p:ajax event="rowSelect" listener="#{avisEcheanceController.onRowSelectLigne}"/>
+					<p:ajax event="rowEditInit" listener="#{avisEcheanceController.onRowEditInit}" oncomplete="autreLigneNonModifiable('myclass');"/>
+					
+										
+					<p:ajax event="toggleSelect" process="@this" />
+					<p:ajax event="rowToggle" process="@this" oncomplete="ligneSeperationExpend()" />
+					
+					<p:column style="width:8px" styleClass="center" >
+						<p:rowToggler  rendered="#{ligne.ligneLieeFils!=null or ligne.ligneLieeMere!=null or ligne.ligneAbonnement!=null}"/>
+					</p:column>
+
+					<p:column style="width:16px" >
+						<p:rowEditor rendered="#{avisEcheanceController.etatBoutonLigne('rowEditor')}" styleClass="row-editor-debut"/>
+					</p:column>
+							
+					<p:column>
+						<f:facet name="header">
+							<h:outputText value="N°" />
+						</f:facet>
+						<h:outputText value="#{ligne.dto.numLigneLDocument}" />
+					</p:column>
+					
+					<p:column style="width:140px">
+						<f:facet name="header">
+							<h:outputText value="Code article" />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{ligne.taArticle.codeArticle}"/>
+							</f:facet>
+							<f:facet name="input">
+							<p:focus>
+								<p:autoComplete value="#{ligne.taArticleDTO}"
+									completeMethod="#{avisEcheanceController.articleAutoCompleteDTOLight}"
+									id="idarticleAvisEcheance" converter="entityConverter"
+									var="art" itemLabel="#{art.codeArticle}" itemValue="#{art}"
+									forceSelection="true" dropdown="true"
+									maxResults="#{avisEcheanceController.taPreferencesService.nbMaxChargeListeArticle()}"
+									moreText="Il y a #{component.maxResults} affichés sur #{component.suggestions.size()} au total, Veuillez affiner votre recherche ou cliquer ici pour en afficher plus ..."
+									 placeholder="Article" 
+									style="width:100%">
+									<!-- 									required="true" requiredMessage="Le code article est obligatoire" -->
+									
+									<p:column>
+										<h:outputText value="#{art.codeArticle}" />
+									</p:column>
+									
+									<p:column>
+										<h:outputText value="#{art.libellecArticle}" />
+									</p:column>
+									<p:column >
+										<h:outputText value="#{art.commentaireArticle}" rendered="#{avisEcheanceController.rechercheAvecCommentaire(false)}"/>
+									</p:column>
+
+									<f:attribute name="nomChamp" value="#{const.C_CODE_ARTICLE}" />
+									<p:ajax event="clear" listener="#{avisEcheanceController.onClearArticle}" 
+									update="@parent:idlibLAvisEcheance,idQte1LAvisEcheance,idu1LAvisEcheance,
+									idu2LAvisEcheance,idpuLAvisEcheance,idhtLAvisEcheance,idttcLAvisEcheance,idtvaLAvisEcheance,idLRemiseAvisEcheance,idqte2LAvisEcheance"/>
+									<p:ajax event="itemSelect" listener="#{avisEcheanceController.autcompleteSelection}" 
+									update="@parent:idlibLAvisEcheance,idQte1LAvisEcheance,idu1LAvisEcheance,
+									idu2LAvisEcheance,idpuLAvisEcheance,idhtLAvisEcheance,idttcLAvisEcheance,idtvaLAvisEcheance,idLRemiseAvisEcheance,idqte2LAvisEcheance"/>
+									<p:ajax event="moreText" listener="#{avisEcheanceController.onMoreTextArticle}" />
+								</p:autoComplete>
+							</p:focus>
+							</f:facet>
+						</p:cellEditor >
+					</p:column >
+					
+<!-- 					<p:column sortBy="#{ligne.taLot.numLot}" style="width:10%" rendered="#{avisEcheanceController.gestionLot}"> -->
+<!-- 								<f:facet name="header"> -->
+<!-- 									<h:outputText value="Numéro de lot" /> -->
+<!-- 								</f:facet>  -->
+<!-- 								<p:cellEditor> -->
+<!-- 									<f:facet name="output"> -->
+<!-- 										<p:commandLink value="#{ligne.articleLotEntrepotDTO.numLot}" process="@this" update="@widgetVar(wvPanelGridDetailLotAvisEcheance)" oncomplete="PF('wvOverlayPanelDetailLotAvisEcheance').show('#{component.clientId}');"> -->
+<!-- 											<f:setPropertyActionListener value="#{ligne}" target="#{avisEcheanceController.detailLigneOverLayPanel}" /> -->
+<!-- 										</p:commandLink> -->
+<!-- 									</f:facet> -->
+<!-- 									<f:facet name="input">  -->
+						
+<!-- 										<p:autoComplete value="#{ligne.articleLotEntrepotDTO}" completeMethod="#{avisEcheanceController.lotAutoComplete}" -->
+<!-- 											converter="#{articleLotEntrepotDTOAvisEcheanceConverter}" -->
+<!-- 											var="lot" itemLabel="#{lot.numLot}" itemValue="#{lot}" id="idLotMPAvisEcheance" -->
+<!-- 											forceSelection="true" dropdown="true" -->
+<!-- 											 placeholder="Lot"  -->
+<!-- 											style="width:100%"> -->
+<!-- 											<p:column> -->
+<!-- 												<f:facet name="header"> -->
+<!-- 													<h:outputText value="Numéro de lot" /> -->
+<!-- 												</f:facet> -->
+<!-- 												<h:outputText value="#{lot.numLot}" /> -->
+<!-- 											</p:column> -->
+<!-- 											<p:column> -->
+<!-- 												<f:facet name="header"> -->
+<!-- 													<h:outputText value="Libellé lot" /> -->
+<!-- 												</f:facet> -->
+<!-- 												<h:outputText value="#{lot.libelleLot}" /> -->
+<!-- 											</p:column> -->
+<!-- 											<p:column> -->
+<!-- 												<f:facet name="header"> -->
+<!-- 													<h:outputText value="Code entrepot" /> -->
+<!-- 												</f:facet> -->
+<!-- 												<h:outputText value="#{lot.codeEntrepot}" /> -->
+<!-- 											</p:column> -->
+<!-- 											<p:column> -->
+<!-- 												<f:facet name="header"> -->
+<!-- 													<h:outputText value="Entrepot" /> -->
+<!-- 												</f:facet> -->
+<!-- 												<h:outputText value="#{lot.libelleEntrepot}" /> -->
+<!-- 											</p:column> -->
+<!-- 											<p:column> -->
+<!-- 												<f:facet name="header"> -->
+<!-- 													<h:outputText value="Emplacement" /> -->
+<!-- 												</f:facet> -->
+<!-- 												<h:outputText value="#{lot.emplacement}" /> -->
+<!-- 											</p:column> -->
+<!-- 											<p:column> -->
+<!-- 												<f:facet name="header"> -->
+<!-- 													<h:outputText value="Qte en stock" /> -->
+<!-- 												</f:facet> -->
+<!-- 												<h:outputText value="#{lot.qte1}" /> -->
+<!-- 											</p:column> -->
+<!-- 											<p:column> -->
+<!-- 												<f:facet name="header"> -->
+<!-- 													<h:outputText value="Unité" /> -->
+<!-- 												</f:facet> -->
+<!-- 												<h:outputText value="#{lot.codeUnite}" /> -->
+<!-- 											</p:column> -->
+<!-- 											<p:column> -->
+<!-- 												<f:facet name="header"> -->
+<!-- 													<h:outputText value="Date lot" /> -->
+<!-- 												</f:facet> -->
+<!-- 												<h:outputText value="#{lot.dateLot}" /> -->
+<!-- 											</p:column>		 -->
+<!-- 											<p:column> -->
+<!-- 												<f:facet name="header"> -->
+<!-- 													<h:outputText value="Dluo" /> -->
+<!-- 												</f:facet> -->
+<!-- 												<h:outputText value="#{lot.dluo}" /> -->
+<!-- 											</p:column>												 -->
+<!-- 											<f:attribute name="nomChamp" value="#{const.C_NUM_LOT}" /> -->
+<!-- 												<p:ajax event="itemSelect" listener="#{avisEcheanceController.autcompleteSelection}"/> -->
+<!-- 											</p:autoComplete> -->
+								
+<!-- 									</f:facet> -->
+<!-- 								</p:cellEditor > -->
+<!-- 							</p:column> -->
+
+					<p:column style="width:140px">
+						<f:facet name="header">
+							<h:outputText value="Libellé" />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.libLDocument}" />
+							</f:facet>
+							<f:facet name="input">
+								<p:inputText value="#{ligne.dto.libLDocument}" id="idlibLAvisEcheance"
+								validator="#{avisEcheanceController.validateLignesDocument}">
+								<f:attribute name="nomChamp" value="#{const.C_LIB_L_DOCUMENT}" />
+								<p:ajax event="blur" />
+								</p:inputText>
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+
+					<p:column  style="width:80px">
+						<f:facet name="header">
+							<h:outputText value="Qté 1" />
+						</f:facet>
+						<p:cellEditor >
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.qteLDocument}"/>	
+							</f:facet>
+							<f:facet name="input" >
+								<p:inputText id="idQte1LAvisEcheance"  value="#{ligne.dto.qteLDocument}"  style="width:100%" 
+										validator="#{avisEcheanceController.validateLignesDocument}">
+									<f:attribute name="nomChamp" value="#{const.C_QTE_L_DOCUMENT}" /> 
+									<p:ajax event="blur" update="@parent:idqte2LAvisEcheance,idhtLAvisEcheance,idttcLAvisEcheance,idtvaLAvisEcheance,@this"/>
+								</p:inputText>
+							</f:facet >
+						</p:cellEditor>
+					</p:column>
+
+					<p:column >
+						<f:facet name="header">
+							<h:outputText value="Unité 1" />
+						</f:facet>
+<!-- 						<p:cellEditor > -->
+<!-- 							<f:facet name="output"> -->
+<!-- 								<h:outputText value="#{ligne.dto.u1LDocument}" /> -->
+<!-- 							</f:facet> -->
+<!-- 							<f:facet name="input"> -->
+<!-- 								<p:inputText value="#{ligne.dto.u1LDocument}" style="width:100%" id="u1"/> -->
+<!-- 							</f:facet> -->
+<!-- 						</p:cellEditor> -->
+						<p:cellEditor >
+							<f:facet name="output">
+								<h:outputText value="#{ligne.taUnite1.codeUnite}" />
+							</f:facet>
+							<f:facet name="input">
+<!-- 								<p:inputText value="#{ligne.taUnite1.codeUnite}" style="width:100%" id="u1"/> -->
+								<p:autoComplete value="#{ligne.taUnite1}"
+									completeMethod="#{avisEcheanceController.uniteAutoComplete}"
+									var="unit" itemLabel="#{unit.codeUnite}" itemValue="#{unit}"
+									forceSelection="true" dropdown="true"
+									placeholder="U1" style="width:100%" id="idu1LAvisEcheance">
+									<p:column>
+										<h:outputText value="#{unit.codeUnite}" />
+									</p:column>
+									
+									<f:attribute name="nomChamp" value="#{const.C_U1_L_DOCUMENT}" />
+									<p:ajax event="itemSelect" listener="#{avisEcheanceController.autcompleteSelection}" update="@parent:idqte2LAvisEcheance"/>
+								</p:autoComplete>
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+
+					<p:column  style="width:80px">
+						<f:facet name="header">
+							<h:outputText value="Qté 2" />
+						</f:facet>
+							<h:outputText value="#{ligne.dto.qte2LDocument}" id="idqte2LAvisEcheance"/>
+					</p:column>
+
+					<p:column >
+						<f:facet name="header">
+							<h:outputText value="Unité 2" />
+						</f:facet>
+<!-- 						<h:outputText value="#{ligne.dto.u2LDocument}" id="u2" />					 -->
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{ligne.taUnite2.codeUnite}"/>
+							</f:facet>
+							<f:facet name="input">
+<!-- 								<p:inputText value="#{ligne.taUnite2.codeUnite}" style="width:100%" id="u2"/> -->
+								<p:autoComplete value="#{ligne.taUnite2}"
+									completeMethod="#{avisEcheanceController.uniteAutoCompleteAll}"
+									var="unit" itemLabel="#{unit.codeUnite}" itemValue="#{unit}"
+									forceSelection="true" dropdown="true"
+									placeholder="U2" style="width:100%" id="idu2LAvisEcheance">
+									<p:column>
+										<h:outputText value="#{unit.codeUnite}" />
+									</p:column>
+									
+									<f:attribute name="nomChamp" value="#{const.C_U2_L_DOCUMENT}" />
+									<p:ajax event="itemSelect" listener="#{avisEcheanceController.autcompleteSelection}" update="@parent:idqte2LAvisEcheance"/>
+								</p:autoComplete>
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+					
+					<p:column styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Prix unitaire" />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.prixULDocument}">
+									<f:convertNumber type="currency"  minFractionDigits="#{avisEcheanceController.prefNbDecimalesPrix}" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</f:facet>
+							<f:facet name="input">
+								<p:inputText value="#{ligne.dto.prixULDocument}" id="idpuLAvisEcheance" style="width:100%" 
+										validator="#{avisEcheanceController.validateLignesDocument}">
+									<f:attribute name="nomChamp" value="#{const.C_PRIX_U_L_DOCUMENT}" /> 
+									<p:ajax event="blur" update="@this,idhtLAvisEcheance,idttcLAvisEcheance,idtvaLAvisEcheance"/>
+								</p:inputText>	
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+					
+					<p:column >
+						<f:facet name="header">
+							<h:outputText value="Remise %" />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.remTxLDocument}" />
+							</f:facet>
+							<f:facet name="input">
+								<p:inputText value="#{ligne.dto.remTxLDocument}" style="width:100%" 
+										validator="#{avisEcheanceController.validateLignesDocument}" id="idLRemiseAvisEcheance">
+									<f:attribute name="nomChamp" value="#{const.C_REM_TX_L_DOCUMENT}" /> 
+									<p:ajax event="blur" update="@this,idhtLAvisEcheance,idttcLAvisEcheance,idtvaLAvisEcheance"/>
+								</p:inputText>	
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+					
+					<p:column styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Montant HT" />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.mtHtLDocument}" disabled="true">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</f:facet>
+							<f:facet name="input">
+								<h:outputText value="#{ligne.dto.mtHtLDocument}" id="idhtLAvisEcheance" style="width:100%" disabled="true" />
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+					
+					<p:column styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Montant TTC" />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.mtTtcLDocument}" disabled="true">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</f:facet>
+							<f:facet name="input">
+								<h:outputText value="#{ligne.dto.mtTtcLDocument}" id="idttcLAvisEcheance" style="width:100%"  disabled="true" />	
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+					
+					<p:column styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="TVA"/>
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.codeTvaLDocument}" disabled="true">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</f:facet>
+							<f:facet name="input">
+								<h:outputText value="#{ligne.dto.codeTvaLDocument}" disabled="true" id="idtvaLAvisEcheance" style="width:100%"/>
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+					
+					<p:column styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Remise globale" />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.txRemHtDocument}" disabled="true">
+								</h:outputText>
+							</f:facet>
+							<f:facet name="input">
+								<h:outputText value="#{ligne.dto.txRemHtDocument}" disabled="true"  style="width:100%"/>
+							</f:facet>							
+						</p:cellEditor>
+					</p:column>
+
+					<p:column style="width:1%">
+						<f:facet name="header">
+							<h:outputText value="Etat" />
+						</f:facet>
+								<h:outputText value="#{ligne.codeEtat}"  id="idListeSaisieEtat#{variableEcran}"/>
+								<p:tooltip  value="#{ligne.codeEtat.concat(ligne.libelleEtat)}" shared="true" for="idListeSaisieEtat#{variableEcran}" showEffect="clip" position="top"/>
+					</p:column>	
+					
+					<p:column style="width:16px">
+						<f:facet name="header">
+							<h:outputText value="" />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<p:commandButton title="Supprimer" styleClass="icon-delete icon icon-grille" widgetVar="widgetVarBtnSupprimer"
+									action="#{avisEcheanceController.actSupprimerLigne}"
+									process="@this"
+									disabled="#{!avisEcheanceController.modeEcran.dataSetEnModif() or avisEcheanceController.etatBoutonLigne('supprimer')}"
+									update="@widgetVar(panelLignesAvisEcheance)">
+<!-- 									<f:attribute name="idLigne" value="#{ligne.dto.id}" /> -->
+									<f:setPropertyActionListener target="#{avisEcheanceController.selectedLigneJSF}" value="#{ligne}" />
+								</p:commandButton>
+							</f:facet>
+							<f:facet name="input">
+								<h:outputText value="" />
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+
+					<p:column style="width:26px">
+						<p:rowEditor rendered="#{avisEcheanceController.etatBoutonLigne('rowEditor')}" styleClass="row-editor-fin"/>
+					</p:column>
+					
+					<p:rowExpansion>
+
+					<p:panelGrid columns="2"  columnClasses="ui-grid-col-6,ui-grid-col-6" styleClass="ui-panelgrid-blank" layout="grid" rendered="#{ligne.ligneLieeFils!=null or ligne.ligneLieeMere!=null}">
+					<p:panel header="document ayant servi à générer le document courant" style="width:100%;" >
+						<p:dataTable value="#{ligne.ligneLieeMere}" id="dataTableLigneLieeMere" var="lien" selectionMode="single" editable="true"
+							selection="#{avisEcheanceController.selectedLigneALigneDTO}" rowKey="#{lien.id}" widgetVar="wvdataTableLigneLieeMere" 
+							emptyMessage="#{msg.message_datatable_vide}" resizableColumns="true">
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="code document" />
+								</f:facet>
+								<p:commandLink value="#{lien.codeDocumentDest}"
+									action="#{avisEcheanceController.duplicationDocumentBean.ouvertureDocumentBean.detailDocument(avisEcheanceController.duplicationDocumentBean.ouvertureDocumentBean.recupCodeDocument(lien.codeDocumentDest,lien.typeDocument))}"
+									update=":form:tabView"
+									oncomplete="activeTabCenter('#{avisEcheanceController.duplicationDocumentBean.ouvertureDocumentBean.event.cssLgrTab}');">>
+								</p:commandLink>
+								<!-- 								<h:outputText value="#{lien.codeDocumentDest}" /> -->
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="libellé ligne" />
+								</f:facet>
+								<h:outputText value="#{lien.libelleLigne}" />
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="lot" />
+								</f:facet>
+								<h:outputText value="#{lien.numLot}" />
+							</p:column>
+							<p:column styleClass="right">
+								<f:facet name="header">
+									<h:outputText value="Qté. reçue" />
+								</f:facet>
+								<h:outputText value="#{lien.qteRecue}" />
+							</p:column>
+<!-- 							<p:column> -->
+<!-- 								<f:facet name="header"> -->
+<!-- 									<h:outputText value="Etat" /> -->
+<!-- 								</f:facet> -->
+<!-- 								<h:outputText value="#{lien.etat}" /> -->
+<!-- 							</p:column>							 -->
+
+						</p:dataTable>
+						</p:panel>
+						<p:panel header="document généré à partir du document courant" style="width:100%;" >
+						<p:dataTable value="#{ligne.ligneLieeFils}" id="dataTableLigneLieeFils" var="lien" selectionMode="single" editable="true"
+							selection="#{avisEcheanceController.selectedLigneALigneDTO}" rowKey="#{lien.id}" widgetVar="wvdataTableLigneLieeFils" 
+							emptyMessage="#{msg.message_datatable_vide}" resizableColumns="true">
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="code document" />
+								</f:facet>
+								<p:commandLink value="#{lien.codeDocumentDest}"
+									action="#{avisEcheanceController.duplicationDocumentBean.ouvertureDocumentBean.detailDocument(avisEcheanceController.duplicationDocumentBean.ouvertureDocumentBean.recupCodeDocument(lien.codeDocumentDest,lien.typeDocument))}"
+									update=":form:tabView"
+									oncomplete="activeTabCenter('#{avisEcheanceController.duplicationDocumentBean.ouvertureDocumentBean.event.cssLgrTab}');">>
+								</p:commandLink>
+								<!-- 								<h:outputText value="#{lien.codeDocumentDest}" /> -->
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="libellé ligne" />
+								</f:facet>
+								<h:outputText value="#{lien.libelleLigne}" />
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="lot" />
+								</f:facet>
+								<h:outputText value="#{lien.numLot}" />
+							</p:column>
+							<p:column styleClass="right">
+								<f:facet name="header">
+									<h:outputText value="Qté. reçue" />
+								</f:facet>
+								<h:outputText value="#{lien.qteRecue}" />
+							</p:column>
+<!-- 							<p:column> -->
+<!-- 								<f:facet name="header"> -->
+<!-- 									<h:outputText value="Etat" /> -->
+<!-- 								</f:facet> -->
+<!-- 								<h:outputText value="#{lien.etat}" /> -->
+<!-- 							</p:column>							 -->
+
+						</p:dataTable>
+						</p:panel>
+					</p:panelGrid>
+					<p:panel header="Infos de l'abonnement" style="width:100%;" rendered="#{ligne.ligneAbonnement!=null}">
+						<p:dataTable value="#{ligne.ligneAbonnement}" id="dataTableLigneAbonnement" var="lien" selectionMode="single" editable="true"
+							selection="#{avisEcheanceController.selectedLigneALigneDTO}" rowKey="#{lien.id}" widgetVar="wvdataTableLigneAbonnement" 
+							emptyMessage="#{msg.message_datatable_vide}" resizableColumns="true">
+								<p:column  style="width:80px" >
+									<p:commandButton value="" actionListener="#{avisEcheanceController.actDialogDetailLigneAbonnement}" process="@this"
+										styleClass="icon-medium icon-reglement" title="Détail de la ligne d'abonnement">
+										<f:attribute name="taLigneALigneEcheanceDTO" value="#{lien}" />
+										<p:ajax event="dialogReturn" listener="#{avisEcheanceController.handleReturnDialogDetailLigneAbonnement}" />
+									</p:commandButton>
+								</p:column>
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="code document" />
+								</f:facet>
+								<p:commandLink value="#{lien.codeDocumentDest}"
+									action="#{avisEcheanceController.duplicationDocumentBean.ouvertureDocumentBean.detailAbonnement(avisEcheanceController.duplicationDocumentBean.ouvertureDocumentBean.recupCodeDocument(lien.codeDocumentDest,lien.typeDocument))}"
+									update=":form:tabView"
+									oncomplete="activeTabCenter('#{avisEcheanceController.duplicationDocumentBean.ouvertureDocumentBean.event.cssLgrTab}');">>
+								</p:commandLink>
+
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="libellé ligne" />
+								</f:facet>
+								<h:outputText value="#{lien.libelleLigne}" />
+							</p:column>
+						</p:dataTable>
+</p:panel>
+
+
+
+					</p:rowExpansion>
+
+
+
+				</p:dataTable>
+
+				<p:overlayPanel widgetVar="wvOverlayPanelDetailLotAvisEcheance" hideEffect="fade">
+					<p:panel widgetVar="wvPanelGridDetailLotAvisEcheance" style="text-align:center;">
+					<p:panelGrid columns="2" rendered="#{not empty avisEcheanceController.detailLigneOverLayPanel}">
+						<h:outputText value="Lot" />
+						<h:outputText value="#{avisEcheanceController.detailLigneOverLayPanel.dto.numLot} - #{avisEcheanceController.detailLigneOverLayPanel.dto.libelleLot}" />
+
+						<h:outputText value="Entrepot" />
+						<h:outputText value="#{avisEcheanceController.detailLigneOverLayPanel.dto.codeEntrepot}" />
+
+						<h:outputText value="Qte" />
+						<h:outputText value="#{avisEcheanceController.detailLigneOverLayPanel.dto.qteLDocument} #{avisEcheanceController.detailLigneOverLayPanel.dto.u1LDocument}" />
+
+						<h:outputText value="DLUO" />
+						<h:outputText value="#{avisEcheanceController.detailLigneOverLayPanel.dto.dluo}" />
+					</p:panelGrid>
+					</p:panel>
+				</p:overlayPanel>
+
+				<p:panelGrid columns="3" styleClass="totaux-lignes-document" id="idTotauxLAvisEcheance">
+					<f:facet name="header">
+							<h:outputText value="Totaux" />
+					</f:facet>
+					
+					<h:outputText value="NET HT" />
+				
+					<h:outputText value="NET TVA" />
+			
+					<h:outputText value="NET TTC" />
+					<h:outputText value="#{avisEcheanceController.selectedDocumentDTO.netHtCalc}">
+						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+					</h:outputText>
+					<h:outputText value="#{avisEcheanceController.selectedDocumentDTO.netTvaCalc}">
+						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+					</h:outputText>
+					<h:outputText value="#{avisEcheanceController.selectedDocumentDTO.netTtcCalc}">
+						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+					</h:outputText>
+					
+				</p:panelGrid>
+				
+
+
+			</p:panel>
+		</p:tab>
+		
+		<p:tab id="idTotauxFormAvisEcheance" title="Totaux" >
+
+			<p:panel id="idPaneltotauxFormAvisEcheance" header="Totaux" toggleable="true" widgetVar="panelTotauxFormAvisEcheance">
+			<div class="ui-g">
+				<div class="ui-g-12 ui-md-12 ui-lg-6">
+					<div class="ui-g-12 ui-md-12 ui-lg-6">
+						<p:fieldset legend="Totaux">
+							<h:panelGrid columns="2" cellpadding="10">
+		
+								<p:outputLabel value="HT" />
+								<p:inputText value="#{avisEcheanceController.selectedDocumentDTO.mtHtCalc}" disabled="true">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</p:inputText>
+								
+								<p:outputLabel value="TVA" />
+								<p:inputText value="#{avisEcheanceController.selectedDocumentDTO.mtTvaCalc}" disabled="true">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</p:inputText>
+		
+								<p:outputLabel value="TTC" />
+								<p:inputText value="#{avisEcheanceController.selectedDocumentDTO.mtTtcAvantRemiseGlobaleCalc}" disabled="true">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</p:inputText>
+		
+		
+							</h:panelGrid>
+						</p:fieldset>
+					</div>
+					<div class="ui-g-12 ui-md-12 ui-lg-6">
+						<p:fieldset legend="Totaux après remise globale">
+							<h:panelGrid columns="2" cellpadding="10">
+		
+								<p:outputLabel value="Montant HT" />
+								<p:inputText value="#{avisEcheanceController.selectedDocumentDTO.netHtCalc}" disabled="true">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</p:inputText>
+								
+								<p:outputLabel value="Montant TVA" />
+								<p:inputText value="#{avisEcheanceController.selectedDocumentDTO.netTvaCalc}" disabled="true">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</p:inputText>
+		
+								<p:outputLabel value="Montant TTC" />
+								<p:inputText value="#{avisEcheanceController.selectedDocumentDTO.netTtcCalc}" disabled="true">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</p:inputText>
+		
+							</h:panelGrid>
+						</p:fieldset>
+					</div>
+				
+					<div class="ui-g-12 ui-md-12 ui-lg-6">
+						<p:fieldset legend="Remise">
+							<h:panelGrid columns="2" cellpadding="10">
+								<p:outputLabel value="Remise globale %" />
+								<p:inputText value="#{avisEcheanceController.selectedDocumentDTO.txRemHtDocument}"
+									disabled="#{avisEcheanceController.editable()}" validator="#{avisEcheanceController.validateDocument}">
+									<f:attribute name="nomChamp" value="#{const.C_TX_REM_HT_DOCUMENT}" />
+									<p:ajax event="blur" update="@this,@widgetVar(panelTotauxFormAvisEcheance)" />
+								</p:inputText>
+								
+								<p:outputLabel value="Remise sur HT" />
+								<p:inputText value="#{avisEcheanceController.selectedDocumentDTO.remHtDocument}" disabled="true">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</p:inputText>
+							</h:panelGrid>
+						</p:fieldset>
+					</div>
+<!-- 					<div class="ui-g-12 ui-md-12 ui-lg-6"> -->
+<!-- 						<p:fieldset legend="Escompte"> -->
+<!-- 							<h:panelGrid columns="2" cellpadding="10"> -->
+		
+<!-- 								<p:outputLabel value="Escompte accordé %" /> -->
+<!-- 								<p:inputText value="#{avisEcheanceController.selectedDocumentDTO.txRemTtcDocument}" -->
+<!-- 									disabled="#{avisEcheanceController.editable()}" validator="#{avisEcheanceController.validateDocument}"> -->
+<!-- 									<f:attribute name="nomChamp" value="#{const.C_TX_REM_TTC_DOCUMENT}" /> -->
+<!-- 									<p:ajax event="blur" update="@this,@widgetVar(panelTotauxFormAvisEcheance)" /> -->
+<!-- 								</p:inputText> -->
+								
+<!-- 								<p:outputLabel value="Montant escompte" /> -->
+<!-- 								<p:inputText value="#{avisEcheanceController.selectedDocumentDTO.remTtcDocument}" disabled="true"> -->
+<!-- 									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" /> -->
+<!-- 								</p:inputText> -->
+		
+<!-- 							</h:panelGrid> -->
+<!-- 						</p:fieldset> -->
+<!-- 					</div> -->
+				</div>
+				<div class="ui-g-12 ui-md-12 ui-lg-6">
+					<p:fieldset legend="Règlements" style="height:100%" >
+						<h:panelGrid columns="2" cellpadding="10" id="idReglementAvisEcheance">
+<!-- 							<p:outputLabel value="AvisEcheance réglée" disabled="#{avisEcheanceController.editable()}" /> -->
+<!-- 							<p:selectBooleanCheckbox value="#{avisEcheanceController.avisEcheanceReglee}" title="avisEcheance Réglée" widgetVar="idAvisEcheanceReglee" disabled="#{avisEcheanceController.editable()}" > -->
+<!-- 							<p:ajax update="idReglementAvisEcheance,idResteAPayerAvisEcheance" listener="#{avisEcheanceController.actInitReglement}"  /> -->
+<!-- 							</p:selectBooleanCheckbox> -->
+							
+<!-- 							<p:outputLabel value="Accompte" rendered="false"/> -->
+<!-- 							<p:inputText value="#{avisEcheanceController.selectedDocumentDTO.acomptes}" disabled="true" rendered="false"/> -->
+							
+<!-- 							<p:outputLabel value="AvisEcheances" rendered="false"/> -->
+<!-- 							<p:inputText value="#{avisEcheanceController.selectedDocumentDTO.avisEcheances}" disabled="true" rendered="false"/> -->
+	
+		
+							<p:outputLabel value="Type paiement" />
+							<!-- 						<p:inputText value="#{avisEcheanceController.selectedDocumentDTO.compte}"/> -->
+							<p:autoComplete value="#{avisEcheanceController.taTPaiement}" converter="entityConverter" 
+								completeMethod="#{avisEcheanceController.typePaiementAutoComplete}" var="tp" itemLabel="#{tp.codeTPaiement}"
+								itemValue="#{tp}" forceSelection="true" dropdown="true" disabled="#{avisEcheanceController.editable()}"
+								placeholder="Type de paiement" style="width:100%">
+								<p:column>
+									<h:outputText value="#{tp.codeTPaiement}" />
+								</p:column>
+								<p:column>
+									<h:outputText value="#{tp.libTPaiement}" />
+								</p:column>
+								<f:attribute name="nomChamp" value="#{const.C_CODE_T_PAIEMENT}" />
+								<p:ajax event="itemSelect" listener="#{avisEcheanceController.autcompleteSelection}" />
+							</p:autoComplete>
+
+<!-- 							<p:outputLabel value="Montant paiement" /> -->
+<!-- 							<p:inputText value="#{avisEcheanceController.selectedDocumentDTO.montantReglement}" disabled="true"> -->
+<!-- 								<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" /> -->
+<!-- 							</p:inputText> -->
+							
+<!-- 							<p:outputLabel value="Libellé paiement" /> -->
+<!-- 							<p:inputText id="idLibPaiementAvisEcheance" value="#{avisEcheanceController.selectedDocumentDTO.libelleReglement}" disabled="#{avisEcheanceController.editable()}" /> -->
+							
+							<p:outputLabel value="Date d'échéance " />
+							<p:calendar
+								value="#{avisEcheanceController.selectedDocumentDTO.dateEchDocument}" id="idDateEchAvisEcheance"
+								pattern="dd/MM/yyyy" mask="true" locale="fr" navigator="true" showOn="button"  timeZone="#{msg.time_zone}" 
+								disabled="#{avisEcheanceController.editable()}">
+								
+								<f:attribute name="nomChamp" value="#{const.C_DATE_ECH_DOCUMENT}" />
+						<p:ajax event="dateSelect" listener="#{avisEcheanceController.controleDate}" update="@this" />
+						<p:ajax event="change" listener="#{avisEcheanceController.controleDate}"  update="@this" />
+							</p:calendar>
+						</h:panelGrid>
+					</p:fieldset>
+				</div>
+				
+				<div class="ui-g-12 ui-md-12 ui-lg-6">
+					<p:panel id="idConditionPaiementAvisEcheance" header="Condition de paiement" toggleable="true" widgetVar="panelConditionPaiementAvisEcheance" collapsed="false">
+						<h:panelGrid columns="2" cellpadding="10" id="idPanelConditionPaiementAvisEcheance" >
+								<p:outputLabel value="Code paiement" />
+								<h:panelGrid columns="3" cellpadding="10">
+									<p:autoComplete value="#{avisEcheanceController.taCPaiementDoc}" converter="entityConverter" id="idCodeCPaiementAvisEcheance"
+										completeMethod="#{avisEcheanceController.typeCPaiementAutoComplete}" var="tp" itemLabel="#{tp.codeCPaiement}"
+										itemValue="#{tp}" forceSelection="true" dropdown="true" disabled="#{avisEcheanceController.editable()}"
+										placeholder="Condition de paiement" style="width:100%">
+										<p:column>
+											<h:outputText value="#{tp.codeCPaiement}" />
+										</p:column>
+										<p:column>
+											<h:outputText value="#{tp.libCPaiement}" />
+										</p:column>
+										<f:attribute name="nomChamp" value="#{const.C_CODE_C_PAIEMENT}" />
+										<p:ajax event="itemSelect" listener="#{avisEcheanceController.autcompleteSelection}"
+											update="idLibelleCPaimentAvisEcheance,idReportAvisEcheance,idFinMoisAvisEcheance,idDateEchAvisEcheance,idMenuBoutonAvisEcheance" />
+									</p:autoComplete>
+									<!-- 										<p:inputText value="#{avisEcheanceController.selectedCPaiement.codeCPaiement}" -->
+									<!-- 											disabled="#{avisEcheanceController.editable()}"> -->
+									<!-- 											<p:ajax event="blur" update="@this" /> -->
+									<!-- 										</p:inputText> -->
+									<p:commandButton value="Appliquer" styleClass="icon-refresh btn"
+										actionListener="#{avisEcheanceController.actAppliquerCPaiement}" process="@this"
+										update="idPanelConditionPaiementAvisEcheance,idLibelleCPaimentAvisEcheance,idReportAvisEcheance,idFinMoisAvisEcheance,idDateEchAvisEcheance,idMenuBoutonAvisEcheance" />
+								</h:panelGrid>
+								<p:outputLabel value="Libellé" />
+							<p:inputText value="#{avisEcheanceController.selectedCPaiement.libCPaiement}" disabled="#{avisEcheanceController.editable()}" id="idLibelleCPaimentAvisEcheance">
+							<p:ajax event="blur" update="@this" />
+							</p:inputText>
+							<p:outputLabel value="Report" />
+							<p:inputText value="#{avisEcheanceController.selectedCPaiement.reportCPaiement}" disabled="#{avisEcheanceController.editable()}" id="idReportAvisEcheance">
+							<p:ajax event="blur" update="@this" />
+							</p:inputText>
+							<p:outputLabel value="Fin de mois" />
+							<p:inputText value="#{avisEcheanceController.selectedCPaiement.finMoisCPaiement}" disabled="#{avisEcheanceController.editable()}" id="idFinMoisAvisEcheance">
+							<p:ajax event="blur" update="@this" />
+							</p:inputText>
+						</h:panelGrid>
+					</p:panel>
+				</div>
+				<div class="ui-g-12 ui-md-12 ui-lg-6">
+					<div class="ui-g-12 ui-md-12 ui-lg-6">
+						<p:fieldset legend="">
+							<h:panelGrid columns="2" cellpadding="10" id="idNetAPayerAvisEcheance">
+								<p:outputLabel value="Net à payer" />
+								<p:inputText value="#{avisEcheanceController.selectedDocumentDTO.netTtcCalc}" disabled="true">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</p:inputText>
+							</h:panelGrid>
+						</p:fieldset>
+					</div>
+<!-- 					<div class="ui-g-12 ui-md-12 ui-lg-6"> -->
+<!-- 						<p:fieldset legend=""> -->
+<!-- 							<h:panelGrid columns="2" cellpadding="10" id="idResteAPayerAvisEcheance"> -->
+<!-- 								<p:outputLabel value="Accompte" /> -->
+<!-- 								<p:inputText value="#{avisEcheanceController.selectedDocumentDTO.regleDocument}" disabled="true"> -->
+<!-- 									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" /> -->
+<!-- 								</p:inputText> -->
+<!-- 							</h:panelGrid> -->
+<!-- 						</p:fieldset> -->
+<!-- 					</div> -->
+				</div>	
+				
+				<div class="ui-g-12 ui-md-12 ui-lg-6">
+					<p:dataTable value="#{avisEcheanceController.masterEntity.lignesTVA}" var="ltva">
+						<f:facet name="header">
+								<h:outputText value="TVA" />
+						</f:facet>
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="Code TVA" />
+							</f:facet>
+							<h:outputText value="#{ltva.codeTva}" />
+						</p:column>
+						
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="Libellé" />
+							</f:facet>
+							<h:outputText value="#{ltva.libelle}" />
+						</p:column>
+						
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="Taux" />
+							</f:facet>
+							<h:outputText value="#{ltva.tauxTva}" />
+						</p:column>
+						
+						<p:column styleClass="right">
+							<f:facet name="header">
+								<h:outputText value="Montant" />
+							</f:facet>
+							<h:outputText value="#{ltva.mtTva}">
+								<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+							</h:outputText>
+						</p:column>
+					</p:dataTable>
+				</div>
+				
+				<div class="ui-g-12 ui-md-12 ui-lg-6">
+					<h:panelGrid columns="2" cellpadding="10">
+						<p:outputLabel value="Imprimer" />
+						<p:selectBooleanCheckbox value="#{avisEcheanceController.impressionDirect}" disabled="#{avisEcheanceController.editable()}">
+						<p:ajax event="change" update="@this"/>
+						</p:selectBooleanCheckbox>
+					</h:panelGrid>
+				</div>
+			
+		</div>	
+	</p:panel>
+			
+		</p:tab>
+		
+
+		
+	</p:wizard>
+
+	<!-- 			</div> -->
+	<!-- 		</div> -->
+	<!-- 	</div> -->
+
+	<p:remoteCommand name="increment" binding="#{avisEcheanceController.rc}"
+		actionListener="#{avisEcheanceController.actAutoInsererLigne}"
+		process="@this" update="@widgetVar(panelLignesAvisEcheance)"
+		disabled="#{avisEcheanceController.insertAuto}"
+		 />
+<!-- oncomplete="jQuery('.myclass .ui-datatable-data tr').last().find('span.ui-icon-pencil').each(function(){jQuery(this).click()});" -->
+	
+	<!-- </f:validateBean> -->
+
+	<p:dialog header="Cohérence de la qté 2" widgetVar="wVdialogQte2AvisEcheance" modal="true" appendTo="@(body)" showEffect="clip" hideEffect="clip" width="900"
+		height="200">
+		<p:panelGrid columns="1">
+			<p:outputLabel value="La qté 2 n'est pas cohérente par rapport au coefficient applicable, voulez vous la conserver ?" />
+		</p:panelGrid>
+		<p:panelGrid columns="2">
+			<p:commandButton value="Conserver la valeur" process="@this" onstart="PF('wVdialogQte2AvisEcheance').hide()" />
+			<p:commandButton value="Appliquer le coefficient" process="@this" actionListener="#{avisEcheanceController.actArreterEnregistrementEtFocusQte2()}"
+				oncomplete="PF('wVdialogQte2AvisEcheance').hide()" update="@widgetVar(widgetVarDataTableLigneAvisEcheance)" />
+		</p:panelGrid>
+	</p:dialog>
+
+
+</ui:composition>

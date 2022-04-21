@@ -1,0 +1,174 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:p="http://primefaces.org/ui">
+	
+	<o:importConstants type="fr.legrain.bdg.webapp.app.LgrTab" />
+	
+	<p:commandLink id="listeServiceWebExterneBtn" >
+		<i class="top-submenu-icon fa fa-fw fa-user"></i>
+		<span><h:outputText value="Liste des services web externes" /></span>
+	</p:commandLink>
+	
+	<p:overlayPanel id="idListeServiceWebExternePanel" for="listeServiceWebExterneBtn" hideEffect="fade" dynamic="true" 
+		dismissable="true" appendTo="@(body)" widgetVar="wvOverlayListeServiceWebExterne" showCloseIcon="true">
+		<h:form>
+		<div class="dashboard-title" style="background:#f6f6f6;">
+              <h:panelGrid columns="3" cellpadding="5">
+<!--             	<h:graphicImage name="dashboard/tier.svg" library="images" height="35px" style="margin-top:1px;" /> -->
+                <p:outputLabel value="Liste des Services Web Externe" style="font-size:20px;"/>
+              </h:panelGrid>  
+              <p:separator/>
+        </div>
+	<p:menubar styleClass="menu-onglet" widgetVar="wvMenuListeServiceWebExterne" id="idMenuListeServiceWebExterne">
+		 <p:menuitem title="Ajouter un nouveau ServiceWebExterne" update=":form:tabView,:form:messages,@widgetVar(wvMenuListeServiceWebExterne),@widgetVar(wvDataTableListeServiceWebExterne),@widgetVar(wvBandeauActionServiceWebExterne)" 
+		 	actionListener="#{serviceWebExterneController.nouveau}" styleClass="icon icon-insert" disabled="#{serviceWebExterneController.etatBouton('inserer')}" oncomplete="PF('wvOverlayListeServiceWebExterne').hide();"/>
+
+		 <p:menuitem title="Rafraîchir la liste" update="@form,:form:messages" actionListener="#{serviceWebExterneController.refresh}" styleClass="icon icon-refresh" disabled="#{serviceWebExterneController.modeEcran.dataSetEnModif()}"/>
+	</p:menubar>
+	
+	<p:sticky target="idMenuListeServiceWebExterne" />
+	 
+	 	
+<!-- 	stickyHeader="true" -->
+	
+	<p:dataTable id="dataTableListeServiceWebExterne" var="taServiceWebExterne"
+				widgetVar="wvDataTableListeServiceWebExterne"
+				value="#{serviceWebExterneController.values}"
+				rowKey="#{taServiceWebExterne.id}"
+				sortBy="#{taServiceWebExterne.codeTServiceWebExterne}"
+				selection="#{serviceWebExterneController.selectedTaServiceWebExterneDTOs}"
+				dblClickSelect="true"
+				styleClass="datatable mt10"
+				resizableColumns="true"
+				paginator="true" 
+				expandableRowGroups="true"
+				rows="#{msg.modele_datatable_ligne_par_page_debut}"
+				paginatorTemplate="#{msg.modele_datatable_paginator}"
+				rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+				emptyMessage="#{msg.message_datatable_vide}"
+				currentPageReportTemplate="#{msg.modele_datatable_page_courante}"
+				disabledSelection="#{serviceWebExterneController.modeEcran.dataSetEnModif()}">
+				
+<!-- 				<p:ajax event="rowDblselect" listener="#{serviceWebExterneController.onRowSelect}" update=":form:tabView,:form:messages,@form" />  -->
+<!-- 				<p:ajax event="rowSelect" listener="#{serviceWebExterneController.onRowSelect}" disabled="#{serviceWebExterneController.pasDejaOuvert()}" update=":form:tabView,:form:messages,@form" /> -->
+				
+<!-- 				<p:ajax event="rowDblselect" listener="#{serviceWebExterneController.onRowSelect}" update=":form:tabView,:form:messages" oncomplete="activeTabCenter('#{LgrTab.CSS_CLASS_TAB_TIERS}');PF('wvOverlayListeServiceWebExterne').hide();scrollToTop();"/> -->
+				<p:ajax event="rowSelect" delay="#{msg.datatable_rowselect_delay}" listener="#{serviceWebExterneController.onRowSelect}" update=":form:tabView,:form:messages,@widgetVar(wvBandeauActionServiceWebExterne)" oncomplete="activeTabCenter('#{LgrTab.CSS_CLASS_TAB_SERVICE_WEB_EXTERNE}');PF('wvOverlayListeServiceWebExterne').hide();scrollToTop();"/>
+			
+				<f:facet name="header">  
+           			<h:outputText value="ServiceWebExterne" />
+<!--            			<p:outputPanel> -->
+<!-- 		                <h:outputText value="Rechercher dans les champs :" /> -->
+<!-- 		                <p:inputText id="globalFilter" onkeyup="PF('carsTable').filter()" style="width:150px" placeholder="Enter keyword"/> -->
+<!-- 		            </p:outputPanel> -->
+        		</f:facet>
+        		
+        		<p:headerRow>
+		            <p:column colspan="7">
+		                <h:outputText value="#{taServiceWebExterne.codeTServiceWebExterne}" />
+		            </p:column>
+		        </p:headerRow>
+
+		  		<f:facet name="{Exporters}">
+		            <h:commandLink>
+		                <p:graphicImage library="images" name="excel.png" width="24"/>
+		                <p:dataExporter type="xls" target="dataTableListeServiceWebExterne" fileName="liste_tiers" />
+		            </h:commandLink>
+		 
+		            <h:commandLink>
+		                <p:graphicImage  library="images" name="pdf.png"  width="24"/>
+		                <p:dataExporter type="pdf" target="dataTableListeServiceWebExterne" fileName="liste_tiers"/>
+		            </h:commandLink>
+		 
+		            <h:commandLink>
+		                <p:graphicImage  library="images" name="csv.png"  width="24"/>
+		                <p:dataExporter type="csv" target="dataTableListeServiceWebExterne" fileName="liste_tiers" />
+		            </h:commandLink>
+		 
+		            <h:commandLink>
+		                <p:graphicImage  library="images" name="xml.png"  width="24"/>
+		                <p:dataExporter type="xml" target="dataTableListeServiceWebExterne" fileName="liste_tiers" />
+		            </h:commandLink>
+		        </f:facet>
+        
+        		<p:column selectionMode="multiple" style="width:16px;text-align:center" exportable="false"/>
+			
+				<p:column style="width:16px" exportable="false">
+					<f:facet name="header">
+						<h:outputText value="" />
+					</f:facet>
+					<p:commandButton title="Détail" update=":form:tabView,:form:messages,@widgetVar(wvBandeauActionServiceWebExterne)" 
+						action="#{serviceWebExterneController.detail}" styleClass="icon icon-detail icon-grille" 
+						disabled="#{serviceWebExterneController.modeEcran.dataSetEnModif()}" oncomplete="PF('wvOverlayListeServiceWebExterne').hide();">
+						<f:setPropertyActionListener target="#{serviceWebExterneController.selectedTaServiceWebExterneDTO}" value="#{taServiceWebExterne}" />
+					</p:commandButton>
+				</p:column>
+        
+				<p:column sortBy="#{taServiceWebExterne.actif}" styleClass="center" filterBy="#{taServiceWebExterne.actif}" filterMatchMode="equals">
+					<f:facet name="header">
+						<h:outputText value="Actif" />
+					</f:facet>
+					<f:facet name="filter">
+			                <p:selectOneButton onchange="PF('wvDataTableListeServiceWebExterne').filter()">
+			                    <f:converter converterId="javax.faces.Boolean" />
+			                    <f:selectItem itemLabel="Tous" itemValue="" />
+			                    <f:selectItem itemLabel="Vrai" itemValue="true" />
+			                    <f:selectItem itemLabel="Faux" itemValue="false" />
+			                </p:selectOneButton>
+			            </f:facet>
+					<p:selectBooleanCheckbox value="#{taServiceWebExterne.actif}" disabled="true"/>
+				</p:column>
+
+				<p:column sortBy="#{taServiceWebExterne.codeServiceWebExterne}" filterBy="#{taServiceWebExterne.codeServiceWebExterne}" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="Code" />
+					</f:facet>
+					<h:outputText value="#{taServiceWebExterne.codeServiceWebExterne}" />
+				</p:column>
+				
+				<p:column sortBy="#{taServiceWebExterne.libelleServiceWebExterne}" filterBy="#{taServiceWebExterne.libelleServiceWebExterne}" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="Libellé" />
+					</f:facet>
+					<h:outputText value="#{taServiceWebExterne.libelleServiceWebExterne}"/>
+				</p:column>
+				
+				
+				<p:column sortBy="#{taServiceWebExterne.codeTServiceWebExterne}" filterBy="#{taServiceWebExterne.codeTServiceWebExterne}" styleClass="center" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="Type" />
+					</f:facet>
+					<h:outputText value="#{taServiceWebExterne.codeTServiceWebExterne}" />
+				</p:column>
+				
+				<p:column styleClass="center">
+					<f:facet name="header">
+						<h:outputText value="Logo" />
+					</f:facet>
+					<p:graphicImage value="/image_service_web_externe/#{taServiceWebExterne.id}"  height="40"/>
+				</p:column>
+				
+				<p:column style="width:16px" exportable="false">
+					<f:facet name="header">
+						<h:outputText value="" />
+					</f:facet>
+					
+					<p:commandButton title="Supprimer" styleClass="icon-delete icon icon-grille" widgetVar="widgetVarBtnSupprimerServiceWebExterneListe"
+						action="#{serviceWebExterneController.actSupprimer}"
+						process="@this"
+						update="@widgetVar(wvDataTableListeServiceWebExterne)">
+						<f:setPropertyActionListener target="#{serviceWebExterneController.selectedTaServiceWebExterneDTO}" value="#{taServiceWebExterne}" />
+						<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer ce tiers ?" icon="ui-icon-alert" />
+					</p:commandButton>
+						
+				</p:column>
+
+			</p:dataTable>
+
+		</h:form>
+	</p:overlayPanel>
+	
+</ui:composition>

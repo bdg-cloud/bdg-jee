@@ -1,0 +1,132 @@
+ <ui:composition xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core" 
+	xmlns:ui="http://java.sun.com/jsf/facelets" 
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/template_dialog_lgr.xhtml">
+	
+		<p:importConstants type="fr.legrain.bdg.webapp.generation.generationDocumentController" var="ConstController" />
+		
+	<ui:define name="head">
+		<title> <h:outputText
+				value="#{generationDocumentController.titreEcran}" />
+		</title>
+	
+		<style type="text/css">
+			.ui-widget {font-size: 90%;}
+		</style>
+	</ui:define>
+
+	<ui:define name="content">
+		<h:form id="idDialogGenerationDocument">
+			<p:panel id="idGenerationDocumentPanel" visible="true" widgetVar="widgetVarGenerationDocumentPanel">
+	
+					<div class="ui-g">
+						<div class="ui-g-12">
+							<p:fieldset legend="Document à générer">
+								<p:panelGrid columns="1">
+										<p:selectOneRadio id="idTypeDocument"  value="#{generationDocumentController.selectedType}" layout="pageDirection" columns="1">
+									        <f:selectItems value="#{generationDocumentController.listeTypeDoc}" var="rg" itemLabel="#{rg}" itemValue="#{rg}" />
+									        <p:ajax  listener="#{generationDocumentController.choixTypeDest()}" update="@this,idOption,@form,@widgetVar(wvMouvCrd)"/>
+				<!-- 					        <p:ajax listener="#{exportComptaBean.optionReglement}" update="idPanelOptionExportParDate,idPanelOptionExportTous,idPanelOptionExportParReference"/> -->
+									    </p:selectOneRadio>
+								</p:panelGrid>
+				<!-- 				<p:commandButton value="Valider" actionListener="#{etatExportationDocumentBean.actRecherche}" update="@widgetVar(wvDataTableDocumentExport)"/> -->
+							</p:fieldset>
+						</div>
+					</div>
+					
+					<div class="ui-g">
+						<div class="ui-g-12">
+							<p:fieldset legend="Paramètres">
+								<p:panelGrid columns="2">
+									<p:outputLabel value="Date document"/>
+									<p:calendar value="#{generationDocumentController.dateDocument}" pattern="dd/MM/yyyy" mask="true" 
+									locale="fr" navigator="true" showOn="button"  timeZone="#{msg.time_zone}" type="localDate"
+									mindate="#{generationDocumentController.dateMin}"
+									maxdate="#{generationDocumentController.dateMax}" >
+									<f:attribute name="nomChamp" value="#{const.C_DATE_DOCUMENT}" />
+										<p:ajax event="dateSelect" listener="#{generationDocumentController.controleDate}" update="@this" />
+										<p:ajax event="change"  listener="#{generationDocumentController.controleDate}" update="@this"/>
+									</p:calendar>
+									
+									<!-- <f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" type="localDate"/> -->
+				
+									<p:outputLabel value="Tiers"/>
+										
+									<p:autoComplete value="#{generationDocumentController.tiers}"
+										completeMethod="#{generationDocumentController.tiersAutoComplete}"
+										 var="tiers"	itemLabel="#{tiers.codeTiers}" itemValue="#{tiers}"
+										 disabled="#{!generationDocumentController.result.tiersModifiable}"
+										forceSelection="true" dropdown="true"
+									maxResults="#{generationDocumentController.taPreferencesService.nbMaxChargeListeTiers()}"
+									moreText="Il y a #{component.maxResults} affichés sur #{component.suggestions.size()} au total, Veuillez affiner votre recherche ou cliquer ici pour en afficher plus ..."
+										placeholder="code tiers" converter="entityConverter">
+										<p:column>
+											<f:facet name="header">
+											</f:facet>												
+											<h:outputText value="#{tiers.codeTiers}" />
+											</p:column>
+											<p:column>
+												<h:outputText value="#{tiers.nomTiers}" />
+											</p:column>
+
+											<f:attribute name="nomChamp" value="#{const.C_CODE_TIERS}" />
+												<p:ajax event="itemSelect"
+												listener="#{generationDocumentController.autcompleteSelection}"
+												update="@this" />
+												<p:ajax event="moreText" listener="#{generationDocumentController.onMoreTextTiers}" />
+										</p:autoComplete>										
+										
+										<p:outputLabel value="Libellé"/>
+										<p:inputText value="#{generationDocumentController.nouveauLibelle}"  >
+											<p:ajax event="blur" update="@this"/>
+										</p:inputText>									
+
+				
+								</p:panelGrid>
+								<p:panelGrid columns="1">
+									    <p:selectOneRadio value="#{generationDocumentController.option}" id="idOption">
+								            <f:selectItem itemLabel="Reprise du n° du document dans le corps" itemValue="1" />
+								            <f:selectItem itemLabel="Reprise du libellé du document dans le corps" itemValue="2" />
+								            <f:selectItem itemLabel="Aucun" itemValue="3" />
+								            	    <p:ajax   update="@this"/>
+				        				</p:selectOneRadio>	
+<!-- 				        				<p:panelGrid columns="2"> -->
+									    <p:selectBooleanCheckbox value="#{generationDocumentController.ouvrir}" itemLabel="Ouvrir le document en suivant">
+									    <p:ajax  update="@this"/>
+				        				</p:selectBooleanCheckbox>
+									    <p:selectBooleanCheckbox value="#{generationDocumentController.mouvementerCrdAvoir}" itemLabel="Mouvementer les CRD dans les Avoirs" widgetVar="wvMouvCrd"
+									    disabled="#{generationDocumentController.selectedType!='Avoir'}" >
+									    <p:ajax  update="@this"/>
+				        				</p:selectBooleanCheckbox>			        											 
+								</p:panelGrid>
+								
+								<p:panelGrid columns="1" rendered="#{generationDocumentController.typeSrc=='Boncde' and generationDocumentController.selectedType=='Facture' and generationDocumentController.paiementParCarteEnAttente!=null}">
+									<p:outputLabel value="Empreinte CB prise #{generationDocumentController.paiementParCarteEnAttente.idExterne}"/>
+									<p:outputLabel value="Montant maximum autorisé #{generationDocumentController.paiementParCarteEnAttente.amountCapturable} €"/>
+									<p:outputLabel value="Montant final du bon de commande #{generationDocumentController.documentSrc.netTtcCalc} €"/>
+									
+									 <p:selectBooleanCheckbox value="#{generationDocumentController.capturerReglement}" itemLabel="Capturer le montant">
+									    <p:ajax  update="@this"/>
+				        				</p:selectBooleanCheckbox>
+								</p:panelGrid>
+								
+								<p:commandButton value="Valider" actionListener="#{generationDocumentController.actImprimer}"  process="@this" >
+								</p:commandButton>
+								<p:commandButton value="Fermer" actionListener="#{generationDocumentController.actFermer}" process="@this" />
+
+							</p:fieldset>
+						</div>
+					
+					</div>
+			</p:panel>
+					
+		</h:form>
+	</ui:define>
+
+	
+
+
+</ui:composition>

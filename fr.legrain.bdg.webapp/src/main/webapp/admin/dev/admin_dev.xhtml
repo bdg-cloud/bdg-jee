@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<title>Dev - Scripts</title>
+	<link rel="shortcut icon" type="image/x-icon" href="#{resource['images:solstyce.ico']}" />
+	
+	<style>
+		.base-importante {
+			background-color : #fca752 !important;
+		}
+	</style>
+
+	<f:facet name="first">
+	</f:facet>
+</h:head>
+<h:body>
+	<f:facet name="last">
+		<!-- surcharge des CSS primefaces -->
+		<h:outputStylesheet library="css" name="hacks.css" />
+	</f:facet>
+
+	<p:layout fullPage="true" widgetVar="widgetLayoutPage">
+
+		<!-- 		<p:ajax event="toggle" listener="#{leftBean.handleToggle}"/> -->
+
+		<p:layoutUnit position="north" size="100" gutter="0" class="north">
+			<div class="ui-grid ui-grid-responsive">
+				<div class="ui-grid-col-2">
+					<p:link href="/index.xhtml">
+						<p:graphicImage library="images" name="solstyce_32x32.png" />
+						<h:outputText value="Solstyce" />
+					</p:link>
+				</div>
+				<div class="ui-grid-col-3">
+					<p:ajaxStatus>
+						<f:facet name="start">
+							<p:graphicImage library="images" name="ajax-loader.gif" />
+						</f:facet>
+						<f:facet name="complete">
+							<!-- 							<h:outputText value="Done!" /> -->
+						</f:facet>
+					</p:ajaxStatus>
+				</div>
+				<div class="ui-grid-col-10 text-right">
+					Mon compte -
+					<p:commandLink value="déconnexion" actionListener="#{auth.logout}" />
+				</div>
+
+
+			</div>
+			<!-- 			<ui:include src="../../menu.xhtml" /> -->
+		</p:layoutUnit>
+		<!-- 
+		<p:layoutUnit position="south" size="100" resizable="true">
+		</p:layoutUnit>
+ -->
+		<!-- 		<p:layoutUnit id="idWestUnit" position="west" size="550" resizable="true" collapsed="#{leftBean.collapsed}"  -->
+		<!-- 			collapsible="true" header="" gutter="4" class="west"> -->
+
+
+		<!-- 		</p:layoutUnit> -->
+
+		<!-- 		<p:layoutUnit position="east" size="200" resizable="true" -->
+		<!-- 			collapsible="true" collapsed="true" header="" gutter="2" class="east"> -->
+		<!-- 		</p:layoutUnit> -->
+
+		<p:layoutUnit position="center" gutter="4" class="center">
+
+			<h:form id="form">
+
+				<p:socket onMessage="handleMessage" channel="/notifications" />
+
+				<!-- 				<p:socket channel="/notifications"> -->
+				<!-- 					<p:ajax event="message" update="growl" /> -->
+				<!-- 				</p:socket> -->
+
+				<p:growl id="growl" showDetail="true" widgetVar="growl" />
+				
+				<p:commandLink value="Refresh" update="@form" />
+
+				<p:separator />
+
+				<p:accordionPanel>
+				
+					<p:tab title="Dossiers (schéma de la bdd princiaple 'bdg')">
+					
+						<p:inputText value="#{devBean.nomDossier}" placeholder="Nom du dossier" />
+						<!--	<br /> -->
+						.
+						<p:commandButton actionListener="#{devBean.ajoutDossier}" value="Ajout dossier" update="@form" />
+						
+						<p:commandButton actionListener="#{devBean.rebootServeur}" value="Reboot (WildFly)" update="@form">
+							<p:confirm header="Confirmation" message="Etes vous sur de vouloir redémarrer le serveur d'application maintenant ?" icon="ui-icon-alert" />
+						</p:commandButton>
+	
+						<p:separator />
+					
+						<p:dataTable var="table" value="#{devBean.listeSchema}" styleClass="datatable" paginator="true"
+							rowHover="true"
+							rows="#{msg.modele_datatable_ligne_par_page_debut}" paginatorTemplate="#{msg.modele_datatable_paginator}"
+							rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}" emptyMessage="#{msg.message_datatable_vide}"
+							currentPageReportTemplate="#{msg.modele_datatable_page_courante}">
+
+							<f:facet name="header">
+        						Liste des dossiers (schéma) ** #{devBean.listeSchema.size()}
+    						</f:facet>
+
+							<!-- <p:ajax event="rowSelect" listener="#{listeConformiteController.onRowSelect}"/> -->
+							<!-- <p:ajax event="rowToggle" listener="#{listeConformiteController.onRowToggle}" update=":@this" /> -->
+							<!-- <p:ajax event="rowReorder" listener="#{listeConformiteController.onRowReorder}" /> -->
+
+							<p:column style="width:16px">
+								<p:rowToggler />
+							</p:column>
+
+							<p:column sortBy="#{table.nom}" filterBy="#{table.nom}" filterMatchMode="contains">
+								<f:facet name="header">
+									<h:outputText value="Schema" />
+								</f:facet>
+
+								<h:outputText value="#{table.nom}" />
+							</p:column>
+
+							<p:column sortBy="#{table.taille2}" filterBy="#{table.taille2}" filterMatchMode="contains">
+								<f:facet name="header">
+									<h:outputText value="Taille" />
+								</f:facet>
+
+								<h:outputText value="#{table.taille2}" />
+							</p:column>
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="Action" />
+								</f:facet>
+
+								<p:commandLink actionListener="#{devBean.dumpDossier}" value="Dump Dossier" update="@form">
+									<f:attribute name="nomDossier" value="#{table}" />
+									<p:confirm header="Confirmation" message="Faire un dump de ce dossier ?" icon="ui-icon-alert" />
+								</p:commandLink>  
+								.
+								<p:commandLink actionListener="#{devBean.supprimerDossier}" value="Supprimer" update="@form">
+									<f:attribute name="nomDossier" value="#{table}" />
+									<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer ce dossier ?" icon="ui-icon-alert" />
+								</p:commandLink>
+							</p:column>
+
+							<p:rowExpansion>
+
+								<p:dataTable var="dump" value="#{table.listeDump}" styleClass="datatable"
+									emptyMessage="#{msg.message_datatable_vide}">
+
+									<f:facet name="header">
+        								Liste des sauvegardes (dumps) du dossier <h:outputText value="#{table.nom} ** #{table.listeDump.size()}" />
+									</f:facet>
+
+									<p:column sortBy="#{dump.nom}">
+										<f:facet name="header">
+											<h:outputText value="Dump" />
+										</f:facet>
+
+										<h:outputText value="#{dump.nom}" />
+									</p:column>
+									
+									<p:column sortBy="#{dump.date}">
+										<f:facet name="header">
+											<h:outputText value="Date dump" />
+										</f:facet>
+
+										<h:outputText value="#{dump.date}">
+											<f:convertDateTime pattern="#{msg.datetime_pattern}" timeZone="#{msg.time_zone}"/>
+										</h:outputText>
+									</p:column>
+
+									<p:column>
+										<f:facet name="header">
+											<h:outputText value="Action" />
+										</f:facet>
+
+										<p:commandLink actionListener="#{devBean.restaureDump}" value="Restaurer dump" update="@form">
+											<f:attribute name="nomDump" value="#{dump.nom}" />
+											<f:attribute name="nomDossier" value="#{table.nom}" />
+											<p:confirm header="Confirmation" message="Restaurer ce fichier de dump ?" icon="ui-icon-alert" />
+										</p:commandLink>
+
+									</p:column>
+								</p:dataTable>
+
+							</p:rowExpansion>
+
+						</p:dataTable>
+					</p:tab>
+					<p:tab title="Bases de données">
+					
+						<p:inputText value="#{devBean.nomDump}" placeholder="Tag dump" />.
+						<!-- 				<br /> -->
+						<p:commandButton actionListener="#{devBean.dbDump}" value="Dump de la base de donnée principale 'bdg' (tous les schémas)" />
+						
+						<p:separator />
+
+						<p:dataTable var="table" value="#{devBean.listeBase}" styleClass="datatable" paginator="true"
+							rowHover="true"
+							rows="#{msg.modele_datatable_ligne_par_page_debut}" paginatorTemplate="#{msg.modele_datatable_paginator}"
+							rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}" emptyMessage="#{msg.message_datatable_vide}"
+							currentPageReportTemplate="#{msg.modele_datatable_page_courante}"
+							rowStyleClass="#{(table.nom eq 'bdg') or (table.nom eq 'login_db') or (table.nom eq 'moncompte') or (table.nom eq 'autorisations') or (table.nom eq 'postgres')? 'base-importante' : null}">
+
+							<f:facet name="header">
+        						Liste des bases de données du serveur postgreSQL
+							</f:facet>
+							
+							<p:column style="width:16px">
+								<p:rowToggler />
+							</p:column>
+
+							<p:column sortBy="#{table.nom}" filterBy="#{table.nom}" filterMatchMode="contains">
+								<f:facet name="header">
+									<h:outputText value="BDD" />
+								</f:facet>
+
+								<h:outputText value="#{table.nom}" />
+							</p:column>
+							
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="Action" />
+								</f:facet>
+
+								<p:commandLink actionListener="#{devBean.dumpBase}" value="Dump base" update="@form">
+									<f:attribute name="nomBase" value="#{table.nom}" />
+									<p:confirm header="Confirmation" message="Faire un dump de cette base ?" icon="ui-icon-alert" />
+								</p:commandLink>  
+	
+							</p:column>
+							
+							<p:rowExpansion>
+
+								<p:dataTable var="dump" value="#{table.listeDump}" styleClass="datatable"
+									emptyMessage="#{msg.message_datatable_vide}">
+
+									<f:facet name="header">
+        								Liste des sauvegardes (dumps) de cette base <h:outputText value="#{table.nom} ** #{table.listeDump.size()}" />
+									</f:facet>
+
+									<p:column sortBy="#{dump.nom}">
+										<f:facet name="header">
+											<h:outputText value="Dump" />
+										</f:facet>
+
+										<h:outputText value="#{dump.nom}" />
+									</p:column>
+									
+									<p:column sortBy="#{dump.date}">
+										<f:facet name="header">
+											<h:outputText value="Date dump" />
+										</f:facet>
+
+										<h:outputText value="#{dump.date}">
+											<f:convertDateTime pattern="#{msg.datetime_pattern}" timeZone="#{msg.time_zone}"/>
+										</h:outputText>
+									</p:column>
+									
+									
+									
+									
+
+									<p:column>
+										<f:facet name="header">
+											<h:outputText value="Action" />
+										</f:facet>
+
+										<p:commandLink actionListener="#{devBean.restaureDump}" value="Restaurer dump" update="@form">
+											<f:attribute name="nomDump" value="#{dump.nom}" />
+											<f:attribute name="nomDossier" value="#{table.nom}" />
+											<p:confirm header="Confirmation" message="Restaurer ce fichier de dump ?" icon="ui-icon-alert" />
+										</p:commandLink>
+
+									</p:column>
+								</p:dataTable>
+
+							</p:rowExpansion>
+							
+						</p:dataTable>
+					</p:tab>
+				</p:accordionPanel>
+
+				<p:separator />
+
+				<p:outputLabel value="Message Push (pour tous les utilisateurs)" />
+				<h:panelGrid columns="2">
+					<p:outputLabel for="summary" value="Titre" />
+					<p:inputText id="summary" value="#{pushMessageBean.summary}" />
+					<p:outputLabel for="detail" value="Détail" />
+					<p:inputText id="detail" value="#{pushMessageBean.detail}" />
+				</h:panelGrid>
+				<p:commandButton value="Envoyer" actionListener="#{pushMessageBean.send}">
+					<p:confirm header="Confirmation" message="Etes vous sur de vouloir envoyer ce message à tous les utilisateurs ?"
+						icon="ui-icon-alert" />
+				</p:commandButton>
+
+				<p:separator />
+
+				<p:confirmDialog global="true" showEffect="fade" hideEffect="explode">
+					<p:commandButton value="Oui" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+					<p:commandButton value="Non" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+				</p:confirmDialog>
+			</h:form>
+
+		</p:layoutUnit>
+
+	</p:layout>
+
+	<h:outputScript name="/js/functions.js" />
+
+</h:body>
+</html>

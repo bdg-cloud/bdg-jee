@@ -1,0 +1,245 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<p:panel id="espaceClientFormPrincipal" widgetVar="espaceClientForm">
+
+		<p class="subtitle">
+			<p:outputLabel value="Gestion des espaces client" rendered="#{dansDialogue == null ? true : false}" />
+		</p>
+		
+		<p:panel id="espaceClientDataTableF" class="mt30" style="position:relative;"
+			rendered="#{dansDialogue == null ? true : false}">
+			
+			<p:commandButton id="idInsererEspaceClient" value="Ajouter" title="Insérer" process="@this"
+				update=":form:tabView,:form:messages,:form" 
+				actionListener="#{gestionCompteClientController.actDialogTypes}"
+				styleClass="icon-insert icon" >
+				<p:ajax event="dialogReturn" listener="#{gestionCompteClientController.handleReturnDialogTypes}" 
+					update=":form"/>
+			</p:commandButton>
+		
+			<p:commandButton id="idModifierEspaceClient" value="Modifier" title="Modifier" process="@this"
+				update=":form:tabView,:form:messages,:form" 
+				actionListener="#{gestionCompteClientController.actDialogModifier}"
+				styleClass="icon-update icon" >
+				<p:ajax event="dialogReturn" listener="#{gestionCompteClientController.handleReturnDialogTypes}" update=":form"/>
+			</p:commandButton>
+			
+			<p:commandButton value="Rafraichir" title="Rafraichir" process="@this"
+				update="@widgetVar(wvEspaceClientDataTable)" 
+				actionListener="#{gestionCompteClientController.actRafraichir}"
+				styleClass="icon-refresh icon" >
+			</p:commandButton>
+			
+			<p:commandButton id="espaceClientSupprimer" value="Supprimer"
+				class="icon-delete icon menuitem-poubelle-droite"
+				disabled="#{gestionCompteClientController.etatBouton('supprimer')}"
+				actionListener="#{gestionCompteClientController.actSupprimer}"
+				update="@widgetVar(wvEspaceClientDataTable)" process="@this"
+				 >
+				<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer cet enregistrement ?" icon="ui-icon-alert" />
+			</p:commandButton>
+
+			<p:commandButton id="espaceClientFermer" title="Fermer"
+				class="icon-close icon menuitem-fermer-droite" onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())">
+				<p:confirm header="Confirmation" message="#{msg_diag.alert_fermeture_onglet}" icon="ui-icon-alert" disabled="#{!gestionCompteClientController.modeEcran.dataSetEnModif()}"/>
+			</p:commandButton>
+
+			<p:commandButton id="espaceClientFermerDialogue" title="Fermer"
+				process="@this" class="icon-close icon menuitem-fermer-droite"
+				actionListener="#{gestionCompteClientController.actFermerDialog}"
+				rendered="#{dansDialogue != null ? true : false}" />
+
+		</p:panel>
+
+		<p:dataTable 
+					rendered="#{dansDialogue == null ? true : false}"
+					id="dataTableListeFacture" var="ec"
+					widgetVar="wvEspaceClientDataTable"
+					value="#{gestionCompteClientController.values}"
+					rowKey="#{ec.id}"
+			selectionMode="single" 
+			selection="#{gestionCompteClientController.selection}"
+					styleClass="datatable mt10"
+					resizableColumns="true"
+					paginator="true" 
+					rows="#{msg.modele_datatable_ligne_par_page_debut}"
+					paginatorTemplate="#{msg.modele_datatable_paginator}"
+					rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+					emptyMessage="#{msg.message_datatable_vide}"
+					currentPageReportTemplate="#{msg.modele_datatable_page_courante}">
+					
+					<p:ajax event="rowSelect" listener="#{gestionCompteClientController.onRowSelect}" />
+
+<!--        	 			<p:column selectionMode="multiple" style="width:16px;text-align:center" exportable="false" /> -->
+					
+					<p:column headerText="Code tiers" styleClass="center" filterBy="#{ec.codeTiers}" sortBy="#{ec.codeTiers}" filterMatchMode="contains" > 
+						<p:commandLink value="#{ec.codeTiers}"
+							action="#{ouvertureDocumentBean.detailTiers(ouvertureDocumentBean.recupCodetiers(ec.codeTiers))}" update=":form:tabView"
+							oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+						</p:commandLink>
+					</p:column>
+				
+					<p:column styleClass="center"
+								sortBy="#{ec.dateDerniereConnexion}"
+								filterMatchMode="contains" 
+								filterBy="#{factureController.customFormatDate(ec.dateDerniereConnexion)}" >
+						<f:facet name="header">
+							<h:outputText value="Dernière connexion" />
+						</f:facet>
+						<h:outputText value="#{ec.dateDerniereConnexion}">
+							<f:convertDateTime pattern="#{msg.datetime_pattern}" timeZone="#{msg.time_zone}"/> 
+						</h:outputText>
+					</p:column>
+				
+					<p:column sortBy="#{ec.email}" styleClass="center"
+								filterMatchMode="contains" 
+								filterBy="#{ec.email}" >
+						<f:facet name="header">
+							<h:outputText value="Email / Identifiant" />
+						</f:facet>
+						<h:outputText value="#{ec.email}" />
+					</p:column>
+	
+					<p:column sortBy="#{ec.nom}" styleClass="center"
+								filterMatchMode="contains" 
+								filterBy="#{ec.nom}" >
+						<f:facet name="header">
+							<h:outputText value="Nom" />
+						</f:facet>
+						<h:outputText value="#{ec.nom}" />
+					</p:column>
+					
+					<p:column sortBy="#{ec.prenom}" styleClass="center"
+								filterMatchMode="contains" 
+								filterBy="#{ec.prenom}" >
+						<f:facet name="header">
+							<h:outputText value="Prénom" />
+						</f:facet>
+						<h:outputText value="#{ec.prenom}" />
+					</p:column>
+
+					<p:column sortBy="#{ec.actif}" styleClass="center"
+								filterMatchMode="contains" 
+								filterBy="#{ec.actif}" >
+						<f:facet name="header">
+							<h:outputText value="Actif" />
+						</f:facet>
+						<p:selectBooleanCheckbox value="#{ec.actif}" disabled="true"/>
+					</p:column>
+
+				</p:dataTable>
+	</p:panel>
+
+	<p:messages id="espaceClientMessages" showDetail="true" autoUpdate="true" closable="true" />
+
+	<p:panel id="espaceClientPanel" visible="true" widgetVar="varEspaceClientPanel">
+		<p:panel onLoad="reset()" resizable="false" id="espaceClientPanelCache"
+			rendered="#{gestionCompteClientController.modeEcran.dataSetEnModif()}">
+			<f:validateBean disabled="true">
+				<div id="espaceClientGridResp">
+				
+					<div class="ui-g">
+						<div class="ui-g-4">
+							<h:outputText value="Code tiers :"></h:outputText>
+						</div>
+						<div class="ui-g-8">
+							<h:inputText value="#{gestionCompteClientController.nouveau.codeTiers}" disabled="true">
+									<f:attribute name="nomChamp" value="#{const.C_CODE_TIERS}" />
+									<p:ajax event="blur" update="@this"/>
+							</h:inputText>
+						</div>
+					</div>
+				
+					<div class="ui-g">
+						<div class="ui-g-4">
+							<h:outputText value="Code tiers :"></h:outputText>
+						</div>
+						<div class="ui-g-8">
+							<p:autoComplete value="#{gestionCompteClientController.taTiersDTO}"
+									converter="entityConverter"
+									completeMethod="#{gestionCompteClientController.tiersAutoCompleteDTOLight}"
+									var="tp" itemLabel="#{tp.codeTiers}" itemValue="#{tp}"
+									dropdown="true"
+									placeholder="Tiers">
+									<p:column>
+										<h:outputText value="#{tp.codeTiers}" />
+									</p:column>
+									<p:column>
+										<h:outputText value="#{tp.nomTiers}" />
+									</p:column>
+									<f:attribute name="nomChamp" value="#{const.C_CODE_TIERS}" />
+									<p:ajax event="itemSelect" listener="#{gestionCompteClientController.autcompleteSelection}" />
+								</p:autoComplete>
+						</div>
+					</div>
+					
+					<div class="ui-g">
+						<div class="ui-g-4">
+							<h:outputText value="Email :"/>
+						</div>
+						<div class="ui-g-8">
+							<h:inputText  value="#{gestionCompteClientController.nouveau.email}" styleClass="Input100"
+								required="true"
+								requiredMessage="#{msg_diag.alert_champs_obligatoir}" validator="#{gestionCompteClientController.validateObject}">
+									<f:attribute name="nomChamp" value="#{const.C_EMAIL}" />
+									<p:ajax event="blur" update="@this"/>
+							</h:inputText>
+						</div>
+					</div>
+					
+					<div class="ui-g">
+						<div class="ui-g-4">
+							<h:outputText value="Nom :"/>
+						</div>
+						<div class="ui-g-8">
+							<h:inputText  value="#{gestionCompteClientController.nouveau.nom}" styleClass="Input100"
+								required="true"
+								requiredMessage="#{msg_diag.alert_champs_obligatoir}" validator="#{gestionCompteClientController.validateObject}">
+									<f:attribute name="nomChamp" value="#{const.C_EMAIL}" />
+									<p:ajax event="blur" update="@this"/>
+							</h:inputText>
+						</div>
+					</div>
+					
+					<div class="ui-g">
+						<div class="ui-g-4">
+							<h:outputText value="Prénom :"/>
+						</div>
+						<div class="ui-g-8">
+							<h:inputText  value="#{gestionCompteClientController.nouveau.prenom}" styleClass="Input100" validator="#{gestionCompteClientController.validateObject}">
+									<f:attribute name="nomChamp" value="#{const.C_EMAIL}" />
+									<p:ajax event="blur" update="@this"/>
+							</h:inputText>
+						</div>
+					</div>
+					
+					<div class="ui-g">
+						<div class="ui-g-12 text-center">
+							<p:commandButton id="idEnregistrerEspaceClient" value="Enregistrer" styleClass="btn-save btn"
+								disabled="#{gestionCompteClientController.etatBouton('enregistrer')}"
+								update="@widgetVar(espaceClientForm), @widgetVar(varEspaceClientPanel)"
+								actionListener="#{gestionCompteClientController.actEnregistrer}" />
+							
+							<p:commandButton id="espaceClientAnnuler" value="Annuler" styleClass="btn-cancel btn"
+								disabled="#{gestionCompteClientController.etatBouton('annuler')}"
+								update="@widgetVar(espaceClientForm), @widgetVar(varEspaceClientPanel)"
+								actionListener="#{gestionCompteClientController.actAnnuler}" 
+								rendered="#{dansDialogue != null ? false : true}" />
+
+							<p:commandButton id="espaceClientAnnulerDialogue" value="Annuler"
+								styleClass="btn-cancel btn" process="@this"
+								disabled="#{gestionCompteClientController.etatBouton('annuler')}"
+								actionListener="#{gestionCompteClientController.actFermerDialog}"
+								rendered="#{dansDialogue != null ? true : false}" />
+						</div>
+					</div>
+				</div>
+			</f:validateBean>
+			<!-- 			</h:form> -->
+		</p:panel>
+	</p:panel>
+</ui:composition>

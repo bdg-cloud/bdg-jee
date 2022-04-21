@@ -1,0 +1,50 @@
+<h1 class="titre">Mes devis</h1>
+
+<p-table [value]="devis" selectionMode="single"
+	[(selection)]="selectedDevis" dataKey="codeDocument"
+	(onRowSelect)="onRowSelect($event)"
+	(onRowUnselect)="onRowUnselect($event)"
+	sortField="dateDocument" [sortOrder]="-1"> 
+	
+	<ng-template pTemplate="header">
+		<tr>
+			<th pSortableColumn="codeDocument">Code<p-sortIcon field="codeDocument"></p-sortIcon></th>
+			<th>Libellé</th>
+			<th pSortableColumn="dateDocument">Date<p-sortIcon field="dateDocument"></p-sortIcon></th>
+			<th>HT</th>
+			<th>TVA</th>
+			<th>TTC</th>
+			<th>Solde</th>
+			<th>Echéance</th>
+			<th>Payer</th>
+			<th>PDF</th>
+		</tr>
+	</ng-template> 
+	
+	<ng-template pTemplate="body" let-fact>
+		<tr [pSelectableRow]="fact">
+			<td class="center">{{fact.codeDocument}}</td>
+			<td>{{fact.libelleDocument}}</td>
+			<td class="center">{{fact.dateDocument | date:'dd/MM/yyyy'}}</td>
+			<td class="right">{{fact.netHtCalc}} €</td>
+			<td class="right">{{fact.netTvaCalc}} €</td>
+			<td class="right">{{fact.netTtcCalc}} €</td>
+			<td class="right">{{fact.resteAReglerComplet}} €</td>
+			<td class="center">{{fact.dateEchDocument | date:'dd/MM/yyyy'}}</td>
+			<td class="center">
+<!-- 				<div *ngIf="fact.resteAReglerComplet!=null && fact.resteAReglerComplet <= 0; else apayer">Facture déjà payée</div> -->
+<!-- 				<ng-template #apayer> -->
+<!-- 				  <p-button label="Payer" (onClick)="handleClick($event, fact)" *ngIf="paiementPossible"></p-button> -->
+<!-- 				</ng-template> -->
+			</td>
+			<td class="center">
+				<p-button label="PDF" (onClick)="handleClick2($event, fact)"></p-button>
+			</td>
+		</tr>
+	</ng-template> 
+	
+</p-table>
+
+<div *ngIf="loading" style="margin: auto; text-align: center;"><i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i></div>
+
+<p-toast [style]="{marginTop: '80px'}"></p-toast>

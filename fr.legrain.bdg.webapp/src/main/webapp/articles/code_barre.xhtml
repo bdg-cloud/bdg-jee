@@ -1,0 +1,212 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<p:panel id="codeBarreFormPrincipal" widgetVar="widgetVarCodeBarreForm">
+
+		<p class="subtitle">
+			<p:outputLabel value="Gestion des codes barres" rendered="#{dansDialogue == null ? true : false}" />
+		</p>
+
+		<p:dataTable id="codeBarreDataTable" var="table"
+			rendered="#{dansDialogue == null ? true : false}"
+			value="#{codeBarreController.values}" rowKey="#{table.id}"
+			selectionMode="single" class="datatable"
+			selection="#{codeBarreController.selection}" paginator="true"
+			rows="#{msg.modele_datatable_ligne_par_page_debut}"
+			paginatorTemplate="#{msg.modele_datatable_paginator}"
+			rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+			emptyMessage="#{msg.message_datatable_vide}"
+			currentPageReportTemplate="#{msg.modele_datatable_page_courante}">
+			
+			<p:ajax event="rowSelect" listener="#{codeBarreController.onRowSelect}" />
+
+			<f:facet name="{Exporters}">
+				<h:commandLink>
+					<p:graphicImage library="images" name="excel.png" width="24" />
+					<p:dataExporter type="xls" target="codeBarreDataTable"
+						fileName="type_tiers" />
+				</h:commandLink>
+
+				<h:commandLink>
+					<p:graphicImage library="images" name="pdf.png" width="24" />
+					<p:dataExporter type="pdf" target="codeBarreDataTable"
+						fileName="type_tiers" />
+				</h:commandLink>
+
+				<h:commandLink>
+					<p:graphicImage library="images" name="csv.png" width="24" />
+					<p:dataExporter type="csv" target="codeBarreDataTable"
+						fileName="type_tiers" options="#{separateurCsvController.csvOptions}" />
+				</h:commandLink>
+
+				<h:commandLink>
+					<p:graphicImage library="images" name="xml.png" width="24" />
+					<p:dataExporter type="xml" target="codeBarreDataTable"
+						fileName="type_tiers" />
+				</h:commandLink>
+			</f:facet>
+			<!-- 			<p:column sortBy="#{table.codeBarre}" filterBy="#{table.codeBarre}" filterMatchMode="contains"> -->
+			<!-- 				<f:facet name="header"> -->
+			<!-- 					<h:outputText value="Code 128" /> -->
+			<!-- 				</f:facet> -->
+			<!-- 				<h:outputText value="#{table.codeBarre}" /> -->
+			<!-- 			</p:column> -->
+			<p:column sortBy="#{table.codeBarre}" filterBy="#{table.codeBarre}"
+				filterMatchMode="contains">
+				<f:facet name="header">
+					<h:outputText value="Code" />
+				</f:facet>
+				<!-- 				<p:barcode value="#{table.codeBarre}" type="ean128"/> -->
+				<h:outputText value="#{table.codeBarre}" />
+			</p:column>
+
+			<p:column sortBy="#{table.codeTypeCodeBarre}"
+				filterBy="#{table.codeTypeCodeBarre}"
+				filterMatchMode="contains">
+				<f:facet name="header">
+					<h:outputText value="Type code" />
+				</f:facet>
+				<!-- 				<p:barcode value="#{table.codeBarre}" type="ean128"/> -->
+				<h:outputText value="#{table.codeTypeCodeBarre}" />
+			</p:column>
+			<p:column>
+				<f:facet name="header">
+					<h:outputText value="code EAN-128" />
+				</f:facet>
+				<p:barcode value="#{table.codeBarre}" type="code128" />
+			</p:column>
+		</p:dataTable>
+
+		<!-- bouton -->
+		<p:panel id="codeBarreDataTableF" styleClass="text-center mt30 bg-grey" style="position:relative;"
+			rendered="#{dansDialogue == null ? true : false}">
+
+			<p:commandButton id="codeBarreInserer" value="Insérer" process="@this"
+				disabled="#{codeBarreController.etatBouton('inserer')}"
+				update="@widgetVar(varCodeBarrePanel), @this, @parent:codeBarreModifier, @parent:codeBarreSupprimer"
+				actionListener="#{codeBarreController.actInserer}"
+				styleClass="btn-insert btn" />
+
+			<p:commandButton id="codeBarreModifier" value="Modifier"
+				process="@this" class="btn-update btn"
+				disabled="#{codeBarreController.etatBouton('modifier')}"
+				update="@widgetVar(varCodeBarrePanel), @parent:codeBarreInserer, @this, @parent:codeBarreSupprimer"
+				actionListener="#{codeBarreController.actModifier}" />
+
+			<p:commandButton id="codeBarreSupprimer" value="Supprimer"
+				styleClass="btn-delete btn"
+				disabled="#{codeBarreController.etatBouton('supprimer')}"
+				onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())">
+<!-- 				type="button" onclick="PF('famillecd2').show()" -->
+				<p:confirm header="Confirmation" message="#{msg_diag.alert_fermeture_onglet}" icon="ui-icon-alert" />
+			</p:commandButton>
+
+			<p:commandButton id="codeBarreFermer" title="Fermer"
+				styleClass="btn-close btn menuitem-fermer-droite" 
+				rendered="#{dansDialogue == null ? true : false}" >
+<!-- 				type="button" onclick="PF('famillecd2').show()" -->
+				<p:confirm header="Confirmation" message="#{msg_diag.alert_fermeture_onglet}" icon="ui-icon-alert" disabled="#{!codeBarreController.modeEcran.dataSetEnModif()}"/>
+			</p:commandButton>
+
+			<p:commandButton id="codeBarreFermerDialogue" title="Fermer"
+				process="@this" class="btn-close btn menuitem-fermer-droite"
+				actionListener="#{codeBarreController.actFermerDialog}"
+				rendered="#{dansDialogue != null ? true : false}" />
+
+<!-- 			<p:confirmDialog -->
+<!-- 				message="Etes-vous sûr de vouloir supprimer l'enregistrement?" -->
+<!-- 				header="Confirmation" severity="alert" appendTo="@(body)" -->
+<!-- 				widgetVar="codeBarrecd1"> -->
+
+<!-- 				<p:commandButton value="Oui" update="@form" oncomplete="PF('codeBarrecd1').hide()"> -->
+<!-- 					<p:ajax listener="#{codeBarreController.actSupprimer()}" /> -->
+<!-- 				</p:commandButton> -->
+
+<!-- 				<p:commandButton value="Non" onclick="PF('codeBarrecd1').hide();" type="button" /> -->
+<!-- 			</p:confirmDialog> -->
+
+<!-- 			<p:confirmDialog -->
+<!-- 				message="Etes-vous sûr de vouloir fermer l'onglet ? (les modifications en cours ne seront pas sauvegardées) " -->
+<!-- 				header="Confirmation" severity="alert" widgetVar="codeBarrecd2" -->
+<!-- 				appendTo="@(body)"> -->
+
+<!-- 				<p:commandButton value="Oui" -->
+<!-- 					onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())" -->
+<!-- 					oncomplete="PF('codeBarrecd2').hide()" /> -->
+
+<!-- 				<p:commandButton value="Non" onclick="PF('codeBarrecd2').hide();" -->
+<!-- 					type="button" /> -->
+<!-- 			</p:confirmDialog> -->
+		</p:panel>
+		<!-- 	 -->
+	</p:panel>
+
+	<p:messages id="codeBarreMessages" showDetail="true" autoUpdate="true" closable="true" />
+
+	<p:panel id="codeBarrePanel" visible="true" widgetVar="varCodeBarrePanel">
+		<p:panel resizable="false" id="codeBarrePanelCache"
+			rendered="#{codeBarreController.modeEcran.dataSetEnModif()}">
+			<!-- 					<h:form id="codeBarreFormCreation"> -->
+			<f:validateBean disabled="true">
+				<div class="ui-grid ui-grid-responsive" id="codeBarreGridResp">
+					<div class="ui-grid-row">
+						<div class="ui-grid-col-4">
+							<h:outputText value="Code :"></h:outputText>
+						</div>
+						<div class="ui-grid-col-8">
+							<h:inputText value="#{codeBarreController.nouveau.codeBarre}"
+								required="true" requiredMessage="Champs obligatoire!">
+								<p:ajax event="blur" update="@form" />
+							</h:inputText>
+						</div>
+					</div>
+					<div class="ui-grid-row" id="code">
+						<div class="ui-grid-col-4">
+							<h:outputText value="Code barre :" />
+						</div>
+						<div class="ui-grid-col-8">
+							<!-- 							<h:inputText value="#{codeBarreController.nouveau.codeBarre}" required="true" requiredMessage="Champs obligatoire!" /> -->
+							<p:barcode value="#{codeBarreController.nouveau.codeBarre}" type="ean128" />
+							<!-- 							<p:barcode value="1234567454512" type="ean128"  /> -->
+						</div>
+					</div>
+					<!-- 					<div class="ui-grid-row" id="code"> -->
+					<!-- 						<div class="ui-grid-col-8"> -->
+					<!-- 									<p:outputLabel value="Code Barre : " /> -->
+					<!-- 									<p:inputText value="#{codeBarreController.nouveau.codeBarre}" > -->
+					<!-- 										<f:attribute name="nomChamp" value="#codeBarre" /> -->
+					<!-- 										<p:ajax event="blur" update="@form"/> -->
+					<!-- 									</p:inputText> -->
+					<!-- 						</div> -->
+					<!-- 					</div>					 -->
+
+					<div class="ui-grid-row">
+						<div class="ui-grid-col-12 text-center">
+							<p:commandButton value="Enregistrer" styleClass="btn-save btn"
+								disabled="#{codeBarreController.etatBouton('enregistrer')}"
+								update="@widgetVar(widgetVarCodeBarreForm), @widgetVar(varCodeBarrePanel)"
+								actionListener="#{codeBarreController.actEnregistrer}" />
+
+							<p:commandButton id="codeBarreAnnuler" value="Annuler"
+								styleClass="btn-cancel btn" process="@this"
+								disabled="#{codeBarreController.etatBouton('annuler')}"
+								update="@widgetVar(widgetVarCodeBarreForm), @widgetVar(varCodeBarrePanel)"
+								actionListener="#{codeBarreController.actAnnuler}"
+								rendered="#{dansDialogue == null ? true : false}" />
+
+							<p:commandButton id="codeBarreAnnulerDialogue" value="Annuler"
+								styleClass="btn-cancel btn" process="@this"
+								disabled="#{codeBarreController.etatBouton('annuler')}"
+								actionListener="#{codeBarreController.actFermerDialog}"
+								rendered="#{dansDialogue != null ? true : false}" />
+						</div>
+					</div>
+				</div>
+			</f:validateBean>
+			<!-- 					</h:form> -->
+		</p:panel>
+	</p:panel>
+</ui:composition>

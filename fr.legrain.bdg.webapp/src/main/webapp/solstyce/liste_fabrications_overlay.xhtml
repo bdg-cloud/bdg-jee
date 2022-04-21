@@ -1,0 +1,227 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:p="http://primefaces.org/ui">
+	
+	<o:importConstants type="fr.legrain.bdg.webapp.app.LgrTab" />
+	
+<!-- 	<h:form> -->
+
+<!-- <p:ajax event="rowSelect" listener="#{clientController.onRowSelect}" update=":form:tabView,:form:messages" oncomplete="PF('wvOverlayListeClient').hide();"/>  -->
+
+
+<!-- 	<p:commandButton id="movieBtn" value="Dynamic" type="button" /> -->
+	<p:commandLink id="listeFabricationBtn" >
+		<i class="top-submenu-icon fa fa-fw fa-cogs"></i>
+<!-- 		<i class="top-bar-badge animated rubberBand"><h:outputText value="#{topBarController.nbClient}"/></i> -->
+<!-- 		<i class="fa fa-book animated swing" aria-hidden="true"></i> -->
+		<span><h:outputText value="Liste des fabrications" /></span>
+	</p:commandLink>
+	
+<!-- 	<p:overlayPanel id="moviePanel" for="movieBtn" hideEffect="fade" dynamic="true"  -->
+<!-- 		dismissable="true" appendTo="@(body)" widgetVar="wvOverlayListeProduit" showCloseIcon="true"> -->
+	
+	<p:overlayPanel id="idListeFabricationPanel" for="listeFabricationBtn" hideEffect="fade" dynamic="true" 
+		dismissable="true" appendTo="@(body)" widgetVar="wvOverlayListeFabrication" showCloseIcon="true">
+		<h:form>
+
+	<p:menubar styleClass="menu-onglet" widgetVar="wvMenuListeFabrication" id="idMenuListeFabrication">
+		<p:menuitem title="Ajouter" update=":form:tabView,:form:messages,@widgetVar(wvMenuListeFabrication),@widgetVar(wvDataTableListeFabrication)" 
+		actionListener="#{fabricationController.nouveau}" styleClass="icon icon-insert" disabled="#{fabricationController.etatBouton('inserer')}" oncomplete="PF('wvOverlayListeFabrication').hide();"/>
+<!-- 		<p:menuitem title="Détail" update=":form:tabView,:form:messages" actionListener="#{fabricationController.detail}" styleClass="icon icon-detail" disabled="#{fabricationController.modeEcran.dataSetEnModif()}" oncomplete="PF('wvOverlayListeFabrication').hide();"/> -->
+<!-- 		<p:menuitem title="Supprimer les fabrications sélectionnées" update=":form:tabView,@widgetVar(wvMenuListeFabrication),@widgetVar(wvDataTableListeFabrication),:form:messages,@form"  -->
+<!-- 		actionListener="#{fabricationController.supprimer}" styleClass="icon icon-delete" disabled="#{fabricationController.etatBouton('supprimerListe')}"> -->
+<!-- 	 		<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer les fabrications sélectionnées ?" icon="ui-icon-alert" /> -->
+<!-- 	 	</p:menuitem> -->
+		<p:menuitem title="Rafraîchir" update="@form,@widgetVar(wvMenuListeFabrication),@widgetVar(wvDataTableListeFabrication),:form:messages" actionListener="#{fabricationController.refresh}" styleClass="icon icon-refresh" disabled="#{fabricationController.modeEcran.dataSetEnModif()}"/>
+		
+		<p:menuitem styleClass="icon icon-nouveau-modele-a-partir-fab" title="Nouveau modèle à partir de cette fabrication" oncomplete="PF('wvOverlayListeFabrication').hide();"
+				update="@form,:form:tabView,:form:messages" actionListener="#{modeleFabricationController.actNouveauModeleDepuisFabrication}">
+				<f:attribute name="idFabrication" value="#{fabricationController.renvoiPremierIdSelection()}" />
+		</p:menuitem>
+	</p:menubar>
+	<p:sticky target="idMenuListeFabrication" />
+	
+	<p:dataTable id="dataTableListeFabrications" var="taFabrication"
+				widgetVar="wvDataTableListeFabrication"
+				styleClass="datatable mt10"
+				value="#{fabricationController.listeFabrication}"
+				rowKey="#{taFabrication.id}"
+				selection="#{fabricationController.selectedTaFabricationDTOs}"
+				dblClickSelect="true"
+				resizableColumns="true"
+				paginator="true" 
+				rows="#{msg.modele_datatable_ligne_par_page_debut}"
+				paginatorTemplate="#{msg.modele_datatable_paginator}"
+				rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+				emptyMessage="#{msg.message_datatable_vide}"
+				currentPageReportTemplate="#{msg.modele_datatable_page_courante}"
+				disabledSelection="#{fabricationController.modeEcran.dataSetEnModif()}">
+				
+<!-- 				<p:ajax event="rowDblselect" listener="#{fabricationController.onRowSelect}" update=":form:tabView,:form:messages,@form" oncomplete="activeLastTabCenter()"/> -->
+<!-- 				<p:ajax event="rowSelect" listener="#{fabricationController.onRowSelect}" update=":form:tabView,:form:messages" oncomplete="PF('wvOverlayListeFabrication').hide();"/> -->
+				
+<!-- 				<p:ajax event="rowDblselect" listener="#{fabricationController.onRowSelect}" update=":form:tabView,:form:messages" /> -->
+				<p:ajax event="rowSelect" delay="#{msg.datatable_rowselect_delay}" listener="#{fabricationController.onRowSelect}" update=":form:tabView,:form:messages" oncomplete="activeTabCenter('#{LgrTab.CSS_CLASS_TAB_FABRICATION}');PF('wvOverlayListeFabrication').hide();scrollToTop();"/>
+			
+				<f:facet name="header">  
+           			Fabrications
+           			<span style="float:right;" class="searchbar_list">
+	           			<p:outputPanel>
+			                <p:inputText id="globalFilter" onkeyup="PF('wvDataTableListeFabrication').filter()" style="width:150px" placeholder="Rechercher"/>
+			            </p:outputPanel>
+		            </span>
+        		</f:facet>
+
+  		<f:facet name="{Exporters}">
+            <h:commandLink>
+                <p:graphicImage library="images" name="excel.png" width="24"/>
+                <p:dataExporter type="xls" target="dataTableListeFabrications" fileName="liste_fabrications" />
+            </h:commandLink>
+ 			
+ 			<p:commandLink onsuccess="window.open('#{request.contextPath}/output?__report=/reports/fabrication/ListeDesFabrications.rptdesign&amp;__format=pdf')"
+			actionListener="#{fabricationController.actImprimerListeDesFabrications}" process="@this">
+		                <p:graphicImage  library="images" name="pdf.png"  width="24"/>
+<!-- 		                <p:dataExporter type="pdf" target="dataTableListeTiers" fileName="liste_tiers" /> -->
+		            </p:commandLink>
+		            
+<!--             <h:commandLink> -->
+<!--                 <p:graphicImage  library="images" name="pdf.png"  width="24"/> -->
+<!--                 <p:dataExporter type="pdf" target="dataTableListeFabrications" fileName="liste_fabrications"/> -->
+<!--             </h:commandLink> -->
+ 
+            <h:commandLink>
+                <p:graphicImage  library="images" name="csv.png"  width="24"/>
+                <p:dataExporter type="csv" target="dataTableListeFabrications" fileName="liste_fabrications" options="#{separateurCsvController.csvOptions}" />
+            </h:commandLink>
+ 
+            <h:commandLink>
+                <p:graphicImage  library="images" name="xml.png"  width="24"/>
+                <p:dataExporter type="xml" target="dataTableListeFabrications" fileName="liste_fabrications" />
+            </h:commandLink>
+        </f:facet>
+        
+			<p:column selectionMode="multiple" style="width:16px;text-align:center" exportable="false"/>
+			
+				<p:column style="width:16px" exportable="false">
+					<f:facet name="header">
+						<h:outputText value="" />
+					</f:facet>
+					<p:commandButton title="Détail" update=":form:tabView,:form:messages" 
+						action="#{fabricationController.detail}" styleClass="icon icon-detail icon-grille" 
+						disabled="#{fabricationController.modeEcran.dataSetEnModif()}" oncomplete="PF('wvOverlayListeFabrication').hide();">
+						<f:setPropertyActionListener target="#{fabricationController.selectedTaFabricationDTO}" value="#{taFabrication}" />
+					</p:commandButton>
+				</p:column>
+
+<!-- 				<p:column sortBy="#{taFabrication.id}"> -->
+<!-- 					<f:facet name="header"> -->
+<!-- 						<h:outputText value="ID" /> -->
+<!-- 					</f:facet> -->
+<!-- 					<h:outputText value="#{taFabrication.id}" /> -->
+<!-- 				</p:column> -->
+
+				<p:column sortBy="#{taFabrication.codeDocument}" filterBy="#{taFabrication.codeDocument}" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="Code" />
+					</f:facet>
+					<h:outputText value="#{taFabrication.codeDocument}" />
+				</p:column>
+				
+					<p:column sortBy="#{taFabrication.dateDebR}" filterBy="#{taFabrication.dateDebR}" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="Date Deb R" />
+					</f:facet>
+					<h:outputText value="#{taFabrication.dateDebR}" >
+						<f:convertDateTime pattern="#{msg.datetime_pattern}" timeZone="#{msg.time_zone}"/>
+					</h:outputText>
+				</p:column>
+				
+<!-- 				<p:column sortBy="#{taFabrication.dateFinT}"> -->
+<!-- 					<f:facet name="header"> -->
+<!-- 						<h:outputText value="Date Fin T" /> -->
+<!-- 					</f:facet> -->
+<!-- 					<h:outputText value="#{taFabrication.dateFinT}" > -->
+<!-- 						<f:convertDateTime pattern="dd/MM/yyyy-HH:mm:ss"/> -->
+<!-- 					</h:outputText> -->
+<!-- 				</p:column> -->
+				
+<!-- 				<p:column sortBy="#{taFabrication.dateDebR}"> -->
+<!-- 					<f:facet name="header"> -->
+<!-- 						<h:outputText value="Date Deb R" /> -->
+<!-- 					</f:facet> -->
+<!-- 					<h:outputText value="#{taFabrication.dateDebR}" > -->
+<!-- 						<f:convertDateTime pattern="dd/MM/yyyy-HH:mm:ss"/> -->
+<!-- 					</h:outputText> -->
+<!-- 				</p:column> -->
+				
+<!-- 				<p:column sortBy="#{taFabrication.dateFinR}"> -->
+<!-- 					<f:facet name="header"> -->
+<!-- 						<h:outputText value="Date Fin R" /> -->
+<!-- 					</f:facet> -->
+<!-- 					<h:outputText value="#{taFabrication.dateFinR}" > -->
+<!-- 						<f:convertDateTime pattern="dd/MM/yyyy-HH:mm:ss"/> -->
+<!-- 					</h:outputText> -->
+<!-- 				</p:column> -->
+				
+				<p:column sortBy="#{taFabrication.libelleDocument}" filterBy="#{taFabrication.libelleDocument}" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="Description" />
+					</f:facet>
+					<h:outputText value="#{taFabrication.libelleDocument}" />
+				</p:column>
+				
+				<p:column sortBy="#{taFabrication.codeTiers}" filterBy="#{taFabrication.codeTiers}" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="Code Tiers" />
+					</f:facet>
+					<h:outputText value="#{taFabrication.codeTiers}" />
+				</p:column>
+				
+				<p:column sortBy="#{taFabrication.nomTiers}" filterBy="#{taFabrication.nomTiers}" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="Nom Tiers" />
+					</f:facet>
+					<h:outputText value="#{taFabrication.nomTiers}" />
+				</p:column>
+				
+				<p:column sortBy="#{taFabrication.liblTFabrication}" filterBy="#{taFabrication.liblTFabrication}" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="Type Fabrication" />
+					</f:facet>
+					<h:outputText value="#{taFabrication.liblTFabrication}" />
+				</p:column>
+				
+				
+<!-- 				<p:column sortBy="#{taFabrication.commentaire}"> -->
+<!-- 					<f:facet name="header"> -->
+<!-- 						<h:outputText value="Commentaire" /> -->
+<!-- 					</f:facet> -->
+<!-- 					<h:outputText value="#{taFabrication.commentaire}" /> -->
+<!-- 				</p:column> -->
+
+				<p:column style="width:16px" exportable="false">
+						<f:facet name="header">
+							<h:outputText value="" />
+						</f:facet>
+						
+						<p:commandButton title="Supprimer" styleClass="icon-delete icon icon-grille" widgetVar="widgetVarBtnSupprimerFabricationListe"
+							action="#{fabricationController.actSupprimer}"
+							process="@this"
+							update="@widgetVar(wvDataTableListeFabrication)">
+							<f:setPropertyActionListener target="#{fabricationController.selectedTaFabricationDTO}" value="#{taFabrication}" />
+							<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer cette fabrication ?" icon="ui-icon-alert" />
+						</p:commandButton>
+							
+					</p:column>
+				
+			</p:dataTable>
+
+		</h:form>
+	</p:overlayPanel>
+	
+<!-- 	</h:form> -->
+
+</ui:composition>

@@ -1,0 +1,248 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html" 
+	xmlns:ui="http://java.sun.com/jsf/facelets" 
+	xmlns:p="http://primefaces.org/ui">
+
+	<style>
+		.base-importante {
+			background-color: #fca752 !important;
+		}
+	</style>
+
+	<!-- <p:socket onMessage="handleMessage" channel="/notifications" /> -->
+
+	<!-- <p:growl id="growl" showDetail="true" widgetVar="growl" /> -->
+
+	<p:commandLink actionListener="#{adminBean.actualiser}" update="@form" >
+		<i class="fa fa-refresh"></i>
+		<span><h:outputText value="Refresh" /></span>
+	</p:commandLink>
+
+	<p:separator />
+
+	<p:accordionPanel>
+
+		<p:tab title="Dossiers (schéma de la bdd princiaple 'bdg')">
+
+			<p:inputText value="#{adminBean.nomDossier}" placeholder="Nom du dossier" disabled="true"/>
+				.
+			<p:commandButton actionListener="#{adminBean.ajoutDossier}" value="Ajout dossier" update="@form" disabled="true"/>
+
+			<p:commandButton actionListener="#{adminBean.rebootServeur}" value="Reboot (WildFly)" update="@form">
+				<p:confirm header="Confirmation" message="Etes vous sur de vouloir redémarrer le serveur d'application maintenant ?" icon="ui-icon-alert" />
+			</p:commandButton>
+
+			<p:separator />
+
+			<p:dataTable 
+				var="table" 
+				value="#{adminBean.listeSchema}" 
+				styleClass="datatable" 
+				paginator="true" 
+				rowHover="true"
+				rows="#{msg.modele_datatable_ligne_par_page_debut}" 
+				paginatorTemplate="#{msg.modele_datatable_paginator}"
+				rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}" 
+				emptyMessage="#{msg.message_datatable_vide}"
+				currentPageReportTemplate="#{msg.modele_datatable_page_courante}">
+
+				<f:facet name="header">
+        			Liste des dossiers (schéma) ** #{adminBean.listeSchema.size()}
+    			</f:facet>
+
+				<p:column style="width:16px">
+					<p:rowToggler />
+				</p:column>
+
+				<p:column sortBy="#{table.nom}" filterBy="#{table.nom}" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="Schema" />
+					</f:facet>
+
+					<h:outputText value="#{table.nom}" />
+				</p:column>
+
+				<p:column sortBy="#{table.taille2}" filterBy="#{table.taille2}" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="Taille" />
+					</f:facet>
+
+					<h:outputText value="#{table.taille2}" />
+				</p:column>
+
+				<p:column>
+					<f:facet name="header">
+						<h:outputText value="Adresse" />
+					</f:facet>
+
+					<p:commandLink
+						value="#{!empty adminBean.prefixeSousDomaine ? adminBean.prefixeSousDomaine : ''}#{table.nom}.#{adminBean.nomDomaine}"
+							 onclick="window.open('http://#{!empty adminBean.prefixeSousDomaine ? adminBean.prefixeSousDomaine : &#39;&#39;}#{table.nom}.#{adminBean.nomDomaine}');"
+						 />
+				</p:column>
+
+				<p:column>
+					<f:facet name="header">
+						<h:outputText value="Action" />
+					</f:facet>
+
+					<p:commandLink actionListener="#{adminBean.dumpDossier}" value="Dump Dossier" update="@form">
+						<f:attribute name="nomDossier" value="#{table}" />
+						<p:confirm header="Confirmation" message="Faire un dump de ce dossier ?" icon="ui-icon-alert" />
+					</p:commandLink>  
+								.
+								<p:commandLink actionListener="#{adminBean.supprimerDossier}" value="Supprimer" update="@form">
+						<f:attribute name="nomDossier" value="#{table}" />
+						<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer ce dossier ?" icon="ui-icon-alert" />
+					</p:commandLink>
+				</p:column>
+
+				<p:rowExpansion>
+
+					<p:dataTable 
+						var="dump" 
+						value="#{table.listeDump}" 
+						styleClass="datatable"
+						emptyMessage="#{msg.message_datatable_vide}">
+
+						<f:facet name="header">
+        					Liste des sauvegardes (dumps) du dossier <h:outputText value="#{table.nom} ** #{table.listeDump.size()}" />
+						</f:facet>
+
+						<p:column sortBy="#{dump.nom}">
+							<f:facet name="header">
+								<h:outputText value="Dump" />
+							</f:facet>
+
+							<h:outputText value="#{dump.nom}" />
+						</p:column>
+
+						<p:column sortBy="#{dump.date}">
+							<f:facet name="header">
+								<h:outputText value="Date dump" />
+							</f:facet>
+
+							<h:outputText value="#{dump.date}">
+								<f:convertDateTime pattern="#{msg.datetime_pattern}" timeZone="#{msg.time_zone}" />
+							</h:outputText>
+						</p:column>
+
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="Action" />
+							</f:facet>
+
+							<p:commandLink actionListener="#{adminBean.restaureDump}" value="Restaurer dump" update="@form">
+								<f:attribute name="nomDump" value="#{dump.nom}" />
+								<f:attribute name="nomDossier" value="#{table.nom}" />
+								<p:confirm header="Confirmation" message="Restaurer ce fichier de dump ?" icon="ui-icon-alert" />
+							</p:commandLink>
+
+							<!-- 										<p:link value="Télécharger" href="#{dump.nom}"/> -->
+
+						</p:column>
+					</p:dataTable>
+
+				</p:rowExpansion>
+
+			</p:dataTable>
+		</p:tab>
+		
+		<p:tab title="Bases de données">
+
+			<p:inputText value="#{adminBean.nomDump}" placeholder="Tag dump" />.
+			
+			<p:commandButton actionListener="#{adminBean.dbDump}" value="Dump de la base de donnée principale 'bdg' (tous les schémas)" />
+				
+			<p:separator />
+
+			<p:dataTable 
+				var="table" 
+				value="#{adminBean.listeBase}" 
+				styleClass="datatable" 
+				paginator="true" 
+				rowHover="true"
+				rows="#{msg.modele_datatable_ligne_par_page_debut}" 
+				paginatorTemplate="#{msg.modele_datatable_paginator}"
+				rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}" 
+				emptyMessage="#{msg.message_datatable_vide}"
+				currentPageReportTemplate="#{msg.modele_datatable_page_courante}"
+				rowStyleClass="#{(table.nom eq 'bdg') or (table.nom eq 'login_db') or (table.nom eq 'moncompte') or (table.nom eq 'autorisations') or (table.nom eq 'postgres')? 'base-importante' : null}">
+
+				<f:facet name="header">
+        			Liste des bases de données du serveur postgreSQL
+				</f:facet>
+
+				<p:column style="width:16px">
+					<p:rowToggler />
+				</p:column>
+
+				<p:column sortBy="#{table.nom}" filterBy="#{table.nom}" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="BDD" />
+					</f:facet>
+
+					<h:outputText value="#{table.nom}" />
+				</p:column>
+
+				<p:column>
+					<f:facet name="header">
+						<h:outputText value="Action" />
+					</f:facet>
+
+					<p:commandLink actionListener="#{adminBean.dumpBase}" value="Dump base" update="@form">
+						<f:attribute name="nomBase" value="#{table.nom}" />
+						<p:confirm header="Confirmation" message="Faire un dump de cette base ?" icon="ui-icon-alert" />
+					</p:commandLink>
+
+				</p:column>
+
+				<p:rowExpansion>
+
+					<p:dataTable var="dump" value="#{table.listeDump}" styleClass="datatable"
+						emptyMessage="#{msg.message_datatable_vide}">
+
+						<f:facet name="header">
+        					Liste des sauvegardes (dumps) de cette base <h:outputText value="#{table.nom} ** #{table.listeDump.size()}" />
+						</f:facet>
+
+						<p:column sortBy="#{dump.nom}">
+							<f:facet name="header">
+								<h:outputText value="Dump" />
+							</f:facet>
+
+							<h:outputText value="#{dump.nom}" />
+						</p:column>
+
+						<p:column sortBy="#{dump.date}">
+							<f:facet name="header">
+								<h:outputText value="Date dump" />
+							</f:facet>
+
+							<h:outputText value="#{dump.date}">
+								<f:convertDateTime pattern="#{msg.datetime_pattern}" timeZone="#{msg.time_zone}" />
+							</h:outputText>
+						</p:column>
+
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="Action" />
+							</f:facet>
+
+							<p:commandLink actionListener="#{adminBean.restaureDump}" value="Restaurer dump" update="@form">
+								<f:attribute name="nomDump" value="#{dump.nom}" />
+								<f:attribute name="nomDossier" value="#{table.nom}" />
+								<p:confirm header="Confirmation" message="Restaurer ce fichier de dump ?" icon="ui-icon-alert" />
+							</p:commandLink>
+
+						</p:column>
+					</p:dataTable>
+
+				</p:rowExpansion>
+
+			</p:dataTable>
+		</p:tab>
+	</p:accordionPanel>
+
+</ui:composition>

@@ -1,0 +1,242 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:p="http://primefaces.org/ui">
+	
+	<o:importConstants type="fr.legrain.bdg.webapp.app.LgrTab" />
+	
+	<p:commandLink id="listePreparationBtn" >
+		<i class="top-submenu-icon fa fa-fw fa-file-text-o"></i>
+<!-- 		<i class="top-bar-badge animated rubberBand"><h:outputText value="#{topBarController.nbClient}"/></i> -->
+<!-- 		<i class="fa fa-book animated swing" aria-hidden="true"></i> -->
+		<span><h:outputText value="Liste des bons de préparation" /></span>
+	</p:commandLink>
+	
+	<p:overlayPanel id="idListePreparationPanel" for="listePreparationBtn" hideEffect="fade" dynamic="true" 
+		dismissable="true" appendTo="@(body)" widgetVar="wvOverlayListePreparation" showCloseIcon="true">
+	
+		<h:form>
+		<div class="dashboard-title" style="background:#f6f6f6;">
+              <h:panelGrid columns="3" cellpadding="5">
+            	<h:graphicImage name="dashboard/bon-de-commande.svg" library="images" height="35px" style="margin-top:1px;" />
+                <p:outputLabel value="Liste des bons de préparation" style="font-size:20px;"/>
+              </h:panelGrid>  
+              <p:separator/>
+        </div>
+		<p:menubar styleClass="menu-onglet" widgetVar="wvMenuListePreparation" id="idMenuListePreparation">
+			<p:menuitem title="Créer un nouveau bon de préparation" update=":form:tabView,:form:messages,@widgetVar(wvMenuListePreparation),@widgetVar(wvDataTableListePreparation)" 
+				actionListener="#{bonPreparationController.nouveau}" styleClass="icon icon-insert" disabled="#{bonPreparationController.etatBouton('inserer')}" oncomplete="PF('wvOverlayListePreparation').hide();"/>
+	<!-- 	 	<p:menuitem title="Détail" update=":form:tabView,:form:messages" actionListener="#{bonPreparationController.detail}" styleClass="icon icon-detail" disabled="#{bonPreparationController.modeEcran.dataSetEnModif()}" oncomplete="PF('wvOverlayListePreparation').hide();"/> -->
+<!-- 		 	<p:menuitem title="Supprimer les Preparation sélectionnés" update=":form:tabView,@widgetVar(wvDataTableListePreparation),@widgetVar(wvMenuListePreparation),:form:messages,@form"  -->
+<!-- 		 	actionListener="#{bonPreparationController.supprimer}" styleClass="icon icon-delete" disabled="#{bonPreparationController.etatBouton('supprimerListe')}"> -->
+<!-- 		 		<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer les Preparation sélectionnés ?" icon="ui-icon-alert" /> -->
+<!-- 		 	</p:menuitem> -->
+		 	<p:menuitem title="Rafraîchir la liste des bons de préparation" update="@form,@widgetVar(wvDataTableListePreparation),@widgetVar(wvMenuListePreparation),:form:messages" actionListener="#{bonPreparationController.refresh}" styleClass="icon icon-refresh" disabled="#{bonPreparationController.modeEcran.dataSetEnModif()}"/>
+		</p:menubar>
+		
+		<p:sticky target="idMenuListePreparation" />
+	 
+	<p:dataTable id="dataTableListePreparation" var="Preparation"
+				widgetVar="wvDataTableListePreparation"
+				value="#{bonPreparationController.values}"
+				rowKey="#{Preparation.id}"
+				selection="#{bonPreparationController.selectedDocumentDTOs}"
+				dblClickSelect="true"
+				styleClass="datatable mt10"
+				resizableColumns="true"
+				paginator="true" 
+				rows="#{msg.modele_datatable_ligne_par_page_debut}"
+				paginatorTemplate="#{msg.modele_datatable_paginator}"
+				rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+				emptyMessage="#{msg.message_datatable_vide}"
+				currentPageReportTemplate="#{msg.modele_datatable_page_courante}"
+				disabledSelection="#{bonPreparationController.modeEcran.dataSetEnModif()}">
+
+				<p:ajax event="rowSelect" delay="#{msg.datatable_rowselect_delay}" listener="#{bonPreparationController.onRowSelect}" update=":form:tabView,:form:messages" oncomplete="activeTabCenter('#{LgrTab.CSS_CLASS_TAB_BONCDE}');PF('wvOverlayListePreparation').hide();scrollToTop();"/>
+
+			
+				<f:facet name="header">  
+           			<h:outputText value="Preparation" />
+           			<span style="float:right;" class="searchbar_list">
+			            <p:outputPanel>
+				                <p:inputText id="globalFilter" onkeyup="PF('wvDataTableListePreparation').filter()" style="width:150px" placeholder="Rechercher"/>
+				            </p:outputPanel>
+			        </span>
+        		</f:facet>
+
+		  		<f:facet name="{Exporters}">
+		            <h:commandLink>
+		                <p:graphicImage library="images" name="excel.png" width="24"/>
+		                <p:dataExporter type="xls" target="dataTableListePreparation" fileName="liste_Preparation" />
+		            </h:commandLink>
+		 
+		            <p:commandLink onsuccess="window.open('#{request.contextPath}/output?__report=/reports/documents/Preparation/ListeDesPreparation.rptdesign&amp;__format=pdf')"
+			actionListener="#{bonPreparationController.actImprimerListeDesPreparation}" process="@this">
+		                <p:graphicImage  library="images" name="pdf.png"  width="24"/>
+<!-- 		                <p:dataExporter type="pdf" target="dataTableListeTiers" fileName="liste_tiers" /> -->
+		            </p:commandLink>
+		 
+		            <h:commandLink>
+		                <p:graphicImage  library="images" name="csv.png"  width="24"/>
+		                <p:dataExporter type="csv" target="dataTableListePreparation" fileName="liste_Preparation" options="#{separateurCsvController.csvOptions}" />
+		            </h:commandLink>
+		 
+		            <h:commandLink>
+		                <p:graphicImage  library="images" name="xml.png"  width="24"/>
+		                <p:dataExporter type="xml" target="dataTableListePreparation" fileName="liste_Preparation" />
+		            </h:commandLink>
+		        </f:facet>
+
+				<p:column selectionMode="multiple" style="width:16px;text-align:center" exportable="false"/>
+			
+				<p:column style="width:16px" exportable="false">
+					<f:facet name="header">
+						<h:outputText value="" />
+					</f:facet>
+					<p:commandButton title="Détail" update=":form:tabView,:form:messages" 
+						action="#{bonPreparationController.detail}" styleClass="icon icon-detail icon-grille" 
+						disabled="#{bonPreparationController.modeEcran.dataSetEnModif()}" oncomplete="PF('wvOverlayListePreparation').hide();">
+						<f:setPropertyActionListener target="#{bonPreparationController.selectedDocumentDTO}" value="#{Preparation}" />
+					</p:commandButton>
+				</p:column>
+
+
+				<p:column sortBy="#{Preparation.codeDocument}"
+							filterMatchMode="contains" 
+							filterBy="#{Preparation.codeDocument}">
+					<f:facet name="header">
+						<h:outputText value="Code" />
+					</f:facet>
+					<h:outputText value="#{Preparation.codeDocument}" />
+				</p:column>
+				
+				<p:column 	styleClass="center"
+							sortBy="#{Preparation.dateDocument}"
+							filterMatchMode="contains" 
+							filterBy="#{bonPreparationController.customFormatDate(Preparation.dateDocument)}">
+					<f:facet name="header">
+						<h:outputText value="Date" />
+					</f:facet>
+					<h:outputText value="#{Preparation.dateDocument}">
+						<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+					</h:outputText>
+				</p:column>
+				
+				<p:column sortBy="#{Preparation.codeTiers}"
+							filterMatchMode="contains" 
+							filterBy="#{Preparation.codeTiers}">
+					<f:facet name="header">
+						<h:outputText value="Code tiers" />
+					</f:facet>
+					<h:outputText value="#{Preparation.codeTiers}" />
+				</p:column>
+
+				<p:column 	sortBy="#{Preparation.nomTiers}"
+							filterMatchMode="contains" 
+							filterBy="#{Preparation.nomTiers}">
+					<f:facet name="header">
+						<h:outputText value="Nom" />
+					</f:facet>
+					<h:outputText value="#{Preparation.nomTiers}" />
+				</p:column>
+				
+				<p:column 	sortBy="#{Preparation.prenomTiers}"
+							filterMatchMode="contains" 
+							filterBy="#{Preparation.prenomTiers}">
+					<f:facet name="header">
+						<h:outputText value="Prénom" />
+					</f:facet>
+					<h:outputText value="#{Preparation.prenomTiers}" />
+				</p:column>
+
+				<p:column 	sortBy="#{Preparation.nomEntreprise}"
+							filterMatchMode="contains" 
+							filterBy="#{Preparation.nomEntreprise}" >
+					<f:facet name="header">
+						<h:outputText value="Entreprise" />
+					</f:facet>
+					<h:outputText value="#{Preparation.nomEntreprise}" />
+				</p:column>
+
+				<p:column 	styleClass="right" 
+							filterMatchMode="contains" 
+							filterBy="#{Preparation.netHtCalc}" 
+							sortBy="#{Preparation.netHtCalc}"
+							exportFunction="#{separateurCsvController.exportNumber}">
+				
+					<f:facet name="header">
+						<h:outputText value="HT" />
+					</f:facet>
+					<h:outputText value="#{Preparation.netHtCalc}" >
+						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+					</h:outputText>
+				</p:column>
+				
+				<p:column 	styleClass="right" 
+							filterMatchMode="contains" 
+							filterBy="#{Preparation.netTvaCalc}" 
+							sortBy="#{Preparation.netTvaCalc}"
+							exportFunction="#{separateurCsvController.exportNumber}">
+					<f:facet name="header">
+						<h:outputText value="TVA" />
+					</f:facet>
+					<h:outputText value="#{Preparation.netTvaCalc}" >
+						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+					</h:outputText>
+				</p:column>
+
+				<p:column 	styleClass="right" 
+							filterMatchMode="contains" 
+							filterBy="#{Preparation.netTtcCalc}" 
+							sortBy="#{Preparation.netTtcCalc}"
+							exportFunction="#{separateurCsvController.exportNumber}">
+					<f:facet name="header">
+						<h:outputText value="TTC" />
+					</f:facet>
+					<h:outputText value="#{Preparation.netTtcCalc}">
+						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+					</h:outputText>
+				</p:column>
+
+				<p:column 	styleClass="center" 
+							filterMatchMode="contains" 
+							filterBy="#{bonPreparationController.customFormatDate(Preparation.dateEchDocument)}" 
+							sortBy="#{Preparation.dateEchDocument}">
+					<f:facet name="header">
+						<h:outputText value="Date échéance :" />
+					</f:facet>
+					<h:outputText value="#{Preparation.dateEchDocument}" >
+					<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+					</h:outputText>
+				</p:column>
+				
+					<p:column style="width:16px" exportable="false">
+						<f:facet name="header">
+							<h:outputText value="" />
+						</f:facet>
+<!--
+commentaire :  déclenche un bouton invisible pour mettre à jour le message personnalisé
+ -->						
+						<p:commandButton title="Supprimer" styleClass="icon-delete icon icon-grille" widgetVar="widgetVarBtnSupprimerPreparationListe"
+							action="#{bonPreparationController.actBeforeSupprimer(Preparation)}" oncomplete="$('.classHiddenCommandForSuppressionBCAchat').click()"
+							process="@this"
+							update="@widgetVar(widgetVarBtnSupprimerPreparationListe2)">
+							<f:setPropertyActionListener target="#{bonPreparationController.selectedDocumentDTO}" value="#{Preparation}" />
+						</p:commandButton>
+							
+					</p:column>
+
+			</p:dataTable>
+		<p:commandButton styleClass="classHiddenCommandForSuppressionBCAchat" widgetVar="widgetVarBtnSupprimerPreparationListe2" 
+		actionListener="#{bonPreparationController.actSupprimer}" style="display:none" process="@this" 
+		 update="@widgetVar(wvDataTableListePreparation)" >
+        <p:confirm header="Confirmation de la suppression" message="#{bonPreparationController.messageSuppression}" icon="ui-icon-alert" /> 
+    </p:commandButton>	
+		</h:form>
+	</p:overlayPanel>
+	
+<!-- 	</h:form> -->
+
+</ui:composition>

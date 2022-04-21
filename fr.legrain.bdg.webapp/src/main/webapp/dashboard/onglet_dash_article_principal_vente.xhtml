@@ -1,0 +1,1886 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+<div class="ui-g-12 ui-md-12" style="background:#ebebeb;">
+									<div class="ui-g-12 ui-md-6 ui-lg-3">
+										<p:panel  style="background:#ebebeb;" widgetVar="wvCountNbArticleTransforme">
+											<f:facet name="header">
+												Article sur la période
+				                               <!-- <p:commandLink id="idLinkAideArticleBoxParArticle" styleClass="lien-aide-contextuelle"  >
+												<i class="fa fa-info-circle animated swing" style="font-size : 20px;"/>
+											</p:commandLink> -->
+				                            </f:facet>
+				                            <!-- <p:overlayPanel for="idLinkAideArticleBoxParArticle" hideEffect="fade" dynamic="true" showCloseIcon="true" styleClass="overlay-aide-contextuelle">
+													<ui:include src="/aide_contextuelle/dashboard_article_box_par_article.xhtml" />
+											</p:overlayPanel> -->
+											<div class="box #{dashBoardArticleController.cSbNbDocumentSurPeriode}" >
+				<!-- 								<div class= "box greenback"> -->
+				<!-- 							<h:graphicImage name="dashboard/devis.svg" id="imagedashboard" library="images" height="40px"/> -->
+											<i class="fa fa-cube"></i>
+											<h2>#{dashBoardArticleController.nombreArticlesDoc.count} articles </h2>
+												
+											
+											<h3>Total HT : <p:outputLabel value="#{dashBoardArticleController.caTotalArticlesDocMoinsAvoir.mtHtCalc}">
+												 <f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" /> 	
+											</p:outputLabel>
+											</h3>
+											<p:outputLabel value="Facturé : "/>
+											<p:outputLabel value="#{dashBoardArticleController.caTotalArticlesDoc.mtHtCalc}">
+												 <f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" /> 	
+											</p:outputLabel><br/>
+											
+											<p:outputLabel value="Avoirs : "/>
+											<p:outputLabel value="#{dashBoardArticleController.caTotalArticlesDocAvoir.mtHtCalc}">
+												 <f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" /> 	
+											</p:outputLabel>
+											
+											
+				<!-- 							<h3>Total HT : #{dashBoardArticleController.totauxCaPeriodeDevis.mtHtCalc} € </h3> -->
+											<p>Du 
+											<p:outputLabel value="#{dashBoardArticleController.dateDebut}">
+												<f:convertDateTime pattern="#{msg.date_pattern}"
+														               timeZone="#{msg.time_zone}" type="localDate"/>		
+											</p:outputLabel>
+											  au 
+											<p:outputLabel value="#{dashBoardArticleController.dateFin}">
+												<f:convertDateTime pattern="#{msg.date_pattern}"
+														               timeZone="#{msg.time_zone}" type="localDate"/>		
+											</p:outputLabel>
+											
+											
+											</p>
+				
+				
+				
+										<p:selectBooleanButton style="width:50%;" id="articletous" 
+																value="true" onLabel="Sélection active"
+																widgetVar="wvArticleTous" 
+																offLabel="Afficher" onIcon="ui-icon-check" offIcon="ui-icon-close">
+																<!-- oncomplete="PF('wvListeArticle').filter()" -->
+												<p:ajax 
+														event="change" 
+														update="@this,
+																	@widgetVar(wvPanelCriteresDashboardArticle),
+																	@widgetVar(wvDashArticlePanelArticle),
+																	@widgetVar(wvDashArticlePanelArticleTous),
+																	@widgetVar(wvDashArticlePanelArticleAvoirs),
+																	@widgetVar(wvListeArticle),
+																	@widgetVar(wvListeArticleDetail),
+																	@widgetVar(wvListeFamilleArticle),
+																	@widgetVar(wvListeArticleParMois),
+																	@widgetVar(wvListeArticleTous),
+																	@widgetVar(wvListeArticleTousDetail),
+																	@widgetVar(wvListeArticleParMoisAvoirs),
+																	@widgetVar(wvListeFamilleArticleAvoirs),
+																	@widgetVar(wvListeArticleAvoirs),
+																	@widgetVar(wvListeArticleAvoirDetail),
+																	@widgetVar(wvCountNbArticleTransforme),
+																	@widgetVar(wvCountNbFamilleArticleTransforme),
+																	@widgetVar(wvListeArticleMoisArticles),
+																	@widgetVar(wvpanelCritArticleVente),
+																	@widgetVar(wvpanelCritFamilleArticleVente)" 
+																			
+																listener="#{dashBoardArticleController.refreshDashBoard('tous')}"/>	 
+				        					</p:selectBooleanButton>
+											</div> 
+										</p:panel>
+									</div>
+									<!-- <div class="ui-g-12 ui-md-6 ui-lg-3">
+										<p:panel header="Critère de recherche pour les articles" style="background:#ebebeb;" widgetVar="wvpanelCritArticleVente" rendered="false">
+											<div class=" #{dashBoardArticleController.cSbNbDocumentSurPeriode}" >
+												<p:panelGrid columns="1" cellpadding="0" columnClasses="ui-grid-col-12" style="width:100%">
+													<p:commandButton oncomplete="PF('wvListeArticle').filter()" 
+																	update="@this,
+																			@widgetVar(wvPanelCriteresDashboardArticle),
+																			@widgetVar(wvDashArticlePanelArticle),
+																			@widgetVar(wvDashArticlePanelArticleTous),
+																			@widgetVar(wvDashArticlePanelArticleAvoirs),
+																			@widgetVar(wvListeArticle),
+																			@widgetVar(wvListeFamilleArticle),
+																			@widgetVar(wvListeArticleParMois),
+																			@widgetVar(wvListeArticleTous),
+																			@widgetVar(wvListeArticleTousDetail),
+																			@widgetVar(wvListeArticleParMoisAvoirs),
+																			@widgetVar(wvListeArticleAvoirs),
+																			@widgetVar(wvCountNbArticleTransforme),
+																			@widgetVar(wvListeArticleMoisArticles)"  
+													action="#{dashBoardArticleController.initBornePeriodeAujourdhui()}" value="Groupé par unité" id="btnCritArticleVenteGroupByUnite"  
+													 style="font-size: 12px;height: 22px;width:100%;border-bottom: 2px solid #7FA128;"/>
+												</p:panelGrid>
+											</div>
+										</p:panel>
+									</div> -->
+									
+									
+									<div class="ui-g-12 ui-md-6 ui-lg-3">
+										<p:panel  style="background:#ebebeb;" widgetVar="wvCountNbFamilleArticleTransforme">
+											<f:facet name="header">
+												Famille d'article sur la période
+												<!-- <p:commandLink id="idLinkAideArticleBoxParFamille" styleClass="lien-aide-contextuelle"  >
+														<i class="fa fa-info-circle animated swing" style="font-size : 20px;"/>
+													</p:commandLink> -->
+											</f:facet>
+											<!-- <p:overlayPanel for="idLinkAideArticleBoxParFamille" hideEffect="fade" dynamic="true" showCloseIcon="true" styleClass="overlay-aide-contextuelle">
+													<ui:include src="/aide_contextuelle/dashboard_article_box_par_famille.xhtml" />
+											</p:overlayPanel> -->
+											<div class="box #{dashBoardArticleController.cSbNbDocumentNonTransformeSurPeriode}" >
+				<!-- 								<div class= "box greenback"> -->
+				<!-- 							<h:graphicImage name="dashboard/devis.svg" id="imagedashboard" library="images" height="40px"/> -->
+											<i class="fa fa-cube"></i>
+											<h2>#{dashBoardArticleController.nombreFamillesDoc.count} familles d'articles </h2>
+												
+											
+											<h3>Total HT : <p:outputLabel value="#{dashBoardArticleController.caTotalArticlesDocMoinsAvoir.mtHtCalc}">
+												 <f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" /> 	
+											</p:outputLabel>
+											</h3>
+											<p:outputLabel value="Facturé : "/>
+											<p:outputLabel value="#{dashBoardArticleController.caTotalArticlesDoc.mtHtCalc}">
+												 <f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" /> 	
+											</p:outputLabel><br/>
+											
+											<p:outputLabel value="Avoirs : "/>
+											<p:outputLabel value="#{dashBoardArticleController.caTotalArticlesDocAvoir.mtHtCalc}">
+												 <f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" /> 	
+											</p:outputLabel>
+				<!-- 							<h3>Total HT : #{dashBoardArticleController.totauxCaPeriodeDevis.mtHtCalc} € </h3> -->
+											<p>Du 
+											<p:outputLabel value="#{dashBoardArticleController.dateDebut}">
+												<f:convertDateTime pattern="#{msg.date_pattern}"
+														               timeZone="#{msg.time_zone}" type="localDate"/>		
+											</p:outputLabel>
+											  au 
+											<p:outputLabel value="#{dashBoardArticleController.dateFin}">
+												<f:convertDateTime pattern="#{msg.date_pattern}"
+														               timeZone="#{msg.time_zone}" type="localDate"/>		
+											</p:outputLabel>
+											
+											
+											</p>
+				
+				
+				
+										<p:selectBooleanButton style="width:50%;" id="FamilleArticletous" 
+																value="false" onLabel="Sélection active"
+																widgetVar="wvFamilleArticleTous" 
+																offLabel="Afficher" onIcon="ui-icon-check" offIcon="ui-icon-close">
+																<!-- oncomplete="PF('wvListeArticle').filter()" -->
+												<p:ajax 
+														event="change" 
+														update="@this,
+																	@widgetVar(wvPanelCriteresDashboardArticle),
+																	@widgetVar(wvDashArticlePanelArticle),
+																	@widgetVar(wvDashArticlePanelArticleTous),
+																	@widgetVar(wvDashArticlePanelArticleAvoirs),
+																	@widgetVar(wvListeArticle),
+																	@widgetVar(wvListeArticleDetail),
+																	@widgetVar(wvListeFamilleArticle),
+																	@widgetVar(wvListeArticleParMois),
+																	@widgetVar(wvListeArticleTous),
+																	@widgetVar(wvListeArticleTousDetail),
+																	@widgetVar(wvListeArticleParMoisAvoirs),
+																	@widgetVar(wvListeFamilleArticleAvoirs),
+																	@widgetVar(wvListeArticleAvoirs),
+																	@widgetVar(wvListeArticleAvoirDetail),
+																	@widgetVar(wvCountNbArticleTransforme),
+																	@widgetVar(wvCountNbFamilleArticleTransforme),
+																	@widgetVar(wvListeArticleMoisArticles),
+																	@widgetVar(wvpanelCritArticleVente),
+																	@widgetVar(wvpanelCritFamilleArticleVente)"
+																	 		
+																listener="#{dashBoardArticleController.refreshDashBoard('famille')}"/>	 
+				        					</p:selectBooleanButton>
+											</div> 
+										</p:panel>
+									</div>
+									<!-- <div class="ui-g-12 ui-md-6 ui-lg-3">
+										<p:panel header="Critère de recherche pour les familles d'articles" style="background:#ebebeb;" widgetVar="wvpanelCritFamilleArticleVente" rendered="false">
+											<div class="box #{dashBoardArticleController.cSbNbDocumentNonTransformeSurPeriode}" >
+											</div>
+										</p:panel>
+									</div> -->
+									
+									
+								</div>
+								 <div class="ui-g-12 ui-md-12" >
+								<!--ICI VIEN LE DEBUT DU TABVIEW POUR  LES TABS REEL, FACTURE, AVOIRS-->
+								<p:tabView id="idTabViewListesArticlesDashArticleGlobal" widgetVar="wvTabViewListesArticlesDashArticleGlobal" styleClass="tab-verte-border-color-verte ">
+								         <!--ICI VIEN LE DEBUT DU TAB REEL ou TOUS-->
+								         <p:tab title="Tous">
+								         	 <div class="ui-g-12 ui-md-12">
+											<p:panel header="Liste des articles facturés et facturés en avoir sur la période" widgetVar="wvDashArticlePanelArticleTous" >
+												
+												<p:tabView id="idTabViewListesArticlesDashArticleTous" widgetVar="wvTabViewListesArticlesDashArticleTous" styleClass="tab-verte-border-color-verte ">
+											         <p:tab title="Groupé par article" rendered="#{dashBoardArticleController.afficheTabGroupeArticle}"> 
+											        <!-- <p:tab title="#{dashBoardArticleController.titreTabListe1}"> -->
+											        
+											         <div class="ui-g-12 ui-md-12 background-color-vert">
+											         <!-- value="#{dashBoardArticleController.syntheseEtDetailValueLigneArticleTous()}" -->
+												        <p:dataTable id="taArticle" var="articleTous"
+															value="#{dashBoardArticleController.valueLignesArticleTous}"
+															scrollable="true"
+															scrollHeight="150"
+															liveResize="true"								
+															widgetVar="wvListeArticleTous" resizableColumns="true" 
+															paginator="true"
+															rows="#{msg.modele_datatable_ligne_par_page_debut}"
+															paginatorTemplate="#{msg.modele_datatable_paginator}"
+															rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+															emptyMessage="#{msg.message_datatable_vide}"
+															currentPageReportTemplate="#{msg.modele_datatable_page_courante}">
+															
+															<f:facet name="header">
+																
+																    <span style="float:left;">
+																        <p:commandButton id="idBtnListePrintEcranDasboardArticleTousGroupeArticle"
+														 title="Imprimer la #{dashBoardArticleController.titreListeSyntheseParArticleTous}" 
+										onsuccess="window.open('#{request.contextPath}/output?__report=/reports/article/ListeDashboardArticle.rptdesign&amp;__format=pdf')"
+										actionListener="#{dashBoardArticleController.actImprimerListeArticleTousGroupeArticle}"
+										process="@this" styleClass="ui-priority-primary boutonPrint" style="color : white;" icon="fa fa-print" />
+																    </span>
+																    
+																     <span style="float:left;">
+																        <p:commandButton id="idBtnListePrintEcranDasboardArticleRapportRapportDetailDesVenteEtAvoirParArticle"
+														 title="Imprimer le #{dashBoardArticleController.titreEditionListeDetailParArticleTous}" 
+										onsuccess="window.open('#{request.contextPath}/output?__report=/reports/article/SyntheseTousDetailDesVenteEtAvoirsParArticle.rptdesign&amp;__format=pdf')"
+										actionListener="#{dashBoardArticleController.actImprimerRapportDetailDesVenteEtAvoirParArticle}"
+										process="@this" styleClass="ui-priority-primary boutonPrint" style="color : white;" icon="fa fa-print" />
+																    </span>
+																    
+																	 <span style="float:left;">
+																        <p:commandLink id="idBtnListeExportEcranDasboardArticleRapportRapportDetailDesVenteParArticleUniteFournisseur"
+														 title="Visualiser l'export du #{dashBoardArticleController.titreEditionListeDetailParArticleFactureFournisseur}" 
+										onclick="PF('interfaceExportArticleFournisseur').show();">
+										<p:graphicImage  library="images" name="csv.png"  width="24"/>
+																		</p:commandLink>
+																    </span> 																    
+																    
+																        #{dashBoardArticleController.titreListeSyntheseParArticleTous}
+																    
+																    <span style="float:right;" class="searchbar_list">
+															            <p:outputPanel>
+																                <p:inputText id="globalFilter" onkeyup="PF('wvListeArticleTous').filter()" style="width:150px" placeholder="Rechercher"/>
+																            </p:outputPanel>
+															        </span>
+																
+								        						
+								    						</f:facet>
+								    						
+								    						<!-- <p:ajax event="rowToggle" listener="#{tableBean.onRowToggle}" update=":form:growl" /> -->
+								    						
+								    						<!-- TEST EXPAND -->
+								    						<p:rowExpansion>
+								    						
+								    						
+								    						
+											   </p:rowExpansion>
+											   <!-- <p:column style="width:16px">
+													  <p:rowToggler />
+											   </p:column> -->
+								    						<!-- FIN TEST EXPAND -->
+								    						
+								    						 
+															<p:column width="20%" filterMatchMode="contains"
+																filterBy="#{articleTous.libcFamille}" sortBy="#{articleTous.libcFamille}">
+																	<f:facet name="header">
+																		<h:outputText value="Famille " />
+																	</f:facet>
+																	<h:outputText value="#{articleTous.libcFamille}" />
+																</p:column> 
+								    						 
+															<p:column headerText="Code article" width="15%" rendered="true" filterMatchMode="contains"
+																filterBy="#{articleTous.codeArticle}" sortBy="#{articleTous.codeArticle}"  >
+																<p:commandLink value="#{articleTous.codeArticle}"
+																	action="#{ouvertureDocumentBean.detailArticle(ouvertureDocumentBean.recupCodeArticle(articleTous.codeArticle))}" 
+																	update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+																</p:commandLink>
+																	
+															</p:column>
+																
+								
+															<p:column width="20%" filterMatchMode="contains" 
+																filterBy="#{articleTous.libellecArticle}" sortBy="#{articleTous.libellecArticle}">
+																<f:facet name="header">
+																	<h:outputText value="Libellé article(s)" />
+																</f:facet>
+																<h:outputText value="#{articleTous.libellecArticle}" />
+															</p:column> 
+															
+															<p:column styleClass="center" width="12%"
+																filterMatchMode="contains" filterBy="#{articleTous.u1LDocument}"
+																sortBy="#{articleTous.u1LDocument}">
+																<f:facet name="header">
+																	<h:outputText value="Unité" />
+																</f:facet>
+																<h:outputText value="#{articleTous.u1LDocument}">
+																</h:outputText>
+															</p:column>
+															
+															<p:column width="20%" filterMatchMode="contains" styleClass="center"
+																filterBy="#{articleTous.qteLDocument}" sortBy="#{articleTous.qteLDocument}">
+																<f:facet name="header">
+																	<h:outputText value="Quantité" />
+																</f:facet>
+																<h:outputText value="#{articleTous.qteLDocument}" />
+															</p:column> 
+								
+								
+															<p:column styleClass="right" width="15%"
+																sortBy="#{articleTous.mtHtCalc}" filterMatchMode="contains" filterBy="#{articleTous.mtHtCalc}">
+																<f:facet name="header">
+																	<h:outputText value="CA HT" />
+																</f:facet>
+																<h:outputText value="#{articleTous.mtHtCalc}">
+																		<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+																</h:outputText>
+															</p:column>
+								
+															<p:column styleClass="right" width="15%"
+																sortBy="#{articleTous.mtTtcCalc}" filterMatchMode="contains" filterBy="#{articleTous.mtTtcCalc}">
+																<f:facet name="header">
+																	<h:outputText value="CA TTC" />
+																</f:facet>
+																<h:outputText value="#{articleTous.mtTtcCalc}">
+																		<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+																</h:outputText>
+															</p:column>		
+															
+														</p:dataTable>
+											            </div>
+											        </p:tab>
+											         <p:tab title="Détail par article" rendered="#{dashBoardArticleController.afficheTabGroupeArticle}"> 
+											        <!-- <p:tab title="#{dashBoardArticleController.titreTabListe1}"> -->
+											        
+											         <div class="ui-g-12 ui-md-12 background-color-vert">
+												        <p:dataTable id="taArticleDetail" var="articleTousDetail"
+															value="#{dashBoardArticleController.valueLignesArticleTousDetail}"
+															scrollable="true"
+															scrollHeight="150"
+															liveResize="true"	
+															rowStyleClass="#{articleTousDetail.typeDoc =='Avoir' ? 'rowAvoirs': null }"							
+															widgetVar="wvListeArticleTousDetail" resizableColumns="true" 
+															paginator="true"
+															rows="#{msg.modele_datatable_ligne_par_page_debut}"
+															paginatorTemplate="#{msg.modele_datatable_paginator}"
+															rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+															emptyMessage="#{msg.message_datatable_vide}"
+															currentPageReportTemplate="#{msg.modele_datatable_page_courante}">
+															
+															<f:facet name="header">
+																
+																    <span style="float:left;">
+																        <p:commandButton id="idBtnListePrintEcranDasboardArticleTousDetailGroupeArticle"
+														 title="Imprimer le #{dashBoardArticleController.titreListeDetailParArticleTous}" 
+										onsuccess="window.open('#{request.contextPath}/output?__report=/reports/article/ListeDashboardArticleDetail.rptdesign&amp;__format=pdf')"
+										actionListener="#{dashBoardArticleController.actImprimerListeArticleTousDetailGroupeArticle}"
+										process="@this" styleClass="ui-priority-primary boutonPrint" style="color : white;" icon="fa fa-print" />
+																    </span>
+																    											    
+																        #{dashBoardArticleController.titreListeDetailParArticleTous} 
+																    
+																    <span style="float:right;" class="searchbar_list">
+															            <p:outputPanel>
+																                <p:inputText id="globalFilter" onkeyup="PF('wvListeArticleTousDetail').filter()" style="width:150px" placeholder="Rechercher"/>
+																            </p:outputPanel>
+															        </span>
+																
+								        						
+								    						</f:facet>
+								    						
+								    						<p:column width="10%" headerText="Code document" sortBy="#{articleTousDetail.codeDocument}" filterBy="#{articleTousDetail.codeDocument}" filterMatchMode="contains">
+																<!-- Si document est Facture -->
+																<p:commandLink value="#{articleTousDetail.codeDocument}" rendered="#{articleTousDetail.typeDoc == dashBoardArticleController.typeFacture}"
+																	action="#{ouvertureDocumentBean.detailDocument(ouvertureDocumentBean.recupCodeDocument(articleTousDetail.codeDocument,ouvertureDocumentBean.getTypeDocumentFacture()))}" 
+																	update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+																</p:commandLink> 
+																<!-- Si document est Avoir -->  
+																<p:commandLink value="#{articleTousDetail.codeDocument}" rendered="#{articleTousDetail.typeDoc == dashBoardArticleController.typeAvoir}"
+																	action="#{ouvertureDocumentBean.detailDocument(ouvertureDocumentBean.recupCodeDocument(articleTousDetail.codeDocument,ouvertureDocumentBean.getTypeDocumentAvoir()))}" 
+																	update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+																</p:commandLink>          
+				        			           				 </p:column>
+				        			           				 
+				        			           				 <p:column styleClass="center" width="12%"
+																filterMatchMode="contains" filterBy="#{dashBoardArticleController.customFormatDate(articleTousDetail.dateDocument)}"
+																sortBy="#{articleTousDetail.dateDocument}">
+																<f:facet name="header">
+																	<h:outputText value="Date document" />
+																</f:facet>
+																<h:outputText value="#{articleTousDetail.dateDocument}">
+																	<f:convertDateTime pattern="#{msg.date_pattern}"
+																		timeZone="#{msg.time_zone}" />
+																</h:outputText>
+															</p:column>
+								    						
+															<p:column width="15%" filterMatchMode="contains" 
+																	filterBy="#{articleTousDetail.libcFamille}" sortBy="#{articleTousDetail.libcFamille}">
+																	<f:facet name="header">
+																		<h:outputText value="Famille " />
+																	</f:facet>
+																	<h:outputText value="#{articleTousDetail.libcFamille}" />
+																</p:column> 
+								    						 
+															<p:column headerText="Code article" width="10%" rendered="true" filterMatchMode="contains"
+																filterBy="#{articleTousDetail.codeArticle}" sortBy="#{articleTousDetail.codeArticle}"  >
+																<p:commandLink value="#{articleTousDetail.codeArticle}"
+																	action="#{ouvertureDocumentBean.detailArticle(ouvertureDocumentBean.recupCodeArticle(articleTousDetail.codeArticle))}" 
+																	update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+																</p:commandLink>
+																	
+															</p:column>
+																
+								
+															<p:column width="20%" filterMatchMode="contains" 
+																filterBy="#{articleTousDetail.libellecArticle}" sortBy="#{articleTousDetail.libellecArticle}">
+																<f:facet name="header">
+																	<h:outputText value="Libellé article(s)" />
+																</f:facet>
+																<h:outputText value="#{articleTousDetail.libellecArticle}" />
+															</p:column> 
+															
+															<p:column styleClass="center" width="5%"
+																filterMatchMode="contains" filterBy="#{articleTousDetail.u1LDocument}"
+																sortBy="#{articleTousDetail.u1LDocument}">
+																<f:facet name="header">
+																	<h:outputText value="Unité" />
+																</f:facet>
+																<h:outputText value="#{articleTousDetail.u1LDocument}">
+																</h:outputText>
+															</p:column>
+															
+															<p:column width="10%" filterMatchMode="contains" styleClass="center"
+																filterBy="#{articleTousDetail.qteLDocument}" sortBy="#{articleTousDetail.qteLDocument}">
+																<f:facet name="header">
+																	<h:outputText value="Quantité" />
+																</f:facet>
+																<h:outputText value="#{articleTousDetail.qteLDocument}" />
+															</p:column> 
+								
+								
+															<p:column styleClass="right" width="15%"
+																sortBy="#{articleTousDetail.mtHtCalc}" filterMatchMode="contains" filterBy="#{articleTousDetail.mtHtCalc}">
+																<f:facet name="header">
+																	<h:outputText value="CA HT" />
+																</f:facet>
+																<h:outputText value="#{articleTousDetail.typeDoc == dashBoardArticleController.typeAvoir ?articleTousDetail.mtHtCalc*-1 : articleTousDetail.mtHtCalc}">
+																		<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+																</h:outputText>
+															</p:column>
+								
+															<p:column styleClass="right" width="15%"
+																sortBy="#{articleTousDetail.mtTtcCalc}" filterMatchMode="contains" filterBy="#{articleTousDetail.mtTtcCalc}">
+																<f:facet name="header">
+																	<h:outputText value="CA TTC" />
+																</f:facet>
+																<h:outputText value="#{articleTousDetail.typeDoc == dashBoardArticleController.typeAvoir ? articleTousDetail.mtTtcCalc*-1 : articleTousDetail.mtTtcCalc}">
+																		<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+																</h:outputText>
+															</p:column>		
+															
+														</p:dataTable>
+											            </div>
+											        </p:tab>
+											        <p:tab title="Groupé par famille" rendered="#{dashBoardArticleController.afficheTabGroupeFamille}"> 
+											        <!-- <p:tab title="#{dashBoardArticleController.titreTabListe1}"> -->
+											        
+											        <div class="ui-g-12 ui-md-12 background-color-vert">
+												        <p:dataTable id="taFamilleArticle" var="articleFamilleTousDetail"
+															value="#{dashBoardArticleController.valueLignesFamilleArticleTous}"
+															scrollable="true"
+															scrollHeight="150"
+															liveResize="true"								
+															widgetVar="wvListeFamilleArticle"
+															resizableColumns="true" 
+															paginator="true"
+															rows="#{msg.modele_datatable_ligne_par_page_debut}"
+															paginatorTemplate="#{msg.modele_datatable_paginator}"
+															rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+															emptyMessage="#{msg.message_datatable_vide}"
+															currentPageReportTemplate="#{msg.modele_datatable_page_courante}">
+															
+								<!-- 							selectionMode="single" rowKey="#{articleFamilleTousDetail.codeArticle}" reflow="true" -->
+															
+															
+															<f:facet name="header">
+																
+																    <span style="float:left;">
+																        <p:commandButton id="idBtnListePrintEcranDasboardTousFamilleArticleAvoir"
+																		title="Imprimer la #{dashBoardArticleController.titreListeSyntheseParFamilleTous}" 
+																		onsuccess="window.open('#{request.contextPath}/output?__report=/reports/article/ListeDashboardFamilleArticle.rptdesign&amp;__format=pdf')"
+																		actionListener="#{dashBoardArticleController.actImprimerListeTousFamilleArticleAvoir}"
+																		process="@this" styleClass="ui-priority-primary boutonPrint" style="color : white;" icon="fa fa-print" />
+																    </span> 
+																    
+																    <span style="float:left;">
+																        <p:commandButton id="idBtnListePrintEcranDasboardTousSyntheseEtDetailFamilles"
+																		title="Imprimer le #{dashBoardArticleController.titreEditionListeDetailParFamilleTous}" 
+																		onsuccess="window.open('#{request.contextPath}/output?__report=/reports/article/SyntheseEtDetailFamilleTous.rptdesign&amp;__format=pdf')"
+																		actionListener="#{dashBoardArticleController.actImprimerTousSyntheseEtDetailFamilles}"
+																		process="@this" styleClass="ui-priority-primary boutonPrint" style="color : white;" icon="fa fa-print" />
+																    </span> 
+																    
+																    	#{dashBoardArticleController.titreListeSyntheseParFamilleTous}
+																        
+																    
+																     <span style="float:right;" class="searchbar_list">
+															            <p:outputPanel>
+																                <p:inputText id="globalFilter" onkeyup="PF('wvListeFamilleArticle').filter()" style="width:150px" placeholder="Rechercher"/>
+																            </p:outputPanel>
+															        </span>
+																
+								        						
+								    						</f:facet>
+								    						<!--  ROW EXPAND pour detail famille tous -->
+								    						<p:rowExpansion>
+								    						
+								    						
+								    						</p:rowExpansion>
+								    						<!-- <p:column style="width:16px">
+																  <p:rowToggler />
+														   </p:column> -->
+								    						<!-- FIN ROW EXPAND pour detail famille tous -->
+								    						
+								    						 
+															        <p:column headerText="Code Famille" sortBy="#{articleFamilleTousDetail.codeFamille}" filterBy="#{articleFamilleTousDetail.codeFamille}" filterMatchMode="contains">
+															            <h:outputText value="#{articleFamilleTousDetail.codeFamille}">
+																		</h:outputText>
+															        </p:column>		
+															        <p:column headerText="libelle Famille" sortBy="#{articleFamilleTousDetail.libcFamille}" filterBy="#{articleFamilleTousDetail.libcFamille}" filterMatchMode="contains">
+															            <h:outputText value="#{articleFamilleTousDetail.libcFamille}">
+																		</h:outputText>
+															        </p:column>		
+															        <p:column styleClass="center" width="12%"
+																		filterMatchMode="contains" filterBy="#{articleFamilleTousDetail.u1LDocument}"
+																		sortBy="#{articleFamilleTousDetail.u1LDocument}">
+																		<f:facet name="header">
+																			<h:outputText value="Unité" />
+																		</f:facet>
+																		<h:outputText value="#{articleFamilleTousDetail.u1LDocument}">
+																		</h:outputText>
+																	</p:column>
+																	
+																	<p:column width="20%" filterMatchMode="contains" styleClass="center" 
+																		filterBy="#{articleFamilleTousDetail.qteLDocument}" sortBy="#{articleFamilleTousDetail.qteLDocument}">
+																		<f:facet name="header">
+																			<h:outputText value="Quantité" />
+																		</f:facet>
+																		<h:outputText value="#{articleFamilleTousDetail.qteLDocument}" />
+																	</p:column> 
+															        
+															        <p:column headerText="Montant HT" sortBy="#{articleFamilleTousDetail.mtHtLDocument}" filterBy="#{articleFamilleTousDetail.mtHtLDocument}" filterMatchMode="contains">
+															            <h:outputText value="#{articleFamilleTousDetail.mtHtCalc}">
+															            <f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+																		</h:outputText>
+															        </p:column>		
+															
+														</p:dataTable>
+											            </div>
+											        </p:tab>
+											        
+											        
+											        
+											        
+											        
+											        
+											        
+											        
+											       </p:tabView>
+											      </p:panel>
+											     </div>
+								         </p:tab>
+								         <!-- FIN TAB REEL ou TOUS-->
+								         
+								         <!--ICI VIEN LE DEBUT DU TAB FACTURE-->
+								         <p:tab title="Facturés">
+								         
+										  <div class="ui-g-12 ui-md-12">
+											<p:panel header="Liste des articles facturés sur la période" widgetVar="wvDashArticlePanelArticle" >
+												
+												<p:tabView id="idTabViewListesArticlesDashArticle" widgetVar="wvTabViewListesArticlesDashArticle" styleClass="tab-verte-border-color-verte ">
+											         <p:tab title="Groupé par article" rendered="#{dashBoardArticleController.afficheTabGroupeArticle}"> 
+											        <!-- <p:tab title="#{dashBoardArticleController.titreTabListe1}"> -->
+											        <!-- value="#{dashBoardArticleController.valueLignesArticle}" -->
+											        <!-- value="#{dashBoardArticleController.syntheseEtDetailValueLigneArticle()}" -->
+											         <div class="ui-g-12 ui-md-12 background-color-vert">
+												        <p:dataTable id="taArticle" var="articleFacture"
+															value="#{dashBoardArticleController.valueLignesArticle}"
+															scrollable="true"
+															scrollHeight="150"
+															liveResize="true"								
+															widgetVar="wvListeArticle" resizableColumns="true" 
+															paginator="true"
+															rows="#{msg.modele_datatable_ligne_par_page_debut}"
+															paginatorTemplate="#{msg.modele_datatable_paginator}"
+															rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+															emptyMessage="#{msg.message_datatable_vide}"
+															currentPageReportTemplate="#{msg.modele_datatable_page_courante}">
+															
+															<f:facet name="header">
+																
+																     <span style="float:left;">
+																        <p:commandButton id="idBtnListePrintEcranDasboardArticleFactureGroupeArticle"
+														 title="Imprimer la #{dashBoardArticleController.titreListeSyntheseParArticleFacture}" 
+										onsuccess="window.open('#{request.contextPath}/output?__report=/reports/article/ListeDashboardArticle.rptdesign&amp;__format=pdf')"
+										actionListener="#{dashBoardArticleController.actImprimerListeArticleFactureGroupeArticle}"
+										process="@this" styleClass="ui-priority-primary boutonPrint" style="color : white;" icon="fa fa-print" />
+																    </span>
+																    
+																    <span style="float:left;">
+																        <p:commandButton id="idBtnListePrintEcranDasboardArticleRapportRapportDetailDesVenteParArticle"
+														 title="Imprimer le #{dashBoardArticleController.titreEditionListeDetailParArticleFacture}" 
+										onsuccess="window.open('#{request.contextPath}/output?__report=/reports/article/RapportDetailDesVentesParArticle.rptdesign&amp;__format=pdf')"
+										actionListener="#{dashBoardArticleController.actImprimerRapportFactureDetailDesVenteParArticle}"
+										process="@this" styleClass="ui-priority-primary boutonPrint" style="color : white;" icon="fa fa-print" />
+																    </span> 
+																    
+<!-- 																   	 <span style="float:left;">															       																    -->
+<!-- 																        <p:commandButton id="idBtnListePrintEcranDasboardArticleRapportRapportDetailDesVenteParArticleFournisseur" -->
+<!-- 														 title="Imprimer le #{dashBoardArticleController.titreEditionListeDetailParArticleFactureFournisseur}"  -->
+<!-- 										onsuccess="window.open('#{request.contextPath}/output?__report=/reports/article/RapportDetailDesVentesParArticleUniteFournisseur.rptdesign&amp;__format=pdf')" -->
+<!-- 										actionListener="#{dashBoardArticleController.actImprimerRapportFactureDetailDesVenteParArticleFournisseur}" -->
+<!-- 										process="@this" styleClass="ui-priority-primary boutonPrint" style="color : white;" icon="fa fa-print" /> -->
+<!-- 																	</span> -->
+
+<!-- 																	 <span style="float:left;"> -->
+<!-- 																        <p:commandLink id="idBtnListeExportEcranDasboardArticleRapportRapportDetailDesVenteParArticleUniteFournisseur" -->
+<!-- 														 title="Visualisé  l'export du #{dashBoardArticleController.titreEditionListeDetailParArticleFactureFournisseur}"  -->
+<!-- 										onclick="PF('interfaceExportArticleFournisseur').show();"> -->
+<!-- 										<p:graphicImage  library="images" name="csv.png"  width="24"/> -->
+<!-- 																		</p:commandLink> -->
+<!-- 																    </span>  -->
+																
+			
+																    
+																        #{dashBoardArticleController.titreListeSyntheseParArticleFacture}
+																    	
+																    <span style="float:right;" class="searchbar_list">
+															            <p:outputPanel>
+																                <p:inputText id="globalFilter" onkeyup="PF('wvListeArticle').filter()" style="width:150px" placeholder="Rechercher"/>
+																            </p:outputPanel>
+															        </span>
+																
+								        						
+								    						</f:facet>
+																
+								    						
+								    						<!-- TEST EXPAND DETAIL FACTURE -->
+								    						<!-- PF(oo).clearFilters() -->
+											  				 <!-- <p:ajax event="rowToggle" oncomplete="var oo = wvListeArticleFactureDetail#{articleFacture.codeArticle};"  /> -->
+								    						<p:rowExpansion>
+								    						
+								    						
+								    						
+											   </p:rowExpansion>
+											   <!-- <p:column style="width:16px">
+													  <p:rowToggler />
+											   </p:column> -->
+
+								    						<!-- FIN TEST EXPAND DETAIL FACTURE -->
+								    						
+								    						 
+															<p:column width="20%" filterMatchMode="contains" 
+																	filterBy="#{articleFacture.libcFamille}" sortBy="#{articleFacture.libcFamille}">
+																	<f:facet name="header">
+																		<h:outputText value="Famille " />
+																	</f:facet>
+																	<h:outputText value="#{articleFacture.libcFamille}" />
+																	</p:column> 
+								    						 
+															<p:column headerText="Code article" width="15%" rendered="true" filterMatchMode="contains"
+																filterBy="#{articleFacture.codeArticle}" sortBy="#{articleFacture.codeArticle}"  >
+																<p:commandLink value="#{articleFacture.codeArticle}"
+																	action="#{ouvertureDocumentBean.detailArticle(ouvertureDocumentBean.recupCodeArticle(articleFacture.codeArticle))}" 
+																	update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+																</p:commandLink>
+																	
+															</p:column>
+																
+								
+															<p:column width="20%" filterMatchMode="contains" 
+																filterBy="#{articleFacture.libellecArticle}" sortBy="#{articleFacture.libellecArticle}">
+																<f:facet name="header">
+																	<h:outputText value="Libellé article(s)" />
+																</f:facet>
+																<h:outputText value="#{articleFacture.libellecArticle}" />
+															</p:column> 
+															
+															<p:column styleClass="center" width="12%"
+																filterMatchMode="contains" filterBy="#{articleFacture.u1LDocument}"
+																sortBy="#{articleFacture.u1LDocument}">
+																<f:facet name="header">
+																	<h:outputText value="Unité" />
+																</f:facet>
+																<h:outputText value="#{articleFacture.u1LDocument}">
+																</h:outputText>
+															</p:column>
+															
+															<p:column width="20%" filterMatchMode="contains" styleClass="center"
+																filterBy="#{articleFacture.qteLDocument}" sortBy="#{articleFacture.qteLDocument}">
+																<f:facet name="header">
+																	<h:outputText value="Quantité" />
+																</f:facet>
+																<h:outputText value="#{articleFacture.qteLDocument}" />
+															</p:column> 
+								
+								
+															<p:column styleClass="right" filterMatchMode="contains" filterBy="#{articleFacture.mtHtCalc}" width="15%"
+																sortBy="#{articleFacture.mtHtCalc}">
+																<f:facet name="header">
+																	<h:outputText value="CA HT" />
+																</f:facet>
+																<h:outputText value="#{articleFacture.mtHtCalc}">
+																		<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+																</h:outputText>
+															</p:column>
+								
+															<p:column styleClass="right" filterMatchMode="contains" filterBy="#{articleFacture.mtTtcCalc}" width="15%"
+																sortBy="#{articleFacture.mtTtcCalc}">
+																<f:facet name="header">
+																	<h:outputText value="CA TTC" />
+																</f:facet>
+																<h:outputText value="#{articleFacture.mtTtcCalc}">
+																		<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+																</h:outputText>
+															</p:column>		
+															
+														</p:dataTable>
+											            </div>
+											        </p:tab>
+											        <!-- TAB DETAIL -->
+											        <p:tab title="Détail par article" rendered="#{dashBoardArticleController.afficheTabGroupeArticle}"> 
+											        <!-- <p:tab title="#{dashBoardArticleController.titreTabListe1}"> -->
+											        
+											         <div class="ui-g-12 ui-md-12 background-color-vert">
+												        <p:dataTable id="taArticleFactureDetail" var="articleFactureDetail"
+															value="#{dashBoardArticleController.valueLignesArticleDetail}"
+															scrollable="true"
+															scrollHeight="150"
+															liveResize="true"	
+															widgetVar="wvListeArticleDetail" resizableColumns="true" 
+															paginator="true"
+															rows="#{msg.modele_datatable_ligne_par_page_debut}"
+															paginatorTemplate="#{msg.modele_datatable_paginator}"
+															rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+															emptyMessage="#{msg.message_datatable_vide}"
+															currentPageReportTemplate="#{msg.modele_datatable_page_courante}">
+															
+															<f:facet name="header">
+																
+																    <span style="float:left;">
+																        <p:commandButton id="idBtnListePrintEcranDasboardArticleTousFactureDetail"
+														 title="Imprimer le #{dashBoardArticleController.titreListeDetailParArticleFacture}" 
+										onsuccess="window.open('#{request.contextPath}/output?__report=/reports/article/ListeDashboardArticleDetail.rptdesign&amp;__format=pdf')"
+										actionListener="#{dashBoardArticleController.actImprimerListeArticleTousFactureDetail}"
+										process="@this" styleClass="ui-priority-primary boutonPrint" style="color : white;" icon="fa fa-print" />
+																    </span>
+																    
+																        #{dashBoardArticleController.titreListeDetailParArticleFacture}
+																    
+																   <span style="float:right;" class="searchbar_list">
+															            <p:outputPanel>
+																                <p:inputText id="globalFilter" onkeyup="PF('wvListeArticleDetail').filter()" style="width:150px" placeholder="Rechercher"/>
+																            </p:outputPanel>
+															        </span>
+																
+								        						
+								    						</f:facet>
+								    						
+								    						<p:column width="10%" headerText="Code document" sortBy="#{articleFactureDetail.codeDocument}" filterBy="#{articleFactureDetail.codeDocument}" filterMatchMode="contains">
+																<!-- Si document est Facture -->
+																<p:commandLink value="#{articleFactureDetail.codeDocument}"
+																	action="#{ouvertureDocumentBean.detailDocument(ouvertureDocumentBean.recupCodeDocument(articleFactureDetail.codeDocument,ouvertureDocumentBean.getTypeDocumentFacture()))}" 
+																	update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+																</p:commandLink>         
+				        			           				 </p:column>
+				        			           				 
+				        			           				 <p:column styleClass="center" width="12%"
+																filterMatchMode="contains" filterBy="#{dashBoardArticleController.customFormatDate(articleFactureDetail.dateDocument)}"
+																sortBy="#{articleFactureDetail.dateDocument}">
+																<f:facet name="header">
+																	<h:outputText value="Date document" />
+																</f:facet>
+																<h:outputText value="#{articleFactureDetail.dateDocument}">
+																	<f:convertDateTime pattern="#{msg.date_pattern}"
+																		timeZone="#{msg.time_zone}" />
+																</h:outputText>
+															</p:column>
+								    						
+															<p:column width="15%" filterMatchMode="contains" 
+																	filterBy="#{articleFactureDetail.libcFamille}" sortBy="#{articleFactureDetail.libcFamille}">
+																	<f:facet name="header">
+																		<h:outputText value="Famille " />
+																	</f:facet>
+																	<h:outputText value="#{articleFactureDetail.libcFamille}" />
+																</p:column> 
+								    						 
+															<p:column headerText="Code article" width="10%" rendered="true" filterMatchMode="contains"
+																filterBy="#{articleFactureDetail.codeArticle}" sortBy="#{articleFactureDetail.codeArticle}"  >
+																<p:commandLink value="#{articleFactureDetail.codeArticle}"
+																	action="#{ouvertureDocumentBean.detailArticle(ouvertureDocumentBean.recupCodeArticle(articleFactureDetail.codeArticle))}" 
+																	update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+																</p:commandLink>
+																	
+															</p:column>
+																
+								
+															<p:column width="20%" filterMatchMode="contains" 
+																filterBy="#{articleFactureDetail.libellecArticle}" sortBy="#{articleFactureDetail.libellecArticle}">
+																<f:facet name="header">
+																	<h:outputText value="Libellé article(s)" />
+																</f:facet>
+																<h:outputText value="#{articleFactureDetail.libellecArticle}" />
+															</p:column> 
+															
+															<p:column styleClass="center" width="5%"
+																filterMatchMode="contains" filterBy="#{articleFactureDetail.u1LDocument}"
+																sortBy="#{articleFactureDetail.u1LDocument}">
+																<f:facet name="header">
+																	<h:outputText value="Unité" />
+																</f:facet>
+																<h:outputText value="#{articleFactureDetail.u1LDocument}">
+																</h:outputText>
+															</p:column>
+															
+															<p:column width="10%" filterMatchMode="contains" styleClass="center"
+																filterBy="#{articleFactureDetail.qteLDocument}" sortBy="#{articleFactureDetail.qteLDocument}">
+																<f:facet name="header">
+																	<h:outputText value="Quantité" />
+																</f:facet>
+																<h:outputText value="#{articleFactureDetail.qteLDocument}" />
+															</p:column> 
+								
+								
+															<p:column styleClass="right" width="15%"
+																sortBy="#{articleFactureDetail.mtHtCalc}" filterMatchMode="contains" filterBy="#{articleFactureDetail.mtHtCalc}">
+																<f:facet name="header">
+																	<h:outputText value="CA HT" />
+																</f:facet>
+																<h:outputText value="#{articleFactureDetail.typeDoc == dashBoardArticleController.typeAvoir ?articleFactureDetail.mtHtCalc*-1 : articleFactureDetail.mtHtCalc}">
+																		<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+																</h:outputText>
+															</p:column>
+								
+															<p:column styleClass="right" width="15%"
+																sortBy="#{articleFactureDetail.mtTtcCalc}" filterMatchMode="contains" filterBy="#{articleFactureDetail.mtTtcCalc}">
+																<f:facet name="header">
+																	<h:outputText value="CA TTC" />
+																</f:facet>
+																<h:outputText value="#{articleFactureDetail.typeDoc == dashBoardArticleController.typeAvoir ? articleFactureDetail.mtTtcCalc*-1 : articleFactureDetail.mtTtcCalc}">
+																		<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+																</h:outputText>
+															</p:column>		
+															
+														</p:dataTable>
+											            </div>
+											        </p:tab>
+											        <!-- FIN TAB DETAIL -->
+											        
+											        
+											        <p:tab title="Groupé par mois" rendered="#{dashBoardArticleController.afficheTabGroupeArticleMois}">
+											        <div class="ui-g-12 ui-md-12 background-color-vert">
+											        	<p:dataTable id="taArticleParMois" var="articleFactureMois"
+															value="#{dashBoardArticleController.valueLignesArticleMois}"
+															scrollable="true"
+															scrollHeight="150"
+															liveResize="true"								
+															
+															widgetVar="wvListeArticleParMois" resizableColumns="true" 
+															paginator="true"
+															rows="#{msg.modele_datatable_ligne_par_page_debut}"
+															paginatorTemplate="#{msg.modele_datatable_paginator}"
+															rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+															emptyMessage="#{msg.message_datatable_vide}"
+															currentPageReportTemplate="#{msg.modele_datatable_page_courante}">
+															
+								<!-- 							selectionMode="single" rowKey="#{articleFactureMois.codeArticle}" reflow="true" -->
+															
+															
+															<f:facet name="header">
+																<span style="float:left;">
+																	        <p:commandButton id="idBtnListePrintEcranDasboardArticleFactureGroupeMois"
+														 title="Imprimer la #{dashBoardArticleController.titreListeSyntheseParArticleMoisFacture}" 
+										onsuccess="window.open('#{request.contextPath}/output?__report=/reports/article/ListeDashboardArticleMois.rptdesign&amp;__format=pdf')"
+										actionListener="#{dashBoardArticleController.actImprimerListeArticleFactureGroupeMois}"
+										process="@this" styleClass="ui-priority-primary boutonPrint" style="color : white;" icon="fa fa-print" />
+																</span> 
+																    
+								        						#{dashBoardArticleController.titreListeSyntheseParArticleMoisFacture}
+								        						
+								        						<span style="float:right;" class="searchbar_list">
+															            <p:outputPanel>
+																                <p:inputText id="globalFilter" onkeyup="PF('wvListeArticleParMois').filter()" style="width:150px" placeholder="Rechercher"/>
+																            </p:outputPanel>
+															        </span>
+								    						</f:facet>
+								    						
+								    						 <p:column width="20%" filterMatchMode="contains" 
+																	filterBy="#{articleFactureMois.libcFamille}" sortBy="#{articleFactureMois.libcFamille}">
+																	<f:facet name="header">
+																		<h:outputText value="Famille " />
+																	</f:facet>
+																	<h:outputText value="#{articleFactureMois.libcFamille}" />
+																</p:column> 
+								    						 
+															<p:column headerText="Code article" width="15%" rendered="true" filterMatchMode="contains"
+																filterBy="#{articleFactureMois.codeArticle}" sortBy="#{articleFactureMois.codeArticle}"  >
+																<p:commandLink value="#{articleFactureMois.codeArticle}"
+																	action="#{ouvertureDocumentBean.detailArticle(ouvertureDocumentBean.recupCodeArticle(articleFactureMois.codeArticle))}" 
+																	update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+																</p:commandLink>
+																	
+															</p:column>
+																
+								
+															<p:column width="20%" filterMatchMode="contains" 
+																filterBy="#{articleFactureMois.libellecArticle}" sortBy="#{articleFactureMois.libellecArticle}">
+																<f:facet name="header">
+																	<h:outputText value="Libellé article(s)" />
+																</f:facet>
+																<h:outputText value="#{articleFactureMois.libellecArticle}" />
+															</p:column> 
+															
+															<p:column styleClass="center" width="12%"
+																filterMatchMode="contains" filterBy="#{articleFactureMois.u1LDocument}"
+																sortBy="#{articleFactureMois.u1LDocument}">
+																<f:facet name="header">
+																	<h:outputText value="Unité" />
+																</f:facet>
+																<h:outputText value="#{articleFactureMois.u1LDocument}">
+																</h:outputText>
+															</p:column>
+															
+															<p:column width="20%" filterMatchMode="contains" styleClass="center" 
+																filterBy="#{articleFactureMois.qteLDocument}" sortBy="#{articleFactureMois.qteLDocument}">
+																<f:facet name="header">
+																	<h:outputText value="Quantité" />
+																</f:facet>
+																<h:outputText value="#{articleFactureMois.qteLDocument}" />
+															</p:column> 
+								
+								
+															<p:column styleClass="right" width="15%"
+																sortBy="#{articleFactureMois.mtHtCalc}" filterMatchMode="contains" filterBy="#{articleFactureMois.mtHtCalc}">
+																<f:facet name="header">
+																	<h:outputText value="CA HT" />
+																</f:facet>
+																<h:outputText value="#{articleFactureMois.mtHtCalc}">
+																		<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+																</h:outputText>
+															</p:column>
+								
+															<p:column styleClass="right" width="15%"
+																sortBy="#{articleFactureMois.mtTtcCalc}" filterMatchMode="contains" filterBy="#{articleFactureMois.mtTtcCalc}">
+																<f:facet name="header">
+																	<h:outputText value="CA TTC" />
+																</f:facet>
+																<h:outputText value="#{articleFactureMois.mtTtcCalc}">
+																		<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+																</h:outputText>
+															</p:column>	
+															
+															<p:column width="20%" filterMatchMode="contains" 
+																filterBy="#{articleFactureMois.moisInt}" sortBy="#{articleFactureMois.moisInt}">
+																<f:facet name="header">
+																	<h:outputText value="N° Mois" />
+																</f:facet>
+																<h:outputText value="#{articleFactureMois.moisInt}" />
+															</p:column> 
+															
+															<p:column width="20%" filterMatchMode="contains" 
+																filterBy="#{dashBoardArticleController.actRechercheMoisString( articleFactureMois.mois, articleFactureMois.annee)}" sortBy="#{dashBoardArticleController.actRechercheMoisString( articleFactureMois.mois, articleFactureMois.annee)}">
+																<f:facet name="header">
+																	<h:outputText value="Mois" />
+																</f:facet>
+																<h:outputText value="#{dashBoardArticleController.actRechercheMoisString( articleFactureMois.mois, articleFactureMois.annee)}" />
+															</p:column> 
+															
+															<p:column width="20%" filterMatchMode="contains" 
+																filterBy="#{articleFactureMois.anneeInt}" sortBy="#{articleFactureMois.anneeInt}">
+																<f:facet name="header">
+																	<h:outputText value="Année" />
+																</f:facet>
+																<h:outputText value="#{articleFactureMois.anneeInt}" />
+															</p:column> 				
+								
+															
+														</p:dataTable>
+											            </div>
+											        </p:tab>
+											        
+											        <p:tab title="Groupé par famille" rendered="#{dashBoardArticleController.afficheTabGroupeFamille}"> 
+											        <!-- <p:tab title="#{dashBoardArticleController.titreTabListe1}"> -->
+											        <!-- value="#{dashBoardArticleController.syntheseEtDetailValueLigneFamilleFacture()}" -->
+											         <div class="ui-g-12 ui-md-12 background-color-vert">
+												        <p:dataTable id="taFamilleArticle" var="articleFamilleFacture"
+															value="#{dashBoardArticleController.valueLignesFamilleArticle}"
+															scrollable="true"
+															scrollHeight="150"
+															liveResize="true"								
+															widgetVar="wvListeFamilleArticle"
+															resizableColumns="true" 
+															paginator="true"
+															rows="#{msg.modele_datatable_ligne_par_page_debut}"
+															paginatorTemplate="#{msg.modele_datatable_paginator}"
+															rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+															emptyMessage="#{msg.message_datatable_vide}"
+															currentPageReportTemplate="#{msg.modele_datatable_page_courante}">
+															
+								<!-- 							selectionMode="single" rowKey="#{articleFamilleFacture.codeArticle}" reflow="true" -->
+															
+															
+															<f:facet name="header">
+																
+																    <span style="float:left;">
+																        <p:commandButton id="idBtnListePrintEcranDasboardFactureFamilleArticleGroupe"
+																		title="Imprimer la #{dashBoardArticleController.titreListeSyntheseParFamilleFacture}" 
+																		onsuccess="window.open('#{request.contextPath}/output?__report=/reports/article/ListeDashboardFamilleArticleGroupe.rptdesign&amp;__format=pdf')"
+																		actionListener="#{dashBoardArticleController.actImprimerListeFactureFamilleArticleGroupe}"
+																		process="@this" styleClass="ui-priority-primary boutonPrint" style="color : white;" icon="fa fa-print" />
+																    </span>
+																    
+																    <span style="float:left;">
+																        <p:commandButton id="idBtnListePrintEcranDasboardFactureSyntheseEtDetailFamilles"
+																		title="Imprimer le #{dashBoardArticleController.titreEditionListeDetailParFamilleFacture}}" 
+																		onsuccess="window.open('#{request.contextPath}/output?__report=/reports/article/SyntheseEtDetailFamilleFacture.rptdesign&amp;__format=pdf')"
+																		actionListener="#{dashBoardArticleController.actImprimerFactureSyntheseEtDetailFamilles}"
+																		process="@this" styleClass="ui-priority-primary boutonPrint" style="color : white;" icon="fa fa-print" />
+																    </span> 
+																    
+																    	#{dashBoardArticleController.titreListeSyntheseParFamilleFacture}
+																        
+																    
+																    <span style="float:right;" class="searchbar_list">
+															            <p:outputPanel>
+																                <p:inputText id="globalFilter" onkeyup="PF('wvListeFamilleArticle').filter()" style="width:150px" placeholder="Rechercher"/>
+																            </p:outputPanel>
+															        </span>
+																
+								        						
+								    						</f:facet>
+								    						
+								    						 
+															 <!-- <p:column style="width:16px">
+															            <p:rowToggler />
+															        </p:column> -->
+															        <p:column headerText="Code Famille" sortBy="#{articleFamilleFacture.codeFamille}" filterBy="#{articleFamilleFacture.codeFamille}" filterMatchMode="contains" style="width:10%">
+															            <h:outputText value="#{articleFamilleFacture.codeFamille}">
+																		</h:outputText>
+															        </p:column>		
+															        <p:column headerText="libelle Famille" sortBy="#{articleFamilleFacture.libcFamille}" filterBy="#{articleFamilleFacture.libcFamille}" filterMatchMode="contains">
+															            <h:outputText value="#{articleFamilleFacture.libcFamille}">
+																		</h:outputText>
+															        </p:column>		
+															        <p:column styleClass="center" width="12%"
+																		filterMatchMode="contains" filterBy="#{articleFamilleFacture.u1LDocument}"
+																		sortBy="#{articleFamilleFacture.u1LDocument}">
+																		<f:facet name="header">
+																			<h:outputText value="Unité" />
+																		</f:facet>
+																		<h:outputText value="#{articleFamilleFacture.u1LDocument}">
+																		</h:outputText>
+																	</p:column>
+																	
+																	<p:column width="20%" filterMatchMode="contains" styleClass="center" 
+																		filterBy="#{articleFamilleFacture.qteLDocument}" sortBy="#{articleFamilleFacture.qteLDocument}">
+																		<f:facet name="header">
+																			<h:outputText value="Quantité" />
+																		</f:facet>
+																		<h:outputText value="#{articleFamilleFacture.qteLDocument}" />
+																	</p:column> 
+															        
+															        <p:column headerText="Montant HT" sortBy="#{articleFamilleFacture.mtHtLDocument}" filterBy="#{articleFamilleFacture.mtHtLDocument}" filterMatchMode="contains">
+															            <h:outputText value="#{articleFamilleFacture.mtHtLDocument}">
+															            <f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+																		</h:outputText>
+															        </p:column>		
+															
+														</p:dataTable>
+											            </div>
+											        </p:tab>
+											        
+											        <!-- TEST   ici vien le detail par famille (inutile) TEST -->
+											        
+											        <!-- <p:tab title="Test synthèse et détail" rendered="#{dashBoardArticleController.afficheTabGroupeFamille}"> 
+											        <p:tab title="#{dashBoardArticleController.titreTabListe1}">
+											        
+											        <div class="ui-g-12 ui-md-12 background-color-vert">
+												        <p:dataTable id="taFamilleArticleTest" var="articleFamilleFacture"
+															value="#{dashBoardArticleController.syntheseEtDetailValueLigneFamilleAvoir()}"
+															scrollable="true"
+															scrollHeight="150"
+															liveResize="true"								
+															widgetVar="wvListeFamilleArticleTestxx"
+															resizableColumns="true" 
+															paginator="true"
+															rows="#{msg.modele_datatable_ligne_par_page_debut}"
+															paginatorTemplate="#{msg.modele_datatable_paginator}"
+															rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+															emptyMessage="#{msg.message_datatable_vide}"
+															currentPageReportTemplate="#{msg.modele_datatable_page_courante}">
+															
+															selectionMode="single" rowKey="#{articleFamilleTousDetail.codeArticle}" reflow="true"
+															
+															
+															<f:facet name="header">
+																
+																    <span style="float:left;">
+																        <p:commandButton id="idBtnListePrintEcranDasboardTousFamilleArticleAvoir"
+																		title="Imprimer la liste" 
+																		onsuccess="window.open('#{request.contextPath}/output?__report=/reports/article/ListeDashboardFamilleArticle.rptdesign&amp;__format=pdf')"
+																		actionListener="#{dashBoardArticleController.actImprimerListeTousFamilleArticleAvoir}"
+																		process="@this" styleClass="ui-priority-primary boutonPrint" style="color : white;" icon="fa fa-print" />
+																    </span> 
+																    	TEST synthése et detail
+																        
+																    
+																    <span style="float:right;">
+																        
+																    </span>
+																
+								        						
+								    						</f:facet>
+								    						 ROW EXPAND pour detail famille tous
+								    						<p:rowExpansion>
+								    							<p:dataTable id="tttt" var="detail"
+															value="#{articleFamilleFacture.listeDetail}"
+															scrollable="true"
+															scrollHeight="150"
+															liveResize="true"								
+															widgetVar="wvttttt"
+															resizableColumns="true" 
+															paginator="true"
+															rows="#{msg.modele_datatable_ligne_par_page_debut}"
+															paginatorTemplate="#{msg.modele_datatable_paginator}"
+															rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+															emptyMessage="#{msg.message_datatable_vide}"
+															currentPageReportTemplate="#{msg.modele_datatable_page_courante}">
+															
+															selectionMode="single" rowKey="#{articleFamilleTousDetail.codeArticle}" reflow="true"
+															
+															
+														
+																     <p:column headerText="Code Famille" sortBy="#{detail.codeFamille}" filterBy="#{detail.codeFamille}" filterMatchMode="contains" style="width:10%">
+															            <h:outputText value="#{detail.codeFamille}">
+																		</h:outputText>
+															        </p:column>		
+															        <p:column headerText="libelle Famille" sortBy="#{detail.libcFamille}" filterBy="#{detail.libcFamille}" filterMatchMode="contains">
+															            <h:outputText value="#{detail.libcFamille}">
+																		</h:outputText>
+															        </p:column>		
+															        <p:column styleClass="center" width="12%"
+																		filterMatchMode="contains" filterBy="#{detail.u1LDocument}"
+																		sortBy="#{detail.u1LDocument}">
+																		<f:facet name="header">
+																			<h:outputText value="Unité" />
+																		</f:facet>
+																		<h:outputText value="#{detail.u1LDocument}">
+																		</h:outputText>
+																	</p:column>
+																	
+																	<p:column width="20%" filterMatchMode="contains" styleClass="center" 
+																		filterBy="#{detail.qteLDocument}" sortBy="#{detail.qteLDocument}">
+																		<f:facet name="header">
+																			<h:outputText value="Quantité" />
+																		</f:facet>
+																		<h:outputText value="#{detail.qteLDocument}" />
+																	</p:column> 
+															        
+															        <p:column headerText="Montant HT" sortBy="#{detail.mtHtLDocument}" filterBy="#{detail.mtHtLDocument}" filterMatchMode="contains">
+															            <h:outputText value="#{detail.mtHtCalc}">
+															            <f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+																		</h:outputText>
+															        </p:column>	
+								    						</p:dataTable>
+								    						</p:rowExpansion>
+								    						FIN ROW DETAIL EXPAND famille tous
+								    						<p:column style="width:16px">
+																  <p:rowToggler />
+														   </p:column> 
+								    						FIN ROW EXPAND pour detail famille tous
+								    						
+								    						 
+															         <p:column headerText="Code Famille" sortBy="#{articleFamilleFacture.codeFamille}" filterBy="#{articleFamilleFacture.codeFamille}" filterMatchMode="contains" style="width:10%">
+															            <h:outputText value="#{articleFamilleFacture.codeFamille}">
+																		</h:outputText>
+															        </p:column>		
+															        <p:column headerText="libelle Famille" sortBy="#{articleFamilleFacture.libcFamille}" filterBy="#{articleFamilleFacture.libcFamille}" filterMatchMode="contains">
+															            <h:outputText value="#{articleFamilleFacture.libcFamille}">
+																		</h:outputText>
+															        </p:column>		
+															        <p:column styleClass="center" width="12%"
+																		filterMatchMode="contains" filterBy="#{articleFamilleFacture.u1LDocument}"
+																		sortBy="#{articleFamilleFacture.u1LDocument}">
+																		<f:facet name="header">
+																			<h:outputText value="Unité" />
+																		</f:facet>
+																		<h:outputText value="#{articleFamilleFacture.u1LDocument}">
+																		</h:outputText>
+																	</p:column>
+																	
+																	<p:column width="20%" filterMatchMode="contains" styleClass="center" 
+																		filterBy="#{articleFamilleFacture.qteLDocument}" sortBy="#{articleFamilleFacture.qteLDocument}">
+																		<f:facet name="header">
+																			<h:outputText value="Quantité" />
+																		</f:facet>
+																		<h:outputText value="#{articleFamilleFacture.qteLDocument}" />
+																	</p:column> 
+															        
+															        <p:column headerText="Montant HT" sortBy="#{articleFamilleFacture.mtHtLDocument}" filterBy="#{articleFamilleFacture.mtHtLDocument}" filterMatchMode="contains">
+															            <h:outputText value="#{articleFamilleFacture.mtHtLDocument}">
+															            <f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+																		</h:outputText>
+															        </p:column>		
+															
+														</p:dataTable>
+											            </div>
+											        </p:tab> -->
+											        
+											        <!-- fin TEST tab detail par famille TEST -->
+											       
+											    </p:tabView>
+							
+													
+												</p:panel>
+											</div>
+								         </p:tab>
+								         <!-- FIN TAB FACTURE-->
+								         <!--ICI VIEN LE DEBUT DU TAB AVOIR-->
+								         <p:tab title="Avoirs">
+								         	 <div class="ui-g-12 ui-md-12">
+											<p:panel header="Liste des articles facturés en avoirs sur la période" widgetVar="wvDashArticlePanelArticleAvoirs" >
+												
+												<p:tabView id="idTabViewListesArticlesDashArticleAvoirs" widgetVar="wvTabViewListesArticlesDashArticleAvoirs" styleClass="tab-verte-border-color-verte ">
+											         <p:tab title="Groupé par article" rendered="#{dashBoardArticleController.afficheTabGroupeArticle}"> 
+											        <!-- <p:tab title="#{dashBoardArticleController.titreTabListe1}"> -->
+											        <!--  value="#{dashBoardArticleController.syntheseEtDetailValueLigneAvoirs()}"-->
+											         <div class="ui-g-12 ui-md-12 background-color-vert">
+												        <p:dataTable id="idtaArticleAvoirs" var="avoirsTous"
+															value="#{dashBoardArticleController.valueLignesArticleAvoirs}"
+															scrollable="true"
+															scrollHeight="150"
+															liveResize="true"								
+															
+															widgetVar="wvListeArticleAvoirs" resizableColumns="true" 
+															paginator="true"
+															rows="#{msg.modele_datatable_ligne_par_page_debut}"
+															paginatorTemplate="#{msg.modele_datatable_paginator}"
+															rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+															emptyMessage="#{msg.message_datatable_vide}"
+															currentPageReportTemplate="#{msg.modele_datatable_page_courante}">
+															
+															<f:facet name="header">
+																
+																    <span style="float:left;">
+																        <p:commandButton id="idBtnListePrintEcranDasboardArticleAvoirsGroupeArticle"
+														 title="Imprimer la #{dashBoardArticleController.titreListeSyntheseParArticleAvoir}" 
+										onsuccess="window.open('#{request.contextPath}/output?__report=/reports/article/ListeDashboardArticle.rptdesign&amp;__format=pdf')"
+										actionListener="#{dashBoardArticleController.actImprimerListeArticleAvoirsGroupeArticle}"
+										process="@this" styleClass="ui-priority-primary boutonPrint" style="color : white;" icon="fa fa-print" />
+																    </span>
+																    
+																    <span style="float:left;">
+																        <p:commandButton id="idBtnListePrintEcranDasboardArticleRapportRapportDetailDesVenteParArticleEtFamille"
+														 title="Imprimer le #{dashBoardArticleController.titreEditionListeDetailParArticleAvoir}" 
+										onsuccess="window.open('#{request.contextPath}/output?__report=/reports/article/RapportDetailDesVentesEtAvoirsParArticleEtFamille.rptdesign&amp;__format=pdf')"
+										actionListener="#{dashBoardArticleController.actImprimerRapportFactureDetailDesVenteEtAvoirsParArticleEtFamille}"
+										process="@this" styleClass="ui-priority-primary boutonPrint" style="color : white;" icon="fa fa-print" />
+																    </span>
+																    
+																         #{dashBoardArticleController.titreListeSyntheseParArticleAvoir}
+																    	
+																   <span style="float:right;" class="searchbar_list">
+															            <p:outputPanel>
+																                <p:inputText id="globalFilter" onkeyup="PF('wvListeArticleAvoirs').filter()" style="width:150px" placeholder="Rechercher"/>
+																            </p:outputPanel>
+															        </span>
+																
+								        						
+								    						</f:facet>
+								    						
+								    						<!-- TEST EXPAND DETAIL AVOIR -->
+								    						<p:rowExpansion>
+								    						
+								    						
+								    						
+											   </p:rowExpansion>
+											   <!-- <p:column style="width:16px">
+													  <p:rowToggler />
+											   </p:column> -->
+								    						<!-- FIN TEST EXPAND DETAIL AVOIR -->
+								    						
+								    						 
+															<p:column width="20%" filterMatchMode="contains" 
+																	filterBy="#{avoirsTous.libcFamille}" sortBy="#{avoirsTous.libcFamille}">
+																	<f:facet name="header">
+																		<h:outputText value="Famille " />
+																	</f:facet>
+																	<h:outputText value="#{avoirsTous.libcFamille}" />
+																</p:column> 
+								    						 
+															<p:column headerText="Code article" width="15%" rendered="true" filterMatchMode="contains"
+																filterBy="#{avoirsTous.codeArticle}" sortBy="#{avoirsTous.codeArticle}"  >
+																<p:commandLink value="#{avoirsTous.codeArticle}"
+																	action="#{ouvertureDocumentBean.detailArticle(ouvertureDocumentBean.recupCodeArticle(avoirsTous.codeArticle))}" 
+																	update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+																</p:commandLink>
+																	
+															</p:column>
+																
+								
+															<p:column width="20%" filterMatchMode="contains" 
+																filterBy="#{avoirsTous.libellecArticle}" sortBy="#{avoirsTous.libellecArticle}">
+																<f:facet name="header">
+																	<h:outputText value="Libellé article(s)" />
+																</f:facet>
+																<h:outputText value="#{avoirsTous.libellecArticle}" />
+															</p:column> 
+															
+															<p:column styleClass="center" width="12%"
+																filterMatchMode="contains" filterBy="#{avoirsTous.u1LDocument}"
+																sortBy="#{avoirsTous.u1LDocument}">
+																<f:facet name="header">
+																	<h:outputText value="Unité" />
+																</f:facet>
+																<h:outputText value="#{avoirsTous.u1LDocument}">
+																</h:outputText>
+															</p:column>
+															
+															<p:column width="20%" filterMatchMode="contains" styleClass="center"
+																filterBy="#{avoirsTous.qteLDocument}" sortBy="#{avoirsTous.qteLDocument}">
+																<f:facet name="header">
+																	<h:outputText value="Quantité" />
+																</f:facet>
+																<h:outputText value="#{avoirsTous.qteLDocument}" />
+															</p:column> 
+								
+								
+															<p:column styleClass="right" width="15%" filterMatchMode="contains" filterBy="#{avoirsTous.mtHtCalc}"
+																sortBy="#{avoirsTous.mtHtCalc}">
+																<f:facet name="header">
+																	<h:outputText value="CA HT" />
+																</f:facet>
+																<h:outputText value="#{avoirsTous.mtHtCalc}">
+																		<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+																</h:outputText>
+															</p:column>
+								
+															<p:column styleClass="right" width="15%" filterMatchMode="contains" filterBy="#{avoirsTous.mtTtcCalc}"
+																sortBy="#{avoirsTous.mtTtcCalc}">
+																<f:facet name="header">
+																	<h:outputText value="CA TTC" />
+																</f:facet>
+																<h:outputText value="#{avoirsTous.mtTtcCalc}">
+																		<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+																</h:outputText>
+															</p:column>		
+															
+														</p:dataTable>
+											            </div>
+											        </p:tab>
+											        <!-- TAB DETAIL AVOIRS -->
+											        <p:tab title="Détail par article" rendered="#{dashBoardArticleController.afficheTabGroupeArticle}"> 
+											        <!-- <p:tab title="#{dashBoardArticleController.titreTabListe1}"> -->
+											        
+											         <div class="ui-g-12 ui-md-12 background-color-vert">
+												        <p:dataTable id="taArticleAvoirDetail" var="avoirsTousDetail"
+															value="#{dashBoardArticleController.valueLignesArticleAvoirsDetail}"
+															scrollable="true"
+															scrollHeight="150"
+															liveResize="true"	
+															widgetVar="wvListeArticleAvoirDetail" resizableColumns="true" 
+															paginator="true"
+															rows="#{msg.modele_datatable_ligne_par_page_debut}"
+															paginatorTemplate="#{msg.modele_datatable_paginator}"
+															rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+															emptyMessage="#{msg.message_datatable_vide}"
+															currentPageReportTemplate="#{msg.modele_datatable_page_courante}">
+															
+															<f:facet name="header">
+																
+																    <span style="float:left;">
+																        <p:commandButton id="idBtnListePrintEcranDasboardArticleAvoirsDetailArticle"
+														 title="Imprimer le #{dashBoardArticleController.titreListeDetailParArticleAvoir}" 
+										onsuccess="window.open('#{request.contextPath}/output?__report=/reports/article/ListeDashboardArticleDetail.rptdesign&amp;__format=pdf')"
+										actionListener="#{dashBoardArticleController.actImprimerListeArticleAvoirsDetailArticle}"
+										process="@this" styleClass="ui-priority-primary boutonPrint" style="color : white;" icon="fa fa-print" />
+																    </span>
+																    
+																        #{dashBoardArticleController.titreListeDetailParArticleAvoir}
+																    	
+																     <span style="float:right;" class="searchbar_list">
+															            <p:outputPanel>
+																                <p:inputText id="globalFilter" onkeyup="PF('wvListeArticleAvoirDetail').filter()" style="width:150px" placeholder="Rechercher"/>
+																            </p:outputPanel>
+															        </span>
+																
+								        						
+								    						</f:facet>
+								    						
+								    						<p:column width="10%" headerText="Code document" sortBy="#{avoirsTousDetail.codeDocument}" filterBy="#{avoirsTousDetail.codeDocument}" filterMatchMode="contains">
+																<!-- Si document est Avoir -->
+																<p:commandLink value="#{avoirsTousDetail.codeDocument}"
+																	action="#{ouvertureDocumentBean.detailDocument(ouvertureDocumentBean.recupCodeDocument(avoirsTousDetail.codeDocument,ouvertureDocumentBean.getTypeDocumentAvoir()))}" 
+																	update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+																</p:commandLink>         
+				        			           				 </p:column>
+				        			           				 
+				        			           				 <p:column styleClass="center" width="12%"
+																filterMatchMode="contains" filterBy="#{dashBoardArticleController.customFormatDate(avoirsTousDetail.dateDocument)}"
+																sortBy="#{avoirsTousDetail.dateDocument}">
+																<f:facet name="header">
+																	<h:outputText value="Date document" />
+																</f:facet>
+																<h:outputText value="#{avoirsTousDetail.dateDocument}">
+																	<f:convertDateTime pattern="#{msg.date_pattern}"
+																		timeZone="#{msg.time_zone}" />
+																</h:outputText>
+															</p:column>
+								    						
+															<p:column width="15%" filterMatchMode="contains" 
+																	filterBy="#{avoirsTousDetail.libcFamille}" sortBy="#{avoirsTousDetail.libcFamille}">
+																	<f:facet name="header">
+																		<h:outputText value="Famille " />
+																	</f:facet>
+																	<h:outputText value="#{avoirsTousDetail.libcFamille}" />
+																</p:column> 
+								    						 
+															<p:column headerText="Code article" width="10%" rendered="true" filterMatchMode="contains"
+																filterBy="#{avoirsTousDetail.codeArticle}" sortBy="#{avoirsTousDetail.codeArticle}"  >
+																<p:commandLink value="#{avoirsTousDetail.codeArticle}"
+																	action="#{ouvertureDocumentBean.detailArticle(ouvertureDocumentBean.recupCodeArticle(avoirsTousDetail.codeArticle))}" 
+																	update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+																</p:commandLink>
+																	
+															</p:column>
+																
+								
+															<p:column width="20%" filterMatchMode="contains" 
+																filterBy="#{avoirsTousDetail.libellecArticle}" sortBy="#{avoirsTousDetail.libellecArticle}">
+																<f:facet name="header">
+																	<h:outputText value="Libellé article(s)" />
+																</f:facet>
+																<h:outputText value="#{avoirsTousDetail.libellecArticle}" />
+															</p:column> 
+															
+															<p:column styleClass="center" width="5%"
+																filterMatchMode="contains" filterBy="#{avoirsTousDetail.u1LDocument}"
+																sortBy="#{avoirsTousDetail.u1LDocument}">
+																<f:facet name="header">
+																	<h:outputText value="Unité" />
+																</f:facet>
+																<h:outputText value="#{avoirsTousDetail.u1LDocument}">
+																</h:outputText>
+															</p:column>
+															
+															<p:column width="10%" filterMatchMode="contains" styleClass="center"
+																filterBy="#{avoirsTousDetail.qteLDocument}" sortBy="#{avoirsTousDetail.qteLDocument}">
+																<f:facet name="header">
+																	<h:outputText value="Quantité" />
+																</f:facet>
+																<h:outputText value="#{avoirsTousDetail.qteLDocument}" />
+															</p:column> 
+								
+								
+															<p:column styleClass="right" width="15%"
+																sortBy="#{avoirsTousDetail.mtHtCalc}" filterMatchMode="contains" filterBy="#{avoirsTousDetail.mtHtCalc}">
+																<f:facet name="header">
+																	<h:outputText value="CA HT" />
+																</f:facet>
+																<h:outputText value="#{avoirsTousDetail.typeDoc == dashBoardArticleController.typeAvoir ?avoirsTousDetail.mtHtCalc*-1 : avoirsTousDetail.mtHtCalc}">
+																		<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+																</h:outputText>
+															</p:column>
+								
+															<p:column styleClass="right" width="15%"
+																sortBy="#{avoirsTousDetail.mtTtcCalc}" filterMatchMode="contains" filterBy="#{avoirsTousDetail.mtTtcCalc}">
+																<f:facet name="header">
+																	<h:outputText value="CA TTC" />
+																</f:facet>
+																<h:outputText value="#{avoirsTousDetail.typeDoc == dashBoardArticleController.typeAvoir ? avoirsTousDetail.mtTtcCalc*-1 : avoirsTousDetail.mtTtcCalc}">
+																		<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+																</h:outputText>
+															</p:column>		
+															
+														</p:dataTable>
+											            </div>
+											        </p:tab>
+											        <!-- FIN TAB DETAIL AVOIRS -->
+											        <p:tab title="Groupé par mois" rendered="#{dashBoardArticleController.afficheTabGroupeArticleMois}">
+											        <div class="ui-g-12 ui-md-12 background-color-vert">
+											        	<p:dataTable id="taArticleParMoisAvoirs" var="avoirsTousMois"
+															value="#{dashBoardArticleController.valueLignesArticleAvoirsMois}"
+															scrollable="true"
+															scrollHeight="150"
+															liveResize="true"								
+															
+															widgetVar="wvListeArticleParMoisAvoirs" resizableColumns="true" 
+															paginator="true"
+															rows="#{msg.modele_datatable_ligne_par_page_debut}"
+															paginatorTemplate="#{msg.modele_datatable_paginator}"
+															rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+															emptyMessage="#{msg.message_datatable_vide}"
+															currentPageReportTemplate="#{msg.modele_datatable_page_courante}">
+															
+								<!-- 							selectionMode="single" rowKey="#{avoirsTousMois.codeArticle}" reflow="true" -->
+															
+															
+															<f:facet name="header">
+																<span style="float:left;">
+																	        <p:commandButton id="idBtnListePrintEcranDasboardArticleAvoirsGroupeMois"
+														 title="Imprimer la #{dashBoardArticleController.titreListeSyntheseParArticleMoisAvoir}" 
+										onsuccess="window.open('#{request.contextPath}/output?__report=/reports/article/ListeDashboardArticleMois.rptdesign&amp;__format=pdf')"
+										actionListener="#{dashBoardArticleController.actImprimerListeArticleAvoirsGroupeMois}"
+										process="@this" styleClass="ui-priority-primary boutonPrint" style="color : white;" icon="fa fa-print" />
+																</span>
+								        						#{dashBoardArticleController.titreListeSyntheseParArticleMoisAvoir}
+								        						 <span style="float:right;" class="searchbar_list">
+															            <p:outputPanel>
+																                <p:inputText id="globalFilter" onkeyup="PF('wvListeArticleParMoisAvoirs').filter()" style="width:150px" placeholder="Rechercher"/>
+																            </p:outputPanel>
+															        </span>
+								    						</f:facet>
+								    						
+								    						 <p:column width="20%" filterMatchMode="contains" 
+																	filterBy="#{avoirsTousMois.libcFamille}" sortBy="#{avoirsTousMois.libcFamille}">
+																	<f:facet name="header">
+																		<h:outputText value="Famille " />
+																	</f:facet>
+																	<h:outputText value="#{avoirsTousMois.libcFamille}" />
+																</p:column> 
+								    						 
+															<p:column headerText="Code article" width="15%" rendered="true" filterMatchMode="contains"
+																filterBy="#{avoirsTousMois.codeArticle}" sortBy="#{avoirsTousMois.codeArticle}"  >
+																<p:commandLink value="#{avoirsTousMois.codeArticle}"
+																	action="#{ouvertureDocumentBean.detailArticle(ouvertureDocumentBean.recupCodeArticle(avoirsTousMois.codeArticle))}" 
+																	update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+																</p:commandLink>
+																	
+															</p:column>
+																
+								
+															<p:column width="20%" filterMatchMode="contains" 
+																filterBy="#{avoirsTousMois.libellecArticle}" sortBy="#{avoirsTousMois.libellecArticle}">
+																<f:facet name="header">
+																	<h:outputText value="Libellé article(s)" />
+																</f:facet>
+																<h:outputText value="#{avoirsTousMois.libellecArticle}" />
+															</p:column> 
+															
+															<p:column styleClass="center" width="12%"
+																filterMatchMode="contains" filterBy="#{avoirsTousMois.u1LDocument}"
+																sortBy="#{avoirsTousMois.u1LDocument}">
+																<f:facet name="header">
+																	<h:outputText value="Unité" />
+																</f:facet>
+																<h:outputText value="#{avoirsTousMois.u1LDocument}">
+																</h:outputText>
+															</p:column>
+															
+															<p:column width="20%" filterMatchMode="contains" styleClass="center" 
+																filterBy="#{avoirsTousMois.qteLDocument}" sortBy="#{avoirsTousMois.qteLDocument}">
+																<f:facet name="header">
+																	<h:outputText value="Quantité" />
+																</f:facet>
+																<h:outputText value="#{avoirsTousMois.qteLDocument}" />
+															</p:column> 
+								
+								
+															<p:column styleClass="right" width="15%"
+																sortBy="#{avoirsTousMois.mtHtCalc}" filterMatchMode="contains" filterBy="#{avoirsTousMois.mtHtCalc}">
+																<f:facet name="header">
+																	<h:outputText value="CA HT" />
+																</f:facet>
+																<h:outputText value="#{avoirsTousMois.mtHtCalc}">
+																		<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+																</h:outputText>
+															</p:column>
+								
+															<p:column styleClass="right" width="15%"
+																sortBy="#{avoirsTousMois.mtTtcCalc}" filterMatchMode="contains" filterBy="#{avoirsTousMois.mtTtcCalc}">
+																<f:facet name="header">
+																	<h:outputText value="CA TTC" />
+																</f:facet>
+																<h:outputText value="#{avoirsTousMois.mtTtcCalc}">
+																		<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+																</h:outputText>
+															</p:column>	
+															
+															<p:column width="20%" filterMatchMode="contains" 
+																filterBy="#{avoirsTousMois.moisInt}" sortBy="#{avoirsTousMois.moisInt}">
+																<f:facet name="header">
+																	<h:outputText value="N° Mois" />
+																</f:facet>
+																<h:outputText value="#{avoirsTousMois.moisInt}" />
+															</p:column> 
+															
+															<p:column width="20%" filterMatchMode="contains" 
+																filterBy="#{dashBoardArticleController.actRechercheMoisString( avoirsTousMois.mois, avoirsTousMois.annee)}" sortBy="#{dashBoardArticleController.actRechercheMoisString( avoirsTousMois.mois, avoirsTousMois.annee)}">
+																<f:facet name="header">
+																	<h:outputText value="Mois" />
+																</f:facet>
+																<h:outputText value="#{dashBoardArticleController.actRechercheMoisString( avoirsTousMois.mois, avoirsTousMois.annee)}" />
+															</p:column> 
+															
+															<p:column width="20%" filterMatchMode="contains" 
+																filterBy="#{avoirsTousMois.anneeInt}" sortBy="#{avoirsTousMois.anneeInt}">
+																<f:facet name="header">
+																	<h:outputText value="Année" />
+																</f:facet>
+																<h:outputText value="#{avoirsTousMois.anneeInt}" />
+															</p:column> 				
+								
+															
+														</p:dataTable>
+											            </div>
+											        </p:tab>
+											        
+											        <p:tab title="Groupé par famille" rendered="#{dashBoardArticleController.afficheTabGroupeFamille}"> 
+											        <!-- <p:tab title="#{dashBoardArticleController.titreTabListe1}"> -->
+											        <!--value="#{dashBoardArticleController.syntheseEtDetailValueLigneFamilleAvoir()}"  -->
+											         <div class="ui-g-12 ui-md-12 background-color-vert">
+												        <p:dataTable id="taFamilleArticleAvoirs" var="avoirsFamille"
+												        
+															value="#{dashBoardArticleController.valueLignesFamilleArticleAvoir}"
+															scrollable="true"
+															scrollHeight="150"
+															liveResize="true"								
+															widgetVar="wvListeFamilleArticleAvoirs"
+															resizableColumns="true" 
+															paginator="true"
+															rows="#{msg.modele_datatable_ligne_par_page_debut}"
+															paginatorTemplate="#{msg.modele_datatable_paginator}"
+															rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+															emptyMessage="#{msg.message_datatable_vide}"
+															currentPageReportTemplate="#{msg.modele_datatable_page_courante}">
+															
+								<!-- 							selectionMode="single" rowKey="#{avoirsFamille.codeArticle}" reflow="true" -->
+															
+															
+															<f:facet name="header">
+																
+																    <span style="float:left;">
+																        <p:commandButton id="idBtnListePrintEcranDasboardAvoirsFamilleArticleAvoir"
+																		title="Imprimer la #{dashBoardArticleController.titreListeSyntheseParFamilleAvoir}" 
+																		onsuccess="window.open('#{request.contextPath}/output?__report=/reports/article/ListeDashboardFamilleArticleGroupe.rptdesign&amp;__format=pdf')"
+																		actionListener="#{dashBoardArticleController.actImprimerListeAvoirFamilleArticleAvoir}"
+																		process="@this" styleClass="ui-priority-primary boutonPrint" style="color : white;" icon="fa fa-print" />
+																    </span>
+																    
+																    <span style="float:left;">
+																        <p:commandButton id="idBtnListePrintEcranDasboardAvoirSyntheseEtDetailFamilles"
+																		title="Imprimer le #{dashBoardArticleController.titreEditionListeDetailParFamilleAvoir}" 
+																		onsuccess="window.open('#{request.contextPath}/output?__report=/reports/article/SyntheseEtDetailFamilleAvoir.rptdesign&amp;__format=pdf')"
+																		actionListener="#{dashBoardArticleController.actImprimerAvoirSyntheseEtDetailFamilles}"
+																		process="@this" styleClass="ui-priority-primary boutonPrint" style="color : white;" icon="fa fa-print" />
+																    </span> 
+																    
+																    	#{dashBoardArticleController.titreListeSyntheseParFamilleAvoir}
+																        
+																    
+																    <span style="float:right;" class="searchbar_list">
+															            <p:outputPanel>
+																                <p:inputText id="globalFilter" onkeyup="PF('wvListeFamilleArticleAvoirs').filter()" style="width:150px" placeholder="Rechercher"/>
+																            </p:outputPanel>
+															        </span>
+																
+								        						
+								    						</f:facet>
+								    						
+								    						 
+															 <!-- <p:column style="width:16px">
+															            <p:rowToggler />
+															        </p:column> -->
+															        <p:column headerText="Code Famille" sortBy="#{avoirsFamille.codeFamille}" filterBy="#{avoirsFamille.codeFamille}" filterMatchMode="contains" style="width:10%">
+															            <h:outputText value="#{avoirsFamille.codeFamille}">
+																		</h:outputText>
+															        </p:column>		
+															        <p:column headerText="libelle Famille" sortBy="#{avoirsFamille.libcFamille}" filterBy="#{avoirsFamille.libcFamille}" filterMatchMode="contains">
+															            <h:outputText value="#{avoirsFamille.libcFamille}">
+																		</h:outputText>
+															        </p:column>		
+															        <p:column styleClass="center" width="12%"
+																		filterMatchMode="contains" filterBy="#{avoirsFamille.u1LDocument}"
+																		sortBy="#{avoirsFamille.u1LDocument}">
+																		<f:facet name="header">
+																			<h:outputText value="Unité" />
+																		</f:facet>
+																		<h:outputText value="#{avoirsFamille.u1LDocument}">
+																		</h:outputText>
+																	</p:column>
+																	
+																	<p:column width="20%" filterMatchMode="contains" styleClass="center" 
+																		filterBy="#{avoirsFamille.qteLDocument}" sortBy="#{avoirsFamille.qteLDocument}">
+																		<f:facet name="header">
+																			<h:outputText value="Quantité" />
+																		</f:facet>
+																		<h:outputText value="#{avoirsFamille.qteLDocument}" />
+																	</p:column> 
+															        
+															        <p:column headerText="Montant HT" sortBy="#{avoirsFamille.mtHtLDocument}" filterBy="#{avoirsFamille.mtHtLDocument}" filterMatchMode="contains">
+															            <h:outputText value="#{avoirsFamille.mtHtLDocument}">
+															            <f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+																		</h:outputText>
+															        </p:column>		
+															
+														</p:dataTable>
+											            </div>
+											        </p:tab>
+											       
+											    </p:tabView>
+							
+													
+												</p:panel>
+											</div>
+								         </p:tab>
+								          <!-- FIN TAB AVOIR-->
+								</p:tabView>
+								</div>
+								<!-- FIN TABVIEW POUR  LES TABS REEL, FACTURE, AVOIRS-->
+								
+		<p:dialog header="2005031138 - Prévisulisation de l'export du détail des ventes par articles, par unités et fournisseur " widgetVar="interfaceExportArticleFournisseur" modal="true" appendTo="@(body)" showEffect="clip" hideEffect="clip" width="90%" height="90%">
+						
+						<p:tab title="Groupé par fournisseur" > 
+											       
+											         <div class="ui-g-12 ui-md-12 background-color-vert">
+												        <p:dataTable id="taArticleUniteFournisseur" var="articleFournisseur"
+												        	widgetVar="wvDataTableExportArticleFournisseur"
+															value="#{dashBoardArticleController.DetailValueLigneArticleFournisseur()}"
+															scrollable="true"
+															scrollHeight="500"
+															paginator="true"															
+															emptyMessage="#{msg.message_datatable_vide}"
+															rows="#{msg.modele_datatable_ligne_par_page_debut}"
+															paginatorTemplate="#{msg.modele_datatable_paginator}"
+															rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}">
+															<f:facet name="{Exporters}">
+            <h:commandLink>
+                <p:graphicImage library="images" name="excel.png" width="24"/>
+                <p:dataExporter type="xls" target="taArticleUniteFournisseur" fileName="export_fournisseur" />
+            </h:commandLink>
+ 
+            <h:commandLink>
+                <p:graphicImage  library="images" name="csv.png"  width="24"/>
+                <p:dataExporter type="csv" target="taArticleUniteFournisseur" fileName="export_fournisseur" options="#{separateurCsvController.csvOptions}" />
+            </h:commandLink>
+ 
+            <h:commandLink>
+                <p:graphicImage  library="images" name="xml.png"  width="24"/>
+                <p:dataExporter type="xml" target="taArticleUniteFournisseur" fileName="export_fournisseur" />
+            </h:commandLink>
+			
+        </f:facet>
+								
+															        <p:column headerText="Code document" sortBy="#{articleFournisseur.codeDocument}" filterBy="#{articleFournisseur.codeDocument}" width="6%" filterMatchMode="contains" style="width:10%">
+															            <h:outputText value="#{articleFournisseur.codeDocument}">
+																		</h:outputText>
+															        </p:column>
+															        <p:column headerText="Date document" sortBy="#{articleFournisseur.dateDocument}" filterBy="#{articleFournisseur.dateDocument}" width="5%" filterMatchMode="contains" style="width:10%">
+															            <h:outputText value="#{articleFournisseur.dateDocument}">
+															            <f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+																		</h:outputText>
+															        </p:column>
+															        <p:column headerText="Date livraison" sortBy="#{articleFournisseur.dateLivraison}" filterBy="#{articleFournisseur.dateLivraison}" width="5%" filterMatchMode="contains" style="width:10%">
+															            <h:outputText value="#{articleFournisseur.dateLivraison}">
+															            <f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+																		</h:outputText>
+															        </p:column>															        
+															        <p:column headerText="Type document" sortBy="#{articleFournisseur.typeDoc}" filterBy="#{articleFournisseur.typeDoc}" width="5%" filterMatchMode="contains" style="width:10%">
+															            <h:outputText value="#{articleFournisseur.typeDoc}">
+																		</h:outputText>
+															        </p:column>
+															        <p:column headerText="Code client" sortBy="#{articleFournisseur.codeTiers}" filterBy="#{articleFournisseur.codeTiers}" width="8%" filterMatchMode="contains">
+															            <h:outputText value="#{articleFournisseur.codeTiers}">
+																		</h:outputText>
+															        </p:column>	
+															        <p:column headerText="Nom client" sortBy="#{articleFournisseur.nomTiers}" filterBy="#{articleFournisseur.nomTiers}" width="8%" filterMatchMode="contains">
+															            <h:outputText value="#{articleFournisseur.nomTiers}">
+																		</h:outputText>
+															        </p:column>			
+															        <p:column headerText="code Famille" sortBy="#{articleFournisseur.codeFamille}" filterBy="#{articleFournisseur.codeFamille}" width="6%" filterMatchMode="contains">
+															            <h:outputText value="#{articleFournisseur.codeFamille}">
+																		</h:outputText>
+															        </p:column>
+															        <p:column headerText="libelle Famille" sortBy="#{articleFournisseur.libcFamille}" filterBy="#{articleFournisseur.libcFamille}" width="6%" filterMatchMode="contains">
+															            <h:outputText value="#{articleFournisseur.libcFamille}">
+																		</h:outputText>
+															        </p:column>
+															        <p:column headerText="Code article" sortBy="#{articleFournisseur.codeArticle}" filterBy="#{articleFournisseur.codeArticle}" width="6%" filterMatchMode="contains">
+															            <h:outputText value="#{articleFournisseur.codeArticle}">
+																		</h:outputText>
+															        </p:column>
+															        
+															        <p:column headerText="Libelle ligne" sortBy="#{articleFournisseur.libellecArticle}" filterBy="#{articleFournisseur.libellecArticle}" width="10%" filterMatchMode="contains">
+															            <h:outputText value="#{articleFournisseur.libellecArticle}">
+																		</h:outputText>
+															        </p:column>
+															        <p:column headerText="Code fournisseur" sortBy="#{articleFournisseur.fournisseur}" filterBy="#{articleFournisseur.fournisseur}" width="6%" filterMatchMode="contains">
+															            <h:outputText value="#{articleFournisseur.fournisseur}">
+																		</h:outputText>
+															        </p:column>	
+															        <p:column headerText="Nom fournisseur" sortBy="#{articleFournisseur.nomFournisseur}" filterBy="#{articleFournisseur.nomFournisseur}" width="6%" filterMatchMode="contains">
+															            <h:outputText value="#{articleFournisseur.nomFournisseur}">
+																		</h:outputText>
+															        </p:column>	
+															        <p:column headerText="Num. lot" sortBy="#{articleFournisseur.lot}" filterBy="#{articleFournisseur.lot}" width="6%" filterMatchMode="contains">
+															            <h:outputText value="#{articleFournisseur.lot}">
+																		</h:outputText>
+															        </p:column>																        
+															        <p:column width="5%" filterMatchMode="contains" styleClass="center" 
+																		filterBy="#{articleFournisseur.qteLDocument}" sortBy="#{articleFournisseur.qteLDocument}">
+																		<f:facet name="header">
+																			<h:outputText value="Qte 1" />
+																		</f:facet>
+																		<h:outputText value="#{articleFournisseur.qteLDocument}" />
+																	</p:column> 	
+															        <p:column styleClass="center" width="5%"
+																		filterMatchMode="contains" filterBy="#{articleFournisseur.u1LDocument}"
+																		sortBy="#{articleFournisseur.u1LDocument}">
+																		<f:facet name="header">
+																			<h:outputText value="Unite 1" />
+																		</f:facet>
+																		<h:outputText value="#{articleFournisseur.u1LDocument}">
+																		</h:outputText>
+																	</p:column>
+																	<p:column width="5%" filterMatchMode="contains" styleClass="center" 
+																		filterBy="#{articleFournisseur.qte2LDocument}" sortBy="#{articleFournisseur.qte2LDocument}">
+																		<f:facet name="header">
+																			<h:outputText value="Qte 2" />
+																		</f:facet>
+																		<h:outputText value="#{articleFournisseur.qte2LDocument}" />
+																	</p:column> 
+																	<p:column styleClass="center" width="5%"
+																		filterMatchMode="contains" filterBy="#{articleFournisseur.u2LDocument}"
+																		sortBy="#{articleFournisseur.u2LDocument}">
+																		<f:facet name="header">
+																			<h:outputText value="Unite 2" />
+																		</f:facet>
+																		<h:outputText value="#{articleFournisseur.u2LDocument}">
+																		</h:outputText>
+																	</p:column>
+																	
+															        <p:column headerText="Montant HT" sortBy="#{articleFournisseur.mtHtCalc}" filterBy="#{articleFournisseur.mtHtCalc}" width="5%" filterMatchMode="contains">
+															            <h:outputText value="#{articleFournisseur.mtHtCalc}">
+<!-- 															            <f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" /> -->
+																		</h:outputText>
+															        </p:column>
+															        <p:column headerText="Montant TVA" sortBy="#{articleFournisseur.mtTvaCalc}" filterBy="#{articleFournisseur.mtTvaCalc}" width="5%" filterMatchMode="contains">
+															            <h:outputText value="#{articleFournisseur.mtTvaCalc}">
+<!-- 															            <f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" /> -->
+																		</h:outputText>
+															        </p:column>	
+															        <p:column headerText="Montant TTC" sortBy="#{articleFournisseur.mtTtcCalc}" filterBy="#{articleFournisseur.mtTtcCalc}" width="5%" filterMatchMode="contains">
+															            <h:outputText value="#{articleFournisseur.mtTtcCalc}">
+<!-- 															            <f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" /> -->
+																		</h:outputText>
+															        </p:column>	
+															       	
+															
+														</p:dataTable>
+											            </div>
+											        </p:tab>
+											        
+		</p:dialog>
+</ui:composition>					         

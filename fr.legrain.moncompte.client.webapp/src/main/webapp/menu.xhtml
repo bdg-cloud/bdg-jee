@@ -1,0 +1,44 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+	
+	<h:form>
+	
+		<p:remoteCommand name="rc" actionListener="#{leftBean.remoteCommandToggleList}" oncomplete="handleCompleteToggleList(xhr, status, args)"/>
+	
+		<p:growl id="messages" />
+		<p:menubar class="topmenu mt10">
+<!-- 			<p:menuitem value="Accueil" url="/index.xhtml" /> -->
+			
+			<p:menuitem value="Dossier" url="/index.xhtml" />
+			
+			<p:submenu label="Boutique" url="/index.xhtml"  >
+					
+			</p:submenu>
+			
+			<p:submenu label="Mes achats" url="/index.xhtml"  >
+					
+			</p:submenu>
+			
+			<p:submenu label="Aide">
+				<p:menuitem value="A propos" actionListener="#{aProposBean.actAbout}" />
+			</p:submenu>
+			
+<!-- 			<p:menuitem  value="Déconnexion" actionListener="#{auth.logout}" icon="ui-icon-extlink" /> -->
+			
+			<p:submenu label="Administration" icon="ui-icon-gear">
+<!-- 				<p:menuitem value="Controles saisie" url="/admin/controle_template.xhtml" /> -->
+<!-- 				<p:menuitem value="Génération de code" url="/admin/gencode_template.xhtml" /> -->
+<!-- 				<p:menuitem value="Log" url="/admin/dev/log.xhtml" /> -->
+<!-- 				<p:menuitem value="Utilisateurs" actionListener="#{menuBean.openUtilisateur}" update=":form:tabView"  oncomplete="activeLastTabCenter()" /> -->
+<!-- 				<p:menuitem value="Roles" actionListener="#{menuBean.openRole}" update=":form:tabView"  oncomplete="activeLastTabCenter()" /> -->
+			</p:submenu>
+			
+         
+		</p:menubar>
+
+	</h:form>
+	<br/>
+</ui:composition>

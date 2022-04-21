@@ -1,0 +1,59 @@
+<persistence xmlns="http://java.sun.com/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd"
+             version="2.0">
+
+              
+<!--  <persistence xmlns="http://xmlns.jcp.org/xml/ns/persistence" -->
+<!--  			xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" -->
+<!--  			xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd" -->
+<!--  			version="2.1">  -->
+
+	<persistence-unit name="moncompte" transaction-type="JTA">
+<!-- 		<jta-data-source>java:/BDGFirebirdDS</jta-data-source> -->
+		<jta-data-source>java:/MonComptePostgresDS</jta-data-source>
+
+		<!-- moncompte -->
+		<class>fr.legrain.moncompte.model.TaRole</class>
+		<class>fr.legrain.moncompte.model.TaUtilisateur</class>
+		<class>fr.legrain.moncompte.model.TaRRoleUtilisateur</class>
+		<class>fr.legrain.moncompte.model.TaAdresse</class>
+		<class>fr.legrain.moncompte.model.TaTypeProduit</class>
+		<class>fr.legrain.moncompte.model.TaTNiveau</class>
+		<class>fr.legrain.moncompte.model.TaGroupeProduit</class>
+		<class>fr.legrain.moncompte.model.TaProduit</class>
+		<class>fr.legrain.moncompte.model.TaClient</class>
+		<class>fr.legrain.moncompte.model.TaDossier</class>
+		<class>fr.legrain.moncompte.model.TaPanier</class>
+		<class>fr.legrain.moncompte.model.TaLignePanier</class>
+		<class>fr.legrain.moncompte.model.TaPrixParUtilisateur</class>
+		<class>fr.legrain.moncompte.model.TaPrixParUtilisateurPerso</class>
+		<class>fr.legrain.moncompte.model.TaPrixPerso</class>
+		<class>fr.legrain.moncompte.model.TaAutorisation</class>
+		<class>fr.legrain.moncompte.model.TaSetup</class>
+		<class>fr.legrain.moncompte.model.TaCategoriePro</class>
+		<class>fr.legrain.moncompte.model.TaCgv</class>
+		<class>fr.legrain.moncompte.model.TaCgPartenaire</class>
+		<class>fr.legrain.moncompte.model.TaTypePartenaire</class>
+		<class>fr.legrain.moncompte.model.TaPartenaire</class>
+		<class>fr.legrain.moncompte.model.TaCommission</class>
+		<class>fr.legrain.moncompte.model.TaLigneCommission</class>
+		<class>fr.legrain.moncompte.model.TaTypePaiement</class>
+		
+		<validation-mode>NONE</validation-mode> 
+		
+		<properties>
+			<property name="javax.persistence.validation.mode" value="NONE"/>
+
+			<property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
+			
+<!-- 		<property name="hibernate.show_sql" value="true"/> -->
+<!--        <property name="hibernate.format_sql" value="true"/> -->
+
+<!-- 			<property name="hibernate.multiTenancy" value="SCHEMA"/> -->
+<!-- 			<property name="hibernate.tenant_identifier_resolver" value="fr.legrain.hibernate.multitenant.SchemaResolver"/> -->
+<!-- 			<property name="hibernate.multi_tenant_connection_provider" value="fr.legrain.hibernate.multitenant.MultiTenantProvider"/>  -->
+			
+		</properties>
+	</persistence-unit>
+</persistence>

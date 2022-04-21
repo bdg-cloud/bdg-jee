@@ -1,0 +1,257 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:p="http://primefaces.org/ui">
+	
+	<o:importConstants type="fr.legrain.bdg.webapp.app.LgrTab" />
+	
+<!-- 	<h:form> -->
+
+<!-- <p:ajax event="rowSelect" listener="#{clientController.onRowSelect}" update=":form:tabView,:form:messages" oncomplete="PF('wvOverlayListeClient').hide();"/>  -->
+
+
+<!-- 	<p:commandButton id="movieBtn" value="Dynamic" type="button" /> -->
+	<p:commandLink id="listeArticleBtn" >
+		<i class="top-submenu-icon fa fa-fw fa-cube"></i>
+<!-- 		<i class="top-bar-badge animated rubberBand"><h:outputText value="#{topBarController.nbClient}"/></i> -->
+<!-- 		<i class="fa fa-book animated swing" aria-hidden="true"></i> -->
+<!-- 		<span><h:outputText value="Liste articles" /></span> -->
+	</p:commandLink>
+	
+<!-- 	<p:overlayPanel id="moviePanel" for="movieBtn" hideEffect="fade" dynamic="true"  -->
+<!-- 		dismissable="true" appendTo="@(body)" widgetVar="wvOverlayListeProduit" showCloseIcon="true"> -->
+	
+	<p:overlayPanel id="idListeArticlePanel" for="listeArticleBtn" hideEffect="fade" dynamic="true" 
+		dismissable="true" appendTo="@(body)" widgetVar="wvOverlayListeArticle" showCloseIcon="true">
+		<h:form>
+		<div class="dashboard-title" style="background:#f6f6f6;">
+              <h:panelGrid columns="3" cellpadding="5">
+            	<h:graphicImage name="dashboard/article.svg" library="images" height="35px" style="margin-top:1px;" />
+                <p:outputLabel value="Liste des articles" style="font-size:20px;"/>
+              </h:panelGrid>  
+              <p:separator/>
+        </div>
+
+	<p:menubar styleClass="menu-onglet" widgetVar="wvMenuListeArticle" id="idMenuListeArticle">
+		<p:menuitem title="Ajouter un nouveal article" update=":form:tabView,:form:messages,@widgetVar(wvMenuListeArticle),@widgetVar(wvDataTableListeArticle)" 
+		actionListener="#{articleController.nouveau}" styleClass="icon icon-insert" disabled="#{articleController.etatBouton('inserer')}" oncomplete="PF('wvOverlayListeArticle').hide();PF('wvtabViewArticle').select(1);"/>
+<!-- 	 	<p:menuitem title="Détail" update=":form:tabView,:form:messages" actionListener="#{articleController.detail}" styleClass="icon icon-detail" disabled="#{articleController.modeEcran.dataSetEnModif()}" oncomplete="PF('wvOverlayListeArticle').hide();"/> -->
+<!-- 	 	<p:menuitem title="Supprimer les articles sélectionnés" update=":form:tabView,@widgetVar(wvMenuListeArticle),@widgetVar(wvDataTableListeArticle),:form:messages,@form"  -->
+<!-- 	 	actionListener="#{articleController.supprimer}" styleClass="icon icon-delete" disabled="#{articleController.etatBouton('supprimerListe')}"> -->
+<!-- 	 		<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer les articles sélectionnés ?" icon="ui-icon-alert" /> -->
+<!-- 	 	</p:menuitem> -->
+	 	<p:menuitem title="Rafraîchir la liste" update="@form,:form:messages" actionListener="#{articleController.refresh}" styleClass="icon icon-refresh" disabled="#{articleController.modeEcran.dataSetEnModif()}"/>
+		<p:menuitem title="Exporter la liste" ajax="false" styleClass="icon icon-export">
+			<p:fileDownload value="#{articleController.exportationArticles}"/>
+		</p:menuitem>
+	</p:menubar>
+	
+	<h:panelGrid columns="2" rendered="#{auth.isDevLgr()}">
+        <h:outputText value="Boutique " />
+        <p:toggleSwitch value="#{articleController.afficheSeulementBoutique}">
+            <p:ajax listener="#{articleController.switchAfficheSeulementBoutique}" onstart="PF('wvDataTableListeArticle').clearFilters()" update="@widgetVar(wvDataTableListeArticle)" />
+        </p:toggleSwitch>
+    </h:panelGrid>
+	
+	
+	<p:sticky target="idMenuListeArticle" />
+	
+	<div class="text-center">
+	<p:panelGrid columns="3">
+<!-- 		<p:selectBooleanCheckbox value="#{articleController.afficheMatierePremiere}" itemLabel="Matières premières"> -->
+<!-- 			<p:ajax update="@form,:form:messages" listener="#{articleController.refresh()}" /> -->
+<!-- 		</p:selectBooleanCheckbox> -->
+<!-- . -->
+<!-- 		<p:selectBooleanCheckbox value="#{articleController.afficheProduitFini}" itemLabel="Produits finis"> -->
+<!-- 			<p:ajax update="@form,:form:messages" listener="#{articleController.refresh()}" /> -->
+<!-- 		</p:selectBooleanCheckbox> -->
+		
+		<p:selectOneRadio id="choixAffiche" value="#{articleController.affiche}"  rendered="#{!articleController.affiche_filtre_grille}">
+			<f:selectItem  itemValue="#{const.C_TOUS}" itemLabel="Tous"/>
+			<f:selectItem  itemValue="#{const.C_MATIERE_PREMIERE}" itemLabel="Matière P."/>
+			<f:selectItem  itemValue="#{const.C_PRODUIT_FINI}" itemLabel="Produit F."/>
+			<f:selectItem  itemValue="#{const.C_PF_MP}" itemLabel="Matière P. et Produit F."/>
+<!-- 			<f:selectItem  itemValue="#{const.C_PF_OU_MP}" itemLabel="Matière P. et/ou Produit F."/> -->
+			<p:ajax update="@form,:form:messages" listener="#{articleController.refresh()}" oncomplete="PF('wvDataTableListeArticle').filter()"/>
+		</p:selectOneRadio>
+
+		<p:selectBooleanCheckbox id="idActifChoix" value="#{articleController.afficheInactif}" title="Inactif" rendered="#{!articleController.affiche_filtre_grille}">
+				<p:ajax update="@form,:form:messages" listener="#{articleController.refresh()}" oncomplete="PF('wvDataTableListeArticle').filter()"/>
+		</p:selectBooleanCheckbox>
+				<p:outputLabel value="Inactif" rendered="#{!articleController.affiche_filtre_grille}"/>
+		</p:panelGrid>
+	</div>
+	
+	<p:dataTable id="dataTableListeArticles" var="taArticle"
+				widgetVar="wvDataTableListeArticle"
+				styleClass="datatable mt10"
+				value="#{articleController.values}"
+				rowKey="#{taArticle.id}"
+				selection="#{articleController.selectedTaArticleDTOs}"
+				dblClickSelect="true"
+				resizableColumns="true"
+				paginator="true" 
+				rows="#{msg.modele_datatable_ligne_par_page_debut}"
+				paginatorTemplate="#{msg.modele_datatable_paginator}"
+				rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+				emptyMessage="#{msg.message_datatable_vide}"
+				currentPageReportTemplate="#{msg.modele_datatable_page_courante}"
+				disabledSelection="#{articleController.modeEcran.dataSetEnModif()}">
+				
+<!-- 				<p:ajax event="rowSelect" update=":form:tiers" />   dblClickSelect="true" rowDblselect-->
+
+<!-- 				<p:ajax event="rowDblselect" listener="#{articleController.onRowSelect}" update=":form:tabView,:form:messages,@form" oncomplete="activeLastTabCenter()"/> -->
+<!-- 				<p:ajax event="rowSelect" listener="#{articleController.onRowSelect}" disabled="#{articleController.pasDejaOuvert()}" update=":form:tabView,:form:messages,@form" />  -->
+
+<!-- 				<p:ajax event="rowDblselect" listener="#{articleController.onRowSelect}" update=":form:tabView,:form:messages" oncomplete="activeTabCenter('#{LgrTab.CSS_CLASS_TAB_ARTICLE}');PF('wvOverlayListeArticle').hide();scrollToTop();"/> -->
+
+
+				<!-- <p:ajax event="rowSelect" delay="#{msg.datatable_rowselect_delay}"
+				 listener="#{articleController.onRowSelect}"
+				  update=":form:tabView,:form:messages"
+				   oncomplete="activeTabCenter('#{LgrTab.CSS_CLASS_TAB_ARTICLE}');PF('wvOverlayListeArticle').hide();scrollToTop();"/> -->
+               <p:ajax event="rowSelect" delay="#{msg.datatable_rowselect_delay}"
+				 listener="#{articleController.onRowSelect}"
+				  update=":form:tabView,:form:messages"
+				   oncomplete="activeTabCenter('#{articleController.CLASS_CSS_TAB_DASH_ARTICLE}', '#{articleController.WV_TABVIEW_ARTICLE}');PF('wvOverlayListeArticle').hide();scrollToTop();"/> 
+				
+
+			 
+				<f:facet name="header"> 
+					<h:outputText value="Articles" /> 
+           			
+           			<span style="float:right;" class="searchbar_list">
+			            <p:outputPanel>
+				                <p:inputText id="globalFilter" onkeyup="PF('wvDataTableListeArticle').filter()" style="width:150px" placeholder="Rechercher"/>
+				            </p:outputPanel>
+			        </span>	
+        		</f:facet>
+
+		  		<f:facet name="{Exporters}" style="align:right;">
+		            <p:commandLink ajax="false">
+		                <p:graphicImage library="images" name="excel.png" width="24"/>
+		                <p:dataExporter type="xls" target="dataTableListeArticles" fileName="liste_articles" />
+		            </p:commandLink>
+		 
+		            <p:commandLink onsuccess="window.open('#{request.contextPath}/output?__report=/reports/article/ListeDesArticles.rptdesign&amp;__format=pdf')"
+			actionListener="#{articleController.actImprimerListeDesArticles}" process="@this">
+		                <p:graphicImage  library="images" name="pdf.png"  width="24"/>
+<!-- 		                <p:dataExporter type="pdf" target="dataTableListeTiers" fileName="liste_tiers" /> -->
+		            </p:commandLink>
+		 
+		            <h:commandLink>
+		                <p:graphicImage  library="images" name="csv.png"  width="24"/>
+		                <p:dataExporter type="csv" target="dataTableListeArticles" fileName="liste_articles" options="#{separateurCsvController.csvOptions}" />
+		            </h:commandLink>
+		 
+		            <h:commandLink>
+		                <p:graphicImage  library="images" name="xml.png"  width="24"/>
+		                <p:dataExporter type="xml" target="dataTableListeArticles" fileName="liste_articles" />
+		            </h:commandLink>
+		        </f:facet>
+        
+				<p:column selectionMode="multiple" style="width:16px;text-align:center" exportable="false"/>
+			
+				<p:column style="width:16px" exportable="false">
+					<f:facet name="header">
+						<h:outputText value="" />
+					</f:facet>
+					<p:commandButton title="Détail" update=":form:tabView,:form:messages" 
+						action="#{articleController.detail}" styleClass="icon icon-detail icon-grille" 
+						disabled="#{articleController.modeEcran.dataSetEnModif()}" oncomplete="PF('wvOverlayListeArticle').hide();">
+						<f:setPropertyActionListener target="#{articleController.selectedTaArticleDTO}" value="#{taArticle}" />
+					</p:commandButton>
+				</p:column>
+
+
+				<p:column sortBy="#{taArticle.codeFamille}" filterBy="#{taArticle.codeFamille}" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="Code famille" />
+					</f:facet>
+					<h:outputText value="#{taArticle.codeFamille}" />
+				</p:column>
+				
+			
+				
+				<p:column sortBy="#{taArticle.codeArticle}" filterBy="#{taArticle.codeArticle}" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="Code" />
+					</f:facet>
+					<h:outputText value="#{taArticle.codeArticle}" />
+				</p:column>
+				
+				<p:column sortBy="#{taArticle.libellecArticle}" filterBy="#{taArticle.libellecArticle}" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="Libellé" />
+					</f:facet>
+					<h:outputText value="#{taArticle.libellecArticle}" />
+				</p:column>
+				
+				<p:column sortBy="#{taArticle.codeUniteReference}" filterBy="#{taArticle.codeUniteReference}" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="Unité (référence)" />
+					</f:facet>
+					<h:outputText value="#{taArticle.codeUniteReference}" />
+				</p:column>
+								
+				<p:column headerText="MP" sortBy="#{taArticle.matierePremiere}" filterBy="#{taArticle.matierePremiere}" filterMatchMode="equals" styleClass="center" rendered="#{articleController.affiche_filtre_grille}">
+			            <f:facet name="filter">
+			                <p:selectOneButton onchange="PF('wvDataTableListeArticle').filter()" >
+			                    <f:converter converterId="javax.faces.Boolean" />
+			                    <f:selectItem itemLabel="Tous" itemValue="" />
+			                    <f:selectItem itemLabel="Vrai" itemValue="true" />
+			                    <f:selectItem itemLabel="Faux" itemValue="false" />
+			                </p:selectOneButton>
+					</f:facet>
+					<p:selectBooleanCheckbox value="#{taArticle.matierePremiere}"  disabled="true"/>
+				</p:column>
+								
+				<p:column headerText="PF" sortBy="#{taArticle.produitFini}" filterBy="#{taArticle.produitFini}" filterMatchMode="equals" styleClass="center" rendered="#{articleController.affiche_filtre_grille}">
+			            <f:facet name="filter">
+			                <p:selectOneButton onchange="PF('wvDataTableListeArticle').filter()">
+			                    <f:converter converterId="javax.faces.Boolean" />
+			                    <f:selectItem itemLabel="Tous" itemValue="" />
+			                    <f:selectItem itemLabel="Vrai" itemValue="true" />
+			                    <f:selectItem itemLabel="Faux" itemValue="false" />
+			                </p:selectOneButton>
+					</f:facet>
+					<p:selectBooleanCheckbox value="#{taArticle.produitFini}"  disabled="true"/>
+				</p:column>
+								
+				<p:column headerText="Actif" sortBy="#{taArticle.actif}" filterBy="#{taArticle.actif}" filterMatchMode="equals" styleClass="center" rendered="#{articleController.affiche_filtre_grille}">
+			            <f:facet name="filter">
+			                <p:selectOneButton onchange="PF('wvDataTableListeArticle').filter()" >
+			                    <f:converter converterId="javax.faces.Boolean" />
+			                    <f:selectItem itemLabel="Tous" itemValue="" />
+			                    <f:selectItem itemLabel="Vrai" itemValue="true" />
+			                    <f:selectItem itemLabel="Faux" itemValue="false" />
+			                </p:selectOneButton>
+					</f:facet>
+					<p:selectBooleanCheckbox value="#{taArticle.actif}"  disabled="true"/>
+				</p:column>
+								
+				<p:column style="width:16px" exportable="false">
+					<f:facet name="header">
+						<h:outputText value="" />
+					</f:facet>
+					
+					<p:commandButton title="Supprimer" styleClass="icon-delete icon icon-grille"
+						action="#{articleController.actSupprimer}"
+						process="@this"
+						update="@widgetVar(wvDataTableListeArticle)">
+						<f:setPropertyActionListener target="#{articleController.selectedTaArticleDTO}" value="#{taArticle}" />
+						<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer cet article ?" icon="ui-icon-alert" />
+					</p:commandButton>
+						
+				</p:column>
+				
+			</p:dataTable>
+
+		</h:form>
+	</p:overlayPanel>
+	
+<!-- 	</h:form> -->
+
+</ui:composition>

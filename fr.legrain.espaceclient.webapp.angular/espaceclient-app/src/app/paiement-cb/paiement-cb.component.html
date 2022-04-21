@@ -1,0 +1,127 @@
+<form method="post" id="payment-form" *ngIf="saisie;else encours_ou_resultat">
+<div class="ui-g-12 bandeau-titre">
+	<p style="background-color: rgb(168, 168, 168); box-shadow: none;text-align: center;">
+		<img src="../../assets/images/paiement/cadenas.png" height="16px"/>
+		Espace sécurisé
+	</p>
+</div>
+<div class="cell example example1" id="example-1">
+	<fieldset style="background-color: white; box-shadow: none;">
+		<div class="row">
+			<label
+				style="margin: auto; display: table; color: black; text-align: center;">
+				Montant total à payer (TTC) 
+			</label>
+			<div
+				style="margin: auto; border: 1px solid; padding: 0px; text-align: center; width: 200px; font-weight: bold;">
+				<label>  {{montantPaiement}} €</label>
+			</div>
+		</div>
+
+		<div class="row">
+			<label for="example1-name" data-tid="elements_examples.form.name_label"
+				style="margin: auto; display: block; color: black; text-align: center;">
+				Nom du porteur *
+			</label>
+			<div
+				style="margin: auto; border: 1px solid; padding: 0px; text-align: center; width: 300px">
+				<input id="cardholder-name"
+					data-tid="elements_examples.form.name_placeholder"
+					type="text" placeholder="" required="" autocomplete="name"
+					style="padding: 0px;" />
+			</div>
+		</div>
+<!-- 						            <div class="row"> -->
+<!-- 						            	<label for="example1-email" data-tid="elements_examples.form.email_label"  -->
+<!-- 						            	style="margin: auto; display: block; color: black; text-align: center;"> -->
+<!-- 						            	Email -->
+<!-- 						            	</label> -->
+<!-- 						            	<div -->
+<!-- 											style="margin: auto; border: 1px solid; padding: 0px; text-align: center; width: 300px"> -->
+<!-- 							              	<input id="cardholder-email"  -->
+<!-- 							              		data-tid="elements_examples.form.email_placeholder" type="email"  -->
+<!-- 							              		placeholder="" autocomplete="email" -->
+<!-- 							              		style="padding: 0px;"/> -->
+<!-- 						              	</div> -->
+<!-- 						            </div> -->
+<!-- 						            <div class="row"> -->
+<!-- 						              	<label for="example1-phone" data-tid="elements_examples.form.phone_label" -->
+<!-- 										style="margin: auto; display: block; color: black; text-align: center;"> -->
+<!-- 										Téléphone -->
+<!-- 										</label> -->
+<!-- 										<div -->
+<!-- 											style="margin: auto; border: 1px solid; padding: 0px; text-align: center; width: 300px"> -->
+<!-- 						              		<input id="cardholder-phone"  -->
+<!-- 						              			data-tid="elements_examples.form.phone_placeholder" type="tel"  -->
+<!-- 						              			placeholder="" autocomplete="tel"  -->
+<!-- 						              			style="padding: 0px;"/> -->
+<!-- 						              	</div> -->
+<!-- 						            </div> -->
+	</fieldset>
+	<fieldset>
+		<div id="card-element">
+			<!-- A Stripe Element will be inserted here. -->
+		</div>
+	</fieldset>
+
+	<!-- Used to display form errors. -->
+	<div id="card-errors" role="alert"></div>
+	<!-- 					  </div> -->
+
+	<div class="" style="text-align: center">
+
+		<button id="card-button" attr.data-secret="{{intentSecret}}" >
+			Payer {{montantPaiement}} €
+		</button>
+	</div>
+</div>
+</form>
+
+<ng-template #encours_ou_resultat>
+	<div class="ui-g-12 bandeau-titre">
+		<p style="background-color: rgb(168, 168, 168); box-shadow: none;text-align: center;">
+			<img src="../../assets/images/paiement/cadenas.png" height="16px"/>
+			Espace sécurisé
+		</p>
+	</div>
+	
+	<div *ngIf="encours; else resultat" style="margin:auto; text-align: center;">
+		<img src="../assets/images/ajax.gif" width="150px" style="text-align: center;"/>
+	</div>
+	<ng-template #resultat>
+	
+	<ng-container [ngSwitch]="etatPaiementCourant">
+<!-- 	public static final int PAIEMENT_OK = 1; -->
+<!-- 	public static final int PAIEMENT_ERREUR = 2; -->
+<!-- 	public static final int PAIEMENT_EN_COURS = 3; -->
+	
+	     <div *ngSwitchCase="1">
+
+			<div style="text-align: center">
+				<div style="font-size: x-large; text-decoration: underline; margin-bottom: 13px; margin-top: 30px;">
+				Le paiement a été validé.
+				</div> 
+				<div style="margin-bottom: 13px;">Le règlement correspondant doit être visible dans la liste des règlements.</div>
+			</div>
+			<div style="text-align: center;display: flex; align-items: center;justify-content: center;">
+					<img src="/assets/images/paiement/220px-Logo_GIE-CB.jpg" height="32px"/>
+				<div style="font-weight: bold; color: #006c9d; border-bottom: 2px solid;">CARTE BANCAIRE</div> 
+			</div>
+			<div style="text-align: center;">
+				<div style="font-weight: bold; font-size: x-large; padding-top: 13px;">{{montantPaiement}} €</div>
+			</div>
+			<p-button label="Fermer" (onClick)="actFermer($event)" style="text-align: center; display: block; margin-top: 20px;"></p-button>
+			</div>
+
+	     <div *ngSwitchCase="2">
+	         Erreur
+	     </div>
+	     
+	     <div *ngSwitchCase="3">
+	         En cours
+	     </div>
+
+		</ng-container>
+	</ng-template>
+</ng-template>
+

@@ -1,0 +1,166 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui">
+
+	<f:validateBean disabled="true">
+
+	<p:messages autoUpdate="true" />
+
+	<p:menubar styleClass="menu-onglet">	
+<!-- 					actionListener="#{bonReceptionController.actFermer}"	 -->
+			
+		<p:menuitem title="Fermer" styleClass="icon icon-close menuitem-fermer-droite"
+
+			process="@this" 
+			onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())">
+			
+<!-- 			<p:confirm header="Confirmation" message="#{msg_diag.alert_fermeture_onglet}" icon="ui-icon-alert" /> -->
+		</p:menuitem>
+
+	</p:menubar>
+	
+
+		<h:panelGrid columns="3" style="margin-bottom:10px" cellpadding="5">
+
+			<!-- Les Dates -->
+			<p:outputLabel for="dateDebut" value="Date (de..à) :" />
+			<p:calendar id="dateDebut" value="#{etatTracabiliteFabricationController.dateDebut}" navigator="true" showOn="button">
+				<p:ajax event="dateSelect"  update="@this" />
+				<p:ajax event="change"  update="@this"  />
+			</p:calendar>
+			<p:calendar id="dateFin" value="#{etatTracabiliteFabricationController.dateFin}" navigator="true"  showOn="button">
+				<p:ajax event="dateSelect" update="@this"/>
+				<p:ajax event="change"  update="@this"  />
+			</p:calendar>
+
+
+			<p:outputLabel value="Mouvements (par date) pour l'article :" for="mouvementArticleParDate" />
+			<p:autoComplete id="mouvementArticleParDate" value="#{etatTracabiliteFabricationController.mouvementArticleParDate}"
+				completeMethod="#{etatTracabiliteFabricationController.completeTextDetailMouvementArticle}" />
+			<p:commandButton value="Imprimer" id="imprimerDMA1" styleClass="btn-print btn"
+				onsuccess="window.open('#{request.contextPath}/output?__report=/reports/solstyce/Detail_Mouvement_ArticleParDate.rptdesign&amp;__format=pdf')"
+				actionListener="#{etatTracabiliteFabricationController.actImprimerDMAParDate}"
+				disabled="#{etatTracabiliteFabricationController.etatBouton('imprimer')}" />
+				
+			<p:outputLabel value="Fiche Fabrication du lot :" for="codeFabricationLot" />
+			<p:autoComplete id="codeFabricationLot" value="#{etatTracabiliteFabricationController.pfNumLot}"
+				completeMethod="#{etatTracabiliteFabricationController.completeTextLotFabrique}" />
+			<p:commandButton value="Imprimer" id="imprimerCFLot" styleClass="btn-print btn"
+				onsuccess="window.open('#{request.contextPath}/output?__report=/reports/solstyce/Fiche_Fabrication.rptdesign&amp;__format=pdf')"
+				actionListener="#{etatTracabiliteFabricationController.actImprimerCF}"
+				disabled="#{etatTracabiliteFabricationController.etatBouton('imprimer')}" />
+			
+			<p:outputLabel value="Fiches Fabrication de l'article :" for="codeFabrications" rendered="false"/>
+			<p:autoComplete id="codeFabrications" value="#{etatTracabiliteFabricationController.codeArticle}"
+				completeMethod="#{etatTracabiliteFabricationController.completeTextArticleFabrique}" disabled="true" rendered="false"/>
+			<p:commandButton value="Imprimer" id="imprimerCFArticle" styleClass="btn-print btn" 
+				onsuccess="window.open('#{request.contextPath}/output?__report=/reports/solstyce/Fiche_Fabrication.rptdesign&amp;__format=pdf')"
+				actionListener="#{etatTracabiliteFabricationController.actImprimerCFArticle}"
+				 disabled="true" rendered="false"/> 
+<!-- 				disabled="#{etatTracabiliteFabricationController.etatBouton('imprimer')}" -->
+								
+
+<!-- 			<p:outputLabel value="Matières premières utilisées pour la fabrication de :" for="pfLibelle" /> -->
+<!-- 			<p:autoComplete id="pfLibelle" value="#{etatTracabiliteFabricationController.pfLibelle}" -->
+<!-- 				completeMethod="#{etatTracabiliteFabricationController.completeTextPFLibelle}" /> -->
+<!-- 			<p:commandButton value="Imprimer" id="imprimerPFL" styleClass="btn-print btn" -->
+<!-- 				onsuccess="window.open('#{request.contextPath}/output?__report=/reports/solstyce/Libelle_Produit_Fini.rptdesign&amp;__format=pdf')" -->
+<!-- 				actionListener="#{etatTracabiliteFabricationController.actImprimerPFL}" -->
+<!-- 				disabled="#{etatTracabiliteFabricationController.etatBouton('imprimer')}" /> -->
+
+<!-- 			<p:outputLabel value="Matières premières utilisées pour la fabrication du lot :" for="pfNumLot" /> -->
+<!-- 			<p:autoComplete id="pfNumLot" value="#{etatTracabiliteFabricationController.pfNumLot}" -->
+<!-- 				completeMethod="#{etatTracabiliteFabricationController.completeTextPFNumLot}" /> -->
+<!-- 			<p:commandButton value="Imprimer" id="imprimerPFNL" styleClass="btn-print btn" -->
+<!-- 				onsuccess="window.open('#{request.contextPath}/output?__report=/reports/solstyce/Numero_du_Lot_Produit_Fini.rptdesign&amp;__format=pdf')" -->
+<!-- 				actionListener="#{etatTracabiliteFabricationController.actImprimerPFNL}" -->
+<!-- 				disabled="#{etatTracabiliteFabricationController.etatBouton('imprimer')}" /> -->
+
+			<p:outputLabel value="Produits finis qui utilisent la Matière Première :" for="mpLibelle" />
+			<p:autoComplete id="mpLibelle" value="#{etatTracabiliteFabricationController.mpLibelle}"
+				completeMethod="#{etatTracabiliteFabricationController.completeTextMPLibelle}" />
+			<p:commandButton value="Imprimer" id="imprimerMPL" styleClass="btn-print btn"
+				onsuccess="window.open('#{request.contextPath}/output?__report=/reports/solstyce/Libelle_Matiere_Premiere.rptdesign&amp;__format=pdf')"
+				actionListener="#{etatTracabiliteFabricationController.actImprimerMPL}"
+				disabled="#{etatTracabiliteFabricationController.etatBouton('imprimer')}" />
+
+<!-- onsuccess="window.open('#{request.contextPath}/output?__report=/reports/solstyce/Numero_du_Lot_Matiere_Premiere.rptdesign&amp;__format=pdf')" -->
+			<p:outputLabel value="Produits finis qui utilisent le lot de Matière Première :" for="mpNumLot" />
+			<p:autoComplete id="mpNumLot" value="#{etatTracabiliteFabricationController.mpNumLot}"
+				completeMethod="#{etatTracabiliteFabricationController.completeTextMPNumLot}" />
+			<p:commandButton value="Imprimer" id="imprimerMPNL" styleClass="btn-print btn"				
+				onsuccess="window.open('#{request.contextPath}/output?__report=/reports/solstyce/Libelle_Matiere_Premiere_Par_Lot.rptdesign&amp;__format=pdf')"
+				actionListener="#{etatTracabiliteFabricationController.actImprimerMPNL}"
+				disabled="#{etatTracabiliteFabricationController.etatBouton('imprimer')}" />
+
+			<p:outputLabel value="Mouvements (par type) pour l'article :" for="mouvementArticleParType" />
+			<p:autoComplete id="mouvementArticleParType" value="#{etatTracabiliteFabricationController.mouvementArticle}"
+				completeMethod="#{etatTracabiliteFabricationController.completeTextDetailMouvementArticle}" />
+			<p:commandButton value="Imprimer" id="imprimerDMA" styleClass="btn-print btn"
+				onsuccess="window.open('#{request.contextPath}/output?__report=/reports/solstyce/Detail_Mouvement_Article.rptdesign&amp;__format=pdf')"
+				actionListener="#{etatTracabiliteFabricationController.actImprimerDMAParType}"
+				disabled="#{etatTracabiliteFabricationController.etatBouton('imprimer')}" />
+
+			<p:outputLabel value="Mouvements (par type) pour le lot :" for="mouvementLot" />
+			<p:autoComplete id="mouvementLot" value="#{etatTracabiliteFabricationController.mouvementLot}"
+				completeMethod="#{etatTracabiliteFabricationController.completeTextDetailMouvementLot}" />
+			<p:commandButton value="Imprimer" id="imprimerDML" styleClass="btn-print btn"
+				onsuccess="window.open('#{request.contextPath}/output?__report=/reports/solstyce/Detail_Mouvement_Lot.rptdesign&amp;__format=pdf')"
+				actionListener="#{etatTracabiliteFabricationController.actImprimerDML}"
+				disabled="#{etatTracabiliteFabricationController.etatBouton('imprimer')}" />
+
+			<p:outputLabel value="Etat des stocks :" for="etatStockGlobal" />
+			<p:outputLabel id="etatStockGlobal" color="red" value="(* Choisissez les Dates)" />
+			<p:commandButton value="Imprimer" id="imprimerEdSG" styleClass="btn-print btn"
+				onsuccess="window.open('#{request.contextPath}/output?__report=/reports/solstyce/Etat_des_Stocks_Global.rptdesign&amp;__format=pdf')"
+				actionListener="#{etatTracabiliteFabricationController.actImprimerEdSG}"
+				disabled="#{etatTracabiliteFabricationController.etatBouton('imprimer')}" />
+
+<!-- 			<p:outputLabel value="Etat des stocks par article:" for="etatStockArticle" /> -->
+<!-- 			<p:outputLabel id="etatStockArticle" color="red" value="(* Choisissez les Dates)" /> -->
+<!-- 			<p:commandButton value="Imprimer" id="imprimerEdSGPA" styleClass="btn-print btn" -->
+<!-- 				onsuccess="window.open('#{request.contextPath}/output?__report=/reports/solstyce/Etat_des_Stocks_Articles.rptdesign&amp;__format=pdf')" -->
+<!-- 				actionListener="#{etatTracabiliteFabricationController.actImprimerEdSGPA}"	 -->
+<!-- 				disabled="#{etatTracabiliteFabricationController.etatBouton('imprimer')}" /> -->
+				
+			<p:outputLabel value="Etat des Non-Conformités :" for="etatNonConf" rendered="false"/>
+			<p:outputLabel id="etatNonConf" color="red" value="  "  rendered="false"/>
+			<p:commandButton value="Imprimer" id="imprimerEdNC" styleClass="btn-print btn"
+				onsuccess="window.open('#{request.contextPath}/output?__report=/reports/solstyce/Non_conformites.rptdesign&amp;__format=pdf')"
+				actionListener="#{etatTracabiliteFabricationController.actImprimerEdNC}"
+				disabled="#{etatTracabiliteFabricationController.etatBouton('imprimer')}"  rendered="false"/>
+				
+			<p:outputLabel value="Mouvements (par date) pour tous les articles :" for="mouvementTousArticles" />
+			<p:outputLabel id="mouvementTousArticles" color="red" value="(* Choisissez les Dates)" />
+			<p:commandButton value="Imprimer" id="imprimerDMA3" styleClass="btn-print btn"
+				onsuccess="window.open('#{request.contextPath}/output?__report=/reports/solstyce/Detail_Mouvement_TousLesArticlesParDate.rptdesign&amp;__format=pdf')"
+				actionListener="#{etatTracabiliteFabricationController.actImprimerDMATous}"
+				disabled="#{etatTracabiliteFabricationController.etatBouton('imprimer')}" />	
+				
+			<p:outputLabel value="Fiche Bon Réception du lot :" for="brNumLot" />
+			<p:autoComplete id="brNumLot" value="#{etatTracabiliteFabricationController.brNumLot}"
+				completeMethod="#{etatTracabiliteFabricationController.completeTextLotReceptionne}" />
+			<p:commandButton value="Imprimer" id="imprimerCBRLot" styleClass="btn-print btn"
+				onsuccess="window.open('#{request.contextPath}/output?__report=/reports/documents/br/Fiche_BonReception.rptdesign&amp;__format=pdf')"
+				actionListener="#{etatTracabiliteFabricationController.actImprimerCBR}"
+				disabled="#{etatTracabiliteFabricationController.etatBouton('imprimer')}" />				
+		
+			<p:outputLabel value="Fiches Bon Réception de l'article :" for="codeBRs" rendered="false"/>
+			<p:autoComplete id="codeBRs" value="#{etatTracabiliteFabricationController.codeArticle}"
+				completeMethod="#{etatTracabiliteFabricationController.completeTextArticleReceptionne}"  disabled="true" rendered="false"/>
+			<p:commandButton value="Imprimer" id="imprimerCBRArticle" styleClass="btn-print btn"
+				onsuccess="window.open('#{request.contextPath}/output?__report=/reports/documents/br/Fiche_BonReception.rptdesign&amp;__format=pdf')"
+				actionListener="#{etatTracabiliteFabricationController.actImprimerCBRArticle}"
+				 disabled="true" rendered="false"/>	
+<!-- 				 disabled="#{etatTracabiliteFabricationController.etatBouton('imprimer')}" -->
+				
+			<p:outputLabel value="Inventaire :" for="Inventaire" rendered="false"/>
+			<p:autoComplete id="Inventaire" value="#{etatTracabiliteFabricationController.codeInventaire}"
+				completeMethod="#{etatTracabiliteFabricationController.completeTextCodeInventaire}"  rendered="false"/>
+			<p:commandButton value="Imprimer" id="imprimerInventaire" styleClass="btn-print btn"
+				onsuccess="window.open('#{request.contextPath}/output?__report=/reports/stock/Liste_des_Mouvements_Inventaire.rptdesign&amp;__format=pdf')"
+				actionListener="#{etatTracabiliteFabricationController.actImprimerInventaire}"
+				disabled="#{etatTracabiliteFabricationController.etatBouton('imprimer')}"  rendered="false"/>				
+		</h:panelGrid>
+
+	</f:validateBean>
+</ui:composition>

@@ -1,0 +1,1964 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:pe="http://primefaces.org/ui/extensions"
+    	xmlns:o="http://omnifaces.org/ui"
+	xmlns:p="http://primefaces.org/ui">
+	
+	<o:importConstants type="fr.legrain.bdg.webapp.app.LgrTab" />
+
+	<ui:define name="metadata">
+		<f:metadata>
+			<f:viewParam name="variableEcran" value="Boncde_achat" />
+		</f:metadata>
+	</ui:define>
+	
+	<!-- <f:validateBean disabled="true"> -->
+			<div class="dashboard-title" style="background: #f0f1f2; margin-bottom: 15px;">
+						<h:panelGroup id="idPanelGroupInfosTiersEnteteBonCdeAchat" rendered="#{!bonCdeAchatController.selectedDocumentDTO.BoncdeAchatEstVide()}">
+						<p:spacer width="30" height="5" />
+						<p:outputLabel value="Code : " />
+						<p:outputLabel value="#{bonCdeAchatController.selectedDocumentDTO.codeDocument}" style="font-weight: bold;"/>
+						<p:spacer width="30" height="5" />
+						<p:outputLabel value="Code tiers : " />
+							<p:commandLink 	value="#{bonCdeAchatController.selectedDocumentDTO.codeTiers}"
+											style="font-weight: bold;" 
+											action="#{bonCdeAchatController.ouvertureTiersBean.detailTiers(bonCdeAchatController.ouvertureTiersBean.recupCodetiers(bonCdeAchatController.selectedDocumentDTO.codeTiers))}" update=":form:tabView"
+											oncomplete="activeTabCenter('#{bonCdeAchatController.ouvertureTiersBean.event.cssLgrTab}');">
+							</p:commandLink>						
+<!-- 						<p:outputLabel value="#{bonCdeAchatController.selectedDocumentDTO.codeTiers}" style="font-weight: bold;"/> -->
+						<p:spacer width="30" height="5" />
+						<p:outputLabel value="Nom : " />
+						<p:outputLabel value="#{bonCdeAchatController.selectedDocumentDTO.nomTiers} #{bonCdeAchatController.selectedDocumentDTO.prenomTiers}" style="font-weight: bold;"/>
+						<p:spacer width="30" height="5" />
+						<p:outputLabel value="Raison sociale : " />
+						<p:outputLabel value="#{bonCdeAchatController.selectedDocumentDTO.nomEntreprise}" style="font-weight: bold;"/>
+						</h:panelGroup>
+			</div>
+
+
+	<p:menubar styleClass="menu-onglet" id="idMenuBoutonBoncdeAchat" widgetVar="wvMenuBoutonBoncdeAchat">
+
+	<p:menuitem title="#{c_boncommande.titre_menu_aide}" styleClass="icon icon-aidecontextuelle" onstart="PF('wvAideMenuBc').show()" />
+	<p:separator styleClass="separateur-menu-vertical"/>		
+			
+<!-- 			onsuccess="impressionDirect(PF('wvImpressionDirectBoncdeAchat'),'ddd')" -->
+<!-- oncomplete="if(PF('wvImpressionDirectBoncdeAchat').checked) {window.open('#{request.contextPath}/output?__report=/reports/Fiche_boncde.rptdesign&amp;__format=pdf'}" -->
+		<p:menuitem value="Enregistrer" styleClass="icon icon-save" process="@this idtiersBoncdeAchat idCodeBoncdeAchat"
+			title="#{c_boncommande.titre_menu_enregistrer}"
+			actionListener="#{bonCdeAchatController.actEnregistrer}" 
+			oncomplete="impressionDirect(PF('wvImpressionDirectBoncdeAchat'),'#{request.contextPath}/output?__report=/reports/documents/boncde/Fiche_boncde.rptdesign&amp;__format=pdf')"
+			update="idPanelEnteteBoncdeAchat,idPanelLignesBoncdeAchat,idTableauComplementaireBcde,:form:messages,@widgetVar(wvMenuListeBoncdeAchat),@widgetVar(wvDataTableListeBoncdeAchat),@widgetVar(#{bonCdeAchatController.wvEcran})"
+			disabled="#{bonCdeAchatController.etatBouton('enregistrer') or bonCdeAchatController.stepEnCours('idLignesBoncdeAchat')}" />
+			
+		<p:menuitem value="Insérer" styleClass="icon icon-insert"
+			title="#{c_boncommande.titre_menu_inserer}"
+			actionListener="#{bonCdeAchatController.actInserer}" process="@this"
+			oncomplete="if(PF('widgetVarLigneBoncdeAchat').getStepIndex()!=-1) {PF('widgetVarLigneBoncdeAchat').loadStep('idEnteteBoncdeAchat', false)}"
+			update="idPanelEnteteBoncdeAchat,idPanelLignesBoncdeAchat,idTableauComplementaireBcde,idPrecisionPrixBcdeAchat,:form:messages,@widgetVar(wvMenuListeBoncdeAchat),@widgetVar(wvDataTableListeBoncdeAchat),@widgetVar(#{bonCdeAchatController.wvEcran})"
+			disabled="#{bonCdeAchatController.etatBouton('inserer') or bonCdeAchatController.stepEnCours('idLignesBoncdeAchat')}" />
+			
+		<p:menuitem value="Modifier" styleClass="icon icon-update"
+			title="#{c_boncommande.titre_menu_modifier}"
+			actionListener="#{bonCdeAchatController.actModifier}"
+			process="@this"
+			update="idPanelEnteteBoncdeAchat,idPanelLignesBoncdeAchat,idTableauComplementaireBcde,:form:messages,@widgetVar(#{bonCdeAchatController.wvEcran}),@widgetVar(wvMenuListeBoncdeAchat),@widgetVar(wvDataTableListeBoncdeAchat)"
+			disabled="#{bonCdeAchatController.etatBouton('modifier') }" >
+			<p:confirm header="#{bonCdeAchatController.titreModification}" message="#{bonCdeAchatController.messageModification}" icon="ui-icon-alert" />
+		</p:menuitem>
+			
+			
+		<p:menuitem value="Annuler" styleClass="icon icon-cancel"
+			title="#{c_boncommande.titre_menu_annuler}"
+			actionListener="#{bonCdeAchatController.actAnnuler}" process="@this"
+			update="idPanelEnteteBoncdeAchat,idPanelLignesBoncdeAchat,idTableauComplementaireBcde,:form:messages,@widgetVar(#{bonCdeAchatController.wvEcran}),@widgetVar(wvMenuListeBoncdeAchat),@widgetVar(wvDataTableListeBoncdeAchat)"
+			disabled="#{bonCdeAchatController.etatBouton('annuler') }" >
+		<p:confirm header="Confirmation" message="#{msg_diag.alert_annulation}"  icon="ui-icon-alert" />
+		</p:menuitem>
+
+		<p:menuitem value="Supprimer" styleClass="icon icon-delete menuitem-poubelle-droite"
+			title="#{c_boncommande.titre_menu_supprimer}"
+			actionListener="#{bonCdeAchatController.actSupprimer}"
+			process="@this"
+			update="idPanelEnteteBoncdeAchat,idPanelLignesBoncdeAchat,idTableauComplementaireBcde,:form:messages,@widgetVar(wvDataTableListeBoncdeAchat),@widgetVar(wvMenuListeBoncdeAchat),@widgetVar(#{bonCdeAchatController.wvEcran})"
+			disabled="#{bonCdeAchatController.etatBouton('supprimer') or bonCdeAchatController.stepEnCours('idLignesBoncdeAchat')}" >
+<!-- 			<p:confirm header="Confirmation" message="#{msg_diag.alert_suppresion}" icon="ui-icon-alert" /> -->
+			<p:confirm header="Confirmation de la suppression" message="#{bonCdeAchatController.messageSuppression}" icon="ui-icon-alert" />
+
+		</p:menuitem>			
+			
+		<p:menuitem value="Fermer" styleClass="icon icon-close menuitem-fermer-droite"
+			title="#{c_boncommande.titre_menu_fermer}"
+			process="@this" 
+			actionListener="#{bonCdeAchatController.actFermer}"
+			update=":form:messages,@widgetVar(wvMenuListeBoncdeAchat),@widgetVar(wvDataTableListeBoncdeAchat)"
+			disabled="#{bonCdeAchatController.etatBouton('fermer') }" 
+			onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())">
+			
+			<p:confirm header="Confirmation" message="#{msg_diag.alert_fermeture_onglet}" icon="ui-icon-alert" disabled="#{!bonCdeAchatController.modeEcran.dataSetEnModif()}"/>
+		</p:menuitem>
+
+		<p:menuitem title="Créer un évènement" styleClass="icon-agenda icon" 
+			
+			oncomplete="$('.classHiddenCommandForDialogAgendaReturnBCdeAchat').click()"
+			process="@this" 
+			update="@this" 
+			disabled="#{bonCdeAchatController.etatBouton('modifier')}"/>
+
+		<p:separator styleClass="separateur-menu-vertical"/>
+
+		<p:menuitem value="Imprimer" styleClass="icon icon-print"
+			title="#{c_boncommande.titre_menu_imprimer}"
+			onsuccess="window.open('#{request.contextPath}/output?__report=/reports/documents/boncdeAchat/Fiche_boncde_achat.rptdesign&amp;__format=pdf')"
+			actionListener="#{bonCdeAchatController.actImprimer}"
+			disabled="#{bonCdeAchatController.etatBouton('imprimer') or bonCdeAchatController.stepEnCours('idLignesBoncdeAchat')}" />
+			
+		<p:menuitem value="Imprimer étiquette code barre" styleClass="icon icon-barcode"
+						onsuccess="window.open('#{request.contextPath}/articles/etiquette_cb.xhtml')"
+						actionListener="#{bonCdeAchatController.actImprimerEtiquetteCB}"/>	
+						
+		<p:menuitem title="Envoyer par email" styleClass="icon icon-envoi-mail"
+			oncomplete="$('.classHiddenCommandForDialogEmailReturnBCdeAchat').click()"
+			process="@this" 
+			update=":form:messages" 
+			disabled="#{bonCdeAchatController.etatBouton('modifier')}"/>
+
+		<p:separator styleClass="separateur-menu-vertical" />
+
+		<p:menuitem title="#{c_boncommande.titre_menu_afficher_liste}" styleClass="icon icon-liste" oncomplete="PF('wvOverlayListeBoncdeAchat').show();"/>
+		
+		<p:separator styleClass="separateur-menu-vertical" />
+
+		<p:menuitem title="Documents liés" styleClass="icon icon-documents-lies"  rendered="#{auth.isDevLgr()}"
+			oncomplete="$('.classHiddenCommandForDialogDocumentLieReturnBcdeAchat').click()"
+			process="@this" 
+			update="@this" 
+			disabled="#bonCdeAchatController.etatBouton('imprimer') }" />
+					
+	</p:menubar>
+	<p:commandButton styleClass="classHiddenCommandForDialogAgendaReturnBCdeAchat" actionListener="#{bonCdeAchatController.actDialogEvenement}" style="display:none" process="@this"  >
+        <p:ajax event="dialogReturn" update="@widgetVar(wvAgenda)"  />  
+    </p:commandButton>    
+    
+	<p:commandButton styleClass="classHiddenCommandForDialogEmailReturnBCdeAchat" actionListener="#{bonCdeAchatController.actDialogEmail}" style="display:none" process="@this"  >
+        <p:ajax event="dialogReturn" listener="#{bonCdeAchatController.handleReturnDialogEmail}" update=":form:messages"  />  
+    </p:commandButton>
+    
+    <p:commandButton styleClass="classHiddenCommandForDialogDocumentLieReturnBcdeAchat" actionListener="#{bonCdeAchatController.actDialogGenerationDocumentLie}" style="display:none" process="@this"  >
+        <p:ajax event="dialogReturn" update="@form"  listener="#{bonCdeAchatController.handleReturnDialogDocumentLie}"/>  
+    </p:commandButton>
+        
+	<p:overlayPanel widgetVar="wvAideMenuBc" hideEffect="fade"
+								dynamic="true" showCloseIcon="true"
+								styleClass="overlay-aide-contextuelle overlay-aide-contextuelle-big">
+								<ui:include src="/aide_contextuelle/bc_general.xhtml" />
+	</p:overlayPanel>
+
+	<p:fieldset style="margin-bottom:20px;" id="idTableauComplementaireBcde" widgetVar="wvTableauComplementaireBcde">
+		<h:panelGrid columns="9" cellpadding="15">
+			<p:panel styleClass="panel-aide-contextuelle">
+				<p:commandButton process="@this" 
+				alt="#{const_vue.btn_generation_modele}"
+				title="#{const_vue.btn_generation_modele}" 
+				label="#{const_vue.btn_generation_modele}" 
+				value="#{const_vue.btn_generation_modele}"
+
+				icon="ui-icon-copy"
+					action="#{duplicationDocumentBean.actDialogGenerationModeleDocument}" disabled="#{bonCdeAchatController.modeEcran.dataSetEnModif()}">
+						<f:setPropertyActionListener target="#{duplicationDocumentBean.doc}" value="#{bonCdeAchatController.masterEntity}"/>
+						<p:ajax event="dialogReturn" listener="#{duplicationDocumentBean.handleReturnDialogGenerationDocument}" 
+						update=":form:tabView,@widgetVar(wvMenuListeBoncdeAchat),@widgetVar(wvDataTableListeBoncdeAchat)" oncomplete="activeTabCenter('#{bonCdeAchatController.css}');" />
+				</p:commandButton>
+				<p:commandLink id="idLinkAideGenerationModeleDocumentDevis"
+					styleClass="lien-aide-contextuelle">
+					<i class="fa fa-info-circle animated"></i>
+				</p:commandLink>
+
+				<p:overlayPanel for="idLinkAideGenerationModeleDocumentDevis"
+					hideEffect="fade" dynamic="true" showCloseIcon="true"
+					styleClass="overlay-aide-contextuelle">
+					<ui:include
+						src="/aide_contextuelle/document_generation_modele_document.xhtml" />
+				</p:overlayPanel>
+			</p:panel>
+			<p:separator/>
+			<p:panel styleClass="panel-aide-contextuelle">
+				<p:commandButton process="@this" 
+					alt="#{const_vue.btn_generation_document}" 
+					title="#{const_vue.btn_generation_document}"
+					label="#{const_vue.btn_generation_document}" 
+					value="#{const_vue.btn_generation_document}"
+				icon="ui-icon-link"
+					action="#{duplicationDocumentBean.actDialogGenerationDocument}" disabled="#{bonCdeAchatController.modeEcran.dataSetEnModif()}">
+					<f:setPropertyActionListener target="#{duplicationDocumentBean.doc}" value="#{bonCdeAchatController.masterEntity}"/>
+					<f:setPropertyActionListener target="#{duplicationDocumentBean.genereToutesLesLignes}" value="true"/>	
+						<p:ajax event="dialogReturn" listener="#{duplicationDocumentBean.handleReturnDialogGenerationDocument}" 
+						update=":form:tabView,@widgetVar(wvMenuListeBoncdeAchat),@widgetVar(wvDataTableListeBoncdeAchat)" oncomplete="activeTabCenter('#{bonCdeAchatController.css}');" />
+				</p:commandButton>
+				<p:commandLink id="idLinkAideGenerationDocumentBc"
+					styleClass="lien-aide-contextuelle">
+					<i class="fa fa-info-circle animated"></i>
+				</p:commandLink>
+
+				<p:overlayPanel for="idLinkAideGenerationDocumentBc" hideEffect="fade"
+					dynamic="true" showCloseIcon="true"
+					styleClass="overlay-aide-contextuelle">
+					<ui:include
+						src="/aide_contextuelle/document_generation_document.xhtml" />
+				</p:overlayPanel>
+			</p:panel>
+			<!-- 							<p:separator styleClass="separateur-menu-vertical"/> -->
+			<!-- 							<p:panel> -->
+			<!-- 							<p:outputLabel value="CA HT : " /> -->
+			<!-- 							</p:panel> -->
+			<!-- 							<p:panel> -->
+			<!-- 							<p:outputLabel value="150 €" /> -->
+			<!-- 							</p:panel> -->
+			<!-- 							<p:separator styleClass="separateur-menu-vertical"/> -->
+			<!-- 							<p:panel> -->
+			<!-- 							<p:outputLabel value="CA HT : " /> -->
+			<!-- 							</p:panel> -->
+			<!-- 							<p:panel> -->
+			<!-- 							<p:outputLabel value="150 €" /> -->
+			<!-- 							</p:panel> -->
+				<p:commandButton process="@this"  rendered="#{auth.isDevLgr()}"
+					alt="Valider le document" 
+					title="Valider le document"
+					label="Valider le document" 
+					value="Valider le document"
+				icon="ui-icon-link"
+					action="#{bonCdeAchatController.actValiderDocument}" 
+					disabled="#{bonCdeAchatController.modeEcran.dataSetEnModif()}"
+					 update="idPanelEnteteBoncdeAchat,idPanelLignesBoncdeAchat,idTableauComplementaireBcde,:form:messages,@widgetVar(#{bonCdeAchatController.wvEcran}),@widgetVar(wvMenuListeBoncdeAchat),@widgetVar(wvDataTableListeBoncdeAchat)" >
+					<f:setPropertyActionListener target="#{duplicationDocumentBean.doc}" value="#{bonCdeAchatController.masterEntity}"/>	
+						
+				</p:commandButton>
+							
+					<p:outputLabel value="Etat du document  " rendered="#{auth.isDevLgr()}"/>
+						<p:panel styleClass="panel-aide-contextuelle" rendered="#{auth.isDevLgr()}">
+							<p:autoComplete value="#{bonCdeAchatController.selectedEtatDocument}" 
+								converter="entityConverter"
+								completeMethod="#{bonCdeAchatController.etatAutoComplete}"
+								disabled="true" var="etat"
+								itemLabel="#{etat.codeEtat}" itemValue="#{etat}"
+								forceSelection="true" dropdown="true" placeholder="Etat du document">
+								<p:column>
+									<h:outputText value="#{etat.codeEtat}" />
+								</p:column>
+
+								<p:column>
+									<h:outputText value="#{etat.liblEtat}" />
+								</p:column>
+
+								<f:attribute name="nomChamp" value="#{const.C_CODE_ETAT}" />
+								  <p:ajax event="clear" listener="#{bonCdeAchatController.onClearEtat}" 
+								 	update="idPanelEnteteBoncdeAchat,idPanelLignesBoncdeAchat,idTableauComplementaireBcde,:form:messages,@widgetVar(#{bonCdeAchatController.wvEcran}),@widgetVar(wvMenuListeBoncdeAchat),@widgetVar(wvDataTableListeBoncdeAchat)"/>
+								<p:ajax event="itemSelect"
+									listener="#{bonCdeAchatController.autcompleteSelection}"
+									update="idPanelEnteteBoncdeAchat,idPanelLignesBoncdeAchat,idTableauComplementaireBcde,:form:messages,@widgetVar(#{bonCdeAchatController.wvEcran}),@widgetVar(wvMenuListeBoncdeAchat),@widgetVar(wvDataTableListeBoncdeAchat)"/>
+							</p:autoComplete>
+						</p:panel>			
+					<p:outputLabel value="précision prix : " rendered="#{bonCdeAchatController.affichagePrecisionPrixDocument()}"/>
+					<p:outputLabel value="#{bonCdeAchatController.masterEntity.nbDecimalesPrix} décimale(s)" style="font-weight: bold;" id="idPrecisionPrixBcdeAchat" 
+					rendered="#{bonCdeAchatController.affichagePrecisionPrixDocument()}"/>
+		</h:panelGrid>
+	</p:fieldset>
+	
+	<!-- 	<div class="ui-grid ui-grid-responsive"> -->
+	<!-- 		<div class="ui-grid-row"> -->
+	<!-- 			<div class="ui-grid-col-12"> -->
+<!-- 	flowListener="#{bonCdeAchatController.onFlowProcess}" -->
+
+	<p:wizard nextLabel="#{const_vue.btn_suivant}" backLabel="#{const_vue.btn_precedent}" binding="#{bonCdeAchatController.wizardDocument}" step="#{bonCdeAchatController.stepCourant()}"
+	showStepStatus="false" widgetVar="widgetVarLigneBoncdeAchat" flowListener="#{bonCdeAchatController.handleFlow}" >
+<p:tab id="idSyntheseBoncdeAchat" title="Synthèse du bon de commande">
+			<div class="card">
+				<p:panel header="Synthèse du bon de commande" style="width:100%;" rendered="#{!bonCdeAchatController.selectedDocumentDTO.BoncdeAchatEstVide()}">
+					<p:panelGrid columns="3" id="idInfosBoncdeAchat" columnClasses="ui-grid-col-4,ui-grid-col-4,ui-grid-col-4" styleClass="ui-panelgrid-blank" layout="grid">
+						<h:panelGroup>
+						<p:outputLabel value="Code bon commande : " style="font-weight: bold;"/>
+						<p:outputLabel value="#{bonCdeAchatController.selectedDocumentDTO.codeDocument}" />
+						</h:panelGroup>
+						<h:panelGroup>
+						<p:outputLabel value="Code tiers : " style="font-weight: bold;"/>
+							<p:commandLink 	value="#{bonCdeAchatController.selectedDocumentDTO.codeTiers}"
+											style="font-weight: bold;" 
+											action="#{bonCdeAchatController.ouvertureTiersBean.detailTiers(bonCdeAchatController.ouvertureTiersBean.recupCodetiers(bonCdeAchatController.selectedDocumentDTO.codeTiers))}" update=":form:tabView"
+											oncomplete="activeTabCenter('#{bonCdeAchatController.ouvertureTiersBean.event.cssLgrTab}');">
+							</p:commandLink>						
+<!-- 						<p:outputLabel value="#{bonCdeAchatController.selectedDocumentDTO.codeTiers}"/> -->
+						</h:panelGroup>
+						<h:panelGroup>
+						<p:outputLabel value="Adresse facturation : " style="font-weight: bold;"/>
+<!-- 						<p:outputLabel value="#{bonCdeAchatController.selectedDocumentDTO.dateDocument}" > -->
+<!-- 							<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/> -->
+<!-- 						</p:outputLabel> -->
+						</h:panelGroup>
+						
+						<h:panelGroup>
+<!-- 						<p:outputLabel value="Libellé : "/> -->
+						<p:outputLabel value="#{bonCdeAchatController.selectedDocumentDTO.libelleDocument}" />
+						</h:panelGroup>
+						<h:panelGroup>
+						<p:outputLabel value="Entreprise : " style="font-weight: bold;"/>
+						<p:outputLabel value="#{bonCdeAchatController.selectedDocumentDTO.nomEntreprise}"/>
+						<br />
+						<p:outputLabel value="#{bonCdeAchatController.selectedDocumentDTO.nomTiers} - #{bonCdeAchatController.selectedDocumentDTO.prenomTiers}"/>
+<!-- 						<hr/> -->
+<!-- 						<h:panelGroup> -->
+<!-- 						<p:outputLabel value="Coordonnées : " style="font-weight: bold;"/> -->
+<!-- 						<p:outputLabel value="#{bonCdeAchatController.selectedInfosTiers.adresseEmail} - #{bonCdeAchatController.selectedInfosTiers.numeroTelephone}"/> -->
+<!-- 						</h:panelGroup> -->
+						</h:panelGroup>
+						<h:panelGroup>
+						<p:outputLabel value="" style="font-weight:bold;"/>
+						<p:outputLabel value="#{bonCdeAchatController.taAdresseFact.adresse1Adresse}" >
+						</p:outputLabel>
+						<br/>
+						<p:outputLabel value="#{bonCdeAchatController.taAdresseFact.adresse2Adresse}" >
+						</p:outputLabel>
+						</h:panelGroup>
+
+						<h:panelGroup>
+						<p:outputLabel value="Date bon commande : " style="font-weight: bold;"/>
+						<p:outputLabel value="#{bonCdeAchatController.selectedDocumentDTO.dateDocument}" >
+							<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+						</p:outputLabel>
+						</h:panelGroup>
+						<h:panelGroup>
+						<p:outputLabel value="Tèl : " style="font-weight: bold;"/>
+						<p:outputLabel value="#{bonCdeAchatController.taTiersDTO.numeroTelephone}"/>
+						</h:panelGroup>
+						<h:panelGroup>
+						<p:outputLabel value="" style="font-weight: bold;"/>
+						<p:outputLabel value="#{bonCdeAchatController.taAdresseFact.adresse3Adresse}" >
+<!-- 						<p:outputLabel value="#{bonCdeAchatController.taAdresseFact.codepostalAdresse} #{bonCdeAchatController.taAdresseFact.villeAdresse}" > -->
+<!-- 							<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/> -->
+						</p:outputLabel>
+						</h:panelGroup>
+						
+<!-- 						<h:panelGroup> -->
+<!-- 						<p:outputLabel value="Date échéance : " style="font-weight:bold;"/> -->
+<!-- 						<p:outputLabel value="#{bonCdeAchatController.selectedDocumentDTO.dateEchDocument}" > -->
+<!-- 							<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/> -->
+<!-- 						</p:outputLabel> -->
+<!-- 						</h:panelGroup> -->
+						<h:panelGroup>
+						<p:outputLabel value="Email : " style="font-weight: bold;"/>
+						<p:outputLabel value="#{bonCdeAchatController.taTiersDTO.adresseEmail}"/>
+						</h:panelGroup>
+						<h:panelGroup>
+						<p:outputLabel value="Ville : " style="font-weight: bold;"/>
+						<p:outputLabel value="#{bonCdeAchatController.taAdresseFact.codepostalAdresse} #{bonCdeAchatController.taAdresseFact.villeAdresse}" >
+<!-- 							<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/> -->
+						</p:outputLabel>
+						</h:panelGroup>
+																		
+ 						<h:panelGroup> 
+						<div class="card" style="background:#ebebeb;text-align:center;center;padding: 5px;margin-top: 15px;">
+						<p:outputLabel value="Net TTC" style="font-weight: bold;"/>
+						<p:separator style="color:#9a9a9a"/>
+						<p:outputLabel value="#{bonCdeAchatController.selectedDocumentDTO.netTtcCalc}">
+						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+						</p:outputLabel>
+<!-- 						<hr /> -->
+						</div>
+						</h:panelGroup>
+
+						
+						
+						<h:panelGroup>
+						<div class="card" style="background:#ebebeb;text-align:center;center;padding: 5px;margin-top: 15px;">
+<!-- 						<p:outputLabel value="Déjà réglé : " style="font-weight: bold;"/> -->
+<!-- 						<p:separator style="color:#9a9a9a"/> -->
+<!-- 						<p:outputLabel value="#{bonCdeAchatController.selectedDocumentDTO.regleDocument}"> -->
+<!-- 						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" /> -->
+<!-- 						</p:outputLabel> -->
+						</div>
+						</h:panelGroup>
+<!-- 						</h:panelGroup> -->
+<!--border-style: solid;border-width: thin;padding: 7px; -->
+						<h:panelGroup>
+						<div class="card" style="background: #ebf9cc;text-align: center;padding: 5px;margin-top: 15px;">
+<!-- 						<p:outputLabel value="Reste à régler" style="font-weight: bold;"/> -->
+<!-- 						<p:separator style="color:#9a9a9a"/> -->
+<!-- 						<p:outputLabel value="#{bonCdeAchatController.selectedDocumentDTO.resteAReglerComplet}" style="font-weight: bold;" > -->
+<!-- 						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" /> -->
+<!-- 						</p:outputLabel> -->
+<!-- 						<hr /> -->
+						</div>
+						</h:panelGroup>
+					</p:panelGrid>
+<!-- Début détail ligne synthèse					 -->
+					<p:dataTable id="iddataTableLigneBoncdeAchatSynthese" 
+					var="ligne"
+					scrollable="true"
+					scrollHeight="250"					
+					widgetVar="widgetVarDataTableLigneBoncdeAchatSynthese"
+					emptyMessage="#{msg.message_datatable_vide}"
+					value="#{bonCdeAchatController.valuesLigne}"
+					rowKey="#{ligne.dto.numLigneLDocument}"
+					styleClass="datatable mt10 myclassBoncdeAchat">
+					
+					
+					<p:ajax event="toggleSelect" process="@this" />
+					<p:ajax event="rowToggle" process="@this" oncomplete="ligneSeperationExpend()" />
+					
+					<p:column style="width:8px" styleClass="center" >
+						<p:rowToggler  rendered="#{ligne.ligneLieeFils!=null or ligne.ligneLieeMere!=null or ligne.ligneAbonnement!=null}"/>
+					</p:column>
+					
+					
+					<p:column style="width:10%">
+						<f:facet name="header">
+							<h:outputText value="Code article" />
+						</f:facet>
+				<p:commandLink 	value="#{ligne.taArticle.codeArticle}"
+						action="#{bonCdeAchatController.ouvertureArticleBean.detailArticle(bonCdeAchatController.ouvertureArticleBean.recupCodeArticle(ligne.taArticle.codeArticle))}" update=":form:tabView"
+						oncomplete="activeTabCenter('#{bonCdeAchatController.ouvertureArticleBean.event.cssLgrTab}');">
+				</p:commandLink>	
+<!-- 								<h:outputText value="#{ligne.taArticle.codeArticle}"/> -->
+					</p:column >
+					
+					<p:column style="width:24%">
+						<f:facet name="header">
+							<h:outputText value="Libellé" />
+						</f:facet>
+								<h:outputText value="#{ligne.dto.libLDocument}" id="idListeSyntheseLibelleBoncdeAchat"/>
+								<p:tooltip id="toolTipListeSyntheseLibelleBoncdeAchat" value="#{ligne.dto.libLDocument}" shared="true" for="idListeSyntheseLibelleBoncdeAchat" showEffect="clip" position="top"/>
+					</p:column>
+
+					<p:column  style="width:8%" styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Qté 1" />
+						</f:facet>
+								<h:outputText value="#{ligne.dto.qteLDocument}"/>	
+					</p:column>
+
+					<p:column style="width:5%" styleClass="center">
+						<f:facet name="header">
+							<h:outputText value="U1" />
+						</f:facet>
+
+								<h:outputText value="#{ligne.taUnite1.codeUnite}" />
+					</p:column>
+
+					<p:column  style="width:8%" styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Qté 2" />
+						</f:facet>
+							<h:outputText value="#{ligne.dto.qte2LDocument}" id="idqte2LBoncdeAchatSynthese"/>
+					</p:column>
+
+					<p:column style="width:5%" styleClass="center">
+						<f:facet name="header">
+							<h:outputText value="U2" />
+						</f:facet>
+								<h:outputText value="#{ligne.taUnite2.codeUnite}"/>
+					</p:column>
+					
+					<p:column style="width:8%" styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Prix unitaire" />
+						</f:facet>
+								<h:outputText value="#{ligne.dto.prixULDocument}">
+									<f:convertNumber type="currency"  minFractionDigits="#{bonCdeAchatController.prefNbDecimalesPrix}" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+					</p:column>
+					
+					<p:column style="width:5%" styleClass="right" >
+						<f:facet name="header">
+							<h:outputText value="Remise %" />
+						</f:facet>
+								<h:outputText value="#{ligne.dto.remTxLDocument}" />
+					</p:column>
+					
+					<p:column style="width:20%" styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Montant HT" />
+						</f:facet>
+								<h:outputText value="#{ligne.dto.mtHtLDocument}" disabled="true">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+					</p:column>
+					
+					<p:column style="width:5%" styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="TVA"/>
+						</f:facet>
+								<h:outputText value="#{ligne.dto.codeTvaLDocument}" disabled="true">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+					</p:column>
+					
+					<p:column style="width:20%" styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Montant TTC" />
+						</f:facet>
+								<h:outputText value="#{ligne.dto.mtTtcLDocument}" disabled="true">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+					</p:column>
+					
+					<p:column style="width:5%" styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Remise globale" />
+						</f:facet>
+								<h:outputText value="#{ligne.dto.txRemHtDocument}" disabled="true">
+								</h:outputText>
+					</p:column>
+					<p:column style="width:1%">
+						<f:facet name="header">
+							<h:outputText value="Etat" />
+						</f:facet>
+								<h:outputText value="#{ligne.codeEtat}"  id="idListeSyntheseEtat#{variableEcran}"/>
+								<p:tooltip  value="#{ligne.codeEtat.concat(ligne.libelleEtat)}" shared="true" for="idListeSyntheseEtat#{variableEcran}" showEffect="clip" position="top"/>
+					</p:column>					
+					
+					<p:rowExpansion>
+
+					<p:panelGrid columns="2"  columnClasses="ui-grid-col-6,ui-grid-col-6" styleClass="ui-panelgrid-blank" layout="grid" rendered="#{ligne.ligneLieeFils!=null or ligne.ligneLieeMere!=null}">
+					<p:panel header="document ayant servi à générer le document courant" style="width:100%;" >
+						<p:dataTable value="#{ligne.ligneLieeMere}" id="dataTableLigneLieeMere" var="lien" selectionMode="single" editable="true"
+							selection="#{bonCdeAchatController.selectedLigneALigneDTO}" rowKey="#{lien.id}" widgetVar="wvdataTableLigneLieeMere" 
+							emptyMessage="#{msg.message_datatable_vide}" resizableColumns="true">
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="code document" />
+								</f:facet>
+								<p:commandLink value="#{lien.codeDocumentDest}"
+									action="#{bonCdeAchatController.duplicationDocumentBean.ouvertureDocumentBean.detailDocument(bonCdeAchatController.duplicationDocumentBean.ouvertureDocumentBean.recupCodeDocument(lien.codeDocumentDest,lien.typeDocument))}"
+									update=":form:tabView"
+									oncomplete="activeTabCenter('#{bonCdeAchatController.duplicationDocumentBean.ouvertureDocumentBean.event.cssLgrTab}');">>
+								</p:commandLink>
+								<!-- 								<h:outputText value="#{lien.codeDocumentDest}" /> -->
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="libellé ligne" />
+								</f:facet>
+								<h:outputText value="#{lien.libelleLigne}" />
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="lot" />
+								</f:facet>
+								<h:outputText value="#{lien.numLot}" />
+							</p:column>
+							<p:column styleClass="right">
+								<f:facet name="header">
+									<h:outputText value="Qté. reçue" />
+								</f:facet>
+								<h:outputText value="#{lien.qteRecue}" />
+							</p:column>
+<!-- 							<p:column> -->
+<!-- 								<f:facet name="header"> -->
+<!-- 									<h:outputText value="Etat" /> -->
+<!-- 								</f:facet> -->
+<!-- 								<h:outputText value="#{lien.etat}" /> -->
+<!-- 							</p:column>							 -->
+
+						</p:dataTable>
+						</p:panel>
+						<p:panel header="document généré à partir du document courant" style="width:100%;" >
+						<p:dataTable value="#{ligne.ligneLieeFils}" id="dataTableLigneLieeFils" var="lien" selectionMode="single" editable="true"
+							selection="#{bonCdeAchatController.selectedLigneALigneDTO}" rowKey="#{lien.id}" widgetVar="wvdataTableLigneLieeFils" 
+							emptyMessage="#{msg.message_datatable_vide}" resizableColumns="true">
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="code document" />
+								</f:facet>
+								<p:commandLink value="#{lien.codeDocumentDest}"
+									action="#{bonCdeAchatController.duplicationDocumentBean.ouvertureDocumentBean.detailDocument(bonCdeAchatController.duplicationDocumentBean.ouvertureDocumentBean.recupCodeDocument(lien.codeDocumentDest,lien.typeDocument))}"
+									update=":form:tabView"
+									oncomplete="activeTabCenter('#{bonCdeAchatController.duplicationDocumentBean.ouvertureDocumentBean.event.cssLgrTab}');">>
+								</p:commandLink>
+								<!-- 								<h:outputText value="#{lien.codeDocumentDest}" /> -->
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="libellé ligne" />
+								</f:facet>
+								<h:outputText value="#{lien.libelleLigne}" />
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="lot" />
+								</f:facet>
+								<h:outputText value="#{lien.numLot}" />
+							</p:column>
+							<p:column styleClass="right">
+								<f:facet name="header">
+									<h:outputText value="Qté. reçue" />
+								</f:facet>
+								<h:outputText value="#{lien.qteRecue}" />
+							</p:column>
+<!-- 							<p:column> -->
+<!-- 								<f:facet name="header"> -->
+<!-- 									<h:outputText value="Etat" /> -->
+<!-- 								</f:facet> -->
+<!-- 								<h:outputText value="#{lien.etat}" /> -->
+<!-- 							</p:column>							 -->
+
+						</p:dataTable>
+						</p:panel>
+					</p:panelGrid>
+					<p:panel header="Infos de l'abonnement" style="width:100%;" rendered="#{ligne.ligneAbonnement!=null}">
+
+						<p:dataTable value="#{ligne.ligneAbonnement}" id="dataTableLigneAbonnement" var="lien" selectionMode="single" editable="true"
+							selection="#{bonCdeAchatController.selectedLigneALigneDTO}" rowKey="#{lien.id}" widgetVar="wvdataTableLigneAbonnement" 
+							emptyMessage="#{msg.message_datatable_vide}" resizableColumns="true">
+								<p:column  style="width:80px" >
+									<p:commandButton value="" actionListener="#{bonCdeAchatController.actDialogDetailLigneAbonnement}" process="@this"
+										styleClass="icon-medium icon-reglement" title="Détail de la ligne d'abonnement">
+										<f:attribute name="taLigneALigneEcheanceDTO" value="#{lien}" />
+										<p:ajax event="dialogReturn" listener="#{bonCdeAchatController.handleReturnDialogDetailLigneAbonnement}" />
+									</p:commandButton>
+								</p:column>
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="code document" />
+								</f:facet>
+								<p:commandLink value="#{lien.codeDocumentDest}"
+									action="#{bonCdeAchatController.duplicationDocumentBean.ouvertureDocumentBean.detailAbonnement(bonCdeAchatController.duplicationDocumentBean.ouvertureDocumentBean.recupCodeDocument(lien.codeDocumentDest,lien.typeDocument))}"
+									update=":form:tabView"
+									oncomplete="activeTabCenter('#{bonCdeAchatController.duplicationDocumentBean.ouvertureDocumentBean.event.cssLgrTab}');">>
+								</p:commandLink>
+
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="libellé ligne" />
+								</f:facet>
+								<h:outputText value="#{lien.libelleLigne}" />
+							</p:column>
+						</p:dataTable>
+						</p:panel>
+
+					</p:rowExpansion>
+
+				</p:dataTable>
+<!-- Fin détail ligne synthèse					 -->
+					<p:panelGrid columns="1" id="idInfosCommentaireBoncdeAchat" columnClasses="ui-grid-col-4" styleClass="ui-panelgrid-blank" layout="grid">
+						<h:panelGroup>
+						<p:outputLabel value="Commentaires" style="font-weight: bold;"/>
+						<br/>
+						<p:outputLabel value="#{bonCdeAchatController.selectedDocumentDTO.commentaire}" />
+						</h:panelGroup>
+					</p:panelGrid>
+				</p:panel>
+			</div>
+		</p:tab>
+		<p:tab id="idEnteteBoncdeAchat" title="Entête" >
+		
+			<p:panel id="idPanelEnteteBoncdeAchat" header="#{const_vue.titre_panel_entete}" toggleable="true" widgetVar="panelEnteteBoncdeAchat" >
+				<f:facet name="actions">
+				<p:commandLink id="idLinkAideEnteteBc"
+						styleClass="lien-aide-contextuelle">
+						<i class="fa fa-info-circle animated"></i>
+					</p:commandLink>
+
+					<p:overlayPanel for="idLinkAideEnteteBc" hideEffect="fade"
+						dynamic="true" showCloseIcon="true"
+						styleClass="overlay-aide-contextuelle">
+						<ui:include src="/aide_contextuelle/document_entete_document.xhtml" />
+					</p:overlayPanel>
+        		</f:facet>
+        		<h:panelGrid columns="2" cellpadding="10" >
+					
+					<p:outputLabel value="Code bon commande : " styleClass="labelchob" />
+					<p:panel styleClass="panel-aide-contextuelle">
+						<p:inputText id="idCodeBoncdeAchat"
+							styleClass=""
+							value="#{bonCdeAchatController.selectedDocumentDTO.codeDocument}"
+							validator="#{bonCdeAchatController.validateDocument}"
+							disabled="#{bonCdeAchatController.editableEnInsertionUniquement()}">
+							<f:attribute name="nomChamp" value="#{const.C_CODE_DOCUMENT}" />
+							<p:ajax event="blur" update="@this" />
+						</p:inputText>
+						<p:commandLink id="idLinkAideCodeBoncdeAchat" styleClass="lien-aide-contextuelle" >
+							<i class="fa fa-info-circle animated swing"></i>
+						</p:commandLink>
+						<p:overlayPanel for="idLinkAideCodeBoncdeAchat" hideEffect="fade" dynamic="true" showCloseIcon="true" styleClass="overlay-aide-contextuelle">
+							<ui:include src="/aide_contextuelle/document_code_document.xhtml" />
+						</p:overlayPanel>
+					</p:panel>
+					
+					<p:outputLabel value="Code tiers : " styleClass="labelchob"/>
+					
+					<p:focus>
+					
+						<p:panel styleClass="panel-aide-contextuelle">
+							<p:autoComplete value="#{bonCdeAchatController.taTiersDTO}"
+							       id="idtiersBoncdeAchat" converter="entityConverter"
+								completeMethod="#{bonCdeAchatController.tiersAutoCompleteDTOLight}"
+								required="true" requiredMessage="#{msg_diag.alert_champs_obligatoir}"
+								disabled="#{bonCdeAchatController.editable()}" var="tiers"
+								itemLabel="#{tiers.codeTiers}" itemValue="#{tiers}"
+								forceSelection="true" dropdown="true" placeholder="Tiers" >
+								<p:column>
+									<!-- 				             	<f:facet name="header"> -->
+									<!-- 				            		<p:commandButton value="Ajouter" title="Insérer" -->
+									<!-- 										process="@this" -->
+									<!-- 										update=":form:tabView,:form:messages" -->
+									<!-- 										actionListener="#{bonCdeAchatController.actDialogTiers}" -->
+									<!-- 										styleClass="btn-insert btn" > -->
+									<!-- 											<p:ajax event="dialogReturn" listener="#{bonCdeAchatController.handleReturnDialogTiers}" update="@parent:@parent"/> -->
+									<!-- 										</p:commandButton> -->
+									<!-- 				            	</f:facet> -->
+									<h:outputText value="#{tiers.codeTiers}" required="true" requiredMessage="#{msg_diag.alert_champs_obligatoir}"/>
+								</p:column>
+								
+								<p:column>
+									<h:outputText value="#{tiers.nomTiers}" />
+								</p:column>
+
+								<p:column>
+									<h:outputText value="#{tiers.prenomTiers}" />
+								</p:column>
+
+								<p:column>
+									<h:outputText value="#{tiers.nomEntreprise}" />
+								</p:column>
+
+				
+								<f:attribute name="nomChamp" value="#{const.C_CODE_TIERS}" />
+								<p:ajax event="itemSelect" listener="#{bonCdeAchatController.autcompleteSelection}" 
+								update="idNomTiersBoncdeAchat,idLibellePieceBoncdeAchat,idTTCBoncdeAchat,idLocalisationTvaDocBoncdeAchat,idDateEchBoncdeAchat,@this,@widgetVar(panelAdresseFacturationBoncdeAchat),@widgetVar(panelAdresseLivraisonBoncdeAchat),
+								@widgetVar(panelConditionPaiementBoncdeAchat),idPanelGroupInfosTiersEnteteBonCdeAchat" />
+							</p:autoComplete>
+							<p:commandLink id="idLinkAideCodeTiers" styleClass="lien-aide-contextuelle">
+								<i class="fa fa-info-circle animated swing"></i>
+							</p:commandLink>
+
+							<p:overlayPanel for="idLinkAideCodeTiers" hideEffect="fade" dynamic="true" showCloseIcon="true" styleClass="overlay-aide-contextuelle" >
+									<ui:include src="/aide_contextuelle/document_code_tiers.xhtml" />
+							</p:overlayPanel>
+						</p:panel>
+						
+					</p:focus>
+					
+					<p:outputLabel value="Nom Tiers : "  styleClass="labelchob"/>
+					<p:panel styleClass="panel-aide-contextuelle">
+					<p:inputText
+						value="#{bonCdeAchatController.selectedDocumentDTO.nomTiers}" id="idNomTiersBoncdeAchat"
+						validator="#{bonCdeAchatController.validateDocument}" 
+						disabled="#{bonCdeAchatController.editable()}">
+						<f:attribute name="nomChamp" value="#{const.C_NOM_TIERS}" />
+						<p:ajax event="blur" update="@this" />
+					</p:inputText>
+					<p:commandLink id="idLinkAideNomTiersBc"
+							styleClass="lien-aide-contextuelle">
+							<i class="fa fa-info-circle animated swing"></i>
+						</p:commandLink>
+
+						<p:overlayPanel for="idLinkAideNomTiersBc" hideEffect="fade"
+							dynamic="true" showCloseIcon="true"
+							styleClass="overlay-aide-contextuelle">
+							<ui:include src="/aide_contextuelle/document_nom_tiers.xhtml" />
+						</p:overlayPanel>
+					</p:panel>
+					
+					<p:outputLabel value="Date bon commande : " />
+					<p:panel styleClass="panel-aide-contextuelle">
+					<p:calendar
+						value="#{bonCdeAchatController.selectedDocumentDTO.dateDocument}"
+						pattern="dd/MM/yyyy" mask="true" locale="fr" navigator="true"  showOn="button"  timeZone="#{msg.time_zone}" 
+						mindate="#{bonCdeAchatController.dateMin}"
+						maxdate="#{bonCdeAchatController.dateMax}"
+						disabled="#{bonCdeAchatController.editable()}">
+						
+						<f:attribute name="nomChamp" value="#{const.C_DATE_DOCUMENT}" />
+						<p:ajax event="dateSelect" listener="#{bonCdeAchatController.controleDate}" update="@this,idDateEchBoncdeAchat" />
+						<p:ajax event="change" listener="#{bonCdeAchatController.controleDate}"  update="@this,idDateEchBoncdeAchat" />
+					</p:calendar>
+					<p:commandLink id="idLinkAideDateBc"
+						styleClass="lien-aide-contextuelle">
+						<i class="fa fa-info-circle animated"></i>
+					</p:commandLink>
+
+					<p:overlayPanel for="idLinkAideDateBc" hideEffect="fade"
+						dynamic="true" showCloseIcon="true"
+						styleClass="overlay-aide-contextuelle">
+						<ui:include src="/aide_contextuelle/document_date_document.xhtml" />
+					</p:overlayPanel>
+					</p:panel>
+					
+					<p:panel styleClass="panel-aide-contextuelle">
+					<p:outputLabel value="Libellé : " />
+					<p:commandLink id="idLinkAideLibelleBc"
+						styleClass="lien-aide-contextuelle">
+						<i class="fa fa-info-circle animated"></i>
+					</p:commandLink>
+
+					<p:overlayPanel for="idLinkAideLibelleBc" hideEffect="fade"
+						dynamic="true" showCloseIcon="true"
+						styleClass="overlay-aide-contextuelle">
+						<ui:include src="/aide_contextuelle/document_libelle_document.xhtml" />
+					</p:overlayPanel>
+					</p:panel>
+					
+					<p:inputText
+						value="#{bonCdeAchatController.selectedDocumentDTO.libelleDocument}" id="idLibellePieceBoncdeAchat"
+						validator="#{bonCdeAchatController.validateDocument}" style="width:300%"
+						disabled="#{bonCdeAchatController.editable()}">
+						<f:attribute name="nomChamp" value="#{const.C_LIBELLE_DOCUMENT}" />
+						<p:ajax event="blur" update="@this" />
+					</p:inputText>
+					
+					<p:outputLabel value="TTC : " />
+					<p:panel styleClass="panel-aide-contextuelle">
+					<p:selectBooleanCheckbox
+						value="#{bonCdeAchatController.selectedDocumentDTO.ttc}" id="idTTCBoncdeAchat" 
+						disabled="#{bonCdeAchatController.disableTtc() or bonCdeAchatController.disableTtcSiDocSansTVA()}">
+						<f:attribute name="nomChamp" value="#{const.C_TTC}" />
+						<p:ajax event="change" update="@this" />
+					</p:selectBooleanCheckbox>
+					<p:commandLink id="idLinkAideSaisieTtcBc"
+						styleClass="lien-aide-contextuelle">
+						<i class="fa fa-info-circle animated"></i>
+					</p:commandLink>
+
+					<p:overlayPanel for="idLinkAideSaisieTtcBc" hideEffect="fade"
+						dynamic="true" showCloseIcon="true"
+						styleClass="overlay-aide-contextuelle">
+						<ui:include src="/aide_contextuelle/document_saisiettc_document.xhtml" />
+					</p:overlayPanel>
+					</p:panel>
+										
+										<p:outputLabel value="" id="idDateEchBoncdeAchat"/><!-- Label vide avec l'ID précédent pour ne pas supprimer cet id dans tous les updates tant que la supression de ce champ n'est totalement valide -->
+										<p:outputLabel value="" />
+<!-- 					<p:outputLabel value="Date de validité : " /> -->
+<!-- 					<p:panel styleClass="panel-aide-contextuelle"> -->
+<!-- 					<p:calendar -->
+<!-- 						value="#{bonCdeAchatController.selectedDocumentDTO.dateEchDocument}" id="idDateEchBoncdeAchat" -->
+<!-- 						pattern="dd/MM/yyyy" mask="true" locale="fr" navigator="true"  showOn="button" timeZone="#{msg.time_zone}"  -->
+<!-- 						disabled="#{bonCdeAchatController.editable()}"> -->
+						
+<!-- 						<f:attribute name="nomChamp" value="#{const.C_DATE_ECH_DOCUMENT}" /> -->
+<!-- 						<p:ajax event="dateSelect" listener="#{bonCdeAchatController.controleDate}" update="@this" /> -->
+<!-- 						<p:ajax event="change" listener="#{bonCdeAchatController.controleDate}"  update="@this" /> -->
+<!-- 					</p:calendar> -->
+<!-- 					<p:commandLink id="idLinkAideDateEcheanceBc" -->
+<!-- 						styleClass="lien-aide-contextuelle"> -->
+<!-- 						<i class="fa fa-info-circle animated"></i> -->
+<!-- 					</p:commandLink> -->
+
+<!-- 					<p:overlayPanel for="idLinkAideDateEcheanceBc" hideEffect="fade" -->
+<!-- 						dynamic="true" showCloseIcon="true" -->
+<!-- 						styleClass="overlay-aide-contextuelle"> -->
+<!-- 						<ui:include src="/aide_contextuelle/document_date_validite_document.xhtml" /> -->
+<!-- 					</p:overlayPanel> -->
+<!-- 					</p:panel> -->
+										
+					<p:outputLabel value="Date de livraison souhaitée : " />
+					<p:calendar
+						value="#{bonCdeAchatController.selectedDocumentDTO.dateLivDocument}"
+						pattern="dd/MM/yyyy" mask="true" locale="fr" navigator="true" showOn="button"  timeZone="#{msg.time_zone}" 
+						validator="#{bonCdeAchatController.validateDocument}"
+						disabled="#{bonCdeAchatController.editable()}">
+						
+						<f:attribute name="nomChamp" value="#{const.C_DATE_LIV_DOCUMENT}" />
+						<p:ajax event="dateSelect" update="@this" />
+						<p:ajax event="change"  update="@this"/>
+					</p:calendar>
+					
+<!-- 					<p:outputLabel value="Localisation TVA : " /> -->
+<!-- 					<p:selectOneMenu id="console" value="#{bonCdeAchatController.selectedDocumentDTO.commentaire}" style="width:125px"> -->
+<!-- 			            <f:selectItem itemLabel="Client en France" itemValue="fr" /> -->
+<!-- 			        </p:selectOneMenu> -->
+			        
+			        <p:outputLabel value="Localisation TVA : " />
+					<p:panel styleClass="panel-aide-contextuelle">
+						<p:autoComplete value="#{bonCdeAchatController.taTTvaDoc}" id="idLocalisationTvaDocBoncdeAchat"
+							converter="entityConverter" disabled="#{bonCdeAchatController.editable() or bonCdeAchatController.disableTtc()}"
+							completeMethod="#{bonCdeAchatController.typeTvaDocAutoComplete}"
+							var="tp" itemLabel="#{tp.codeTTvaDoc}" itemValue="#{tp}"
+							forceSelection="true" dropdown="true"
+							placeholder="Localisation TVA">
+							<p:column>
+								<h:outputText value="#{tp.codeTTvaDoc}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{tp.libelleTTvaDoc}" />
+							</p:column>
+							<f:attribute name="nomChamp" value="#{const.C_CODE_T_TVA_DOC}" />
+							<p:ajax event="itemSelect" listener="#{bonCdeAchatController.autcompleteSelection}" update="idTTCBoncdeAchat"/>
+						</p:autoComplete>
+					<p:commandLink id="idLinkAideLocalidationTvaBc"
+						styleClass="lien-aide-contextuelle">
+						<i class="fa fa-info-circle animated"></i>
+					</p:commandLink>
+
+					<p:overlayPanel for="idLinkAideLocalidationTvaBc" hideEffect="fade"
+						dynamic="true" showCloseIcon="true"
+						styleClass="overlay-aide-contextuelle">
+						<ui:include src="/aide_contextuelle/document_localisationtva_document.xhtml" />
+					</p:overlayPanel>
+					</p:panel>
+<!-- 					<p:outputLabel value="Observation : " /> -->
+<!-- 					<p:inputTextarea -->
+<!-- 						value="#{bonCdeAchatController.selectedDocumentDTO.commentaire}" -->
+<!-- 						validator="#{bonCdeAchatController.validateDocument}" style="width:300%" -->
+<!-- 						disabled="#{bonCdeAchatController.editable()}"> -->
+<!-- 						<f:attribute name="nomChamp" value="#{const.C_COMMENTAIRE}" /> -->
+<!-- 						<p:ajax event="blur" update="@this" /> -->
+<!-- 					</p:inputTextarea> -->
+
+			        
+<!-- 				<p:commandButton  process="@this" title="Génération modèle"  -->
+<!-- 						styleClass="btn-generation-modele btn" actionListener="#{bonCdeAchatController.actDialogGenerationModeleDocument}" > -->
+<!-- 						<p:ajax event="dialogReturn" listener="#{bonCdeAchatController.handleReturnDialogGenerationDocument}"  -->
+<!-- 						update=":form:tabView,@widgetVar(wvMenuListeBoncdeAchat),@widgetVar(wvDataTableListeBoncdeAchat)" oncomplete="activeTabCenter('#{bonCdeAchatController.css}');" /> -->
+<!-- 				</p:commandButton> -->
+<!-- 				<p:commandButton process="@this" title="Génération document"  -->
+<!-- 						styleClass="btn-generation-document btn" actionListener="#{bonCdeAchatController.actDialogGenerationDocument}" > -->
+<!-- 						<p:ajax event="dialogReturn" listener="#{bonCdeAchatController.handleReturnDialogGenerationDocument}"  -->
+<!-- 						update=":form:tabView,@widgetVar(wvMenuListeBoncdeAchat),@widgetVar(wvDataTableListeBoncdeAchat)" oncomplete="activeTabCenter('#{bonCdeAchatController.css}');" /> -->
+<!-- 				</p:commandButton> -->
+
+					<p:outputLabel value="Numéro commande externe : " />
+					<p:inputText
+						value="#{bonCdeAchatController.selectedDocumentDTO.numeroCommandeFournisseur}"
+						validator="#{bonCdeAchatController.validateDocument}" 
+						disabled="#{bonCdeAchatController.editable()}">
+						<f:attribute name="nomChamp" value="#{const.C_NUMERO_COMMANDE_FOURNISSEUR}" />
+						<p:ajax event="blur" update="@this" />
+					</p:inputText>
+					
+					<p:outputLabel value="Transporteur : " />
+					<p:autoComplete value="#{bonCdeAchatController.taTransporteurDTO}"
+						converter="entityConverter"
+						completeMethod="#{bonCdeAchatController.transporteurAutoCompleteDTOLight}"
+						disabled="#{bonCdeAchatController.editable()}" var="transporteur"
+						itemLabel="#{transporteur.codeTransporteur}" itemValue="#{transporteur}"
+						forceSelection="true" dropdown="true" placeholder="Transporteur" >
+						<p:column>
+							<h:outputText value="#{transporteur.codeTransporteur}" required="true" requiredMessage="#{msg_diag.alert_champs_obligatoir}"/>
+						</p:column>
+
+						<p:column>
+							<h:outputText value="#{transporteur.liblTransporteur}" />
+						</p:column>
+		
+						<f:attribute name="nomChamp" value="#{const.C_CODE_TRANSPORTEUR}" />
+						<p:ajax event="itemSelect" listener="#{bonCdeAchatController.autcompleteSelection}" update="@this" />
+					</p:autoComplete>
+
+					<!-- Invisible, relier au meme champ que la checkbox du dernier step du wizard, reprise de cette valeur dans le 1er step car le oncomplete du actEnregistrer se declanche apres le retour au 1er, la valeur doit donc etre disponible ici pour le javascript -->
+					<p:selectBooleanCheckbox value="#{bonCdeAchatController.impressionDirect}" styleClass="invisible" disabled="#{bonCdeAchatController.editable()}" widgetVar="wvImpressionDirectBoncdeAchat"/>
+
+				</h:panelGrid>
+				
+    		<div class="ui-g">
+    		 <div class="ui-g-6">
+				<p:panel id="idAdresseFacturationBoncdeAchat" header="#{const_vue.titre_panel_adresse_facturation}" toggleable="true" widgetVar="panelAdresseFacturationBoncdeAchat"
+					collapsed="false">
+					<h:panelGrid columns="2" cellpadding="10" id="idPanelAdresseFacBoncdeAchat">
+						<p:outputLabel value="" />
+						<p:selectOneMenu value="#{bonCdeAchatController.taAdresseFact}" converter="entityConverter" var="t" filter="true" filterMatchMode="contains"
+							disabled="#{bonCdeAchatController.editable()}">
+							<f:selectItems value="#{bonCdeAchatController.listeAdresseInfosFacturationDTO}" var="tt" itemValue="#{t}" itemLabel="sélectionner une adresse" />
+							<p:column>
+								<h:outputText value="#{t.adresse1Adresse}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{t.adresse2Adresse}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{t.adresse3Adresse}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{t.codepostalAdresse}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{t.villeAdresse}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{t.paysAdresse}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{t.codeTAdr}" />
+							</p:column>
+							<p:ajax event="change" listener="#{bonCdeAchatController.affecteAdrFactAutoComplete}" update="idPanelAdresseFacBoncdeAchat" />
+						</p:selectOneMenu>
+
+
+						<p:outputLabel value="Adresse 1" />
+						<p:panel styleClass="panel-autocomplete">
+							<p:inputText value="#{bonCdeAchatController.selectedAdresseFact.adresse1Adresse}" disabled="#{bonCdeAchatController.editable()}">
+								<p:ajax event="blur" update="@this" />
+							</p:inputText>
+							<p:commandButton value="Raffraîchir" styleClass="icon-refresh btn" disabled="#{bonCdeAchatController.editable()}"
+								actionListener="#{bonCdeAchatController.actReinitAdrFact}" process="@this" update="idPanelAdresseFacBoncdeAchat,idMenuBoutonBoncdeAchat" />
+						</p:panel>
+
+						<p:outputLabel value="Adresse 2" />
+						<p:inputText value="#{bonCdeAchatController.selectedAdresseFact.adresse2Adresse}" disabled="#{bonCdeAchatController.editable()}">
+							<p:ajax event="blur" update="@this" />
+						</p:inputText>
+						<p:outputLabel  value="Adresse 3" />
+						<p:inputText value="#{bonCdeAchatController.selectedAdresseFact.adresse3Adresse}" disabled="#{bonCdeAchatController.editable()}">
+							<p:ajax event="blur" update="@this" />
+						</p:inputText>
+						<p:outputLabel value="Code postal" />
+						<p:inputText value="#{bonCdeAchatController.selectedAdresseFact.codepostalAdresse}" disabled="#{bonCdeAchatController.editable()}">
+							<p:ajax event="blur" update="@this" />
+						</p:inputText>
+						<p:outputLabel value="Ville" />
+						<p:inputText value="#{bonCdeAchatController.selectedAdresseFact.villeAdresse}" disabled="#{bonCdeAchatController.editable()}">
+							<p:ajax event="blur" update="@this" />
+						</p:inputText>
+						<p:outputLabel value="Pays" />
+						<p:inputText value="#{bonCdeAchatController.selectedAdresseFact.paysAdresse}" disabled="#{bonCdeAchatController.editable()}">
+							<p:ajax event="blur" update="@this" />
+						</p:inputText>
+					</h:panelGrid>
+				</p:panel>
+			</div>
+			
+			<div class="ui-g-6">
+			
+				<p:panel id="idAdresseLivraisonBoncdeAchat" header="Adresse de livraison" widgetVar="panelAdresseLivraisonBoncdeAchat">
+					<h:panelGrid columns="2" cellpadding="10" id="idPanelAdresseLivBoncdeAchat">
+
+						<p:outputLabel value="" />
+						<p:selectOneMenu value="#{bonCdeAchatController.taAdresseLiv}" converter="entityConverter" var="t" filter="true" filterMatchMode="contains"
+							disabled="#{bonCdeAchatController.editable()}">
+							<f:selectItems value="#{bonCdeAchatController.listeAdresseInfosLivraisonDTO}" var="tt" itemValue="#{t}" itemLabel="sélectionner une adresse" />
+							<p:column>
+								<h:outputText value="#{t.adresse1AdresseLiv}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{t.adresse2AdresseLiv}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{t.adresse3AdresseLiv}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{t.codepostalAdresseLiv}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{t.villeAdresseLiv}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{t.paysAdresseLiv}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{t.codeTAdr}" />
+							</p:column>
+							<p:ajax event="change" listener="#{bonCdeAchatController.affecteAdrLivAutoComplete}" update="idPanelAdresseLivBoncdeAchat" />
+						</p:selectOneMenu>
+					
+
+						<p:outputLabel value="Adresse 1" />
+						<p:panel styleClass="panel-autocomplete">
+							<p:inputText value="#{bonCdeAchatController.selectedAdresseLiv.adresse1AdresseLiv}" disabled="#{bonCdeAchatController.editable()}">
+								<p:ajax event="blur" update="@this" />
+							</p:inputText>
+							<p:commandButton value="Raffraîchir" styleClass="icon-refresh btn" disabled="#{bonCdeAchatController.editable()}"
+								actionListener="#{bonCdeAchatController.actReinitAdrLiv}" process="@this" update="idPanelAdresseLivBoncdeAchat,idMenuBoutonBoncdeAchat" />
+						</p:panel>
+						<p:outputLabel value="Adresse 2" />
+						<p:inputText value="#{bonCdeAchatController.selectedAdresseLiv.adresse2AdresseLiv}" disabled="#{bonCdeAchatController.editable()}">
+							<p:ajax event="blur" update="@this" />
+						</p:inputText>
+						<p:outputLabel value="Adresse 3" />
+						<p:inputText value="#{bonCdeAchatController.selectedAdresseLiv.adresse3AdresseLiv}" disabled="#{bonCdeAchatController.editable()}">
+							<p:ajax event="blur" update="@this" />
+						</p:inputText>
+						<p:outputLabel value="Code postal" />
+						<p:inputText value="#{bonCdeAchatController.selectedAdresseLiv.codepostalAdresseLiv}" disabled="#{bonCdeAchatController.editable()}">
+							<p:ajax event="blur" update="@this" />
+						</p:inputText>
+						<p:outputLabel value="Ville" />
+						<p:inputText value="#{bonCdeAchatController.selectedAdresseLiv.villeAdresseLiv}" disabled="#{bonCdeAchatController.editable()}">
+							<p:ajax event="blur" update="@this" />
+						</p:inputText>
+						<p:outputLabel value="Pays" />
+						<p:inputText value="#{bonCdeAchatController.selectedAdresseLiv.paysAdresseLiv}" disabled="#{bonCdeAchatController.editable()}">
+							<p:ajax event="blur" update="@this" />
+						</p:inputText>
+					</h:panelGrid>
+				</p:panel>
+			</div>
+		</div>
+
+				
+				<p:panel id="idConditionPaiementBoncdeAchat" header="Conditon de paiement" toggleable="true" widgetVar="panelConditionPaiementBoncdeAchat" collapsed="true">
+				<f:facet name="actions">
+				<p:commandLink id="idLinkAideConditionPaiementBc"
+						styleClass="lien-aide-contextuelle">
+						<i class="fa fa-info-circle animated"></i>
+					</p:commandLink>
+
+					<p:overlayPanel for="idLinkAideConditionPaiementBc" hideEffect="fade"
+						dynamic="true" showCloseIcon="true"
+						styleClass="overlay-aide-contextuelle">
+						<ui:include src="/aide_contextuelle/devis_condition_duree_validite_devis.xhtml" />
+					</p:overlayPanel>
+        		</f:facet>					
+					
+					<h:panelGrid columns="2" cellpadding="10" id="idPanelConditionPaiementBoncdeAchat" >
+					
+						<p:outputLabel value="Code paiement : " />
+						<h:panelGrid columns="3" cellpadding="10" >
+								<p:autoComplete value="#{bonCdeAchatController.taCPaiementDoc}" converter="entityConverter" id="idCodeCPaiementBoncdeAchat"
+								completeMethod="#{bonCdeAchatController.typeCPaiementAutoComplete}" var="tp" itemLabel="#{tp.codeCPaiement}"
+								itemValue="#{tp}" forceSelection="true" dropdown="true" disabled="#{bonCdeAchatController.editable()}"
+								placeholder="Condition de paiement" style="width:100%">
+								<p:column>
+									<h:outputText value="#{tp.codeCPaiement}" />
+								</p:column>
+								<p:column>
+									<h:outputText value="#{tp.libCPaiement}" />
+								</p:column>
+								<f:attribute name="nomChamp" value="#{const.C_CODE_C_PAIEMENT}" />
+								<p:ajax event="itemSelect" listener="#{bonCdeAchatController.autcompleteSelection}" 
+								update="idLibelleCPaimentBoncdeAchat,idReportBoncdeAchat,idFinMoisBoncdeAchat,idDateEchBoncdeAchat,idMenuBoutonBoncdeAchat" />	
+							</p:autoComplete>
+						
+						
+<!-- 							<p:inputText value="#{bonCdeAchatController.selectedCPaiement.codeCPaiement}" disabled="#{bonCdeAchatController.editable()}"> -->
+<!-- 								<p:ajax event="blur" update="@this" /> -->
+<!-- 							</p:inputText> -->
+							<p:commandButton value="Appliquer" styleClass="icon-refresh btn" disabled="#{bonCdeAchatController.editable()}"
+								actionListener="#{bonCdeAchatController.actAppliquerCPaiement}" process="@this" update="idCodeCPaiementBoncdeAchat,idLibelleCPaimentBoncdeAchat,idReportBoncdeAchat,idFinMoisBoncdeAchat,idDateEchBoncdeAchat,idMenuBoutonBoncdeAchat" />						
+						</h:panelGrid>
+
+						<p:outputLabel value="Libellé : " />
+						<p:inputText value="#{bonCdeAchatController.selectedCPaiement.libCPaiement}" disabled="#{bonCdeAchatController.editable()}" id="idLibelleCPaimentBoncdeAchat">
+						<p:ajax event="blur" update="@this" />
+						</p:inputText>
+						<p:outputLabel value="Report : " />
+						<p:inputText value="#{bonCdeAchatController.selectedCPaiement.reportCPaiement}" disabled="#{bonCdeAchatController.editable()}" id="idReportBoncdeAchat">
+						<p:ajax event="blur" update="@this" />
+						</p:inputText>
+						<p:outputLabel value="Fin de mois : " />
+						<p:inputText value="#{bonCdeAchatController.selectedCPaiement.finMoisCPaiement}" disabled="#{bonCdeAchatController.editable()}" id="idFinMoisBoncdeAchat">
+						<p:ajax event="blur" update="@this" />
+						</p:inputText>
+					</h:panelGrid>
+				</p:panel>
+
+			</p:panel>
+
+			<!-- 			</div> -->
+			<!-- 		</div> -->
+			
+		</p:tab>
+
+		<!-- 		<div class="ui-grid-row"> -->
+		<!-- 			<div class="ui-grid-col-12"> -->
+
+		<p:tab id="idLignesBoncdeAchat" title="Ligne">
+		<p:panel widgetVar="wvLigneBoncdeAchatMesssages">
+			<p:messages id="idLigneBoncdeAchatMessages" showDetail="true" closable="true" autoUpdate="false"/>
+		</p:panel>
+			<p:panel id="idPanelLignesBoncdeAchat" header="Lignes" toggleable="true" widgetVar="panelLignesBoncdeAchat">
+
+<!-- 				<div class="text-center"> -->
+<!--  					<p:commandButton value="Annuler" styleClass="btn-cancel btn"  -->
+<!--  						actionListener="#{bonCdeAchatController.actAnnulerLigne}"  -->
+<!--  						process="@this"  -->
+<!--  						update="@widgetVar(panelLignesBoncdeAchat),:form:messages,@form"  -->
+<!-- 						disabled="#{bonCdeAchatController.etatBoutonLigne('annuler')}" />  -->
+						
+<!--  					<p:commandButton value="Enregistrer" styleClass="btn-save btn"  -->
+<!--  						actionListener="#{bonCdeAchatController.actEnregistrerLigne}"  -->
+<!--  						update="@widgetVar(panelLignesBoncdeAchat),:form:messages,@form"  -->
+<!-- 						disabled="#{bonCdeAchatController.etatBoutonLigne('enregistrer')}" />  -->
+
+<!-- 					<p:commandButton value="Insérer" styleClass="btn-insert btn" -->
+<!-- 						actionListener="#{bonCdeAchatController.actInsererLigne}" -->
+<!-- 						process="@this" -->
+<!-- 						update="@this,@widgetVar(widgetVarDataTableLigneBoncdeAchat),:form:messages" -->
+<!-- 						disabled="#{!bonCdeAchatController.modeEcran.dataSetEnModif() or bonCdeAchatController.etatBoutonLigne('inserer')}" -->
+<!-- 						oncomplete="jQuery('.myclassBoncdeAchat .ui-datatable-data tr').last().find('span.ui-icon-pencil').each(function(){jQuery(this).click()});" /> -->
+
+<!--  					<p:commandButton value="Modifier" styleClass="btn-update btn"  -->
+<!-- 						actionListener="#{bonCdeAchatController.actModifierLigne}"  -->
+<!--  						process="@this"  -->
+<!--  						update="@widgetVar(panelLignesBoncdeAchat),:form:messages,@form"  -->
+<!--  						disabled="#{!bonCdeAchatController.modeEcran.dataSetEnModif() or bonCdeAchatController.etatBoutonLigne('modifier')}" />  -->
+
+<!-- 					<p:commandButton value="Supprimer" styleClass="btn-delete btn" widgetVar="widgetVarBtnSupprimer" -->
+<!-- 						actionListener="#{bonCdeAchatController.actSupprimerLigne}" -->
+<!-- 						process="@this" -->
+<!-- 						update="@widgetVar(panelLignesBoncdeAchat),:form:messages,@form" -->
+<!-- 						disabled="#{!bonCdeAchatController.modeEcran.dataSetEnModif() or bonCdeAchatController.etatBoutonLigne('supprimer')}" /> -->
+<!-- 				</div> -->
+				
+				<p:menubar styleClass="menu-onglet">
+				
+					<p:menuitem title="Insérer" styleClass="icon-insert icon"
+						actionListener="#{bonCdeAchatController.actInsererLigne}"
+						process="@this"
+						update="@this,@widgetVar(widgetVarDataTableLigneBoncdeAchat),:form:messages"
+						disabled="#{!bonCdeAchatController.modeEcran.dataSetEnModif() or bonCdeAchatController.etatBoutonLigne('inserer')}"
+						oncomplete="editionDerniereLigne('myclassBoncdeAchat');" />
+						
+					<p:menuitem title="Supprimer" styleClass="icon-delete icon" widgetVar="widgetVarBtnSupprimerLigneBonCdeAchat"
+						actionListener="#{bonCdeAchatController.actSupprimerLigne}"
+						process="@this"
+						update="@widgetVar(panelLignesBoncdeAchat),:form:messages,@widgetVar(#{bonCdeAchatController.wvEcran})"
+						disabled="#{!bonCdeAchatController.modeEcran.dataSetEnModif() or bonCdeAchatController.disabledLigne() or bonCdeAchatController.etatBoutonLigne('supprimer')}" >
+						<p:confirm header="Confirmation de la suppression" message="#{bonCdeAchatController.messageSuppression}" icon="ui-icon-alert" />
+					</p:menuitem>	
+				</p:menubar>
+				
+				<p:dataTable id="iddataTableLigneBoncdeAchat" 
+					var="ligne"
+					widgetVar="widgetVarDataTableLigneBoncdeAchat"
+					value="#{bonCdeAchatController.valuesLigne}"
+					rowKey="#{ligne.dto.numLigneLDocument}"
+					selection="#{bonCdeAchatController.selectedLigneJSF}"
+					selectionMode="single" 
+					editable="true" 
+					dblClickSelect="true"
+					styleClass="datatable mt10 myclassBoncdeAchat" 
+					emptyMessage="#{msg.message_datatable_vide}"
+					resizableColumns="true" 
+					draggableRows="true">
+        
+<!-- 					paginator="true" -->
+<!-- 					rows="#{msg.modele_datatable_ligne_par_page_debut}" -->
+<!-- 					paginatorTemplate="#{msg.modele_datatable_paginator_sans_exporter}" -->
+<!-- 					rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}" -->
+<!-- 					emptyMessage="#{msg.message_datatable_vide}" -->
+<!-- 					currentPageReportTemplate="#{msg.modele_datatable_page_courante}"> -->
+<!-- onsuccess="increment();"  -->
+					<p:ajax event="rowReorder" listener="#{bonCdeAchatController.onRowReorder}" update="@this,@widgetVar(wvMenuBoutonBoncdeAchat)" />
+					<p:ajax event="rowEdit" listener="#{bonCdeAchatController.onRowEdit}" update="@widgetVar(wvLigneBoncdeAchatMesssages),@parent:idTotauxLBoncdeAchat" 
+					oncomplete="if(!handleCompleteValidationError(xhr, status, args)) {increment();};autreLigneModifiable('myclassBoncdeAchat');" />
+					<p:ajax event="rowEditCancel" listener="#{bonCdeAchatController.onRowCancel}" update="@widgetVar(widgetVarBtnSupprimerLigneBonCdeAchat)" oncomplete="autreLigneModifiable('myclassBoncdeAchat');"/>
+					<p:ajax event="rowSelect" listener="#{bonCdeAchatController.onRowSelectLigne}" update="@widgetVar(widgetVarBtnSupprimerLigneBonCdeAchat)"/>
+					<p:ajax event="rowEditInit" listener="#{bonCdeAchatController.onRowEditInit}"  oncomplete="autreLigneNonModifiable('myclassBoncdeAchat');"/>
+					
+					<p:column style="width:16px" >
+						<p:rowEditor rendered="#{bonCdeAchatController.etatBoutonLigne('rowEditor')}" styleClass="row-editor-debut"/>
+					</p:column>
+
+					<p:ajax event="toggleSelect" process="@this" />
+					<p:ajax event="rowToggle" process="@this" oncomplete="ligneSeperationExpend()" />					
+					<p:column style="width:8px" styleClass="center" >
+						<p:rowToggler  rendered="#{ligne.ligneLieeFils!=null or ligne.ligneLieeMere!=null or ligne.ligneAbonnement!=null}"/>
+					</p:column>
+
+
+					<p:column style="width:8px">
+						<f:facet name="header">
+							<h:outputText value="N°" />
+						</f:facet>
+						<h:outputText value="#{ligne.dto.numLigneLDocument}" />
+					</p:column>
+					
+					<p:column style="width:6%">
+						<f:facet name="header">
+							<h:outputText value="Code article" />
+						</f:facet>
+						<p:cellEditor disabled="#{ligne.ligneLieeFils!=null}">
+							<f:facet name="output">
+								<h:outputText value="#{ligne.taArticle.codeArticle}"/>
+							</f:facet>
+							<f:facet name="input" >
+							<p:focus>
+								<p:autoComplete value="#{ligne.taArticleDTO}"
+									completeMethod="#{bonCdeAchatController.articleAutoCompleteDTOLight}"
+									id="idarticleBoncdeAchat" converter="entityConverter"
+									var="art" itemLabel="#{art.codeArticle}" itemValue="#{art}"
+									forceSelection="true" dropdown="true" 
+									maxResults="#{bonCdeAchatController.taPreferencesService.nbMaxChargeListeArticle()}"
+									moreText="Il y a #{component.maxResults} affichés sur #{component.suggestions.size()} au total, Veuillez affiner votre recherche ou cliquer ici pour en afficher plus ..."
+									 placeholder="Article" 
+									style="width:100%">
+<!-- 									required="true" requiredMessage="Le code article est obligatoire" -->
+									
+									<p:column>
+										<h:outputText value="#{art.codeArticle}" />
+									</p:column>
+									
+									<p:column>
+										<h:outputText value="#{art.libellecArticle}" />
+									</p:column>
+									<p:column >
+										<h:outputText value="#{art.commentaireArticle}" rendered="#{bonCdeAchatController.rechercheAvecCommentaire(false)}"/>
+									</p:column>
+
+									<f:attribute name="nomChamp" value="#{const.C_CODE_ARTICLE}" />
+									<p:ajax event="clear" listener="#{bonCdeAchatController.onClearArticle}" 
+									update="@parent:idlibLBoncdeAchat,idQte1LBoncdeAchat,idu1LBoncdeAchat,idu2LBoncdeAchat,idpuLBoncdeAchat,idhtLBoncdeAchat,idttcLBoncdeAchat,idtvaLBoncdeAchat,idLRemiseBoncdeAchat,idqte2LBoncdeAchat"/>
+									<p:ajax event="itemSelect" listener="#{bonCdeAchatController.autcompleteSelection}" 
+									update="@parent:idlibLBoncdeAchat,idQte1LBoncdeAchat,idu1LBoncdeAchat,idu2LBoncdeAchat,idpuLBoncdeAchat,idhtLBoncdeAchat,idttcLBoncdeAchat,idtvaLBoncdeAchat,idLRemiseBoncdeAchat,idqte2LBoncdeAchat"/>
+																		<p:ajax event="moreText" listener="#{bonCdeAchatController.onMoreTextArticle}" />
+									
+								</p:autoComplete>
+							</p:focus>
+							</f:facet>
+						</p:cellEditor >
+					</p:column >
+
+					<p:column style="width:28%">
+						<f:facet name="header">
+							<h:outputText value="Libellé" />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.libLDocument}" id="idListeSaisieLibelleBoncdeAchat"/>
+								<p:tooltip id="toolTipListeSaisieLibelleBoncdeAchat" value="#{ligne.dto.libLDocument}" shared="true" for="idListeSaisieLibelleBoncdeAchat" showEffect="clip" position="top"/>
+<!-- 								<h:outputText value="#{ligne.dto.libLDocument}" /> -->
+							</f:facet>
+							<f:facet name="input">
+								<p:inputText value="#{ligne.dto.libLDocument}" id="idlibLBoncdeAchat"
+								validator="#{bonCdeAchatController.validateLignesDocument}">
+								<f:attribute name="nomChamp" value="#{const.C_LIB_L_DOCUMENT}" />
+								<p:ajax event="blur" />
+								</p:inputText>
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+
+					<p:column  style="width:4%" styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Qté 1" />
+						</f:facet>
+						<p:cellEditor >
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.qteLDocument}"/>	
+							</f:facet>
+							<f:facet name="input" >
+								<p:inputText id="idQte1LBoncdeAchat"  value="#{ligne.dto.qteLDocument}"  style="width:100%" 
+										validator="#{bonCdeAchatController.validateLignesDocument}" disabled="#{ligne.ligneCommentaire()}">
+									<f:attribute name="nomChamp" value="#{const.C_QTE_L_DOCUMENT}" /> 
+									<p:ajax event="blur" update="@parent:idqte2LBoncdeAchat,idhtLBoncdeAchat,idttcLBoncdeAchat,idtvaLBoncdeAchat"/>
+								</p:inputText>
+							</f:facet >
+						</p:cellEditor>
+					</p:column>
+
+					<p:column style="width:5%"  styleClass="center">
+						<f:facet name="header">
+							<h:outputText value="Unité 1" />
+						</f:facet>
+<!-- 						<p:cellEditor > -->
+<!-- 							<f:facet name="output"> -->
+<!-- 								<h:outputText value="#{ligne.dto.u1LDocument}" /> -->
+<!-- 							</f:facet> -->
+<!-- 							<f:facet name="input"> -->
+<!-- 								<p:inputText value="#{ligne.dto.u1LDocument}" style="width:100%" id="u1"/> -->
+<!-- 							</f:facet> -->
+<!-- 						</p:cellEditor> -->
+						<p:cellEditor disabled="#{ligne.ligneLieeFils!=null}">
+							<f:facet name="output">
+								<h:outputText value="#{ligne.taUnite1.codeUnite}" />
+							</f:facet>
+							<f:facet name="input">
+<!-- 								<p:inputText value="#{ligne.taUnite1.codeUnite}" style="width:100%" id="u1"/> -->
+								<p:autoComplete value="#{ligne.taUnite1}"
+									completeMethod="#{bonCdeAchatController.uniteAutoComplete}"
+									var="unit" itemLabel="#{unit.codeUnite}" itemValue="#{unit}"
+									forceSelection="true" dropdown="true"
+									placeholder="U1" style="width:100%" id="idu1LBoncdeAchat" disabled="#{ligne.ligneCommentaire()}">
+									<p:column>
+										<h:outputText value="#{unit.codeUnite}" />
+									</p:column>
+									
+									<f:attribute name="nomChamp" value="#{const.C_U1_L_DOCUMENT}" />
+									<p:ajax event="itemSelect" listener="#{bonCdeAchatController.autcompleteSelection}" update="@parent:idqte2LBoncdeAchat"/>
+								</p:autoComplete>
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+
+					<p:column  style="width:4%" styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Qté 2" />
+						</f:facet>
+							<h:outputText value="#{ligne.dto.qte2LDocument}" id="idqte2LBoncdeAchat" disabled="#{ligne.ligneCommentaire()}"/>
+					</p:column>
+
+					<p:column style="width:5%" styleClass="center">
+						<f:facet name="header">
+							<h:outputText value="Unité 2" />
+						</f:facet>
+<!-- 						<h:outputText value="#{ligne.dto.u2LDocument}" id="u2" />					 -->
+						<p:cellEditor disabled="#{ligne.ligneLieeFils!=null}">
+							<f:facet name="output">
+								<h:outputText value="#{ligne.taUnite2.codeUnite}"/>
+							</f:facet>
+							<f:facet name="input">
+<!-- 								<p:inputText value="#{ligne.taUnite2.codeUnite}" style="width:100%" id="u2"/> -->
+								<p:autoComplete value="#{ligne.taUnite2}"
+									completeMethod="#{bonCdeAchatController.uniteAutoCompleteAll}"
+									var="unit" itemLabel="#{unit.codeUnite}" itemValue="#{unit}"
+									forceSelection="true" dropdown="true"
+									placeholder="U2" style="width:100%" id="idu2LBoncdeAchat" disabled="#{ligne.ligneCommentaire()}">
+									<p:column>
+										<h:outputText value="#{unit.codeUnite}" />
+									</p:column>
+									
+									<f:attribute name="nomChamp" value="#{const.C_U2_L_DOCUMENT}" />
+									<p:ajax event="itemSelect" listener="#{bonCdeAchatController.autcompleteSelection}" update="@parent:idqte2LBoncdeAchat"/>
+								</p:autoComplete>
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+					
+					<p:column style="width:8%" styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Prix unitaire" />
+						</f:facet>
+						<p:cellEditor disabled="#{ligne.ligneLieeFils!=null}">
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.prixULDocument}" title="#{ligne.dto.prixULDocument}">
+									<f:convertNumber type="currency"  minFractionDigits="#{bonCdeAchatController.prefNbDecimalesPrix}" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</f:facet>
+							<f:facet name="input">
+								<p:inputText value="#{ligne.dto.prixULDocument}" id="idpuLBoncdeAchat" style="width:100%" 
+										validator="#{bonCdeAchatController.validateLignesDocument}" disabled="#{ligne.ligneCommentaire()}">
+									<f:attribute name="nomChamp" value="#{const.C_PRIX_U_L_DOCUMENT}" /> 
+									<p:ajax event="blur" update="@this,idhtLBoncdeAchat,idttcLBoncdeAchat,idtvaLBoncdeAchat"/>
+								</p:inputText>	
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+					
+					<p:column style="width:5%" styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Remise %" />
+						</f:facet>
+						<p:cellEditor disabled="#{ligne.ligneLieeFils!=null}">
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.remTxLDocument}" />
+							</f:facet>
+							<f:facet name="input">
+								<p:inputText value="#{ligne.dto.remTxLDocument}" style="width:100%" id="idLRemiseBoncdeAchat"
+										validator="#{bonCdeAchatController.validateLignesDocument}" disabled="#{ligne.ligneCommentaire()}">
+									<f:attribute name="nomChamp" value="#{const.C_REM_TX_L_DOCUMENT}" /> 
+									<p:ajax event="blur" update="@this,idhtLBoncdeAchat,idttcLBoncdeAchat,idtvaLBoncdeAchat"/>
+								</p:inputText>	
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+					
+					<p:column style="width:10%" styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Montant HT" />
+						</f:facet>
+						<p:cellEditor disabled="#{ligne.ligneLieeFils!=null}">
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.mtHtLDocument}" disabled="true">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</f:facet>
+							<f:facet name="input">
+								<h:outputText value="#{ligne.dto.mtHtLDocument}" id="idhtLBoncdeAchat" style="width:100%" disabled="true"/>
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+					
+					<p:column style="width:10%" styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Montant TTC" />
+						</f:facet>
+						<p:cellEditor disabled="#{ligne.ligneLieeFils!=null}">
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.mtTtcLDocument}" disabled="true">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</f:facet>
+							<f:facet name="input">
+								<h:outputText value="#{ligne.dto.mtTtcLDocument}" id="idttcLBoncdeAchat" style="width:100%"  disabled="true"/>
+						
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+					
+					<p:column style="width:3%" styleClass="center">
+						<f:facet name="header">
+							<h:outputText value="TVA" />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.codeTvaLDocument}" disabled="true">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</f:facet>
+							<f:facet name="input">
+								<h:outputText value="#{ligne.dto.codeTvaLDocument}" disabled="true" id="idtvaLBoncdeAchat" style="width:100%"/>
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+					
+	
+					
+					<p:column style="width:7%" styleClass="right">
+						<f:facet name="header">
+					<h:outputText value="date prévue" />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.datePrevue}" >
+										<f:convertDateTime pattern="dd/MM/yyyy" timeZone="#{msg.time_zone}"  />
+								</h:outputText>
+							</f:facet>
+							<f:facet name="input">
+								<p:calendar value="#{ligne.dto.datePrevue}" pattern="dd/MM/yyyy" mask="true" mode="popup"  timeZone="#{msg.time_zone}" 
+									locale="fr" navigator="true" id="dluo"/>
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+					<p:column style="width:1%">
+						<f:facet name="header">
+							<h:outputText value="Etat" />
+						</f:facet>
+								<h:outputText value="#{ligne.codeEtat}"  id="idListeSyntheseEtatBonliv"/>
+								<p:tooltip  value="#{ligne.codeEtat.concat(ligne.libelleEtat)}" shared="true" for="idListeSyntheseEtatBonliv" showEffect="clip" position="top"/>
+					</p:column>					
+
+					
+					<p:column style="width:16px">
+						<f:facet name="header">
+							<h:outputText value="" />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<p:commandButton title="Supprimer" styleClass="icon-delete icon icon-grille" widgetVar="widgetVarBtnSupprimer"
+									action="#{bonCdeAchatController.actSupprimerLigne}"
+									process="@this"
+									disabled="#{!bonCdeAchatController.modeEcran.dataSetEnModif() or ligne.ligneLieeFils!=null  or bonCdeAchatController.etatBoutonLigne('supprimer')}"
+									update="@widgetVar(panelLignesBoncdeAchat)">
+<!-- 									<f:attribute name="idLigne" value="#{ligne.dto.id}" /> -->
+									<f:setPropertyActionListener target="#{bonCdeAchatController.selectedLigneJSF}" value="#{ligne}" />
+									<p:confirm header="Confirmation de la suppression" message="#{bonCdeAchatController.messageSuppression}" icon="ui-icon-alert" />	
+								</p:commandButton>
+							</f:facet>
+							<f:facet name="input">
+								<h:outputText value="" />
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+
+					<p:column style="width:26px">
+						<p:rowEditor rendered="#{bonCdeAchatController.etatBoutonLigne('rowEditor')}" styleClass="row-editor-fin"/>
+					</p:column>
+
+					<p:rowExpansion>
+					<p:panelGrid columns="2"  columnClasses="ui-grid-col-6,ui-grid-col-6" styleClass="ui-panelgrid-blank" layout="grid" rendered="#{ligne.ligneLieeFils!=null or ligne.ligneLieeMere!=null}">
+					<p:panel header="document ayant servi à générer le document courant" style="width:100%;" >
+						<p:dataTable value="#{ligne.ligneLieeMere}" id="dataTableLigneLieeMere" var="lien" selectionMode="single" editable="true"
+							selection="#{bonCdeAchatController.selectedLigneALigneDTO}" rowKey="#{lien.id}" widgetVar="wvdataTableLigneLieeMere" 
+							emptyMessage="#{msg.message_datatable_vide}" resizableColumns="true">
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="code document" />
+								</f:facet>
+								<p:commandLink value="#{lien.codeDocumentDest}"
+									action="#{bonCdeAchatController.duplicationDocumentBean.ouvertureDocumentBean.detailDocument(bonCdeAchatController.duplicationDocumentBean.ouvertureDocumentBean.recupCodeDocument(lien.codeDocumentDest,lien.typeDocument))}"
+									update=":form:tabView"
+									oncomplete="activeTabCenter('#{bonCdeAchatController.duplicationDocumentBean.ouvertureDocumentBean.event.cssLgrTab}');">>
+								</p:commandLink>
+								<!-- 								<h:outputText value="#{lien.codeDocumentDest}" /> -->
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="libellé ligne" />
+								</f:facet>
+								<h:outputText value="#{lien.libelleLigne}" />
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="lot" />
+								</f:facet>
+								<h:outputText value="#{lien.numLot}" />
+							</p:column>
+							<p:column styleClass="right">
+								<f:facet name="header">
+									<h:outputText value="Qté. reçue" />
+								</f:facet>
+								<h:outputText value="#{lien.qteRecue}" />
+							</p:column>
+<!-- 							<p:column> -->
+<!-- 								<f:facet name="header"> -->
+<!-- 									<h:outputText value="Etat" /> -->
+<!-- 								</f:facet> -->
+<!-- 								<h:outputText value="#{lien.etat}" /> -->
+<!-- 							</p:column>							 -->
+
+						</p:dataTable>
+						</p:panel>
+						<p:panel header="document généré à partir du document courant" style="width:100%;" >
+						<p:dataTable value="#{ligne.ligneLieeFils}" id="dataTableLigneLieeFils" var="lien" selectionMode="single" editable="true"
+							selection="#{bonCdeAchatController.selectedLigneALigneDTO}" rowKey="#{lien.id}" widgetVar="wvdataTableLigneLieeFils" 
+							emptyMessage="#{msg.message_datatable_vide}" resizableColumns="true">
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="code document" />
+								</f:facet>
+								<p:commandLink value="#{lien.codeDocumentDest}"
+									action="#{bonCdeAchatController.duplicationDocumentBean.ouvertureDocumentBean.detailDocument(bonCdeAchatController.duplicationDocumentBean.ouvertureDocumentBean.recupCodeDocument(lien.codeDocumentDest,lien.typeDocument))}"
+									update=":form:tabView"
+									oncomplete="activeTabCenter('#{bonCdeAchatController.duplicationDocumentBean.ouvertureDocumentBean.event.cssLgrTab}');">>
+								</p:commandLink>
+								<!-- 								<h:outputText value="#{lien.codeDocumentDest}" /> -->
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="libellé ligne" />
+								</f:facet>
+								<h:outputText value="#{lien.libelleLigne}" />
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="lot" />
+								</f:facet>
+								<h:outputText value="#{lien.numLot}" />
+							</p:column>
+							<p:column styleClass="right">
+								<f:facet name="header">
+									<h:outputText value="Qté. reçue" />
+								</f:facet>
+								<h:outputText value="#{lien.qteRecue}" />
+							</p:column>
+<!-- 							<p:column> -->
+<!-- 								<f:facet name="header"> -->
+<!-- 									<h:outputText value="Etat" /> -->
+<!-- 								</f:facet> -->
+<!-- 								<h:outputText value="#{lien.etat}" /> -->
+<!-- 							</p:column>							 -->
+
+						</p:dataTable>
+						</p:panel>
+					</p:panelGrid>
+					<p:panel header="Infos de l'abonnement" style="width:100%;" rendered="#{ligne.ligneAbonnement!=null}">
+						<p:dataTable value="#{ligne.ligneAbonnement}" id="dataTableLigneAbonnement" var="lien" selectionMode="single" editable="true"
+							selection="#{bonCdeAchatController.selectedLigneALigneDTO}" rowKey="#{lien.id}" widgetVar="wvdataTableLigneAbonnement" 
+							emptyMessage="#{msg.message_datatable_vide}" resizableColumns="true">
+								<p:column  style="width:80px" >
+									<p:commandButton value="" actionListener="#{bonCdeAchatController.actDialogDetailLigneAbonnement}" process="@this"
+										styleClass="icon-medium icon-reglement" title="Détail de la ligne d'abonnement">
+										<f:attribute name="taLigneALigneEcheanceDTO" value="#{lien}" />
+										<p:ajax event="dialogReturn" listener="#{bonCdeAchatController.handleReturnDialogDetailLigneAbonnement}" />
+									</p:commandButton>
+								</p:column>
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="code document" />
+								</f:facet>
+								<p:commandLink value="#{lien.codeDocumentDest}"
+									action="#{bonCdeAchatController.duplicationDocumentBean.ouvertureDocumentBean.detailAbonnement(bonCdeAchatController.duplicationDocumentBean.ouvertureDocumentBean.recupCodeDocument(lien.codeDocumentDest,lien.typeDocument))}"
+									update=":form:tabView"
+									oncomplete="activeTabCenter('#{bonCdeAchatController.duplicationDocumentBean.ouvertureDocumentBean.event.cssLgrTab}');">>
+								</p:commandLink>
+
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="libellé ligne" />
+								</f:facet>
+								<h:outputText value="#{lien.libelleLigne}" />
+							</p:column>
+						</p:dataTable>
+						</p:panel>
+
+					</p:rowExpansion>
+				
+				</p:dataTable>
+				
+				<p:panelGrid columns="3" styleClass="totaux-lignes-document" id="idTotauxLBoncdeAchat">
+					<f:facet name="header">
+							<h:outputText value="Totaux" />
+					</f:facet>
+					
+					<h:outputText value="NET HT" />
+				
+					<h:outputText value="NET TVA" />
+			
+					<h:outputText value="NET TTC" />
+					<h:outputText value="#{bonCdeAchatController.selectedDocumentDTO.netHtCalc}">
+						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+					</h:outputText>
+					<h:outputText value="#{bonCdeAchatController.selectedDocumentDTO.netTvaCalc}">
+						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+					</h:outputText>
+					<h:outputText value="#{bonCdeAchatController.selectedDocumentDTO.netTtcCalc}">
+						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+					</h:outputText>
+					
+				</p:panelGrid>
+				
+
+
+			</p:panel>
+		</p:tab>
+		
+		<p:tab id="idTotauxFormBoncdeAchat" title="Totaux">
+
+			<p:panel id="idPaneltotauxFormBoncdeAchat" header="Totaux" toggleable="true" widgetVar="panelTotauxFormBoncdeAchat">
+				
+				<div class="ui-grid ui-grid-responsive">
+			<div class="ui-grid-row">
+				<div class="ui-grid-col-6">
+				<h:panelGrid columns="2" cellpadding="10">
+						<p:outputLabel value="Remise globale %" />
+						<p:inputText value="#{bonCdeAchatController.selectedDocumentDTO.txRemHtDocument}" disabled="#{bonCdeAchatController.editable()}"
+							validator="#{bonCdeAchatController.validateDocument}">
+							<f:attribute name="nomChamp" value="#{const.C_TX_REM_HT_DOCUMENT}" />
+							<p:ajax event="blur" update="@this,@widgetVar(panelTotauxFormBoncdeAchat)"/>
+						</p:inputText>
+						
+						<p:outputLabel value="Montant HT" />
+						<p:inputText value="#{bonCdeAchatController.selectedDocumentDTO.netHtCalc}" disabled="true">
+							<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+						</p:inputText>
+						
+						<p:outputLabel value="Montant TVA" />
+						<p:inputText value="#{bonCdeAchatController.selectedDocumentDTO.netTvaCalc}" disabled="true">
+							<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+						</p:inputText>
+						
+						<p:outputLabel value="Escompte accordé %"  rendered="false"/>
+						<p:inputText value="#{bonCdeAchatController.selectedDocumentDTO.txRemTtcDocument}" disabled="#{bonCdeAchatController.editable()} " rendered="false"
+							validator="#{bonCdeAchatController.validateDocument}">
+							<f:attribute name="nomChamp" value="#{const.C_TX_REM_TTC_DOCUMENT}" />
+							<p:ajax event="blur" update="@this,@widgetVar(panelTotauxFormBoncdeAchat)"/>
+						</p:inputText>
+						
+						<p:outputLabel value="Montant TTC" />
+						<p:inputText value="#{bonCdeAchatController.selectedDocumentDTO.netTtcCalc}" disabled="true">
+							<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+						</p:inputText>
+						
+						<p:outputLabel value="Accompte" rendered="false"/>
+						<p:inputText value="#{bonCdeAchatController.selectedDocumentDTO.compte}" disabled="true" rendered="false"/>
+						
+						<p:outputLabel value="Imprimer" />
+						<p:selectBooleanCheckbox value="#{bonCdeAchatController.impressionDirect}"  disabled="#{bonCdeAchatController.editable()}">
+							<p:ajax event="change" update="@this" />
+						</p:selectBooleanCheckbox>
+						
+						<p:outputLabel value="Type paiement" rendered="false"/>
+<!-- 						<p:inputText value="#{bonCdeAchatController.selectedDocumentDTO.compte}"/> -->
+						<p:autoComplete value="#{bonCdeAchatController.taTPaiement}" rendered="false"
+						converter="entityConverter"
+							completeMethod="#{bonCdeAchatController.typePaiementAutoComplete}"
+							var="tp" itemLabel="#{tp.codeTPaiement}" itemValue="#{tp}"
+							forceSelection="true" dropdown="true" disabled="#{bonCdeAchatController.editable()}"
+							placeholder="Type de paiement" style="width:100%" id="idtypePaiementBoncdeAchat">
+							<p:column>
+								<h:outputText value="#{tp.codeTPaiement}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{tp.libTPaiement}" />
+							</p:column>
+							<f:attribute name="nomChamp" value="#{const.C_CODE_T_PAIEMENT}" />
+							<p:ajax event="itemSelect" listener="#{bonCdeAchatController.autcompleteSelection}" />
+						</p:autoComplete>
+						
+					</h:panelGrid>
+				</div>
+				
+				<div class="ui-grid-col-6">
+				<p:dataTable value="#{bonCdeAchatController.masterEntity.lignesTVA}" var="ltva">
+					<f:facet name="header">
+							<h:outputText value="TVA" />
+					</f:facet>
+					<p:column>
+						<f:facet name="header">
+							<h:outputText value="Code TVA" />
+						</f:facet>
+						<h:outputText value="#{ltva.codeTva}" />
+					</p:column>
+					
+					<p:column>
+						<f:facet name="header">
+							<h:outputText value="Libellé" />
+						</f:facet>
+						<h:outputText value="#{ltva.libelle}" />
+					</p:column>
+					
+					<p:column>
+						<f:facet name="header">
+							<h:outputText value="Taux" />
+						</f:facet>
+						<h:outputText value="#{ltva.tauxTva}">
+<!-- 							<f:convertNumber type="percentage" /> -->
+						</h:outputText>
+					</p:column>
+					
+					<p:column styleClass="right" >
+						<f:facet name="header">
+							<h:outputText value="Montant" />
+						</f:facet>
+						<h:outputText value="#{ltva.mtTva}">	
+							<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+						</h:outputText>
+					</p:column>
+				</p:dataTable>
+				
+				</div>
+				</div>
+				</div>
+			</p:panel>
+			<p:panel>
+		<div class="ui-grid-row">
+			<div class="ui-grid-col-12">			
+				<p:panel id="idPanelCommentaireBoncdeAchat" header="Commentaire" toggleable="true" widgetVar="panelCommentaire">				
+						<p:inputTextarea value="#{bonCdeAchatController.selectedDocumentDTO.commentaire}"  disabled="#{bonCdeAchatController.editable()}" style="width:100%">
+							<f:attribute name="nomChamp" value="#{const.C_LIBL_COMMENTAIRE}" />
+							<p:ajax event="blur" update="@this"/>
+						</p:inputTextarea>	
+				</p:panel>
+				
+			</div>
+		</div>
+</p:panel>
+		</p:tab>
+		
+<!-- 		<p:tab id="idValidationFormBoncdeAchat" title="Validation"> -->
+
+<!-- 			<p:panel id="idPanelValidationForm" header="Validation" toggleable="true" widgetVar="panelValidationForm"> -->
+			
+<!-- 				<h:panelGrid columns="2" cellpadding="10"> -->
+
+<!-- 					<p:outputLabel value="Code tiers : " /> -->
+<!-- 					<h:outputText value="#{bonCdeAchatController.taTiers}"/> -->
+						
+
+<!-- 					<p:outputLabel value="Code boncde : " /> -->
+<!-- 					<h:outputText value="#{bonCdeAchatController.selectedDocumentDTO.codeDocument}"/> -->
+						
+
+<!-- 					<p:outputLabel value="Date : " /> -->
+<!-- 					<h:outputText value="#{bonCdeAchatController.selectedDocumentDTO.dateDocument}"> -->
+<!-- 							<f:convertDateTime pattern="dd/MM/yyyy" /> -->
+<!-- 						</h:outputText> -->
+					
+
+<!-- 					<p:outputLabel value="Libellé : " /> -->
+<!-- 					<h:outputText -->
+<!-- 						value="#{bonCdeAchatController.selectedDocumentDTO.libelleDocument}"/> -->
+						
+
+<!-- 					<p:outputLabel value="Observation : " /> -->
+<!-- 					<h:outputText -->
+<!-- 						value="#{bonCdeAchatController.selectedDocumentDTO.commentaire}" /> -->
+
+<!-- 				</h:panelGrid> -->
+			
+<!-- 				<p:dataTable id="dataTableValidationLigneBoncdeAchat"  -->
+<!-- 					var="ligne" -->
+<!-- 					widgetVar="widgetVarDataTableValidationLigneBoncdeAchat" -->
+<!-- 					value="#{bonCdeAchatController.valuesLigne}" -->
+<!-- 					styleClass="datatable mt10" resizableColumns="true" -->
+<!-- 					paginator="true" -->
+<!-- 					rows="#{msg.modele_datatable_ligne_par_page_debut}" -->
+<!-- 					paginatorTemplate="#{msg.modele_datatable_paginator_sans_exporter}" -->
+<!-- 					rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}" -->
+<!-- 					emptyMessage="#{msg.message_datatable_vide}" -->
+<!-- 					currentPageReportTemplate="#{msg.modele_datatable_page_courante}"> -->
+
+<!-- 					<p:column> -->
+<!-- 						<f:facet name="header"> -->
+<!-- 							<h:outputText value="Code article" /> -->
+<!-- 						</f:facet> -->
+<!-- 						<h:outputText value="#{ligne.taArticle.codeArticle}" /> -->
+<!-- 					</p:column> -->
+
+<!-- 					<p:column> -->
+<!-- 						<f:facet name="header"> -->
+<!-- 							<h:outputText value="Libellé" /> -->
+<!-- 						</f:facet> -->
+<!-- 						<h:outputText value="#{ligne.taArticle.libellelArticle}" id="aa" /> -->
+<!-- 					</p:column> -->
+
+<!-- 					<p:column> -->
+<!-- 						<f:facet name="header"> -->
+<!-- 							<h:outputText value="Entrepot" /> -->
+<!-- 						</f:facet> -->
+<!-- 						<h:outputText value="#{ligne.taEntrepot.codeEntrepot}" /> -->
+<!-- 					</p:column> -->
+
+<!-- 					<p:column> -->
+<!-- 						<f:facet name="header"> -->
+<!-- 							<h:outputText value="Emplacement" /> -->
+<!-- 						</f:facet> -->
+<!-- 					</p:column> -->
+
+<!-- 					<p:column> -->
+<!-- 						<f:facet name="header"> -->
+<!-- 							<h:outputText value="DLUO" /> -->
+<!-- 						</f:facet> -->
+<!-- 					</p:column> -->
+
+<!-- 					<p:column> -->
+<!-- 						<f:facet name="header"> -->
+<!-- 							<h:outputText value="Qté1" /> -->
+<!-- 						</f:facet> -->
+<!-- 						<h:outputText value="#{ligne.dto.qteLDocument}" /> -->
+<!-- 					</p:column> -->
+
+<!-- 					<p:column> -->
+<!-- 						<f:facet name="header"> -->
+<!-- 							<h:outputText value="Unité 1" /> -->
+<!-- 						</f:facet> -->
+<!-- 						<h:outputText value="#{ligne.dto.u1LDocument}" /> -->
+<!-- 					</p:column> -->
+
+<!-- 					<p:column> -->
+<!-- 						<f:facet name="header"> -->
+<!-- 							<h:outputText value="Qté2" /> -->
+<!-- 						</f:facet> -->
+<!-- 						<h:outputText value="#{ligne.dto.qte2LDocument}" /> -->
+<!-- 					</p:column> -->
+
+<!-- 					<p:column> -->
+<!-- 						<f:facet name="header"> -->
+<!-- 							<h:outputText value="Unité 2" /> -->
+<!-- 						</f:facet> -->
+<!-- 						<h:outputText value="#{ligne.dto.u2LDocument}" /> -->
+<!-- 					</p:column> -->
+
+<!-- 				</p:dataTable> -->
+				
+<!-- 			</p:panel> -->
+
+<!-- 		</p:tab> -->
+		
+	</p:wizard>
+
+	<!-- 			</div> -->
+	<!-- 		</div> -->
+	<!-- 	</div> -->
+
+	<p:remoteCommand name="increment" binding="#{bonCdeAchatController.rc}"
+		actionListener="#{bonCdeAchatController.actAutoInsererLigne}"
+		process="@this" update="@widgetVar(panelLignesBoncdeAchat)"
+		disabled="#{bonCdeAchatController.insertAuto}"
+		 />
+<!-- oncomplete="jQuery('.myclassBoncdeAchat .ui-datatable-data tr').last().find('span.ui-icon-pencil').each(function(){jQuery(this).click()});" -->
+	
+	<!-- </f:validateBean> -->
+
+	<p:dialog header="Cohérence de la qté 2" widgetVar="wVdialogQte2BoncdeAchat" modal="true" appendTo="@(body)" showEffect="clip" hideEffect="clip" width="900"
+		height="200">
+		<p:panelGrid columns="1">
+			<p:outputLabel value="La qté 2 n'est pas cohérente par rapport au coefficient applicable, voulez vous la conserver ?" />
+		</p:panelGrid>
+		<p:panelGrid columns="2">
+			<p:commandButton value="Conserver la valeur" process="@this" onstart="PF('wVdialogQte2BoncdeAchat').hide()" />
+			<p:commandButton value="Appliquer le coefficient" process="@this" actionListener="#{bonCdeAchatController.actArreterEnregistrementEtFocusQte2()}"
+				oncomplete="PF('wVdialogQte2BoncdeAchat').hide()" update="@widgetVar(widgetVarDataTableLigneBoncdeAchat)" />
+		</p:panelGrid>
+	</p:dialog>
+
+
+</ui:composition>

@@ -1,0 +1,139 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<p:menubar styleClass="menu-onglet" >
+		<p:menuitem title="Fermer l'écran" value="Fermer"
+			styleClass="icon icon-close menuitem-fermer-droite" process="@this"	
+			onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())">
+		</p:menuitem>
+	</p:menubar>
+	
+	<div class="ui-g">
+		<div class="ui-g-12">
+			<p:fieldset legend="Paramètres">
+				<p:panelGrid columns="4">
+					<p:outputLabel value="Début" />
+					<p:calendar value="#{etatFournisseurBean.dateDebut}" showOn="button"
+						navigator="true">
+						<f:convertDateTime pattern="#{msg.date_pattern}"
+							timeZone="#{msg.time_zone}" />
+					</p:calendar>
+					<p:outputLabel value="Fin" />
+					<p:calendar value="#{etatFournisseurBean.dateFin}" showOn="button"
+						navigator="true">
+						<f:convertDateTime pattern="#{msg.date_pattern}"
+							timeZone="#{msg.time_zone}" />
+					</p:calendar>
+
+<!-- 					<p:panelGrid  columns="2"> -->
+<!-- 					<p:selectBooleanCheckbox title="Par famille" value="#{etatFournisseurBean.parFamille}"> -->
+<!-- 					</p:selectBooleanCheckbox> -->
+<!-- 					 <p:outputLabel value="Par famille"/>	 -->
+<!-- 					</p:panelGrid> -->
+				
+					<p:outputLabel value="Article" />
+					<p:autoComplete value="#{etatFournisseurBean.taArticle}" 
+						converter="entityConverter"
+						completeMethod="#{etatFournisseurBean.articleAutoComplete}"
+						var="article" itemLabel="#{article.codeArticle}" itemValue="#{article}"
+						forceSelection="true" dropdown="true" placeholder="Article">					
+						<p:column>
+							<h:outputText value="#{article.codeArticle}" />
+						</p:column>
+
+						<p:column>
+							<h:outputText value="#{article.libellecArticle}" />
+						</p:column>
+						<p:ajax event="itemSelect"  update="@this" />
+					</p:autoComplete>
+					
+					</p:panelGrid>
+					
+
+				<p:commandButton value="Valider" oncomplete="PF('wvDataTableDocumentFournisseurs').filter()" 
+					actionListener="#{etatFournisseurBean.actRecherche}"	update="@widgetVar(wvDataTableDocumentFournisseurs)" />
+			</p:fieldset>
+		</div>
+	</div>
+
+	<p:panel header="Résultat de la recherche">
+		<div class="ui-g">
+			<div class="ui-g-12">
+				<p:dataTable value="#{etatFournisseurBean.modelDocument}"
+					id="dataTableDocumentFournisseurs" var="doc" rowKey="#{doc.id}"
+					widgetVar="wvDataTableDocumentFournisseurs"
+					selection="#{etatFournisseurBean.selection}" resizableColumns="true"
+					paginator="true"
+					rows="#{msg.modele_datatable_ligne_par_page_debut}"
+					paginatorTemplate="#{msg.modele_datatable_paginator}"
+					rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+					emptyMessage="#{msg.message_datatable_vide}"
+					currentPageReportTemplate="#{msg.modele_datatable_page_courante}">
+
+					<f:facet name="{Exporters}">
+						<h:commandLink>
+							<p:graphicImage library="images" name="excel.png" width="24" />
+							<p:dataExporter type="xls" target="dataTableDocumentFournisseurs"
+								fileName="etat_stocks_entrepot"
+								postProcessor="#{etatFournisseurBean.postProcessXLS}" />
+						</h:commandLink>
+						
+						<p:commandLink onsuccess="window.open('#{request.contextPath}/output?__report=/reports/stock/ListeEtatFournisseurPourUnArticle.rptdesign&amp;__format=pdf')"
+			actionListener="#{etatFournisseurBean.actImprimerListeEtatFournisseurPourUnArticle}" process="@this">
+		                <p:graphicImage  library="images" name="pdf.png"  width="24"/>
+<!-- 		                <p:dataExporter type="pdf" target="dataTableListeTiers" fileName="liste_tiers" /> -->
+		            </p:commandLink>
+		            
+<!-- 						<h:commandLink> -->
+<!-- 							<p:graphicImage library="images" name="pdf.png" width="24" /> -->
+<!-- 							<p:dataExporter type="pdf" target="dataTableDocumentFournisseurs" -->
+<!-- 								fileName="etat_stocks_entrepot" -->
+<!-- 								preProcessor="#{etatFournisseurBean.preProcessPDF}" /> -->
+<!-- 						</h:commandLink> -->
+
+						<h:commandLink>
+							<p:graphicImage library="images" name="csv.png" width="24" />
+							<p:dataExporter type="csv" target="dataTableDocumentFournisseurs"
+								fileName="etat_stocks_entrepot" options="#{separateurCsvController.csvOptions}" />
+						</h:commandLink>
+
+						<h:commandLink>
+							<p:graphicImage library="images" name="xml.png" width="24" />
+							<p:dataExporter type="xml" target="dataTableDocumentFournisseurs"
+								fileName="etat_stocks_entrepot" />
+						</h:commandLink>
+					</f:facet>
+					<!-- 					<p:column headerText="Exporté" selectionMode="multiple" style="width:40px;text-align:center" /> -->
+
+					<p:column headerText="Code Fournisseur"  sortBy="#{doc.dto.codeTiers}" filterBy="#{doc.dto.codeTiers}" filterMatchMode="contains">
+						<p:commandLink value="#{doc.dto.codeTiers}"
+							action="#{etatFournisseurBean.detailTiers}"
+							update=":form:tabView"
+							oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+							<f:setPropertyActionListener value="#{doc.taTiers}"
+								target="#{etatFournisseurBean.detailLigneTiers}" />
+						</p:commandLink>
+					</p:column>	
+					
+					<p:column headerText="Nom" sortBy="#{doc.dto.nomTiers}" filterBy="#{doc.dto.nomTiers}"  filterMatchMode="contains">
+						<p:outputLabel value="#{doc.dto.nomTiers}" />
+					</p:column>				
+					
+					<p:column headerText="Nom entreprise" sortBy="#{doc.dto.nomEntreprise}" filterBy="#{doc.dto.nomEntreprise}"  filterMatchMode="contains">
+						<p:outputLabel value="#{doc.dto.nomEntreprise}" />
+					</p:column>
+					
+					<p:column headerText="Actif" sortBy="#{doc.dto.actifTiers}" filterBy="#{doc.dto.actifTiers}"  filterMatchMode="contains">					
+						<p:selectBooleanCheckbox value="#{doc.dto.actifTiers}" disabled="true"/>
+					</p:column>
+				</p:dataTable>
+				
+			</div>
+
+		</div>
+	</p:panel>
+
+</ui:composition>

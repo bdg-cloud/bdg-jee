@@ -1,0 +1,360 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    
+    <ui:define name="head">
+         <script type="text/javascript">
+            //<![CDATA[
+            function skinChart() {
+                this.cfg.shadow = false;
+                this.cfg.title = '';
+                this.cfg.seriesColors = ['#EA9624', '#5BA5D8'];
+                this.cfg.grid = {
+                    background: '#ffffff',
+                    borderColor: '#ffffff',
+                    gridLineColor: '#F5F5F5',
+                    shadow: false
+                };
+                this.cfg.axesDefaults = {
+                    rendererOptions: {
+                        textColor: '#666F77'
+                    }
+                };
+                this.cfg.seriesDefaults = {
+                    shadow: false,
+                    lineWidth: 1,
+                    markerOptions: {
+                        shadow: false,
+                        size: 7,
+                        style: 'circle'
+                    }
+                }
+            }
+            //]]>  
+        </script> 
+        <style type="text/css">
+            .main-content {
+                padding: 0;
+            }
+            
+            #main-wrapper-content {
+                padding: 10px;
+            }
+        </style>
+    </ui:define>
+    
+    
+        <div class="dashboard">
+            <div class="dashboard-header">
+                <div class="ui-g">
+                        <p:commandButton value="Fermer" styleClass="icon icon-close menuitem-fermer-droite" process="@this" 
+							onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())"/>
+   						<h:graphicImage name="dashboard/article.svg" id="imagedashboard" library="images" height="71px" width="71px" />
+   						
+<!-- 					<i class="fa fa-file-text-o fa-3x" style="color:#d2524f"></i> -->
+                    <div class="ui-g-12 ui-md-6">
+                        <div class="dashboard-title">
+                            <h2>Articles : Tableau de bord</h2>
+
+                        </div>
+                    </div>
+
+                    <div class="ui-g-12 ui-g-nopad">
+
+                    </div>
+                </div>
+            </div>
+            
+            <div id="main-wrapper-content-devis">
+
+                    
+                <div class="ui-g">
+
+
+				<div class="ui-g-12 ui-md-12">
+				<p:panel collapsed="true" toggleable="true" id="idPanelCriteresDashboardArticle" widgetVar="wvPanelCriteresDashboardArticle" >
+						<f:facet name="header">
+							<h:outputText value="Critères et paramètres du tableau de bord - " />
+							<h:outputText value="Période du " />
+							<h:outputText value="#{dashBoardArticleController.dateDebut}" >
+								<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" type="localDate"/>
+							</h:outputText>
+							<h:outputText value=" au " />
+							<h:outputText value="#{dashBoardArticleController.dateFin}" >
+								<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" type="localDate"/>
+							</h:outputText>
+						</f:facet>
+				
+					<div class="ui-g-12 ui-md-3">
+					<div class="card">
+		
+						<p:panel header="Période en cours" styleClass="panelgrey" >
+						<f:facet name="footer">
+						<i class="fa fa-calendar fa-2x" aria-hidden="true" style="color:skyblue;"></i>							<p:commandButton oncomplete="PF('wvListeArticle').filter()" 
+											update="@this,
+													@widgetVar(wvPanelCriteresDashboardArticle),
+													@widgetVar(wvDashArticlePanelArticle),
+													@widgetVar(wvDashArticlePanelArticleTous),
+													@widgetVar(wvDashArticlePanelArticleAvoirs),
+													@widgetVar(wvListeArticle),
+													@widgetVar(wvListeArticleParMois),
+													@widgetVar(wvListeFamilleArticle),
+													@widgetVar(wvListeArticleTous),
+													@widgetVar(wvListeArticleTousDetail),
+													@widgetVar(wvListeArticleParMoisAvoirs),
+													@widgetVar(wvListeFamilleArticleAvoirs),
+													@widgetVar(wvListeArticleAvoirs),
+													@widgetVar(wvCountNbArticleTransforme),
+													@widgetVar(wvCountNbFamilleArticleTransforme),
+													@widgetVar(wvListeArticleMoisArticles),
+													@widgetVar(wvDataTableExportArticleFournisseur)"  
+							action="#{dashBoardArticleController.refreshDashBoard('tous')}" value="Appliquer" id="idPeriodeArticle" styleClass="ui-green" 
+							style="width:60%;margin-left: 15px;bottom: 5px;" />
+
+							
+						</f:facet>
+						 <div class="ui-g-12 ui-md-1" >
+
+						 </div>
+						 <div class="ui-g-12 ui-md-11">
+			        	<h:panelGrid columns="2" cellpadding="0">
+						 <p:outputLabel value="Du"/>
+											<p:calendar value="#{dashBoardArticleController.dateDebut}"
+												showOn="button" 
+												pattern="#{msg.date_pattern}" 
+												mask="true" 
+												pages="3"
+												locale="fr" 
+												timeZone="#{msg.time_zone}"
+												size="8" >
+											</p:calendar>
+
+						 <p:outputLabel value="au"/>
+											<p:calendar value="#{dashBoardArticleController.dateFin}"
+												showOn="button" 
+												navigator="true" 
+												pattern="#{msg.date_pattern}" 
+												mask="true" 
+												locale="fr" 
+												timeZone="#{msg.time_zone}" 
+												size="8">
+											</p:calendar>
+
+        				</h:panelGrid>
+        				</div>
+        				 <p:separator />
+
+
+								</p:panel>
+					
+					</div>					
+
+    				</div>
+    				
+    				<div class="ui-g-12 ui-md-2">
+					<div class="card">
+					<p:panel header="Raccourcis périodes" styleClass="panelgrey">
+						<p:panelGrid columns="1" cellpadding="0" columnClasses="ui-grid-col-12" style="width:100%">
+							<p:commandButton oncomplete="PF('wvListeArticle').filter()" 
+											update="@this,
+													@widgetVar(wvPanelCriteresDashboardArticle),
+													@widgetVar(wvDashArticlePanelArticle),
+													@widgetVar(wvDashArticlePanelArticleTous),
+													@widgetVar(wvDashArticlePanelArticleAvoirs),
+													@widgetVar(wvListeArticle),
+													@widgetVar(wvListeFamilleArticle),
+													@widgetVar(wvListeArticleParMois),
+													@widgetVar(wvListeArticleTous),
+													@widgetVar(wvListeArticleTousDetail),
+													@widgetVar(wvListeArticleParMoisAvoirs),
+													@widgetVar(wvListeFamilleArticleAvoirs),
+													@widgetVar(wvListeArticleAvoirs),
+													@widgetVar(wvCountNbArticleTransforme),
+													@widgetVar(wvCountNbFamilleArticleTransforme),
+													@widgetVar(wvListeArticleMoisArticles),
+													@widgetVar(wvDataTableExportArticleFournisseur)"  
+							action="#{dashBoardArticleController.initBornePeriodeAujourdhui()}" value="Aujourd'hui" id="idPeriodeDevisJourCourant"  
+							 style="font-size: 12px;height: 22px;width:100%;border-bottom: 2px solid #7FA128;"/>
+<!-- 							 styleClass="ui-orange"					 -->
+							<p:commandButton oncomplete="PF('wvListeArticle').filter()" 
+											update="@this,
+													@widgetVar(wvPanelCriteresDashboardArticle),
+													@widgetVar(wvDashArticlePanelArticle),
+													@widgetVar(wvDashArticlePanelArticleTous),
+													@widgetVar(wvDashArticlePanelArticleAvoirs),
+													@widgetVar(wvListeArticle),
+													@widgetVar(wvListeFamilleArticle),
+													@widgetVar(wvListeArticleParMois),
+													@widgetVar(wvListeArticleTous),
+													@widgetVar(wvListeArticleTousDetail),
+													@widgetVar(wvListeArticleParMoisAvoirs),
+													@widgetVar(wvListeFamilleArticleAvoirs),
+													@widgetVar(wvListeArticleAvoirs),
+													@widgetVar(wvCountNbArticleTransforme),
+													@widgetVar(wvCountNbFamilleArticleTransforme),
+													@widgetVar(wvListeArticleMoisArticles),
+													@widgetVar(wvDataTableExportArticleFournisseur)"   
+							action="#{dashBoardArticleController.initBornePeriodeHier()}" value="Hier" id="idPeriodeDevisJourPrecedent"  
+							 style="font-size: 12px;height: 22px;width:100%;border-bottom: 2px solid #7FA128;"/>
+							<p:commandButton oncomplete="PF('wvListeArticle').filter()" 
+											update="@this,
+													@widgetVar(wvPanelCriteresDashboardArticle),
+													@widgetVar(wvDashArticlePanelArticle),
+													@widgetVar(wvDashArticlePanelArticleTous),
+													@widgetVar(wvDashArticlePanelArticleAvoirs),
+													@widgetVar(wvListeArticle),
+													@widgetVar(wvListeFamilleArticle),
+													@widgetVar(wvListeArticleParMois),
+													@widgetVar(wvListeArticleTous),
+													@widgetVar(wvListeArticleTousDetail),
+													@widgetVar(wvListeArticleParMoisAvoirs),
+													@widgetVar(wvListeFamilleArticleAvoirs),
+													@widgetVar(wvListeArticleAvoirs),
+													@widgetVar(wvCountNbArticleTransforme),
+													@widgetVar(wvCountNbFamilleArticleTransforme),
+													@widgetVar(wvListeArticleMoisArticles),
+													@widgetVar(wvDataTableExportArticleFournisseur)" 
+							action="#{dashBoardArticleController.initBornePeriodeMoisCourant()}" value="Mois courant" id="idPeriodeDevisMoisCourant"  
+							style="font-size: 12px;height: 22px;width:100%;border-bottom: 2px solid #7FA128;"/>
+							<p:commandButton oncomplete="PF('wvListeArticle').filter()" 
+											update="@this,
+													@widgetVar(wvPanelCriteresDashboardArticle),
+													@widgetVar(wvDashArticlePanelArticle),
+													@widgetVar(wvDashArticlePanelArticleTous),
+													@widgetVar(wvDashArticlePanelArticleAvoirs),
+													@widgetVar(wvListeArticle),
+													@widgetVar(wvListeFamilleArticle),
+													@widgetVar(wvListeArticleParMois),
+													@widgetVar(wvListeArticleTous),
+													@widgetVar(wvListeArticleTousDetail),
+													@widgetVar(wvListeArticleParMoisAvoirs),
+													@widgetVar(wvListeFamilleArticleAvoirs),
+													@widgetVar(wvListeArticleAvoirs),
+													@widgetVar(wvCountNbArticleTransforme),
+													@widgetVar(wvCountNbFamilleArticleTransforme),
+													@widgetVar(wvListeArticleMoisArticles),
+													@widgetVar(wvDataTableExportArticleFournisseur)"   
+							action="#{dashBoardArticleController.initBornePeriodeAnneeCourante()}" value="Année courante" id="idPeriodeArticleAnneeCourante"  
+							 style="font-size: 12px;height: 22px;width:100%;border-bottom: 2px solid #7FA128;"/>
+						</p:panelGrid>
+					</p:panel>
+					</div>
+    				</div>
+    				
+    				<div class="ui-g-12 ui-md-2">
+					<div class="card">
+					<p:panel header="sélection d'un article" styleClass="panelgrey">
+						<p:panelGrid columns="1" cellpadding="0" columnClasses="ui-grid-col-12" style="width:100%">
+								<p:autoComplete value="#{dashBoardArticleController.taArticleDTO}"
+									completeMethod="#{dashBoardArticleController.articleAutoCompleteDTOLight}"
+								 converter="entityConverter"
+									var="art" itemLabel="#{art.codeArticle}" itemValue="#{art}"
+									forceSelection="true" dropdown="true" 
+									 placeholder="Article" 
+									maxResults="#{dashBoardArticleController.taPreferencesService.nbMaxChargeListeArticle()}"
+									moreText="Il y a #{component.maxResults} affichés sur #{component.suggestions.size()} au total, Veuillez affiner votre recherche ou cliquer ici	pour en afficher plus ..."
+									style="width:100%">
+<!-- 									required="true" requiredMessage="Le code article est obligatoire" -->
+									
+									<p:column>
+										<h:outputText value="#{art.codeArticle}" />
+									</p:column>
+									
+									<p:column>
+										<h:outputText value="#{art.libellecArticle}" />
+									</p:column>
+									<p:column >
+										<h:outputText value="#{art.commentaireArticle}" rendered="#{dashBoardArticleController.rechercheAvecCommentaire(false)}"/>
+									</p:column>
+
+									<f:attribute name="nomChamp" value="#{const.C_CODE_ARTICLE}" />
+									<p:ajax event="moreText" listener="#{dashBoardArticleController.onMoreTextArticle}" />
+									<p:ajax event="clear" listener="#{dashBoardArticleController.onClearArticle}" 
+									update="
+													
+													@widgetVar(wvDashArticlePanelArticle),
+													@widgetVar(wvDashArticlePanelArticleTous),
+													@widgetVar(wvDashArticlePanelArticleAvoirs),
+													@widgetVar(wvListeArticle),
+													@widgetVar(wvListeFamilleArticle),
+													@widgetVar(wvListeArticleParMois),
+													@widgetVar(wvListeArticleTous),
+													@widgetVar(wvListeArticleTousDetail),
+													@widgetVar(wvListeArticleParMoisAvoirs),
+													@widgetVar(wvListeFamilleArticleAvoirs),
+													@widgetVar(wvListeArticleAvoirs),
+													@widgetVar(wvCountNbArticleTransforme),
+													@widgetVar(wvCountNbFamilleArticleTransforme),
+													@widgetVar(wvListeArticleMoisArticles),
+													@widgetVar(wvDataTableExportArticleFournisseur)"   />									
+									<p:ajax event="itemSelect" listener="#{dashBoardArticleController.autcompleteSelection}" 
+									update="
+													
+													@widgetVar(wvDashArticlePanelArticle),
+													@widgetVar(wvDashArticlePanelArticleTous),
+													@widgetVar(wvDashArticlePanelArticleAvoirs),
+													@widgetVar(wvListeArticle),
+													@widgetVar(wvListeFamilleArticle),
+													@widgetVar(wvListeArticleParMois),
+													@widgetVar(wvListeArticleTous),
+													@widgetVar(wvListeArticleTousDetail),
+													@widgetVar(wvListeArticleParMoisAvoirs),
+													@widgetVar(wvListeFamilleArticleAvoirs),
+													@widgetVar(wvListeArticleAvoirs),
+													@widgetVar(wvCountNbArticleTransforme),
+													@widgetVar(wvCountNbFamilleArticleTransforme),
+													@widgetVar(wvListeArticleMoisArticles),
+													@widgetVar(wvDataTableExportArticleFournisseur)"   />
+								</p:autoComplete>							 
+						</p:panelGrid>
+					</p:panel>
+					</div>
+    				</div>
+    				
+<!-- 					<div class="ui-g-12 ui-md-2"> -->
+<!-- 					<p:fieldset style="margin-bottom:20px;"> -->
+<!-- 						<p:panel header="Période antérieure" styleClass="panelgrey"  > -->
+						
+<!-- 			        	<h:panelGrid columns="3" cellpadding="5"> -->
+<!--         				</h:panelGrid> -->
+<!--         				</p:panel> -->
+<!--     				</p:fieldset> -->
+<!--     				</div> -->
+					<div class="ui-g-12 ui-md-4">
+
+    				</div>
+					<div class="ui-g-12 ui-md-4">
+
+    				</div>
+				</p:panel>
+				</div>
+			<!-- ICI VIEN LA TABVIEW PRINCIPALE pour les tabs VENTE, DEVIS, COMMANDE, PROFORMA,... -->
+			<div class="ui-g-12 ui-md-12">
+				<p:tabView id="idTabViewListesArticlesDashArticlePrincipale" widgetVar="wvTabViewListesArticlesDashArticlePrincipale" styleClass="tab-verte-border-color-verte ">
+					         <!--ICI VIEN LE DEBUT DU TAB VENTE-->
+					         <p:tab title="Ventes">
+								 <ui:include src="/dashboard/onglet_dash_article_principal_vente.xhtml" />
+					         </p:tab>
+					          <!--ICI VIEN LE DEBUT DU TAB DEVIS-->
+					         <p:tab title="Devis" rendered="false">
+					         	<ui:include src="/dashboard/onglet_dash_article_principal_devis.xhtml" />
+					         </p:tab>
+					          <!--ICI VIEN LE DEBUT DU TAB COMMANDE-->
+					         <p:tab title="Commandes" rendered="false"></p:tab>
+					          <!--ICI VIEN LE DEBUT DU TAB PROFORMA-->
+					         <p:tab title="Proforma" rendered="false"></p:tab>
+				 </p:tabView>
+			</div>
+			<!-- FIN TABVIEW PRINCIPALE -->
+				
+
+                </div>
+            </div>
+        </div>
+
+    
+</ui:composition>

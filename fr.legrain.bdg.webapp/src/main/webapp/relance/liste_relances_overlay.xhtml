@@ -1,0 +1,138 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:o="http://omnifaces.org/ui" xmlns:p="http://primefaces.org/ui">
+
+	<o:importConstants type="fr.legrain.bdg.webapp.app.LgrTab" />
+
+	<p:commandLink id="listeRelanceBtn">
+		<i class="top-submenu-icon fa fa-fw fa-user"></i>
+		<span><h:outputText value="Liste des relances" /></span>
+	</p:commandLink>
+
+	<p:overlayPanel id="idListeRelancePanel" for="listeRelanceBtn" hideEffect="fade" dynamic="true" dismissable="true" appendTo="@(body)"
+		widgetVar="wvOverlayListeRelance" showCloseIcon="true" >
+		<h:form>
+			<div class="dashboard-title" style="background: #f6f6f6;">
+				<h:panelGrid columns="3" cellpadding="5">
+					<h:graphicImage name="dashboard/tier.svg" library="images" height="35px" style="margin-top:1px;" />
+					<p:outputLabel value="Liste des Relances" style="font-size:20px;" />
+				</h:panelGrid>
+				<p:separator />
+			</div>
+			<p:menubar styleClass="menu-onglet" widgetVar="wvMenuListeRelance" id="idMenuListeRelance">
+				<p:menuitem title="Ajouter une nouvelle Relance"
+					update=":form:tabView,:form:messages,@widgetVar(wvMenuListeRelance),@widgetVar(wvDataTableListeGestRelance2)
+					 @widgetVar(wvDataTableListeRelance),@widgetVar(wvBandeauActionRelance),@widgetVar(wvPanelRenderedRelance)"
+					actionListener="#{relanceController.nouveau}" styleClass="icon icon-insert" disabled="#{relanceController.etatBouton('inserer')}"
+					oncomplete="PF('wvOverlayListeRelance').hide();" />
+
+				<p:menuitem title="Rafraîchir la liste" update="@form,:form:messages" actionListener="#{relanceController.refresh}" styleClass="icon icon-refresh"
+					disabled="#{relanceController.modeEcran.dataSetEnModif()}" />
+
+				<!-- 		 <p:menuitem title="Exporter la liste" ajax="false" styleClass="icon icon-export"> -->
+				<!-- 			<p:fileDownload value="#{relanceController.exportationRelance}"/> -->
+				<!-- 		 </p:menuitem> -->
+			</p:menubar>
+
+			<p:sticky target="idMenuListeRelance" />
+
+
+			<!-- 	stickyHeader="true" -->
+
+			<p:dataTable id="dataTableListeGestRelance2" 
+				var="doc" 
+				widgetVar="wvDataTableListeGestRelance2" 
+				class="datatable" 
+				value="#{relanceController.values}"
+				rowKey="#{doc.idRelance}" 
+				selection="#{relanceController.selection}" 
+				dblClickSelect="true" 
+				resizableColumns="true" 
+				selectionMode="single"
+				paginator="true" 
+				rows="#{msg.modele_datatable_ligne_par_page_debut}" 
+				paginatorTemplate="#{msg.modele_datatable_paginator}"
+				rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}" 
+				emptyMessage="#{msg.message_datatable_vide}"
+				currentPageReportTemplate="#{msg.modele_datatable_page_courante}" 
+				disabledSelection="#{relanceController.modeEcran.dataSetEnModif()}">
+
+				<p:ajax event="rowSelect" delay="#{msg.datatable_rowselect_delay}" listener="#{relanceController.onRowSelect}"
+					update=":form:tabView,:form:messages,@widgetVar(wvBandeauActionRelance)"
+					oncomplete="activeTabCenter('#{LgrTab.CSS_CLASS_TAB_RELANCE}');PF('wvOverlayListeRelance').hide();scrollToTop();" />
+
+				<f:facet name="header">
+					<h:outputText value="Relance" />
+
+				</f:facet>
+
+				<f:facet name="{Exporters}">
+					<h:commandLink>
+						<p:graphicImage library="images" name="excel.png" width="24" />
+						<p:dataExporter type="xls" target="dataTableListeGestRelance2" fileName="liste_relances" />
+					</h:commandLink>
+
+					<p:commandLink onsuccess="window.open('#{request.contextPath}/output?__report=/reports/relance/ListeDesRelances.rptdesign&amp;__format=pdf')"
+			actionListener="#{relanceController.actImprimerListeDesRelances}" process="@this">
+		                <p:graphicImage  library="images" name="pdf.png"  width="24"/>
+<!-- 		                <p:dataExporter type="pdf" target="dataTableListeTiers" fileName="liste_tiers" /> -->
+		            </p:commandLink>
+
+					<h:commandLink>
+						<p:graphicImage library="images" name="csv.png" width="24" />
+						<p:dataExporter type="csv" target="dataTableListeGestRelance2" fileName="liste_relances" options="#{separateurCsvController.csvOptions}" />
+					</h:commandLink>
+
+					<h:commandLink>
+						<p:graphicImage library="images" name="xml.png" width="24" />
+						<p:dataExporter type="xml" target="dataTableListeGestRelance2" fileName="liste_relances" />
+					</h:commandLink>
+				</f:facet>
+
+
+				<p:column style="width:16px" exportable="false">
+					<f:facet name="header">
+						<h:outputText value="" />
+					</f:facet>
+					<p:commandButton title="Détail" update=":form:tabView,:form:messages,@widgetVar(wvBandeauActionRelance),@widgetVar(wvPanelRenderedRelance)"
+						action="#{relanceController.detail}" styleClass="icon icon-detail icon-grille" disabled="#{relanceController.modeEcran.dataSetEnModif()}"
+						oncomplete="PF('wvOverlayListeRelance').hide();">
+						<f:setPropertyActionListener target="#{relanceController.selection}" value="#{doc}" />
+					</p:commandButton>
+				</p:column>
+
+				<p:column sortBy="#{doc.codeRelance}" filterBy="#{doc.codeRelance}" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="Code relance" />
+					</f:facet>
+					<h:outputText value="#{doc.codeRelance}" />
+				</p:column>
+				<p:column sortBy="#{doc.dateRelance}" filterBy="#{doc.dateRelance}" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="Date relance" />
+					</f:facet>
+					<h:outputText value="#{doc.dateRelance}">
+						<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}" />
+					</h:outputText>
+				</p:column>
+
+				<p:column style="width:16px" exportable="false">
+					<f:facet name="header">
+						<h:outputText value="" />
+					</f:facet>
+
+					<p:commandButton title="Supprimer" styleClass="icon-delete icon icon-grille" widgetVar="widgetVarBtnSupprimerListeRelance"
+						action="#{relanceController.actSupprimer}" process="@this" update="@widgetVar(wvDataTableListeGestRelance2)">
+						<f:setPropertyActionListener target="#{relanceController.selection}" value="#{doc}" />
+						<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer cette relance ?" icon="ui-icon-alert" />
+					</p:commandButton>
+				</p:column>
+
+
+			</p:dataTable>
+
+
+
+		</h:form>
+	</p:overlayPanel>
+
+</ui:composition>

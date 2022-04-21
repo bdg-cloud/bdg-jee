@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:h="http://java.sun.com/jsf/html" 
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets" 
+	xmlns:p="http://primefaces.org/ui">
+	
+	<f:view locale="#{languageBean.localeCode}" />
+	
+	<h:head>
+		<f:facet name="first">
+			<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+			<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+			<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+			<meta name="apple-mobile-web-app-capable" content="yes" />
+		</f:facet>
+		
+		<link href="https://fonts.googleapis.com/css?family=PT+Sans" rel="stylesheet" />
+		<link rel="shortcut icon" type="image/x-icon" href="#{resource['images:favicon.ico']}" />
+		
+		<title>Espace client - Bureau de Gestion</title>
+	</h:head>
+	
+	<h:body class="ui-g">>
+		
+		<h:graphicImage id="image_de_fond" library="images" name="fond-bdg.jpg" width="100%" height="100%" />
+		<h:graphicImage id="image_bdg" library="images" name="logo-bdg.png" width="auto" height="auto" />
+		
+		<f:facet name="last">
+			<!-- surcharge des CSS primefaces -->
+			<h:outputStylesheet library="css" name="theme-compteclient.css" />
+		</f:facet>
+	
+		<h:form>
+	
+			<div class="ui-g-12-centrer">
+	
+				<div class="mini-label">
+					<p:outputLabel styleClass="mini-label" value="#{c_langue.espace_client_aide_creer_compte}" />
+				</div>
+	
+				<div>
+					<h:commandButton styleClass="btn_creer" action="#{creationCompteController.init}" value="#{c_langue.espace_client_barre_titre_creer_un_compte}"
+						process="@this" ajax="false" />
+				</div>
+
+				<div class="mini-label">
+					<p:outputLabel styleClass="mini-label" value="#{c_langue.espace_client_aide_espace_client}" />
+				</div>
+	
+				<div class="titre_form">
+					<p:outputLabel styleClass="titre_formulaire" value="#{c_langue.espace_client_barre_titre_espace_client}" />
+				</div>
+	
+				<p:messages id="messages" showDetail="true" autoUpdate="true" closable="true" />
+				
+				<div class="label-formulaire">
+					<p:inputText id="mail" value="#{auth.username}" placeholder="#{c_langue.espace_client_form_placeholder_email}" styleClass="j_username"
+						required="false" size="25" />
+					<br />
+				</div>
+				
+				<div class="label-formulaire">
+					<p:password value="#{auth.password}" placeholder="#{c_langue.espace_client_form_placeholder_mdp}" styleClass="j_password" size="25"
+						autocomplete="on" required="false" title="#{c_langue.espace_client_form_mdp_title}" />
+				</div>
+	
+				<div>
+					<p:commandButton styleClass="btn_mdp_oublier" action="#{auth.mdpOublie}" value="#{c_langue.espace_client_btn_mdp_oublie}" ajax="false" />
+				</div>
+	
+				<div>
+					<p:commandButton id="id_connect" styleClass="btn_login" action="#{auth.login}" value="#{c_langue.espace_client_btn_connexion}" ajax="false" />
+				</div>
+			</div>
+	
+			<p:selectOneMenu class="footer_combo" value="#{languageBean.localeCode}">
+				<f:selectItems value="#{languageBean.countriesInMap}" />
+				<p:ajax listener="#{languageBean.countryLocaleCodeChanged}" update="@form" />
+			</p:selectOneMenu>
+	
+			<h:outputStylesheet name="css/layout-#{auth.themeCouleur}.css" library="icarus-layout" />
+	
+			<div class="footer_login">
+				<span>BUREAU DE GESTION</span>
+			</div>
+			
+			<p:defaultCommand target="id_connect"/>
+			<span class="footer_right">LEGRAIN informatique</span>
+
+		</h:form>
+	
+	
+	
+	</h:body>
+
+</html>

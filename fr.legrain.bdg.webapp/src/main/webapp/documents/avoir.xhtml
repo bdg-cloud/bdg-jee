@@ -1,0 +1,2173 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:lgr="http://legrain.fr/ui"
+    xmlns:pe="http://primefaces.org/ui/extensions">
+
+	<ui:define name="metadata">
+		<f:metadata>
+			<f:viewParam name="variableEcran" value="avoir" />
+		</f:metadata>
+	</ui:define>
+	
+	<!-- <f:validateBean disabled="true"> -->
+			<div class="dashboard-title" style="background: #f0f1f2; margin-bottom: 15px;">
+						<h:panelGroup id="idPanelGroupInfosTiersEnteteAvoir">
+						<p:spacer width="30" height="5" />
+						<p:outputLabel value="Code : " />
+						<p:outputLabel value="#{avoirController.selectedDocumentDTO.codeDocument}" style="font-weight: bold;"/>
+						<p:spacer width="30" height="5" />
+						
+						<p:outputLabel value="Code tiers : " />
+						<p:commandLink value="#{avoirController.selectedDocumentDTO.codeTiers}" style="font-weight: bold;"
+						action="#{ouvertureDocumentBean.detailTiers(ouvertureDocumentBean.recupCodetiers(avoirController.selectedDocumentDTO.codeTiers))}" 
+						update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+						</p:commandLink>
+						
+						
+						<p:spacer width="30" height="5" />
+						<p:outputLabel value="Nom : " />
+						<p:outputLabel value="#{avoirController.selectedDocumentDTO.nomTiers} #{avoirController.selectedDocumentDTO.prenomTiers}" style="font-weight: bold;"/>
+						<p:spacer width="30" height="5" />
+						<p:outputLabel value="Raison sociale : " />
+						<p:outputLabel value="#{avoirController.selectedDocumentDTO.nomEntreprise}" style="font-weight: bold;"/>
+						</h:panelGroup>
+			</div>
+
+
+	<p:menubar styleClass="menu-onglet" id="idMenuBoutonAvoir" widgetVar="wvMenuBoutonAvoir">
+
+		<p:menuitem title="Enregistrer l'avoir en cours de saisie" value="Enregistrer" styleClass="icon icon-save" process="@this idtiersAvoir idCodeAvoir"
+			actionListener="#{avoirController.actEnregistrer}" 
+			oncomplete="impressionDirect(PF('wvImpressionDirectAvoir'),'#{request.contextPath}/output?__report=/reports/documents/avoir/FicheAvoir.rptdesign&amp;__format=pdf');
+			clickBouttonSuivantCheckBox(PF('wvEnvoyerEmailDirectAvoir'),'.classHiddenCommandForDialogEmailReturnAvoir')"				
+			update="idPanelEnteteAvoir,idPanelLignesAvoir,idTableauComplementaireAvoir,:form:messages,@form,@widgetVar(wvMenuListeAvoir),@widgetVar(wvDataTableListeAvoir)"
+			disabled="#{avoirController.etatBouton('enregistrer') or avoirController.stepEnCours('idLignesAvoir')}">
+			<p:confirm header="Confirmation mise à disposition client" message="Etes-vous sur de vouloir mettre à disposition ce document au client ? Ce document ne sera plus modifiable." icon="ui-icon-alert" disabled="#{!avoirController.impressionDirectClient and !avoirController.envoyeParEmail}"/>
+			</p:menuitem>
+			
+		<p:menuitem title="Créer un nouvel avoir" value="Insérer" styleClass="icon icon-insert"
+			actionListener="#{avoirController.actInserer}" process="@this"
+			oncomplete="if(PF('widgetVarLigneAvoir').getStepIndex()!=-1) {PF('widgetVarLigneAvoir').loadStep('idEnteteAvoir', false)}"
+			update="idPanelEnteteAvoir,idPanelLignesAvoir,idTableauComplementaireAvoir,:form:messages,idPrecisionPrixAvoir,@form,@widgetVar(wvMenuListeAvoir),@widgetVar(wvDataTableListeAvoir)"
+			disabled="#{avoirController.etatBouton('inserer') or avoirController.stepEnCours('idLignesAvoir')}" />
+			
+		<p:menuitem title="Modifier l'avoir courant" value="Modifier" styleClass="icon icon-update"
+			actionListener="#{avoirController.actModifier}"
+			process="@this"
+			update="idPanelEnteteAvoir,idPanelLignesAvoir,idTableauComplementaireAvoir,:form:messages,@form,@widgetVar(wvMenuListeAvoir),@widgetVar(wvDataTableListeAvoir)"
+			disabled="#{avoirController.etatBouton('modifier') or avoirController.documentDTOEstVerrouille().verrouille}" >
+			<p:confirm header="#{avoirController.titreModification}" message="#{avoirController.messageModification}" icon="ui-icon-alert" />
+		</p:menuitem>
+			
+			
+		<p:menuitem title="Annuler les modifications en cours" value="Annuler" styleClass="icon icon-cancel"
+			actionListener="#{avoirController.actAnnuler}" process="@this"
+			update="idPanelEnteteAvoir,idPanelLignesAvoir,idTableauComplementaireAvoir,:form:messages,@form,@widgetVar(wvMenuListeAvoir),@widgetVar(wvDataTableListeAvoir)"
+			disabled="#{avoirController.etatBouton('annuler') }" >
+		<p:confirm header="Confirmation" message="Etes vous sur de vouloir annuler les modifications en cours ?"  icon="ui-icon-alert" />
+		</p:menuitem>
+			
+<!-- 		<p:separator styleClass="separateur-menu-vertical"/> -->
+		<p:menuitem title="Supprimer l'avoir courant" value="Supprimer" styleClass="icon icon-delete menuitem-poubelle-droite"
+			actionListener="#{avoirController.actSupprimer}"
+			process="@this"
+			update="idPanelEnteteAvoir,idPanelLignesAvoir,idTableauComplementaireAvoir,:form:messages,@form,@widgetVar(wvMenuListeAvoir),@widgetVar(wvDataTableListeAvoir)"
+			disabled="#{avoirController.etatBouton('supprimer') or avoirController.stepEnCours('idLignesAvoir') or avoirController.documentDTOEstVerrouille().verrouille}" >
+<!-- 			<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer cet enregistrement ?" icon="ui-icon-alert" /> -->
+			<p:confirm header="Confirmation de la suppression" message="#{avoirController.messageSuppression}" icon="ui-icon-alert" />
+
+		</p:menuitem>			
+
+		<p:menuitem title="Créer un évènement" styleClass="icon-agenda icon" 
+			
+			oncomplete="$('.classHiddenCommandForDialogAgendaReturnAvoir').click()"
+			process="@this" 
+			update="@this" 
+			disabled="#{avoirController.etatBouton('modifier')}"/>
+
+		<p:separator styleClass="separateur-menu-vertical"/>
+
+		<p:menuitem title="Fermer l'écran des avoirs" value="Fermer" styleClass="icon icon-close menuitem-fermer-droite"
+			process="@this" 
+			actionListener="#{avoirController.actFermer}"
+			update=":form:messages,@widgetVar(wvMenuListeAvoir),@widgetVar(wvDataTableListeAvoir)"
+			disabled="#{avoirController.etatBouton('fermer')}"
+			onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())">
+			
+			<p:confirm header="Confirmation" message="#{msg_diag.alert_fermeture_onglet}" icon="ui-icon-alert" disabled="#{!avoirController.modeEcran.dataSetEnModif()}"/>
+		</p:menuitem>
+		
+	
+	<!-- JE TAFF ICI POUR LE CHOIX EDITION A L'IMPRESSION -->
+	<p:submenu  icon="ui-icon-print"  class="ui-icon-print-option">
+	<!-- NEW BUTTON COMME FACTURE AVEC EDITION DEFAUT 29/10/19 -->
+	<p:menuitem title="#{c_avoir.titre_menu_imprimer} pour le client" value="Imprimer pour le client" icon="fa fa-print"
+				disabled="#{(avoirController.etatBouton('imprimer') or avoirController.stepEnCours('idLignesAvoir')) }"
+				actionListener="#{avoirController.imprimeEdition(null, 'CLIENT', 'true')}"
+				update="idTableauComplementaireAvoir">
+				<p:confirm header="Confirmation" disabled="#{avoirController.selectedDocumentDTO.estMisADisposition}" message="Etes-vous sur de vouloir mettre à disposition du client ce document ? Ensuite, vous ne pourrez plus le modifier ?" icon="ui-icon-alert" />
+	</p:menuitem>
+	<p:submenu label="Tous les modèles" disabled="#{(avoirController.etatBouton('imprimer') or avoirController.stepEnCours('idLignesAvoir'))}">
+		 <c:forEach items="#{avoirController.listeEdition}" var="edition" varStatus="loop">
+		       <p:menuitem  title="#{edition.libelleEdition}" value="#{edition.libelleEdition}" actionListener="#{avoirController.imprimeEdition(edition, 'CLIENT', 'true')}" 
+		       update="idTableauComplementaireAvoir">
+				<p:confirm header="Confirmation" disabled="#{avoirController.selectedDocumentDTO.estMisADisposition}" message="Etes-vous sur de vouloir mettre à disposition du client ce document ? Ensuite, vous ne pourrez plus le modifier ?" icon="ui-icon-alert" />
+				</p:menuitem >
+		   </c:forEach>
+	</p:submenu>
+			
+			<p:separator />
+	<p:menuitem title="#{c_avoir.titre_menu_imprimer} en Duplicata" value="Duplicata" icon="fa fa-print"
+		disabled="#{(avoirController.etatBouton('imprimer') or avoirController.stepEnCours('idLignesAvoir')) or !avoirController.selectedDocumentDTO.estMisADisposition}"
+		actionListener="#{avoirController.imprimeEdition(null, 'DUPLICATA', 'false')}">
+	</p:menuitem>
+	
+	<p:submenu label="Tous les modèles"
+	 disabled="#{(avoirController.etatBouton('imprimer') or avoirController.stepEnCours('idLignesAvoir')) or !avoirController.selectedDocumentDTO.estMisADisposition}">
+		 <c:forEach items="#{avoirController.listeEdition}" var="edition" varStatus="loop">
+		       <p:menuitem  title="#{edition.libelleEdition}" value="#{edition.libelleEdition}" actionListener="#{avoirController.imprimeEdition(edition, 'DUPLICATA', 'false')}">
+				</p:menuitem >
+		   </c:forEach>
+	</p:submenu>
+			
+			<p:separator />
+	<p:menuitem  title="#{c_avoir.titre_menu_imprimer} en brouillon" value="Brouillon" icon="fa fa-print"
+				disabled="#{(avoirController.etatBouton('imprimer') or avoirController.stepEnCours('idLignesAvoir')) or avoirController.selectedDocumentDTO.estMisADisposition }"
+				actionListener="#{avoirController.imprimeEdition(null, 'BROUILLON', 'false')}">
+	</p:menuitem >
+	<p:submenu label="Tous les modèles" disabled="#{(avoirController.etatBouton('imprimer') or avoirController.stepEnCours('idLignesAvoir')) or avoirController.selectedDocumentDTO.estMisADisposition }">
+			 <c:forEach items="#{avoirController.listeEdition}" var="edition" varStatus="loop">
+			       <p:menuitem  title="#{edition.libelleEdition}" value="#{edition.libelleEdition}" actionListener="#{avoirController.imprimeEdition(edition, 'BROUILLON', 'false')}">
+					</p:menuitem >
+			   </c:forEach>
+	</p:submenu>
+	
+	
+	
+	
+	<!-- <lgr:menuItemImprimer title="Imprimer l'avoir courant (brouillon)" value="Brouillon" 
+			disabled="#{(avoirController.etatBouton('imprimer') or avoirController.stepEnCours('idLignesAvoir')) or avoirController.documentDTOEstVerrouille().verrouille}"
+			onsuccess="window.open('#{request.contextPath}/output?__report=/reports/documents/avoir/FicheAvoir.rptdesign&amp;__format=pdf')"
+			oncomplete="$('.classHiddenCommandForDialogImprimerReturnAvoirBrouillon').click()"
+			actionBean="#{avoirController}"
+			actionMethod="actImprimerBrouillon"
+			choixEdition="#{avoirController.choixEdition}"
+			/>
+	<lgr:menuItemImprimer title="Imprimer un duplicata de l'avoir" value="Duplicata" 
+			disabled="#{(avoirController.etatBouton('imprimer') or avoirController.stepEnCours('idLignesAvoir')) or !avoirController.documentDTOEstVerrouille().verrouille}"
+			onsuccess="window.open('#{request.contextPath}/output?__report=/reports/documents/avoir/FicheAvoir.rptdesign&amp;__format=pdf')"
+			oncomplete="$('.classHiddenCommandForDialogImprimerReturnAvoirDuplicata').click()"
+			actionBean="#{avoirController}"
+			actionMethod="actImprimerDuplicata"
+			choixEdition="#{avoirController.choixEdition}"
+			/> -->
+
+<!-- 	<lgr:menuItemImprimer title="Imprimer l'avoir courant pour le client" value="Imprimer pour le client" 
+			onsuccess="window.open('#{request.contextPath}/output?__report=/reports/documents/avoir/FicheAvoir.rptdesign&amp;__format=pdf')"
+			disabled="#{avoirController.etatBouton('imprimer') or avoirController.stepEnCours('idLignesAvoir')}"
+			oncomplete="$('.classHiddenCommandForDialogImprimerReturnAvoirClient').click()"
+			actionBean="#{avoirController}"
+			actionMethod="actImprimer"
+			pourClient="true"
+			confirmHeader="Confirmation"
+			confirmMessage="Etes-vous sur de vouloir mettre à disposition du client cet avoir ?. Ensuite, vous ne pourrez plus le modifier "
+			choixEdition="#{avoirController.choixEdition}"
+			/> -->
+			 
+	</p:submenu>
+	<!-- FIN NEW BUTTONS -->
+
+			
+		
+
+			
+		<!-- <p:menuitem title="Imprimer l'avoir courant pour le client" value="Imprimer" styleClass="icon icon-print"
+			onsuccess="window.open('#{request.contextPath}/output?__report=/reports/documents/avoir/FicheAvoir.rptdesign&amp;__format=pdf')"
+			actionListener="#{avoirController.actImprimer}"
+			update="idPanelEnteteAvoir,idPanelLignesAvoir,idTableauComplementaireAvoir,:form:messages,@form,@widgetVar(wvMenuListeAvoir),@widgetVar(wvDataTableListeAvoir)"
+			disabled="#{avoirController.etatBouton('imprimer') or avoirController.stepEnCours('idLignesAvoir')}" >
+			<f:attribute name="pour_client" value="true" />
+			<p:confirm header="Confirmation" message="Etes-vous sur de vouloir mettre à disposition du client cet avoir ?. Ensuite, vous ne pourrez plus le modifier ?" icon="ui-icon-alert" />
+		</p:menuitem> -->
+		
+	<!-- FIN TAFF CHOIX EDITION -->
+		
+		
+					
+			
+		<p:menuitem title="Imprimer étiquettes code barre" value="Imprimer étiquette code barre" styleClass="icon icon-barcode"
+						onsuccess="window.open('#{request.contextPath}/articles/etiquette_cb.xhtml')"
+						actionListener="#{avoirController.actImprimerEtiquetteCB}"/>		
+						
+
+		
+		<p:submenu  icon="ui-icon-mail"  class="ui-icon-mail-option">
+			
+			<p:menuitem  title="Envoyer par email pour le client" value="Envoyer au client" icon="fa fa-paper-plane"
+				disabled="#{avoirController.etatBouton('modifier')}"
+				oncomplete="$('.classHiddenCommandForDialogEmailReturnAvoir').click()"
+				update="idPanelEnteteAvoir,idPanelLignesAvoir,idTableauComplementaireAvoir,:form:messages,@form,@widgetVar(wvMenuListeAvoir),@widgetVar(wvDataTableListeAvoir)"
+				actionListener="#{avoirController.envoiMailEdition(null, 'CLIENT', 'true')}">
+				<p:confirm header="Confirmation" disabled="#{avoirController.selectedDocumentDTO.estMisADisposition}" message="Etes-vous sur de vouloir mettre à disposition du client ce document? Ensuite, vous ne pourrez plus la modifier ?" icon="ui-icon-alert" />
+				</p:menuitem >
+				<p:submenu label="Tous les modèles" disabled="#{avoirController.etatBouton('modifier')}">
+					 <c:forEach items="#{avoirController.listeEdition}" var="edition" varStatus="loop">
+					       <p:menuitem  title="#{edition.libelleEdition}" value="#{edition.libelleEdition}"
+					        actionListener="#{avoirController.envoiMailEdition(edition, 'CLIENT', 'true')}"
+					         oncomplete="$('.classHiddenCommandForDialogEmailReturnAvoir').click()">
+					         <p:confirm header="Confirmation" disabled="#{avoirController.selectedDocumentDTO.estMisADisposition}" message="Etes-vous sur de vouloir mettre à disposition du client ce document ? Ensuite, vous ne pourrez plus la modifier ?" icon="ui-icon-alert" />
+							</p:menuitem >
+					   </c:forEach>
+				</p:submenu>
+				
+				<p:separator />
+				
+				<p:menuitem  title="Envoyer par email en duplicata" value="Duplicata" icon="fa fa-paper-plane"
+				disabled="#{avoirController.etatBouton('modifier') or !avoirController.selectedDocumentDTO.estMisADisposition}"
+				oncomplete="$('.classHiddenCommandForDialogEmailReturnAvoir').click()"
+				update="idPanelEnteteAvoir,idPanelLignesAvoir,idTableauComplementaireAvoir,:form:messages,@form,@widgetVar(wvMenuListeAvoir),@widgetVar(wvDataTableListeAvoir)"
+				actionListener="#{avoirController.envoiMailEdition(null, 'DUPLICATA', 'false')}">
+				</p:menuitem >
+				<p:submenu label="Tous les modèles" disabled="#{avoirController.etatBouton('modifier') or !avoirController.selectedDocumentDTO.estMisADisposition}">
+					 <c:forEach items="#{avoirController.listeEdition}" var="edition" varStatus="loop">
+					       <p:menuitem  title="#{edition.libelleEdition}" value="#{edition.libelleEdition}"
+					        actionListener="#{avoirController.envoiMailEdition(edition, 'DUPLICATA', 'false')}"
+					         oncomplete="$('.classHiddenCommandForDialogEmailReturnAvoir').click()">
+							</p:menuitem >
+					   </c:forEach>
+				</p:submenu>
+				
+				<p:separator />
+				
+				<p:menuitem  title="Envoyer par email en brouillon" value="Brouillon" icon="fa fa-paper-plane"
+				disabled="#{avoirController.etatBouton('modifier') or avoirController.selectedDocumentDTO.estMisADisposition}"
+				oncomplete="$('.classHiddenCommandForDialogEmailReturnAvoir').click()"
+				update="idPanelEnteteAvoir,idPanelLignesAvoir,idTableauComplementaireAvoir,:form:messages,@form,@widgetVar(wvMenuListeAvoir),@widgetVar(wvDataTableListeAvoir)"
+				actionListener="#{avoirController.envoiMailEdition(null, 'BROUILLON', 'false')}">
+				</p:menuitem >
+				<p:submenu label="Tous les modèles" disabled="#{avoirController.etatBouton('modifier') or avoirController.selectedDocumentDTO.estMisADisposition}">
+					 <c:forEach items="#{avoirController.listeEdition}" var="edition" varStatus="loop">
+					       <p:menuitem  title="#{edition.libelleEdition}" value="#{edition.libelleEdition}"
+					        actionListener="#{avoirController.envoiMailEdition(edition, 'BROUILLON', 'false')}"
+					         oncomplete="$('.classHiddenCommandForDialogEmailReturnAvoir').click()">
+							</p:menuitem >
+					   </c:forEach>
+				</p:submenu>
+				
+		</p:submenu>
+			
+
+		<p:separator styleClass="separateur-menu-vertical" />
+
+<!-- 		<p:menuitem title="Liste des avoirs" icon="fa fa-list" oncomplete="PF('wvOverlayListeAvoir').show();"/>	 -->
+		<p:menuitem title="Liste des avoirs" styleClass="icon icon-liste" oncomplete="PF('wvOverlayListeAvoir').show();"/>	
+		
+		<p:separator styleClass="separateur-menu-vertical" />		
+		
+		<p:menuitem title="Documents liés" styleClass="icon icon-documents-lies"  rendered="#{auth.isDevLgr()}"
+			oncomplete="$('.classHiddenCommandForDialogDocumentLieReturnAvoir').click()"
+			process="@this" 
+			update="@this" 
+			disabled="#avoirController.etatBouton('imprimer') }" />
+				
+	</p:menubar>
+
+
+	
+<!--     <p:commandButton styleClass="classHiddenCommandForDialogImprimerReturnAvoirBrouillon" actionListener="#{avoirController.actDialogImprimer}" style="display:none" process="@this"  >
+        <p:ajax event="dialogReturn" listener="#{avoirController.handleReturnDialogImprimer}" update=":form:messages"  /> 
+         <f:attribute name="mode_edition" value="BROUILLON" />
+    </p:commandButton> 
+         
+    <p:commandButton styleClass="classHiddenCommandForDialogImprimerReturnAvoirDuplicata" actionListener="#{avoirController.actDialogImprimer}" style="display:none" process="@this"  >
+        <p:ajax event="dialogReturn" listener="#{avoirController.handleReturnDialogImprimer}" update=":form:messages"  /> 
+         <f:attribute name="mode_edition" value="DUPLICATA" />
+    </p:commandButton> 
+    
+    <p:commandButton styleClass="classHiddenCommandForDialogImprimerReturnAvoirPayer" actionListener="#{avoirController.actDialogImprimer}" style="display:none" process="@this"  >
+        <p:ajax event="dialogReturn" listener="#{avoirController.handleReturnDialogImprimer}" update=":form:messages"  /> 
+         <f:attribute name="mode_edition" value="PAYER" /> -->
+<!--     </p:commandButton>  -->
+<!--      
+     <p:commandButton styleClass="classHiddenCommandForDialogImprimerReturnAvoirClient" actionListener="#{avoirController.actDialogImprimer}" style="display:none" process="@this"  >
+        <p:ajax event="dialogReturn" listener="#{avoirController.handleReturnDialogImprimer}" update="idPanelEnteteAvoir,idPanelLignesAvoir,idTableauComplementaireAvoir,
+        :form:messages,
+        @form,@widgetVar(wvMenuListeAvoir),@widgetVar(wvDataTableListeAvoir),@widgetVar(wvMenuBoutonAvoir)"  />
+        <f:attribute name="pour_client" value="true" /> 
+        <p:confirm header="Confirmation" message="Etes-vous sur de vouloir mettre à disposition du client cet avoir ?. Ensuite, vous ne pourrez plus le modifier ?" icon="ui-icon-alert" />
+     </p:commandButton>  -->
+    
+    
+	<p:commandButton styleClass="classHiddenCommandForDialogAgendaReturnAvoir" actionListener="#{avoirController.actDialogEvenement}" style="display:none" process="@this"  >
+        <p:ajax event="dialogReturn" update="@widgetVar(wvAgenda)"  />  
+    </p:commandButton>
+    	<p:commandButton styleClass="classHiddenCommandForDialogEmailReturnAvoir" actionListener="#{avoirController.actDialogEmailSelectedEdition}" style="display:none" process="@this"  >
+        <p:ajax event="dialogReturn" listener="#{avoirController.handleReturnDialogEmail}" update=":form:messages,idTableauComplementaireAvoir"  />  
+    </p:commandButton>   
+                 
+    <p:commandButton styleClass="classHiddenCommandForDialogDocumentLieReturnAvoir" actionListener="#{avoirController.actDialogGenerationDocumentLie}" style="display:none" process="@this"  >
+        <p:ajax event="dialogReturn" update="@form"  listener="#{avoirController.handleReturnDialogDocumentLie}"/>  
+    </p:commandButton> 
+     
+    
+	<!-- 	<div class="ui-grid ui-grid-responsive"> -->
+	<!-- 		<div class="ui-grid-row"> -->
+	<!-- 			<div class="ui-grid-col-12"> -->
+<!-- 	flowListener="#{avoirController.onFlowProcess}" -->
+
+	<!-- 					Ajouter le 03/08/2017 Jean Marc -->
+	<p:fieldset style="margin-bottom:20px;" id="idTableauComplementaireAvoir" widgetVar="wvTableauComplementaireAvoir">
+		<h:panelGrid columns="9" cellpadding="15">
+			<p:panel styleClass="panel-aide-contextuelle">
+				<p:commandButton process="@this" 
+				alt="#{const_vue.btn_generation_modele}"
+				title="#{const_vue.btn_generation_modele}" 
+				label="#{const_vue.btn_generation_modele}" 
+				value="#{const_vue.btn_generation_modele}"
+				icon="ui-icon-copy"
+					action="#{duplicationDocumentBean.actDialogGenerationModeleDocument}" disabled="#{avoirController.modeEcran.dataSetEnModif()}">
+						<f:setPropertyActionListener target="#{duplicationDocumentBean.doc}" value="#{avoirController.masterEntity}"/>
+					<p:ajax event="dialogReturn"
+						listener="#{duplicationDocumentBean.handleReturnDialogGenerationDocument}"
+						update=":form:tabView,@widgetVar(wvMenuListeAvoir),@widgetVar(wvDataTableListeAvoir)"
+						oncomplete="activeTabCenter('#{avoirController.css}');" />
+				</p:commandButton>
+				<p:commandLink id="idLinkAideGenerationModeleDocumentAvoir"
+					styleClass="lien-aide-contextuelle">
+					<i class="fa fa-info-circle animated"></i>
+				</p:commandLink>
+
+				<p:overlayPanel for="idLinkAideGenerationModeleDocumentAvoir"
+					hideEffect="fade" dynamic="true" showCloseIcon="true"
+					styleClass="overlay-aide-contextuelle">
+					<ui:include
+						src="/aide_contextuelle/document_generation_modele_document.xhtml" />
+				</p:overlayPanel>
+			</p:panel>
+			<p:separator/>
+			<p:panel styleClass="panel-aide-contextuelle">
+				<p:commandButton process="@this" 
+					alt="#{const_vue.btn_generation_document}" 
+					title="#{const_vue.btn_generation_document}"
+					label="#{const_vue.btn_generation_document}" 
+					value="#{const_vue.btn_generation_document}"
+				icon="ui-icon-link"
+					action="#{duplicationDocumentBean.actDialogGenerationDocument}" disabled="#{avoirController.modeEcran.dataSetEnModif()}">
+					<f:setPropertyActionListener target="#{duplicationDocumentBean.doc}" value="#{avoirController.masterEntity}"/>	
+					<f:setPropertyActionListener target="#{duplicationDocumentBean.genereToutesLesLignes}" value="true"/>
+					<p:ajax event="dialogReturn"
+						listener="#{duplicationDocumentBean.handleReturnDialogGenerationDocument}"
+						update=":form:tabView,@widgetVar(wvMenuListeAvoir),@widgetVar(wvDataTableListeAvoir)"
+						oncomplete="activeTabCenter('#{avoirController.css}');" />
+				</p:commandButton>
+				<p:commandLink id="idLinkAideGenerationDocumentAvoir"
+					styleClass="lien-aide-contextuelle">
+					<i class="fa fa-info-circle animated"></i>
+				</p:commandLink>
+
+				<p:overlayPanel for="idLinkAideGenerationDocumentAvoir" hideEffect="fade"
+					dynamic="true" showCloseIcon="true"
+					styleClass="overlay-aide-contextuelle">
+					<ui:include
+						src="/aide_contextuelle/document_generation_document.xhtml" />
+				</p:overlayPanel>
+			</p:panel>
+						<p:outputLabel value="Etat du document  " rendered="#{auth.isDevLgr()}"/>
+						<p:panel styleClass="panel-aide-contextuelle">
+							<p:autoComplete value="#{avoirController.selectedEtatDocument}" rendered="#{auth.isDevLgr()}"
+								converter="entityConverter"
+								completeMethod="#{avoirController.etatAutoComplete}"
+								disabled="true" var="etat"
+								itemLabel="#{etat.codeEtat}" itemValue="#{etat}"
+								forceSelection="true" dropdown="true" placeholder="Etat du document">
+								<p:column>
+									<h:outputText value="#{etat.codeEtat}" />
+								</p:column>
+
+								<p:column>
+									<h:outputText value="#{etat.liblEtat}" />
+								</p:column>
+
+								<f:attribute name="nomChamp" value="#{const.C_CODE_ETAT}" />
+								  <p:ajax event="clear" listener="#{avoirController.onClearEtat}" update="idPanelEnteteAvoir,idPanelLignesAvoir,idTableauComplementaireAvoir,:form:messages,@form,@widgetVar(wvMenuListeAvoir),@widgetVar(wvDataTableListeAvoir)"/>
+								<p:ajax event="itemSelect"
+									listener="#{avoirController.autcompleteSelection}"
+									update="idPanelEnteteAvoir,idPanelLignesAvoir,idTableauComplementaireAvoir,:form:messages,@form,@widgetVar(wvMenuListeAvoir),@widgetVar(wvDataTableListeAvoir)"/>
+							</p:autoComplete>
+						</p:panel>	
+						<p:graphicImage value="Document verrouillé !!!" title="#{avoirController.documentDTOEstVerrouille().message}" library="images" name="verrouiller.svg" width="32"  rendered="#{avoirController.documentDTOEstVerrouille().verrouille}"/> 		
+					<p:outputLabel value="précision prix : " rendered="#{avoirController.affichagePrecisionPrixDocument()}"/>
+					<p:outputLabel value="#{avoirController.masterEntity.nbDecimalesPrix} décimale(s)" style="font-weight: bold;" id="idPrecisionPrixAvoir" 
+					rendered="#{avoirController.affichagePrecisionPrixDocument()}"/>
+		</h:panelGrid>
+	</p:fieldset>	
+
+	<p:wizard nextLabel="Suivant" backLabel="Précédent" showStepStatus="false" binding="#{avoirController.wizardDocument}" step="#{avoirController.stepCourant()}"
+	widgetVar="widgetVarLigneAvoir" flowListener="#{avoirController.handleFlow}">
+<p:tab id="idSyntheseAvoir" title="Synthèse de l'avoir">
+			<div class="card">
+				<p:panel header="Synthèse de la facture d'avoir" style="width:100%;" rendered="#{!avoirController.selectedDocumentDTO.factureEstVide()}">
+					<p:panelGrid columns="3" id="idInfosavoir" columnClasses="ui-grid-col-4,ui-grid-col-4,ui-grid-col-4" styleClass="ui-panelgrid-blank" layout="grid">
+						<h:panelGroup>
+						<p:outputLabel value="Code avoir : " style="font-weight: bold;"/>
+						<p:outputLabel value="#{avoirController.selectedDocumentDTO.codeDocument}" />
+						</h:panelGroup>
+						<h:panelGroup>
+						
+						<p:outputLabel value="Code tiers : " style="font-weight: bold;"/>					
+						<p:commandLink value="#{avoirController.selectedDocumentDTO.codeTiers}"
+						action="#{ouvertureDocumentBean.detailTiers(ouvertureDocumentBean.recupCodetiers(avoirController.selectedDocumentDTO.codeTiers))}" 
+						update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+					</p:commandLink> 
+						
+						
+						</h:panelGroup>
+						<h:panelGroup>
+						<p:outputLabel value="Adresse facturation : " style="font-weight: bold;"/>
+<!-- 						<p:outputLabel value="#{avoirController.selectedDocumentDTO.dateDocument}" > -->
+<!-- 							<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/> -->
+<!-- 						</p:outputLabel> -->
+						</h:panelGroup>
+						
+						<h:panelGroup>
+<!-- 						<p:outputLabel value="Libellé : "/> -->
+						<p:outputLabel value="#{avoirController.selectedDocumentDTO.libelleDocument}" />
+						</h:panelGroup>
+						<h:panelGroup>
+						<p:outputLabel value="Entreprise : " style="font-weight: bold;"/>
+						<p:outputLabel value="#{avoirController.selectedDocumentDTO.nomEntreprise}"/>
+						<br />
+						<p:outputLabel value="#{avoirController.selectedDocumentDTO.nomTiers} - #{avoirController.selectedDocumentDTO.prenomTiers}"/>
+<!-- 						<hr/> -->
+<!-- 						<h:panelGroup> -->
+<!-- 						<p:outputLabel value="Coordonnées : " style="font-weight: bold;"/> -->
+<!-- 						<p:outputLabel value="#{avoirController.selectedInfosTiers.adresseEmail} - #{avoirController.selectedInfosTiers.numeroTelephone}"/> -->
+<!-- 						</h:panelGroup> -->
+						</h:panelGroup>
+						<h:panelGroup>
+						<p:outputLabel value="" style="font-weight:bold;"/>
+						<p:outputLabel value="#{avoirController.taAdresseFact.adresse1Adresse}" >
+						</p:outputLabel>
+						<br/>
+						<p:outputLabel value="#{avoirController.taAdresseFact.adresse2Adresse}" >
+						</p:outputLabel>
+						</h:panelGroup>
+
+						<h:panelGroup>
+						<p:outputLabel value="Date avoir : " style="font-weight: bold;"/>
+						<p:outputLabel value="#{avoirController.selectedDocumentDTO.dateDocument}" >
+							<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+						</p:outputLabel>
+						</h:panelGroup>
+						<h:panelGroup>
+						<p:outputLabel value="Tèl : " style="font-weight: bold;"/>
+						<p:outputLabel value="#{avoirController.taTiersDTO.numeroTelephone}"/>
+						</h:panelGroup>
+						<h:panelGroup>
+						<p:outputLabel value="" style="font-weight: bold;"/>
+						<p:outputLabel value="#{avoirController.taAdresseFact.adresse3Adresse}" >
+<!-- 						<p:outputLabel value="#{avoirController.taAdresseFact.codepostalAdresse} #{avoirController.taAdresseFact.villeAdresse}" > -->
+<!-- 							<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/> -->
+						</p:outputLabel>
+						</h:panelGroup>
+						
+						<h:panelGroup>
+						<p:outputLabel value="Date échéance : " style="font-weight:bold;"/>
+						<p:outputLabel value="#{avoirController.selectedDocumentDTO.dateEchDocument}" >
+							<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+						</p:outputLabel>
+						</h:panelGroup>
+						<h:panelGroup>
+						<p:outputLabel value="Email : " style="font-weight: bold;"/>
+						<p:commandLink update=":form:messages" actionListener="#{avoirController.actDialogEmail}">
+        						<h:outputText value="#{avoirController.taTiersDTO.adresseEmail}" />
+    						</p:commandLink>
+						</h:panelGroup>
+						<h:panelGroup>
+						<p:outputLabel value="Ville : " style="font-weight: bold;"/>
+						<p:outputLabel value="#{avoirController.taAdresseFact.codepostalAdresse} #{avoirController.taAdresseFact.villeAdresse}" >
+<!-- 							<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/> -->
+						</p:outputLabel>
+						</h:panelGroup>
+																		
+ 						<h:panelGroup> 
+						<div class="card" style="background:#ebebeb;text-align:center;center;padding: 5px;margin-top: 15px;">
+						<p:outputLabel value="Net TTC" style="font-weight: bold;"/>
+						<p:separator style="color:#9a9a9a"/>
+						<p:outputLabel value="#{avoirController.selectedDocumentDTO.netTtcCalc}">
+						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+						</p:outputLabel>
+<!-- 						<hr /> -->
+						</div>
+						</h:panelGroup>
+
+						
+						
+						<h:panelGroup>
+						<div class="card" style="background:#ebebeb;text-align:center;center;padding: 5px;margin-top: 15px;">
+<!-- 						<p:outputLabel value="Déjà réglé : " style="font-weight: bold;"/> -->
+<!-- 						<p:separator style="color:#9a9a9a"/> -->
+<!-- 						<p:outputLabel value="#{avoirController.selectedDocumentDTO.regleDocument}"> -->
+<!-- 						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" /> -->
+<!-- 						</p:outputLabel> -->
+						</div>
+						</h:panelGroup>
+<!-- 						</h:panelGroup> -->
+<!--border-style: solid;border-width: thin;padding: 7px; -->
+						<h:panelGroup>
+						<div class="card" style="background: #ebf9cc;text-align: center;padding: 5px;margin-top: 15px;">
+<!-- 						<p:outputLabel value="Reste à régler" style="font-weight: bold;"/> -->
+<!-- 						<p:separator style="color:#9a9a9a"/> -->
+<!-- 						<p:outputLabel value="#{avoirController.selectedDocumentDTO.resteAReglerComplet}" style="font-weight: bold;" > -->
+<!-- 						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" /> -->
+<!-- 						</p:outputLabel> -->
+<!-- 						<hr /> -->
+						</div>
+						</h:panelGroup>
+					</p:panelGrid>
+<!-- Début détail ligne synthèse					 -->
+					<p:dataTable id="iddataTableLigneAvoirSynthese" 
+					var="ligne"
+					scrollable="true"
+					scrollHeight="250"					
+					widgetVar="widgetVarDataTableLigneAvoirSynthese"
+					
+					value="#{avoirController.valuesLigne}"
+					rowKey="#{ligne.dto.numLigneLDocument}"
+					styleClass="datatable mt10 myclassAvoir">
+					
+															
+					<p:ajax event="toggleSelect" process="@this" />
+					<p:ajax event="rowToggle" process="@this" oncomplete="ligneSeperationExpend()" />
+					
+					<p:column style="width:8px" styleClass="center" >
+						<p:rowToggler  rendered="#{ligne.ligneLieeFils!=null or ligne.ligneLieeMere!=null or ligne.ligneAbonnement!=null}"/>
+					</p:column>
+					
+					<p:column style="width:10%">
+						<f:facet name="header">
+							<h:outputText value="Code article" />
+						</f:facet>
+								<p:commandLink value="#{ligne.taArticle.codeArticle}"
+																action="#{ouvertureDocumentBean.detailArticle(ouvertureDocumentBean.recupCodeArticle(ligne.taArticle.codeArticle))}" 
+																update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+															</p:commandLink>  
+					</p:column >
+					
+					<p:column style="width:24%">
+						<f:facet name="header">
+							<h:outputText value="Libellé" />
+						</f:facet>
+								<h:outputText value="#{ligne.dto.libLDocument}" id="idListeSyntheseLibelleAvoir"/>
+								<p:tooltip id="toolTipListeSyntheseLibelleAvoir" value="#{ligne.dto.libLDocument}" shared="true" for="idListeSyntheseLibelleAvoir" showEffect="clip" position="top"/>
+					</p:column>
+
+					<p:column  style="width:8%" styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Qté 1" />
+						</f:facet>
+								<h:outputText value="#{ligne.dto.qteLDocument}"/>	
+					</p:column>
+
+					<p:column style="width:5%" styleClass="center">
+						<f:facet name="header">
+							<h:outputText value="U1" />
+						</f:facet>
+
+								<h:outputText value="#{ligne.taUnite1.codeUnite}" />
+					</p:column>
+
+					<p:column  style="width:8%" styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Qté 2" />
+						</f:facet>
+							<h:outputText value="#{ligne.dto.qte2LDocument}" id="idqte2LAvoirSynthese"/>
+					</p:column>
+
+					<p:column style="width:5%" styleClass="center">
+						<f:facet name="header">
+							<h:outputText value="U2" />
+						</f:facet>
+								<h:outputText value="#{ligne.taUnite2.codeUnite}"/>
+					</p:column>
+					
+					<p:column style="width:8%" styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Prix unitaire" />
+						</f:facet>
+								<h:outputText value="#{ligne.dto.prixULDocument}">
+									<f:convertNumber type="currency"  minFractionDigits="#{avoirController.prefNbDecimalesPrix}" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+					</p:column>
+					
+					<p:column style="width:5%" styleClass="right" >
+						<f:facet name="header">
+							<h:outputText value="Remise %" />
+						</f:facet>
+								<h:outputText value="#{ligne.dto.remTxLDocument}" />
+					</p:column>
+					
+					<p:column style="width:20%" styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Montant HT" />
+						</f:facet>
+								<h:outputText value="#{ligne.dto.mtHtLDocument}" disabled="true">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+					</p:column>
+					
+					<p:column style="width:5%" styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="TVA"/>
+						</f:facet>
+								<h:outputText value="#{ligne.dto.codeTvaLDocument}" disabled="true">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+					</p:column>
+					
+					<p:column style="width:20%" styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Montant TTC" />
+						</f:facet>
+								<h:outputText value="#{ligne.dto.mtTtcLDocument}" disabled="true">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+					</p:column>
+					
+					<p:column style="width:5%" styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Remise globale" />
+						</f:facet>
+								<h:outputText value="#{ligne.dto.txRemHtDocument}" disabled="true">
+								</h:outputText>
+					</p:column>
+					
+					<p:column style="width:5%" styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Qté CRD" rendered="#{avoirController.gestionCapsuleAvoir()}"/>
+						</f:facet>
+								<h:outputText value="#{ligne.dto.qteTitreTransport}" disabled="true" rendered="#{avoirController.gestionCapsuleAvoir()}">
+								</h:outputText>
+					</p:column>
+					
+					
+					<p:column style="width:5%" styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Titre CRD" rendered="#{avoirController.gestionCapsuleAvoir()}"/>
+						</f:facet>
+								<h:outputText value="#{ligne.dto.codeTitreTransport}" disabled="true" rendered="#{avoirController.gestionCapsuleAvoir()}">
+								</h:outputText>
+					</p:column>					
+					<p:column style="width:1%">
+						<f:facet name="header">
+							<h:outputText value="Etat" />
+						</f:facet>
+								<h:outputText value="#{ligne.codeEtat}"  id="idListeSyntheseEtat#{variableEcran}"/>
+								<p:tooltip  value="#{ligne.codeEtat.concat(ligne.libelleEtat)}" shared="true" for="idListeSyntheseEtat#{variableEcran}" showEffect="clip" position="top"/>
+					</p:column>					
+										
+					<p:rowExpansion>
+
+					<p:panelGrid columns="2"  columnClasses="ui-grid-col-6,ui-grid-col-6" styleClass="ui-panelgrid-blank" layout="grid" rendered="#{ligne.ligneLieeFils!=null or ligne.ligneLieeMere!=null}">
+					<p:panel header="document ayant servi à générer le document courant" style="width:100%;" >
+						<p:dataTable value="#{ligne.ligneLieeMere}" id="dataTableLigneLieeMere" var="lien" selectionMode="single" editable="true"
+							selection="#{avoirController.selectedLigneALigneDTO}" rowKey="#{lien.id}" widgetVar="wvdataTableLigneLieeMere" 
+							emptyMessage="#{msg.message_datatable_vide}" resizableColumns="true">
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="code document" />
+								</f:facet>
+								<p:commandLink value="#{lien.codeDocumentDest}"
+									action="#{avoirController.duplicationDocumentBean.ouvertureDocumentBean.detailDocument(avoirController.duplicationDocumentBean.ouvertureDocumentBean.recupCodeDocument(lien.codeDocumentDest,lien.typeDocument))}"
+									update=":form:tabView"
+									oncomplete="activeTabCenter('#{avoirController.duplicationDocumentBean.ouvertureDocumentBean.event.cssLgrTab}');">>
+								</p:commandLink>
+								<!-- 								<h:outputText value="#{lien.codeDocumentDest}" /> -->
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="libellé ligne" />
+								</f:facet>
+								<h:outputText value="#{lien.libelleLigne}" />
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="lot" />
+								</f:facet>
+								<h:outputText value="#{lien.numLot}" />
+							</p:column>
+							<p:column styleClass="right">
+								<f:facet name="header">
+									<h:outputText value="Qté. reçue" />
+								</f:facet>
+								<h:outputText value="#{lien.qteRecue}" />
+							</p:column>
+<!-- 							<p:column> -->
+<!-- 								<f:facet name="header"> -->
+<!-- 									<h:outputText value="Etat" /> -->
+<!-- 								</f:facet> -->
+<!-- 								<h:outputText value="#{lien.etat}" /> -->
+<!-- 							</p:column>							 -->
+
+						</p:dataTable>
+						</p:panel>
+						<p:panel header="document généré à partir du document courant" style="width:100%;" >
+						<p:dataTable value="#{ligne.ligneLieeFils}" id="dataTableLigneLieeFils" var="lien" selectionMode="single" editable="true"
+							selection="#{avoirController.selectedLigneALigneDTO}" rowKey="#{lien.id}" widgetVar="wvdataTableLigneLieeFils" 
+							emptyMessage="#{msg.message_datatable_vide}" resizableColumns="true">
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="code document" />
+								</f:facet>
+								<p:commandLink value="#{lien.codeDocumentDest}"
+									action="#{avoirController.duplicationDocumentBean.ouvertureDocumentBean.detailDocument(avoirController.duplicationDocumentBean.ouvertureDocumentBean.recupCodeDocument(lien.codeDocumentDest,lien.typeDocument))}"
+									update=":form:tabView"
+									oncomplete="activeTabCenter('#{avoirController.duplicationDocumentBean.ouvertureDocumentBean.event.cssLgrTab}');">>
+								</p:commandLink>
+								<!-- 								<h:outputText value="#{lien.codeDocumentDest}" /> -->
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="libellé ligne" />
+								</f:facet>
+								<h:outputText value="#{lien.libelleLigne}" />
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="lot" />
+								</f:facet>
+								<h:outputText value="#{lien.numLot}" />
+							</p:column>
+							<p:column styleClass="right">
+								<f:facet name="header">
+									<h:outputText value="Qté. reçue" />
+								</f:facet>
+								<h:outputText value="#{lien.qteRecue}" />
+							</p:column>
+<!-- 							<p:column> -->
+<!-- 								<f:facet name="header"> -->
+<!-- 									<h:outputText value="Etat" /> -->
+<!-- 								</f:facet> -->
+<!-- 								<h:outputText value="#{lien.etat}" /> -->
+<!-- 							</p:column>							 -->
+
+						</p:dataTable>
+						</p:panel>
+					</p:panelGrid>
+					<p:panel header="Infos de l'abonnement" style="width:100%;" rendered="#{ligne.ligneAbonnement!=null}">
+						<p:dataTable value="#{ligne.ligneAbonnement}" id="dataTableLigneAbonnement" var="lien" selectionMode="single" editable="true"
+							selection="#{avoirController.selectedLigneALigneDTO}" rowKey="#{lien.id}" widgetVar="wvdataTableLigneAbonnement" 
+							emptyMessage="#{msg.message_datatable_vide}" resizableColumns="true">
+								<p:column  style="width:80px" >
+									<p:commandButton value="" actionListener="#{avoirController.actDialogDetailLigneAbonnement}" process="@this"
+										styleClass="icon-medium icon-reglement" title="Détail de la ligne d'abonnement">
+										<f:attribute name="taLigneALigneEcheanceDTO" value="#{lien}" />
+										<p:ajax event="dialogReturn" listener="#{avoirController.handleReturnDialogDetailLigneAbonnement}" />
+									</p:commandButton>
+								</p:column>
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="code document" />
+								</f:facet>
+								<p:commandLink value="#{lien.codeDocumentDest}"
+									action="#{avoirController.duplicationDocumentBean.ouvertureDocumentBean.detailAbonnement(avoirController.duplicationDocumentBean.ouvertureDocumentBean.recupCodeDocument(lien.codeDocumentDest,lien.typeDocument))}"
+									update=":form:tabView"
+									oncomplete="activeTabCenter('#{avoirController.duplicationDocumentBean.ouvertureDocumentBean.event.cssLgrTab}');">>
+								</p:commandLink>
+
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="libellé ligne" />
+								</f:facet>
+								<h:outputText value="#{lien.libelleLigne}" />
+							</p:column>
+						</p:dataTable>
+</p:panel>
+
+					</p:rowExpansion>
+
+					
+					
+
+				</p:dataTable>
+<!-- Fin détail ligne synthèse					 -->
+					<p:panelGrid columns="1" id="idInfosCommentaireavoir" columnClasses="ui-grid-col-4" styleClass="ui-panelgrid-blank" layout="grid">
+						<h:panelGroup>
+						<p:outputLabel value="Commentaires" style="font-weight: bold;"/>
+						<br/>
+						<p:outputLabel value="#{avoirController.selectedDocumentDTO.commentaire}" />
+						</h:panelGroup>
+					</p:panelGrid>
+				</p:panel>
+			</div>
+		</p:tab>
+		<p:tab id="idEnteteAvoir" title="Entête">
+		
+			<p:panel id="idPanelEnteteAvoir" header="Entête" toggleable="true" widgetVar="panelEnteteAvoir">
+			
+			 <p:overlayPanel id="idAideAvoir" for="idlabelCodeAvoir" hideEffect="fade" showCloseIcon="true" dynamic="true" hideEvent="mousedown" style="text-align:center;width:200px;align:center;">
+			  <ui:include src="/aide_contextuelle/document_code_document.xhtml" />
+    		 </p:overlayPanel>
+    				
+				<h:panelGrid columns="2" cellpadding="10">
+<!-- 				    <p:outputLabel id="idBtn1"  value="" title="La référence de la avoir" styleClass="icon icon-print"/> -->
+<!-- 				    <p:button id="idBtn1" icon="ui-icon-star" title="Icon Only"> -->
+<!-- 					</p:button> -->
+
+					<p:outputLabel id="idlabelCodeAvoir" value="Code avoir " title="La référence de l'avoir" styleClass="labelchob"/>
+					
+					<p:inputText id="idCodeAvoir"
+						
+						value="#{avoirController.selectedDocumentDTO.codeDocument}"
+						validator="#{avoirController.validateDocument}"
+						disabled="#{avoirController.editableEnInsertionUniquement()}">
+						<f:attribute name="nomChamp" value="#{const.C_CODE_DOCUMENT}" minimum="0"/>
+						<p:ajax event="blur" update="@this" />
+						
+					</p:inputText>
+					
+					<p:outputLabel  value="Code tiers : " styleClass="labelchob"/>
+					<p:focus >
+					
+					<p:autoComplete value="#{avoirController.taTiersDTO}"
+					       id="idtiersAvoir" converter="entityConverter"
+					       
+						completeMethod="#{avoirController.tiersAutoCompleteDTOLight}"
+						required="true" requiredMessage="#{msg_diag.alert_champs_obligatoir}"
+						disabled="#{avoirController.editable()}" var="tiers"
+						itemLabel="#{tiers.codeTiers}" itemValue="#{tiers}"
+						forceSelection="true" dropdown="true" placeholder="Tiers" >
+						<p:column>
+							<!-- 				             	<f:facet name="header"> -->
+							<!-- 				            		<p:commandButton value="Ajouter" title="Insérer" -->
+							<!-- 										process="@this" -->
+							<!-- 										update=":form:tabView,:form:messages" -->
+							<!-- 										actionListener="#{avoirController.actDialogTiers}" -->
+							<!-- 										styleClass="btn-insert btn" > -->
+							<!-- 											<p:ajax event="dialogReturn" listener="#{avoirController.handleReturnDialogTiers}" update="@parent:@parent"/> -->
+							<!-- 										</p:commandButton> -->
+							<!-- 				            	</f:facet> -->
+							<h:outputText  value="#{tiers.codeTiers}" required="true" requiredMessage="#{msg_diag.alert_champs_obligatoir}"/>
+						</p:column>
+						
+						<p:column>
+							<h:outputText value="#{tiers.nomTiers}" />
+						</p:column>
+		
+
+						<p:column>
+							<h:outputText value="#{tiers.prenomTiers}" />
+						</p:column>
+
+						<p:column>
+							<h:outputText value="#{tiers.nomEntreprise}" />
+						</p:column>
+
+						<f:attribute name="nomChamp" value="#{const.C_CODE_TIERS}" />
+						<p:ajax event="itemSelect" listener="#{avoirController.autcompleteSelection}" 
+						update="idNomTiersAvoir,idLibellePieceAvoir,idTTCAvoir,idLocalisationTvaDocAvoir,@this,@widgetVar(panelAdresseFacturationAvoir),@widgetVar(panelAdresseLivraisonAvoir),
+						@widgetVar(panelConditionPaiementAvoir),idPanelGroupInfosTiersEnteteAvoir" />
+					</p:autoComplete>
+					</p:focus>
+					
+					<p:outputLabel value="Nom Tiers : " styleClass="labelchob"/>
+					<p:inputText
+						
+						value="#{avoirController.selectedDocumentDTO.nomTiers}" id="idNomTiersAvoir"
+						validator="#{avoirController.validateDocument}" 
+						disabled="#{avoirController.editable()}">
+						<f:attribute name="nomChamp" value="#{const.C_NOM_TIERS}" />
+						<p:ajax event="blur" update="@this" />
+					</p:inputText>
+
+					<p:outputLabel value="Date avoir: " styleClass="labelchob"/>
+					<p:calendar
+						
+						value="#{avoirController.selectedDocumentDTO.dateDocument}"
+						pattern="dd/MM/yyyy" mask="true" locale="fr" navigator="true" showOn="button"  timeZone="#{msg.time_zone}" 
+						mindate="#{avoirController.dateMin}"
+						maxdate="#{avoirController.dateMax}" 
+						disabled="#{avoirController.editable()}">
+						
+						<f:attribute name="nomChamp" value="#{const.C_DATE_DOCUMENT}" />
+						<p:ajax event="dateSelect" listener="#{avoirController.controleDate}" update="@this,idDateEchAvoir" />
+						<p:ajax event="change" listener="#{avoirController.controleDate}"  update="@this,idDateEchAvoir" />
+					</p:calendar>
+
+					<p:outputLabel value="Libellé : " />
+					<p:inputText
+						value="#{avoirController.selectedDocumentDTO.libelleDocument}" id="idLibellePieceAvoir"
+						validator="#{avoirController.validateDocument}" style="width:300%"
+						disabled="#{avoirController.editable()}">
+						<f:attribute name="nomChamp" value="#{const.C_LIBELLE_DOCUMENT}" />
+						<p:ajax event="blur" update="@this" />
+					</p:inputText>
+					
+					<p:outputLabel value="TTC : " />
+					<p:selectBooleanCheckbox
+					 	
+						value="#{avoirController.selectedDocumentDTO.ttc}" id="idTTCAvoir" 
+						disabled="#{avoirController.disableTtc() or avoirController.disableTtcSiDocSansTVA()}">
+						<f:attribute name="nomChamp" value="#{const.C_TTC}" />
+						<p:ajax event="change" update="@this" />
+					</p:selectBooleanCheckbox>
+					
+					<p:outputLabel value="Date de livraison : " />
+					<p:calendar
+						value="#{avoirController.selectedDocumentDTO.dateLivDocument}"
+						pattern="dd/MM/yyyy" mask="true" locale="fr" navigator="true"  showOn="button" timeZone="#{msg.time_zone}" 
+						validator="#{avoirController.validateDocument}"
+						disabled="#{avoirController.editable()}">
+						
+						<f:attribute name="nomChamp" value="#{const.C_DATE_LIV_DOCUMENT}" />
+						<p:ajax event="dateSelect" update="@this" />
+						<p:ajax event="change"  update="@this"/>
+					</p:calendar>
+					
+<!-- 					<p:outputLabel value="Localisation TVA : " /> -->
+<!-- 					<p:selectOneMenu id="console" value="#{avoirController.selectedDocumentDTO.commentaire}" style="width:125px"> -->
+<!-- 			            <f:selectItem itemLabel="Client en France" itemValue="fr" /> -->
+<!-- 			        </p:selectOneMenu> -->
+			        
+			        <p:outputLabel value="Localisation TVA : " />
+						<p:autoComplete value="#{avoirController.taTTvaDoc}" id="idLocalisationTvaDocAvoir"
+							converter="entityConverter" disabled="#{avoirController.editable() or avoirController.disableTtc()}"
+							completeMethod="#{avoirController.typeTvaDocAutoComplete}"
+							var="tp" itemLabel="#{tp.codeTTvaDoc}" itemValue="#{tp}"
+							forceSelection="true" dropdown="true"
+							placeholder="Localisation TVA" style="width:100%">
+							<p:column>
+								<h:outputText value="#{tp.codeTTvaDoc}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{tp.libelleTTvaDoc}" />
+							</p:column>
+							<f:attribute name="nomChamp" value="#{const.C_CODE_T_TVA_DOC}" />
+							<p:ajax event="itemSelect" listener="#{avoirController.autcompleteSelection}" update="idTTCAvoir"/>
+						</p:autoComplete>
+
+					<p:outputLabel value="Observation : " />
+					<p:inputTextarea
+						value="#{avoirController.selectedDocumentDTO.commentaire}"
+						validator="#{avoirController.validateDocument}" style="width:300%"
+						disabled="#{avoirController.editable()}">
+						<f:attribute name="nomChamp" value="#{const.C_COMMENTAIRE}" />
+						<p:ajax event="blur" update="@this" />
+					</p:inputTextarea>
+					
+					<p:outputLabel value="Gestion des lots : " />
+					<p:inputSwitch value="#{avoirController.selectedDocumentDTO.gestionLot}" onLabel="Oui" offLabel="Non" disabled="#{avoirController.editable()}">
+			            <p:ajax listener="#{avoirController.validateDocument}" update="@this" />
+			        </p:inputSwitch>
+			        
+			        <p:outputLabel value="Mouvementer les stocks : " />
+					<p:inputSwitch value="#{avoirController.selectedDocumentDTO.mouvementerStock}" onLabel="Oui" offLabel="Non" disabled="#{avoirController.editable()}">
+			            <p:ajax listener="#{avoirController.validateDocument}" update="@this" />
+			        </p:inputSwitch>
+			        			        
+			        <p:outputLabel value="Mouvementer les crd : " />
+					<p:inputSwitch value="#{avoirController.selectedDocumentDTO.mouvementerCRD}" onLabel="Oui" offLabel="Non" disabled="#{avoirController.editable()or avoirController.disableTtc()}">
+			            <p:ajax listener="#{avoirController.validateDocument}" update="@this" />
+			        </p:inputSwitch>
+			        
+			        
+<!-- 			        Modifier le 03/08/2017 Jean Marc -->			        
+<!-- 				<p:commandButton  process="@this" title="Génération modèle"  -->
+<!-- 						styleClass="btn-generation-modele btn" actionListener="#{avoirController.actDialogGenerationModeleDocument}" > -->
+<!-- 						<p:ajax event="dialogReturn" listener="#{avoirController.handleReturnDialogGenerationDocument}"  -->
+<!-- 						update=":form:tabView,@widgetVar(wvMenuListeAvoir),@widgetVar(wvDataTableListeAvoir)" oncomplete="activeTabCenter('#{avoirController.css}');" /> -->
+<!-- 				</p:commandButton> -->
+<!-- 				<p:commandButton process="@this" title="Génération document"  -->
+<!-- 						styleClass="btn-generation-document btn" actionListener="#{avoirController.actDialogGenerationDocument}" > -->
+<!-- 						<p:ajax event="dialogReturn" listener="#{avoirController.handleReturnDialogGenerationDocument}"  -->
+<!-- 						update=":form:tabView,@widgetVar(wvMenuListeAvoir),@widgetVar(wvDataTableListeAvoir)" oncomplete="activeTabCenter('#{avoirController.css}');" /> -->
+<!-- 				</p:commandButton> -->
+				
+			        
+			        
+			        
+					<!-- Invisible, relier au meme champ que la checkbox du dernier step du wizard, reprise de cette valeur dans le 1er step car le oncomplete du actEnregistrer se declanche apres le retour au 1er, la valeur doit donc etre disponible ici pour le javascript -->
+					<p:selectBooleanCheckbox value="#{avoirController.impressionDirect}" styleClass="invisible" disabled="#{avoirController.editable()}" widgetVar="wvImpressionDirectAvoir"/>
+					<p:selectBooleanCheckbox value="#{avoirController.envoyeParEmail}" styleClass="invisible" disabled="#{avoirController.editable()}"
+						widgetVar="wvEnvoyerEmailDirectAvoir" />
+
+
+
+				</h:panelGrid>
+				
+    		<div class="ui-g">
+    		 <div class="ui-g-6">
+				<p:panel id="idAdresseFacturationAvoir" header="#{const_vue.titre_panel_adresse_facturation}" toggleable="true" widgetVar="panelAdresseFacturationAvoir"
+					collapsed="false">
+					<h:panelGrid columns="2" cellpadding="10" id="idPanelAdresseFacAvoir">
+						<p:outputLabel value="" />
+						<p:selectOneMenu value="#{avoirController.taAdresseFact}" converter="entityConverter" var="t" filter="true" filterMatchMode="contains"
+							disabled="#{avoirController.editable()}">
+							<f:selectItems value="#{avoirController.listeAdresseInfosFacturationDTO}" var="tt" itemValue="#{t}" itemLabel="sélectionner une adresse" />
+							<p:column>
+								<h:outputText value="#{t.adresse1Adresse}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{t.adresse2Adresse}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{t.adresse3Adresse}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{t.codepostalAdresse}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{t.villeAdresse}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{t.paysAdresse}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{t.codeTAdr}" />
+							</p:column>
+							<p:ajax event="change" listener="#{avoirController.affecteAdrFactAutoComplete}" update="idPanelAdresseFacAvoir" />
+						</p:selectOneMenu>
+
+
+						<p:outputLabel value="Adresse 1" />
+						<p:panel styleClass="panel-autocomplete">
+							<p:inputText value="#{avoirController.selectedAdresseFact.adresse1Adresse}" disabled="#{avoirController.editable()}">
+								<p:ajax event="blur" update="@this" />
+							</p:inputText>
+							<p:commandButton value="Raffraîchir" styleClass="icon-refresh btn" disabled="#{avoirController.editable()}"
+								actionListener="#{avoirController.actReinitAdrFact}" process="@this" update="idPanelAdresseFacAvoir,idMenuBoutonAvoir" />
+						</p:panel>
+
+						<p:outputLabel value="Adresse 2" />
+						<p:inputText value="#{avoirController.selectedAdresseFact.adresse2Adresse}" disabled="#{avoirController.editable()}">
+							<p:ajax event="blur" update="@this" />
+						</p:inputText>
+						<p:outputLabel  value="Adresse 3" />
+						<p:inputText value="#{avoirController.selectedAdresseFact.adresse3Adresse}" disabled="#{avoirController.editable()}">
+							<p:ajax event="blur" update="@this" />
+						</p:inputText>
+						<p:outputLabel value="Code postal" />
+						<p:inputText value="#{avoirController.selectedAdresseFact.codepostalAdresse}" disabled="#{avoirController.editable()}">
+							<p:ajax event="blur" update="@this" />
+						</p:inputText>
+						<p:outputLabel value="Ville" />
+						<p:inputText value="#{avoirController.selectedAdresseFact.villeAdresse}" disabled="#{avoirController.editable()}">
+							<p:ajax event="blur" update="@this" />
+						</p:inputText>
+						<p:outputLabel value="Pays" />
+						<p:inputText value="#{avoirController.selectedAdresseFact.paysAdresse}" disabled="#{avoirController.editable()}">
+							<p:ajax event="blur" update="@this" />
+						</p:inputText>
+					</h:panelGrid>
+				</p:panel>
+			</div>
+			
+			<div class="ui-g-6">
+			
+				<p:panel id="idAdresseLivraisonAvoir" header="Adresse de livraison" widgetVar="panelAdresseLivraisonAvoir">
+					<h:panelGrid columns="2" cellpadding="10" id="idPanelAdresseLivAvoir">
+
+						<p:outputLabel value="" />
+						<p:selectOneMenu value="#{avoirController.taAdresseLiv}" converter="entityConverter" var="t" filter="true" filterMatchMode="contains"
+							disabled="#{avoirController.editable()}">
+							<f:selectItems value="#{avoirController.listeAdresseInfosLivraisonDTO}" var="tt" itemValue="#{t}" itemLabel="sélectionner une adresse" />
+							<p:column>
+								<h:outputText value="#{t.adresse1AdresseLiv}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{t.adresse2AdresseLiv}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{t.adresse3AdresseLiv}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{t.codepostalAdresseLiv}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{t.villeAdresseLiv}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{t.paysAdresseLiv}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{t.codeTAdr}" />
+							</p:column>
+							<p:ajax event="change" listener="#{avoirController.affecteAdrLivAutoComplete}" update="idPanelAdresseLivAvoir" />
+						</p:selectOneMenu>
+					
+
+						<p:outputLabel value="Adresse 1" />
+						<p:panel styleClass="panel-autocomplete">
+							<p:inputText value="#{avoirController.selectedAdresseLiv.adresse1AdresseLiv}" disabled="#{avoirController.editable()}">
+								<p:ajax event="blur" update="@this" />
+							</p:inputText>
+							<p:commandButton value="Raffraîchir" styleClass="icon-refresh btn" disabled="#{avoirController.editable()}"
+								actionListener="#{avoirController.actReinitAdrLiv}" process="@this" update="idPanelAdresseLivAvoir,idMenuBoutonAvoir" />
+						</p:panel>
+						<p:outputLabel value="Adresse 2" />
+						<p:inputText value="#{avoirController.selectedAdresseLiv.adresse2AdresseLiv}" disabled="#{avoirController.editable()}">
+							<p:ajax event="blur" update="@this" />
+						</p:inputText>
+						<p:outputLabel value="Adresse 3" />
+						<p:inputText value="#{avoirController.selectedAdresseLiv.adresse3AdresseLiv}" disabled="#{avoirController.editable()}">
+							<p:ajax event="blur" update="@this" />
+						</p:inputText>
+						<p:outputLabel value="Code postal" />
+						<p:inputText value="#{avoirController.selectedAdresseLiv.codepostalAdresseLiv}" disabled="#{avoirController.editable()}">
+							<p:ajax event="blur" update="@this" />
+						</p:inputText>
+						<p:outputLabel value="Ville" />
+						<p:inputText value="#{avoirController.selectedAdresseLiv.villeAdresseLiv}" disabled="#{avoirController.editable()}">
+							<p:ajax event="blur" update="@this" />
+						</p:inputText>
+						<p:outputLabel value="Pays" />
+						<p:inputText value="#{avoirController.selectedAdresseLiv.paysAdresseLiv}" disabled="#{avoirController.editable()}">
+							<p:ajax event="blur" update="@this" />
+						</p:inputText>
+					</h:panelGrid>
+				</p:panel>
+			</div>
+		</div>
+
+				
+			</p:panel>
+
+			<!-- 			</div> -->
+			<!-- 		</div> -->
+			
+		</p:tab>
+
+		<!-- 		<div class="ui-grid-row"> -->
+		<!-- 			<div class="ui-grid-col-12"> -->
+
+		<p:tab id="idLignesAvoir" title="Ligne">
+		<p:panel widgetVar="wvLigneAvoirMesssages">
+			<p:messages id="idLigneAvoirMessages" showDetail="true" closable="true" autoUpdate="false"/>
+		</p:panel>
+			<p:panel id="idPanelLignesAvoir" header="Lignes" toggleable="true" widgetVar="panelLignesAvoir">
+
+				
+				<p:menubar styleClass="menu-onglet">
+				
+					<p:menuitem title="Insérer" styleClass="icon-insert icon"
+						actionListener="#{avoirController.actInsererLigne}"
+						process="@this"
+						update="@this,@widgetVar(widgetVarDataTableLigneAvoir),:form:messages"
+						disabled="#{!avoirController.modeEcran.dataSetEnModif() or avoirController.etatBoutonLigne('inserer')}"
+						oncomplete="editionDerniereLigne('myclassAvoir');" />
+						
+					<p:menuitem title="Supprimer" styleClass="icon-delete icon" widgetVar="widgetVarBtnSupprimer"
+						actionListener="#{avoirController.actSupprimerLigne}"
+						process="@this"
+						update="@widgetVar(wvBCPanelLignes),:form:messages,@form"
+						disabled="#{!avoirController.modeEcran.dataSetEnModif() or avoirController.etatBoutonLigne('supprimer')}" />
+				</p:menubar>
+				<p:confirmDialog widgetVar="wvConfirmSaveRow">
+				     le document est associé à un règlement dont le montant diffère du montant total du document. Vous devrez revalider le règlement.
+				</p:confirmDialog>
+
+				<p:dataTable id="iddataTableLigneAvoir" 
+					var="ligne"
+					widgetVar="widgetVarDataTableLigneAvoir"
+					
+					value="#{avoirController.valuesLigne}"
+					rowKey="#{ligne.dto.numLigneLDocument}"
+					selection="#{avoirController.selectedLigneJSF}"
+					selectionMode="single" 
+					editable="true" 
+					dblClickSelect="true"
+					styleClass="datatable mt10 myclassAvoir" 
+					resizableColumns="true"
+					draggableRows="true">
+<!-- 					paginator="true" -->
+<!-- 					rows="#{msg.modele_datatable_ligne_par_page_debut}" -->
+<!-- 					paginatorTemplate="#{msg.modele_datatable_paginator_sans_exporter}" -->
+<!-- 					rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}" -->
+<!-- 					emptyMessage="#{msg.message_datatable_vide}" -->
+<!-- 					currentPageReportTemplate="#{msg.modele_datatable_page_courante}"> -->
+<!-- onsuccess="increment();"  -->
+
+<!--  					if(reglementDifferentNetTTC(xhr, status, args)){PF('wvConfirmSaveRow').show()}; -->
+					<p:ajax event="rowReorder" listener="#{avoirController.onRowReorder}" update="@this,@widgetVar(wvMenuBoutonAvoir)" />
+					<p:ajax event="rowEdit" listener="#{avoirController.onRowEdit}"  
+					update="@widgetVar(wvLigneAvoirMesssages),@parent:idTotauxLAvoir,@parent:idReglementAvoir" 
+					oncomplete="if(!handleCompleteValidationError(xhr, status, args)) {increment();};autreLigneModifiable('myclassAvoir');" />
+					<p:ajax event="rowEditCancel" listener="#{avoirController.onRowCancel}" update="@widgetVar(widgetVarBtnSupprimer)" oncomplete="autreLigneModifiable('myclassAvoir');"/>
+					<p:ajax event="rowSelect" listener="#{avoirController.onRowSelectLigne}"/>
+					<p:ajax event="rowEditInit" listener="#{avoirController.onRowEditInit}" oncomplete="autreLigneNonModifiable('myclassAvoir');"/>
+					
+					
+										
+					<p:ajax event="toggleSelect" process="@this" />
+					<p:ajax event="rowToggle" process="@this" oncomplete="ligneSeperationExpend()" />
+					
+					<p:column style="width:8px" styleClass="center" >
+						<p:rowToggler  rendered="#{ligne.ligneLieeFils!=null or ligne.ligneLieeMere!=null or ligne.ligneAbonnement!=null}"/>
+					</p:column>
+
+					<p:column style="width:16px" >
+						<p:rowEditor rendered="#{avoirController.etatBoutonLigne('rowEditor')}" styleClass="row-editor-debut"/>
+					</p:column>
+							
+					<p:column>
+						<f:facet name="header">
+							<h:outputText value="N°" />
+						</f:facet>
+						<h:outputText value="#{ligne.dto.numLigneLDocument}" />
+					</p:column>
+					
+					<p:column style="width:140px">
+						<f:facet name="header">
+							<h:outputText value="Code article" />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{ligne.taArticle.codeArticle}"/>
+							</f:facet>
+							<f:facet name="input">
+							<p:focus>
+								<p:autoComplete value="#{ligne.taArticleDTO}"
+									completeMethod="#{avoirController.articleAutoCompleteDTOLight}"
+									id="idarticleAvoir" converter="entityConverter"
+									var="art" itemLabel="#{art.codeArticle}" itemValue="#{art}"
+									forceSelection="true" dropdown="true"
+									maxResults="#{avoirController.taPreferencesService.nbMaxChargeListeArticle()}"
+									moreText="Il y a #{component.maxResults} affichés sur #{component.suggestions.size()} au total, Veuillez affiner votre recherche ou cliquer ici pour en afficher plus ..."
+									 placeholder="Article" 
+									style="width:100%">
+									<!-- 									required="true" requiredMessage="Le code article est obligatoire" -->
+									
+									<p:column>
+										<h:outputText value="#{art.codeArticle}" />
+									</p:column>
+									
+									<p:column>
+										<h:outputText value="#{art.libellecArticle}" />
+									</p:column>
+									
+									<p:column >
+										<h:outputText value="#{art.commentaireArticle}" rendered="#{avoirController.rechercheAvecCommentaire(false)}"/>
+									</p:column>
+									
+									<f:attribute name="nomChamp" value="#{const.C_CODE_ARTICLE}" />
+									<p:ajax event="clear" listener="#{avoirController.onClearArticle}" 
+									update="@parent:idlibLAvoir,idQte1LAvoir,idu1LAvoir,
+									idu2LAvoir,idpuLAvoir,idhtLAvoir,idttcLAvoir,idtvaLAvoir,idQteTransportAvoir,idCodeTransportAvoir,idLotMPAvoir,idLRemiseAvoir,idqte2LAvoir,idEntrepotAv"/>
+									<p:ajax event="itemSelect" listener="#{avoirController.autcompleteSelection}" 
+									update="@parent:idlibLAvoir,idQte1LAvoir,idu1LAvoir,
+									idu2LAvoir,idpuLAvoir,idhtLAvoir,idttcLAvoir,idtvaLAvoir,idQteTransportAvoir,idCodeTransportAvoir,idLotMPAvoir,idLRemiseAvoir,idqte2LAvoir,idEntrepotAv"/>
+									<p:ajax event="moreText" listener="#{avoirController.onMoreTextArticle}" />
+								</p:autoComplete>
+							</p:focus>
+							</f:facet>
+						</p:cellEditor >
+					</p:column >
+					
+					<p:column sortBy="#{ligne.taLot.numLot}" style="width:10%" rendered="#{avoirController.selectedDocumentDTO.gestionLot}">
+								<f:facet name="header">
+									<h:outputText value="Numéro de lot" />
+								</f:facet> 
+								<p:cellEditor>
+									<f:facet name="output">
+<!-- 										<p:outputLabel id="idNumLot" value="#{ligne.articleLotEntrepotDTO.numLot}" onclick="PF('wvOverlayPanelDetailLotAvoir').show()"/> -->
+										<p:commandLink value="#{ligne.articleLotEntrepotDTO.numLot}" process="@this" update="@widgetVar(wvPanelGridDetailLotAvoir)" oncomplete="PF('wvOverlayPanelDetailLotAvoir').show('#{component.clientId}');">
+											<f:setPropertyActionListener value="#{ligne}" target="#{avoirController.detailLigneOverLayPanel}" />
+										</p:commandLink>
+									</f:facet>
+									<f:facet name="input"> 
+						
+										<p:autoComplete value="#{ligne.articleLotEntrepotDTO}" completeMethod="#{avoirController.lotAutoComplete}"
+											converter="#{articleLotEntrepotDTOAvoirConverter}"
+											var="lot" itemLabel="#{lot.numLot}" itemValue="#{lot}" id="idLotMPAvoir"  
+											disabled="#{ligne.ligneCommentaire() or avoirController.lotEstVirtuelEtAUneSeuleLigne(ligne.taArticle)}"
+											forceSelection="true" dropdown="true"
+											 placeholder="Lot" 
+											style="width:100%">
+											<p:column>
+												<f:facet name="header">
+													<h:outputText value="Numéro de lot" />
+												</f:facet>
+												<h:outputText value="#{lot.numLot}" />
+											</p:column>
+											<p:column>
+												<f:facet name="header">
+													<h:outputText value="Libellé lot" />
+												</f:facet>
+												<h:outputText value="#{lot.libelleLot}" />
+											</p:column>
+											<p:column>
+												<f:facet name="header">
+													<h:outputText value="Code entrepot" />
+												</f:facet>
+												<h:outputText value="#{lot.codeEntrepot}" />
+											</p:column>
+											<p:column>
+												<f:facet name="header">
+													<h:outputText value="Entrepot" />
+												</f:facet>
+												<h:outputText value="#{lot.libelleEntrepot}" />
+											</p:column>
+											<p:column>
+												<f:facet name="header">
+													<h:outputText value="Emplacement" />
+												</f:facet>
+												<h:outputText value="#{lot.emplacement}" />
+											</p:column>
+											<p:column>
+												<f:facet name="header">
+													<h:outputText value="Qte en stock" />
+												</f:facet>
+												<h:outputText value="#{lot.qte1}" />
+											</p:column>
+											<p:column>
+												<f:facet name="header">
+													<h:outputText value="Unité" />
+												</f:facet>
+												<h:outputText value="#{lot.codeUnite}" />
+											</p:column>
+											<p:column>
+												<f:facet name="header">
+													<h:outputText value="Date lot" />
+												</f:facet>
+												<h:outputText value="#{lot.dateLot}" />
+											</p:column>		
+											<p:column>
+												<f:facet name="header">
+													<h:outputText value="Dluo" />
+												</f:facet>
+												<h:outputText value="#{lot.dluo}" />
+											</p:column>												
+											<f:attribute name="nomChamp" value="#{const.C_NUM_LOT}" />
+<!-- 												<p:ajax event="itemSelect" listener="#{avoirController.autcompleteSelectionMP}" update="libLotMP,idEntrepotMP,idEmplcementMP"/> -->
+												<p:ajax event="itemSelect" listener="#{avoirController.autcompleteSelection}" update="@parent:idlibLAvoir,idEntrepotAv" />
+											</p:autoComplete>
+								
+									</f:facet>
+								</p:cellEditor >
+							</p:column>
+
+					<p:column style="width:140px">
+						<f:facet name="header">
+							<h:outputText value="Libellé" />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.libLDocument}" />
+							</f:facet>
+							<f:facet name="input">
+								<p:inputText value="#{ligne.dto.libLDocument}" id="idlibLAvoir"
+								validator="#{avoirController.validateLignesDocument}">
+								<f:attribute name="nomChamp" value="#{const.C_LIB_L_DOCUMENT}" />
+								<p:ajax event="blur" />
+								</p:inputText>
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+
+					<p:column style="width:10%">
+						<f:facet name="header">
+							<h:outputText value="Entrepot" />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{ligne.taEntrepot.codeEntrepot}" />
+							</f:facet>
+							<f:facet name="input">
+							<h:outputText value="#{ligne.taEntrepot.codeEntrepot}" disabled="true" id="idEntrepotAv" />
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+					
+
+					<p:column  style="width:80px">
+						<f:facet name="header">
+							<h:outputText value="Qté 1" />
+						</f:facet>
+						<p:cellEditor >
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.qteLDocument}"/>	
+							</f:facet>
+							<f:facet name="input" >
+								<p:inputText id="idQte1LAvoir"  value="#{ligne.dto.qteLDocument}"  style="width:100%" 
+										validator="#{avoirController.validateLignesDocument}" disabled="#{ligne.ligneCommentaire()}">
+									<f:attribute name="nomChamp" value="#{const.C_QTE_L_DOCUMENT}" /> 
+									<p:ajax event="blur" update="@parent:idqte2LAvoir,idQteTransportAvoir,idhtLAvoir,idttcLAvoir,idtvaLAvoir,@this"/>
+								</p:inputText>
+							</f:facet >
+						</p:cellEditor>
+					</p:column>
+
+					<p:column >
+						<f:facet name="header">
+							<h:outputText value="Unité 1" />
+						</f:facet>
+<!-- 						<p:cellEditor > -->
+<!-- 							<f:facet name="output"> -->
+<!-- 								<h:outputText value="#{ligne.dto.u1LDocument}" /> -->
+<!-- 							</f:facet> -->
+<!-- 							<f:facet name="input"> -->
+<!-- 								<p:inputText value="#{ligne.dto.u1LDocument}" style="width:100%" id="u1"/> -->
+<!-- 							</f:facet> -->
+<!-- 						</p:cellEditor> -->
+						<p:cellEditor >
+							<f:facet name="output">
+								<h:outputText value="#{ligne.taUnite1.codeUnite}" />
+							</f:facet>
+							<f:facet name="input">
+<!-- 								<p:inputText value="#{ligne.taUnite1.codeUnite}" style="width:100%" id="u1"/> -->
+								<p:autoComplete value="#{ligne.taUnite1}"
+									completeMethod="#{avoirController.uniteAutoComplete}"
+									var="unit" itemLabel="#{unit.codeUnite}" itemValue="#{unit}"
+									forceSelection="true" dropdown="true"
+									placeholder="U1" style="width:100%" id="idu1LAvoir" disabled="#{ligne.ligneCommentaire()}">
+									<p:column>
+										<h:outputText value="#{unit.codeUnite}" />
+									</p:column>
+									
+									<f:attribute name="nomChamp" value="#{const.C_U1_L_DOCUMENT}" />
+									<p:ajax event="itemSelect" listener="#{avoirController.autcompleteSelection}" update="@parent:idqte2LAvoir"/>
+								</p:autoComplete>
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+
+					<p:column  style="width:80px">
+						<f:facet name="header">
+							<h:outputText value="Qté 2" />
+						</f:facet>
+							<p:cellEditor >
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.qte2LDocument}"/>	
+							</f:facet>
+							<f:facet name="input" >
+								<p:inputText id="idqte2LAvoir"  value="#{ligne.dto.qte2LDocument}"  style="width:100%" 
+										validator="#{avoirController.validateLignesDocument}" disabled="#{ligne.ligneCommentaire()}">
+									<f:attribute name="nomChamp" value="#{const.C_QTE2_L_DOCUMENT}" /> 
+									<p:ajax event="blur" update="@parent:idQte1LAvoir,idhtLAvoir,idttcLAvoir,idtvaLAvoir,@this"/>
+								</p:inputText>
+							</f:facet >
+						</p:cellEditor>
+					</p:column>
+
+					<p:column >
+						<f:facet name="header">
+							<h:outputText value="Unité 2" />
+						</f:facet>
+<!-- 						<h:outputText value="#{ligne.dto.u2LDocument}" id="u2" />					 -->
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{ligne.taUnite2.codeUnite}"/>
+							</f:facet>
+							<f:facet name="input">
+<!-- 								<p:inputText value="#{ligne.taUnite2.codeUnite}" style="width:100%" id="u2"/> -->
+								<p:autoComplete value="#{ligne.taUnite2}"
+									completeMethod="#{avoirController.uniteAutoCompleteAll}"
+									var="unit" itemLabel="#{unit.codeUnite}" itemValue="#{unit}"
+									forceSelection="true" dropdown="true"
+									placeholder="U2" style="width:100%" id="idu2LAvoir"  disabled="#{ligne.ligneCommentaire()}">
+									<p:column>
+										<h:outputText value="#{unit.codeUnite}" />
+									</p:column>
+									
+									<f:attribute name="nomChamp" value="#{const.C_U2_L_DOCUMENT}" />
+									<p:ajax event="itemSelect" listener="#{avoirController.autcompleteSelection}" update="@parent:idqte2LAvoir"/>
+								</p:autoComplete>
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+					
+					<p:column styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Prix unitaire" />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.prixULDocument}">
+									<f:convertNumber type="currency"  minFractionDigits="#{avoirController.prefNbDecimalesPrix}" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</f:facet>
+							<f:facet name="input">
+								<p:inputText value="#{ligne.dto.prixULDocument}" id="idpuLAvoir" style="width:100%" 
+										validator="#{avoirController.validateLignesDocument}" disabled="#{ligne.ligneCommentaire()}">
+									<f:attribute name="nomChamp" value="#{const.C_PRIX_U_L_DOCUMENT}" /> 
+									<p:ajax event="blur" update="@this,idhtLAvoir,idttcLAvoir,idtvaLAvoir"/>
+								</p:inputText>	
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+					
+					<p:column >
+						<f:facet name="header">
+							<h:outputText value="Remise %" />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.remTxLDocument}" />
+							</f:facet>
+							<f:facet name="input">
+								<p:inputText value="#{ligne.dto.remTxLDocument}" style="width:100%" id="idLRemiseAvoir"
+										validator="#{avoirController.validateLignesDocument}" disabled="#{ligne.ligneCommentaire()}">
+									<f:attribute name="nomChamp" value="#{const.C_REM_TX_L_DOCUMENT}" /> 
+									<p:ajax event="blur" update="@this,idhtLAvoir,idttcLAvoir,idtvaLAvoir"/>
+								</p:inputText>	
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+					
+					<p:column styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Montant HT" />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.mtHtLDocument}" disabled="true">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</f:facet>
+							<f:facet name="input">
+								<h:outputText value="#{ligne.dto.mtHtLDocument}" id="idhtLAvoir" style="width:100%" disabled="true" />
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+					
+					<p:column styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Montant TTC" />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.mtTtcLDocument}" disabled="true">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</f:facet>
+							<f:facet name="input">
+								<h:outputText value="#{ligne.dto.mtTtcLDocument}" id="idttcLAvoir" style="width:100%"  disabled="true" />	
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+					
+					<p:column styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="TVA"/>
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.codeTvaLDocument}" disabled="true">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</f:facet>
+							<f:facet name="input">
+								<h:outputText value="#{ligne.dto.codeTvaLDocument}" disabled="true" id="idtvaLAvoir" style="width:100%"/>
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+					
+										<p:column styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Remise globale" />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.txRemHtDocument}" disabled="true">
+								</h:outputText>
+							</f:facet>
+							<f:facet name="input">
+								<h:outputText value="#{ligne.dto.txRemHtDocument}" disabled="true"  style="width:100%"/>
+							</f:facet>							
+						</p:cellEditor>
+					</p:column>
+
+
+					<p:column style="width:5%" styleClass="right"  rendered="#{avoirController.gestionCapsuleAvoir()}">
+						<f:facet name="header">
+							<h:outputText value="Qté CRD"  />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.qteTitreTransport}"  />
+							</f:facet>
+							<f:facet name="input">
+								<p:inputText value="#{ligne.dto.qteTitreTransport}"  id="idQteTransportAvoir" style="width:100%" validator="#{avoirController.validateLignesDocument}"  disabled="#{ligne.ligneCommentaire()}">
+									<f:attribute name="nomChamp" value="#{const.C_QTE_TITRE_TRANSPORT_L_DOCUMENT}" />
+									<p:ajax event="blur" update="@this"/>
+								</p:inputText>
+							</f:facet>
+						</p:cellEditor>						
+					</p:column>
+
+
+					<p:column  style="width:5%" styleClass="right"  rendered="#{avoirController.gestionCapsuleAvoir()}">
+						<f:facet name="header">
+							<h:outputText value="Titre CRD" />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.codeTitreTransport}">
+								</h:outputText>
+							</f:facet>
+							<f:facet name="input">
+								<p:autoComplete value="#{ligne.taTitreTransport}" id="idCodeTransportAvoir"
+								completeMethod="#{avoirController.titreTransportAutoComplete}" var="unit" itemLabel="#{unit.codeTitreTransport}"
+									itemValue="#{unit}" forceSelection="true" dropdown="true" placeholder="U2" style="width:100%" converter="entityConverter"  disabled="#{ligne.ligneCommentaire()}">
+									<p:column>
+										<h:outputText value="#{unit.codeTitreTransport}" />
+									</p:column>
+
+									<f:attribute name="nomChamp" value="#{const.C_CODE_TITRE_TRANSPORT}" />
+									 <p:ajax event="clear" listener="#{avoirController.onClearTaTitreTransport}" update=",idQteTransportAvoir"/>
+									<p:ajax event="itemSelect" listener="#{avoirController.autcompleteSelection}"/>
+								</p:autoComplete>
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+					
+
+
+					<p:column style="width:1%">
+						<f:facet name="header">
+							<h:outputText value="Etat" />
+						</f:facet>
+								<h:outputText value="#{ligne.codeEtat}"  id="idListeSaisieEtat#{variableEcran}"/>
+								<p:tooltip  value="#{ligne.codeEtat.concat(ligne.libelleEtat)}" shared="true" for="idListeSaisieEtat#{variableEcran}" showEffect="clip" position="top"/>
+					</p:column>	
+					
+					<p:column style="width:16px">
+						<f:facet name="header">
+							<h:outputText value="" />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<p:commandButton title="Supprimer" styleClass="icon-delete icon icon-grille" widgetVar="widgetVarBtnSupprimer"
+									action="#{avoirController.actSupprimerLigne}"
+									process="@this"
+									disabled="#{!avoirController.modeEcran.dataSetEnModif() or avoirController.etatBoutonLigne('supprimer')}"
+									update="@widgetVar(panelLignesAvoir)">
+<!-- 									<f:attribute name="idLigne" value="#{ligne.dto.id}" /> -->
+									<f:setPropertyActionListener target="#{avoirController.selectedLigneJSF}" value="#{ligne}" />
+								</p:commandButton>
+							</f:facet>
+							<f:facet name="input">
+								<h:outputText value="" />
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+
+					<p:column style="width:26px">
+						<p:rowEditor rendered="#{avoirController.etatBoutonLigne('rowEditor')}" styleClass="row-editor-fin"/>
+					</p:column>
+					
+					<p:rowExpansion>
+
+					<p:panelGrid columns="2"  columnClasses="ui-grid-col-6,ui-grid-col-6" styleClass="ui-panelgrid-blank" layout="grid" rendered="#{ligne.ligneLieeFils!=null or ligne.ligneLieeMere!=null}">
+					<p:panel header="document ayant servi à générer le document courant" style="width:100%;" >
+						<p:dataTable value="#{ligne.ligneLieeMere}" id="dataTableLigneLieeMere" var="lien" selectionMode="single" editable="true"
+							selection="#{avoirController.selectedLigneALigneDTO}" rowKey="#{lien.id}" widgetVar="wvdataTableLigneLieeMere" 
+							emptyMessage="#{msg.message_datatable_vide}" resizableColumns="true">
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="code document" />
+								</f:facet>
+								<p:commandLink value="#{lien.codeDocumentDest}"
+									action="#{avoirController.duplicationDocumentBean.ouvertureDocumentBean.detailDocument(avoirController.duplicationDocumentBean.ouvertureDocumentBean.recupCodeDocument(lien.codeDocumentDest,lien.typeDocument))}"
+									update=":form:tabView"
+									oncomplete="activeTabCenter('#{avoirController.duplicationDocumentBean.ouvertureDocumentBean.event.cssLgrTab}');">>
+								</p:commandLink>
+								<!-- 								<h:outputText value="#{lien.codeDocumentDest}" /> -->
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="libellé ligne" />
+								</f:facet>
+								<h:outputText value="#{lien.libelleLigne}" />
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="lot" />
+								</f:facet>
+								<h:outputText value="#{lien.numLot}" />
+							</p:column>
+							<p:column styleClass="right">
+								<f:facet name="header">
+									<h:outputText value="Qté. reçue" />
+								</f:facet>
+								<h:outputText value="#{lien.qteRecue}" />
+							</p:column>
+<!-- 							<p:column> -->
+<!-- 								<f:facet name="header"> -->
+<!-- 									<h:outputText value="Etat" /> -->
+<!-- 								</f:facet> -->
+<!-- 								<h:outputText value="#{lien.etat}" /> -->
+<!-- 							</p:column>							 -->
+
+						</p:dataTable>
+						</p:panel>
+						<p:panel header="document généré à partir du document courant" style="width:100%;" >
+						<p:dataTable value="#{ligne.ligneLieeFils}" id="dataTableLigneLieeFils" var="lien" selectionMode="single" editable="true"
+							selection="#{avoirController.selectedLigneALigneDTO}" rowKey="#{lien.id}" widgetVar="wvdataTableLigneLieeFils" 
+							emptyMessage="#{msg.message_datatable_vide}" resizableColumns="true">
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="code document" />
+								</f:facet>
+								<p:commandLink value="#{lien.codeDocumentDest}"
+									action="#{avoirController.duplicationDocumentBean.ouvertureDocumentBean.detailDocument(avoirController.duplicationDocumentBean.ouvertureDocumentBean.recupCodeDocument(lien.codeDocumentDest,lien.typeDocument))}"
+									update=":form:tabView"
+									oncomplete="activeTabCenter('#{avoirController.duplicationDocumentBean.ouvertureDocumentBean.event.cssLgrTab}');">>
+								</p:commandLink>
+								<!-- 								<h:outputText value="#{lien.codeDocumentDest}" /> -->
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="libellé ligne" />
+								</f:facet>
+								<h:outputText value="#{lien.libelleLigne}" />
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="lot" />
+								</f:facet>
+								<h:outputText value="#{lien.numLot}" />
+							</p:column>
+							<p:column styleClass="right">
+								<f:facet name="header">
+									<h:outputText value="Qté. reçue" />
+								</f:facet>
+								<h:outputText value="#{lien.qteRecue}" />
+							</p:column>
+<!-- 							<p:column> -->
+<!-- 								<f:facet name="header"> -->
+<!-- 									<h:outputText value="Etat" /> -->
+<!-- 								</f:facet> -->
+<!-- 								<h:outputText value="#{lien.etat}" /> -->
+<!-- 							</p:column>							 -->
+
+						</p:dataTable>
+						</p:panel>
+					</p:panelGrid>
+					<p:panel header="Infos de l'abonnement" style="width:100%;" rendered="#{ligne.ligneAbonnement!=null}">
+
+						<p:dataTable value="#{ligne.ligneAbonnement}" id="dataTableLigneAbonnement" var="lien" selectionMode="single" editable="true"
+							selection="#{avoirController.selectedLigneALigneDTO}" rowKey="#{lien.id}" widgetVar="wvdataTableLigneAbonnement" 
+							emptyMessage="#{msg.message_datatable_vide}" resizableColumns="true">
+								<p:column  style="width:80px" >
+									<p:commandButton value="" actionListener="#{avoirController.actDialogDetailLigneAbonnement}" process="@this"
+										styleClass="icon-medium icon-reglement" title="Détail de la ligne d'abonnement">
+										<f:attribute name="taLigneALigneEcheanceDTO" value="#{lien}" />
+										<p:ajax event="dialogReturn" listener="#{avoirController.handleReturnDialogDetailLigneAbonnement}" />
+									</p:commandButton>
+								</p:column>
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="code document" />
+								</f:facet>
+								<p:commandLink value="#{lien.codeDocumentDest}"
+									action="#{avoirController.duplicationDocumentBean.ouvertureDocumentBean.detailAbonnement(avoirController.duplicationDocumentBean.ouvertureDocumentBean.recupCodeDocument(lien.codeDocumentDest,lien.typeDocument))}"
+									update=":form:tabView"
+									oncomplete="activeTabCenter('#{avoirController.duplicationDocumentBean.ouvertureDocumentBean.event.cssLgrTab}');">>
+								</p:commandLink>
+
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="libellé ligne" />
+								</f:facet>
+								<h:outputText value="#{lien.libelleLigne}" />
+							</p:column>
+						</p:dataTable>
+</p:panel>
+
+					</p:rowExpansion>
+
+
+
+				</p:dataTable>
+
+				<p:overlayPanel widgetVar="wvOverlayPanelDetailLotAvoir" hideEffect="fade">
+					<p:panel widgetVar="wvPanelGridDetailLotAvoir" style="text-align:center;">
+					<p:panelGrid columns="2" rendered="#{not empty avoirController.detailLigneOverLayPanel}">
+						<h:outputText value="Lot" />
+						<h:outputText value="#{avoirController.detailLigneOverLayPanel.dto.numLot} - #{avoirController.detailLigneOverLayPanel.dto.libelleLot}" />
+
+						<h:outputText value="Entrepot" />
+						<h:outputText value="#{avoirController.detailLigneOverLayPanel.dto.codeEntrepot}" />
+
+						<h:outputText value="Qte" />
+						<h:outputText value="#{avoirController.detailLigneOverLayPanel.dto.qteLDocument} #{avoirController.detailLigneOverLayPanel.dto.u1LDocument}" />
+
+						<h:outputText value="DLUO" />
+						<h:outputText value="#{avoirController.detailLigneOverLayPanel.dto.dluo}" />
+					</p:panelGrid>
+					</p:panel>
+				</p:overlayPanel>
+
+				<p:panelGrid columns="3" styleClass="totaux-lignes-document" id="idTotauxLAvoir">
+					<f:facet name="header">
+							<h:outputText value="Totaux" />
+					</f:facet>
+					
+					<h:outputText value="NET HT" />
+				
+					<h:outputText value="NET TVA" />
+			
+					<h:outputText value="NET TTC" />
+					<h:outputText value="#{avoirController.selectedDocumentDTO.netHtCalc}">
+						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+					</h:outputText>
+					<h:outputText value="#{avoirController.selectedDocumentDTO.netTvaCalc}">
+						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+					</h:outputText>
+					<h:outputText value="#{avoirController.selectedDocumentDTO.netTtcCalc}">
+						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+					</h:outputText>
+					
+				</p:panelGrid>
+				
+
+
+			</p:panel>
+		</p:tab>
+		
+		<p:tab id="idTotauxFormAvoir" title="Totaux">
+
+			<p:panel id="idPaneltotauxFormAvoir" header="Totaux" toggleable="true" widgetVar="panelTotauxFormAvoir">
+			<div class="ui-g">
+				<div class="ui-g-12 ui-md-12 ui-lg-6">
+					<div class="ui-g-12 ui-md-12 ui-lg-6">
+						<p:fieldset legend="Totaux">
+							<h:panelGrid columns="2" cellpadding="10">
+		
+								<p:outputLabel value="HT" />
+								<p:inputText value="#{avoirController.selectedDocumentDTO.mtHtCalc}" disabled="true">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</p:inputText>
+								
+								<p:outputLabel value="TVA" />
+								<p:inputText value="#{avoirController.selectedDocumentDTO.mtTvaCalc}" disabled="true">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</p:inputText>
+		
+								<p:outputLabel value="TTC" />
+								<p:inputText value="#{avoirController.selectedDocumentDTO.mtTtcAvantRemiseGlobaleCalc}" disabled="true">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</p:inputText>
+		
+		
+							</h:panelGrid>
+						</p:fieldset>
+					</div>
+					<div class="ui-g-12 ui-md-12 ui-lg-6">
+						<p:fieldset legend="Totaux après remise globale">
+							<h:panelGrid columns="2" cellpadding="10">
+		
+								<p:outputLabel value="Montant HT" />
+								<p:inputText value="#{avoirController.selectedDocumentDTO.netHtCalc}" disabled="true">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</p:inputText>
+								
+								<p:outputLabel value="Montant TVA" />
+								<p:inputText value="#{avoirController.selectedDocumentDTO.netTvaCalc}" disabled="true">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</p:inputText>
+		
+								<p:outputLabel value="Montant TTC" />
+								<p:inputText value="#{avoirController.selectedDocumentDTO.netTtcCalc}" disabled="true">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</p:inputText>
+		
+							</h:panelGrid>
+						</p:fieldset>
+					</div>
+				
+					<div class="ui-g-12 ui-md-12 ui-lg-6">
+						<p:fieldset legend="Remise">
+							<h:panelGrid columns="2" cellpadding="10">
+								<p:outputLabel value="Remise globale %" />
+								<p:inputText value="#{avoirController.selectedDocumentDTO.txRemHtDocument}"
+									disabled="#{avoirController.editable()}" validator="#{avoirController.validateDocument}">
+									<f:attribute name="nomChamp" value="#{const.C_TX_REM_HT_DOCUMENT}" />
+									<p:ajax event="blur" update="@this,@widgetVar(panelTotauxFormAvoir)" />
+								</p:inputText>
+								
+								<p:outputLabel value="Remise sur HT" />
+								<p:inputText value="#{avoirController.selectedDocumentDTO.remHtDocument}" disabled="true">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</p:inputText>
+							</h:panelGrid>
+						</p:fieldset>
+					</div>
+<!-- 					<div class="ui-g-12 ui-md-12 ui-lg-6"> -->
+<!-- 						<p:fieldset legend="Escompte"> -->
+<!-- 							<h:panelGrid columns="2" cellpadding="10"> -->
+		
+<!-- 								<p:outputLabel value="Escompte accordé %" /> -->
+<!-- 								<p:inputText value="#{avoirController.selectedDocumentDTO.txRemTtcDocument}" -->
+<!-- 									disabled="#{avoirController.editable()}" validator="#{avoirController.validateDocument}"> -->
+<!-- 									<f:attribute name="nomChamp" value="#{const.C_TX_REM_TTC_DOCUMENT}" /> -->
+<!-- 									<p:ajax event="blur" update="@this,@widgetVar(panelTotauxFormAvoir)" /> -->
+<!-- 								</p:inputText> -->
+								
+<!-- 								<p:outputLabel value="Montant escompte" /> -->
+<!-- 								<p:inputText value="#{avoirController.selectedDocumentDTO.remTtcDocument}" disabled="true"> -->
+<!-- 									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" /> -->
+<!-- 								</p:inputText> -->
+		
+<!-- 							</h:panelGrid> -->
+<!-- 						</p:fieldset> -->
+<!-- 					</div> -->
+				</div>
+				<div class="ui-g-12 ui-md-12 ui-lg-6">
+					<p:fieldset legend="Règlements" style="height:100%" >
+						<h:panelGrid columns="2" cellpadding="10" id="idReglementAvoir">
+<!-- 							<p:outputLabel value="Avoir réglée" disabled="#{avoirController.editable()}" /> -->
+<!-- 							<p:selectBooleanCheckbox value="#{avoirController.avoirReglee}" title="avoir Réglée" widgetVar="idAvoirReglee" disabled="#{avoirController.editable()}" > -->
+<!-- 							<p:ajax update="idReglementAvoir,idResteAPayerAvoir" listener="#{avoirController.actInitReglement}"  /> -->
+<!-- 							</p:selectBooleanCheckbox> -->
+							
+<!-- 							<p:outputLabel value="Accompte" rendered="false"/> -->
+<!-- 							<p:inputText value="#{avoirController.selectedDocumentDTO.acomptes}" disabled="true" rendered="false"/> -->
+							
+<!-- 							<p:outputLabel value="Avoirs" rendered="false"/> -->
+<!-- 							<p:inputText value="#{avoirController.selectedDocumentDTO.avoirs}" disabled="true" rendered="false"/> -->
+	
+		
+							<p:outputLabel value="Type paiement" />
+							<!-- 						<p:inputText value="#{avoirController.selectedDocumentDTO.compte}"/> -->
+							<p:autoComplete value="#{avoirController.taTPaiement}" converter="entityConverter" 
+								completeMethod="#{avoirController.typePaiementAutoComplete}" var="tp" itemLabel="#{tp.codeTPaiement}"
+								itemValue="#{tp}" forceSelection="true" dropdown="true" disabled="#{avoirController.editable()}"
+								placeholder="Type de paiement" style="width:100%">
+								<p:column>
+									<h:outputText value="#{tp.codeTPaiement}" />
+								</p:column>
+								<p:column>
+									<h:outputText value="#{tp.libTPaiement}" />
+								</p:column>
+								<f:attribute name="nomChamp" value="#{const.C_CODE_T_PAIEMENT}" />
+								<p:ajax event="itemSelect" listener="#{avoirController.autcompleteSelection}" />
+							</p:autoComplete>
+
+<!-- 							<p:outputLabel value="Montant paiement" /> -->
+<!-- 							<p:inputText value="#{avoirController.selectedDocumentDTO.montantReglement}" disabled="true"> -->
+<!-- 								<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" /> -->
+<!-- 							</p:inputText> -->
+							
+<!-- 							<p:outputLabel value="Libellé paiement" /> -->
+<!-- 							<p:inputText id="idLibPaiementAvoir" value="#{avoirController.selectedDocumentDTO.libelleReglement}" disabled="#{avoirController.editable()}" /> -->
+							
+							<p:outputLabel value="Date d'échéance " />
+							<p:calendar
+								value="#{avoirController.selectedDocumentDTO.dateEchDocument}" id="idDateEchAvoir"
+								pattern="dd/MM/yyyy" mask="true" locale="fr" navigator="true" showOn="button"  timeZone="#{msg.time_zone}" 
+								disabled="#{avoirController.editable()}">
+								
+								<f:attribute name="nomChamp" value="#{const.C_DATE_ECH_DOCUMENT}" />
+						<p:ajax event="dateSelect" listener="#{avoirController.controleDate}" update="@this" />
+						<p:ajax event="change" listener="#{avoirController.controleDate}"  update="@this" />
+							</p:calendar>
+						</h:panelGrid>
+					</p:fieldset>
+				</div>
+				
+				<div class="ui-g-12 ui-md-12 ui-lg-6">
+					<p:panel id="idConditionPaiementAvoir" header="Conditon de paiement" toggleable="true" widgetVar="panelConditionPaiementAvoir" collapsed="false">
+						<h:panelGrid columns="2" cellpadding="10" id="idPanelConditionPaiementAvoir" >
+								<p:outputLabel value="Code paiement" />
+								<h:panelGrid columns="3" cellpadding="10">
+									<p:autoComplete value="#{avoirController.taCPaiementDoc}" converter="entityConverter" id="idCodeCPaiementAvoir"
+										completeMethod="#{avoirController.typeCPaiementAutoComplete}" var="tp" itemLabel="#{tp.codeCPaiement}"
+										itemValue="#{tp}" forceSelection="true" dropdown="true" disabled="#{avoirController.editable()}"
+										placeholder="Condition de paiement" style="width:100%">
+										<p:column>
+											<h:outputText value="#{tp.codeCPaiement}" />
+										</p:column>
+										<p:column>
+											<h:outputText value="#{tp.libCPaiement}" />
+										</p:column>
+										<f:attribute name="nomChamp" value="#{const.C_CODE_C_PAIEMENT}" />
+										<p:ajax event="itemSelect" listener="#{avoirController.autcompleteSelection}"
+											update="idLibelleCPaimentAvoir,idReportAvoir,idFinMoisAvoir,idDateEchAvoir,idMenuBoutonAvoir" />
+									</p:autoComplete>
+									<!-- 										<p:inputText value="#{avoirController.selectedCPaiement.codeCPaiement}" -->
+									<!-- 											disabled="#{avoirController.editable()}"> -->
+									<!-- 											<p:ajax event="blur" update="@this" /> -->
+									<!-- 										</p:inputText> -->
+									<p:commandButton value="Appliquer" styleClass="icon-refresh btn"
+										actionListener="#{avoirController.actAppliquerCPaiement}" process="@this"
+										update="idPanelConditionPaiementAvoir,idLibelleCPaimentAvoir,idReportAvoir,idFinMoisAvoir,idDateEchAvoir,idMenuBoutonAvoir" />
+								</h:panelGrid>
+								<p:outputLabel value="Libellé" />
+							<p:inputText value="#{avoirController.selectedCPaiement.libCPaiement}" disabled="#{avoirController.editable()}" id="idLibelleCPaimentAvoir">
+							<p:ajax event="blur" update="@this" />
+							</p:inputText>
+							<p:outputLabel value="Report" />
+							<p:inputText value="#{avoirController.selectedCPaiement.reportCPaiement}" disabled="#{avoirController.editable()}" id="idReportAvoir">
+							<p:ajax event="blur" update="@this" />
+							</p:inputText>
+							<p:outputLabel value="Fin de mois" />
+							<p:inputText value="#{avoirController.selectedCPaiement.finMoisCPaiement}" disabled="#{avoirController.editable()}" id="idFinMoisAvoir">
+							<p:ajax event="blur" update="@this" />
+							</p:inputText>
+						</h:panelGrid>
+					</p:panel>
+				</div>
+				<div class="ui-g-12 ui-md-12 ui-lg-6">
+					<div class="ui-g-12 ui-md-12 ui-lg-6">
+						<p:fieldset legend="">
+							<h:panelGrid columns="2" cellpadding="10" id="idNetAPayerAvoir">
+								<p:outputLabel value="Net à payer" />
+								<p:inputText value="#{avoirController.selectedDocumentDTO.netTtcCalc}" disabled="true">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</p:inputText>
+							</h:panelGrid>
+						</p:fieldset>
+					</div>
+					<div class="ui-g-12 ui-md-12 ui-lg-6">
+						<p:fieldset legend="">
+							<h:panelGrid columns="2" cellpadding="10" id="idResteAPayerAvoir">
+								<p:outputLabel value="Montant affecté" />
+								<p:inputText value="#{avoirController.selectedDocumentDTO.regleDocument}" disabled="true">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</p:inputText>
+							</h:panelGrid>
+						</p:fieldset>
+					</div>
+				</div>	
+				
+				<div class="ui-g-12 ui-md-12 ui-lg-6">
+					<p:dataTable value="#{avoirController.masterEntity.lignesTVA}" var="ltva">
+						<f:facet name="header">
+								<h:outputText value="TVA" />
+						</f:facet>
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="Code TVA" />
+							</f:facet>
+							<h:outputText value="#{ltva.codeTva}" />
+						</p:column>
+						
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="Libellé" />
+							</f:facet>
+							<h:outputText value="#{ltva.libelle}" />
+						</p:column>
+						
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="Taux" />
+							</f:facet>
+							<h:outputText value="#{ltva.tauxTva}" />
+						</p:column>
+						
+						<p:column styleClass="right">
+							<f:facet name="header">
+								<h:outputText value="Montant" />
+							</f:facet>
+							<h:outputText value="#{ltva.mtTva}">
+								<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+							</h:outputText>
+						</p:column>
+					</p:dataTable>
+				</div>
+				
+				<div class="ui-g-12 ui-md-12 ui-lg-6">
+					 <p:fieldset legend="Aperçu" rendered="false">
+							<p:outputLabel value="Imprimer brouillon" /><p:spacer width="5" />
+							<p:selectBooleanCheckbox value="#{avoirController.impressionDirect}" disabled="#{avoirController.editable()}">
+								<p:ajax event="change" update="@this" />
+							</p:selectBooleanCheckbox>
+					  </p:fieldset>
+					<p:fieldset legend="Transmettre le document au client">
+							<div class="ui-g-4">
+							<p:outputLabel value="Imprimer pour client" /><p:spacer width="5" />
+							<p:selectBooleanCheckbox id="idImprimerAvoirPourClient" value="#{avoirController.impressionDirectClient}" disabled="#{avoirController.editable()}">
+								 <p:ajax event="change" update="@this, @widgetVar(wvMenuBoutonAvoir)" /> 
+							</p:selectBooleanCheckbox>
+							</div>
+							<div class="ui-g-4">
+							<!-- A REMETTRE ET A FAIRE MARCHER COMME SUR FACTURE -->
+							<p:outputLabel value="Envoyer par email (A Venir)" /><p:spacer width="5" />
+							<!-- 			disabled="#{avoirController.editable()}" -->
+							<p:selectBooleanCheckbox value="#{avoirController.envoyeParEmail}" disabled="true">
+								<p:ajax event="change" update="@this,@widgetVar(wvEnvoyerEmailDirectAvoir),  @widgetVar(wvMenuBoutonAvoir)" />
+							</p:selectBooleanCheckbox>
+							</div>
+							
+							<div class="ui-g-4">
+							<p:outputLabel value="Compte client" /><p:spacer width="5" />
+							<p:selectBooleanCheckbox value="#{avoirController.miseADispositionCompteClient}" disabled="#{avoirController.editable()}">
+								<p:ajax event="change" update="@this" />
+							</p:selectBooleanCheckbox>
+							</div>
+							
+							
+					 </p:fieldset>
+					
+						<!-- <p:outputLabel value="Imprimer" />
+						<p:selectBooleanCheckbox value="#{avoirController.impressionDirect}" disabled="#{avoirController.editable()}">
+								<p:ajax event="change" update="@this,idImprimerAvoirPourClient" listener="#{avoirController.actImprimerPourClient}"/>
+							</p:selectBooleanCheckbox>
+							
+							<p:outputLabel value="Imprimer pour client" />
+							<p:selectBooleanCheckbox id="idImprimerAvoirPourClient" value="#{avoirController.impressionDirectClient}" disabled="#{avoirController.editable() or !avoirController.impressionDirect}">
+								<p:ajax event="change" update="@this" />
+							</p:selectBooleanCheckbox> -->
+							
+<!-- 							<p:outputLabel value="Compte client" /> -->
+<!-- 							<p:selectBooleanCheckbox value="#{avoirController.miseADispositionCompteClient}" disabled="#{avoirController.editable()}"> -->
+<!-- 								<p:ajax event="change" update="@this" /> -->
+<!-- 							</p:selectBooleanCheckbox> -->
+							
+							<!-- <p:outputLabel value="Envoyer par email" />
+							<p:selectBooleanCheckbox value="#{avoirController.envoyeParEmail}" disabled="#{avoirController.editable()}">
+								<p:ajax event="change" update="@this" />
+							</p:selectBooleanCheckbox> -->
+					
+				</div>		
+		</div>	
+	</p:panel>
+			
+		</p:tab>
+		
+
+		
+	</p:wizard>
+
+	<!-- 			</div> -->
+	<!-- 		</div> -->
+	<!-- 	</div> -->
+
+	<p:remoteCommand name="increment" binding="#{avoirController.rc}"
+		actionListener="#{avoirController.actAutoInsererLigne}"
+		process="@this" update="@widgetVar(panelLignesAvoir)"
+		disabled="#{avoirController.insertAuto}"
+		 />
+<!-- oncomplete="jQuery('.myclassAvoir .ui-datatable-data tr').last().find('span.ui-icon-pencil').each(function(){jQuery(this).click()});" -->
+	
+	<!-- </f:validateBean> -->
+
+	<p:dialog header="Cohérence de la qté 2" widgetVar="wVdialogQte2Avoir" modal="true" appendTo="@(body)" showEffect="clip" hideEffect="clip" width="900"
+		height="200">
+		<p:panelGrid columns="1">
+			<p:outputLabel value="La qté 2 n'est pas cohérente par rapport au coefficient applicable, voulez vous la conserver ?" />
+		</p:panelGrid>
+		<p:panelGrid columns="2">
+			<p:commandButton value="Conserver la valeur" process="@this" onstart="PF('wVdialogQte2Avoir').hide()" />
+			<p:commandButton value="Appliquer le coefficient" process="@this" actionListener="#{avoirController.actArreterEnregistrementEtFocusQte2()}"
+				oncomplete="PF('wVdialogQte2Avoir').hide()" update="@widgetVar(widgetVarDataTableLigneAvoir)" />
+		</p:panelGrid>
+	</p:dialog>
+
+
+</ui:composition>

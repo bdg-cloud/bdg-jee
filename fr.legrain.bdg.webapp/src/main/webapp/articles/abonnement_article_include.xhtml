@@ -1,0 +1,291 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
+xmlns:f="http://java.sun.com/jsf/core" 
+xmlns:h="http://java.sun.com/jsf/html"
+xmlns:ui="http://java.sun.com/jsf/facelets" 
+xmlns:o="http://omnifaces.org/ui" 
+xmlns:p="http://primefaces.org/ui">
+
+
+
+	<p:panel widgetVar="abonnementArticleForm#{variableNomWvIDUnique}">
+	
+	
+	
+		<p:panel  widgetVar="panelListeAbonnementArticle#{variableNomWvIDUnique}">
+			<!-- <p:panelGrid columns="2">
+				<p:outputLabel value="ID (externe)" />
+				<p:commandLink value="#{abonnementArticleController.selectedTaStripeProductDTO.idExterne}"
+					onclick="window.open('#{abonnementArticleController.genereUrlDashboardStripe('products',abonnementArticleController.selectedTaStripeProductDTO.idExterne,true)}')" >
+				</p:commandLink>
+				
+				<p:outputLabel value="Date création" />
+				<p:outputLabel value="" />
+				
+				<p:outputLabel value="Nom" />
+				<p:outputLabel value="#{abonnementArticleController.selectedTaStripeProductDTO.name}" />
+				
+				<p:commandButton value="Créer / Mettre à jour" actionListener="#{abonnementArticleController.actEnregistrer}" update="@widgetVar(panelListeAbonnementArticle#{variableNomWvIDUnique})" process="@this"/>
+			</p:panelGrid> -->
+		</p:panel>
+		
+		<p:panel header="Abonnement" widgetVar="wvPanelActiverAbonnementArticle">
+			<h:panelGrid columns="1" cellpadding="10">
+				<p:outputLabel value="Rendre cet article utilisable en abonnement : " />
+				<p:inputSwitch   value="#{abonnementArticleController.masterEntity.abonnement}" >
+									<p:ajax update="@this,
+									 @widgetVar(wvPanelActiverAbonnementArticle),
+									  @widgetVar(abonnementArticleForm#{variableNomWvIDUnique})" listener="#{abonnementArticleController.actActiverArticleAbonnement}" />
+				</p:inputSwitch >
+				
+			</h:panelGrid>
+			<p:outputLabel value="Rendez cet article utilisable en abonnement pour qu'il soit séléctionnable à la création d'un abonnement et de ces lignes. Cela fera aussi appraître les options et paramêtre dans cet écran." />
+			
+		</p:panel>
+		
+		<p:panel header="Coefficient multiplicateur" widgetVar="wvPanelCoefMultiAbonnementArticle" rendered="#{abonnementArticleController.masterEntity.abonnement}">
+			<h:panelGrid columns="2" cellpadding="10" >
+				<p:outputLabel value="Coefficient multiplicateur sur le prix : " />
+				<p:inputSwitch   value="#{abonnementArticleController.masterEntity.coefMultiplicateur}" >
+									<p:ajax update="@this, @widgetVar(wvPanelCoefMultiAbonnementArticle)" listener="#{abonnementArticleController.actModifieCoefMultiplicateur}"/>
+				</p:inputSwitch >
+				<p:outputLabel value="Libellé pour ce multiplicateur : " />
+				 <p:inputText value="#{abonnementArticleController.masterEntity.liblCoefMultiplicateur}" >
+				 	<p:ajax update="@this, @widgetVar(wvPanelCoefMultiAbonnementArticle)" listener="#{abonnementArticleController.actModifieLiblCoefMultiplicateur}"/>
+				 </p:inputText>
+				
+			</h:panelGrid>
+			<p:outputLabel value="Activez le coefficient multiplicateur si vous voulez autoriser le choix d'un coefficient multiplicateur pour cet article sur les lignes d'abonnements, qui changera le prix de l'abonnement (par exemple : X licenses) " />
+			
+		</p:panel>
+		<p:panel header="Délai de survie" widgetVar="wvPanelDelaiSurvieAbonnementArticle" rendered="#{abonnementArticleController.masterEntity.abonnement}">
+			<h:panelGrid columns="2" cellpadding="10">
+				<p:outputLabel value="Délai de survie (en jours) d'une échéance pour cet article : " />
+				<p:spinner  value="#{abonnementArticleController.masterEntity.delaiSurvie}" min="1" >
+									<p:ajax update="@this, @widgetVar(wvPanelDelaiSurvieAbonnementArticle)" listener="#{abonnementArticleController.actModifieDelaiSurvie}"/>
+								</p:spinner >
+				
+			</h:panelGrid>
+			<p:outputLabel value="Ce nombre de jour est la durée de vie d'une échéance suspendue pour non paiement. Au bout de ce délai, l'échéance est supprimée (sauf si délai de grâce ci-dessous), et la ligne d'abonnement correspondante est annulée. " />
+			
+		</p:panel>
+		
+		<p:panel header="Délai de grâce" widgetVar="wvPanelDelaiGraceAbonnementArticle" rendered="#{abonnementArticleController.masterEntity.abonnement}">
+			<h:panelGrid columns="2" cellpadding="10">
+				<p:outputLabel value="Délai de grâce (en jours) d'une échéance pour cet article : " />
+				<p:spinner  value="#{abonnementArticleController.masterEntity.delaiGrace}" min="1" >
+									<p:ajax update="@this, @widgetVar(wvPanelDelaiGraceAbonnementArticle)" listener="#{abonnementArticleController.actModifieDelaiGrace}"/>
+								</p:spinner >
+				
+			</h:panelGrid>
+			<p:outputLabel value="Ce nombre de jour est sert à conserver les échéances même après que leur délai de survie soit passé. Au bout de ce délai, l'échéance est supprimée. " />
+			
+		</p:panel>
+		
+		<p:panel header="Jours de relances" widgetVar="wvPanelJourRelanceAbonnementArticle" rendered="#{abonnementArticleController.masterEntity.abonnement}">
+		<h:panelGrid columns="1" cellpadding="10">
+			<p:outputLabel value="Vous pouvez définir des relances automatiques (envoi de mail) pour les lignes d'abonnement comprenant cet article. Ces relances sont en nombre de jour par rapport à l'échéance.
+			 Pour définir une relance après la date d'échéance, par exemple 10 jours après la date d'échéance, il suffit de définir un nombre de jour négatif, donc -10 dans notre exemple." />
+			<p:commandButton value="Insérer" actionListener="#{abonnementArticleController.actInsererJourRelance}" update="@widgetVar(wvPanelJourRelanceAbonnementArticle)" process="@this"/>
+			<!-- <p:commandButton value="Modifier" actionListener="#{abonnementArticleController.actModifierJourRelance}" update="@parent" process="@this"/> -->
+		</h:panelGrid>
+			
+			<p:dataTable value="#{abonnementArticleController.listeJourRelance}" var="p"
+				rowKey="#{p.idJourRelance}" selectionMode="single" selection="#{abonnementArticleController.selectedTaJourRelanceDTO}" emptyMessage="Aucun Nombre de jour de relance enregistré">
+				
+				<p:ajax event="rowSelect" delay="#{msg.datatable_rowselect_delay}"
+				 listener="#{abonnementArticleController.onRowSelectJourRelance}"
+				  update="@parent"/>
+				   
+				<p:column headerText="Nombre de jour pour relance" styleClass="center" sortBy="#{p.nbJour}" >
+					<p:outputLabel value="#{p.nbJour}" />
+				</p:column>
+
+			</p:dataTable>
+			
+			<p:panelGrid columns="2" rendered="#{abonnementArticleController.newTaJourRelanceDTO != null and abonnementArticleController.selectedTaJourRelanceDTO != null}">
+
+				
+				
+				<p:outputLabel value="Nombre de jour pour relance :" />
+				<p:inputNumber  value="#{abonnementArticleController.selectedTaJourRelanceDTO.nbJour}" minValue="-30" maxValue="30"  decimalPlaces="0" disabled="#{!abonnementArticleController.modeEcran.dataSetEnModif()}">
+					<p:ajax event="blur"/>
+				</p:inputNumber >
+				
+
+				
+				
+				<p:commandButton value="Créer / Mettre à jour" actionListener="#{abonnementArticleController.actEnregistrerJourRelance}" process="@this" update="@parent:@parent" disabled="#{!abonnementArticleController.modeEcran.dataSetEnModif()}"/>
+				<p:commandButton value="Supprimer" actionListener="#{abonnementArticleController.actSupprimerJourRelance}" process="@this" update="@parent:@parent" disabled="#{abonnementArticleController.modeEcran.dataSetEnModif()}">
+					<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer cette relance ?" icon="ui-icon-alert" />
+				</p:commandButton>
+			</p:panelGrid>
+			
+		</p:panel>
+		
+		<p:panel header="Plan" widgetVar="panelListePlanAbonnementArticle#{variableNomWvIDUnique}" rendered="#{abonnementArticleController.masterEntity.abonnement}">
+			<p:commandButton value="Insérer" actionListener="#{abonnementArticleController.actInsererPlan}" update="@parent" process="@this"/>
+			<p:commandButton value="Modifier" actionListener="#{abonnementArticleController.actModifierPlan}" update="@parent" process="@this"/>
+			<p:dataTable value="#{abonnementArticleController.listePlan}" var="p"
+				rowKey="#{p.id}" selectionMode="single" selection="#{abonnementArticleController.selectedTaStripePlanDTO}">
+				
+				<p:ajax event="rowSelect" delay="#{msg.datatable_rowselect_delay}"
+				 listener="#{abonnementArticleController.onRowSelectPlan}"
+				  update="@parent,@widgetVar(panelListeAbonnementActifArticle#{variableNomWvIDUnique}), @widgetVar(wvSelectOneMenuTaFrequencePlan)"/>
+				   
+				<!-- <p:column headerText="ID (externe)" sortBy="#{p.idExterne}" filterBy="#{p.idExterne}"> 
+				</p:column> -->
+				<p:column headerText="Nom" styleClass="center" sortBy="#{p.nickname}" filterBy="#{p.nickname}">
+					<p:outputLabel value="#{p.nickname}" />
+				</p:column>
+				<p:column headerText="Montant HT" styleClass="center" sortBy="#{p.amount}" filterBy="#{p.amount}">
+					<h:outputText value="#{p.amount}">	
+						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+					</h:outputText>
+				</p:column>
+				<p:column headerText="Nombre de mois" styleClass="center" sortBy="#{p.nbMois}" filterBy="#{p.nbMois}">
+					<p:outputLabel value="#{p.nbMois}" />
+				</p:column>
+				
+				<p:column headerText="Actif" styleClass="center" sortBy="#{p.active}" filterBy="#{p.active}">
+					<p:selectBooleanCheckbox value="#{p.active}" disabled="true"/>
+				</p:column>
+				
+				<!-- <p:column headerText="Intervale" styleClass="center" sortBy="#{p.liblFrequence}" filterBy="#{p.liblFrequence}">
+					<p:outputLabel value="#{p.liblFrequence}" />
+				</p:column> -->
+			</p:dataTable>
+			
+			
+			
+			<p:panelGrid columns="2" rendered="#{abonnementArticleController.newTaStripePlanDTO != null and abonnementArticleController.selectedTaStripePlanDTO != null}">
+				<!-- <p:outputLabel value="ID (externe)" />
+				<p:commandLink value="#{abonnementArticleController.selectedTaStripePlanDTO.idExterne}" 
+					onclick="window.open('#{abonnementArticleController.genereUrlDashboardStripe('plans',p.idExterne,true)}')">
+				</p:commandLink> -->
+				
+				<p:outputLabel value="Date création" />
+				<p:outputLabel value="" />
+				
+				<p:outputLabel value="Nom" />
+				<p:inputText value="#{abonnementArticleController.selectedTaStripePlanDTO.nickname}"  disabled="#{!abonnementArticleController.modeEcran.dataSetEnModif()}">
+					<p:ajax event="blur"/>
+				</p:inputText>
+				
+				<!-- <p:outputLabel value="Intervale" />
+				<p:selectOneMenu value="#{abonnementArticleController.selectedTaFrequenceDTO}" widgetVar="wvSelectOneMenuTaFrequencePlan" converter="entityConverter" style="width:125px" disabled="#{!abonnementArticleController.modeEcran.dataSetEnModif()}">
+		            <f:selectItems value="#{abonnementArticleController.listeFrequenceDTO}" itemLabel="#{frequence.liblFrequence}" var="frequence" itemValue="#{frequence}"/>
+		            <p:ajax event="blur"/>
+		        </p:selectOneMenu> -->
+<!-- 				//day, week, month or year -->
+				
+				<p:outputLabel value="Montant HT" />
+				<p:inputText value="#{abonnementArticleController.selectedTaStripePlanDTO.amount}" disabled="#{!abonnementArticleController.modeEcran.dataSetEnModif()}">
+					<p:ajax event="blur"/>
+				</p:inputText>
+				
+				<p:outputLabel value="Pour le nombre de mois :" />
+				<p:inputNumber  value="#{abonnementArticleController.selectedTaStripePlanDTO.nbMois}" minValue="1"  decimalPlaces="0" disabled="#{!abonnementArticleController.modeEcran.dataSetEnModif()}">
+					<p:ajax event="blur"/>
+				</p:inputNumber >
+				
+				<p:outputLabel value="Période essai (nb jours)" />
+				<p:inputText value="#{abonnementArticleController.selectedTaStripePlanDTO.trialPrediodDays}" disabled="true">
+					<p:ajax event="blur"/>
+				</p:inputText>
+				
+<!-- 				<p:outputLabel value="Type" /> -->
+<!-- 				<p:outputLabel value="" /> -->
+				
+				
+				<p:commandButton value="Créer / Mettre à jour" actionListener="#{abonnementArticleController.actEnregistrerPlan}" process="@this" update="@parent:@parent" disabled="#{!abonnementArticleController.modeEcran.dataSetEnModif()}"/>
+				<p:commandButton value="Supprimer" actionListener="#{abonnementArticleController.actSupprimerPlan}" process="@this" update="@parent:@parent" disabled="#{abonnementArticleController.modeEcran.dataSetEnModif()}">
+					<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer ce plan ?" icon="ui-icon-alert" />
+				</p:commandButton>
+			</p:panelGrid>
+
+<!-- 			<p:panel header="Abonnement actif sur ce plan" widgetVar="panelListeAbonnementActifArticle#{variableNomWvIDUnique}" > -->
+<!-- 				<p:dataTable value="#{abonnementArticleController.listeSubscription}" var="p" -->
+<!-- 					rowKey="#{p.id}" selectionMode="single" selection="#{abonnementArticleController.selectedTaStripeSubscriptionDTO}"> -->
+					
+
+					   
+<!-- 					<p:column headerText="ID" styleClass="center" sortBy="#{p.id}" filterBy="#{p.id}">  -->
+<!-- 						<p:outputLabel value="#{p.id}" /> -->
+<!-- 					</p:column> -->
+					
+<!-- 					<p:column headerText="Code tiers" styleClass="center" sortBy="#{p.codeTiers}" filterBy="#{p.codeTiers}">  -->
+<!-- 						<p:commandLink value="#{p.codeTiers}" -->
+<!-- 							action="#{ouvertureDocumentBean.detailTiers(ouvertureDocumentBean.recupCodetiers(p.codeTiers))}" update=":form:tabView" -->
+<!-- 							oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');"> -->
+<!-- 						</p:commandLink> -->
+<!-- 					</p:column> -->
+					
+<!-- 					<p:column headerText="Code document" styleClass="center" sortBy="#{p.codeDocument}" filterBy="#{p.codeDocument}">  -->
+<!-- 						<p:outputLabel value="#{p.codeDocument}" /> -->
+<!-- 					</p:column>		 -->
+								
+<!-- 					<p:column headerText="Status" styleClass="center" sortBy="#{p.status}" filterBy="#{p.status}"> -->
+<!-- 						<p:outputLabel value="#{p.status}" /> -->
+<!-- 					</p:column> -->
+				
+<!-- 					<p:column headerText="Début" styleClass="center" sortBy="#{p.dateDebut}" filterBy="#{p.dateDebut}"> -->
+<!-- 						<h:outputText value="#{p.dateDebut}"> -->
+<!-- 							<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/> -->
+<!-- 						</h:outputText> -->
+<!-- 					</p:column> -->
+					
+<!-- 					<p:column headerText="Fin" styleClass="center" sortBy="#{p.dateFin}" filterBy="#{p.dateFin}"> -->
+<!-- 						<h:outputText value="#{p.dateFin}"> -->
+<!-- 							<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/> -->
+<!-- 						</h:outputText> -->
+<!-- 					</p:column> -->
+					
+<!-- 					<p:column headerText="Annulation" styleClass="center" sortBy="#{p.dateAnnulation}" filterBy="#{p.dateAnnulation}"> -->
+<!-- 						<h:outputText value="#{p.dateAnnulation}"> -->
+<!-- 							<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/> -->
+<!-- 						</h:outputText> -->
+<!-- 					</p:column> -->
+<!-- 				</p:dataTable> -->
+<!-- 			</p:panel> -->
+		</p:panel>
+
+	</p:panel>
+
+		<p:dialog header="Nouvelle référence" widgetVar="nouvelleabonnementArticle" resizable="false" rendered="false">
+			<h:form id="idAbonnementArticleForm">
+				<p:panelGrid id="display" columns="2" cellpadding="4"
+					style="margin:0 auto;">
+					<f:validateBean disabled="true">
+
+									<p:outputLabel value="Code article fournisseur" />
+									<p:inputText value="#{abonnementArticleController.selectedTaAbonnementArticleDTO.codeArticleFournisseur}" validator="#{abonnementArticleController.validateCompteBanque}"
+										disabled="#{abonnementArticleController.editable()}">
+										<f:attribute name="nomChamp" value="#{const.C_CODE_ARTICLE}" />
+										<p:ajax event="blur" update="@this,@widgetVar(wvMenuabonnementArticle#{variableNomWvIDUnique})" />
+									</p:inputText>
+										<p:outputLabel value="Code barre fournisseur" />
+										<p:inputText value="#{abonnementArticleController.selectedTaAbonnementArticleDTO.codeBarreFournisseur}" validator="#{abonnementArticleController.validateCompteBanque}"
+											disabled="#{abonnementArticleController.editable()}">
+											<f:attribute name="nomChamp" value="#{const.C_CODE_BARRE_ARTICLE}" />
+											<p:ajax event="blur" update="@this,@widgetVar(wvMenuabonnementArticle#{variableNomWvIDUnique})" />
+										</p:inputText>									
+										<p:outputLabel value="Descriptif" />
+										<p:inputTextarea value="#{abonnementArticleController.selectedTaAbonnementArticleDTO.descriptif}" validator="#{abonnementArticleController.validateCompteBanque}"
+											disabled="#{abonnementArticleController.editable()}" styleClass="large-input-100">
+											<f:attribute name="nomChamp" value="#{const.C_DESCRIPTION}" />
+											<p:ajax event="blur" update="@this,@widgetVar(wvMenuabonnementArticle#{variableNomWvIDUnique})" />
+										</p:inputTextarea>	
+
+
+					</f:validateBean>
+
+					<f:facet name="footer">
+						<p:commandButton value="Enregistrer" styleClass="icon-save icon" actionListener="#{abonnementArticleController.actEnregistrer}"
+							update="@this"
+							oncomplete="handleSubmitRequest(xhr, status, args, 'controleDlg','newControleForm'); " />
+					</f:facet>
+				</p:panelGrid>
+			</h:form>
+		</p:dialog>
+		
+</ui:composition>

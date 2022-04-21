@@ -1,0 +1,42 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:p="http://primefaces.org/ui">
+
+	<h:form id="formLeft" prependId="true">
+		<!-- false pour le selector du CSS -->
+
+		<p:growl id="messages" />
+
+		<!-- 		<p:tabView id="tabView" value="#{leftBean.tabs.onglets}" var="onglet"> -->
+		<p:tabView id="tabViewLeft" cache="false" scrollable="true" binding="#{tabViewsBean.tabviewLeft}" widgetVar="widgetVarTabViewLeft">
+
+			<p:ajax event="tabChange" listener="#{leftBean.onTabChange}"
+				update=":formLeft:messages" />
+			<p:ajax event="tabClose" listener="#{leftBean.onTabClose}"
+				update=":formLeft:messages" />
+
+			<c:forEach items="#{leftBean.tabs.onglets}" var="onglet"
+				varStatus="loop">
+				<p:tab title="#{onglet.titre}" closable="true" titleStyleClass="#{onglet.style}">
+					<f:subview id="tab_#{loop.index}">
+						<!-- 						<p:graphicImage library="images" name="solstyce.ico" /> -->
+						<!-- 						<h:outputText value="#{onglet.typeOnglet}" /> -->
+						<!-- 						<br /> -->
+						<ui:include src="#{onglet.template}" />
+					</f:subview>
+				</p:tab>
+			</c:forEach>
+
+			<!-- 								<p:tab title="Onglet - #{onglet.titre}" closable="true"> -->
+			<!-- 									<p:graphicImage library="images" name="solstyce.ico" /> -->
+			<!-- 									<h:outputText value="#{onglet.typeOnglet}" /> -->
+			<!-- 									<ui:include src="#{onglet.template}" /> -->
+			<!-- 								</p:tab> -->
+
+		</p:tabView>
+	</h:form>
+
+</ui:composition>

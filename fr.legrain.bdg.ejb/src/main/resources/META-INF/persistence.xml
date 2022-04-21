@@ -1,0 +1,451 @@
+<!-- <persistence xmlns="http://java.sun.com/xml/ns/persistence" -->
+<!--              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" -->
+<!--              xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd" -->
+<!--              version="2.0"> -->
+
+              
+<persistence xmlns="http://xmlns.jcp.org/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence
+             http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd"
+             version="2.1">
+
+	<persistence-unit name="bdg" transaction-type="JTA">
+<!-- 		<jta-data-source>java:/BDGFirebirdDS</jta-data-source> -->
+		<jta-data-source>java:/BDGPostgresDS</jta-data-source>
+
+		<!-- tiers -->
+		<class>fr.legrain.tiers.model.TaTCivilite</class>
+		<class>fr.legrain.tiers.model.TaTTiers</class>
+		<class>fr.legrain.tiers.model.TaTTel</class>
+		<class>fr.legrain.tiers.model.TaTAdr</class>
+		<class>fr.legrain.tiers.model.TaTEntite</class>
+		<class>fr.legrain.tiers.model.TaTBanque</class>
+		<class>fr.legrain.tiers.model.TaTWeb</class>
+		<class>fr.legrain.tiers.model.TaTTarif</class>
+		<class>fr.legrain.tiers.model.TaTEmail</class>
+		<class>fr.legrain.tiers.model.TaTLiens</class>
+		<class>fr.legrain.tiers.model.TaTNoteTiers</class>
+		<class>fr.legrain.tiers.model.TaFamilleTiers</class>
+		<class>fr.legrain.tiers.model.TaDocumentTiers</class>
+		<class>fr.legrain.tiers.model.TaCPaiement</class>
+		<class>fr.legrain.tiers.model.TaTCPaiement</class>
+		<class>fr.legrain.tiers.model.TaAdresse</class>
+		<class>fr.legrain.tiers.model.TaEmail</class>
+		<class>fr.legrain.tiers.model.TaWeb</class>
+		<class>fr.legrain.tiers.model.TaTelephone</class>
+		<class>fr.legrain.tiers.model.TaEntreprise</class>
+		<class>fr.legrain.tiers.model.TaParamCreeDocTiers</class>
+		<class>fr.legrain.tiers.model.TaLiens</class>
+		<class>fr.legrain.tiers.model.TaCompteBanque</class>
+		<class>fr.legrain.tiers.model.TaMandatPrelevement</class>
+		<class>fr.legrain.tiers.model.TaCarteBancaire</class>
+		<class>fr.legrain.tiers.model.TaNoteTiers</class>
+		<class>fr.legrain.tiers.model.TaInfoJuridique</class>
+		<class>fr.legrain.tiers.model.TaTTvaDoc</class>
+		<class>fr.legrain.tiers.model.TaCompl</class>
+		<class>fr.legrain.tiers.model.TaCommentaire</class>
+		<class>fr.legrain.tiers.model.TaTiers</class>
+		<class>fr.legrain.tiers.model.TaRPrix</class>
+		<class>fr.legrain.tiers.model.TaRPrixTiers</class>
+		<class>fr.legrain.tiers.model.TaEspaceClient</class>
+			
+		<class>fr.legrain.tiers.model.TaParamEspaceClient</class>
+		<class>fr.legrain.tiers.model.TaTerminalMobile</class>					
+		
+		<!-- dossier -->
+		<class>fr.legrain.dossier.model.TaInfoEntreprise</class>
+		
+		<!-- article -->
+		<class>fr.legrain.article.model.TaTTva</class>
+		<class>fr.legrain.article.model.TaTva</class>
+		<class>fr.legrain.article.model.TaUnite</class>
+		<class>fr.legrain.article.model.TaCoefficientUnite</class>
+		<class>fr.legrain.article.model.TaCatalogueWeb</class>
+		<class>fr.legrain.article.model.TaCategorieArticle</class>
+		<class>fr.legrain.article.model.TaConditionnementArticle</class>
+		<class>fr.legrain.article.model.TaFamille</class>
+		<class>fr.legrain.article.model.TaFamilleUnite</class>
+		<class>fr.legrain.article.model.TaImageArticle</class>
+		<class>fr.legrain.article.model.TaLabelArticle</class>
+		<class>fr.legrain.article.model.TaNoteArticle</class>
+		<class>fr.legrain.article.model.TaPrix</class>
+		<class>fr.legrain.article.model.TaRefArticleFournisseur</class>	
+
+		<class>fr.legrain.article.model.TaRapportUnite</class>
+		<class>fr.legrain.article.model.TaRefPrix</class>
+		<class>fr.legrain.article.model.TaRTArticle</class>
+		<class>fr.legrain.article.model.TaRTaTitreTransport</class>
+		<class>fr.legrain.article.model.TaTArticle</class>
+		<class>fr.legrain.article.model.TaTConditionnement</class>
+		<class>fr.legrain.article.model.TaTNoteArticle</class>
+		<class>fr.legrain.article.model.TaArticle</class>
+		<class>fr.legrain.article.model.TaArticleCompose</class>
+		<class>fr.legrain.article.model.TaComportementArticleCompose</class>
+		<class>fr.legrain.article.model.TaArticleViti</class>
+		<class>fr.legrain.article.model.TaRTSupport</class>
+		<class>fr.legrain.article.model.TaTAbonnement</class>
+		<class>fr.legrain.article.model.TaTSupport</class>
+		<class>fr.legrain.article.model.TaRecette</class>
+		<class>fr.legrain.article.model.TaLRecette</class>
+		<class>fr.legrain.article.model.TaTFabrication</class>
+		<class>fr.legrain.article.model.TaTReception</class>
+		<class>fr.legrain.article.model.TaMarqueArticle</class>
+		<class>fr.legrain.article.model.TaParamEan128</class>		
+		<!-- Solstyce -->
+<!-- 		<class>fr.legrain.article.model.TaLotArticle</class> -->
+		<class>fr.legrain.article.model.TaCodeBarre</class>
+		<class>fr.legrain.article.model.TaLot</class>
+<!-- 		<class>fr.legrain.article.model.TaMatierePremiere</class> -->
+<!-- 		<class>fr.legrain.article.model.TaProduit</class> -->
+		<class>fr.legrain.article.model.TaEntrepot</class>
+		<class>fr.legrain.article.model.TaFabrication</class>
+		<class>fr.legrain.article.model.TaModeleFabrication</class>
+		<class>fr.legrain.article.model.TaTypeCodeBarre</class>
+		<class>fr.legrain.article.model.TaTypeControle</class>
+		<class>fr.legrain.article.model.TaTypeMouvement</class>
+		
+		<class>fr.legrain.article.model.TaTransporteur</class>
+		<class>fr.legrain.article.model.TaTTransport</class>
+		
+		
+		<!-- gestion capsules -->
+		<class>fr.legrain.article.titretransport.model.TaEtatStockCapsules</class>
+		<class>fr.legrain.article.titretransport.model.TaReportStockCapsules</class>
+		<class>fr.legrain.article.titretransport.model.TaStockCapsules</class>
+		<class>fr.legrain.article.titretransport.model.TaTitreTransport</class>
+		
+		<!-- requetes -->
+		<class>fr.legrain.requetes.model.TaLigneRequete</class>
+		<class>fr.legrain.requetes.model.TaRequete</class>
+		
+		<!-- document -->		
+		<class>fr.legrain.document.model.TaComDoc</class>
+		<class>fr.legrain.document.model.TaParamPublipostage</class>
+		<class>fr.legrain.document.model.TaTDoc</class>
+		<class>fr.legrain.document.model.TaTPaiement</class>
+		<class>fr.legrain.document.model.TaTMoyenPaiement</class>
+		
+		<!-- Ajouté par Dima - Début -->
+		<!-- Ajouté par Dima -  Fin  -->
+		
+		<class>fr.legrain.document.model.TaAcompte</class>
+		<class>fr.legrain.document.model.TaApporteur</class>
+		<class>fr.legrain.document.model.TaAvisEcheance</class>
+		<class>fr.legrain.document.model.TaAvoir</class>
+		<class>fr.legrain.document.model.TaBoncde</class>
+		<class>fr.legrain.document.model.TaBoncdeAchat</class>
+		<class>fr.legrain.document.model.TaBonliv</class>
+		<class>fr.legrain.document.model.TaDevis</class>
+		<class>fr.legrain.document.model.TaBonReception</class>
+		<class>fr.legrain.document.model.TaEtat</class>
+		<class>fr.legrain.document.model.TaFacture</class>
+		<class>fr.legrain.document.model.TaTicketDeCaisse</class>
+		<class>fr.legrain.document.model.TaInfosAcompte</class>
+		<class>fr.legrain.document.model.TaInfosApporteur</class>
+		<class>fr.legrain.document.model.TaInfosAvisEcheance</class>
+		<class>fr.legrain.document.model.TaInfosAvoir</class>
+		<class>fr.legrain.document.model.TaInfosBoncde</class>
+		<class>fr.legrain.document.model.TaInfosBoncdeAchat</class>		
+		<class>fr.legrain.document.model.TaInfosBonliv</class>
+		<class>fr.legrain.document.model.TaInfosDevis</class>
+		<class>fr.legrain.document.model.TaInfosBonReception</class>
+		<class>fr.legrain.article.model.TaInfosFabrication</class>
+		<class>fr.legrain.article.model.TaInfosModeleFabrication</class>
+		<class>fr.legrain.document.model.TaInfosFacture</class>
+		<class>fr.legrain.document.model.TaInfosTicketDeCaisse</class>
+		<class>fr.legrain.document.model.TaInfosPrelevement</class>
+		<class>fr.legrain.document.model.TaInfosProforma</class>
+		<class>fr.legrain.document.model.TaLAcompte</class>
+		<class>fr.legrain.document.model.TaLApporteur</class>
+		<class>fr.legrain.document.model.TaLAvisEcheance</class>
+		<class>fr.legrain.document.model.TaLAvoir</class>
+		<class>fr.legrain.document.model.TaLBoncde</class>
+		<class>fr.legrain.document.model.TaLBoncdeAchat</class>
+		<class>fr.legrain.document.model.TaLBonliv</class>
+		<class>fr.legrain.document.model.TaLDevis</class>
+		<class>fr.legrain.document.model.TaLBonReception</class>
+		
+		<class>fr.legrain.document.model.TaGroupePreparation</class>
+		<class>fr.legrain.document.model.TaPreparation</class>
+		<class>fr.legrain.document.model.TaLPreparation</class>
+		<class>fr.legrain.document.model.TaInfosPreparation</class>
+		<class>fr.legrain.document.model.TaFlash</class>
+		<class>fr.legrain.document.model.TaLFlash</class>
+		
+		<class>fr.legrain.document.model.TaPanier</class>
+		<class>fr.legrain.document.model.TaLPanier</class>
+		<class>fr.legrain.document.model.TaInfosPanier</class>		
+		
+<!-- 		<class>fr.legrain.article.model.TaLFabrication</class> -->
+		<class>fr.legrain.article.model.TaLFabricationMP</class>
+		<class>fr.legrain.article.model.TaLFabricationPF</class>
+<!-- 		<class>fr.legrain.article.model.TaLModeleFabrication</class> -->
+		<class>fr.legrain.article.model.TaLModeleFabricationMP</class>
+		<class>fr.legrain.article.model.TaLModeleFabricationPF</class>
+		<class>fr.legrain.document.model.TaLEcheance</class>
+		<class>fr.legrain.document.model.TaLFacture</class>
+		<class>fr.legrain.document.model.TaLTicketDeCaisse</class>
+		<class>fr.legrain.document.model.TaLPrelevement</class>
+		<class>fr.legrain.document.model.TaLProforma</class>
+		<class>fr.legrain.document.model.TaLRelance</class>
+		<class>fr.legrain.document.model.TaLRemise</class>
+		<class>fr.legrain.document.model.TaPrelevement</class>
+		<class>fr.legrain.document.model.TaProforma</class>
+		<class>fr.legrain.document.model.TaRAcompte</class>
+		<class>fr.legrain.document.model.TaRAvoir</class>
+		<class>fr.legrain.document.model.TaRDocument</class>
+		<class>fr.legrain.document.model.TaReglement</class>
+<!-- 		<class>fr.legrain.document.model.TaReglementTraca</class> -->
+		<class>fr.legrain.document.model.TaRelance</class>
+		<class>fr.legrain.document.model.TaRemise</class>
+		<class>fr.legrain.document.model.TaRReglement</class>
+		<class>fr.legrain.document.model.TaRReglementLiaison</class>
+		
+		<class>fr.legrain.document.model.TaTLigne</class>
+		<class>fr.legrain.document.model.TaTRelance</class>
+		<class>fr.legrain.document.model.TaEndToEnd</class>
+		<class>fr.legrain.document.model.TaMandat</class>
+		<class>fr.legrain.document.model.TaDocumentEditable</class>
+		<class>fr.legrain.document.model.TaMiseADisposition</class>
+		<class>fr.legrain.document.model.TaLigneALigne</class>
+		<class>fr.legrain.document.model.TaLigneALigneEcheance</class>
+		<class>fr.legrain.document.model.TaTEtat</class>
+		
+		<class>fr.legrain.document.model.TaREtat</class>
+		<class>fr.legrain.document.model.TaHistREtat</class>
+		<class>fr.legrain.document.model.TaREtatLigneDocument</class>
+		<class>fr.legrain.document.model.TaHistREtatLigneDocument</class>
+		
+		<class>fr.legrain.stock.model.TaGrMouvStockPrev</class>
+		<class>fr.legrain.stock.model.TaMouvementStockPrev</class>
+		
+		<!-- abonnement -->
+		<class>fr.legrain.abonnement.model.TaAbonnementOld</class>
+		<class>fr.legrain.abonnement.model.TaFrequence</class>
+		<class>fr.legrain.abonnement.model.TaJourRelance</class>
+		
+		<class>fr.legrain.supportAbonnement.model.TaLicenceLogiciel</class>
+		<class>fr.legrain.supportAbonnement.model.TaOptionAbon</class>
+		<class>fr.legrain.supportAbonnement.model.TaROptionAbon</class>
+		<class>fr.legrain.supportAbonnement.model.TaSupportAbon</class>
+		
+		<class>fr.legrain.document.model.TaAbonnement</class>
+		<class>fr.legrain.document.model.TaLAbonnement</class>
+		<class>fr.legrain.document.model.TaInfosAbonnement</class>
+		
+		<!-- controle -->
+		<class>fr.legrain.controle.model.TaControle</class>
+		<class>fr.legrain.controle.model.TaGenCode</class>
+		<class>fr.legrain.controle.model.TaVerrouCodeGenere</class>
+		<class>fr.legrain.controle.model.TaVerrouModification</class>
+		
+		<class>fr.legrain.droits.model.TaAuthURL</class>
+		<class>fr.legrain.droits.model.TaAuthView</class>
+		<class>fr.legrain.droits.model.TaClientLegrain</class>
+		<class>fr.legrain.droits.model.TaEntrepriseClient</class>
+		<class>fr.legrain.droits.model.TaGroupeEntreprise</class>
+		<class>fr.legrain.droits.model.TaRole</class>
+		<class>fr.legrain.droits.model.TaRRoleUtilisateur</class>
+		<class>fr.legrain.droits.model.TaUtilisateur</class>
+		<class>fr.legrain.droits.model.TaUtilisateurWebService</class>
+		<class>fr.legrain.droits.model.TaOAuthTokenClient</class>
+		<class>fr.legrain.droits.model.TaOAuthServiceClient</class>
+		<class>fr.legrain.droits.model.TaOAuthScopeClient</class>
+		
+		<!-- stocks -->
+		<class>fr.legrain.stock.model.TaMouvementStock</class>
+		<class>fr.legrain.stock.model.TaGrMouvStock</class>
+		<class>fr.legrain.stock.model.TaEtatStock</class>
+		<class>fr.legrain.stock.model.TaInventaire</class>
+		<class>fr.legrain.stock.model.TaLInventaire</class>
+		
+		<class>fr.legrain.dossier.model.TaAutorisationsDossier</class>
+		<class>fr.legrain.dossier.model.TaPreferences</class>
+		<class>fr.legrain.dossier.model.TaCategoriePreference</class>
+		<class>fr.legrain.dossier.model.TaGroupePreference</class>
+
+		<!-- général -->
+		<class>fr.legrain.general.model.TaFichier</class>
+		<class>fr.legrain.general.model.TaLogDossier</class>
+		<class>fr.legrain.general.model.TaLiaisonDossierMaitre</class>	
+		
+		<class>fr.legrain.conformite.model.TaBareme</class>
+		<class>fr.legrain.conformite.model.TaConformite</class>
+		<class>fr.legrain.conformite.model.TaGroupe</class>
+		<class>fr.legrain.conformite.model.TaModeleGroupe</class>
+		<class>fr.legrain.conformite.model.TaListeConformite</class>
+		<class>fr.legrain.conformite.model.TaModeleBareme</class>
+		<class>fr.legrain.conformite.model.TaModeleConformite</class>
+		<class>fr.legrain.conformite.model.TaResultatConformite</class>
+		<class>fr.legrain.conformite.model.TaResultatCorrection</class>
+		<class>fr.legrain.conformite.model.TaTypeConformite</class>
+		<class>fr.legrain.conformite.model.TaRGroupeModeleConformite</class>
+		<class>fr.legrain.conformite.model.TaStatusConformite</class>
+		<class>fr.legrain.controle.model.TaGenCodeEx</class>
+		
+		<class>fr.legrain.dossierIntelligent.model.TaTypeDonnee</class>
+		<class>fr.legrain.dossierIntelligent.model.TaParamDossierIntel</class>
+		<class>fr.legrain.dossierIntelligent.model.TaRParamDossierIntel</class>
+		
+		<!-- gestion des taches / evenements -->
+		<class>fr.legrain.tache.model.TaAgenda</class>
+		<class>fr.legrain.tache.model.TaCategorieEvenement</class>
+		<class>fr.legrain.tache.model.TaEvenement</class>
+		<class>fr.legrain.tache.model.TaNotification</class>
+		<class>fr.legrain.tache.model.TaRDocumentEvenement</class>
+		<class>fr.legrain.tache.model.TaRecurrenceEvenement</class>
+		<class>fr.legrain.tache.model.TaTypeEvenement</class>
+		<class>fr.legrain.tache.model.TaTypeNotification</class>
+		
+		<!-- service web externe -->
+		<class>fr.legrain.servicewebexterne.model.TaCompteServiceWebExterne</class>
+		<class>fr.legrain.servicewebexterne.model.TaServiceWebExterne</class>
+		<class>fr.legrain.servicewebexterne.model.TaTAuthentification</class>
+		<class>fr.legrain.servicewebexterne.model.TaTServiceWebExterne</class>
+		<class>fr.legrain.servicewebexterne.model.TaLigneShippingBo</class>
+		<class>fr.legrain.servicewebexterne.model.TaLigneServiceWebExterne</class>
+		<class>fr.legrain.servicewebexterne.model.TaLiaisonServiceExterne</class>
+		<class>fr.legrain.servicewebexterne.model.TaSynchroServiceExterne</class>
+		
+		<!-- log paiement internet -->
+		<class>fr.legrain.paiement.model.TaLogPaiementInternet</class>
+		
+		<!-- log Email -->
+		<class>fr.legrain.email.model.TaMessageEmail</class>
+		<class>fr.legrain.email.model.TaEtiquetteEmail</class>
+		<class>fr.legrain.email.model.TaPieceJointeEmail</class>
+		<class>fr.legrain.email.model.TaContactMessageEmail</class>
+		
+		<!-- log SMS -->
+		<class>fr.legrain.sms.model.TaMessageSMS</class>
+		<class>fr.legrain.sms.model.TaContactMessageSMS</class>
+		
+		<!-- log Message Push -->
+		<class>fr.legrain.push.model.TaMessagePush</class>
+		<class>fr.legrain.push.model.TaContactMessagePush</class>
+		
+		<!-- Edition -->
+		<class>fr.legrain.edition.model.TaEdition</class>
+		<class>fr.legrain.edition.model.TaTEdition</class>
+		<class>fr.legrain.edition.model.TaActionInterne</class>
+		<class>fr.legrain.edition.model.TaActionEdition</class>
+		
+		<!-- Caisse -->
+		<class>fr.legrain.caisse.model.TaDepotRetraitCaisse</class>
+		<class>fr.legrain.caisse.model.TaFondDeCaisse</class>
+		<class>fr.legrain.caisse.model.TaLSessionCaisse</class>
+		<class>fr.legrain.caisse.model.TaSessionCaisse</class>
+		<class>fr.legrain.caisse.model.TaTDepotRetraitCaisse</class>
+		<class>fr.legrain.caisse.model.TaTFondDeCaisse</class>
+		<class>fr.legrain.caisse.model.TaTLSessionCaisse</class>
+		
+		<!-- Abonnement Stripe -->
+<!-- 		<class>fr.legrain.abonnement.stripe.model.TaDevise</class> -->
+		<class>fr.legrain.abonnement.stripe.model.TaStripeAccount</class>
+		<class>fr.legrain.abonnement.stripe.model.TaStripeBankAccount</class>
+		<class>fr.legrain.abonnement.stripe.model.TaStripeCard</class>
+		<class>fr.legrain.abonnement.stripe.model.TaStripeCharge</class>
+		<class>fr.legrain.abonnement.stripe.model.TaStripePaymentIntent</class>
+		<class>fr.legrain.abonnement.stripe.model.TaStripeRefund</class>
+		<class>fr.legrain.abonnement.stripe.model.TaStripeCoupon</class>
+		<class>fr.legrain.abonnement.stripe.model.TaStripeCustomer</class>
+		<class>fr.legrain.abonnement.stripe.model.TaStripeDiscount</class>
+		<class>fr.legrain.abonnement.stripe.model.TaStripeInvoice</class>
+		<class>fr.legrain.abonnement.stripe.model.TaStripeInvoiceItem</class>
+		<class>fr.legrain.abonnement.stripe.model.TaStripePlan</class>
+		<class>fr.legrain.abonnement.stripe.model.TaStripeProduct</class>
+		<class>fr.legrain.abonnement.stripe.model.TaStripeSource</class>
+		<class>fr.legrain.abonnement.stripe.model.TaStripeTSource</class>
+		<class>fr.legrain.abonnement.stripe.model.TaStripeSubscription</class>
+		<class>fr.legrain.abonnement.stripe.model.TaStripeSubscriptionItem</class>
+		<class>fr.legrain.abonnement.stripe.model.TaStripePaiementPrevu</class>
+		
+		<!-- TaCron -->
+		<class>fr.legrain.cron.model.TaCron</class>
+
+
+
+		<!-- <class>fr.legrain.data.GestionModif</class> -->
+		
+		<validation-mode>NONE</validation-mode> 
+		
+		<properties>
+<!-- 		<property name="hibernate.event.merge.entity_copy_observer" value="allow"/> -->
+<!-- 		<property name="hibernate.connection.driver_class">org.firebirdsql.jdbc.FBDriver</property> -->
+<!-- 		<property name="hibernate.connection.password">###_PASSWORD_FB_BDG_###</property> -->
+<!-- 		<property name="hibernate.connection.url">jdbc:firebirdsql:localhost:/donnees/Projet/Java/Eclipse/runtime-GestionCommerciale.product/dossier/Bd/GEST_COM.FDB</property> -->
+<!-- 		<property name="hibernate.connection.username">###_LOGIN_FB_BDG_###</property> -->
+
+<!-- 			<property name="javax.persistence.provider" value="org.hibernate.ejb.HibernatePersistence" /> -->
+<!-- 			<property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver" /> -->
+<!-- 			<property name="javax.persistence.jdbc.url" value="jdbc:postgresql:demo" /> -->
+<!-- 			<property name="javax.persistence.jdbc.user" value="postgres" /> -->
+<!-- 			<property name="javax.persistence.jdbc.password" value="lgr006" /> -->
+			
+			<property name="javax.persistence.validation.mode" value="NONE"/>
+			
+<!-- 			<shared-cache-mode>ALL</shared-cache-mode> -->
+
+<!-- 		<property name="hibernate.dialect" value="fr.legrain.bdg.jpa.LgrHibernateFirebirdDialect"/> -->
+			<property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
+<!-- 		<property name="hibernate.dialect" value="org.hibernate.dialect.FirebirdDialect" /> -->
+			
+<!--   		<property name="hibernate.show_sql" value="true"/>  -->
+<!--         <property name="hibernate.format_sql" value="true"/>   -->
+
+<!-- <property name="hibernate.jdbc.batch_size" value="50"/> -->
+
+			<property name="hibernate.multiTenancy" value="SCHEMA"/>
+			<property name="hibernate.tenant_identifier_resolver" value="fr.legrain.hibernate.multitenant.SchemaResolver"/>
+<!-- 			<property name="hibernate.multi_tenant_connection_provider" value="fr.legrain.hibernate.multitenant.MultiTenantConnectionProviderImpl"/> -->
+			<property name="hibernate.multi_tenant_connection_provider" value="fr.legrain.hibernate.multitenant.MultiTenantProvider"/> 
+
+<!-- 			<property name="hibernate.connection.release_mode" value="after_transaction"/> -->
+
+<property name="hibernate.cache.use_query_cache" value="true" /><!-- pour eviter un bug dans WildFly 17 et les beta du 18 https://developer.jboss.org/thread/280621 -->
+			
+		</properties>
+	</persistence-unit>
+	
+	<!-- 			
+	*****************************************************************************************************
+	*****************************************************************************************************
+	-->
+	
+	<persistence-unit name="login_db" transaction-type="JTA">
+		<jta-data-source>java:/BDGLoginPostgresDS</jta-data-source>
+		<class>fr.legrain.login.model.TaRoleLogin</class>
+		<class>fr.legrain.login.model.TaRRoleUtilisateurLogin</class>
+		<class>fr.legrain.login.model.TaUtilisateurLogin</class>
+		<validation-mode>NONE</validation-mode> 
+		<properties>
+			<property name="javax.persistence.validation.mode" value="NONE"/>
+			<property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
+			<property name="hibernate.cache.use_query_cache" value="true" /><!-- pour eviter un bug dans WildFly 17 et les beta du 18 https://developer.jboss.org/thread/280621 -->
+		</properties>
+	</persistence-unit>
+	
+	<!-- 			
+	*****************************************************************************************************
+	*****************************************************************************************************
+	-->
+	
+	<persistence-unit name="bdg_prog" transaction-type="JTA">
+		<jta-data-source>java:/BDGProgPostgresDS</jta-data-source>
+
+		<!-- Edition -->
+		<class>fr.legrain.edition.model.TaEditionCatalogue</class>
+		<class>fr.legrain.edition.model.TaTEditionCatalogue</class>
+		<class>fr.legrain.edition.model.TaActionInterneProg</class>
+		<class>fr.legrain.general.model.TaAliasEspaceClient</class>
+		<class>fr.legrain.general.model.TaParametre</class>
+		
+		<validation-mode>NONE</validation-mode> 
+		<properties>
+			<property name="javax.persistence.validation.mode" value="NONE"/>
+			<property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
+		</properties>
+	</persistence-unit>
+	
+</persistence>

@@ -1,0 +1,36 @@
+# IP fixe du grain : 90.63.218.1
+
+# fail2ban-client reload
+# fail2ban-client status
+# fail2ban-client status ssh
+=========================================================================
+
+https://doc.ubuntu-fr.org/fail2ban
+https://serverfault.com/questions/627169/how-to-secure-an-open-postgresql-port
+
+==========================================================================
+
+# ##############################
+# Fichier filter à créer : /etc/fail2ban/filter.d/local-postgresql.conf
+# ##############################
+ [Definition]
+
+ failregex = <HOST>\(\d+\) FATAL:  password authentication failed for .+$
+            <HOST>\(\d+\) FATAL:  no pg_hba.conf entry for host .+$
+
+ ignoreregex = duration:
+
+
+# ##############################
+# Fichier filter à créer : /etc/fail2ban/jail.d/local-postgresql-jail.conf
+# ##############################
+
+[local-postgresql]
+ignoreip = 127.0.0.1 90.63.218.1
+enabled  = true
+filter   = local-postgresql
+action   = iptables[name=PostgreSQL, port=5432, protocol=tcp]
+           sendmail-whois[name=PostgreSQL, dest=root@localhost]
+logpath  = /var/log/postgresql/postgresql-9.5-main.log
+maxretry = 3
+#port    = 5432

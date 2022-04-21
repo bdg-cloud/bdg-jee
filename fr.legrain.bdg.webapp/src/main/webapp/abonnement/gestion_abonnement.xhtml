@@ -1,0 +1,663 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<p:panel  widgetVar="labelArticleForm">
+
+		<p class="subtitle">
+			<p:outputLabel value="Gestion des abonnements"/>
+		</p>
+		
+		<div class="card">
+				<p:panel header="Totaux chiffre d'affaire TTC des abonnements" widgetVar="wvtotauxLignesAboGestionAbonnement">
+		           <b><h:outputText value="#{gestionAbonnementController.totalTTCAbonnement}">
+	                   <f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+	                </h:outputText></b> TTC (somme des montants TTC des lignes abonnement en cours ou suspendu)
+		    	</p:panel>
+		</div>
+		
+		<!-- bouton -->
+		<p:panel id="labelArticleDataTableF" class="mt30" style="position:relative;">
+			<p:commandButton title="Génère tous les avis d'échéances (lance le CRON)" styleClass="icon icon-outil"  label="Genere avis echeance" widgetVar="widgetVarBtnGenereAvisEcheance"
+									actionListener="#{abonnementController.genereAvisEcheance}"
+									process="@this"
+									>
+				</p:commandButton>
+				
+				
+
+			<!-- <p:commandButton value="Modifier" title="Modifier" process="@this"
+				update=":form:tabView,:form:messages,:form" 
+				actionListener="#{gestionAbonnementController.actDialogModifier}"
+				styleClass="icon-update icon" >
+				<p:ajax event="dialogReturn" listener="#{gestionAbonnementController.handleReturnDialogTypes}" update=":form"/>
+			</p:commandButton> -->
+			<p:commandButton title="Créer un nouveau Abonnement" update=":form:tabView,:form:messages,@widgetVar(wvMenuListeAbonnement),@widgetVar(wvDataTableListeAbonnement)" 
+				actionListener="#{abonnementController.nouveau}" styleClass="icon icon-insert" disabled="#{abonnementController.etatBouton('inserer')}" oncomplete="PF('wvOverlayListeAbonnement').hide();">
+			</p:commandButton>	
+			
+			<p:commandButton value="Rafraîchir" title="Rafraîchir" actionListener="#{gestionAbonnementController.refresh}" disabled="#{gestionAbonnementController.modeEcran.dataSetEnModif()}"
+				styleClass="icon-refresh icon" process="@this" update=":form:tabView,:form:messages,:form" >
+			</p:commandButton>
+			
+			<!-- EXISTANT -->	
+			<!-- 
+			<p:commandButton title="Affectation état transformés sur échéance"  label="Affectation état transformés sur échéance" widgetVar="widgetVarBtnTransformeEcheance"
+									actionListener="#{abonnementController.transformeEcheance}"
+									process="@this">
+			</p:commandButton>
+			
+			<p:commandButton title="Affectation état en cours sur lignes d'échéances"  label="Suspension des lignes d'échéances dépassées" widgetVar="widgetVarBtnSuspensionEcheanceDepasse"
+									actionListener="#{abonnementController.donneEtatEnCours}"
+									process="@this">
+			</p:commandButton>
+			
+			<p:commandButton title="Annulation ligne abo des abo annulés"  label="Annulation ligne abo des abo annulés" widgetVar="widgetVarBtnAnnulationLigneAbo"
+									actionListener="#{abonnementController.annuleLigneAbo}"
+									process="@this">
+			</p:commandButton>
+			
+			<p:commandButton title="Suppréssion échéances en cours des lignes abo annulés"  label="Suppréssion échéances en cours des lignes abo annulés" widgetVar="widgetVarBtnSuppressionEcheanceEnCoursAnnule"
+									actionListener="#{abonnementController.suppressionEcheanceAnnule}"
+									process="@this">
+			</p:commandButton>
+			
+			<p:commandButton title="Suppréssion des lignes d'échéances en cours de dont la date éch est dans plus de 60 jours"  label="Suppréssion des lignes d'échéances en cours de dont la date éch est dans plus de 60 jours" widgetVar="widgetVarBtnSuppressionEcheanceAVenir60Jours"
+									actionListener="#{abonnementController.suppressionEcheanceDans60Jours}"
+									process="@this">
+			</p:commandButton>
+			
+			<p:commandButton title="Suspension des lignes d'échéances dépassées"  label="Suspension des lignes d'échéances dépassées" widgetVar="widgetVarBtnSuspensionEcheanceDepasse"
+									actionListener="#{abonnementController.suspendEcheance}"
+									process="@this">
+			</p:commandButton>
+			
+			<p:commandButton title="Suppression des lignes d'échéances suspendue depuis trop longtemps"  label="Suppression des lignes d'échéances suspendue depuis trop longtemps" widgetVar="widgetVarBtnSuppressionEcheanceDepasse"
+									actionListener="#{abonnementController.supprimeEcheance}"
+									process="@this">
+			</p:commandButton>
+			
+			<p:commandButton title="Insertion dates de périodes active sur abo"  label="Insertion dates de périodes active sur abo" widgetVar="widgetVarBtnInsertionDatePeriodeActiveAbo"
+									actionListener="#{abonnementController.insertionPeriode}"
+									process="@this">
+			</p:commandButton>
+			
+			<p:commandButton title="Insertion ligne a Ligne échéance avis"  label="Insertion ligne a Ligne échéance avis" widgetVar="widgetVarBtnInsertionLaLEcheanceAvis"
+									actionListener="#{abonnementController.insertionLigneALigneEcheanceAvis}"
+									process="@this">
+			</p:commandButton>
+			
+			<p:commandButton title="Insertion ligne a Ligne échéance facture"  label="Insertion ligne a Ligne échéance facture" widgetVar="widgetVarBtnInsertionLaLEcheancFacture"
+									actionListener="#{abonnementController.insertionLigneALigneEcheanceFacture}"
+									process="@this">
+			</p:commandButton>
+			
+			<p:commandButton title="Ajout relance mail (20 jours avant échéances)"  label="Ajout relance mail (20 jours avant échéances)" widgetVar="widgetVarBtnRelanceMail"
+									actionListener="#{abonnementController.addTaJourRelance}"
+									process="@this">
+			</p:commandButton>
+			
+			<p:commandButton title="Insertion périodes sur abo v2"  label="Insertion périodes sur abo v2" widgetVar="widgetVarBtnInsertionPeriodeV2"
+									actionListener="#{abonnementController.insertionPeriodeV2}"
+									process="@this">
+			</p:commandButton> -->
+			
+			<p:commandButton title="Suppréssion des échéances sans états (même celle liées à des avis)"  label="Suppréssion des échéances sans états" widgetVar="widgetVarBtnSupprEchSansEtat"
+									actionListener="#{abonnementController.supprimeEcheanceSansEtat}"
+									process="@this">
+			</p:commandButton>
+			
+			<p:outputLabel for="idInputNbMoisSuppressionAvis" value="Nombre de mois pour suppréssion d'avis :"/>
+			<p:inputNumber id="idInputNbMoisSuppressionAvis" value="#{abonnementController.nbMoisSuppressionAvis}" modifyValueOnWheel="false">
+				<p:ajax event="blur"/>
+			
+			</p:inputNumber>
+			<p:commandButton title="Suppréssion des avis d'échéances vieux de X mois ou plus"  label="Suppréssion des avis d'échéances vieux de X mois ou plus" widgetVar="widgetVarBtnSupprAvisVieuxXMois"
+									actionListener="#{abonnementController.supprimeAvisVieuxXMois}"
+									process="@this">
+									<p:confirm header="Confirmation" message="Etes-vous sur de vouloir supprimer l'intégralité des avis séléctionnés dans la période choisis ? Cela comprend les avis qui ont été payés (c'est à dire qui sont liés indirectement à des factures). " icon="pi pi-exclamation-triangle"/>
+			</p:commandButton>
+			 
+			
+			<!-- <p:commandButton title="Donne état en cours aux lignes abo sans états"  label="Donne état en cours aux lignes abo sans états" widgetVar="widgetVarBtnDonneEtatEnCouirsLigneAboSansEtat"
+				actionListener="#{abonnementController.donneEtatEnCoursLigneAboSansEtat}"
+				process="@this">
+			</p:commandButton> -->
+			
+			<!-- <p:commandButton title="Insertion ligne a Ligne classique abo avis"  label="Insertion ligne a Ligne classique abo avis" widgetVar="widgetVarBtnInsertionLaLClassiqueAboAvis"
+									actionListener="#{abonnementController.insertionLigneALigneClassiqueAboAvis}"
+									process="@this">
+			</p:commandButton> -->
+			
+		<!-- 	FIN EXISTANT -->
+			
+			
+			
+			
+			
+			<!-- <p:commandButton title="Suppréssion des avis d'échéances faux"  label="Suppréssionbo des avis d'échéances faux" widgetVar="widgetVarBtnSuppressionAvisEcheanceFausse"
+									actionListener="#{abonnementController.supprimeAvisEcheanceFaux}"
+									process="@this">
+				</p:commandButton> -->
+				
+				<!--  <p:commandButton title="Suppréssion de tous les taRDocument avis d'échéances"  label="Suppréssion de tous les taRDocument avis d'échéances" widgetVar="widgetVarBtnSuppressionTousRDocumentEvenementAvisEcheance"
+									actionListener="#{abonnementController.supprimeTousRDocumentEvenementAvisEcheance}"
+									process="@this">
+				</p:commandButton>
+				
+				<p:commandButton title="Suppréssion de tous avis d'échéances"  label="Suppréssion de tous avis d'échéances" widgetVar="widgetVarBtnSuppressionTousAvisEcheance"
+									actionListener="#{abonnementController.supprimeToutAvisEcheance}"
+									process="@this">
+				</p:commandButton>
+				
+				
+				<p:commandButton title="Suppréssion des lignes d'échéances en cours"  label="Suppréssion des lignes d'échéances en cours" widgetVar="widgetVarBtnSuppressionEcheanceEnCours"
+									actionListener="#{abonnementController.supprimeEcheanceEnCours}"
+									process="@this">
+				</p:commandButton>
+				
+				<p:commandButton title="Régénération des premières échéances pour tous les abos"  label="Régénération des premières échéances pour tous les abos" widgetVar="widgetVarBtnGenerePremiereEcheance"
+									actionListener="#{abonnementController.generePremiereEcheancesRegul}"
+									process="@this">
+				</p:commandButton>
+				
+				<p:commandButton title="Mise a dispo avis (mail)"  label="Mise a dispo avis (mail)" widgetVar="widgetVarBtnMiseADispoAvisAbo"
+									actionListener="#{abonnementController.metADispositionTousAvisEcheance}"
+									process="@this">
+				</p:commandButton>-->
+				
+				
+			
+			<!-- <p:commandButton title="Régularisation des abonnements faux"  label="Regénération des échéances fausses" widgetVar="widgetVarBtnGenereEcheanceFausse"
+									actionListener="#{abonnementController.genereProchainesEcheancesRegul}"
+									process="@this">
+				</p:commandButton> -->
+					
+
+			<p:commandButton id="labelArticleFermer" title="Fermer"
+				styleClass="icon-close icon menuitem-fermer-droite" onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())">
+				 <p:confirm header="Confirmation" message="#{msg_diag.alert_fermeture_onglet}" icon="ui-icon-alert" disabled="#{!gestionAbonnementController.modeEcran.dataSetEnModif()}"/>
+			</p:commandButton>
+				 
+
+			<p:commandButton id="labelArticleFermerDialogue" title="Fermer"
+				process="@this" styleClass="icon-close icon menuitem-fermer-droite"
+				actionListener="#{gestionAbonnementController.actFermerDialog}"
+				rendered="#{dansDialogue != null ? true : false}" />
+		</p:panel>
+		
+		<p:sticky target="labelArticleDataTableF" />
+		
+		<p:tabView>
+			<p:tab title="Abonnements">
+			<p:dataTable id="idDatatableAbonnementGestionAbonnement" 
+			widgetVar="wvDataTableListeAbonnementGestionAbonnement" 
+			 paginatorTemplate="#{msg.modele_datatable_paginator}"
+			 paginator="true" rows="#{msg.modele_datatable_ligne_par_page_debut}"
+			 rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+			value="#{gestionAbonnementController.listeSubscriptionNonStripe}" 
+			var="p" rowKey="#{p.id}" selectionMode="single" selection="#{gestionAbonnementController.selectedDocumentDTO}">
+					
+					<f:facet name="header">  
+	           			<h:outputText value="Abonnements" />
+	           			 <span style="float:right;" class="searchbar_list">
+				            <p:outputPanel>
+					                <p:inputText id="globalFilter" onkeyup="PF('wvDataTableListeAbonnementGestionAbonnement').filter()" style="width:150px" placeholder="Rechercher"/>
+					            </p:outputPanel>
+				        </span>	
+	        		</f:facet>
+					
+					<f:facet name="{Exporters}">
+			            <h:commandLink>
+			                <p:graphicImage library="images" name="excel.png" width="24"/>
+			                <p:dataExporter type="xls" target="idDatatableAbonnementGestionAbonnement" fileName="liste_Abonnement" />
+			            </h:commandLink>
+			            
+			            <h:commandLink>
+			                <p:graphicImage  library="images" name="csv.png"  width="24"/>
+			                <p:dataExporter type="csv" target="idDatatableAbonnementGestionAbonnement" fileName="liste_Abonnement" options="#{separateurCsvController.csvOptions}" />
+			            </h:commandLink>
+			 
+			            <h:commandLink>
+			                <p:graphicImage  library="images" name="xml.png"  width="24"/>
+			                <p:dataExporter type="xml" target="idDatatableAbonnementGestionAbonnement" fileName="liste_Abonnement" />
+			            </h:commandLink>
+					</f:facet>
+					   
+					<p:column headerText="ID" styleClass="center" filterBy="#{p.id}" sortBy="#{p.id}"> 
+						<p:outputLabel value="#{p.id}" />
+					</p:column>
+					<p:column headerText="Code tiers" styleClass="center" filterBy="#{p.codeTiers}" sortBy="#{p.codeTiers}" filterMatchMode="contains"> 
+						<p:commandLink value="#{p.codeTiers}"
+							action="#{ouvertureDocumentBean.detailTiers(ouvertureDocumentBean.recupCodetiers(p.codeTiers))}" update=":form:tabView"
+							oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+						</p:commandLink>
+					</p:column>
+					
+					<p:column headerText="Code document" styleClass="center" filterBy="#{p.codeDocument}" sortBy="#{p.codeDocument}" filterMatchMode="contains"> 
+						<p:commandLink value="#{p.codeDocument}"
+										action="#{ouvertureDocumentBean.detailAbonnement(ouvertureDocumentBean.recupCodeDocument(p.codeDocument, gestionAbonnementController.typeDoc))}" 
+										update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+									</p:commandLink>
+					</p:column>			
+							
+					<!-- <p:column headerText="Status" styleClass="center" filterBy="#{p.status}" sortBy="#{p.status}" filterMatchMode="contains">
+						<p:outputLabel value="#{p.status}" />
+					</p:column>
+				 -->
+					<p:column headerText="Début" styleClass="center" filterBy="#{abonnementController.customFormatDate(p.dateDebut)}" sortBy="#{p.dateDebut}">
+						<h:outputText value="#{p.dateDebut}">
+							<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+						</h:outputText>
+					</p:column>
+					
+					<p:column headerText="Fin" styleClass="center" filterBy="#{p.dateFin!= null ? abonnementController.customFormatDate(p.dateFin) : null }" sortBy="#{p.dateFin}">
+						<h:outputText value="#{p.dateFin}">
+							<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+						</h:outputText>
+					</p:column>
+					
+					<p:column headerText="Début période active" styleClass="center" filterBy="#{p.dateDebutPeriodeActive!= null ? abonnementController.customFormatDate(p.dateDebutPeriodeActive) : null }" sortBy="#{p.dateDebutPeriodeActive}">
+						<h:outputText value="#{p.dateDebutPeriodeActive}">
+							<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+						</h:outputText>
+					</p:column>
+					
+					<p:column headerText="Fin période active" styleClass="center" filterBy="#{p.dateFinPeriodeActive!= null ? abonnementController.customFormatDate(p.dateFinPeriodeActive) : null }" sortBy="#{p.dateFinPeriodeActive}">
+						<h:outputText value="#{p.dateFinPeriodeActive}">
+							<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+						</h:outputText>
+					</p:column>
+					
+					<p:column headerText="Annulation" styleClass="center" filterBy="#{p.dateAnnulation!= null ? abonnementController.customFormatDate(p.dateAnnulation) : null }" sortBy="#{p.dateAnnulation}">
+						<h:outputText value="#{p.dateAnnulation}">
+							<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+						</h:outputText>
+					</p:column>
+	
+				</p:dataTable>
+			</p:tab>
+			
+			
+			<!-- Ligne abonnement -->
+			<p:tab title="Ligne d'abonnements">
+			<p:dataTable id="idDatatableLAbonnementGestionAbonnement" 
+			widgetVar="wvDataTableListeLAbonnementGestionAbonnement" 
+			 paginatorTemplate="#{msg.modele_datatable_paginator}"
+			 paginator="true" rows="#{msg.modele_datatable_ligne_par_page_debut}" rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+
+			value="#{gestionAbonnementController.listeLAbonnement}" 
+			var="p" rowKey="#{p.id}">
+					
+					<f:facet name="header">  
+	           			<h:outputText value="Lignes d'abonnements" />
+	           			 <span style="float:right;" class="searchbar_list">
+				            <p:outputPanel>
+					                <p:inputText id="globalFilter" onkeyup="PF('wvDataTableListeLAbonnementGestionAbonnement').filter()" style="width:150px" placeholder="Rechercher"/>
+					            </p:outputPanel>
+				        </span>	
+	        		</f:facet>
+					
+					<f:facet name="{Exporters}">
+			            <h:commandLink>
+			                <p:graphicImage library="images" name="excel.png" width="24"/>
+			                <p:dataExporter type="xls" target="idDatatableLAbonnementGestionAbonnement" fileName="liste_ligne_Abonnement" />
+			            </h:commandLink>
+			            
+			            <h:commandLink>
+			                <p:graphicImage  library="images" name="csv.png"  width="24"/>
+			                <p:dataExporter type="csv" target="idDatatableLAbonnementGestionAbonnement" fileName="liste_ligne_Abonnement" options="#{separateurCsvController.csvOptions}" />
+			            </h:commandLink>
+			 
+			            <h:commandLink>
+			                <p:graphicImage  library="images" name="xml.png"  width="24"/>
+			                <p:dataExporter type="xml" target="idDatatableLAbonnementGestionAbonnement" fileName="liste_ligne_Abonnement" />
+			            </h:commandLink>
+					</f:facet>
+					   
+					<p:column headerText="ID" styleClass="center" filterBy="#{p.idLDocument}" sortBy="#{p.idLDocument}"> 
+						<p:outputLabel value="#{p.idLDocument}" />
+					</p:column>
+					<p:column headerText="Code tiers" styleClass="center" filterBy="#{p.codeTiers}" sortBy="#{p.codeTiers}" filterMatchMode="contains"> 
+						<p:commandLink value="#{p.codeTiers}"
+							action="#{ouvertureDocumentBean.detailTiers(ouvertureDocumentBean.recupCodetiers(p.codeTiers))}" update=":form:tabView"
+							oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+						</p:commandLink>
+					</p:column>
+					
+					<p:column headerText="Code document" styleClass="center" filterBy="#{p.codeDocument}" sortBy="#{p.codeDocument}" filterMatchMode="contains"> 
+						<p:commandLink value="#{p.codeDocument}"
+										action="#{ouvertureDocumentBean.detailAbonnement(ouvertureDocumentBean.recupCodeDocument(p.codeDocument, gestionAbonnementController.typeDoc))}" 
+										update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+									</p:commandLink>
+					</p:column>			
+							
+					<!-- <p:column headerText="Status" styleClass="center" filterBy="#{p.status}" sortBy="#{p.status}" filterMatchMode="contains">
+						<p:outputLabel value="#{p.status}" />
+					</p:column>
+				 -->
+					<p:column headerText="Début ligne abonnement" styleClass="center" filterBy="#{abonnementController.customFormatDate(p.dateDebutAbonnement)}" sortBy="#{p.dateDebutAbonnement}">
+						<h:outputText value="#{p.dateDebutAbonnement}">
+							<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+						</h:outputText>
+					</p:column>
+					
+					<p:column styleClass="right" filterBy="#{p.qteLDocument}" sortBy="#{p.qteLDocument}" filterMatchMode="contains">
+						<f:facet name="header">
+							<h:outputText value="Qté 1" />
+						</f:facet>
+							<h:outputText value="#{p.qteLDocument}" /> 
+					</p:column>
+					
+					<p:column  styleClass="center" filterBy="#{p.u1LDocument}" sortBy="#{p.u1LDocument}" filterMatchMode="contains"> 
+						<f:facet name="header">
+							<h:outputText value="U1" />
+						</f:facet>
+
+						<h:outputText value="#{p.u1LDocument}" /> 
+					</p:column>
+					
+					<p:column  styleClass="right" filterBy="#{p.mtHtLDocument}" sortBy="#{p.mtHtLDocument}" filterMatchMode="contains">
+						<f:facet name="header">
+							<h:outputText value="Montant HT" />
+						</f:facet>
+ 								<h:outputText value="#{p.mtHtLDocument}" disabled="true"> 
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" /> 
+								</h:outputText> 
+					</p:column>
+					
+					<p:column styleClass="right" filterBy="#{p.mtTtcLDocument}" sortBy="#{p.mtTtcLDocument}" filterMatchMode="contains">
+						<f:facet name="header">
+							<h:outputText value="Montant TTC" />
+						</f:facet>
+ 								<h:outputText value="#{p.mtTtcLDocument}" disabled="true"> 
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText> 
+					</p:column>
+					
+					<p:column styleClass="center" rendered="true" filterBy="#{p.complement1}#{p.complement2}#{p.complement3}" sortBy="#{p.complement1}#{p.complement2}#{p.complement3}" filterMatchMode="contains">
+						<f:facet name="header">
+							<h:outputText value="Compléments" />
+						</f:facet>
+							<h:outputText value="#{p.complement1}" disabled="true"> 
+							</h:outputText> 
+							<br/>
+							<h:outputText value="#{p.complement2}" disabled="true"> 
+							</h:outputText> 
+							<br/>
+							<h:outputText value="#{p.complement3}" disabled="true"> 
+							</h:outputText> 
+					</p:column>
+					
+					
+					<p:column filterBy="#{p.liblEtat}" sortBy="#{p.liblEtat}" filterMatchMode="contains">
+						<f:facet name="header" >
+							<h:outputText value="Etat " />
+						</f:facet>
+								<h:outputText value="#{p.liblEtat}" /> 
+					</p:column>
+					
+	
+				</p:dataTable>
+			</p:tab>
+			
+			<!-- Abonnement a suspendre -->
+			<p:tab title="Abonnements à suspendre" rendered="false">
+			<p:dataTable value="#{gestionAbonnementController.listeSubscriptionASuspendre}" var="p"
+					rowKey="#{p.id}" selectionMode="single" selection="#{gestionAbonnementController.selectedDocumentDTO}">
+					   
+					<p:column headerText="ID" styleClass="center" filterBy="#{p.id}" sortBy="#{p.id}"> 
+						<p:outputLabel value="#{p.id}" />
+					</p:column>
+					<p:column headerText="Code tiers" styleClass="center" filterBy="#{p.codeTiers}" sortBy="#{p.codeTiers}" filterMatchMode="contains"> 
+						<p:commandLink value="#{p.codeTiers}"
+							action="#{ouvertureDocumentBean.detailTiers(ouvertureDocumentBean.recupCodetiers(p.codeTiers))}" update=":form:tabView"
+							oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+						</p:commandLink>
+					</p:column>
+					
+					<p:column headerText="Code document" styleClass="center" filterBy="#{p.codeDocument}" sortBy="#{p.codeDocument}" filterMatchMode="contains"> 
+						<p:commandLink value="#{p.codeDocument}"
+										action="#{ouvertureDocumentBean.detailAbonnement(ouvertureDocumentBean.recupCodeDocument(p.taAbonnement.codeDocument, gestionAbonnementController.typeDoc))}" 
+										update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+									</p:commandLink>
+					</p:column>			
+							
+					<p:column headerText="Status" styleClass="center" filterBy="#{p.status}" sortBy="#{p.status}" filterMatchMode="contains">
+						<p:outputLabel value="#{p.status}" />
+					</p:column>
+				
+					<p:column headerText="Début" styleClass="center" filterBy="#{abonnementController.customFormatDate(p.dateDebut)}" sortBy="#{p.dateDebut}">
+						<h:outputText value="#{p.dateDebut}">
+							<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+						</h:outputText>
+					</p:column>
+					
+					<p:column headerText="Fin" styleClass="center" filterBy="#{p.dateFin!= null ? abonnementController.customFormatDate(p.dateFin) : null }" sortBy="#{p.dateFin}">
+						<h:outputText value="#{p.dateFin}">
+							<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+						</h:outputText>
+					</p:column>
+					
+					<p:column headerText="Annulation" styleClass="center" filterBy="#{p.dateAnnulation!= null ? abonnementController.customFormatDate(p.dateAnnulation) : null }" sortBy="#{p.dateAnnulation}">
+						<h:outputText value="#{p.dateAnnulation}">
+							<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+						</h:outputText>
+					</p:column>
+	
+				</p:dataTable>
+			</p:tab>
+			<!-- Fin Abonnement a suspendre -->
+			
+			
+			
+			
+			
+			<p:tab title="Echéances">
+				<p:dataTable id="idDatatableEcheanceNonEmise" value="#{gestionAbonnementController.listeLEcheance}" var="p" widgetVar="wvDatatableEcheanceNonEmise"
+				 paginatorTemplate="#{msg.modele_datatable_paginator}"
+			 paginator="true" rows="#{msg.modele_datatable_ligne_par_page_debut}" rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+							rowKey="#{p.idLEcheance}">
+							<f:facet name="header">
+								<p:outputLabel value="Echéances non transformées "/>
+								 <h:outputLabel value="&#10;" style="white-space:pre;"/>
+								<!-- <p:outputLabel value="Attention, Concerne les abonnements en cours seulement (Non suspendus et Non annulés):
+								  Total : #{gestionAbonnementController.nbEcheances} ||  Montant HT : #{gestionAbonnementController.montantHtEcheances}€ ||  Tiers : #{gestionAbonnementController.nbTiersEcheances} "/> -->
+							</f:facet>
+							<f:facet name="{Exporters}">
+					            <h:commandLink>
+					                <p:graphicImage library="images" name="excel.png" width="24"/>
+					                <p:dataExporter type="xls" target="idDatatableEcheanceNonEmise" fileName="liste_Echeance" />
+					            </h:commandLink>
+					            
+					            <h:commandLink>
+					                <p:graphicImage  library="images" name="csv.png"  width="24"/>
+					                <p:dataExporter type="csv" target="idDatatableEcheanceNonEmise" fileName="liste_Echeance" options="#{separateurCsvController.csvOptions}" />
+					            </h:commandLink>
+					 
+					            <h:commandLink>
+					                <p:graphicImage  library="images" name="xml.png"  width="24"/>
+					                <p:dataExporter type="xml" target="idDatatableEcheanceNonEmise" fileName="liste_Echeance" />
+					            </h:commandLink>
+							</f:facet>
+						<p:column headerText="ID" styleClass="center" filterBy="#{p.idLEcheance}" sortBy="#{p.idLEcheance}">
+							<p:outputLabel value="#{p.idLEcheance}" />
+						</p:column>
+						
+						<p:column headerText="Code abonnement" styleClass="center" sortBy="#{p.taAbonnement.codeDocument}" filterBy="#{p.taAbonnement.codeDocument}" filterMatchMode="contains">
+							<p:commandLink value="#{p.taAbonnement.codeDocument}"
+										action="#{ouvertureDocumentBean.detailAbonnement(ouvertureDocumentBean.recupCodeDocument(p.taAbonnement.codeDocument, gestionAbonnementController.typeDoc) )}" 
+										update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+									</p:commandLink>
+						</p:column>
+						
+						<p:column headerText="Code tiers" styleClass="center" sortBy="#{p.taAbonnement.taTiers.codeTiers}" filterBy="#{p.taAbonnement.taTiers.codeTiers}" filterMatchMode="contains">
+							<p:commandLink value="#{p.taAbonnement.taTiers.codeTiers}"
+								action="#{ouvertureDocumentBean.detailTiers(ouvertureDocumentBean.recupCodetiers(p.taAbonnement.taTiers.codeTiers))}" update=":form:tabView"
+								oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+							</p:commandLink>
+						</p:column>
+						
+						<p:column headerText="Libellé" styleClass="center" sortBy="#{p.libLDocument}" filterBy="#{p.libLDocument}" filterMatchMode="contains">
+							<p:outputLabel value="#{p.libLDocument}" />
+						</p:column>
+						
+						<p:column headerText="Début période" styleClass="center" filterBy="#{p.debutPeriode!= null ? abonnementController.customFormatDate(p.debutPeriode) : null }" sortBy="#{p.debutPeriode}">
+							<h:outputText value="#{p.debutPeriode}">
+								<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+							</h:outputText>
+						</p:column>
+						
+						<p:column headerText="Fin période" styleClass="center" filterBy="#{p.finPeriode != null ? abonnementController.customFormatDate(p.finPeriode) : null }" sortBy="#{p.finPeriode}">
+							<h:outputText value="#{p.finPeriode}">
+								<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+							</h:outputText>
+						</p:column>
+							
+						<p:column headerText="Echéance" styleClass="center" filterBy="#{p.dateEcheance!= null ? abonnementController.customFormatDate(p.dateEcheance) : null }" sortBy="#{p.dateEcheance}">
+							<h:outputText value="#{p.dateEcheance}">
+								<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+							</h:outputText>
+						</p:column>
+						
+						<p:column headerText="Montant HT" styleClass="center" filterBy="#{p.mtHtLDocument}" sortBy="#{p.mtHtLDocument}" filterMatchMode="contains">
+							<h:outputText value="#{p.mtHtLDocument}">
+								<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+							</h:outputText>
+						</p:column>
+						
+						<p:column headerText="Montant TTC" styleClass="center" filterBy="#{p.mtTtcLDocument}" sortBy="#{p.mtTtcLDocument}" filterMatchMode="contains">
+							<h:outputText value="#{p.mtTtcLDocument}">
+								<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+							</h:outputText>
+						</p:column>
+						
+						<p:column headerText="Actions" styleClass="center" rendered="false">
+							<p:commandButton process="@this" value="Annuler / Résilier abo">
+								<p:confirm header="Confirmation" message="TODO" icon="ui-icon-alert" />
+								<f:attribute name="idStripeInvoice" value="#{p.idExterne}"/>
+							</p:commandButton>
+							
+							<p:commandButton process="@this" value="Modifier">
+								<p:confirm header="Confirmation" message="TODO" icon="ui-icon-alert" />
+								<f:attribute name="idStripeInvoice" value="#{p.idExterne}"/>
+							</p:commandButton>
+						</p:column>
+						
+						<p:column headerText="Etat" styleClass="center" sortBy="#{p.taREtat.taEtat.codeEtat}" filterBy="#{p.taREtat.taEtat.codeEtat}" filterMatchMode="contains">
+							<p:outputLabel value="#{p.taREtat.taEtat.codeEtat}" />
+						</p:column>
+						<p:column headerText="Actions" styleClass="center">
+							<p:commandButton value="Supprimer" actionListener="#{gestionAbonnementController.actSupprimerEcheance}" 
+								update="@widgetVar(wvDatatableEcheanceNonEmise)" process="@this" disabled="#{gestionAbonnementController.isTotTransforme(p.taREtat.taEtat.codeEtat)}">
+								<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer cette échéance ?" icon="ui-icon-alert" />
+									<f:attribute name="idLEcheance" value="#{p.idLEcheance}"/>
+							</p:commandButton>
+						</p:column>
+					</p:dataTable>
+			</p:tab>
+			
+			<p:tab title="Paiements prévus">
+				<p:dataTable id="idDatatablePaiementPrevu" value="#{gestionAbonnementController.listePaiementPrevu}" var="p" 
+				 paginatorTemplate="#{msg.modele_datatable_paginator}"
+			 paginator="true" rows="#{msg.modele_datatable_ligne_par_page_debut}" rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+					widgetVar="wvDataTablePaiementPrevu"
+					rowKey="#{p.id}" selectionMode="single" selection="#{gestionAbonnementController.selectedTaStripePaiementPrevuDTO}">
+					
+<!-- 					<p:ajax event="rowSelect" delay="#{msg.datatable_rowselect_delay}" -->
+<!-- 					 listener="#{gestionAbonnementController.onRowSelectPaiementPrevu}" -->
+<!-- 					  update="@widgetVar(panelListePaiementPrevuTiers#{variableNomWvIDUnique})"/> -->
+
+						<f:facet name="{Exporters}">
+					            <h:commandLink>
+					                <p:graphicImage library="images" name="excel.png" width="24"/>
+					                <p:dataExporter type="xls" target="idDatatablePaiementPrevu" fileName="liste_paiement_prevu" />
+					            </h:commandLink>
+					            
+					            <h:commandLink>
+					                <p:graphicImage  library="images" name="csv.png"  width="24"/>
+					                <p:dataExporter type="csv" target="idDatatablePaiementPrevu" fileName="liste_paiement_prevu" options="#{separateurCsvController.csvOptions}" />
+					            </h:commandLink>
+					 
+					            <h:commandLink>
+					                <p:graphicImage  library="images" name="xml.png"  width="24"/>
+					                <p:dataExporter type="xml" target="idDatatablePaiementPrevu" fileName="liste_paiement_prevu" />
+					            </h:commandLink>
+							</f:facet>
+
+
+				<p:column headerText="ID" styleClass="center" filterBy="#{p.id}" sortBy="#{p.id}">
+							<p:outputLabel value="#{p.id}" />
+						</p:column>
+
+					<p:column headerText="Code tiers" styleClass="center" sortBy="#{p.codeTiers}" filterBy="#{p.codeTiers}" filterMatchMode="contains"> 
+						<p:commandLink value="#{p.codeTiers}"
+							action="#{ouvertureDocumentBean.detailTiers(ouvertureDocumentBean.recupCodetiers(p.codeTiers))}" update=":form:tabView"
+							oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+						</p:commandLink>
+					</p:column>
+					<p:column headerText="Avis d'échéance" styleClass="center" sortBy="#{p.codeAvisEcheance}" filterBy="#{p.codeAvisEcheance}" filterMatchMode="contains">
+						<p:commandLink value="#{p.codeAvisEcheance}"
+								action="#{ouvertureDocumentBean.detailDocument(ouvertureDocumentBean.recupCodeDocument(p.codeAvisEcheance,ouvertureDocumentBean.getTypeDocumentAvisEcheance()))}" 
+								update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');" process="@this">
+							</p:commandLink>
+					</p:column>
+					<p:column headerText="Code abonnement" styleClass="center" sortBy="#{p.codeDocument}" filterBy="#{p.codeDocument}" rendered="false"> 
+						<p:outputLabel value="#{p.codeDocument}" />
+					</p:column>		
+									
+					<p:column headerText="Montant" styleClass="center" sortBy="#{p.montant}" filterBy="#{p.montant}" filterMatchMode="contains">
+						<h:outputText value="#{p.montant}">	
+							<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+						</h:outputText>
+					</p:column>
+					
+					<p:column headerText="Date déclenchement prévue" styleClass="center" filterBy="#{abonnementController.customFormatDate(p.dateDeclenchement)}" sortBy="#{p.dateDeclenchement}">
+						<h:outputText value="#{p.dateDeclenchement}">
+							<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+						</h:outputText>
+					</p:column>
+					
+					
+					
+					<p:column headerText="Règlement" styleClass="center" filterBy="#{p.codeReglement}" sortBy="#{p.codeReglement}" filterMatchMode="contains">
+						<p:commandLink value="#{p.codeReglement}"
+							action="#{ouvertureDocumentBean.detailDocument(ouvertureDocumentBean.recupCodeDocument(p.codeReglement,ouvertureDocumentBean.getTypeDocumentReglement()))}" 
+							update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');" process="@this">
+						</p:commandLink>	
+					</p:column>
+					
+					<p:column headerText="Charge" styleClass="center" filterBy="#{p.idExterneCharge}" sortBy="#{p.idExterneCharge}" filterMatchMode="contains">
+						<p:commandLink value="#{p.idExterneCharge}" 
+								onclick="window.open('#{abonnementTiersController.genereUrlDashboardStripe('charges',p.idExterneCharge,true)}')" >
+							</p:commandLink>
+					</p:column>
+					
+					<p:column headerText="Etat" styleClass="center"  filterBy="#{p.status}" sortBy="#{p.status}" filterMatchMode="contains">
+						<h:outputText value="#{p.status}"/>
+					</p:column>
+					
+					<p:column headerText="Actions" styleClass="center">
+						<!-- <p:commandButton value="Annuler" actionListener="#{abonnementTiersController.actPrepareSupprimerPaiementPrevu}" 
+							oncomplete="PF('wvDialogAnnulerPaiementPrevu').show()"
+							update="@widgetVar(wvDataTablePaiementPrevu)" process="@this" rendered="#{p.idExterneCharge == null}">
+							<p:confirm header="Confirmation" message="Etes vous sur de vouloir annuler ce paiement ?" icon="ui-icon-alert" />
+								<f:attribute name="idPaiementPrevu" value="#{p.id}"/>
+							</p:commandButton> -->
+						<p:commandButton value="Déclencher" actionListener="#{gestionAbonnementController.actDeclencherPaiementPrevuMaintenant}" 
+							update="@widgetVar(wvDataTablePaiementPrevu)" process="@this" rendered="#{p.idExterneCharge == null}">
+							<p:confirm header="Confirmation" message="Etes vous sur de vouloir déclencher ce paiement ?" icon="ui-icon-alert" />
+								<f:attribute name="idPaiementPrevu" value="#{p.id}"/>
+							</p:commandButton>
+					</p:column>
+				</p:dataTable>
+			</p:tab>
+<!-- 			<p:tab title="Réductions/coupons"> -->
+<!-- 			</p:tab> -->
+		</p:tabView>
+		
+	</p:panel>
+
+</ui:composition>

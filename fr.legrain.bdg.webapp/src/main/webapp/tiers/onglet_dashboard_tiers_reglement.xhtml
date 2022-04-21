@@ -1,0 +1,316 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
+xmlns:f="http://java.sun.com/jsf/core" 
+xmlns:h="http://java.sun.com/jsf/html"
+xmlns:ui="http://java.sun.com/jsf/facelets" 
+xmlns:o="http://omnifaces.org/ui" 
+xmlns:p="http://primefaces.org/ui">
+
+<!-- 	<div class="ui-g-12 ui-md-12"> -->
+<!-- 		<h:panelGrid columns="2" cellpadding="0"> -->
+<!-- 			<p:outputLabel value="Votre dossier est très volumineux, Cliquez sur le bouton pour raffraîchir les données" style="font-weight : bold;" -->
+<!-- 				rendered="#{tiersController.dashBoardParTiersController.grosFichierTiers}"> -->
+<!-- 			</p:outputLabel> -->
+<!-- 			<p:commandButton process="@this" rendered="#{tiersController.dashBoardParTiersController.grosFichierTiers}" -->
+<!-- 							update="@this,idZoneTotauxArticle, @widgetVar(wvTiersListeArticleExhaustive),@widgetVar(wvTiersListeArticleRegroupee),@widgetVar(wvTiersListeArticleFamille), idGraphiqueParFamilleTiersArticle, idGraphiqueParArticlesTiersArticle,@widgetVar(wvRappelPeriodePanelTiersArticle)"  -->
+<!-- 							action="#{tiersController.dashBoardParTiersController.initAllValueArticle(tiersController.selectedTaTiersDTO.getCodeTiers())}"  -->
+<!-- 				value="Raffraîchir" styleClass="ui-orange" style="width:100%;" /> -->
+<!-- 		</h:panelGrid> -->
+<!-- 	</div>				 -->
+				
+				<div class="ui-g-12 ui-md-12">
+				<p:panel header="Critères et paramètres du tableau de bord" collapsed="true" toggleable="true" toggleOrientation="horizontal" >
+					<div class="ui-g-12 ui-md-4">
+					<p:fieldset style="margin-bottom:20px;">
+<!-- 						 <h:graphicImage name="dashboard/periode.png" library="images" /> -->
+		
+						<p:panel header="Période" styleClass="panelgrey">
+						<f:facet name="footer">
+<!-- 						oncomplete="PF('wvTiersListeReglement').filter()" -->
+							<p:commandButton  
+							process="@this"
+							update="@this,idZoneTotauxReglement, @widgetVar(wvTiersListeReglement),idGraphiqueParTiersReglement,@widgetVar(wvRappelPeriodePanelTiersReglement)" 
+							action="#{tiersController.dashBoardParTiersController.initAllValueReglement(tiersController.selectedTaTiersDTO.getCodeTiers())}" value="Appliquer" styleClass="ui-orange" 
+							style="width:100%;" />
+							
+						</f:facet>
+						 <div class="ui-g-12 ui-md-2" >
+						<i class="fa fa-calendar fa-3x" aria-hidden="true"></i>
+<!-- 						 <h:graphicImage name="dashboard/periode.png" library="images" /> -->
+						 </div>
+						 <div class="ui-g-12 ui-md-10">
+			        	<h:panelGrid columns="2" cellpadding="0">
+						 <p:outputLabel value="Du"/>
+											<p:calendar value="#{tiersController.dashBoardParTiersController.dateDebutReglement}"
+												showOn="button" 
+												navigator="true" 
+												pattern="#{msg.date_pattern}" 
+												mask="true" 
+												locale="fr" 
+												timeZone="#{msg.time_zone}" >
+												<p:ajax event="dateSelect"/>
+													<p:ajax event="change"/>
+											</p:calendar>
+<!-- 												<f:convertDateTime pattern="#{msg.date_pattern}" -->
+<!-- 													timeZone="#{msg.time_zone}" /> -->
+
+						 <p:outputLabel value="au"/>
+											<p:calendar value="#{tiersController.dashBoardParTiersController.dateFinReglement}"
+												showOn="button" 
+												navigator="true" 
+												pattern="#{msg.date_pattern}" 
+												mask="true" 
+												locale="fr" 
+												timeZone="#{msg.time_zone}" >
+												<p:ajax event="dateSelect"/>
+													<p:ajax event="change"/>
+											</p:calendar>
+
+        				</h:panelGrid>
+        				</div>
+        				 <p:separator />
+
+
+								</p:panel>
+    				</p:fieldset>
+    				</div>
+
+					<div class="ui-g-12 ui-md-4">
+
+    				</div>
+    				
+					<div class="ui-g-12 ui-md-4">
+
+    				</div>
+				</p:panel>
+				<p:panel widgetVar="wvRappelPeriodePanelTiersReglement"  style="font-size : 20px;">
+				<p:outputLabel>Période du </p:outputLabel>
+				 <h:outputText value="#{tiersController.dashBoardParTiersController.dateDebutReglement}"  style="font-weight : bold;">
+				 	<f:convertDateTime type="date" pattern="dd MMMM yyyy" timeZone="#{msg.time_zone}"/>
+				 </h:outputText>
+				 <p:outputLabel> au  </p:outputLabel>
+				 <h:outputText value="#{tiersController.dashBoardParTiersController.dateFinReglement}"  style="font-weight : bold;">
+				 	<f:convertDateTime type="date" pattern="dd MMMM yyyy" timeZone="#{msg.time_zone}"/>
+				 </h:outputText>
+				 
+				</p:panel>
+				</div>
+				<!-- <p:outputPanel deferred="true" id="idZoneTotauxReglement"> -->
+				<div class="ui-g-12 ui-md-12 ui-lg-8">
+				<p:outputPanel id="idZoneTotauxReglement">
+				<div class="card-group">
+				
+					<div class="card card-dash">
+						<h3 align="center card-title"><span style="font-size: 30px;">#{tiersController.dashBoardParTiersController.nbReglement}</span> règlements encaissés</h3><br/>
+						<div class="card-body"></div>
+						<div class="card-footer">
+							<!-- <p:outputLabel value="Total HT : "/> 
+							<p:outputLabel value="#{tiersController.dashBoardParTiersController.montantTotalHtReglement}" >
+							<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+							</p:outputLabel> -->
+							<!-- <br/> -->
+							<p:outputLabel value="Montant : "/> 
+							<p:outputLabel value="#{tiersController.dashBoardParTiersController.montantTotalTtcReglement}" >
+							<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+							</p:outputLabel>
+							<!-- <p:separator></p:separator>
+							<p:outputLabel value="Nombre : "/> 
+							<p:outputLabel value="#{tiersController.dashBoardParTiersController.nbReglement}"/> -->
+						
+	<!-- 				</h:panelGroup> -->
+							<p:commandButton title="Détails" style="width:100%" styleClass="btn-liste btn"
+								process="@this"
+								update="@this,@widgetVar(wvTiersListeReglement),idGraphiqueParTiersReglement"
+								actionListener="#{tiersController.dashBoardParTiersController.initValueLignesReglement(tiersController.selectedTaTiersDTO.getCodeTiers())}"
+								  >
+							</p:commandButton>
+						</div>
+					</div>
+					<div class="card card-dash">
+						<h3 align="center card-title"><span style="font-size: 30px;">#{tiersController.dashBoardParTiersController.nbReglementNonTransformeARelancer}</span> règlements partiellement affectés</h3>
+						<div class="card-body"></div>
+						<div class="card-footer">
+							
+							<p:outputLabel value="Reste à affecter : "/> 
+							<p:outputLabel value="#{tiersController.dashBoardParTiersController.montantTotalTtcNonTransfoARelancerReglement}">
+							<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+							</p:outputLabel>
+							<!-- <p:separator></p:separator>
+							<p:outputLabel value="Nombre : "/> 
+							<p:outputLabel value="#{tiersController.dashBoardParTiersController.nbReglementNonTransforme}"/> -->
+						
+							<p:commandButton title="Détails" style="width:100%" styleClass="btn-liste btn"
+								process="@this"
+								update="@this,@widgetVar(wvTiersListeReglement),idGraphiqueParTiersReglement"
+								actionListener="#{tiersController.dashBoardParTiersController.initValueLignesReglementNonTransformeARelancer(tiersController.selectedTaTiersDTO.getCodeTiers())}" >
+								
+						</p:commandButton>	
+						</div>	
+					</div>		
+					<div class="card card-dash">
+						<h3 align="center card-title"><span style="font-size: 30px;">#{tiersController.dashBoardParTiersController.nbReglementNonTransforme}</span> règlements non affectés</h3>
+						<div class="card-body"></div>
+						<div class="card-footer">
+							
+							<p:outputLabel value="Montant à affecter : "/> 
+							<p:outputLabel value="#{tiersController.dashBoardParTiersController.montantTotalTtcNonTransfoReglement}">
+							<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+							</p:outputLabel>
+							<!-- <p:separator></p:separator>
+							<p:outputLabel value="Nombre : "/> 
+							<p:outputLabel value="#{tiersController.dashBoardParTiersController.nbReglementNonTransformeARelancer}"/> -->
+						
+							<p:commandButton title="Détails" style="width:100%" styleClass="btn-liste btn"
+								process="@this"
+								update="@this,idTiersListeReglement,idGraphiqueParTiersReglement"
+								actionListener="#{tiersController.dashBoardParTiersController.initValueLignesReglementNonTransforme(tiersController.selectedTaTiersDTO.getCodeTiers())}" >
+							</p:commandButton>	
+						</div>	
+					</div>				
+
+				</div>
+				</p:outputPanel>
+				</div>
+				<div class="ui-g-12 ui-md-12">
+				
+				<div class="ui-g-12 ui-md-12 ui-lg-8 ">
+					<div class="card">
+						<h3 align="center">Liste des règlements pour ce tiers</h3>
+		<p:dataTable id="idTiersListeReglement"
+					 sortBy="#{listeReglement.codeDocument}" 
+					 sortOrder="descending" 
+					 var="listeReglement" 
+					 value="#{tiersController.dashBoardParTiersController.valueLignesReglement}"
+					 scrollable="true"
+					 scrollHeight="300"
+					 liveResize="true" 
+					 widgetVar="wvTiersListeReglement">
+			<p:ajax event="rowToggle" listener="#{tiersController.onRowToggle}" update=":@this"/>
+		
+        <f:facet name="header">
+        <div class="list-header-button-print">
+         <!-- <span class="boutonPrintLeft"> -->
+         
+							        <span style="float:left">							        
+									        <p:commandButton id="idBtnListePrintEcranDasboardListeLignesParTiersReg"
+							 title="Imprimer la liste des réglements" 
+			onsuccess="window.open('#{request.contextPath}/output?__report=/reports/tiers/ListeDashboardListeLignesParTiersReglement.rptdesign&amp;__format=pdf')"
+			actionListener="#{dashBoardParTiersController.actImprimerListeLignesParTiersReglement(tiersController.selectedTaTiersDTO.getNomTiers())}"
+			styleClass="ui-priority-primary boutonPrint" style="color : white;" icon="fa fa-print"
+			process="@this" >
+			</p:commandButton>			
+								    </span>
+									    
+            Cliquez pour afficher le détail d'un document
+            </div>
+        </f:facet>
+        <p:column style="width:16px">
+            <p:rowToggler />
+        </p:column>
+        <p:column headerText="Code" sortBy="#{listeReglement.codeDocument}" filterBy="#{listeReglement.codeDocument}" filterMatchMode="contains">
+<!--             <h:outputText value="#{listeDevis.codeDocument}" /> -->
+								<p:commandLink value="#{listeReglement.codeDocument}"
+									action="#{ouvertureDocumentBean.detailDocument(ouvertureDocumentBean.recupCodeDocument(listeReglement.codeDocument,ouvertureDocumentBean.getTypeDocumentReglement()))}" 
+									update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+								</p:commandLink> 														        									            
+        </p:column>
+        
+        <p:column headerText="Libellé" sortBy="#{listeReglement.libelleDocument}" filterBy="#{listeReglement.libelleDocument}" filterMatchMode="contains">
+            <h:outputText value="#{listeReglement.libelleDocument}" id="idListeLibelleReglementOngletTiers"/>
+		</p:column>
+         <p:column headerText="Date règlement" sortBy="#{listeReglement.dateDocument}" filterBy="#{listeReglement.dateDocument}" filterMatchMode="contains">
+            <h:outputText value="#{listeReglement.dateDocument}" >
+            		<f:convertDateTime pattern="#{msg.date_pattern}"
+					timeZone="#{msg.time_zone}" />
+            </h:outputText>
+        </p:column>
+       
+       
+        <p:column headerText="Montant" sortBy="#{listeReglement.netTtcCalc}" filterBy="#{listeReglement.netTtcCalc}" filterMatchMode="contains">
+            <h:outputText value="#{listeReglement.netTtcCalc}" >
+			<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+			</h:outputText>
+        </p:column>
+        
+        <p:column headerText="Reste à affecter" sortBy="#{listeReglement.resteAAffecter}" filterBy="#{listeReglement.resteAAffecter}" filterMatchMode="contains">
+            <h:outputText value="#{listeReglement.resteAAffecter}" >
+			<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+			</h:outputText>
+        </p:column>
+       
+        
+ 
+   <p:rowExpansion>  
+  					 	
+<!-- 							<p:commandButton  -->
+<!-- 							 title="Imprimer le détail des factures liés"  -->
+<!-- 			onsuccess="window.open('#{request.contextPath}/output?__report=/reports/tiers/ListeDashboardListeLignesParTiersReglementDetailFact.rptdesign&amp;__format=pdf')" -->
+<!-- 			actionListener="#{dashBoardParTiersController.actImprimerListeLignesParTiersReglement(tiersController.selectedTaTiersDTO.getNomTiers(), -->
+<!-- 			tiersController.selectedTaTiersDTO.getCodeTiers(), listeReglement.codeDocument, listeReglement.libelleDocument, listeReglement.dateDocument, listeReglement.netTtcCalc, listeReglement.resteAAffecter, listeReglement.codeDocument)}" -->
+<!-- 			styleClass="ui-priority-primary boutonPrint" style="color : white;" icon="fa fa-print"> -->
+<!-- 							</p:commandButton>							 -->
+						<br/>
+						
+   	<h:outputText value="Code Bancaire : #{listeReglement.codeBanque}" >
+	</h:outputText>
+			<p:separator />
+	<h:outputText value="Factures liées : " >
+	</h:outputText>
+						
+							
+   		<p:dataTable id="idTiersListeFactureReglement"
+					 var="Facture" 
+					 value="#{tiersController.dashBoardParTiersController.listeFactureReglement(listeReglement.codeDocument)}"
+					 scrollable="true"
+					 scrollHeight="100"
+					 style="padding: 20px;"
+					 liveResize="true" 
+					 widgetVar="wvTiersListeFactureReglement">
+					 					  																			        			       			
+					<p:column headerText="Facture">
+			     
+						<p:commandLink value="#{Facture.codeFacture}"
+											action="#{ouvertureDocumentBean.detailDocument(ouvertureDocumentBean.recupCodeDocument(Facture.codeFacture, ouvertureDocumentBean.getTypeDocumentFacture()))}" update=":form:tabView"
+											oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+						</p:commandLink>
+			        </p:column> 
+			        <p:column headerText="Date">
+			            <h:outputText value="#{Facture.dateFacture}" >
+			            		<f:convertDateTime pattern="#{msg.date_pattern}"
+								timeZone="#{msg.time_zone}" />
+			            </h:outputText>
+			        </p:column>
+			        <p:column headerText="Montant">
+			            <h:outputText value="#{Facture.netTtcCalc}" >
+						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+						</h:outputText>
+			        </p:column>
+			        <p:column headerText="Reste à régler">
+			            <h:outputText value="#{Facture.resteAReglerFacture}" >
+						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+						</h:outputText>
+			        </p:column>
+			  
+		
+		</p:dataTable>
+ 
+   </p:rowExpansion>
+    </p:dataTable>
+					</div>				
+				</div>
+				<div class="ui-g-12 ui-md-12 ui-lg-4">
+					<div class="card">
+					<p:tab title="Reglements" rendered="true">
+					
+						<h3 align="center">Graphique</h3>
+								<p:chart type="bar" model="#{tiersController.dashBoardParTiersController.barChartModelReglement}"
+								id="idGraphiqueParTiersReglement" 
+								widgetVar="wvGraphiqueParTiersReglement"
+								responsive="true" 
+								style="height:300px;">
+								</p:chart>
+					</p:tab>
+					</div>				
+				</div>
+				</div>
+				
+</ui:composition>

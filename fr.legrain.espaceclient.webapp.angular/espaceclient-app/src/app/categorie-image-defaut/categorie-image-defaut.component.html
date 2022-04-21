@@ -1,0 +1,15 @@
+<!--
+    <img [src]="dataUrl$|async"/>
+-->
+
+
+<div *ngIf="dataUrl$ | async as d; else catSansImage">
+    <img [src]="d" [attr.height]="hauteur" [attr.width]="largeur" *ngIf="idCategorie ; else catTous"/>
+</div>
+<ng-template #catSansImage>
+    <!--<div>Loading ...</div>-->
+    <i class="fa fa-dot-circle boutique-categorie-titre" aria-hidden="true" *ngIf="idCategorie ; else catTous"></i>
+</ng-template> 
+<ng-template #catTous>
+    <i class="fa fa-th-large boutique-categorie-titre" aria-hidden="true"></i>
+</ng-template> 

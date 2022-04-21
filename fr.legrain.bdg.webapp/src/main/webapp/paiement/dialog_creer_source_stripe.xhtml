@@ -1,0 +1,138 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/template_dialog_stripe_lgr.xhtml">
+
+	<ui:define name="head">
+		<title>Paiement par carte bancaire - Stripe</title>
+		<style type="text/css">
+		.ui-widget {
+			font-size: 90%;
+		}
+		</style>
+	</ui:define>
+
+	<ui:define name="content">
+		<h:form id="payment-form">
+			<p:panel>
+
+				<!-- 					<ui:fragment rendered="#{creerSourceStripeController.interfaceStripeElementSaisie}" > -->
+				<div class="ui-g-12 bandeau-titre">
+					<p>
+						<p:graphicImage library="images" name="paiement/cadenas.png" height="16px" />
+						Espace sécurisé
+					</p>
+				</div>
+				<div class="cell example example1" id="example-1">
+					<fieldset style="background-color: white; box-shadow: none;">
+						<div class="row">
+							<label for="example1-name" data-tid="elements_examples.form.name_label"
+								style="margin: auto; display: block; color: black; text-align: center;">
+								Nom du porteur *
+							</label>
+							<div
+								style="margin: auto; border: 1px solid; padding: 0px; text-align: center; width: 300px">
+								<input id="cardholder-name"
+									data-tid="elements_examples.form.name_placeholder"
+									type="text" placeholder="" required="" autocomplete="name"
+									style="padding: 0px;" />
+							</div>
+						</div>
+<!-- 			            <div class="row"> -->
+<!-- 			            	<label for="example1-email" data-tid="elements_examples.form.email_label"  -->
+<!-- 			            	style="margin: auto; display: block; color: black; text-align: center;"> -->
+<!-- 			            	Email -->
+<!-- 			            	</label> -->
+<!-- 			            	<div -->
+<!-- 								style="margin: auto; border: 1px solid; padding: 0px; text-align: center; width: 300px"> -->
+<!-- 				              	<input id="cardholder-email"  -->
+<!-- 				              		data-tid="elements_examples.form.email_placeholder" type="email"  -->
+<!-- 				              		placeholder="" autocomplete="email" -->
+<!-- 				              		style="padding: 0px;"/> -->
+<!-- 			              	</div> -->
+<!-- 			            </div> -->
+<!-- 			            <div class="row"> -->
+<!-- 			              	<label for="example1-phone" data-tid="elements_examples.form.phone_label" -->
+<!-- 							style="margin: auto; display: block; color: black; text-align: center;"> -->
+<!-- 							Téléphone -->
+<!-- 							</label> -->
+<!-- 							<div -->
+<!-- 								style="margin: auto; border: 1px solid; padding: 0px; text-align: center; width: 300px"> -->
+<!-- 			              		<input id="cardholder-phone"  -->
+<!-- 			              			data-tid="elements_examples.form.phone_placeholder" type="tel"  -->
+<!-- 			              			placeholder="" autocomplete="tel"  -->
+<!-- 			              			style="padding: 0px;"/> -->
+<!-- 			              	</div> -->
+<!-- 			            </div> -->
+					</fieldset>
+					<fieldset>
+						<div id="card-element">
+							<!-- A Stripe Element will be inserted here. -->
+						</div>
+					</fieldset>
+
+					<!-- Used to display form errors. -->
+					<div id="card-errors" role="alert"></div>
+					<!-- 					  </div> -->
+
+					<div class="" style="text-align: center">
+						<!-- 						<p:commandButton value="Annuler" actionListener="#{creerSourceStripeController.actAnnuler}" style="margin-right:50px;"/> -->
+						<!-- 						<p:commandButton value="Payer" onclick="lgrstr();"/> -->
+
+						<button id="card-button"
+							data-secret="#{creerSourceStripeController.secretClient}">
+							Enregistrer la carte</button>
+						<p:messages showDetail="true" autoUpdate="true"></p:messages>
+					</div>
+				</div>
+				<!-- 					</ui:fragment> -->
+
+				<!-- 					<ui:fragment rendered="#{creerSourceStripeController.interfaceStripeElementConfirmation}" > -->
+				<!-- 						 <p:ajaxStatus style="width:100px; height:100px; margin:auto" > -->
+				<!-- 				            <f:facet  name="start"> -->
+				<!-- 				                <p:graphicImage name="images/ajax.gif" library="icarus-layout" style="width: 50px;"/> -->
+				<!-- 				                <h:outputText value="Paiement en cours de validation, veuillez patienter ..." /> -->
+				<!-- 				            </f:facet> -->
+				<!-- 				            <f:facet name="complete"> -->
+				<!-- 				                <h:outputText value="" /> -->
+				<!-- 				            </f:facet> -->
+				<!-- 				        </p:ajaxStatus> -->
+				<!-- 				        <p:messages showDetail="true"> -->
+				<!-- 				        	<p:autoUpdate/> -->
+				<!-- 				        </p:messages> -->
+				<!-- 						<p:commandButton value="Fermer" actionListener="#{creerSourceStripeController.actAnnuler}" style="margin:auto" /> -->
+				<!-- 					</ui:fragment>	 -->
+
+				<p:remoteCommand name="enregistrePM" update="@form" actionListener="#{creerSourceStripeController.actCreerSourceStripeCB}" />
+				<!-- 					<p:remoteCommand name="paiementTermine" update="@form" action="#{creerSourceStripeController.paiementTermine}"/> -->
+
+
+			</p:panel>
+		</h:form>
+	</ui:define>
+
+	<ui:define name="footer">
+		<!-- 		<h:panelGroup rendered="#{!creerSourceStripeController.saisirMontant}"> -->
+		<!-- 			<ui:fragment rendered="#{creerSourceStripeController.interfaceStripeElement}" > -->
+		<script type="text/javascript" async="async" defer="defer">
+// 					 $( document ).ready(function() {
+						var a = '<h:outputText value="#{creerSourceStripeController.clePubliqueStripe}"/>';
+		        		console.log( "ready !" );
+// 		        		initStripe(a);
+// 		    		});
+				</script>
+		<!-- 			</ui:fragment> -->
+		<!-- 		</h:panelGroup> -->
+		<script type="text/javascript" async="async" defer="defer">
+// 					 $( document ).ready(function() {
+// 						var a = '<h:outputText value="#{creerSourceStripeController.clePubliqueStripe}"/>';
+// 		        		console.log( "ready !" );
+		        		initStripe(a,false);
+// 		    		});
+				</script>
+
+	</ui:define>
+
+</ui:composition>

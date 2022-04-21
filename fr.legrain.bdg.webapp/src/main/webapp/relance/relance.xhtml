@@ -1,0 +1,268 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions">
+
+	<p:menubar styleClass="menu-onglet" id="idMenuBoutonGestRelance" widgetVar="wvMenuBoutonGestRelance">
+
+		<p:menuitem title="Enregistrer la relance en cours de saisie" value="Enregistrer" styleClass="icon icon-save" process="@this"
+			actionListener="#{relanceController.actEnregistrer}"
+			update=":form:messages,@form,@widgetVar(wvMenuListeRelance),@widgetVar(wvDataTableListeGestRelance),
+				@widgetVar(wvDataTableListeGestRelance2),@widgetVar(wvPanelRenderedRelance),@widgetVar(wvInfosComplementairesRelance)"
+			disabled="#{relanceController.etatBouton('enregistrer')}" />
+
+		<p:menuitem title="Créer une nouvelle relance" value="Insérer" styleClass="icon icon-insert" actionListener="#{relanceController.actInitInserer}"
+			process="@this"
+			update=":form:messages,@form,@widgetVar(wvMenuListeRelance),@widgetVar(wvDataTableListeGestRelance),
+				@widgetVar(wvDataTableListeGestRelance2),@widgetVar(wvPanelRenderedRelance),@widgetVar(wvPanelTotauxRelance)
+				,@widgetVar(wvInfosComplementairesRelance),@widgetVar(wvPanelListeDocRelance)"
+			disabled="#{relanceController.etatBouton('inserer')}" />
+
+		<!-- 		<p:menuitem title="Modifier l'avoir courant" value="Modifier" styleClass="icon icon-update" -->
+		<!-- 			actionListener="#{relanceController.actModifier}" -->
+		<!-- 			process="@this" -->
+		<!-- 			update=":form:messages,@form,@widgetVar(wvMenuListeRelance),@widgetVar(wvDataTableListeGestRelance2),@widgetVar(wvPanelRenderedRelance)" -->
+		<!-- 			disabled="#{relanceController.etatBouton('modifier')}" /> -->
+
+		<p:menuitem title="Annuler les modifications en cours" value="Annuler" styleClass="icon icon-cancel" actionListener="#{relanceController.actAnnuler}"
+			process="@this"
+			update=":form:messages,@form,@widgetVar(wvMenuListeRelance),@widgetVar(wvDataTableListeGestRelance),
+				@widgetVar(wvDataTableListeGestRelance2),@widgetVar(wvPanelRenderedRelance),@widgetVar(wvInfosComplementairesRelance),@widgetVar(wvPanelListeDocRelance)"
+			disabled="#{relanceController.etatBouton('annuler')}">
+			<p:confirm header="Confirmation" message="Etes vous sur de vouloir annuler les modifications en cours ?" icon="ui-icon-alert" />
+		</p:menuitem>
+
+		<!-- 		<p:separator styleClass="separateur-menu-vertical"/> -->
+		<p:menuitem title="Supprimer la Relance courante" value="Supprimer" styleClass="icon icon-delete menuitem-poubelle-droite"
+			actionListener="#{relanceController.actSupprimer}" process="@this"
+			update=":form:messages,@form,@widgetVar(wvMenuListeRelance),@widgetVar(wvDataTableListeGestRelance),@widgetVar(wvDataTableListeGestRelance2),@widgetVar(wvPanelRenderedRelance),@widgetVar(wvInfosComplementairesRelance)"
+			disabled="#{relanceController.etatBouton('supprimer')}">
+			<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer cet enregistrement ?" icon="ui-icon-alert" />
+		</p:menuitem>
+
+		<p:menuitem title="Imprimer la Relance courante" value="Imprimer" styleClass="icon icon-print"
+			onsuccess="window.open('#{request.contextPath}/output?__report=/reports/Relance/FicheRelance.rptdesign&amp;__format=pdf')"
+			actionListener="#{relanceController.actImprimer}" disabled="#{relanceController.etatBouton('imprimer')}" />
+
+		<p:menuitem title="Fermer l'écran" value="Fermer" styleClass="icon icon-close menuitem-fermer-droite" process="@this"
+			actionListener="#{relanceController.actFermer}" update=":form:messages,@widgetVar(wvMenuListeRelance),@widgetVar(wvDataTableListeGestRelance2)" disabled="#{relanceController.etatBouton('fermer')}"
+			onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())">
+
+			<p:confirm header="Confirmation" message="#{msg_diag.alert_fermeture_onglet}" icon="ui-icon-alert"
+				disabled="#{!relanceController.modeEcran.dataSetEnModif()}" />
+		</p:menuitem>
+		<p:separator styleClass="separateur-menu-vertical" />
+
+		<p:menuitem title="Liste des Relances" styleClass="icon icon-liste" oncomplete="PF('wvOverlayListeRelance').show();" />
+
+	</p:menubar>
+
+	<div class="ui-g">
+		<div class="ui-g-6">
+			<p:panel header="Paramètres" widgetVar="wvPanelParametreRelance">
+				<div class="ui-g">
+					<div class="ui-g-1">
+						<p:outputLabel value="Début" />
+					</div>
+					<div class="ui-g-5">
+						<p:calendar value="#{relanceController.dateDeb}" pattern="#{msg.date_pattern}" mask="true" locale="fr" navigator="true"
+							showOn="button" timeZone="#{msg.time_zone}" disabled="#{relanceController.editable()}">
+							<f:attribute name="nomChamp" value="#{const.C_DATE_DOCUMENT}" />
+							<p:ajax event="dateSelect" listener="#{relanceController.controleDate}" update="@this" />
+							<p:ajax event="change" listener="#{relanceController.controleDate}"  update="@this" />
+						</p:calendar>
+					</div>
+					<div class="ui-g-1">
+						<p:outputLabel value="Fin" />
+					</div>
+					<div class="ui-g-5">
+						<p:calendar value="#{relanceController.dateFin}" pattern="#{msg.date_pattern}" mask="true" locale="fr" navigator="true"
+							showOn="button" timeZone="#{msg.time_zone}" disabled="#{relanceController.editable()}">
+							<f:attribute name="nomChamp" value="#{const.C_DATE_DOCUMENT}" />
+							<p:ajax event="dateSelect" listener="#{relanceController.controleDate}" update="@this" />
+							<p:ajax event="change" listener="#{relanceController.controleDate}"  update="@this" />
+						</p:calendar>
+					</div>
+					<div class="ui-g-1">
+						<p:outputLabel value="Le tiers" />
+					</div>
+					<div class="ui-g-5">
+						<p:autoComplete value="#{relanceController.taTiersDTO}" converter="entityConverter"
+							completeMethod="#{relanceController.tiersAutoCompleteDTOLight}" disabled="#{relanceController.editable()}"
+							var="tiers" itemLabel="#{tiers.codeTiers}" itemValue="#{tiers}" forceSelection="true"
+									maxResults="#{relanceController.taPreferencesService.nbMaxChargeListeTiers()}"
+									moreText="Il y a #{component.maxResults} affichés sur #{component.suggestions.size()} au total, Veuillez affiner votre recherche ou cliquer ici pour en afficher plus ..."
+							dropdown="true" placeholder="Tiers">
+							<p:column>
+								<h:outputText value="#{tiers.codeTiers}"/>
+							</p:column>
+
+							<p:column>
+								<h:outputText value="#{tiers.nomTiers}" />
+							</p:column>
+
+							<p:column>
+								<h:outputText value="#{tiers.prenomTiers}" />
+							</p:column>
+
+							<p:column>
+								<h:outputText value="#{tiers.nomEntreprise}" />
+							</p:column>
+
+							<f:attribute name="nomChamp" value="#{const.C_CODE_TIERS}" />
+							<p:ajax event="itemSelect" listener="#{relanceController.autcompleteSelection}" update="@this" />
+							<p:ajax event="moreText" listener="#{relanceController.onMoreTextTiers}" />
+						</p:autoComplete>
+					</div>
+					<div class="ui-g-3">
+						<p:selectBooleanCheckbox itemLabel="Tous les tiers" value="#{relanceController.tousLesTiers}" disabled="#{relanceController.editable()}">
+<!-- 							<f:attribute name="nomChamp" value="#{const.C_TTC}" /> -->
+							<p:ajax event="change" update="@this" />
+						</p:selectBooleanCheckbox>
+					</div>
+					<div class="ui-g-2">
+						<p:commandButton value="Valider" title="Valider" 
+							actionListener="#{relanceController.actRechercherDocument}" process="@this" 
+							update="@widgetVar(wvPanelListeDocRelance)" disabled="#{relanceController.editable()}"/>
+					</div>
+				</div>
+			</p:panel>
+		</div>
+		<div class="ui-g-6">
+			<p:panel header="Compléments" widgetVar="wvPanelParametreComplRelance">
+				<p:outputLabel value="A partir de " />
+				<p:inputText value="#{relanceController.limite}" disabled="#{relanceController.editable()}">
+					<p:ajax event="blur" update="@this" />
+				</p:inputText>
+			</p:panel>
+		</div>
+	</div>
+	<p:panel header="Liste des documents à relancer" widgetVar="wvPanelListeDocRelance">
+		
+		<p:outputLabel value="Code relance" />
+		<p:inputText value="#{relanceController.codeRelance}" style="width:80%">
+			<p:ajax event="blur" update="@this" />
+		</p:inputText>
+		
+		
+		
+<!-- 	<ui:repeat var="nr" value="#{relanceController.mapRelanceParNiveau.entrySet().toArray()}"> -->
+		<p:tabView var="nr" value="#{relanceController.mapRelanceParNiveau.entrySet().toArray()}">
+			<p:tab title="#{nr.key}">
+				<p:commandButton title="Exporter la liste" ajax="false" styleClass="icon icon-export" disabled="#{relanceController.etatBouton('imprimer')}">
+					<p:fileDownload value="#{nr.value.exportation}"/>
+			 	</p:commandButton>
+	<!-- 		value="#{relanceController.valuesLignes}" var="l" -->
+	<!-- selection="#{relanceController.selectionLignes}" -->
+				<p:dataTable
+					id="idDatatableListeDocRelance"
+					value="#{nr.value.listeRelance}" var="l"
+					rowKey="#{l.taLRelance.codeDocument}"
+					sortBy="#{l.taLRelance.codeDocument}"
+					sortOrder="descending"
+					resizableColumns="true"
+					editable="true" 
+					selection="#{nr.value.listeSelectionRelance}"
+					rowSelectMode="checkbox"
+					paginator="true" 
+					rows="#{msg.modele_datatable_ligne_par_page_debut}"
+					paginatorTemplate="#{msg.modele_datatable_paginator}"
+					rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+					emptyMessage="#{msg.message_datatable_vide}"
+					currentPageReportTemplate="#{msg.modele_datatable_page_courante}">
+					<f:facet name="{Exporters}">
+			            <h:commandLink>
+			                <p:graphicImage library="images" name="excel.png" width="24"/>
+			                <p:dataExporter type="xls" target="idDatatableListeDocRelance" fileName="liste_doc_relance" />
+			            </h:commandLink>
+			 
+			            <h:commandLink>
+			                <p:graphicImage  library="images" name="pdf.png"  width="24"/>
+			                <p:dataExporter type="pdf" target="idDatatableListeDocRelance" fileName="liste_doc_relance"/>
+			            </h:commandLink>
+			 
+			            <h:commandLink>
+			                <p:graphicImage  library="images" name="csv.png"  width="24"/>
+			                <p:dataExporter type="csv" target="idDatatableListeDocRelance" fileName="liste_doc_relance" options="#{separateurCsvController.csvOptions}" />
+			            </h:commandLink>
+			 
+			            <h:commandLink>
+			                <p:graphicImage  library="images" name="xml.png"  width="24"/>
+			                <p:dataExporter type="xml" target="idDatatableListeDocRelance" fileName="liste_doc_relance" />
+			            </h:commandLink>
+						
+			        </f:facet>
+			        
+			        <f:facet name="paginatorTopLeft">
+			            <p:commandButton value="aaa" icon="fa fa-sync" />
+			        </f:facet>
+			        
+		<!-- 	        <p:ajax event="cellEdit" listener="#{dtEditView.onCellEdit}" update=":form:msgs" /> -->
+					<p:ajax event="rowSelectCheckbox" listener="#{relanceController.onRowSelectLigne}" update="@this" />
+			        <p:ajax event="rowUnselect" listener="#{relanceController.onUnRowSelectLigne}" update="@this" />
+			        
+					<f:facet name="header">
+							<p:outputLabel value="Liste des lignes de relance des factures (#{nr.value.listeRelance.size()})" />
+					</f:facet>
+					
+					<p:column selectionMode="multiple" style="width:16px;text-align:center" exportable="false"/>
+					
+					<p:column headerText="Code document">
+						<p:commandLink value="#{l.taLRelance.codeDocument}"
+							action="#{ouvertureDocumentBean.detailDocument(l.taFacture)}" process="@this"
+							update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+						</p:commandLink> 
+					</p:column>
+					<p:column headerText="Date échéance" styleClass="center">
+						<h:outputText value="#{l.taLRelance.dateEcheance}" >
+							<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+						</h:outputText>
+					</p:column>
+					<p:column headerText="Code tiers" sortBy="#{l.codeTiers}" filterBy="#{l.codeTiers}" filterMatchMode="contains">
+						<p:commandLink value="#{l.taLRelance.codeTiers}"
+							action="#{ouvertureTiersBean.detailTiers(l.taTiers)}" process="@this"
+							update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureTiersBean.event.cssLgrTab}');">
+						</p:commandLink> 
+					</p:column>
+		<!-- 			<p:column headerText="Nom Entreprise" visible="#{recherche.afficheColonne('Nom Entreprise')}"> -->
+		<!-- 				<p:outputLabel value="#{l.taEntreprise.nomEntreprise}" /> -->
+		<!-- 			</p:column> -->
+					<p:column headerText="Nom">
+						<p:outputLabel value="#{l.taLRelance.nomTiers}" />
+					</p:column>
+					<p:column headerText="Net TTC" styleClass="right">
+						<h:outputText value="#{l.taLRelance.netTTC}" >
+							<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+						</h:outputText>
+					</p:column>
+					<p:column headerText="Reste à régler" styleClass="right">
+						<h:outputText value="#{l.taLRelance.resteARegler}" >
+							<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+						</h:outputText>
+					</p:column>
+					<p:column headerText="Niveau relance" styleClass="center">
+						<p:cellEditor>
+			               <f:facet name="output"><p:outputLabel value="#{l.taLRelance.taTRelance.codeTRelance}" /></f:facet>
+			               <f:facet name="input">
+			                   <p:selectOneMenu value="#{l.taLRelance.taTRelance}" style="width:100%" converter="entityConverter">
+			                       <f:selectItems value="#{relanceController.listeNiveauRelance}" var="r" itemLabel="#{r.codeTRelance}" itemValue="#{r}" />
+			                   </p:selectOneMenu>
+			               </f:facet>
+			           </p:cellEditor>
+					</p:column>
+					<p:column style="width:32px" >
+						<p:rowEditor/>
+					</p:column>
+					<p:column headerText="Libellé relance">
+						<p:outputLabel value="#{l.taLRelance.taTRelance.libelleTRelance}" />
+					</p:column>
+					
+				</p:dataTable>
+			</p:tab>
+		</p:tabView>
+<!-- 		</ui:repeat> -->
+		<p:fieldset legend="Totaux" rendered="#{!relanceController.mapRelanceParNiveau.isEmpty()}">
+			<p:outputLabel value="Nombre de document : #{relanceController.nbLigne}" />
+			<br/>
+			<p:outputLabel value="Montant total TTC : #{relanceController.totalTTC} €" />
+		</p:fieldset>
+	</p:panel>
+</ui:composition>

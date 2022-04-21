@@ -1,0 +1,141 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core" 
+	xmlns:ui="http://java.sun.com/jsf/facelets" 
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/template_dialog_lgr.xhtml">
+
+	<ui:define name="head">
+		<title>Ajout d'un contrôle à l'article <h:outputText
+				value="#{listeConformiteController.masterEntity.codeArticle}" />
+		</title>
+
+		<style type="text/css">
+			.ui-widget {
+				font-size: 90%;
+			}
+		</style>
+	</ui:define>
+
+	<ui:define name="content">
+
+		<h:form id="idDialogCreerControleArticle">
+		
+			<p:messages autoUpdate="true" showDetail="true"></p:messages>
+		
+			<p:panel id="idListeConformitePanel" visible="true" widgetVar="widgetVarListeConformitePanel">
+				<p:panel resizable="false" id="listeConformitePanelCache">
+
+					<div class="ui-g">
+						
+							<div class="ui-g-4">
+								<h:outputText value="Code :" />
+							</div>
+							<div class="ui-g-8">
+								<p:inputText value="#{listeConformiteController.nouveau.code}" style="width:100%" />
+							</div>
+							<div class="ui-g-4">
+								<h:outputText value="Groupe controle :" />
+							</div>
+							<div class="ui-g-8">
+								<p:panel styleClass="panel-autocomplete">
+									<p:autoComplete value="#{listeConformiteController.nouveau.taGroupe}"
+										completeMethod="#{listeConformiteController.groupeAutoComplete}" 
+										var="grp" itemLabel="#{grp.codeGroupe}"
+										itemValue="#{grp}" 
+										forceSelection="true" 
+										dropdown="true" 
+										placeholder="Groupe">
+										<p:column>
+											<f:facet name="header">
+												<p:commandButton value="Ajouter" title="Insérer" process="@this" update="@this"
+													actionListener="#{listeConformiteController.actDialogGroupeControle}" styleClass="btn-insert btn">
+													<p:ajax event="dialogReturn" listener="#{listeConformiteController.handleReturnDialogGroupeControle}"
+														update="@parent:@parent"/>
+<!-- 														update="" -->
+												</p:commandButton>
+											</f:facet>
+											<h:outputText value="#{grp.codeGroupe}" />
+										</p:column>
+										<p:column>
+											<h:outputText value="#{grp.libelle}" />
+										</p:column>
+										<p:ajax event="itemSelect" update="idLblGroupe" />
+									</p:autoComplete>
+									
+									<p:outputLabel id="idLblGroupe" value="#{listeConformiteController.nouveau.taGroupe.libelle}" />
+								</p:panel>
+							</div>
+						
+							<div class="ui-g-4">
+								<h:outputText value="Libellé :" />
+							</div>
+							<div class="ui-g-8">
+								<p:inputText value="#{listeConformiteController.nouveau.libelleConformite}" style="width:100%" />
+							</div>
+							<div class="ui-g-4">
+								<h:outputText value="Type :" />
+							</div>
+							<div class="ui-g-8">
+								<p:selectOneMenu value="#{listeConformiteController.nouveau.taTypeConformite}" 
+									style="width:125px">
+									<f:selectItem itemLabel="Type" noSelectionOption="true" />
+									<f:selectItems value="#{listeConformiteController.listeTypeControle}" var="a" itemLabel="#{a.libelle}" itemValue="#{a}" />
+									<p:ajax update="idLibelle2, idValeur2" />
+<!-- 									<p:ajax update="idLibelle2, idValeur2, idPanelAideFormule" /> -->
+								</p:selectOneMenu>
+							</div>
+							<div class="ui-g-4">
+								<h:outputText value="Valeur par défaut :" />
+							</div>
+							<div class="ui-g-8">
+								<h:inputText value="#{listeConformiteController.nouveau.valeurDefaut}" />
+							</div>
+							<div class="ui-g-4">
+								<h:outputText id="idLibelle2" value="#{listeConformiteController.nouveau.taTypeConformite.libelleDeuxieme}" />
+							</div>
+							<div class="ui-g-8">
+								<h:inputText id="idValeur2" value="#{listeConformiteController.nouveau.deuxiemeValeur}"
+									disabled="#{listeConformiteController.nouveau.taTypeConformite.libelleDeuxieme==null}" />
+<!-- 									<p:panel id="idPanelAideFormule"> -->
+<!-- 										<p:commandButton id="idAideBaremeBtn" value="Aide" type="button" disabled="#{listeConformiteController.nouveau.taTypeConformite.code=='calc'}"/> -->
+<!-- 										<p:overlayPanel id="idAideBaremePanel" for="idAideBaremeBtn" hideEffect="fade"> -->
+<!-- 											<ui:include src="aide_formule_controles.xhtml" />						    	 -->
+<!-- 										</p:overlayPanel> -->
+<!-- 									</p:panel> -->
+							</div>
+<!-- 							<div class="ui-g-4"> -->
+<!-- 								<h:outputText value="Bloquant :" /> -->
+<!-- 							</div> -->
+<!-- 							<div class="ui-g-8"> -->
+<!-- 								<p:selectBooleanCheckbox value="#{listeConformiteController.nouveau.ctrlBloquant}"> -->
+<!-- 									<p:ajax listener="#{listeConformiteController.actCtrlBloquantChangeEvent}" update="@this,@widgetVar(wvCbArticleControleFacultatif)"/> -->
+<!-- 								</p:selectBooleanCheckbox> -->
+<!-- 							</div> -->
+							<div class="ui-g-4">
+								<h:outputText value="Facultatif :" />
+							</div>
+							<div class="ui-g-8">
+								<p:selectBooleanCheckbox widgetVar="wvCbArticleControleFacultatif" value="#{listeConformiteController.nouveau.ctrlFacultatif}" disabled="#{listeConformiteController.nouveau.ctrlBloquant}"/>
+							</div>
+
+							<div class="ui-g-12 text-center">
+								<p:separator />
+								<p:commandButton value="Enregistrer controle" styleClass="btn-save btn" widgetVar="widgetVarBtnEnregistrerCtrl"
+									disabled="#{listeConformiteController.etatBouton('enregistrer')}"
+									update="@widgetVar(widgetVarListeConformitePanel), @widgetVar(panelControleArticle), @widgetVar(widgetVarBtnInsererCtrl), @widgetVar(widgetVarBtnInsererModeleCtrl), @widgetVar(widgetVarBtnSupprimerCtrl),@widgetVar(widgetVarBtnModifierCtrl)"
+									actionListener="#{listeConformiteController.actEnregistrer}" />
+
+								<p:commandButton id="btnAnnulerControle" value="Annuler" styleClass="btn-cancel btn"
+									widgetVar="widgetVarBtnAnnulerCtrl" disabled="#{listeConformiteController.etatBouton('annuler')}"
+									update="@widgetVar(widgetVarListeConformitePanel), @widgetVar(panelControleArticle), @widgetVar(widgetVarBtnInsererCtrl), @widgetVar(widgetVarBtnInsererModeleCtrl), @widgetVar(widgetVarBtnSupprimerCtrl),@widgetVar(widgetVarBtnModifierCtrl)"
+									actionListener="#{listeConformiteController.actAnnuler}" />
+							</div>
+					</div>
+				</p:panel>
+
+			</p:panel>
+		</h:form>
+	</ui:define>
+
+</ui:composition>

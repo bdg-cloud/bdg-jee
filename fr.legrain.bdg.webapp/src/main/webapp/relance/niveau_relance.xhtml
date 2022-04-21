@@ -1,0 +1,184 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<p:panel id="niveauRelanceFormPrincipal" widgetVar="niveauRelanceForm">
+
+		<p class="subtitle">
+			<p:outputLabel value="Gestion des niveaux de relance" rendered="#{dansDialogue == null ? true : false}" />
+		</p>
+		
+		<!-- bouton -->
+		<p:panel id="idDatatableNiveauRelanceF" class="mt30" style="position:relative;" rendered="#{dansDialogue == null ? true : false}">
+			
+			<p:commandButton value="Ajouter" title="Insérer" process="@this"
+				update=":form:tabView,:form:messages,:form" 
+				actionListener="#{niveauRelanceController.actDialogTypes}"
+				styleClass="icon-insert icon" >
+				<p:ajax event="dialogReturn" listener="#{niveauRelanceController.handleReturnDialogTypes}" update=":form"/>
+			</p:commandButton>
+
+			<p:commandButton value="Modifier" title="Modifier" process="@this"
+				update=":form:tabView,:form:messages,:form" 
+				actionListener="#{niveauRelanceController.actDialogModifier}"
+				styleClass="icon-update icon" >
+				<p:ajax event="dialogReturn" listener="#{niveauRelanceController.handleReturnDialogTypes}" update=":form"/>
+			</p:commandButton>
+
+			<p:commandButton id="niveauRelanceSupprimer" value="Supprimer"
+				class="icon-delete icon menuitem-poubelle-droite"
+				disabled="#{niveauRelanceController.etatBouton('supprimer')}"
+				actionListener="#{niveauRelanceController.actSupprimer}"
+				update="@widgetVar(wvNiveauRelanceDataTable)" 
+				process="@this">
+				<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer cet enregistrement ?" icon="ui-icon-alert" />
+			</p:commandButton>
+
+			<p:commandButton id="niveauRelanceFermer" title="Fermer"
+				class="icon-close icon menuitem-fermer-droite" onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())">
+				<p:confirm header="Confirmation" message="#{msg_diag.alert_fermeture_onglet}" icon="ui-icon-alert" disabled="#{!niveauRelanceController.modeEcran.dataSetEnModif()}"/>
+			</p:commandButton>
+
+			<p:commandButton id="niveauRelanceFermerDialogue" title="Fermer"
+				process="@this" class="icon-close icon menuitem-fermer-droite"
+				actionListener="#{niveauRelanceController.actFermerDialog}"
+				rendered="#{dansDialogue != null ? true : false}" />
+		</p:panel>
+
+		<p:dataTable id="idDatatableNiveauRelance" 
+			widgetVar="wvNiveauRelanceDataTable" 
+			var="table"
+			rendered="#{dansDialogue == null ? true : false}"
+			value="#{niveauRelanceController.values}"
+			rowKey="#{table.id}" 
+			selectionMode="single"
+			class="datatable" 
+			selection="#{niveauRelanceController.selection}"
+			paginator="false" 
+			rows="#{msg.modele_datatable_ligne_par_page_debut}"
+			paginatorTemplate="#{msg.modele_datatable_paginator}"
+			rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+			emptyMessage="#{msg.message_datatable_vide}"
+			currentPageReportTemplate="#{msg.modele_datatable_page_courante}">
+
+			<p:ajax event="rowSelect" listener="#{niveauRelanceController.onRowSelect}" />
+
+			<f:facet name="{Exporters}">
+				<h:commandLink>
+					<p:graphicImage library="images" name="excel.png" width="24" />
+					<p:dataExporter type="xls" target="idDatatableNiveauRelance" fileName="niveau_relance" />
+				</h:commandLink>
+
+				<h:commandLink>
+					<p:graphicImage library="images" name="pdf.png" width="24" />
+					<p:dataExporter type="pdf" target="idDatatableNiveauRelance" fileName="niveau_relance" />
+				</h:commandLink>
+
+				<h:commandLink>
+					<p:graphicImage library="images" name="csv.png" width="24" />
+					<p:dataExporter type="csv" target="idDatatableNiveauRelance" fileName="niveau_relance" options="#{separateurCsvController.csvOptions}" />
+				</h:commandLink>
+
+				<h:commandLink>
+					<p:graphicImage library="images" name="xml.png" width="24" />
+					<p:dataExporter type="xml" target="idDatatableNiveauRelance" fileName="niveau_relance" />
+				</h:commandLink>
+
+			</f:facet>
+
+			<p:column sortBy="#{table.codeTRelance}">
+				<f:facet name="header">
+					<h:outputText value="Code" />
+				</f:facet>
+				<h:outputText value="#{table.codeTRelance}" />
+			</p:column>
+			<p:column sortBy="#{table.libelleTRelance}">
+				<f:facet name="header">
+					<h:outputText value="Libellé" />
+				</f:facet>
+				<h:outputText value="#{table.libelleTRelance}" />
+			</p:column>
+			<p:column sortBy="#{table.ordreTRelance}">
+				<f:facet name="header">
+					<h:outputText value="Niveau" />
+				</f:facet>
+				<h:outputText value="#{table.ordreTRelance}" />
+			</p:column>
+			
+		</p:dataTable>
+
+	</p:panel>
+
+	<p:messages id="niveauRelanceMessages" showDetail="true" autoUpdate="true" closable="true" />
+
+	<p:panel id="niveauRelancePanel" visible="true" widgetVar="varNiveauRelancePanel">
+		<p:panel onLoad="reset()" resizable="false" id="niveauRelancePanelCache" rendered="#{niveauRelanceController.modeEcran.dataSetEnModif()}">
+
+			<f:validateBean disabled="true">
+				<div class="ui-grid ui-grid-responsive" id="typePaiementGridResp">
+					<div class="ui-grid-row">
+						<div class="ui-grid-col-4">
+							<h:outputText value="Code :"/>
+						</div>
+						<div class="ui-grid-col-8">
+							<h:inputText
+								value="#{niveauRelanceController.nouveau.codeTRelance}" styleClass="Input50"
+								required="true" requiredMessage="#{msg_diag.alert_champs_obligatoir}" validator="#{niveauRelanceController.validateNiveauRelance}">
+									<f:attribute name="nomChamp" value="#{const.C_CODE_T_PAIEMENT}" />
+									<p:ajax event="blur" update="@this"/>
+							</h:inputText>
+						</div>
+					</div>
+					<div class="ui-grid-row">
+						<div class="ui-grid-col-4">
+							<h:outputText value="Libelle :"></h:outputText>
+						</div>
+						<div class="ui-grid-col-8">
+							<h:inputText value="#{niveauRelanceController.nouveau.libelleTRelance}" styleClass="Input100"
+								required="true" requiredMessage="#{msg_diag.alert_champs_obligatoir}" validator="#{niveauRelanceController.validateNiveauRelance}">
+									<f:attribute name="nomChamp" value="#{const.C_LIB_T_PAIEMENT}" />
+									<p:ajax event="blur" update="@this"/>
+							</h:inputText>
+						</div>
+					</div>
+					<div class="ui-grid-row">
+						<div class="ui-grid-col-4">
+							<h:outputText value="Niveau :"></h:outputText>
+						</div>
+						<div class="ui-grid-col-8">
+							<h:inputText value="#{niveauRelanceController.nouveau.ordreTRelance}"
+								required="true" requiredMessage="#{msg_diag.alert_champs_obligatoir}" validator="#{niveauRelanceController.validateNiveauRelance}">
+									<f:attribute name="nomChamp" value="#{const.C_COMPTE_T_PAIEMENT}" />
+									<p:ajax event="blur" update="@this"/>
+							</h:inputText>
+						</div>
+					</div>
+					<div class="ui-grid-row">
+						<div class="ui-grid-col-12 text-center">
+							<p:commandButton value="Enregistrer" styleClass="btn-save btn"
+								disabled="#{niveauRelanceController.etatBouton('enregistrer')}"
+								update="@widgetVar(niveauRelanceForm), @widgetVar(varNiveauRelancePanel)"
+								actionListener="#{niveauRelanceController.actEnregistrer}" />
+							
+							<p:commandButton id="niveauRelanceAnnuler" value="Annuler"
+								styleClass="btn-cancel btn" process="@this"
+								disabled="#{niveauRelanceController.etatBouton('annuler')}"
+								update="@widgetVar(niveauRelanceForm), @widgetVar(varNiveauRelancePanel)"
+								actionListener="#{niveauRelanceController.actAnnuler}" 
+								rendered="#{dansDialogue != null ? false : true}" />
+
+							<p:commandButton id="niveauRelanceAnnulerDialogue" value="Annuler"
+								styleClass="btn-cancel btn" process="@this"
+								disabled="#{niveauRelanceController.etatBouton('annuler')}"
+								actionListener="#{niveauRelanceController.actFermerDialog}"
+								rendered="#{dansDialogue != null ? true : false}" />
+						</div>
+					</div>
+				</div>
+			</f:validateBean>
+
+		</p:panel>
+	</p:panel>
+</ui:composition>

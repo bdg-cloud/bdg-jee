@@ -1,0 +1,428 @@
+Ubuntu 14.04 LTS / PostgresSQL 9.3
+
+Installation Ubuntu serveur
+	* français, langue et clavier
+	* Partion pour (40Go) : environ 10Go pour OS sur /, 5Go de swap et le reste pour /var (données et bdd)
+	* Nom de machine : ubuntuSolstyce
+	* choisir serveur : OpenSSH et PostgreSQL
+	* utilisateur : solstyce (pwd : solstyce)
+config du serveur
+
+Activation du compte root
+	sudo passwd root
+Mot de passe "solstyce" ou généré avec pwgen
+Passe en mode root
+	su
+
+Mettre à jour
+	sudo apt-get update
+	sudo apt-get upgrade
+	
+Générer un encodage perl manquant (possible sur ubuntu)
+	locale-gen en_US.UTF-8
+	locale-gen fr_FR.UTF-8
+	
+Installer d'autres logiciel manquant si nécessaire :
+	apt-get install unzip
+	apt-get install pwgen
+	
+voir adresse IP
+ifconfig
+
+Changer pour adresse IP fixe, attetion a adapté au LAN du client (address, netmask et gateway, et DNS éventuellement - ici DNS de google)
+	sudo nano /etc/network/interfaces
+	>
+	# The loopback network interface
+	auto lo
+	iface lo inet loopback
+
+	# The primary network interface
+	auto p2p1
+	#iface p2p1 inet dhcp
+	iface p2p1 inet static
+	address 192.168.1.234
+	netmask 255.255.255.0
+	gateway 192.168.1.1
+	dns-nameservers 8.8.8.8 8.8.4.4
+
+reboot
+
+Si non installé pendant l'installation, installé le serveur OpenSSH
+A partir de maintenant on peu se connecter en SSH (plus pratique, on travaille sur son propre ordi et copier/coller possible)
+	ssh solstyce@192.168.1.234
+ou SFTP (FileZilla ou CyberDuck)
+	sftp://192.168.1.234
+
+install postgres 
+Si non installé pendant l'installation, installé le serveur PostgreSQL
+	apt-get install postgresql
+config postgres
+Vérifier la version
+	psql --version
+	
+Configuration de Postgres en UTF-8 par défaut :
+	sudo pg_dropcluster --stop 9.3 main
+	sudo pg_createcluster --locale=fr_FR.utf8 --start 9.3 main
+	
+** Autre possibilié moins radicale pour pouvoir créer des bases en UTF-8
+	update pg_database set datistemplate=false where datname='template1';
+	drop database Template1;
+	create database template1 with owner=postgres encoding='UTF-8'
+	lc_collate='fr_FR.utf8' lc_ctype='fr_FR.utf8' template template0;
+	update pg_database set datistemplate=true where datname='template1';
+
+
+Pour des raisons de sécurité, seul l'utilisateur "postgres" est autorisé à utiliser la commende PSQL
+Changer le mot de passe de l'utilisateur "postgres" par défaut
+	sudo -u postgres psql postgres
+une fois connecté à "psql"
+	\password postgres
+Saisir le nouveau mot de passe 2 fois : xxxxxxxxx     //cf secret
+Sortir de "psql"
+	\q
+
+Autoriser les connexions à la base de données de l'extérieur à fin de pouvoir l'administré à distance
+IP fixe de Le Grain : 90.63.218.1
+Modification du fichier pg_hba.conf (adapter le numéro de version si besoin)
+	sudo nano /etc/postgresql/9.3/main/pg_hba.conf
+	Pour un accès à partir de l'intranet uniquement ajouter la ligne --> (sans -->) et changer peer en md5 dans la ligne au dessus
+	>
+	# "local" is for Unix domain socket connections only
+	local   all             all                                     md5
+	-->host    all             all             192.168.1.0/24            md5
+	ou pour un accès à partir de n'importe quelle adresse ajouter la ligne --> (sans -->)
+	>
+	# "local" is for Unix domain socket connections only
+	local   all             all                                     md5
+	-->host    all             all             all            			  md5
+
+Modification du fichier postgresql.conf (adapter le numéro de version si besoin)
+	sudo nano /etc/postgresql/9.3/main/postgresql.conf
+Modifier :
+	>
+	# - Connection Settings -
+	#listen_addresses = 'localhost'
+en 
+	>
+	# - Connection Settings -
+	listen_addresses = '*'
+
+Redémarrer le service postgreSQL
+	sudo service postgresql restart
+
+Tester la connexion avec pgAdmin à partir d'un autre poste
+Avec pgAdmin créer sur le serveur postgreSQL un nouvel utilisateur (role de connexion)
+nom : ###_LOGIN_PG_BDG_###
+pwd : ###_PASSWORD_PG_BDG_###
+(Ou en tant qu'utilisateur 'postgres' exécuter la commande : psql -c "CREATE USER ###_LOGIN_PG_BDG_### WITH PASSWORD '###_PASSWORD_PG_BDG_###';"          )
+Penser à donner les droits à cet utilisateur pour "créer des base de données" et les droits super utilisateur
+Le mot de passe ne doit pas expirer
+(si connexion impossible, essayé : sudo -u postgres psql -c "ALTER USER bdg VALID UNTIL 'infinity';")
+
+Dans /var (ou dans la partion qui doit être réservé aux données, adpater en fonction)
+Créer un dossier "lgr"
+	sudo mkdir /var/lgr
+	sudo chmod 777 /var/lgr
+Créer un dossier "java" dans lgr
+	sudo mkdir /var/lgr/java
+
+installation du JDK
+installer un JDK 64bits officiel (Oracle JDK 8+) : http://www.oracle.com/technetwork/java/javase/downloads/index.html
+Copier ou télécharger le fichier "jdk-8u65-linux-x64.tar.gz" dans le répoertoire "/var/lgr/java"
+Le décompresser
+	sudo cp jdk-8u60-linux-x64.tar.gz /var/lgr/java/
+	sudo tar xvzf jdk-8u65-linux-x64.tar.gz
+On obtient
+	/var/lgr/java//jdk1.8.0_60
+
+
+installation de WildFly
+Copier une install (legrain) de WildFly 8.2 dans  "/var/lgr" : wildfly-8.2.0.Final.legrain-20151021.zip
+	sudo unzip wildfly-8.2.0.Final.legrain-20151021.zip
+	sudo mv wildfly-8.2.0.Final /var/lgr/
+après installation on à "/var/lgr/wildfly-8.2.0.Final"
+
+Script de lancement de WildFly au démarage de la machine :
+Système de lancement des service, Ubuntu 14.04 LTS : Upstartjob
+Système de lancement des service, Ubuntu 16.04 LTS : Systemd
+Dans les 2 cas, créer le fichier dans /etc/init.d
+
+	sudo nano /etc/init.d/jboss
+>
+	#!/bin/bash
+	
+	### BEGIN INIT INFO
+	# Provides:          jboss
+	# Required-Start:    $local_fs $remote_fs $network $syslog
+	# Required-Stop:     $local_fs $remote_fs $network $syslog
+	# Default-Start:     2 3 4 5
+	# Default-Stop:      0 1 6
+	# Short-Description: Start/Stop JBoss AS 7
+	### END INIT INFO
+	# chkconfig: 35 92 1
+	#
+	#For RedHat based distributions (CentOS, Oracle Linux, Fedora) execute (as root):
+	# chkconfig servicename on
+	#For Debian based distributions (Ubuntu) execute (as root):
+	# update-rc.d servicename defaults
+	
+	## Include some script files in order to set and export environmental variables
+	## as well as add the appropriate executables to $PATH.
+		[ -r /etc/profile.d/java.sh ] && . /etc/profile.d/java.sh
+		[ -r /etc/profile.d/jboss.sh ] && . /etc/profile.d/jboss.sh
+	
+		JBOSS_HOME=/var/lgr/wildfly-8.2.0.Final
+		export LAUNCH_JBOSS_IN_BACKGROUND=true
+		export JBOSS_PIDFILE=$JBOSS_HOME/pid
+	
+		AS7_OPTS="$AS7_OPTS -Dorg.apache.tomcat.util.http.ServerCookie.ALLOW_HTTP_SEPARATORS_IN_V0=true"   ## See AS7-1625
+		AS7_OPTS="$AS7_OPTS -Djboss.bind.address.management=0.0.0.0"
+		AS7_OPTS="$AS7_OPTS -Djboss.bind.address=0.0.0.0"
+	
+		case "$1" in
+			start)
+				echo "Starting JBoss AS 7..."
+				#sudo -u jboss sh ${JBOSS_HOME}/bin/standalone.sh $AS7_OPTS           ##  If running as user "jboss"
+				#start-stop-daemon --start --quiet --background --chuid jboss --exec ${JBOSS_HOME}/bin/standalone.sh $AS7_OPTS   ## Ubuntu
+				${JBOSS_HOME}/bin/standalone.sh $AS7_OPTS &
+			;;
+			stop)
+				echo "Stopping JBoss AS 7..."
+				#sudo -u jboss sh ${JBOSS_HOME}/bin/jboss-admin.sh --connect command=:shutdown            ##  If running as user "jboss"
+				#start-stop-daemon --start --quiet --background --chuid jboss --exec ${JBOSS_HOME}/bin/jboss-admin.sh -- --connect command=:shutdown    $
+				${JBOSS_HOME}/bin/jboss-cli.sh --connect command=:shutdown
+			;;
+			*)
+				echo "Usage: /etc/init.d/jbossas7 {start|stop}"; exit 1;
+			;;
+		esac
+	
+		exit 0
+
+Modifier la ligne contenant le répertoire de base jboss si besoin
+	JBOSS_HOME=/var/lgr/wildfly-8.2.0.Final
+et celle du fichier stockant le PID
+	JBOSS_PIDFILE=$JBOSS_HOME/pid
+
+Rendre le fichier exécutable : 
+	sudo chmod 777 /etc/init.d/jboss
+
+**Pour "Upstartjob" (14.04)
+Indiquer au système que le service doit être lancer au démarrage
+	sudo update-rc.d jboss defaults
+	#sudo update-rc.d jboss remove
+	
+**Pour Systemd ("16.04")
+Création du fichier service
+	sudo nano /etc/systemd/system/jboss.service
+>
+	[Unit]
+	Description=WildFly server
+	After=network.target
+	
+	[Service]
+	EnvironmentFile=-/etc/default/ssh
+	ExecStart=/etc/init.d/jboss start
+	ExecStop=/etc/init.d/jboss stop
+	KillMode=process
+	Restart=on-failure
+	Type=simple
+	
+	[Install]
+	WantedBy=multi-user.target
+
+
+Activation au démarrage par Systemd	
+	sudo systemctl daemon-reload
+	sudo systemctl enable jboss.service
+	
+/// Memo SystemD
+Lister les services actifs :
+# systemctl list-units --type=service
+
+Connaitre l'état d'un service :
+# systemctl is-active postfix
+
+Activer / Désactiver un service au démarrage :
+# systemctl enable postfix
+# systemctl disable postfix
+
+Stop et Start d'un service :
+# systemctl is-active postfix
+# systemctl stop postfix
+# systemctl is-active postfix
+# systemctl start postfix
+# systemctl is-active postfix
+
+Les commandes reload et restart existent aussi.
+Lister les dépendances d'un service :
+# systemctl list-dependencies postfix
+/// Fin Memo SystemD
+	
+Changer les chemins de la variable JAVA_HOME dans mes scripts d'initialisation de WildFly
+On peut aussi adapter la quantité de RAM maximum que peut utiliser le serveur JEE, ici -Xmx4g pour 4Go
+Dans /var/lgr/wildfly-8.2.0.Final/bin/standalone.sh :
+Au début, après le #!/bin/sh
+	sudo nano /var/lgr/wildfly-8.2.0.Final/bin/standalone.sh
+	>
+	JAVA_HOME="/var/lgr/java/jdk1.8.0_65"
+	JAVA_OPTS="-Xms64m -Xmx4g"
+	
+Ces 2 variables peuvent être spécifiées de façon plus "propre" dans le fichier de configuration : /var/lgr/wildfly-8.2.0.Final/bin/standalone.conf
+Options possible pour lancer le serveur em mode Debug : 
+	JAVA_OPTS="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8787"
+
+Dans /var/lgr/wildfly-8.2.0.Final/bin/jboss-cli.sh :
+=========================
+Au début, après le #!/bin/sh
+	sudo nano /var/lgr/wildfly-8.2.0.Final/bin/jboss-cli.sh
+	>
+	JAVA_HOME="/var/lgr/java/jdk1.8.0_65"
+	
+Relancer la machine pour voir si le serveur JEE se lance bien au démarrage
+	sudo reboot
+Le serveur doit maintenant être accessible via le navigateur 
+	http://192.168.1.234:8080/
+
+Copier le dernier fichier "setup_bdg.tar.gz" dans /tmp
+	cd /tmp
+	wget http://192.168.1.12:8080/hudson/job/solstyce/lastSuccessfulBuild/artifact/setup_bdg.tar.gz
+le décompresser
+	tar xvzf setup_bdg.tar.gz
+
+Lancer l'installation de la mise à jour
+param1 : répertoire d'installation bdg
+param2 : nom d'utilisateur pour la connexion bdd
+param3 : nom d'utilisateur pour la connexion bdd
+param4 : répertoire d'installation du wildfly 8.2
+
+	sudo JAVA_HOME="/var/lgr/java/jdk1.8.0_60"
+	sudo export JAVA_HOME
+
+	cd make_install
+Pour déployer seulement bdg/solstyce
+	sudo ./deploy.sh /var/lgr ###_LOGIN_PG_BDG_### ###_PASSWORD_PG_BDG_### /var/lgr/wildfly-8.2.0.Final &> deploy.log
+Ou pour déployer bdg/solstyce, autorisation et moncompte
+	sudo ./deploy.sh /var/lgr ###_LOGIN_PG_BDG_### ###_PASSWORD_PG_BDG_### /var/lgr/wildfly-8.2.0.Final lgr &> deploy.log
+
+
+config wildfly
+
+vérif des connection bdd dans standalone.xml (laisser le datasource exemple avec derby )
+vérif des alias de virtual host pour les sous domaine 
+
+sudo nano /var/lgr/wildfly-8.2.0.Final/standalone/configuration/standalone.xml
+
+	<datasource jndi-name="java:/BDGPostgresDS" pool-name="BDGPostgresDS" enabled="true" use-java-context="true">
+		<connection-url>jdbc:postgresql:bdg</connection-url>
+		<driver>posgresqlDriver</driver>
+		<pool>
+			<min-pool-size>10</min-pool-size>
+			<max-pool-size>50</max-pool-size>
+			<prefill>true</prefill>
+		</pool>
+		<security>
+			<user-name>###_LOGIN_PG_BDG_###</user-name>
+			<password>###_PASSWORD_PG_BDG_###</password>
+		</security>
+		<timeout>
+			<blocking-timeout-millis>20000</blocking-timeout-millis>
+			<idle-timeout-minutes>5</idle-timeout-minutes>
+		</timeout>
+	</datasource>
+	<datasource jndi-name="java:/BDGLoginPostgresDS" pool-name="BDGLoginPostgresDS" enabled="true" use-java-contex$
+		<connection-url>jdbc:postgresql:login_db</connection-url>
+		<driver>posgresqlDriver</driver>
+		<security>
+			<user-name>###_LOGIN_PG_BDG_###</user-name>
+			<password>###_PASSWORD_PG_BDG_###</password>
+		</security>
+	</datasource>
+
+Si installation complète
+	<datasource jndi-name="java:/AutorisationsPostgresDS" pool-name="AutorisationsPostgresDS" enabled="true" use-j$
+		<connection-url>jdbc:postgresql:autorisations</connection-url>
+		<driver>posgresqlDriver</driver>
+		<security>
+			<user-name>postgres</user-name>
+			<password>postgres</password>
+		</security>
+	</datasource>
+	<datasource jndi-name="java:/MonComptePostgresDS" pool-name="MonComptePostgresDS" enabled="true" use-java-cont$
+		<connection-url>jdbc:postgresql:moncompte</connection-url>
+		<driver>posgresqlDriver</driver>
+		<security>
+			<user-name>postgres</user-name>
+			<password>postgres</password>
+		</security>
+	</datasource>
+
+Pour les sous domaines
+
+ <server name="default-server">
+	<http-listener name="default" socket-binding="http"/>
+	<host name="default-host" alias="localhost">
+		<location name="/" handler="welcome-content"/>
+		<filter-ref name="server-header"/>
+		<filter-ref name="x-powered-by-header"/>
+	</host>
+	<host name="other-host" alias="dev.demo.promethee.biz, dev.demo1.promethee.biz" default-web-module="fr.legrain.bdg.webapp.war"/>
+	<host name="autorisations-host" alias="dev.autorisations.promethee.biz" default-web-module="fr.legrain.autorisations.webapp.war"/>
+	<host name="moncompte-admin-host" alias="dev.admin.moncompte.promethee.biz" default-web-module="fr.legrain.moncompte.admin.webapp.war"/>
+	<host name="moncompte-host" alias="dev.moncompte.promethee.biz" default-web-module="fr.legrain.moncompte.client.webapp.war"/>
+</server>
+
+*********
+Si le nom du dossier local est "abcd"
+<host name="other-host" alias="local.abcd.legrain.fr" default-web-module="fr.legrain.bdg.webapp.war"/>
+*******
+
+
+vérif du fichier de config : bdg.properties
+
+sudo nano /var/lgr/wildfly-8.2.0.Final/standalone/configuration/bdg.properties
+>
+#Fichier dans JBOSS_HOME/standalone/configuration
+webservice_autorisation.wsdl.port=8080
+webservice_autorisation.wsdl.host=localhost
+webservice_autorisation.wsdl.url=http://localhost:8080/fr.legrain.autorisations.ejb/TaAutorisationsService?wsdl
+
+prefixe_sous_domaine=dev.
+nom_domaine=promethee.biz
+
+jdbc.username=###_LOGIN_PG_BDG_###
+jdbc.password=###_PASSWORD_PG_BDG_###
+jdbc.url=jdbc:postgresql:bdg
+jdbc.driver=org.postgresql.Driver
+
+
+Changer le fichier hosts ou les DNS
+Si le nom du dossier local est "abcd"
+
+fichier hosts linux
+sudo nano /etc/hosts
+>
+192.168.1.234   local.abcd.legrain.fr
+
+
+************
+Pour une installation sur Linux sur internet
+En cas d'erreur de hostname au démarrage
+ARJUNA012210: Unable to use InetAddress.getLocalHost() to resolve address
+ou
+java.lang.RuntimeException: java.net.UnknownHostException: 
+faire : echo $HOSTNAME
+ajouter une ligne dans le fichier /etc/hosts
+127.0.0.1	nom_du_serveur
+
+=====================================================================
+postgresql.conf - listes des modifications dans la config postgres au fil des mises à jour de postgres
+=================================
+max_connections = 100
+ssl = true
+max_prepared_transactions = 100 #meme chiffre que max_connections #https://www.cybertec-postgresql.com/en/prepared-transactions/
+max_locks_per_transaction = 1024                # min 10
+jit=off #on par defaut deppuis postgres 11 ou 12 et peu poser problème sur certaines requete très longue (JPA)
+=====================================================================
+
+

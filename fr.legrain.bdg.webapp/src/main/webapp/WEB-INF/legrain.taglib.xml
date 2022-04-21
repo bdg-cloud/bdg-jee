@@ -1,0 +1,165 @@
+<?xml version="1.0"?>
+<facelet-taglib id="lgr" version="2.0"
+ xmlns="http://java.sun.com/xml/ns/javaee"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-facelettaglibrary_2_0.xsd">
+ <namespace>http://legrain.fr/ui</namespace>
+ <tag>
+  <tag-name>test</tag-name>
+  <source>tags/fr/legrain/test.xhtml</source>
+ </tag>
+ <tag>
+  <tag-name>hiddenLink</tag-name>
+  <source>tags/fr/legrain/hiddenLink.xhtml</source>
+  <attribute>
+   <name>actionListener</name>
+   <method-signature>void actionListener(javax.faces.event.ActionEvent)</method-signature>
+  </attribute>
+ </tag>
+ <tag>
+  <tag-name>ctrlConformite</tag-name>
+  <source>tags/fr/legrain/ctrlConformite.xhtml</source>
+ </tag>
+ <tag>
+  <tag-name>emails</tag-name>
+  <source>tags/fr/legrain/emails_envoyes_facelet.xhtml</source>
+ </tag>
+ <tag>
+  <description>Affiche l'icone de validité d'un controle de confomite ou d'un lot.</description>
+  <tag-name>iconStatusConformite</tag-name>
+  <source>tags/fr/legrain/iconStatusConformite.xhtml</source>
+  <attribute>
+   <description>Object contenant le statut de conformité à représenter.</description>
+   <name>statusObject</name>
+   <type>fr.legrain.conformite.model.TaStatusConformite</type>
+  </attribute>
+  <attribute>
+   <description>Code du statut de conformtié à représenter</description>
+   <name>codeStatus</name>
+   <type>java.lang.String</type>
+  </attribute>
+  <attribute>
+   <description>lot|controle</description>
+   <name>mode</name>
+  </attribute>
+ </tag>
+ <tag>
+  <description>Affiche un "menuItem" pour l'action imprimer qui déclenchera suivant la valeur de 'choixEdition':
+* l'édition par défaut (édition via le controller/la session http et birtviewer)
+* le dialogue qui permet de choisir l'édition à faire (édition par défaut ou édition supplémentaire dans blob/génération du PDF par les services)
+Dans le cas ou on affiche le dialogue il faut insérer un bouton (caché) après le p:menu qui sera appelé via javascript pour prendre en compte le retour de ce dialogue.</description>
+  <tag-name>menuItemImprimer</tag-name>
+  <source>tags/fr/legrain/menuItemImprimer.xhtml</source>
+  <attribute>
+   <name>title</name>
+  </attribute>
+  <attribute>
+   <name>value</name>
+  </attribute>
+  <attribute>
+   <name>styleClass</name>
+  </attribute>
+  <attribute>
+   <description>Javascript permettant d'appeler directement le birtviewer avec en paramètre un rptdesign accessible via la webapp.
+Exemple:
+window.open('#{request.contextPath}/output?__report=/reports/documents/facture/FicheFacture.rptdesign&amp;amp;__format=pdf')</description>
+   <name>onsuccess</name>
+  </attribute>
+  <attribute>
+   <description>Javascript permettant d'appeler un bouton caché qui déclenchera l'affichage d'un dialogue et gerera le retour de celui-ci.
+Exemple de JS :
+$('.classHiddenCommandForDialogImprimerReturnFacture').click()
+
+Exemple de bouton cahcé placer après le p:menu
+&lt;p:commandButton styleClass="classHiddenCommandForDialogImprimerReturnFacture" actionListener="#{factureController.actDialogImprimer}" style="display:none" process="@this"  &gt;
+        &lt;p:ajax event="dialogReturn" listener="#{factureController.handleReturnDialogImprimer}" update=":form:messages"  /&gt;  
+    &lt;/p:commandButton&gt;
+
+NB : quand les p:menuItem de primefaces gèreront l'évènement "dialogReturn" on pourra se passer du bouton caché</description>
+   <name>oncomplete</name>
+  </attribute>
+  <attribute>
+   <description>le controller contenant la méthode  "actionListener"</description>
+   <name>actionBean</name>
+  </attribute>
+  <attribute>
+   <description>Le nom de la méthode "actionListener".
+Texte 'simple'</description>
+   <name>actionMethod</name>
+  </attribute>
+  <attribute>
+   <name>disabled</name>
+  </attribute>
+  <attribute>
+   <description>affichage ou non du dialogue de sélection de l'édition</description>
+   <name>choixEdition</name>
+   <required>true</required>
+  </attribute>
+  <attribute>
+   <description>Entete du message de confirmation si il doit appraitre</description>
+   <name>confirmHeader</name>
+  </attribute>
+  <attribute>
+   <description>Si le message est renseigné, un dialogue de confirmation doit apparaitre demandant une confirmation avant d'executé l'action</description>
+   <name>confirmMessage</name>
+  </attribute>
+  <attribute>
+   <description>Si "true", c'est une édition pour le client et le document sera verouillé à la suite de l'édition avec le birt web viewer</description>
+   <name>pourClient</name>
+  </attribute>
+ </tag>
+ <!-- 	<tag> 
+ 		<tag-name>analogClock</tag-name> 
+ 		<component> 
+ 			<component-type>it.strazz.faces.AnalogClock</component-type> 
+ 			<renderer-type>it.strazz.faces.AnalogClockRenderer</renderer-type> 
+ 		</component> 
+ 		<attribute> 
+ 			<description><![CDATA[Unique identifier of the component in a namingContainer.]]></description> 
+ 			<name>id</name> 
+ 			<required>false</required> 
+ 			<type>java.lang.String</type> 
+ 		</attribute> 
+ 		<attribute> 
+ 			<description><![CDATA[Boolean value to specify the rendering of the component, when set to false component will not be rendered.]]></description> 
+ 			<name>rendered</name> 
+ 			<required>false</required> 
+ 			<type>java.lang.Boolean</type> 
+ 		</attribute> 
+ 		<attribute> 
+ 			<description><![CDATA[An el expression referring to a server side UIComponent instance in a backing bean.]]></description> 
+ 			<name>binding</name> 
+ 			<required>false</required> 
+ 			<type>javax.faces.component.UIComponent</type> 
+ 		</attribute> 
+ 		<attribute> 
+ 			<description><![CDATA[theme of the analogClock. It can also be a ColorTheme object to set a custom theme]]></description> 
+ 			<name>colorTheme</name> 
+ 			<required>false</required> 
+ 			<type>java.lang.Object</type> 
+ 		</attribute> 
+ 		<attribute> 
+ 			<description><![CDATA[Name of the client side widget.]]></description> 
+ 			<name>widgetVar</name> 
+ 			<required>false</required> 
+ 			<type>java.lang.String</type> 
+ 		</attribute> 
+ 		<attribute> 
+ 			<description><![CDATA['server' for using server time, use the client time otherwise]]></description> 
+ 			<name>mode</name> 
+ 			<required>false</required> 
+ 			<type>java.lang.String</type> 
+ 		</attribute> 
+ 		<attribute> 
+ 			<description><![CDATA[time to display, the default value is current time]]></description> 
+ 			<name>startTime</name> 
+ 			<required>false</required> 
+ 			<type>java.util.Date</type> 
+ 		</attribute> 
+ 		<attribute> 
+ 			<description><![CDATA[width of the clock.]]></description> 
+ 			<name>width</name> 
+ 			<required>false</required> 
+ 			<type>java.lang.Integer</type> 
+ 		</attribute> 
+ 	</tag> -->
+</facelet-taglib>

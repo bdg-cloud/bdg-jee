@@ -1,0 +1,406 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:o="http://omnifaces.org/ui"
+	xmlns:p="http://primefaces.org/ui">
+	
+	<o:importConstants type="fr.legrain.bdg.webapp.app.LgrTab" />
+    
+    <div id="top-bar-wrapper">
+        <div id="top-bar">
+            <div class="search-bar">
+<!--             <div class="dashboard-title"> -->
+            	<p:fieldset >
+        			<h:panelGrid columns="2">
+            	Dossier : <p:outputLabel style="font-weight: bold;" value="#{dashBoardBean.tenantInfo.tenantId}" />
+            	
+            	Niveau : <h:outputLabel style="font-weight:bold;" value="#{monCompteBean.dossierCourant.taTNiveau.libelle}" />
+            	</h:panelGrid>
+    		</p:fieldset>
+<!--                 <span class="search"> -->
+<!--                     <i class="fa fa-search" aria-hidden="true"></i> -->
+<!--                 </span> -->
+<!--                 <input type="text" placeholder="Search"/> -->
+            </div>
+
+            <div class="top-bar-profile">
+                <div class="profile-name">
+                    <span><h:outputText value="#{auth.username}"/></span><br/>
+<!--                     Admin -->
+                </div>
+                <a href="#" id="profile-image">
+                    <h:graphicImage name="images/profile.png" library="icarus-layout" style="border: 0 none;"/>
+                </a>
+                <ul class="top-submenu animated flipInX">
+<!--                     <li> -->
+<!--                         <a href="#"> -->
+<!--                             <i class="fa fa-fw fa-user"></i> -->
+<!--                             <span>Profile</span> -->
+<!--                         </a> -->
+<!--                     </li> -->
+<!--                     <li> -->
+<!--                         <a href="#"> -->
+<!--                             <i class="top-submenu-icon fa fa-fw fa-calendar"></i> -->
+<!--                             <span>Calendar</span> -->
+<!--                         </a> -->
+<!--                     </li> -->
+<!--                     <li> -->
+<!--                         <a href="#"> -->
+<!--                             <i class="top-submenu-icon fa fa-fw fa-envelope"></i> -->
+<!--                             <span>Messages</span> -->
+<!--                             <span class="top-submenu-badge">5</span> -->
+<!--                         </a> -->
+<!--                     </li> -->
+                    <li>
+                   		 <p:commandLink actionListener="#{monCompteBean.openMonCompte}" update=":form:tabView"
+										oncomplete="activeLastTabCenter()" >
+                          	<i class="top-submenu-icon fa fa-fw fa-user"></i>
+					        <span><h:outputText value="Mon compte" /></span>
+					    </p:commandLink>
+                    </li>
+
+                     <li>
+                   		 <p:commandLink actionListener="#{menuBean.openLiaisonDossierMaitre}" update=":form:tabView"
+										oncomplete="activeLastTabCenter()" >
+                          	<i class="top-submenu-icon fa fa-fw fa-shopping-basket"></i>
+					        <span><h:outputText value="Espace client" /></span>
+					    </p:commandLink>
+                    </li>
+                    
+                    <li>
+                   		 <p:commandLink   actionListener="#{menuBean.openTunnelVenteRenouvellement}"  update=":form:tabView" oncomplete="activeLastTabCenter()">
+                   		 	<i class="top-submenu-icon fa fa-fw fa-refresh"></i>
+                   		 	<span><h:outputText value="Renouveller BDG (béta)" /></span>
+						 </p:commandLink>
+                    </li>
+                    
+                    
+                    
+                    
+                    
+                    <ui:fragment rendered="#{auth.isDevLgr()}">
+	                    <li>
+	                   		 <p:commandLink actionListener="#{guestPreferences.changerTheme}" update="@this" process="@this"
+											oncomplete="window.location.reload(true)" >
+	                          	<i class="top-submenu-icon fa fa-fw fa-paint-brush"></i>
+						        <span><h:outputText value="Nouveau thème (béta)" /></span>
+						    </p:commandLink>
+	                    </li>
+                    </ui:fragment>
+                    <li>
+<!--                         <a href="#"> -->
+<!--                             <i class="top-submenu-icon fa fa-fw fa-close"></i> -->
+<!--                             <span>Log Out</span> -->
+<!--                             <p:commandButton value="Log Out" actionListener="#{auth.logout}" icon="fa fa-key" /> -->
+<!--                         </a> -->
+                         <p:commandLink id="idLogout" actionListener="#{auth.logout}">
+                          	<i class="top-submenu-icon fa fa-fw fa-close"></i>
+					        <span><h:outputText value="Déconnexion" /></span>
+					    </p:commandLink>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="top-menu">
+                <div class="top-bar-icon">
+                    <a href="#">
+                        <i class="fa fa-list" aria-hidden="true"></i>
+<!--                         <i class="top-bar-badge animated rubberBand"><h:outputText value="#{topBarController.nbProduit}"/></i> -->
+                    </a>
+                    <ul class="top-submenu animated flipInX">
+<!--                         <li class="header">You have 3 tasks.</li> -->
+<!--                         <li> -->
+<!-- 					    	<ui:include src="/articles/liste_article_overlay.xhtml" /> -->
+<!--                         </li> -->
+<!--                         <li> -->
+<!-- 					    	<ui:include src="/tiers/liste_tiers_overlay.xhtml" /> -->
+<!--                         </li> -->
+						<ui:fragment rendered="#{autorisationBean.autoriseMenu(autorisationBean.idModuleBonReception)}">
+	                        <li>
+						    	<ui:include src="/documents/liste_bon_reception_overlay.xhtml" />
+	                        </li>
+                        </ui:fragment>
+                        
+                        <ui:fragment rendered="#{autorisationBean.autoriseMenu(autorisationBean.idModuleFabrication)}">
+	                        <li>
+						    	<ui:include src="/solstyce/liste_fabrications_overlay.xhtml" />
+	                        </li>
+                        </ui:fragment>
+                        
+                        <ui:fragment rendered="#{autorisationBean.autoriseMenu(autorisationBean.idModuleFabrication)}">
+	                        <li>
+						    	<ui:include src="/solstyce/liste_modele_fabrications_overlay.xhtml" />
+	                        </li>
+                        </ui:fragment>
+                        
+                        <ui:fragment rendered="#{autorisationBean.autoriseMenu(autorisationBean.idModuleInventaire)}">
+	                        <li>
+						    	<ui:include src="/stock/liste_inventaire_overlay.xhtml" />
+	                        </li>
+                        </ui:fragment>
+                        
+                        <ui:fragment rendered="#{autorisationBean.autoriseMenu(autorisationBean.idModuleMouvementStock)}">
+	                        <li>
+						    	<ui:include src="/stock/liste_mouvement_stock_overlay.xhtml" />
+	                        </li>
+                        </ui:fragment>
+                        
+                        <li>
+					    	<ui:include src="/solstyce/liste_modele_controle_overlay.xhtml" />
+                        </li>
+                        <li>
+					    	<ui:include src="/solstyce/liste_modele_groupe_controle_overlay.xhtml" />
+                        </li>
+                        
+                        <ui:fragment rendered="#{autorisationBean.autoriseMenu(autorisationBean.idModuleDevis)}">
+	                        <li>
+						    	<ui:include src="/documents/liste_devis_overlay.xhtml" />
+	                        </li>
+                        </ui:fragment>
+                        
+                        <ui:fragment rendered="#{autorisationBean.autoriseMenu(autorisationBean.idModuleFacture)}">
+	                        <li>
+						    	<ui:include src="/documents/liste_facture_overlay.xhtml" />
+	                        </li>
+                        </ui:fragment>
+                        
+                        <ui:fragment rendered="#{autorisationBean.autoriseMenu(autorisationBean.idModuleCaisse) or auth.isDevLgr()}">
+	                        <li>
+						    	<ui:include src="/documents/liste_ticket_caisse_overlay.xhtml" />
+	                        </li>
+                        </ui:fragment>
+                        
+                        <ui:fragment rendered="#{autorisationBean.autoriseMenu(autorisationBean.idModuleBonLivraison)}">
+	                        <li>
+						    	<ui:include src="/documents/liste_bon_livraison_overlay.xhtml" />
+	                        </li>
+                        </ui:fragment>
+                        
+                        <ui:fragment rendered="#{autorisationBean.autoriseMenu(autorisationBean.idModuleBonCommandeAchat)}">
+	                        <li>
+						    	<ui:include src="/documents/liste_boncde_achat_overlay.xhtml" />
+	                        </li>
+                        </ui:fragment>
+                        
+                        <ui:fragment rendered="#{autorisationBean.autoriseMenu(autorisationBean.idModuleBonPreparation)}">
+	                        <li>
+						    	<ui:include src="/documents/liste_bonPreparation_overlay.xhtml" />
+	                        </li>
+                        </ui:fragment>                        
+                                                
+                        <ui:fragment rendered="#{autorisationBean.autoriseMenu(autorisationBean.idModuleBonCommande)}">
+	                        <li>
+						    	<ui:include src="/documents/liste_boncde_overlay.xhtml" />
+	                        </li>
+                        </ui:fragment>
+                        
+                        <ui:fragment rendered="#{autorisationBean.autoriseMenu(autorisationBean.idModuleAvoir)}">
+	                        <li>
+						    	<ui:include src="/documents/liste_avoir_overlay.xhtml" />
+	                        </li>  
+                        </ui:fragment>
+                        
+                        <ui:fragment rendered="#{autorisationBean.autoriseMenu(autorisationBean.idModuleAcompte)}">
+	                        <li>
+						    	<ui:include src="/documents/liste_acompte_overlay.xhtml" />
+	                        </li>  
+                        </ui:fragment>
+                        
+                        <ui:fragment rendered="#{autorisationBean.autoriseMenu(autorisationBean.idModuleApporteur)}">
+	                        <li>
+						    	<ui:include src="/documents/liste_apporteur_overlay.xhtml" />
+	                        </li> 
+                        </ui:fragment>
+                        
+                        <ui:fragment rendered="#{autorisationBean.autoriseMenu(autorisationBean.idModuleProforma)}">
+	                        <li>
+						    	<ui:include src="/documents/liste_proforma_overlay.xhtml" />
+	                        </li>      
+                        </ui:fragment>
+                         
+                        <ui:fragment rendered="#{autorisationBean.autoriseMenu(autorisationBean.idModuleAvisEcheance)}">
+	                        <li>
+						    	<ui:include src="/documents/liste_avis_echeance_overlay.xhtml" />
+	                        </li>      
+                        </ui:fragment>
+
+						<ui:fragment rendered="#{autorisationBean.autoriseMenu(autorisationBean.idModulePanier)}">
+							<li><ui:include src="/documents/liste_panier_overlay.xhtml" /></li>
+						</ui:fragment>
+
+						<ui:fragment rendered="#{autorisationBean.autoriseMenu(autorisationBean.idModulePrelevement)}">
+	                        <li>
+						    	<ui:include src="/documents/liste_prelevement_overlay.xhtml" />
+	                        </li> 
+                        </ui:fragment>
+                        
+                       <ui:fragment rendered="#{auth.isDevLgr() or auth.isAdminDossier()}">
+	                        <li>
+						    	<ui:include src="/admin/liste_service_web_externe_overlay.xhtml" />
+	                        </li> 
+                        </ui:fragment>
+                        
+                        <ui:fragment rendered="#{auth.isDevLgr() or auth.isAdminDossier()}">
+	                        <li>
+						    	<ui:include src="/admin/liste_compte_service_web_externe_overlay.xhtml" />
+	                        </li> 
+                        </ui:fragment>
+                        
+                         <ui:fragment rendered="#{auth.isDevLgr() or auth.isAdminDossier()}">
+	                        <li>
+						    	<ui:include src="/admin/liste_edition_dossier_overlay.xhtml" />
+	                        </li> 
+                        </ui:fragment>
+                        
+                        <ui:fragment rendered="#{auth.isDevLgr() or auth.isAdminDossier()}">
+	                        <li>
+						    	<ui:include src="/admin_legrain/liste_edition_catalogue_overlay.xhtml" />
+	                        </li> 
+                        </ui:fragment>
+                        
+                        <ui:fragment rendered="#{autorisationBean.autoriseMenu(autorisationBean.idModuleRemise)}">
+	                        <li>
+						    	<ui:include src="/remise/liste_remises_overlay.xhtml" />
+	                        </li>
+                        </ui:fragment>
+                        
+                        <ui:fragment>
+	                        <li>
+						    	<ui:include src="/relance/liste_relances_overlay.xhtml" />
+	                        </li>
+                        </ui:fragment>
+ 
+                         <ui:fragment rendered="#{autorisationBean.autoriseMenu(autorisationBean.idModuleReglements)}">
+	                        <li>
+						    	<ui:include src="/reglement/multiple/liste_reglement_overlay.xhtml" />
+	                        </li>
+                        </ui:fragment>
+                         <ui:fragment rendered="#{autorisationBean.autoriseMenu(autorisationBean.idModuleMultiTarifs)}">
+	                        <li>
+						    	<ui:include src="/multi_tarifs/liste_grille_reference_overlay.xhtml" />
+						    	<ui:include src="/multi_tarifs/liste_grille_tarifaire_overlay.xhtml" />
+						    	<ui:include src="/multi_tarifs/liste_type_tarif_overlay.xhtml" />
+						    	<ui:include src="/multi_tarifs/liste_grille_tarifaire_tiers_overlay.xhtml" />
+						    	<ui:include src="/multi_tarifs/liste_tiers_pour_grille_tarifaire_overlay.xhtml" />						    	
+	                        </li>
+                        </ui:fragment> 
+                           
+<!--                         <ui:fragment rendered="#{auth.isDevLgr() or auth.isAdminDossier()}"> -->
+                        <ui:fragment rendered="#{autorisationBean.autoriseMenu(autorisationBean.idModuleAbonnement)}">
+	                        <li>
+						    	<ui:include src="/abonnement/liste_abonnement_overlay.xhtml" />
+	                        </li> 
+                        </ui:fragment>                    
+                                                                       
+<!--                         <li> -->
+<!--                             <a href="#"> -->
+<!--                                 <i class="top-submenu-icon fa fa-fw fa-line-chart"></i> -->
+<!--                                 <span>Review sale reports</span> -->
+<!--                             </a> -->
+<!--                         </li> -->
+<!--                         <li> -->
+<!--                             <a href="#"> -->
+<!--                                 <i class="top-submenu-icon fa fa-fw fa-plane"></i> -->
+<!--                                 <span>Reserve flight</span> -->
+<!--                             </a> -->
+<!--                         </li> -->
+                    </ul>
+                </div>
+<!--                 <div class="top-bar-icon"> -->
+<!--                     <a href="#"> -->
+<!--                         <i class="fa fa-envelope-o animated swing" aria-hidden="true"></i> -->
+<!--                         <i class="top-bar-badge animated rubberBand">5</i> -->
+<!--                     </a> -->
+<!--                     <ul class="top-submenu animated flipInX"> -->
+<!--                         <li class="header">You have 5 messages.</li> -->
+<!--                         <li> -->
+<!--                             <a href="#"> -->
+<!--                                 <p:graphicImage name="images/avatar_1.png" library="icarus-layout" width="35"/> -->
+<!--                                 <span>Nice to meet you.</span> -->
+<!--                             </a> -->
+<!--                         </li> -->
+<!--                         <li> -->
+<!--                             <a href="#"> -->
+<!--                                 <p:graphicImage name="images/avatar_2.png" library="icarus-layout" width="35"/> -->
+<!--                                 <span>Sales reports attached.</span> -->
+<!--                             </a> -->
+<!--                         </li> -->
+<!--                         <li> -->
+<!--                             <a href="#"> -->
+<!--                                 <p:graphicImage name="images/avatar_3.png" library="icarus-layout" width="35"/> -->
+<!--                                 <span>About your invoice.</span> -->
+<!--                             </a> -->
+<!--                         </li> -->
+<!--                         <li> -->
+<!--                             <a href="#"> -->
+<!--                                 <p:graphicImage name="images/avatar_4.png" library="icarus-layout" width="35"/> -->
+<!--                                 <span>Meeting today at 10pm.</span> -->
+<!--                             </a> -->
+<!--                         </li> -->
+<!--                         <li> -->
+<!--                             <a href="#"> -->
+<!--                                 <p:graphicImage name="images/avatar_2.png" library="icarus-layout" width="35"/> -->
+<!--                                 <span>Lunch today?</span> -->
+<!--                             </a> -->
+<!--                         </li> -->
+<!--                     </ul> -->
+<!--                 </div> -->
+
+				<ui:fragment>
+	                <div class="top-bar-icon">
+						<p:commandLink id="idLinkAgendaAccueil" actionListener="#{menuBean.openMonAgenda}" update=":form:tabView" oncomplete="activeTabCenter('#{LgrTab.CSS_CLASS_TAB_MON_AGENDA}');" >
+                          	<i class="fa fa-calendar"></i>
+                          	<ui:fragment rendered="#{notificationAgendaBean.nbNotificationNonLu!=null}">
+                       			<i class="top-bar-badge animated rubberBand"><h:outputText value="#{notificationAgendaBean.nbNotificationNonLu}"/></i>
+                       		</ui:fragment>
+				    	</p:commandLink>
+	                </div>
+                </ui:fragment>
+                
+                <ui:fragment rendered="#{auth.isDevLgr()}">
+	                <div class="top-bar-icon">
+						<p:commandLink id="idLinkOAuthAccueil" actionListener="#{menuBean.openGestionOAuthDialog}" >
+<!-- 						<p:commandLink id="idLinkOAuthAccueil" actionListener="#{menuBean.openMonAgenda}" update=":form:tabView" oncomplete="activeTabCenter('#{LgrTab.CSS_CLASS_TAB_MON_AGENDA}');" > -->
+                          	<i class="fa fa-external-link"></i>
+<!--                           	<ui:fragment rendered="#{notificationAgendaBean.nbNotificationNonLu!=null}"> -->
+<!--                        			<i class="top-bar-badge animated rubberBand"><h:outputText value="#{notificationAgendaBean.nbNotificationNonLu}"/></i> -->
+<!--                        		</ui:fragment> -->
+				    	</p:commandLink>
+	                </div>
+                </ui:fragment>
+
+                <div class="top-bar-icon">
+                		<p:commandLink id="idLinkAideAccueil" styleClass="lien-aide-contextuelle" onclick="PF('wvAideAccueil').show()">
+							<i class="fa fa-info-circle animated swing"></i>
+						</p:commandLink>
+						<p:overlayPanel widgetVar="wvAideAccueil" hideEffect="fade" dynamic="true" showCloseIcon="true" styleClass="overlay-aide-contextuelle overlay-aide-contextuelle-center">
+							<ui:include src="/aide_contextuelle/aide_accueil.xhtml" />
+						</p:overlayPanel>
+<!--                     <a href="#"> -->
+<!--                         <i class="fa fa-support" aria-hidden="true"></i> -->
+<!--                     </a> -->
+                </div>
+                
+            </div>
+            
+            <div class="top-menu">
+            	<ui:fragment rendered="#{autorisationBean.autoriseMenu(autorisationBean.idModuleTiers)}">
+	                <div class="top-bar-icon">
+						  <ui:include src="/tiers/liste_tiers_overlay.xhtml" />
+	                </div>
+                </ui:fragment>
+                
+                <ui:fragment rendered="#{autorisationBean.autoriseMenu(autorisationBean.idModuleArticle)}">
+	                <div class="top-bar-icon">
+						   <ui:include src="/articles/liste_article_overlay.xhtml" />
+	                </div>
+                </ui:fragment>
+                
+            </div>
+            
+        </div>
+    </div>
+
+    
+</ui:composition>

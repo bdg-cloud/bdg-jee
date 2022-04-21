@@ -1,0 +1,171 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template_dialog_lgr.xhtml">
+
+	<ui:define name="head">
+		<title>#{detailLiaisonDocumentController.titlePartOne} #{detailLiaisonDocumentController.titlePartTwo}</title>
+		<style type="text/css">
+.ui-widget {
+	font-size: 90%;
+}
+</style>
+	</ui:define>
+
+	<ui:define name="content">
+		<h:form id="idDialogDetailLiaisonDocument">
+			<p:menubar styleClass="menu-onglet">
+				<p:menuitem title="Fermer" styleClass="icon icon-close menuitem-fermer-droite" actionListener="#{detailLiaisonDocumentController.actFermerDialog}"
+					process="@this">
+					<p:confirm header="Confirmation" message="#{msg_diag.alert_fermeture_onglet}" icon="ui-icon-alert"
+						disabled="#{!detailLiaisonDocumentController.modeEcran.dataSetEnModif()}" />
+				</p:menuitem>
+			</p:menubar>
+			<div class="ui-g">
+				<div class="ui-g-12">
+					<p:fieldset legend="Liaisons des documents" rendered="#{detailLiaisonDocumentController.ligneLieeFils!=null or detailLiaisonDocumentController.ligneLieeMere!=null}">
+				<p:panel header="Infos du document lié" style="width:100%;">
+					<p:panelGrid columns="3" id="idInfosFacture" columnClasses="ui-grid-col-4,ui-grid-col-4,ui-grid-col-4 right" styleClass="ui-panelgrid-blank"
+						layout="grid">
+						<h:panelGroup>
+							<p:outputLabel value="Code document : " style="font-weight: bold;" />
+							<p:outputLabel value="#{detailLiaisonDocumentController.masterEntityDTO.codeDocument}" />
+						</h:panelGroup>
+						<h:panelGroup>
+							<p:outputLabel value="Code tiers : " style="font-weight: bold;" />
+							<p:outputLabel value="#{detailLiaisonDocumentController.masterEntityDTO.codeTiers}" />
+						</h:panelGroup>
+						<h:panelGroup>
+							<p:outputLabel value="Date document : " style="font-weight: bold;" />
+							<p:outputLabel value="#{detailLiaisonDocumentController.masterEntityDTO.dateDocument}">
+								<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}" />
+							</p:outputLabel>
+						</h:panelGroup>
+						<h:panelGroup>
+							<!-- 						<p:outputLabel value="Libellé : "/> -->
+							<p:outputLabel value="#{detailLiaisonDocumentController.masterEntityDTO.libelleDocument}" />
+						</h:panelGroup>
+						<h:panelGroup>
+							<p:outputLabel value="Nom : " style="font-weight: bold;" />
+							<p:outputLabel
+								value="#{detailLiaisonDocumentController.masterEntityDTO.nomTiers} - #{detailLiaisonDocumentController.masterEntityDTO.nomEntreprise}" />
+						</h:panelGroup>
+						<h:panelGroup>
+							<p:outputLabel value="Date échéance : " style="font-weight:bold;" />
+							<p:outputLabel value="#{detailLiaisonDocumentController.masterEntityDTO.dateEchDocument}">
+								<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}" />
+							</p:outputLabel>
+						</h:panelGroup>
+
+						<h:panelGroup>
+							<div class="card" style="background: #ebebeb; text-align: center; center; padding: 5px; margin-top: 15px;">
+								<p:outputLabel value="Net TTC" style="font-weight: bold;" />
+								<p:separator style="color:#9a9a9a" />
+								<p:outputLabel value="#{detailLiaisonDocumentController.masterEntityDTO.netTtcCalc}">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</p:outputLabel>
+
+							</div>
+						</h:panelGroup>
+
+					</p:panelGrid>
+
+				</p:panel>
+
+			<p:panel id="idListeLienDocument" header="liste des liens entre documents" widgetVar="panelListeLienDocumentFacture">
+				<p:panelGrid columns="2" columnClasses="ui-grid-col-6,ui-grid-col-6" styleClass="ui-panelgrid-blank" layout="grid" rendered="#{detailLiaisonDocumentController.ligneLieeFils!=null or detailLiaisonDocumentController.ligneLieeMere!=null}">
+					<p:panel header="document ayant servi à générer le document courant" style="width:100%;" >
+					<p:dataTable value="#{detailLiaisonDocumentController.ligneLieeMere}" id="dataTableLieeMere" var="lien" selectionMode="single" editable="true"
+						selection="#{detailLiaisonDocumentController.selectedLigneALigneDTO}" rowKey="#{lien.id}" widgetVar="wvdataTableLieeMere"
+						emptyMessage="#{msg.message_datatable_vide}" resizableColumns="true">
+
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="code document" />
+							</f:facet>
+							<p:commandLink value="#{lien.codeDocumentDest}"
+								action="#{detailLiaisonDocumentController.duplicationDocumentBean.ouvertureDocumentBean.detailDocument(detailLiaisonDocumentController.duplicationDocumentBean.ouvertureDocumentBean.recupCodeDocument(lien.codeDocumentDest,lien.typeDocument))}"
+								oncomplete="activeTabCenter('#{detailLiaisonDocumentController.duplicationDocumentBean.ouvertureDocumentBean.event.cssLgrTab}');">
+							</p:commandLink>
+						</p:column>
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="libellé ligne" />
+							</f:facet>
+							<h:outputText value="#{lien.libelleLigne}" />
+						</p:column>
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="lot" />
+							</f:facet>
+							<h:outputText value="#{lien.numLot}" />
+						</p:column>
+						<p:column styleClass="right">
+							<f:facet name="header">
+								<h:outputText value="Qté. reçue" />
+							</f:facet>
+							<h:outputText value="#{lien.qteRecue}" />
+						</p:column>
+						<!-- 							<p:column> -->
+						<!-- 								<f:facet name="header"> -->
+						<!-- 									<h:outputText value="Etat ligne courante" /> -->
+						<!-- 								</f:facet> -->
+						<!-- 								<h:outputText value="#{lien.etat}" /> -->
+						<!-- 							</p:column>							 -->
+
+					</p:dataTable>
+					</p:panel>
+					<p:panel header="document généré à partir du document courant" style="width:100%;" >
+					<p:dataTable value="#{detailLiaisonDocumentController.ligneLieeFils}" id="dataTableLieeFils" var="lien" selectionMode="single" editable="true"
+						selection="#{detailLiaisonDocumentController.selectedLigneALigneDTO}" rowKey="#{lien.id}" widgetVar="wvdataTableLieeFils"
+						emptyMessage="#{msg.message_datatable_vide}" resizableColumns="true">
+
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="code document" />
+							</f:facet>
+							<p:commandLink value="#{lien.codeDocumentDest}"
+								action="#{detailLiaisonDocumentController.duplicationDocumentBean.ouvertureDocumentBean.detailDocument(detailLiaisonDocumentController.duplicationDocumentBean.ouvertureDocumentBean.recupCodeDocument(lien.codeDocumentDest,lien.typeDocument))}"
+								oncomplete="activeTabCenter('#{detailLiaisonDocumentController.duplicationDocumentBean.ouvertureDocumentBean.event.cssLgrTab}');">
+								<p:ajax event="dialogReturn" listener="#{duplicationDocumentBean.handleReturnDialogOuvertureDocumentAPartirDialog}" />
+							</p:commandLink>
+							<!-- 								<h:outputText value="#{lien.codeDocumentDest}" /> -->
+						</p:column>
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="libellé ligne" />
+							</f:facet>
+							<h:outputText value="#{lien.libelleLigne}" />
+						</p:column>
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="lot" />
+							</f:facet>
+							<h:outputText value="#{lien.numLot}" />
+						</p:column>
+						<p:column styleClass="right">
+							<f:facet name="header">
+								<h:outputText value="Qté. reçue" />
+							</f:facet>
+							<h:outputText value="#{lien.qteRecue}" />
+						</p:column>
+
+					</p:dataTable>
+					</p:panel>
+				</p:panelGrid>
+			</p:panel>
+			</p:fieldset>
+			</div>
+</div>
+			
+					<p:panel rendered="#{detailLiaisonDocumentController.ligneAbonnement!=null}">
+						<ui:include src="/documents/detail_ligne_Abonnement.xhtml" >
+							<ui:param name="taLigneALigneEcheanceDTO" value="#{detailLiaisonDocumentController.ligneAbonnement.get(0)}" />
+						</ui:include>
+					</p:panel>	
+
+			<br />
+
+
+
+		</h:form>
+	</ui:define>
+</ui:composition>

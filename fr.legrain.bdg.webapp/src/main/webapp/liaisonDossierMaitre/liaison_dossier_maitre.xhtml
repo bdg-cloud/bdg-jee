@@ -1,0 +1,46 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:o="http://omnifaces.org/ui"
+                xmlns:c="http://java.sun.com/jsp/jstl/core">
+                
+                <o:importConstants type="fr.legrain.bdg.webapp.app.LgrTab" />
+    
+
+   			<p:menubar styleClass="menu-onglet">
+				<p:menuitem title="Fermer" styleClass="icon icon-close menuitem-fermer-droite" process="@this" 
+					actionListener="#{liaisonDossierMaitreController.actFermer}"
+					onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())">
+				</p:menuitem>
+			</p:menubar>
+    
+    
+				<p:panel widgetVar="wvLiaisonDossierMaitre" titre="Connexion espace client">
+					        <div class="ui-g">
+					            <p:panel header="Connexion à l'espace client" styleClass="panel-login-espace-client">
+					                <div class="ui-g-12" style="padding-top:35px;">
+					                    <p:inputText value="#{liaisonDossierMaitreController.loginDeLaTableEspaceClient}" placeholder="Identifiant de l'espace client" id="j_username" size="25" style="width:60%;"/><br/>
+					                </div>
+					                <div class="ui-g-12" style="padding-top:10px;">
+					                    <p:password value="#{liaisonDossierMaitreController.passwordDeLaTableEspaceClient}" placeholder="Mot de passe de l'espace client" id="j_password" size="25" style="width:60%" autocomplete="on" />
+					                </div>
+					                  <div class="ui-g-12" style="padding-top:10px;">
+							                <p:commandLink 	value="Pas de compte ? Créer un compte"
+													actionListener="#{menuBean.openCreationEspaceClient}" update=":form:tabView"
+													oncomplete="activeLastTabCenter()">
+											</p:commandLink>
+									</div>
+					                <p:commandButton id="id_btn_login" action="#{liaisonDossierMaitreController.login}" value="Connexion" ajax="false" />
+					                
+					                
+					                
+					                <p:messages styleClass="errors" autoUpdate="true" />
+					            </p:panel>
+					        </div>
+				</p:panel>
+    
+    
+  </ui:composition>  
+ 

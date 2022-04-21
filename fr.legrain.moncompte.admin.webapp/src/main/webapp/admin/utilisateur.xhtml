@@ -1,0 +1,113 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<!-- 		<f:metadata> -->
+	<!-- 			<f:viewParam name="paramId" value="#{unStockBean.parameter}"/> -->
+	<!-- 			<f:event type="preRenderView" listener="#{unStockBean.refresh}" /> -->
+	<!-- 		</f:metadata> -->
+
+	<!--  h:outputText value="produit #{paramId}" /> -->
+	
+<!-- 	<f:validateBean> -->
+	<f:validateBean disabled="true">
+
+		<p:tabView id="idTabViewUtilisateur" binding="#{utilisateurController.tabViewUtilisateur}">
+
+			<p:tab title="Utilisateur" titleStyleClass="tab-min tab-produit" titletip="Utilisateur">
+				<!--         <p:tab title="Utilisateur" titleStyleClass="tab-min tab-default"> -->
+
+				<div class="ui-grid ui-grid-responsive">
+					<div class="ui-grid-row">
+						<div class="ui-grid-col-12">
+
+							<div class="text-center">
+								<p:commandButton value="Annuler" icon="fa fa-undo" actionListener="#{utilisateurController.actAnnuler}"
+									process="@this"
+									update="idTabViewUtilisateur:idPanelUtilisateur,:form:messages,@form"
+									disabled="#{utilisateurController.etatBouton('annuler')}" />
+								<p:commandButton value="Enregistrer" icon="fa fa-save"
+									actionListener="#{utilisateurController.actEnregistrer}" process="@this"
+									update="idTabViewUtilisateur:idPanelUtilisateur,:form:messages,@form"
+									disabled="#{utilisateurController.etatBouton('enregistrer')}" />
+								<p:commandButton value="Insérer" icon="fa fa-plus-circle" actionListener="#{utilisateurController.actInserer}"
+									process="@this"
+									update="idTabViewUtilisateur:idPanelUtilisateur,:form:messages,@form"
+									disabled="#{utilisateurController.etatBouton('inserer')}" />
+								<p:commandButton value="Modifier" icon="fa fa-pencil" actionListener="#{utilisateurController.actModifier}"
+									process="@this"
+									update="idTabViewUtilisateur:idPanelUtilisateur,:form:messages,@form"
+									disabled="#{utilisateurController.etatBouton('modifier')}" />
+								<p:commandButton value="Supprimer" icon="fa fa-trash"
+									actionListener="#{utilisateurController.actSupprimer}" process="@this"
+									update="idTabViewUtilisateur:idPanelUtilisateur,:form:messages,@form"
+									disabled="#{utilisateurController.etatBouton('supprimer')}" />
+								<p:commandButton value="Fermer" icon="fa fa-close" process="@this" update=":form:messages"
+									disabled="#{utilisateurController.etatBouton('fermer')}"
+									onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())" />
+								<!-- 			<p:commandButton value="Imprimer" styleClass="btn-print btn" actionListener="#{utilisateurController.actImprimer}" disabled="#{utilisateurController.etatBouton('imprimer')}" /> -->
+
+								<p:commandButton value="Imprimer" icon="fa fa-print"
+									onsuccess="window.open('#{request.contextPath}/output?__report=/reports/FicheUtilisateur.rptdesign&amp;id_produit=#{utilisateurController.selectedTaUtilisateurDTO.id}&amp;urlcb=#{utilisateurController.urlPourEdition}&amp;__format=pdf')"
+									actionListener="#{utilisateurController.actImprimer}" disabled="#{utilisateurController.etatBouton('imprimer')}" />
+
+							</div>
+
+						</div>
+					</div>
+
+
+					<div class="ui-grid-row">
+
+						<div class="ui-grid-col-6">
+						
+							<p:panel id="idPanelUtilisateur" header="Compte" toggleable="true" widgetVar="panelUtilisateur">
+								<h:panelGrid columns="2" cellpadding="10">
+									<p:outputLabel value="Login" />
+									<p:inputText value="#{utilisateurController.selectedTaUtilisateurDTO.username}"
+										disabled="#{utilisateurController.editable()}" validator="#{utilisateurController.validateUtilisateur}">
+										<f:attribute name="nomChamp" value="#{const.C_USERNAME}" />
+										<p:ajax event="blur" update="@this" />
+									</p:inputText>
+
+									<p:outputLabel value="Password" />
+									<p:inputText value="#{utilisateurController.selectedTaUtilisateurDTO.passwd}"
+										disabled="#{utilisateurController.editable()}" validator="#{utilisateurController.validateUtilisateur}">
+										<f:attribute name="nomChamp" value="#{const.C_PASSWD}" />
+										<p:ajax event="blur" update="@this" />
+									</p:inputText>
+
+									<p:outputLabel value="Email" />
+									<p:inputText value="#{utilisateurController.selectedTaUtilisateurDTO.email}"
+										disabled="#{utilisateurController.editable()}" validator="#{utilisateurController.validateUtilisateur}">
+										<f:attribute name="nomChamp" value="#{const.C_EMAIL}" />
+										<p:ajax event="blur" update="@this" />
+									</p:inputText>
+									
+									<p:outputLabel value="Dernier accès : " />
+									  <p:outputLabel value="#{utilisateurController.selectedTaUtilisateurDTO.dernierAcces}">
+									  </p:outputLabel>
+									
+									<p:outputLabel value="Actif : " />
+									<p:selectBooleanCheckbox value="#{utilisateurController.selectedTaUtilisateurDTO.actif}" disabled="#{utilisateurController.editable()}" >
+										<p:ajax event="change" update="@this"/>
+									</p:selectBooleanCheckbox>		
+								</h:panelGrid>
+							</p:panel>
+						</div>
+
+
+					</div>
+
+				</div>
+
+			</p:tab>
+
+		</p:tabView>
+
+
+	</f:validateBean>
+
+</ui:composition>

@@ -1,0 +1,48 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core" 
+	xmlns:ui="http://java.sun.com/jsf/facelets" 
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/template_dialog_lgr.xhtml">
+	
+	<ui:define name="head">
+		 <title>Actions correctives</title>
+        <style type="text/css">
+            .ui-widget {
+                font-size: 90%;
+            }
+        </style>
+	</ui:define>
+
+	<ui:define name="content">
+		    	<h:form  id="idDialogActionCorrective">
+
+			<p:tabView value="#{controleActionCorrectiveController.controleConformiteJSF.r.taResultatCorrections}" var="var" widgetVar="widgetVarTabViewCtrl">
+				<p:tab title="#{controleActionCorrectiveController.controleConformiteJSF.c.libelleConformite} - #{var.taBareme.expressionVerifiee}" disabled="true">
+					<h:panelGrid columns="1" cellpadding="5">
+						<p:outputLabel value="Action corrective"/>
+						<p:inputTextarea value="#{var.taBareme.actioncorrective}" disabled="true"/>
+						<p:selectBooleanCheckbox id="idCombo" itemLabel="L'action corrective ci dessus a t'elle été réalisée ?" value="#{var.effectuee}">
+							 <p:ajax event="change" update="btnPrcedent,btnSuivant,@widgetVar(widgetVarBtnEnregistrer)" listener="#{controleActionCorrectiveController.validateCorrection}"/>
+						</p:selectBooleanCheckbox>
+						<p:outputLabel value="Sinon, décrivez l'action corrective effectué"/>
+						<p:inputTextarea id="idTxt" value="#{var.observation}">
+							<p:ajax event="keyup" update="btnPrcedent,btnSuivant,@widgetVar(widgetVarBtnEnregistrer)" listener="#{controleActionCorrectiveController.validateCorrection}"/>
+						</p:inputTextarea>
+						<p:outputLabel value="(Expression à vérifier: #{var.taBareme.expressionVerifiee} )"/>
+					</h:panelGrid>
+					<p:commandButton id="btnPrcedent" value="&lt; Précédent" onclick="activePreviousTab(PF('widgetVarTabViewCtrl'))" disabled="#{controleActionCorrectiveController.etatBouton('precedent')}"  rendered="#{controleActionCorrectiveController.controleConformiteJSF.r.taResultatCorrections.size() gt 1}" update="@form"/>
+					<p:commandButton id="btnSuivant" value="Suivant &gt;" onclick="activeNextTab(PF('widgetVarTabViewCtrl'))" disabled="#{controleActionCorrectiveController.etatBouton('suivant')}" rendered="#{controleActionCorrectiveController.controleConformiteJSF.r.taResultatCorrections.size() gt 1}" update="@form"/>
+				</p:tab>
+			</p:tabView>
+
+			<div class="text-center">
+				<p:commandButton value="Annuler" styleClass="btn-cancel btn" actionListener="#{controleActionCorrectiveController.actFermerDialog}" process="@this"/>
+				<p:commandButton id="btnEnregistrer" value="Enregistrer" styleClass="btn-save btn" actionListener="#{controleActionCorrectiveController.actEnregistrer}" disabled="#{controleActionCorrectiveController.etatBouton('enregistrer')}" update="@form" widgetVar="widgetVarBtnEnregistrer"/>
+			</div>
+		</h:form>
+		
+		<h:outputScript name="/js/functions.js"  />
+	</ui:define>
+     
+</ui:composition>

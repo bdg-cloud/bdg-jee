@@ -1,0 +1,285 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui">
+
+
+	<p:tabView id="idTabViewCompteServiceWebExterne" orientation="left" styleClass="verticalTab" cache="false">
+
+		<p:ajax event="tabChange" update="@widgetVar(panelListeAdresseTiers)" listener="#{compteServiceWebExterneController.onTabChange}" />
+
+		<p:tab title="Compte service" titleStyleClass="tab-min tab-tiers" titletip="Compte service">
+
+			<div class="dashboard-title" style="background: #f6f6f6; margin-bottom: 15px;">
+				<h:panelGrid columns="4" cellpadding="5">
+<!-- 					<h:graphicImage name="dashboard/tier.svg" library="images" height="35px" style="margin-top:1px;" /> -->
+					<p:outputLabel value="Compte service web externe" style="font-size:20px;" />
+				</h:panelGrid>
+			</div>
+
+			<p:menubar styleClass="menu-onglet">
+
+				<p:menuitem title="Enregistrer les modifications en cours" styleClass="icon-save icon"
+					actionListener="#{compteServiceWebExterneController.actEnregistrer}" process="@this"
+					update="idPanelIdentite,idPanelAdresse,:form:messages,@form,@widgetVar(wvMenuListeCompteServiceWebExterne),@widgetVar(wvDataTableListeCompteServiceWebExterne)"
+					disabled="#{compteServiceWebExterneController.etatBouton('enregistrer')}" />
+				<p:menuitem title="Ajouter" styleClass="icon-insert icon" actionListener="#{compteServiceWebExterneController.actInserer}"
+					process="@this"
+					update="idPanelIdentite,idPanelAdresse,:form:messages,@form,@widgetVar(wvMenuListeCompteServiceWebExterne),@widgetVar(wvDataTableListeCompteServiceWebExterne)"
+					disabled="#{compteServiceWebExterneController.etatBouton('inserer')}" />
+				<p:menuitem title="Modifier" styleClass="icon-update icon" actionListener="#{compteServiceWebExterneController.actModifier}"
+					process="@this"
+					update="idPanelIdentite,idPanelAdresse,:form:messages,@form,@widgetVar(wvMenuListeCompteServiceWebExterne),@widgetVar(wvDataTableListeCompteServiceWebExterne)"
+					disabled="#{compteServiceWebExterneController.etatBouton('modifier')}" />
+				<p:menuitem title="Annuler les modifications en cours" styleClass="icon-cancel icon" actionListener="#{compteServiceWebExterneController.actAnnuler}"
+					process="@this"
+					update="idPanelIdentite,idPanelAdresse,:form:messages,@form,@widgetVar(wvMenuListeCompteServiceWebExterne),@widgetVar(wvDataTableListeCompteServiceWebExterne)"
+					disabled="#{compteServiceWebExterneController.etatBouton('annuler')}">
+					<p:confirm header="Confirmation" message="Etes vous sur de vouloir annuler les modifications en cours ?" icon="ui-icon-alert" />
+				</p:menuitem>
+				<p:menuitem title="Supprimer" styleClass="icon icon-delete menuitem-poubelle-droite"
+					actionListener="#{compteServiceWebExterneController.actSupprimer}" process="@this"
+					update="idPanelIdentite,idPanelAdresse,:form:messages,@form,@widgetVar(wvDataTableListeCompteServiceWebExterne)"
+					disabled="#{compteServiceWebExterneController.etatBouton('supprimer')}">
+					<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer ce compte ? Tous les paramétrages seront effacés et les fonctionnalités liées à ce service ne fonctionneront plus." icon="ui-icon-alert" />
+				</p:menuitem>
+				<p:menuitem title="Fermer l'onglet" styleClass="icon icon-close menuitem-fermer-droite" process="@this"
+					actionListener="#{compteServiceWebExterneController.actFermer}" update=":form:messages,@widgetVar(wvMenuListeCompteServiceWebExterne),@widgetVar(wvDataTableListeCompteServiceWebExterne)"
+					disabled="#{compteServiceWebExterneController.etatBouton('fermer')}" onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())">
+					<p:confirm header="Confirmation" message="#{msg_diag.alert_fermeture_onglet}" icon="ui-icon-alert"
+						disabled="#{!compteServiceWebExterneController.modeEcran.dataSetEnModif()}" />
+				</p:menuitem>
+
+				<p:separator styleClass="separateur-menu-vertical" />
+				<p:menuitem title="Liste des comptes services externes" styleClass="icon icon-liste" oncomplete="PF('wvOverlayListeCompteServiceExterne').show();" />
+			</p:menubar>
+
+
+			<div class="ui-grid ui-grid-responsive">
+
+
+				<div class="ui-grid-row">
+
+					<div class="ui-grid-col-6">
+						<p:panel id="idPanelIdentite" header="Description" toggleable="true" widgetVar="panelIdentite">
+
+
+							<h:panelGrid columns="2" cellpadding="10">
+
+								<p:outputLabel value="Service : " />
+
+								<p:autoComplete value="#{compteServiceWebExterneController.taServiceWebExterneDTO}"
+									completeMethod="#{compteServiceWebExterneController.typeTaCompteServiceWebExterneAutoCompleteLight}" disabled="#{compteServiceWebExterneController.editable()}"
+									var="typeEntite" itemLabel="#{typeEntite.codeServiceWebExterne}" itemValue="#{typeEntite}" forceSelection="true" dropdown="true"
+									groupBy="#{typeEntite.codeTServiceWebExterne}"
+									placeholder="Service" converter="entityConverter">
+									<p:column>
+										<h:outputText value="#{typeEntite.codeServiceWebExterne}" />
+									</p:column>
+									<p:column>
+										<h:outputText value="#{typeEntite.libelleServiceWebExterne}" />
+									</p:column>
+									<p:column styleClass="center">
+										<p:graphicImage value="/image_service_web_externe/#{typeEntite.id}"  height="20"/>
+									</p:column>
+
+									<f:attribute name="nomChamp" value="#{const.C_CODE_SERVICE_WEB_EXTERNE}" />
+									<p:ajax event="itemSelect" listener="#{compteServiceWebExterneController.autcompleteSelection}" update="@this,idLabelService,idLogoService,@widgetVar(panelConnexion),@widgetVar(panelIdentite),@widgetVar(panelAdresse)" />
+								</p:autoComplete>
+								
+								<p:outputLabel id="idLabelService" value="#{compteServiceWebExterneController.taServiceWebExterneDTO.libelleServiceWebExterne}" />
+								<p:graphicImage id="idLogoService" value="/image_service_web_externe/#{compteServiceWebExterneController.taServiceWebExterneDTO.id}"  height="20"/>
+								
+								<p:outputLabel value="Code : " styleClass="labelchob" />
+								<p:inputText id="idCode" value="#{compteServiceWebExterneController.selectedTaCompteServiceWebExterneDTO.codeCompteServiceWebExterne}"
+									validator="#{compteServiceWebExterneController.validateTaCompteServiceWebExterne}" disabled="#{compteServiceWebExterneController.editable()}">
+									<f:attribute name="nomChamp" value="#{const.C_CODE_COMPTE_SERVICE_WEB_EXTERNE}" />
+									<p:ajax event="blur" update="@this" />
+								</p:inputText>
+
+								<p:outputLabel value="Libelle : " />
+								<p:inputText value="#{compteServiceWebExterneController.selectedTaCompteServiceWebExterneDTO.libelleCompteServiceWebExterne}"
+									validator="#{compteServiceWebExterneController.validateTaCompteServiceWebExterne}" disabled="#{compteServiceWebExterneController.editable()}">
+									<f:attribute name="nomChamp" value="#{const.C_LIBELLE_COMPTE_SERVICE_WEB_EXTERNE}" />
+									<p:ajax event="blur" update="@this" />
+								</p:inputText>
+
+								<p:outputLabel value="Description : " styleClass="labelchob" />
+								<p:inputText value="#{compteServiceWebExterneController.selectedTaCompteServiceWebExterneDTO.descriptionCompteServiceWebExterne}"
+									validator="#{compteServiceWebExterneController.validateTaCompteServiceWebExterne}" disabled="#{compteServiceWebExterneController.editable()}">
+									<!-- 						<p:inputText value="#{compteServiceWebExterneController.selectedTaCompteServiceWebExterneDTO.nomTiers}" disabled="#{compteServiceWebExterneController.editable()}"> -->
+									<f:attribute name="nomChamp" value="#{const.C_DESCRIPTION_COMPTE_SERVICE_WEB_EXTERNE}" />
+									<p:ajax event="blur" update="@this" />
+								</p:inputText>
+
+								<p:outputLabel value="URL service : " />
+								<p:inputText value="#{compteServiceWebExterneController.selectedTaCompteServiceWebExterneDTO.urlService}"
+									validator="#{compteServiceWebExterneController.validateTaCompteServiceWebExterne}" disabled="#{compteServiceWebExterneController.editable()}">
+									<f:attribute name="nomChamp" value="#{const.C_URL_SERVICE_COMPTE_SERVICE_WEB_EXTERNE}" />
+									<p:ajax event="blur" update="@this" />
+								</p:inputText>
+
+
+<!-- 								<p:outputLabel value="Systeme : " /> -->
+<!-- 								<p:selectBooleanCheckbox value="#{compteServiceWebExterneController.selectedTaCompteServiceWebExterneDTO.systeme}" -->
+<!-- 									disabled="#{compteServiceWebExterneController.editable()}"> -->
+<!-- 									<p:ajax event="change" update="@this" /> -->
+<!-- 								</p:selectBooleanCheckbox> -->
+
+							</h:panelGrid>
+
+						</p:panel>
+
+					</div>
+
+					<div class="ui-grid-col-6">
+						<div class="ui-grid-row">
+
+							<div class="ui-grid-col-12">
+
+								<p:panel id="idPanelAdresse" header="Divers" toggleable="true" widgetVar="panelAdresse">
+
+									<h:panelGrid columns="2" cellpadding="10">
+
+										<p:outputLabel value="Type d'authentification : " />
+										<p:autoComplete value="#{compteServiceWebExterneController.taTAuthentificationDTO}" required="true"
+											completeMethod="#{compteServiceWebExterneController.typeAuthentificationAutoCompleteLight}" disabled="#{compteServiceWebExterneController.editable()}"
+											var="typeTiers" itemLabel="#{typeTiers.codeTAuthentification}" itemValue="#{typeTiers}" forceSelection="true" dropdown="true"
+											placeholder="Type d'authentification" converter="entityConverter">
+											<p:column>
+												<h:outputText value="#{typeTiers.codeTAuthentification}" />
+											</p:column>
+											<p:column>
+												<h:outputText value="#{typeTiers.libelleTAuthentification}" />
+											</p:column>
+
+											<f:attribute name="nomChamp" value="#{const.C_CODE_T_AUTHENTIFICATION}" />
+											<p:ajax event="itemSelect" listener="#{compteServiceWebExterneController.autcompleteSelection}" update="@this,@widgetVar(panelConnexion)" />
+										</p:autoComplete>
+
+										
+
+										<p:outputLabel value="Defaut : " />
+										<p:selectBooleanCheckbox value="#{compteServiceWebExterneController.selectedTaCompteServiceWebExterneDTO.defaut}"
+											disabled="#{compteServiceWebExterneController.editable()}">
+											<p:ajax event="change" update="@this" />
+										</p:selectBooleanCheckbox>
+
+										<p:outputLabel value="Actif : " />
+										<p:selectBooleanCheckbox value="#{compteServiceWebExterneController.selectedTaCompteServiceWebExterneDTO.actif}"
+											disabled="#{compteServiceWebExterneController.editable()}">
+											<p:ajax event="change" update="@this" />
+										</p:selectBooleanCheckbox>
+
+										<p:outputLabel value="Compte test : " />
+										<p:selectBooleanCheckbox value="#{compteServiceWebExterneController.selectedTaCompteServiceWebExterneDTO.compteTest}"
+											disabled="true">
+											<p:ajax event="change" update="@this" />
+										</p:selectBooleanCheckbox>
+										
+									</h:panelGrid>
+
+								</p:panel>
+								
+								<p:panel widgetVar="panelConnexion" >
+								
+									<p:panel id="idPanelIdentifiants" header="Identifiants" toggleable="true" widgetVar="panelIdentifiants" rendered="#{!compteServiceWebExterneController.authenticationOAuth}">
+	
+										<h:panelGrid columns="2" cellpadding="10" width="100%">
+																				
+											<p:outputLabel value="#{compteServiceWebExterneController.label('login')}" rendered="#{compteServiceWebExterneController.afficher('login')}"/>
+											<p:inputText value="#{compteServiceWebExterneController.selectedTaCompteServiceWebExterneDTO.login}"
+												rendered="#{compteServiceWebExterneController.afficher('login')}" style="width:100%"
+												validator="#{compteServiceWebExterneController.validateTaCompteServiceWebExterne}" disabled="#{compteServiceWebExterneController.editable()}">
+												<f:attribute name="nomChamp" value="#{const.C_LOGIN_COMPTE_SERVICE_WEB_EXTERNE}" />
+												<p:ajax event="blur" update="@this" />
+											</p:inputText>
+											
+											<p:outputLabel value="#{compteServiceWebExterneController.label('password')}" rendered="#{compteServiceWebExterneController.afficher('password')}"/>
+											<p:inputText value="#{compteServiceWebExterneController.selectedTaCompteServiceWebExterneDTO.password}"
+												rendered="#{compteServiceWebExterneController.afficher('password')}" style="width:100%"
+												validator="#{compteServiceWebExterneController.validateTaCompteServiceWebExterne}" disabled="#{compteServiceWebExterneController.editable()}">
+												<f:attribute name="nomChamp" value="#{const.C_PASSWORD_COMPTE_SERVICE_WEB_EXTERNE}" />
+												<p:ajax event="blur" update="@this" />
+											</p:inputText>
+											
+											<p:outputLabel value="#{compteServiceWebExterneController.label('apiKey1')}" rendered="#{compteServiceWebExterneController.afficher('apiKey1')}"/>
+											<p:inputText value="#{compteServiceWebExterneController.selectedTaCompteServiceWebExterneDTO.apiKey1}"
+												rendered="#{compteServiceWebExterneController.afficher('apiKey1')}" style="width:100%"
+												validator="#{compteServiceWebExterneController.validateTaCompteServiceWebExterne}" disabled="#{compteServiceWebExterneController.editable()}">
+												<f:attribute name="nomChamp" value="#{const.C_API_KEY_1_COMPTE_SERVICE_WEB_EXTERNE}" />
+												<p:ajax event="blur" update="@this" />
+											</p:inputText>
+											
+											<p:outputLabel value="#{compteServiceWebExterneController.label('apiKey2')}" rendered="#{compteServiceWebExterneController.afficher('apiKey2')}"/>
+											<p:inputText value="#{compteServiceWebExterneController.selectedTaCompteServiceWebExterneDTO.apiKey2}"
+												rendered="#{compteServiceWebExterneController.afficher('apiKey2')}" style="width:100%"
+												validator="#{compteServiceWebExterneController.validateTaCompteServiceWebExterne}" disabled="#{compteServiceWebExterneController.editable()}">
+												<f:attribute name="nomChamp" value="#{const.C_API_KEY_2_COMPTE_SERVICE_WEB_EXTERNE}" />
+												<p:ajax event="blur" update="@this" />
+											</p:inputText>
+											
+											<p:outputLabel value="#{compteServiceWebExterneController.label('valeur1')}" rendered="#{compteServiceWebExterneController.afficher('valeur1')}"/>
+											<p:inputText value="#{compteServiceWebExterneController.selectedTaCompteServiceWebExterneDTO.valeur1}"
+												rendered="#{compteServiceWebExterneController.afficher('valeur1')}"
+												validator="#{compteServiceWebExterneController.validateTaCompteServiceWebExterne}" disabled="#{compteServiceWebExterneController.editable()}">
+												<f:attribute name="nomChamp" value="#{const.C_VALEUR_1_COMPTE_SERVICE_WEB_EXTERNE}" />
+												<p:ajax event="blur" update="@this" />
+											</p:inputText>
+											
+											<p:outputLabel value="#{compteServiceWebExterneController.label('valeur2')}" rendered="#{compteServiceWebExterneController.afficher('valeur2')}"/>
+											<p:inputText value="#{compteServiceWebExterneController.selectedTaCompteServiceWebExterneDTO.valeur2}"
+												rendered="#{compteServiceWebExterneController.afficher('valeur2')}"
+												validator="#{compteServiceWebExterneController.validateTaCompteServiceWebExterne}" disabled="#{compteServiceWebExterneController.editable()}">
+												<f:attribute name="nomChamp" value="#{const.C_VALEUR_2_COMPTE_SERVICE_WEB_EXTERNE}" />
+												<p:ajax event="blur" update="@this" />
+											</p:inputText>
+											
+											<p:outputLabel value="#{compteServiceWebExterneController.label('valeur3')}" rendered="#{compteServiceWebExterneController.afficher('valeur3')}"/>
+											<p:inputText value="#{compteServiceWebExterneController.selectedTaCompteServiceWebExterneDTO.valeur3}"
+												rendered="#{compteServiceWebExterneController.afficher('valeur3')}"
+												validator="#{compteServiceWebExterneController.validateTaCompteServiceWebExterne}" disabled="#{compteServiceWebExterneController.editable()}">
+												<f:attribute name="nomChamp" value="#{const.C_VALEUR_3_COMPTE_SERVICE_WEB_EXTERNE}" />
+												<p:ajax event="blur" update="@this" />
+											</p:inputText>
+											
+											<p:outputLabel value="#{compteServiceWebExterneController.label('valeur4')}" rendered="#{compteServiceWebExterneController.afficher('valeur4')}"/>
+											<p:inputText value="#{compteServiceWebExterneController.selectedTaCompteServiceWebExterneDTO.valeur4}"
+												rendered="#{compteServiceWebExterneController.afficher('valeur2')}"
+												validator="#{compteServiceWebExterneController.validateTaCompteServiceWebExterne}" disabled="#{compteServiceWebExterneController.editable()}">
+												<f:attribute name="nomChamp" value="#{const.C_VALEUR_4_COMPTE_SERVICE_WEB_EXTERNE}" />
+												<p:ajax event="blur" update="@this" />
+											</p:inputText>
+										
+										</h:panelGrid>
+										
+									</p:panel>
+									
+									<p:panel header="OAuth" rendered="#{compteServiceWebExterneController.authenticationOAuth}">
+									
+										<p:panel rendered="#{compteServiceWebExterneController.afficherPanelOAuth('STRIPE_CONNECT')}">
+											<ui:include src="../oauth_stripe_include.xhtml">
+												<ui:param name="gestionOAuthController" value="#{compteServiceWebExterneController.gestionOAuthController}" /> 
+											</ui:include>
+										</p:panel>
+									
+									</p:panel>
+									
+								</p:panel>
+
+							</div>
+						</div>
+
+					</div>
+
+				</div>
+
+			</div>
+
+			
+
+		</p:tab>
+
+
+
+	</p:tabView>
+
+</ui:composition>

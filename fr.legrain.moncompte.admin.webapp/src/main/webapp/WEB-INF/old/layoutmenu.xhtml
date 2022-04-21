@@ -1,0 +1,68 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:pv="http://primefaces.org/volt">
+
+    <h:form id="menuform">
+    	
+<!--     	<p:remoteCommand name="rc" actionListener="#{leftBean.remoteCommandToggleList}" oncomplete="handleCompleteToggleList(xhr, status, args)"/> -->
+    	
+        <pv:menu>
+            <p:submenu id="rm_dashboards" label="Produit" icon="icon-book3">
+<!--                 <p:menuitem id="rm_db_v1" value="Dashboard V1" icon="icon-leaf" outcome="/dashboard"/> -->
+<!--                 <p:menuitem id="rm_db_v2" value="Dashboard V2" icon="icon-leaf" outcome="/dashboard2"/> oncomplete="handleCompleteToggleList2();" -->
+				<p:menuitem styleClass="liste_menu_gauche" value="Liste produit" actionListener="#{menuBean.openListeProduit}" update="@widgetVar(left)"   />
+<!-- 				<p:menuitem value="Liste produit" actionListener="#{menuBean.openListeProduit}" update="@widgetVar(left)" oncomplete="rc();"  /> -->
+				<p:menuitem value="Produit" actionListener="#{menuBean.openProduit}" update="@widgetVar(right)" oncomplete="activeLastTabCenter()"/>
+				<p:menuitem value="Type de produit" actionListener="#{menuBean.openTypeProduit}" update="@widgetVar(right)" oncomplete="activeLastTabCenter()"/>
+            </p:submenu>
+           
+            <p:submenu label="Client" icon="icon-users">
+				<p:menuitem value="Liste client" styleClass="liste_menu_gauche" actionListener="#{menuBean.openListeClient}" update="@widgetVar(left)" />
+				<p:menuitem value="Client" actionListener="#{menuBean.openClient}" update="@widgetVar(right)" oncomplete="activeLastTabCenter()"/>
+				<p:menuitem value="Liste utilisateur" styleClass="liste_menu_gauche" actionListener="#{menuBean.openListeUtilisateur}" update="@widgetVar(left)"   />
+			</p:submenu>
+            
+            <p:submenu label="Paniers" icon="icon-shopping-cart">
+				<p:menuitem value="Paniers" actionListener="#{menuBean.openPanier}" update="@widgetVar(right)" oncomplete="activeLastTabCenter()"/>
+			</p:submenu>
+			
+			
+			<p:submenu label="Autorisations" icon="icon-th-large-outline">
+				<p:menuitem value="Autorisations" actionListener="#{menuBean.openAutorisation}" update="@widgetVar(right)" oncomplete="activeLastTabCenter()" />
+			</p:submenu>
+			
+			<p:submenu label="Administration" icon="icon-th-large-outline">
+				<p:menuitem value="Administration" actionListener="#{menuBean.openAdministration}" update="@widgetVar(right)" oncomplete="activeLastTabCenter()" />
+			</p:submenu>
+			
+			<p:submenu label="Aide" icon="	icon-info">
+				<p:menuitem value="A propos" actionListener="#{aProposBean.actAbout}" />
+			</p:submenu>
+			
+<!--             <p:submenu id="rm_menupos" label="Menu Position" icon="icon-select"> -->
+<!--                 <p:menuitem id="rm_left" url="#" value="Inline Menu" icon="icon-uniE675" onclick="$('body').removeClass('PopupMenu');return false;"/> -->
+<!--                 <p:menuitem id="rm_popup" url="#" value="Popup Menu" icon="icon-windows" onclick="$('body').addClass('PopupMenu');return false;"/> -->
+<!--             </p:submenu> -->
+<!--             <p:submenu id="rm_colors" label="Body Colors" icon="icon-lab"> -->
+<!--                 <p:menuitem id="rm_bg_blue" url="#" value="Blue" icon="icon-syringe" onclick="$('body').removeClass().addClass('BlueBody');return false;"/> -->
+<!--                 <p:menuitem id="rm_bg_leaden" url="#" value="Leaden" icon="icon-syringe" onclick="$('body').removeClass().addClass('LeadenBody');return false;"/> -->
+<!--                 <p:menuitem id="rm_bg_red" url="#" value="Red" icon="icon-syringe" onclick="$('body').removeClass().addClass('RedBody');return false;"/> -->
+<!--                 <p:menuitem id="rm_bg_green" url="#" value="Green" icon="icon-syringe" onclick="$('body').removeClass().addClass('GreenBody');return false;"/> -->
+<!--                 <p:menuitem id="rm_bg_cf" url="#" value="CornFlower" icon="icon-syringe" onclick="$('body').removeClass().addClass('CornFlowerBody');return false;"/> -->
+<!--                 <p:menuitem id="rm_bg_gray" url="#" value="Gray" icon="icon-syringe" onclick="$('body').removeClass().addClass('DarkGrayBody');return false;"/> -->
+<!--             </p:submenu> -->
+<!--             <p:submenu id="rm_default" label="Default Pages" icon="icon-list"> -->
+<!--                 <p:menuitem id="rm_empty" value="Empty Page" icon="icon-code-outline" outcome="/empty-page" /> -->
+<!--                 <p:menuitem id="rm_login" value="Login Page" icon="icon-key-outline" outcome="/login" /> -->
+<!--                 <p:menuitem id="rm_error" value="Error Page" icon="icon-radar-outline" outcome="/error" /> -->
+<!--                 <p:menuitem id="rm_404" value="404 Page" icon="icon-search" outcome="/404" /> -->
+<!--                 <p:menuitem id="rm_access" value="Access Denied Page" icon="icon-eye-outline" outcome="/access-denied" /> -->
+<!--             </p:submenu> -->
+        </pv:menu>
+    </h:form>
+
+</ui:composition>

@@ -1,0 +1,211 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:pi="http://primefaces.org/icarus">
+
+
+    <h:form id="menuform">.
+    
+    		<p:socket onMessage="handleMessage" channel="/notifications" />
+		
+		<p:idleMonitor timeout="#{auth.sessionTimeIdle}" >
+    		<p:ajax event="idle" listener="#{auth.timeout()}" oncomplete="alert('Votre session à expiré (Elle est restée innactive trop longtemps).')"/>
+		</p:idleMonitor>
+		
+<!-- 		<p:socket channel="/notifications"> -->
+<!-- 			<p:ajax event="message" update="messages" /> -->
+<!-- 		</p:socket> -->
+	
+<!-- 		<p:remoteCommand name="rc" actionListener="#{leftBean.remoteCommandToggleList}" oncomplete="handleCompleteToggleList(xhr, status, args)"/> -->
+
+        <pi:menu widgetVar="IcarusMenu">
+        
+<!-- 				<p:menuitem value="Liste client" oncomplete="PF('wvOverlayListeTiers').show()" update="@widgetVar(left)" /> -->
+		
+
+<!-- 		<p:growl id="messages" widgetVar="growl" /> -->
+		
+<!-- 		<p:menubar class="topmenu mt10"> -->
+<!-- 			<p:menuitem value="Accueil" url="/index.xhtml" /> -->
+			
+			<p:submenu id="idMenuDossier" label="Dossier" icon="fa fa-book">
+				<p:menuitem id="idMenuInfosEntreprise" value="Infos entreprise" actionListener="#{menuBean.openInfoEntreprise}" update=":form:tabView"  disabled="#{!menuBean.autoriseMenu('fr.legrain.Tiers')}"/>
+			</p:submenu>
+			
+				
+			
+			<p:submenu id="idMenuTiers" label="Tiers" icon="fa fa-user" >
+				<p:menuitem id="idMenuTiersTiers" value="Tiers" oncomplete="PF('wvOverlayListeTiers').show();" disabled="#{!menuBean.autoriseMenu('fr.legrain.Tiers')}" styleClass="#{!menuBean.autoriseMenu('fr.legrain.Tiers')?'disabled':''}"/>
+			</p:submenu>
+			
+			<p:submenu id="idMenuArticle" label="Articles" icon="fa fa-cube">
+				<p:menuitem id="idMenuArticleArticle" value="Article" oncomplete="PF('wvOverlayListeArticle').show();"  disabled="#{!menuBean.autoriseMenu('fr.legrain.Articles')}" styleClass="#{!menuBean.autoriseMenu('fr.legrain.Articles')?'disabled':''}"/>
+			</p:submenu>
+			
+			<p:submenu id="idMenuSolstyce" label="Solstyce" icon="fa fa-book">
+			
+				<p:submenu id="idMenuBR" label="Réception" icon="fa fa-truck">
+					<p:menuitem id="idMenuListeBR" value="Liste des réceptions" oncomplete="PF('wvOverlayListeBR').show();" 
+					  disabled="#{!menuBean.autoriseMenu('fr.legrain.BonReception')}"/>
+					<p:menuitem id="idMenuBRBR" value="Bon de réception" actionListener="#{menuBean.openBonReception}" update=":form:tabView"  
+					  disabled="#{!menuBean.autoriseMenu('fr.legrain.BonReception')}"/>
+				</p:submenu>
+				
+				<p:submenu id="idMenuFab" label="Fabrications" icon="fa fa-cogs">
+					<p:menuitem id="idMenuListeFabrication"  value="Liste des fabrications" oncomplete="PF('wvOverlayListeFabrication').show();" 
+					  disabled="#{!menuBean.autoriseMenu('fr.legrain.Fabrication')}"/>
+					<p:menuitem id="idMenuNouvelleFabrication"  value="Nouvelle fabrication" actionListener="#{menuBean.openCreationFabrication}" update=":form:tabView" 
+					  disabled="#{!menuBean.autoriseMenu('fr.legrain.Fabrication')}"/>
+					  <p:separator/>
+					<p:menuitem id="idMenuListeModeleFabrication"  value="Liste des modèles" oncomplete="PF('wvOverlayListeModeleFabrication').show();" 
+					  disabled="#{!menuBean.autoriseMenu('fr.legrain.Fabrication')}"/>
+					<p:menuitem id="idMenuNouveauModeleFabrication"  value="Nouveau modèle" actionListener="#{menuBean.openCreationModeleFabrication}" update=":form:tabView" 
+					  disabled="#{!menuBean.autoriseMenu('fr.legrain.Fabrication')}"/>
+				</p:submenu>
+				<p:submenu id="idMenuLot" label="Lots" icon="fa fa-cubes">
+					<p:menuitem id="idMenuGestionLot"  value="Gestion des lots" actionListener="#{menuBean.openGestionLot}" update=":form:tabView"  
+					  disabled="#{!menuBean.autoriseMenu('fr.legrain.GestionLot')}"/>
+				</p:submenu>
+
+				<p:submenu label="Stock / Inventaire" icon="fa fa-cubes">  
+					<p:menuitem id="idMenuListeMouvement"  value="Liste des Mouvements" oncomplete="PF('wvOverlayListeMouvStock').show();" 
+					  disabled="#{!menuBean.autoriseMenu('fr.legrain.MouvementStock')}"/>
+					<p:menuitem id="idMenuNouveauMouvement"  value="Nouveau mouvement" actionListener="#{menuBean.openMouvementStock}" update=":form:tabView"  
+					  disabled="#{!menuBean.autoriseMenu('fr.legrain.MouvementStock')}"/>
+					<p:separator/>
+					<p:menuitem id="idMenuListeInventaire"  value="Liste des inventaires" oncomplete="PF('wvOverlayListeInventaire').show();" 
+					  disabled="#{!menuBean.autoriseMenu('fr.legrain.Inventaire')}"/>
+					<p:menuitem id="idMenuNouvelInventaire"  value="Nouvel inventaire" actionListener="#{menuBean.openMouvementInventaire}" update=":form:tabView"  
+					  disabled="#{!menuBean.autoriseMenu('fr.legrain.Inventaire')}"/>
+				</p:submenu>
+				<p:submenu label="Contrôles de conformité">
+					<p:submenu label="Modèles">
+						<p:menuitem id="idMenuModeleControles"  value="Modèle de contrôles" oncomplete="PF('wvOverlayListeModeleCtrl').show();" />
+						<p:menuitem value="Modèle de groupe de controles" oncomplete="PF('wvOverlayListeModeleGrpCtrl').show();" />
+					</p:submenu>
+					<p:menuitem id="idMenuEtatNonConformite"  value="Etat Non-Conformité" 
+						onsuccess="window.open('#{request.contextPath}/output?__report=/reports/Non_conformites.rptdesign&amp;__format=pdf')" 
+						actionListener="#{etatNonConformiteController.actImprimer}" />
+					
+				</p:submenu>
+				
+				<p:submenu label="Etats">
+					<p:menuitem id="idMenuEtats"  value="Etats" actionListener="#{menuBean.openEtatTracabiliteFabrication}" update=":form:tabView" 
+					  disabled="#{!menuBean.autoriseMenu('fr.legrain.Fabrication')}"/>
+				</p:submenu>
+
+			</p:submenu>
+			
+			<p:submenu id="idMenuParam" label="Paramètres" icon="fa fa-tags">
+				<p:submenu id="idMenuParamArticle" label="Articles" icon="ui-icon-tag">
+
+					<p:menuitem id="idMenuParamFamilleArticle" value="Famille d'articles" actionListener="#{menuBean.openFamilleArticle}" update=":form:tabView"  
+					  disabled="#{!menuBean.autoriseMenu('fr.legrain.Articles')}"/>
+
+					<p:menuitem value="Codes Tva" actionListener="#{menuBean.openTva}" update=":form:tabView"  
+					  disabled="#{!menuBean.autoriseMenu('fr.legrain.Articles')}" rendred="#{mode.facturation}"/>
+					<p:menuitem id="idMenuParamUniteArticle" value="Unités" actionListener="#{menuBean.openUnite}" update=":form:tabView"  
+					  disabled="#{!menuBean.autoriseMenu('fr.legrain.Articles')}"/>
+
+				</p:submenu>
+				
+					
+				<p:submenu label="Documents"  icon="fa fa-book">
+					<p:menuitem value="Type Paiement" actionListener="#{menuBean.openTypePaiement}" update=":form:tabView"  
+					  disabled="#{!menuBean.autoriseMenu('fr.legrain.Document')}" rendred="#{mode.facturation}"/>
+
+					<p:menuitem id="idMenuParamCPaiementDoc"  value="Paiement - Echéance" actionListener="#{menuBean.openConditionPaiementDoc}" update=":form:tabView"  
+					  disabled="#{!menuBean.autoriseMenu('fr.legrain.Document')}"/>
+				</p:submenu>
+
+				<p:submenu id="idMenuParamTiers" label="Tiers" icon="fa fa-book">
+
+					<p:menuitem id="idMenuParamTypeAdresse"  value="Type adresse" actionListener="#{menuBean.openTypeAdresse}" update=":form:tabView" 
+					  disabled="#{!menuBean.autoriseMenu('fr.legrain.Tiers')}"/>
+
+					<p:menuitem id="idMenuParamTypeCivilite"  value="Type civilite" actionListener="#{menuBean.openTypeCivilite}" update=":form:tabView" 
+					  disabled="#{!menuBean.autoriseMenu('fr.legrain.Tiers')}"/>
+					<p:menuitem id="idMenuParamTypeEntite"  value="Type entite" actionListener="#{menuBean.openTypeEntite}" update=":form:tabView" 
+					  disabled="#{!menuBean.autoriseMenu('fr.legrain.Tiers')}"/>
+					<p:menuitem id="idMenuParamTypeTel"  value="Type telephone" actionListener="#{menuBean.openTypeTelephone}" update=":form:tabView" 
+					  disabled="#{!menuBean.autoriseMenu('fr.legrain.Tiers')}"/>
+					
+					<p:menuitem id="idMenuParamTypeTiers"  value="Type tiers" actionListener="#{menuBean.openTypeTiers}" update=":form:tabView"  
+					  disabled="#{!menuBean.autoriseMenu('fr.legrain.Tiers')}"/>
+					<p:menuitem id="idMenuParamTypeWeb"  value="Type de site web" actionListener="#{menuBean.openTypeWeb}" update=":form:tabView"  
+					  disabled="#{!menuBean.autoriseMenu('fr.legrain.Tiers')}"/>
+
+					<p:menuitem id="idMenuParamTypeEmail"  value="Type email" actionListener="#{menuBean.openTypeEmail}" update=":form:tabView"  
+					  disabled="#{!menuBean.autoriseMenu('fr.legrain.Tiers')}"/>
+
+					<p:menuitem id="idMenuParamCPaiementTiers"  value="Condition de paiement" actionListener="#{menuBean.openConditionPaiementTiers}" update=":form:tabView"  
+					  disabled="#{!menuBean.autoriseMenu('fr.legrain.Tiers')}"/>
+					<p:menuitem id="idMenuParamFamilleTiers"  value="Famille de tiers" actionListener="#{menuBean.openFamilleTiers}" update=":form:tabView"  
+					  disabled="#{!menuBean.autoriseMenu('fr.legrain.Tiers')}"/>
+				</p:submenu>
+				
+				<p:submenu id="idMenuParamSolstyce"  label="Solstyce" icon="ui-icon-contact">
+					<p:menuitem id="idMenuEntrepot"  value="Entrepot" actionListener="#{menuBean.openEntrepot}" update=":form:tabView" 
+					  disabled="#{!menuBean.autoriseMenu('fr.legrain.Entrepot')}"/>
+					<p:menuitem id="idMenuTypeFabrication"  value="Type fabrication" actionListener="#{menuBean.openTypeFabrication}" update=":form:tabView" 
+					  disabled="#{!menuBean.autoriseMenu('fr.legrain.Fabrication')}"/>
+					<p:menuitem id="idMenuTypeReception"  value="Type réception" actionListener="#{menuBean.openTypeReception}" update=":form:tabView" 
+					  disabled="#{!menuBean.autoriseMenu('fr.legrain.BonReception')}"/>
+					<p:menuitem id="idMenuTypeCodeBarre"  value="Type code barre" actionListener="#{menuBean.openTypeCodeBarre}" update=":form:tabView" 
+					  disabled="#{!menuBean.autoriseMenu('fr.legrain.CodeBarre')}"/>
+					<p:menuitem id="idMenuGroupeControles"  value="Groupe de controles" actionListener="#{menuBean.openGroupeControle}" update=":form:tabView"  />
+				</p:submenu>
+				
+			</p:submenu>
+			
+			<p:submenu id="idMenuDocuments" label="Documents" rendred="#{mode.facturation}" icon="fa fa-file-text-o">
+				<p:submenu id="idMenuDevis"  label="Devis">
+					<p:menuitem id="idMenuListeDevis"  value="Liste des devis" oncomplete="PF('wvOverlayListeDevis').show();" />
+					<p:menuitem id="idMenuNouveauDevis"  value="Devis" actionListener="#{menuBean.openDevis}" update=":form:tabView"/>
+				</p:submenu>
+				<p:submenu id="idMenuFacture"  label="Facture">
+					<p:menuitem id="idMenuListeFacture"  value="Liste des facture" oncomplete="PF('wvOverlayListeFacture').show();" />
+					<p:menuitem id="idMenuNouvelleFacture"  value="Facture" actionListener="#{menuBean.openFacture}" update=":form:tabView"/>
+				</p:submenu>
+				<p:menuitem id="idMenuNouveauBonLivraison"  value="Bon de livraison" url="/index.xhtml" disabled="true" styleClass="disabled" />
+			</p:submenu>
+			
+			<p:submenu label="Aide" icon="fa fa-info-circle">
+				<p:menuitem value="A propos" actionListener="#{aProposBean.actAbout}" />
+			</p:submenu>
+			
+			
+			
+			<p:submenu id="idMenuAdministration"  label="Administration" icon="fa fa-cogs">
+				<p:menuitem id="idMenuUtilisateur"  value="Utilisateurs" actionListener="#{menuBean.openUtilisateur}" update=":form:tabView"   />
+				<p:menuitem id="idMenuRoles"  value="Roles" actionListener="#{menuBean.openRole}" update=":form:tabView"   />
+				<p:menuitem id="idMenuPreferences" value="Préférences" actionListener="#{menuBean.openPreferences}" update=":form:tabView"   />
+				<p:menuitem id="idMenuGenerationCode" value="Gestion génération des codes" actionListener="#{menuBean.openGenCodeEx}" update=":form:tabView" />
+				<p:menuitem id="idMenuBugs" value="Bugs" actionListener="#{menuBean.openBugs}" update=":form:tabView"   />
+				<p:submenu id="idMenuDev" label="Dev" icon="ui-icon-gear" rendered="#{auth.isDevLgr()}">
+					<p:menuitem id="idMenuDevControlesSaisie" value="Controles saisie" url="/admin/dev/controle_saisie.xhtml" />
+					<p:menuitem id="idMenuDevGenerationCode" value="Génération de code" url="/admin/dev/gencode.xhtml" />
+					<p:menuitem id="idMenuDevLog" value="Log" url="/admin/dev/log.xhtml" />
+					<p:menuitem id="idMenuDevScript" value="Scripts" url="/admin/dev/scripts.xhtml" />
+					<p:menuitem id="idMenuDevInfos" value="Infos" url="/admin/dev/infos_dev.xhtml" />
+					<p:menuitem id="idMenuDevAdmin" value="Admin" url="/admin/dev/admin_dev.xhtml" />
+					<p:menuitem id="idMenuDevGenerationDonnees" value="Génération données" url="/admin/dev/generation_donnees.xhtml" />
+					<p:menuitem id="idMenuDevBugzilla" value="Bugzilla" onclick="window.open('http://bugs.legrain.fr')" />
+					<p:separator/>
+					<p:menuitem id="idMenuDevMonitoring" value="Monitoring" onclick="window.open('#{request.contextPath}/monitoring')" /> 
+					<p:menuitem id="idMenuDevUtilisateursLogins" value="Utilisateurs Logins" actionListener="#{menuBean.openUtilisateurLogin}" update=":form:tabView"   />
+					<p:submenu label="Test" icon="ui-icon-gear">
+						<p:menuitem id="idMenuDevPageTest" value="Page de test" url="/admin/dev/test_dev.xhtml" />
+					</p:submenu>
+				</p:submenu>
+			</p:submenu>
+        </pi:menu>
+        
+<!--         <p:tooltip value="Dossier" for="idMenuDossier" /> -->
+        
+    </h:form>
+    
+</ui:composition>

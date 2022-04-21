@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<title>Gestion des autorisations</title>
+		<link rel="shortcut icon" type="image/x-icon"
+		href="#{resource['images:legrain_new.ico']}" />
+</h:head>
+<h:body>
+
+	<f:facet name="last">
+		<!-- surcharge des CSS primefaces -->
+		<h:outputStylesheet library="css" name="hacks.css" />
+	</f:facet>
+
+	<div id="loginDiv">
+	
+		<p:graphicImage library="images" name="legrain_new.ico" title="Gestion des autorisations"
+			alt="Gestion des autorisations" width="" />
+			
+		<div id="divLoginForm">
+
+			<h:form id="loginForm">
+				<p:focus />
+				<div class="inputlabel">
+					<h:outputLabel for="j_username" value="Utilisateur" />
+				</div>
+				<div>
+					<p:inputText value="#{auth.username}" id="j_username" size="25" />
+				</div>
+				<div class="inputlabel">
+					<h:outputLabel for="j_password" value="Mot de Passe" />
+				</div>
+				<div>
+					<p:password value="#{auth.password}" id="j_password" size="25"
+						autocomplete="on" />
+				</div>
+				<div>
+				 	<p:themeSwitcher value="#{auth.theme}">
+				 		<f:selectItem itemLabel="--Choisir un thème--" itemValue=""/>
+						<f:selectItems value="#{themeChoices.themes}"/>
+					</p:themeSwitcher> 
+				</div>
+				<div>
+					<p:commandButton action="#{auth.login}" value="LOGIN" ajax="false" />
+				</div>
+			</h:form>
+			<p:messages styleClass="errors" autoUpdate="true" />
+		</div>
+	</div>
+
+</h:body>
+</html>

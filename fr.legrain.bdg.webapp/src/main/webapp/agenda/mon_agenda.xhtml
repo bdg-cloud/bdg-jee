@@ -1,0 +1,136 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:lgr="http://legrain.fr/ui"
+	xmlns:c="http://java.sun.com/jsp/jstl/core">
+	
+
+<!-- 	 <ui:define name="head_css"> -->
+	 	<style type="text/css">
+            #{agendaBean.cssAgenda}
+            .evt-lu {
+            	font-weight: bold;
+            }
+        </style>
+<!-- 	 </ui:define> -->
+
+	<p:remoteCommand name="eventSelectRC" actionListener="#{agendaBean.actEventSelectRC(agendaBean.event)}" process="@this"
+				update="@widgetVar(wvDlgEvenementContent)" oncomplete="PF('wvDlgEvenement').show();" />
+				
+				
+    <div class="dashboard-header">
+                <div class="ui-g">
+                        <p:commandButton value="Fermer" actionListener="#{agendaBean.actFermer}" update=":form:messages"
+                         styleClass="icon icon-close menuitem-fermer-droite" process="@this" 
+							onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())"/>
+					<!-- <i class="fa fa-file-text-o fa-3x" style="color:#e88524"></i> -->
+					<!-- <h:graphicImage name="dashboard/agenda.svg" library="images" height="60px" style="margin-top:1px;" /> -->
+					<i class="fa fa-calendar" style="font-size: 60px;"></i>
+                    <div class="ui-g-12 ui-md-6">
+                        <div class="dashboard-title">
+                            <h2>   Mon Agenda</h2>
+
+                        </div>
+                    </div>
+
+                    <div class="ui-g-12 ui-g-nopad">
+
+                    </div>
+                </div>
+            </div>
+
+	<p:menubar styleClass="menu-onglet">
+		<p:menuitem title="Créer un évènement" actionListener="#{agendaBean.actInsererEvenement}" styleClass="icon-insert icon ggg" 
+			process="@this" onsuccess="$('.classHiddenCommandForDialogAgendaReturn').click()"/>
+	</p:menubar>
+	
+	<p:commandButton actionListener="#{agendaBean.actDialogEvenement}" style="display:none" process="@this" styleClass="classHiddenCommandForDialogAgendaReturn" >
+        	<p:ajax event="dialogReturn" listener="#{agendaBean.handleReturnDialogEvenement}" update="@widgetVar(wvAgenda),@widgetVar(wvPanelDatatableEventModel)"  />  
+    </p:commandButton>
+<!-- 	<lgr:hiddenLink id="dd" pour="ggg" actionBean="#{agendaBean}" actionMethod="actDialogEvenement" maj="@widgetVar(wvAgenda)"/> -->
+	
+	<p:panel header="Agendas" toggleable="true">
+		<p:selectManyCheckbox value="#{agendaBean.selectedAgenda}" layout="responsive" columns="3" converter="entityConverter" styleClass="checkbox-agenda">
+	        <f:selectItems value="#{agendaBean.agendas}" var="ag" itemLabelEscaped="false"
+	         itemLabel="&lt;div style=&quot;margin:auto; width: 15px; height: 15px; background-color: ##{ag.couleur}; display:inline &quot;&gt; &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; &lt;/div&gt;
+	         &lt;div style=&quot;display:inline &quot;  &gt;  &#160;&#160;&#160;#{ag.nom} &lt;/div&gt;"
+	         itemValue="#{ag}" itemDescription="#{ag.description}"/>
+	        <p:ajax listener="#{agendaBean.agendaChange}" update="@widgetVar(wvAgenda),@widgetVar(wvPanelDatatableEventModel)"/>
+	    </p:selectManyCheckbox>
+    </p:panel>
+    
+    <p:panel header="Evènements (#{agendaBean.listeEvtDatatable.size()})" toggleable="true" collapsed="true" widgetVar="wvPanelDatatableEventModel">
+		<p:dataTable 
+			value="#{agendaBean.listeEvtDatatable}" 
+			var="e" 
+			id="idDatatableEventModel" 
+			widgetVar="wvDatatableEventModel"
+			rowKey="#{e.idEvenement}" 
+			selectionMode="single"
+			selection="#{agendaBean.selectedEvenement}"
+			scrollable="true" scrollHeight="200"
+			>
+			<p:ajax event="rowSelect" delay="#{msg.datatable_rowselect_delay}" listener="#{agendaBean.onRowSelectEvenement}" oncomplete="$('.classHiddenCommandForDialogAgendaReturn').click()"/>
+			
+			<p:column headerText="Agenda" styleClass="center">
+				<div style="margin:auto; width: 15px; height: 15px; background-color: ##{e.taAgenda.couleur}"/>
+			</p:column>
+			<p:column headerText="Date" styleClass="center">
+				<h:outputText value="#{e.dateDebut}" >
+					<f:convertDateTime pattern="#{msg.datetime_pattern}" timeZone="#{msg.time_zone}"/>
+				</h:outputText>
+			</p:column>
+			<p:column headerText="Titre">
+				<p:outputLabel value="#{e.libelleEvenement}"/>
+			</p:column>
+			
+		</p:dataTable>
+    </p:panel>
+    
+    <p:panel header="Notification (#{agendaBean.listeNotifDatatable.size()})" toggleable="true" collapsed="true" widgetVar="wvPanelNotificationAgenda">
+		<p:dataTable 
+			value="#{agendaBean.listeNotifDatatable}" 
+			var="e" 
+			id="idDatatableNotfModel" 
+			widgetVar="wvDatatableNotifModel"
+			rowKey="#{e.idNotification}" 
+			selectionMode="single"
+			selection="#{agendaBean.selectedNotification}"
+			rowStyleClass="#{e.lu ? null : 'evt-lu'}"
+			scrollable="true" scrollHeight="200"
+			>
+			<p:ajax event="rowSelect" delay="#{msg.datatable_rowselect_delay}" listener="#{agendaBean.onRowSelectNotification}" update="@this,idLinkAgendaAccueil"/>
+			
+			<p:column headerText="Date notification">
+				<h:outputText value="#{e.dateNotification}" >
+					<f:convertDateTime pattern="#{msg.datetime_pattern}" timeZone="#{msg.time_zone}"/>
+				</h:outputText>
+			</p:column>
+			<p:column headerText="Titre">
+				<p:outputLabel value="#{e.taEvenementUtilisateur.libelleEvenement}"/>
+			</p:column>
+
+		</p:dataTable>
+    </p:panel>
+
+	<p:panel header="Calendrier" style="height:100%" styleClass="panel-no-padding-interieur">
+		<p:schedule 
+			value="#{agendaBean.eventModel}" 
+			widgetVar="wvAgenda" 
+			timeZone="#{msg.time_zone}" 
+			styleClass="gggaa">
+<!-- 			<p:ajax event="dateSelect"  oncomplete="alert('ggg')" /> -->
+			
+<!-- 			<p:ajax event="eventSelect" listener="#{agendaBean.onEventSelect}" oncomplete="eventSelectRC()" /> -->
+			<p:ajax event="eventSelect" listener="#{agendaBean.onEventSelect}" oncomplete="$('.classHiddenCommandForDialogAgendaReturn').click()"/>
+			
+			
+<!-- 			<p:ajax event="viewChange" update="@widgetVar(wvDatatableEventModel)" /> -->
+			<!-- <p:ajax event="eventMove" listener="#{agendaBean.onEventMove}" update="messages" /> -->
+			<!-- <p:ajax event="eventResize" listener="#{agendaBean.onEventResize}" update="messages" /> -->
+		</p:schedule>
+	</p:panel>
+
+</ui:composition>

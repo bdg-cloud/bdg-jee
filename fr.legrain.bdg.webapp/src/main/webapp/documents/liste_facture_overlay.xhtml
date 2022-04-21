@@ -1,0 +1,277 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:p="http://primefaces.org/ui">
+	
+	<o:importConstants type="fr.legrain.bdg.webapp.app.LgrTab" />
+	
+<!-- 	<h:form> -->
+
+<!-- <p:ajax event="rowSelect" listener="#{clientController.onRowSelect}" update=":form:tabView,:form:messages" oncomplete="PF('wvOverlayListeClient').hide();"/>  -->
+
+
+<!-- 	<p:commandButton id="movieBtn" value="Dynamic" type="button" /> -->
+	<p:commandLink id="listeFactureBtn" >
+		<i class="top-submenu-icon fa fa-fw fa-file-text-o"></i>
+<!-- 		<i class="top-bar-badge animated rubberBand"><h:outputText value="#{topBarController.nbClient}"/></i> -->
+<!-- 		<i class="fa fa-book animated swing" aria-hidden="true"></i> -->
+		<span><h:outputText value="Liste des factures" /></span>
+	</p:commandLink>
+	
+<!-- 	<p:overlayPanel id="moviePanel" for="movieBtn" hideEffect="fade" dynamic="true"  -->
+<!-- 		dismissable="true" appendTo="@(body)" widgetVar="wvOverlayListeProduit" showCloseIcon="true"> -->
+	
+	<p:overlayPanel id="idListeFacturePanel" for="listeFactureBtn" hideEffect="fade" dynamic="true" 
+		dismissable="true" appendTo="@(body)" widgetVar="wvOverlayListeFacture" showCloseIcon="true">
+		<h:form>
+		<div class="dashboard-title" style="background:#f6f6f6;">
+              <h:panelGrid columns="3" cellpadding="5">
+            	<h:graphicImage name="dashboard/facture.svg" library="images" height="35px" style="margin-top:1px;" />
+                <p:outputLabel value="Liste des factures" style="font-size:20px;"/>
+              </h:panelGrid>  
+              <p:separator/>
+        </div>
+	<p:menubar styleClass="menu-onglet" widgetVar="wvMenuListeFacture" id="idMenuListeFacture">
+		<p:menuitem title="Créer une nouvelle facture" update=":form:tabView,:form:messages,@widgetVar(wvMenuListeFacture),@widgetVar(wvDataTableListeFacture)" 
+		actionListener="#{factureController.nouveau}" styleClass="icon icon-insert" disabled="#{factureController.etatBouton('inserer')}" oncomplete="PF('wvOverlayListeFacture').hide();"/>
+<!-- 	 	<p:menuitem title="Détail" update=":form:tabView,:form:messages" actionListener="#{factureController.detail}" styleClass="icon icon-detail" disabled="#{factureController.modeEcran.dataSetEnModif()}" oncomplete="PF('wvOverlayListeFacture').hide();"/> -->
+<!-- 	 	<p:menuitem title="Supprimer les factures sélectionnées" update=":form:tabView,@widgetVar(wvDataTableListeFacture),@widgetVar(wvMenuListeFacture),:form:messages,@form"  -->
+<!-- 	 	actionListener="#{factureController.supprimer}" styleClass="icon icon-delete" disabled="#{factureController.etatBouton('supprimerListe')}"> -->
+<!-- 	 		<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer les factures sélectionnées ?" icon="ui-icon-alert" /> -->
+<!-- 	 	</p:menuitem> -->
+	 	
+			<p:menuitem title="Rafraîchir la liste" update="@form,@widgetVar(wvDataTableListeFacture),@widgetVar(wvMenuListeFacture),:form:messages" actionListener="#{factureController.refresh}" styleClass="icon icon-refresh" disabled="#{factureController.modeEcran.dataSetEnModif()}"/>
+			
+<!-- 			<p:menuitem icon="ui-icon-print" label="Thème" class="ui-icon-print-option" title="Imprimer la liste"							  -->
+<!-- 				onsuccess="window.open('#{request.contextPath}/output?__report=/reports/documents/facture/ListeFacture.rptdesign&amp;id_facture=#{factureController.values}&amp;__format=pdf')" -->
+<!-- 				actionListener="#{factureController.actImprimerListeFacture}"/> -->
+			
+<!-- 			<p:submenu icon="ui-icon-print" label="Thème" class="ui-icon-print-option"> -->
+<!--         	<p:menuitem title="Theme graphique" value="Theme1" icon="ui-icon-print" class="ui-icon-print-option" action="#{factureController.theme1}"/>  -->
+<!--         	<p:menuitem title="Theme graphique" value="Theme2" action="#{factureController.theme2}"/> -->
+<!--         	<p:menuitem title="Theme graphique" value="Theme3" action="#{factureController.theme3}"/>       	 -->
+<!--         </p:submenu> -->
+	</p:menubar>
+	<p:sticky target="idMenuListeFacture" />
+	 
+	<p:dataTable id="dataTableListeFacture" var="facture"
+				widgetVar="wvDataTableListeFacture"
+				value="#{factureController.values}"
+				rowKey="#{facture.id}"
+				selection="#{factureController.selectedDocumentDTOs}"
+				dblClickSelect="true"
+				styleClass="datatable mt10"
+				resizableColumns="true"
+				paginator="true" 
+				rows="#{msg.modele_datatable_ligne_par_page_debut}"
+				paginatorTemplate="#{msg.modele_datatable_paginator}"
+				rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+				emptyMessage="#{msg.message_datatable_vide}"
+				currentPageReportTemplate="#{msg.modele_datatable_page_courante}"
+				disabledSelection="#{factureController.modeEcran.dataSetEnModif()}">
+				
+<!-- 				<p:ajax event="rowDblselect" listener="#{factureController.onRowSelect}" update=":form:tabView,:form:messages,@form"/>  -->
+<!-- 				<p:ajax event="rowSelect" listener="#{factureController.onRowSelect}" update=":form:tabView,:form:messages" oncomplete="PF('wvOverlayListeFacture').hide();"/> -->
+				
+<!-- 				<p:ajax event="rowDblselect" listener="#{factureController.onRowSelect}" update=":form:tabView,:form:messages" /> -->
+				<p:ajax event="rowSelect" delay="#{msg.datatable_rowselect_delay}" listener="#{factureController.onRowSelect}" update=":form:tabView,:form:messages,@widgetVar(wvTableauComplementaireFac)" oncomplete="activeTabCenter('#{LgrTab.CSS_CLASS_TAB_FACTURE}');PF('wvOverlayListeFacture').hide();scrollToTop();"/>
+			
+				<f:facet name="header">  
+           			<h:outputText value="Facture" />
+           			<span style="float:right;" class="searchbar_list">
+			            <p:outputPanel>
+				                <p:inputText id="globalFilter" onkeyup="PF('wvDataTableListeFacture').filter()" style="width:150px" placeholder="Rechercher"/>
+				            </p:outputPanel>
+			        </span>
+        		</f:facet>
+
+  		<f:facet name="{Exporters}">
+            <h:commandLink>
+                <p:graphicImage library="images" name="excel.png" width="24"/>
+                <p:dataExporter type="xls" target="dataTableListeFacture" fileName="liste_facture" />
+            </h:commandLink>
+ 
+            <p:commandLink onsuccess="window.open('#{request.contextPath}/output?__report=/reports/documents/facture/ListeDesFactures.rptdesign&amp;__format=pdf')"
+			actionListener="#{factureController.actImprimerListeDesFactures}" process="@this">
+		                <p:graphicImage  library="images" name="pdf.png"  width="24"/>
+<!-- 		                <p:dataExporter type="pdf" target="dataTableListeTiers" fileName="liste_tiers" /> -->
+		            </p:commandLink>
+ 
+            <h:commandLink>
+                <p:graphicImage  library="images" name="csv.png"  width="24"/>
+                <p:dataExporter type="csv" target="dataTableListeFacture" fileName="liste_facture" options="#{separateurCsvController.csvOptions}" />
+            </h:commandLink>
+ 
+            <h:commandLink>
+                <p:graphicImage  library="images" name="xml.png"  width="24"/>
+                <p:dataExporter type="xml" target="dataTableListeFacture" fileName="liste_facture" />
+            </h:commandLink>
+            
+<!--              <p:commandLink id="idBtnListePrintEcranListeFacture" -->
+<!-- 							 title="Imprimer la liste" -->
+<!-- 			onsuccess="window.open('#{request.contextPath}/output?__report=/reports/documents/facture/ListeFacture.rptdesign&amp;id_facture=#{factureController.values}&amp;__format=pdf')" -->
+<!-- 			actionListener="#{factureController.actImprimerListeFacture}" -->
+<!-- 			process="@this"> -->
+<!-- 					<p:graphicImage library="images" name="imp.png"  width="24"/> -->
+<!-- 			</p:commandLink> -->
+			
+        </f:facet>
+        
+        <p:column selectionMode="multiple" style="width:16px;text-align:center" exportable="false" />
+			
+				<p:column style="width:16px" exportable="false">
+					<f:facet name="header">
+						<h:outputText value="" />
+					</f:facet>
+					<p:commandButton title="Détail" update=":form:tabView,:form:messages" 
+						action="#{factureController.detail}" styleClass="icon icon-detail icon-grille" 
+						disabled="#{factureController.modeEcran.dataSetEnModif()}" oncomplete="PF('wvOverlayListeFacture').hide();">
+						<f:setPropertyActionListener target="#{factureController.selectedDocumentDTO}" value="#{facture}" />
+					</p:commandButton>
+				</p:column>
+        
+<!-- 				<p:column sortBy="#{facture.id}"> -->
+<!-- 					<f:facet name="header"> -->
+<!-- 						<h:outputText value="ID" /> -->
+<!-- 					</f:facet> -->
+<!-- 					<h:outputText value="#{facture.id}" /> -->
+<!-- 				</p:column> -->
+
+				<p:column sortBy="#{facture.codeDocument}"
+							filterMatchMode="contains" 
+							filterBy="#{facture.codeDocument}" >
+					<f:facet name="header">
+						<h:outputText value="Code" />
+					</f:facet>
+					<h:outputText value="#{facture.codeDocument}" />
+				</p:column>
+				
+				<p:column 	styleClass="center"
+							sortBy="#{facture.dateDocument}"
+							filterMatchMode="contains" 
+							filterBy="#{factureController.customFormatDate(facture.dateDocument)}" >
+					<f:facet name="header">
+						<h:outputText value="Date" />
+					</f:facet>
+					<h:outputText value="#{facture.dateDocument}">
+						<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/> 
+					</h:outputText>
+				</p:column>
+				
+				<p:column sortBy="#{facture.codeTiers}"
+							filterMatchMode="contains" 
+							filterBy="#{facture.codeTiers}" >
+					<f:facet name="header">
+						<h:outputText value="Code tiers" />
+					</f:facet>
+					<h:outputText value="#{facture.codeTiers}" />
+				</p:column>
+
+				<p:column 	sortBy="#{facture.nomTiers}"
+							filterMatchMode="contains" 
+							filterBy="#{facture.nomTiers}" >
+					<f:facet name="header">
+						<h:outputText value="Nom" />
+					</f:facet>
+					<h:outputText value="#{facture.nomTiers}" />
+				</p:column>
+				
+				<p:column 	sortBy="#{facture.prenomTiers}"
+							filterMatchMode="contains" 
+							filterBy="#{facture.prenomTiers}" >
+					<f:facet name="header">
+						<h:outputText value="Prénom" />
+					</f:facet>
+					<h:outputText value="#{facture.prenomTiers}" />
+				</p:column>
+
+				<p:column 	sortBy="#{facture.nomEntreprise}"
+							filterMatchMode="contains" 
+							filterBy="#{facture.nomEntreprise}" >
+					<f:facet name="header">
+						<h:outputText value="Entreprise" />
+					</f:facet>
+					<h:outputText value="#{facture.nomEntreprise}" />
+				</p:column>
+
+				<p:column 	styleClass="right" 
+							filterMatchMode="contains" 
+							filterBy="#{facture.netHtCalc}" 
+							sortBy="#{facture.netHtCalc}"
+							exportFunction="#{separateurCsvController.exportNumber}">
+							
+					<f:facet name="header">
+						<h:outputText value="HT" />
+					</f:facet>
+					<h:outputText value="#{facture.netHtCalc}" >
+						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+					</h:outputText>
+				</p:column>
+				
+				<p:column 	styleClass="right" 
+							filterMatchMode="contains" 
+							filterBy="#{facture.netTvaCalc}" 
+							sortBy="#{facture.netTvaCalc}"
+							exportFunction="#{separateurCsvController.exportNumber}">
+					<f:facet name="header">
+						<h:outputText value="TVA" />
+					</f:facet>
+					<h:outputText value="#{facture.netTvaCalc}" >
+						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+					</h:outputText>
+				</p:column>
+
+				<p:column 	styleClass="right" 
+							filterMatchMode="contains" 
+							filterBy="#{facture.netTtcCalc}" 
+							sortBy="#{facture.netTtcCalc}"
+							exportFunction="#{separateurCsvController.exportNumber}">
+					<f:facet name="header">
+						<h:outputText value="TTC" />
+					</f:facet>
+					<h:outputText value="#{facture.netTtcCalc}">
+						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+					</h:outputText>
+				</p:column>
+
+				<p:column 	styleClass="center" 
+							filterMatchMode="contains" 
+							filterBy="#{factureController.customFormatDate(facture.dateEchDocument)}" 
+							sortBy="#{factureController.customFormatDate(facture.dateEchDocument)}" >
+
+					<f:facet name="header">
+						<h:outputText value="Date échéance :" />
+					</f:facet>
+					<h:outputText value="#{facture.dateEchDocument}" >
+					<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+					</h:outputText>
+				</p:column>
+
+				<p:column style="width:16px" exportable="false">
+					<f:facet name="header">
+						<h:outputText value="" />
+					</f:facet>
+					<p:commandButton title="Supprimer" styleClass="icon-delete icon icon-grille" widgetVar="widgetVarBtnSupprimerFactureListe"
+						action="#{factureController.actBeforeSupprimer(facture)}" oncomplete="$('.classHiddenCommandForSuppression').click()"
+						process="@this"
+						disabled="#{factureController.documentDTOEstVerrouille(facture).verrouille}" update="@widgetVar(widgetVarBtnSupprimerFactureListe2)">
+						<f:setPropertyActionListener target="#{factureController.selectedDocumentDTO}" value="#{facture}" />
+<!-- 						<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer cette facture ?" icon="ui-icon-alert" /> -->
+					</p:commandButton>
+					
+				</p:column>
+				
+			</p:dataTable>
+		<p:commandButton styleClass="classHiddenCommandForSuppression" widgetVar="widgetVarBtnSupprimerFactureListe2" 
+		actionListener="#{factureController.actSupprimer}" style="display:none" process="@this" 
+		 update="@widgetVar(wvDataTableListeFacture)" >
+        <p:confirm header="Confirmation de la suppression" message="#{factureController.messageSuppression}" icon="ui-icon-alert" /> 
+    </p:commandButton>		
+		</h:form>
+	</p:overlayPanel>
+	
+<!-- 	</h:form> -->
+
+</ui:composition>

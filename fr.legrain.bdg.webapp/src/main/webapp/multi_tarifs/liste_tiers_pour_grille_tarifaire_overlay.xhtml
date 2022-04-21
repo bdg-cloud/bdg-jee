@@ -1,0 +1,191 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:p="http://primefaces.org/ui">
+	
+	<o:importConstants type="fr.legrain.bdg.webapp.app.LgrTab" />
+	
+
+	<p:commandLink id="listeTiersGrilleTarifaireBtn" >
+		<i class="top-submenu-icon fa fa-fw fa-user"></i>
+		<span><h:outputText value="Liste des tiers pour les grilles tarifaires" /></span>
+	</p:commandLink>
+	
+
+	
+	<p:overlayPanel id="idListeTiersGrilleTarifairePanel" for="listeTiersGrilleTarifaireBtn" hideEffect="fade" dynamic="true" 
+		dismissable="true" appendTo="@(body)" widgetVar="wvOverlayListeTiersGrilleTarifaire" showCloseIcon="true">
+		<h:form>
+		<div class="dashboard-title" style="background:#f6f6f6;">
+              <h:panelGrid columns="3" cellpadding="5">
+            	<h:graphicImage name="dashboard/tier.svg" library="images" height="35px" style="margin-top:1px;" />
+                <p:outputLabel value="Liste des Tiers rattachés à une grille tarifaire" style="font-size:20px;"/>
+              </h:panelGrid>  
+              <p:separator/>
+        </div>
+	<p:menubar styleClass="menu-onglet" widgetVar="wvMenuListeTiersGrilleTarifaire" id="idMenuListeTiersGrilleTarifaire">
+		 <p:menuitem title="Rafraîchir la liste" update="@form,:form:messages" actionListener="#{grilleTarifaireTiersController.refreshTiers}" styleClass="icon icon-refresh" disabled="#{grilleTarifaireTiersController.modeEcran.dataSetEnModif()}"/>
+	</p:menubar>
+	
+<!-- 	<p:sticky target="idTiersGrilleTarifaire" /> -->
+	 
+	 	
+<!-- 	stickyHeader="true" -->
+	
+	<p:dataTable id="dataTableListeTiersGrilleTarifaire" var="taTiers"
+				widgetVar="wvDataTableListeTiersGrilleTarifaire"
+				value="#{grilleTarifaireTiersController.valuesTiers}"
+				rowKey="#{taTiers.id}"
+				selection="#{grilleTarifaireTiersController.selectionLigneTiers}"
+				dblClickSelect="true"
+				selectionMode="single"
+				styleClass="datatable mt10"
+				resizableColumns="true"
+				paginator="true" 
+				rows="#{msg.modele_datatable_ligne_par_page_debut}"
+				paginatorTemplate="#{msg.modele_datatable_paginator}"
+				rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+				emptyMessage="#{msg.message_datatable_vide}"
+				currentPageReportTemplate="#{msg.modele_datatable_page_courante}"
+				disabledSelection="#{grilleTarifaireTiersController.modeEcran.dataSetEnModif()}">
+				
+				<p:ajax event="rowSelect" delay="#{msg.datatable_rowselect_delay}" listener="#{grilleTarifaireTiersController.onRowSelect}" 
+				update=":form:tabView,:form:messages,@widgetVar(wVPanelTitreGrilleTarifaireTiers),@widgetVar(wvDataTableListeGestGrilleTarifaireTiers2),@widgetVar(wvBandeauActionTiersGrilleTarifaire)" 
+				oncomplete="activeTabCenter('#{LgrTab.CSS_CLASS_TAB_GRILLE_TARIFAIRE_TIERS}');PF('wvOverlayListeTiersGrilleTarifaire').hide();scrollToTop();"/>
+			
+				<f:facet name="header">  
+           			<h:outputText value="Tiers" />
+        		</f:facet>
+
+		  		<f:facet name="{Exporters}">
+		            <h:commandLink>
+		                <p:graphicImage library="images" name="excel.png" width="24"/>
+		                <p:dataExporter type="xls" target="dataTableListeTiersGrilleTarifaire" fileName="liste_tiers_grille_tarifaire" />
+		            </h:commandLink>
+		 
+		            <h:commandLink>
+		                <p:graphicImage  library="images" name="pdf.png"  width="24"/>
+		                <p:dataExporter type="pdf" target="dataTableListeTiersGrilleTarifaire" fileName="liste_tiers_grille_tarifaire"/>
+		            </h:commandLink>
+		 
+		            <h:commandLink>
+		                <p:graphicImage  library="images" name="csv.png"  width="24"/>
+		                <p:dataExporter type="csv" target="dataTableListeTiersGrilleTarifaire" fileName="liste_tiers_grille_tarifaire" options="#{separateurCsvController.csvOptions}" />
+		            </h:commandLink>
+		 
+		            <h:commandLink>
+		                <p:graphicImage  library="images" name="xml.png"  width="24"/>
+		                <p:dataExporter type="xml" target="dataTableListeTiersGrilleTarifaire" fileName="liste_tiers_grille_tarifaire" />
+		            </h:commandLink>
+		        </f:facet>
+        
+			
+<!-- 				<p:column style="width:16px" exportable="false"> -->
+<!-- 					<f:facet name="header"> -->
+<!-- 						<h:outputText value="" /> -->
+<!-- 					</f:facet> -->
+<!-- 					<p:commandButton title="Détail" update=":form:tabView,:form:messages,@widgetVar(wvBandeauActionTiersGrilleTarifaire)"  -->
+<!-- 						action="#{grilleTarifaireTiersController.detail}" styleClass="icon icon-detail icon-grille"  -->
+<!-- 						disabled="#{grilleTarifaireTiersController.modeEcran.dataSetEnModif()}" oncomplete="PF('wvOverlayListeTiersGrilleTarifaire').hide();"> -->
+<!-- 						<f:setPropertyActionListener target="#{grilleTarifaireTiersController.selectionLigneTiers}" value="#{taTiers}" /> -->
+<!-- 					</p:commandButton> -->
+<!-- 				</p:column> -->
+        
+<!-- 				<p:column sortBy="#{taTiers.id}"> -->
+<!-- 					<f:facet name="header"> -->
+<!-- 						<h:outputText value="ID" /> -->
+<!-- 					</f:facet> -->
+<!-- 					<h:outputText value="#{taTiers.id}" /> -->
+<!-- 				</p:column> -->
+
+				<p:column sortBy="#{taTiers.codeTiers}" filterBy="#{taTiers.codeTiers}" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="Code" />
+					</f:facet>
+					<h:outputText value="#{taTiers.codeTiers}" />
+				</p:column>
+				
+				<p:column sortBy="#{taTiers.nomEntreprise}" filterBy="#{taTiers.nomEntreprise}">
+					<f:facet name="header">
+						<h:outputText value="Entreprise" />
+					</f:facet>
+					<h:outputText value="#{taTiers.nomEntreprise}" />
+				</p:column>
+				
+				<p:column sortBy="#{taTiers.nomTiers}" filterBy="#{taTiers.nomTiers}" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="Nom" />
+					</f:facet>
+					<h:outputText value="#{taTiers.nomTiers}" />
+				</p:column>
+				
+				<p:column sortBy="#{taTiers.prenomTiers}" filterBy="#{taTiers.prenomTiers}" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="Prénom" />
+					</f:facet>
+					<h:outputText value="#{taTiers.prenomTiers}" />
+				</p:column>
+				
+				<p:column sortBy="#{taTiers.codeTTiers}" filterBy="#{taTiers.codeTTiers}" styleClass="center" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="Type Tiers" />
+					</f:facet>
+					<h:outputText value="#{taTiers.codeTTiers}" />
+				</p:column>
+				
+				<p:column sortBy="#{taTiers.codeFamilleTiers}" filterBy="#{taTiers.codeFamilleTiers}" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="Famille" />
+					</f:facet>
+					<h:outputText value="#{taTiers.codeFamilleTiers}" />
+				</p:column>
+				
+				
+				<p:column sortBy="#{taTiers.codeTTarif}" filterBy="#{taTiers.codeTTarif}" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="grille tarif" />
+					</f:facet>
+					<h:outputText value="#{taTiers.codeTTarif}" />
+				</p:column>
+								
+				<p:column sortBy="#{taTiers.codepostalAdresse}" filterBy="#{taTiers.codepostalAdresse}" styleClass="center">
+					<f:facet name="header">
+						<h:outputText value="Code Postal" />
+					</f:facet>
+					<h:outputText value="#{taTiers.codepostalAdresse}" />
+				</p:column>
+				
+				<p:column sortBy="#{taTiers.villeAdresse}" filterBy="#{taTiers.villeAdresse}" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="Ville" />
+					</f:facet>
+					<h:outputText value="#{taTiers.villeAdresse}" />
+				</p:column>
+				
+				<p:column sortBy="#{taTiers.actifTiers}" styleClass="center" filterBy="#{taTiers.actifTiers}" filterMatchMode="equals">
+					<f:facet name="header">
+						<h:outputText value="Actif" />
+					</f:facet>
+					<f:facet name="filter">
+			                <p:selectOneButton onchange="PF('wvDataTableListeTiersGrilleTarifaire').filter()">
+			                    <f:converter converterId="javax.faces.Boolean" />
+			                    <f:selectItem itemLabel="Tous" itemValue="" />
+			                    <f:selectItem itemLabel="Vrai" itemValue="true" />
+			                    <f:selectItem itemLabel="Faux" itemValue="false" />
+			                </p:selectOneButton>
+			            </f:facet>
+					<p:selectBooleanCheckbox value="#{taTiers.actifTiers}" disabled="true"/>
+				</p:column>
+				
+				
+				
+
+
+			</p:dataTable>
+
+		</h:form>
+	</p:overlayPanel>
+	
+</ui:composition>

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:h="http://java.sun.com/jsf/html" 
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets" 
+	xmlns:p="http://primefaces.org/ui">
+	
+	<f:view locale="#{languageBean.localeCode}" />
+	
+	<h:head>
+		<f:facet name="first">
+			<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+			<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+			<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+			<meta name="apple-mobile-web-app-capable" content="yes" />
+		</f:facet>
+		
+		<link href="https://fonts.googleapis.com/css?family=PT+Sans" rel="stylesheet" />
+		
+		<title>Espace client - Bureau de Gestion</title>
+	</h:head>
+	
+	<h:body styleClass="containerLogin">
+	
+		<h:graphicImage id="image_de_fond" library="images" name="fond-bdg.jpg" width="100%" height="100%" />
+		<h:graphicImage id="image_bdg" library="images" name="logo-bdg.png" width="auto" height="auto" />
+	
+		<f:facet name="last">
+			<!-- surcharge des CSS primefaces -->
+			<h:outputStylesheet library="css" name="theme-compteclient.css" />
+		</f:facet>
+	
+		<h:form>
+	
+			<div class="ui-g-12-centrer">
+	
+				<div class="titre_form">
+					<p:outputLabel styleClass="titre_formulaire" value="#{c_langue.creer_un_compte_barre_titre_creer_un_compte}" />
+				</div>
+				
+				<div class="label-formulaire">
+					<!-- Remonter des messages d'erreur du controleur pour affichage par PrimeFaces -->
+					<p:messages id="messages" showDetail="true" autoUpdate="true" closable="true" />
+	
+					<p:inputText value="#{creationCompteController.monUtilisateur.nom}" placeholder="#{c_langue.creer_un_compte_form_placeholder_nom}"
+						styleClass="j_nom" size="25" autocomplete="off" validatorMessage="Le nom doit étre renseigner" />
+				</div>
+				
+				<div class="label-formulaire">
+					<p:inputText value="#{creationCompteController.monUtilisateur.prenom}" placeholder="#{c_langue.creer_un_compte_form_placeholder_prenom}"
+						styleClass="j_prenom" size="25" autocomplete="on" validatorMessage="Le nom doit étre renseigner" />
+				</div>
+				
+				<div class="label-formulaire">
+					<p:inputText value="#{creationCompteController.monUtilisateur.email}" placeholder="#{c_langue.creer_un_compte_form_placeholder_email}"
+						styleClass="j_username" size="25" autocomplete="off" />
+					<br />
+				</div>
+				
+				<div class="label-formulaire">
+					<p:password value="#{creationCompteController.monUtilisateur.passwd}" placeholder="#{c_langue.creer_un_compte_form_placeholder_mdp}"
+						styleClass="j_password" size="25" autocomplete="off"
+						validatorMessage="Les mots de passe doivent contenir au moins 1 caractère en majuscule et 1 chiffre." />
+				</div>
+				
+				<div class="label-formulaire">
+					<p:password value="#{creationCompteController.confirmPasswd}" placeholder="#{c_langue.creer_un_compte_form_placeholder_confirmer_mdp}"
+						styleClass="j_confirmpassword" size="25" autocomplete="off" />
+				</div>
+	
+				<div>
+					<p:commandButton styleClass="btn_retour" action="#{auth.retour}" value="#{c_langue.creer_un_compte_btn_retour}" process="@this" />
+				</div>
+	
+				<div>
+					<p:commandButton styleClass="btn_login" action="#{creationCompteController.ajouteUtilisateur()}"
+						value="#{c_langue.creer_un_compte_btn_enregistrer}" />
+				</div>
+	
+			</div>
+
+	
+			<div class="footer_login">
+				<span>BUREAU DE GESTION</span>
+			</div>
+			
+			<span class="footer_right">LEGRAIN informatique</span>
+	
+			<h:outputStylesheet name="css/layout-#{auth.themeCouleur}.css" library="icarus-layout" />
+			
+		</h:form>
+		
+	</h:body>
+
+</html>

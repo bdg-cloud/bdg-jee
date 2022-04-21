@@ -1,0 +1,112 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<p:importConstants type="fr.legrain.bdg.webapp.dms.EtatDmsController" var="ConstController" />
+	
+		<p:menubar styleClass="menu-onglet">
+			
+			<p:menuitem title="Fermer" styleClass="icon icon-close menuitem-fermer-droite" process="@this" 
+				actionListener="#{etatDmsController.actFermer}"
+				onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())">
+			</p:menuitem>
+<!-- 			<p:menuitem title="Calculer" update=":form:messages"  process="@this"  -->
+<!-- 			actionListener="#{etatDmsController.actImprimer}" styleClass="icon icon-refresh"  /> -->
+		</p:menubar>
+		
+		
+	<div class="ui-g">
+		<div class="ui-g-6">
+			<p:fieldset legend="Paramètres">
+				<p:panelGrid columns="4">
+					<p:outputLabel value="Mois"/>
+						<p:inputText value="#{etatDmsController.mois}">
+							<p:ajax event="blur" update="@this"/>
+						</p:inputText>					
+<!-- 					<p:calendar value="#{etatDmsController.mois}" showOn="button"  navigator="true"> -->
+<!-- 						<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"  /> -->
+<!-- 					</p:calendar> -->
+					<p:outputLabel value="Année"/>
+						<p:inputText value="#{etatDmsController.annee}">
+							<p:ajax event="blur" update="@this"/>
+						</p:inputText>						
+<!-- 					<p:calendar value="#{etatExportationDocumentBean.dateFin}" showOn="button"  navigator="true"> -->
+<!-- 						<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/> -->
+<!-- 					</p:calendar> -->
+					
+						<p:outputLabel value="Code article"/>
+						<p:autoComplete value="#{etatDmsController.articleDTO}" converter="entityConverter"
+								completeMethod="#{etatDmsController.articlesAutoCompleteDTOLight}"
+								var="tiers"
+								itemLabel="#{tiers.codeArticle}" 
+								itemValue="#{tiers}"
+								forceSelection="true" dropdown="true" placeholder="Article" >
+								<p:column>
+									<h:outputText value="#{tiers.codeArticle}"/>
+								</p:column>
+						</p:autoComplete>						
+
+						<p:outputLabel value="Code famille"/>
+						<p:autoComplete value="#{etatDmsController.familleDTO}" converter="entityConverter"
+								completeMethod="#{etatDmsController.famillesAutoCompleteDTOLight}"
+								var="tiers"
+								itemLabel="#{tiers.codeFamille}" 
+								itemValue="#{tiers}"
+								forceSelection="true" dropdown="true" placeholder="Famille" >
+								<p:column>
+									<h:outputText value="#{tiers.codeFamille}"/>
+								</p:column>
+						</p:autoComplete>						
+
+
+						<p:outputLabel value="Qté 1"/>
+						<p:inputText value="#{etatDmsController.dto.qte1}">
+							<p:ajax event="blur" update="@this"/>
+						</p:inputText>
+																		
+						<p:outputLabel value="Unité 1"/>
+						<p:inputText value="#{etatDmsController.dto.un1}">
+							<p:ajax event="blur" update="@this"/>
+						</p:inputText>
+
+						<p:outputLabel value="Qté 2"/>
+						<p:inputText value="#{etatDmsController.dto.qte2}">
+							<p:ajax event="blur" update="@this"/>
+						</p:inputText>
+												
+						<p:outputLabel value="Unité 2"/>
+						<p:inputText value="#{etatDmsController.dto.un2}">
+							<p:ajax event="blur" update="@this"/>
+						</p:inputText>
+						
+<!-- 					<p:outputLabel value="Type de document"/> -->
+<!-- 					<p:selectOneMenu value="#{etatExportationDocumentBean.selectedTypeDocument}"> -->
+<!-- 			            <f:selectItems value="#{etatExportationDocumentBean.listeTypeDocument}" /> -->
+<!-- 		        	</p:selectOneMenu> -->
+
+
+				</p:panelGrid>
+				<p:commandButton value="Edition synthèse" 
+				actionListener="#{etatDmsController.actImprimer('synthese')}" 
+				onsuccess="window.open('#{request.contextPath}/output?__report=/reports/stock/EtatSyntheseDms.rptdesign&amp;__format=pdf')"
+				/>
+				<p:commandButton value="Edition détail mouvements" 
+				actionListener="#{etatDmsController.actImprimer('mouvement')}" 
+				onsuccess="window.open('#{request.contextPath}/output?__report=/reports/stock/EtatDms.rptdesign&amp;__format=pdf')"
+				
+				/>				
+			</p:fieldset>
+		</div>	
+<!-- 		<div class="ui-g-3"> -->
+<!-- 			<p:fieldset legend="Précision"> -->
+<!-- 				<p:selectOneRadio value="#{etatDmsController.synthese}" layout="grid" columns="1"> -->
+<!-- 		            <f:selectItem itemLabel="Synthese" itemValue="#{ConstController.C_SYNTHESE}" /> -->
+<!-- 		            <f:selectItem itemLabel="Mouvements" itemValue="#{ConstController.C_MOUVEMENT}" /> -->
+<!-- 		        </p:selectOneRadio> -->
+<!-- 			</p:fieldset> -->
+<!-- 		</div> -->
+	</div>
+
+</ui:composition>

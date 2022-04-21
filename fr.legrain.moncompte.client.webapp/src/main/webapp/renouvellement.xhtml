@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<title>BDG - Renouvellement</title>
+	<link rel="shortcut icon" type="image/x-icon" href="#{resource['images:solstyce.ico']}" />
+
+	<f:facet name="first">
+	</f:facet>
+</h:head>
+<h:body>
+	<f:facet name="last">
+		<!-- surcharge des CSS primefaces -->
+		<h:outputStylesheet library="css" name="hacks.css" />
+	</f:facet>
+
+	<f:metadata>
+		<f:viewParam name="dossier" value="#{renouvellementBean.dossier}" />
+		<f:event type="preRenderView" listener="#{renouvellementBean.refresh}" />
+	</f:metadata>
+
+	<h:form>
+
+		<p:messages autoUpdate="true" showDetail="true" />
+
+		<h:panelGrid columns="2" cellpadding="10" width="100%">
+			<p:outputLabel value="Nom du dossier : #{renouvellementBean.dossier}" />
+
+		</h:panelGrid>
+
+		<p:separator />
+
+		<h:panelGrid columns="2" cellpadding="10" width="100%">
+			<p:outputLabel for="nbUtilisateur" value="Nombre d'utilisateur :" />
+			<p:selectOneMenu id="nbUtilisateur" value="#{renouvellementBean.nbUtilisateur}" style="width:125px">
+				<f:selectItem itemLabel="1 utilisateur" itemValue="1" />
+				<f:selectItem itemLabel="3 utilisateurs" itemValue="3" />
+				<f:selectItem itemLabel="5 utilisateurs" itemValue="5" />
+				<f:selectItem itemLabel="10 utilisateurs" itemValue="10" />
+				<f:selectItem itemLabel="20 utilisateurs" itemValue="20" />
+				<f:selectItem itemLabel="50 utilisateurs" itemValue="50" />
+			</p:selectOneMenu>
+		</h:panelGrid>
+		
+		<p:separator/>
+			
+		Modules disponibles
+		<p:dataTable var="taProduit" widgetVar="wvDataTableListeArticle" styleClass="datatable mt10"
+			value="#{renouvellementBean.listeTousProduit}" rowKey="#{taProduit.idProduit}"
+			selection="#{renouvellementBean.selectedModules}" resizableColumns="true">
+
+			<p:column selectionMode="multiple" style="width:16px;text-align:center" />
+
+
+			<p:column sortBy="#{taProduit.libelle}">
+				<f:facet name="header">
+					<h:outputText value="Module" />
+				</f:facet>
+				<h:outputText value="#{taProduit.libelle}" />
+			</p:column>
+
+			<p:column sortBy="#{taProduit.prixHT}">
+				<f:facet name="header">
+					<h:outputText value="Prix HT" />
+				</f:facet>
+				<h:outputText value="#{taProduit.prixHT}" />
+			</p:column>
+			
+			<p:column>
+				<f:facet name="header">
+					<h:outputText value="Déjà valide" />
+				</f:facet>
+<!-- 				<h:outputText value="#{taProduit.prixHT}" /> -->
+			</p:column>
+
+			<p:column style="width:16px">
+				<p:rowToggler />
+			</p:column>
+
+			<p:rowExpansion>
+				<h:panelGrid columns="2" style="width:300px">
+					<!--                 <f:facet name="header"> -->
+					<!--                     <p:graphicImage name="demo/images/car/#{car.brand}-big.gif"/>  -->
+					<!--                 </f:facet> -->
+
+					<h:outputText value="Description" />
+					<h:outputText value="#{taProduit.description}" />
+
+
+				</h:panelGrid>
+			</p:rowExpansion>
+
+		</p:dataTable>
+		
+		<p:separator/>
+
+		<h:panelGrid columns="2" cellpadding="10" width="100%">
+			<p:outputLabel value="Nombre de mois :" />
+			<p:selectOneMenu value="#{renouvellementBean.nbMois}" style="width:125px">
+				<f:selectItem itemLabel="3 mois" itemValue="3" />
+				<f:selectItem itemLabel="6 mois" itemValue="6" />
+				<f:selectItem itemLabel="12 mois" itemValue="12" />
+			</p:selectOneMenu>
+		</h:panelGrid>
+
+		<p:separator />
+
+		<p:commandButton value="Ajouter au panier" actionListener="#{renouvellementBean.ajoutDossier}" />
+		
+		<h:panelGrid columns="2" cellpadding="10" width="100%">
+			<p:outputLabel value="Sous total : " />
+		</h:panelGrid>
+
+
+
+	</h:form>
+
+	<h:outputScript name="/js/functions.js" />
+	<h:outputScript name="/js/locale_fr.js" />
+
+</h:body>
+</html>

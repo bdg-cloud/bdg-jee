@@ -1,0 +1,120 @@
+=====
+https://docs.docker.com/registry/
+=====
+
+
+== Obtention d'un certificat letsencrypt pour le registre, SSL obligatoire pour une protection par mot de passe (BASIC avec mot de passe en clair)
+===========================================================
+export DOMAIN="registry.legrain.dev"
+export EMAIL="nicolas@legrain.fr"
+certbot certonly --standalone -d registry.legrain.dev --preferred-challenges http --agree-tos -n -m nicolas@legrain.fr --keep-until-expiring
+
+== Renouvellement automatique du certificat pour 3 mois (non testé)
+=====================================================================
+cat <<EOF > /etc/cron.d/letencrypt
+SHELL=/bin/sh
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+30 2 * * 1 root /usr/bin/certbot renew >> /var/log/letsencrypt-renew.log && cd /etc/letsencrypt/live/example.com && cp privkey.pem domain.key && cat cert.pem chain.pem > domain.crt && chmod 777 domain.*
+EOF
+
+
+== Le port 443 est peut etre deja utilisé par apache pour le HTTPS, dans ce cas on peu lancer le registre sur le port 444 par exemple
+==========================================================================================
+--- 443 deja occupé par apache
+
+== il faut copier les fichiers du certificat dans un répertoire qui pourra etre monté en tant que volume sur le container registry
+================================================================================================================================
+cd /etc/letsencrypt/live/registry.legrain.dev
+mkdir certs
+cp fullchain.pem privkey.pem certs/
+
+== il faut créer un fichier htpasswd qui contiendra un login/password pour accéder au registre. Ce fichier sera stocké dans un répertoire qui pourra etre monté en tant que volume sur le container registry
+=======================================================================================================================
+mkdir auth
+docker run \
+  --entrypoint htpasswd \
+  httpd:2 -Bbn testuser testpassword > auth/htpasswd
+
+
+== On peut maintenant lancer le registre
+=============================================
+docker run -d \
+  --restart=always \
+  --name registry \
+  -v /home/admin82/auth:/auth \
+  -e "REGISTRY_AUTH=htpasswd" \
+  -e "REGISTRY_AUTH_HTPASSWD_REALM=Registry Realm" \
+  -e REGISTRY_AUTH_HTPASSWD_PATH=/auth/htpasswd \
+  -v /etc/letsencrypt/live/registry.legrain.dev/certs:/certs \
+  -e REGISTRY_HTTP_ADDR=0.0.0.0:443 \
+  -e REGISTRY_HTTP_TLS_CERTIFICATE=/certs/fullchain.pem \
+  -e REGISTRY_HTTP_TLS_KEY=/certs/privkey.pem \
+  -p 444:443 \
+  registry:2
+  
+== arret du container
+docker ps -a
+docker stop registry
+docker rm registry
+  
+== exemple de pull/push d'une image
+===========================================
+== L'image doit avoir un tag avec l'adresse du registre (et le port si différent de 443)
+* récupération d'une image
+docker pull ubuntu:16.04
+* tag
+docker tag ubuntu:16.04 registry.legrain.dev/my-ubuntu
+== OU
+docker tag ubuntu:16.04 registry.legrain.dev:444/my-ubuntu
+* push
+docker push registry.legrain.dev:444/my-ubuntu
+docker pull registry.legrain.dev:444/my-ubuntu
+
+* connexion interactive
+docker login registry.legrain.dev:444
+* connexion pasive
+docker login -u testuser -p testpassword registry.legrain.dev:444
+* déconnexion
+docker logout registry.legrain.dev:444
+
+=====================================================================================================
+=====================================================================================================
+Docker compose, alternative a la "grosse" ligne de commande docker run
+================================================================
+== Installer docker-compose
+===========================
+curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-Linux-x86_64" -o /usr/local/bin/docker-compose^C
+sudo chmod +x /usr/local/bin/docker-compose
+docker-compose -v
+docker-compose version 1.29.2, build 5becea4c
+
+== Création d'un fichier docker-compose.yml
+=============================================
+version: "3.8"
+services:
+  registry:
+    restart: always
+    container_name: registry
+    image: registry:2
+    ports:
+      - 444:443
+    environment:
+      REGISTRY_HTTP_ADDR: 0.0.0.0:443
+      REGISTRY_HTTP_TLS_CERTIFICATE: /certs/fullchain.pem
+      REGISTRY_HTTP_TLS_KEY: /certs/privkey.pem
+      REGISTRY_AUTH: htpasswd
+      REGISTRY_AUTH_HTPASSWD_PATH: /auth/htpasswd
+      REGISTRY_AUTH_HTPASSWD_REALM: Registry Realm
+    volumes:
+      - /etc/letsencrypt/live/registry.legrain.dev/certs:/certs
+      - /home/admin82/auth:/auth
+
+== Lancement
+=============
+docker-compose up -d
+
+==============================
+curl -u testuser:testpassword -X GET https://registry.legrain.dev:444/v2/_catalog
+curl -u testuser:testpassword -X GET https://registry.legrain.dev:444/v2/my-ubuntu/tags/list
+
+

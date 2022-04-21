@@ -1,0 +1,1393 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                    	xmlns:o="http://omnifaces.org/ui"
+                xmlns:p="http://primefaces.org/ui">
+    
+    	<o:importConstants type="fr.legrain.document.model.TaReglement" />
+    	
+    <ui:define name="head">
+        <script type="text/javascript">
+            //<![CDATA[
+            function skinChart() {
+                this.cfg.shadow = false;
+                this.cfg.title = '';
+                this.cfg.seriesColors = ['#EA9624', '#5BA5D8'];
+                this.cfg.grid = {
+                    background: '#ffffff',
+                    borderColor: '#ffffff',
+                    gridLineColor: '#F5F5F5',
+                    shadow: false
+                };
+                this.cfg.axesDefaults = {
+                    rendererOptions: {
+                        textColor: '#666F77'
+                    }
+                };
+                this.cfg.seriesDefaults = {
+                    shadow: false,
+                    lineWidth: 1,
+                    markerOptions: {
+                        shadow: false,
+                        size: 7,
+                        style: 'circle'
+                    }
+                }
+            }
+            //]]>  
+        </script>
+        <style type="text/css">
+            .main-content {
+                padding: 0;
+            }
+            
+            #main-wrapper-content-Reglement {
+                padding: 10px;
+            }
+        </style>
+    </ui:define>
+    
+    
+        <div class="dashboard">
+            <div class="dashboard-header">
+                <div class="ui-g">
+                        <p:commandButton value="Fermer" styleClass="icon icon-close menuitem-fermer-droite" process="@this" 
+							onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())"/>
+<!--    						<h:graphicImage name="dashboard/Reglement-coul.png" id="imagedashboard" library="images" /> -->
+					<!-- <i class="fa fa-file-text-o fa-3x" style="color:#e88524"></i> -->
+					<h:graphicImage name="dashboard/reglement.svg" library="images" height="60px" style="margin-top:1px;" />
+                    <div class="ui-g-12 ui-md-6">
+                        <div class="dashboard-title">
+                            <h2>Règlement : Tableau de bord</h2>
+
+                        </div>
+                    </div>
+
+                    <div class="ui-g-12 ui-g-nopad">
+
+                    </div>
+                </div>
+            </div>
+            
+            <div id="main-wrapper-content-Reglement">
+
+                    
+                <div class="ui-g">
+
+
+				<div class="ui-g-12 ui-md-12">
+				<p:panel collapsed="true" toggleable="true" id="idPanelCriteresDashboardReglement" >
+						<f:facet name="header">
+							<h:outputText value="Critères et paramètres du tableau de bord - " />
+							<h:outputText value="Période du " />
+							<h:outputText value="#{dashBoardReglementController.dateDebut}" >
+								<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" type="localDate"/>
+							</h:outputText>
+							<h:outputText value=" au " />
+							<h:outputText value="#{dashBoardReglementController.dateFin}" >
+								<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" type="localDate"/>
+							</h:outputText>
+							
+						</f:facet>
+						
+					<div class="ui-g-12 ui-md-3">
+					<div class="card">
+<!-- 					<p:fieldset style="margin-bottom:20px;"> -->
+<!-- 						 <h:graphicImage name="dashboard/periode.png" library="images" /> -->
+		
+						<p:panel header="Période en cours" styleClass="panelgrey">
+						<f:facet name="footer">
+						<i class="fa fa-calendar fa-2x" aria-hidden="true" style="color:skyblue;"></i>
+							<p:commandButton oncomplete="PF('wvListeReglement').filter()" 
+											 update="@this,
+											 		idPanelCriteresDashboardReglement,
+											 		@widgetVar(wvDashReglementPanelReglement),
+											 		@widgetVar(wvCountNbReglementNonPaye),
+											 		@widgetVar(wvCountNbReglementPaye),
+											 		@widgetVar(wvListeReglement),
+											 		@widgetVar(wvListeReglementMois),
+											 		idPanelMensuelTitrePeriodeReglement,
+											 		@widgetVar(wvGraphiqueReglement),
+											 		@widgetVar(wvCountNbReglementNonPayeARelancer),
+											 		@widgetVar(wvTauxReglementPaye),
+											 		@widgetVar(wvTabViewReglementJour),
+													@widgetVar(wvPanelReglementJourDataTable),
+													@widgetVar(wvListeReglementMoisArticles),
+													@widgetVar(wvListeReglementJour),
+													@widgetVar(wvListeReglementJourArticles)" 
+											 			
+							action="#{dashBoardReglementController.refreshDashBoard('tous')}" value="Appliquer" id="periode" styleClass="ui-green" 
+							style="width:60%;margin-left: 15px;bottom: 5px;" />
+							
+						</f:facet>
+						 <div class="ui-g-12 ui-md-1" >
+<!-- 						<i class="fa fa-calendar fa-3x" aria-hidden="true"></i> -->
+<!-- 						 <h:graphicImage name="dashboard/periode.png" library="images" /> -->
+						 </div>
+						 <div class="ui-g-12 ui-md-11">
+			        	<h:panelGrid columns="2" cellpadding="0">
+						 <p:outputLabel value="Du"/>
+											<p:calendar value="#{dashBoardReglementController.dateDebut}"
+												showOn="button" 
+												navigator="true" 
+												pattern="#{msg.date_pattern}" 
+												mask="true" 
+												locale="fr" 
+												timeZone="#{msg.time_zone}"
+												size="8" >
+											</p:calendar>
+<!-- 												<f:convertDateTime pattern="#{msg.date_pattern}" -->
+<!-- 													timeZone="#{msg.time_zone}" /> -->
+
+						 <p:outputLabel value="au"/>
+											<p:calendar value="#{dashBoardReglementController.dateFin}"
+												showOn="button" 
+												navigator="true" 
+												pattern="#{msg.date_pattern}" 
+												mask="true" 
+												locale="fr" 
+												timeZone="#{msg.time_zone}"
+												size="8" >
+											</p:calendar>
+<!-- 												<f:convertDateTime pattern="#{msg.date_pattern}" -->
+<!-- 													timeZone="#{msg.time_zone}" /> -->
+        				</h:panelGrid>
+        				</div>
+        				 <p:separator />
+<!--         				  <p:outputLabel value="Comparer à"/> -->
+<!-- 									<p:selectOneRadio id="console" columns="2" > -->
+<!-- 										<f:selectItem itemLabel="Même période, année précédente" itemValue="PS4"/> -->
+<!-- 										<f:selectItem itemLabel="Période précédente, même durée" itemValue="Xbox One" /> -->
+<!-- 									</p:selectOneRadio> -->
+
+								</p:panel>
+<!--     				</p:fieldset> -->
+    				</div>
+    				</div>
+    				<div class="ui-g-12 ui-md-2">
+					<div class="card">
+					<p:panel header="Raccourcis périodes" styleClass="panelgrey">
+						<p:panelGrid columns="1" cellpadding="0" columnClasses="ui-grid-col-12" style="width:100%">
+<!-- 							<p:commandButton oncomplete="PF('wvListeReglement').filter()"  -->
+<!-- 											update="@this, -->
+<!-- 											 		idPanelCriteresDashboardReglement, -->
+<!-- 											 		@widgetVar(wvDashReglementPanelReglement), -->
+<!-- 											 		@widgetVar(wvCountNbReglementNonPaye), -->
+<!-- 											 		@widgetVar(wvCountNbReglementPaye), -->
+<!-- 											 		@widgetVar(wvListeReglement), -->
+<!-- 											 		@widgetVar(wvListeReglementMois), -->
+<!-- 											 		idPanelMensuelTitrePeriodeReglement, -->
+<!-- 											 		@widgetVar(wvGraphiqueReglement), -->
+<!-- 											 		@widgetVar(wvCountNbReglementNonPayeARelancer), -->
+<!-- 											 		@widgetVar(wvTauxReglementPaye), -->
+<!-- 											 		@widgetVar(wvTabViewReglementJour), -->
+<!-- 													@widgetVar(wvPanelReglementJourDataTable), -->
+<!-- 													@widgetVar(wvListeReglementMoisArticles), -->
+<!-- 													@widgetVar(wvListeReglementJour), -->
+<!-- 													@widgetVar(wvListeReglementJourArticles)" -->
+<!-- 							action="#{dashBoardReglementController.initBornePeriodeAujourdhui()}" value="Aujourd'hui" id="idPeriodeReglementJourCourant"   -->
+<!-- 							 style="font-size: 12px;height: 22px;width:100%;border-bottom: 2px solid #7FA128;"/> -->
+<!-- 							<p:commandButton oncomplete="PF('wvListeReglement').filter()"  -->
+<!-- 											update="@this, -->
+<!-- 											 		idPanelCriteresDashboardReglement, -->
+<!-- 											 		@widgetVar(wvDashReglementPanelReglement), -->
+<!-- 											 		@widgetVar(wvCountNbReglementNonPaye), -->
+<!-- 											 		@widgetVar(wvCountNbReglementPaye), -->
+<!-- 											 		@widgetVar(wvListeReglement), -->
+<!-- 											 		@widgetVar(wvListeReglementMois), -->
+<!-- 											 		idPanelMensuelTitrePeriodeReglement, -->
+<!-- 											 		@widgetVar(wvGraphiqueReglement), -->
+<!-- 											 		@widgetVar(wvCountNbReglementNonPayeARelancer), -->
+<!-- 											 		@widgetVar(wvTauxReglementPaye), -->
+<!-- 											 		@widgetVar(wvTabViewReglementJour), -->
+<!-- 													@widgetVar(wvPanelReglementJourDataTable), -->
+<!-- 													@widgetVar(wvListeReglementMoisArticles), -->
+<!-- 													@widgetVar(wvListeReglementJour), -->
+<!-- 													@widgetVar(wvListeReglementJourArticles)" -->
+<!-- 							action="#{dashBoardReglementController.initBornePeriodeHier()}" value="Hier" id="idPeriodeReglementJourPrecedent"   -->
+<!-- 							 style="font-size: 12px;height: 22px;width:100%;border-bottom: 2px solid #7FA128;"/> -->
+<!-- 							<p:commandButton oncomplete="PF('wvListeReglement').filter()"  -->
+<!-- 											update="@this, -->
+<!-- 											 		idPanelCriteresDashboardReglement, -->
+<!-- 											 		@widgetVar(wvDashReglementPanelReglement), -->
+<!-- 											 		@widgetVar(wvCountNbReglementNonPaye), -->
+<!-- 											 		@widgetVar(wvCountNbReglementPaye), -->
+<!-- 											 		@widgetVar(wvListeReglement), -->
+<!-- 											 		@widgetVar(wvListeReglementMois), -->
+<!-- 											 		idPanelMensuelTitrePeriodeReglement, -->
+<!-- 											 		@widgetVar(wvGraphiqueReglement), -->
+<!-- 											 		@widgetVar(wvCountNbReglementNonPayeARelancer), -->
+<!-- 											 		@widgetVar(wvTauxReglementPaye), -->
+<!-- 											 		@widgetVar(wvTabViewReglementJour), -->
+<!-- 													@widgetVar(wvPanelReglementJourDataTable), -->
+<!-- 													@widgetVar(wvListeReglementMoisArticles), -->
+<!-- 													@widgetVar(wvListeReglementJour), -->
+<!-- 													@widgetVar(wvListeReglementJourArticles)" -->
+<!-- 							action="#{dashBoardReglementController.initBornePeriodeMoisCourant()}" value="Mois courant" id="idPeriodeReglementMoisCourant"   -->
+<!-- 							style="font-size: 12px;height: 22px;width:100%;border-bottom: 2px solid #7FA128;"/> -->
+<!-- 							<p:commandButton oncomplete="PF('wvListeReglement').filter()"  -->
+<!-- 											update="@this, -->
+<!-- 											 		idPanelCriteresDashboardReglement, -->
+<!-- 											 		@widgetVar(wvDashReglementPanelReglement), -->
+<!-- 											 		@widgetVar(wvCountNbReglementNonPaye), -->
+<!-- 											 		@widgetVar(wvCountNbReglementPaye), -->
+<!-- 											 		@widgetVar(wvListeReglement), -->
+<!-- 											 		@widgetVar(wvListeReglementMois), -->
+<!-- 											 		idPanelMensuelTitrePeriodeReglement, -->
+<!-- 											 		@widgetVar(wvGraphiqueReglement), -->
+<!-- 											 		@widgetVar(wvCountNbReglementNonPayeARelancer), -->
+<!-- 											 		@widgetVar(wvTauxReglementPaye), -->
+<!-- 											 		@widgetVar(wvTabViewReglementJour), -->
+<!-- 													@widgetVar(wvPanelReglementJourDataTable), -->
+<!-- 													@widgetVar(wvListeReglementMoisArticles), -->
+<!-- 													@widgetVar(wvListeReglementJour), -->
+<!-- 													@widgetVar(wvListeReglementJourArticles)" -->
+<!-- 							action="#{dashBoardReglementController.initBornePeriodeAnneeCourante()}" value="Année courante" id="idPeriodeReglementAnneeCourante"   -->
+<!-- 							 style="font-size: 12px;height: 22px;width:100%;border-bottom: 2px solid #7FA128;"/> -->
+						</p:panelGrid>
+					</p:panel>
+					</div>
+    				</div>
+    				
+<!-- 					<div class="ui-g-12 ui-md-2"> -->
+<!-- 					<p:fieldset style="margin-bottom:20px;"> -->
+<!-- 						<p:panel header="Période antérieure" styleClass="panelgrey"  > -->
+						
+<!-- 			        	<h:panelGrid columns="3" cellpadding="5"> -->
+<!--         				</h:panelGrid> -->
+<!--         				</p:panel> -->
+<!--     				</p:fieldset> -->
+<!--     				</div> -->
+<!-- 					<div class="ui-g-12 ui-md-4"> -->
+<!-- 					<p:fieldset style="margin-bottom:20px;heigth:80px;"> -->
+<!-- 						<p:panel header="Comparer à"  styleClass="panelgrey"> -->
+<!-- 						<f:facet name="footer"> -->
+<!-- 							<p:commandButton value="Appliquer" id="filtreArticle" styleClass="ui-orange" style="width:100%;" /> -->
+<!-- 						</f:facet>						 -->
+<!-- 			        	<p:panelGrid columns="1" cellpadding="5"> -->
+<!-- 									<p:selectOneRadio id="console"  layout="responsive" columns="1" > -->
+									
+<!-- 										<f:selectItem itemLabel="Même période, année précédente" itemValue="PS4" /> -->
+<!-- 										<f:selectItem itemLabel="Période précédente, même durée" itemValue="Xbox One" /> -->
+<!-- 									</p:selectOneRadio> -->
+						
+<!--         				</p:panelGrid> -->
+<!--         				</p:panel> -->
+<!--     				</p:fieldset> -->
+<!--     				</div> -->
+<!-- 					<div class="ui-g-12 ui-md-4"> -->
+<!-- 					<p:fieldset style="margin-bottom:20px; heigth:80px;" > -->
+<!-- 						<p:panel header="Filtre Tiers"   styleClass="panelgrey"> -->
+<!-- 						<f:facet name="footer"> -->
+<!-- 							<p:commandButton value="Appliquer" id="filtreTier" styleClass="ui-orange" style="width:100%;" /> -->
+<!-- 						</f:facet>						 -->
+<!-- 			        	<h:panelGrid columns="3" cellpadding="5"> -->
+<!-- 						  <h:graphicImage name="dashboard/critere-tiers.png" id="criteretiers" library="images" /> -->
+
+<!-- 							<p:outputLabel value="Code famille : " /> -->
+
+<!-- 							<p:panel styleClass="panel-aide-contextuelle" > -->
+<!-- 							<p:autoComplete  -->
+<!-- 								styleClass="autocompletedashboard " -->
+<!-- 								value="#{articleController.taFamilleDTO}" -->
+<!-- 								multiple="true" -->
+<!-- 								completeMethod="#{articleController.familleArticleAutoCompleteLight}" -->
+<!-- 								id="idfamille" disabled="#{articleController.editable()}" -->
+<!-- 								var="famille" itemLabel="#{famille.codeFamille}" -->
+<!-- 								itemValue="#{famille}" forceSelection="true" dropdown="true" -->
+							
+<!-- 								placeholder="Famille d'article" converter="entityConverter"> -->
+<!-- 								<p:column> -->
+<!-- 									<f:facet name="header"> -->
+<!-- 										<p:commandButton value="Ajouter" title="Insérer" -->
+<!-- 											process="@this" update="@this" -->
+<!-- 											actionListener="#{articleController.actDialogFamille}" -->
+<!-- 											styleClass="btn-insert btn"> -->
+<!-- 											<p:ajax event="dialogReturn" -->
+<!-- 												listener="#{articleController.handleReturnDialogFamille}" -->
+<!-- 												update="@parent:@parent" /> -->
+<!-- 										</p:commandButton> -->
+<!-- 									</f:facet>								 -->
+<!-- 									<h:outputText value="#{famille.codeFamille}" /> -->
+<!-- 								</p:column> -->
+<!-- 								<p:column> -->
+<!-- 									<h:outputText value="#{famille.libcFamille}" /> -->
+<!-- 								</p:column> -->
+<!-- 								<p:column> -->
+<!-- 									<h:outputText value="#{famille.liblFamille}" /> -->
+<!-- 								</p:column> -->
+<!-- 									<f:attribute name="nomChamp" value="#{const.C_CODE_FAMILLE}" /> -->
+<!-- 								<p:ajax event="itemSelect" listener="#{articleController.autcompleteSelection}" update="@this" /> -->
+<!-- 								<p:ajax event="itemUnselect" listener="#{articleController.autcompleteUnSelect}" update="@this" /> -->
+<!-- 							</p:autoComplete> -->
+<!-- 							<p:commandLink id="idLinkAideTiersCodeFamille" styleClass="lien-aide-contextuelle" > -->
+<!-- 								<i class="fa fa-info-circle animated swing"></i> -->
+<!-- 							</p:commandLink> -->
+<!-- 								<p:overlayPanel for="idLinkAideTiersCodeFamille" hideEffect="fade" dynamic="true" showCloseIcon="true"  -->
+<!-- 						    		styleClass="overlay-aide-contextuelle"> -->
+<!-- 									<ui:include src="/aide_contextuelle/article_code_famille.xhtml" /> -->
+<!-- 								</p:overlayPanel> -->
+<!-- 							</p:panel> -->
+
+						
+<!--         				</h:panelGrid> -->
+<!--         				</p:panel> -->
+<!--     				</p:fieldset> -->
+<!--     				</div> -->
+				</p:panel>
+				</div>
+
+				<div class="ui-g-12 ui-md-12" style="background:#ebebeb;">
+					<div class="ui-g-12 ui-md-6 ui-lg-3">
+						<p:panel header="Règlements sur la période" style="background:#ebebeb;" widgetVar="wvCountNbReglementPaye">
+							<div class="box #{dashBoardReglementController.cSbNbDocumentSurPeriode}" >
+							<i class="fa fa-file-text-o"></i>
+							<h2>#{dashBoardReglementController.nbFactureSurPeriode} Règlements encaissés</h2>
+							<h3>Total : <p:outputLabel value="#{dashBoardReglementController.totauxCaPeriodeFacture.mtHtCalc}">
+								<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />		
+							</p:outputLabel>
+							</h3>
+							<p>Du 
+							<p:outputLabel value="#{dashBoardReglementController.dateDebut}">
+								<f:convertDateTime pattern="#{msg.date_pattern}"
+										               timeZone="#{msg.time_zone}" type="localDate"/>		
+							</p:outputLabel>
+							  au 
+							<p:outputLabel value="#{dashBoardReglementController.dateFin}">
+								<f:convertDateTime pattern="#{msg.date_pattern}"
+										               timeZone="#{msg.time_zone}" type="localDate"/>		
+							</p:outputLabel>
+							
+							
+							</p>
+
+						<p:selectBooleanButton style="width:50%;" id="Reglementtous" 
+												value="true" onLabel="Sélection active"
+												widgetVar="wvReglementTous" 
+												offLabel="Afficher" onIcon="ui-icon-check" offIcon="ui-icon-close">
+								<p:ajax oncomplete="PF('wvListeReglement').filter()" 
+										update="@this,
+												@widgetVar(wvDashReglementPanelReglement),
+												@widgetVar(wvCountNbReglementNonPaye),
+												@widgetVar(wvCountNbReglementPaye),
+												@widgetVar(wvListeReglement),
+												@widgetVar(wvListeReglementMois),
+												@widgetVar(wvGraphiqueReglement),
+												@widgetVar(wvCountNbReglementNonPayeARelancer),
+												@widgetVar(wvTauxReglementPaye),
+												@widgetVar(wvTabViewReglementJour),
+												@widgetVar(wvPanelReglementJourDataTable),
+												@widgetVar(wvListeReglementMoisArticles),
+												@widgetVar(wvListeReglementJour),
+												@widgetVar(wvListeReglementJourArticles)"
+										listener="#{dashBoardReglementController.refreshDashBoard('tous')}"/>	 
+        					</p:selectBooleanButton>
+							</div> 
+						</p:panel>
+					</div>
+					
+					
+					<div class="ui-g-12 ui-md-6 ui-lg-3" style="background:#ebebeb;">
+						<p:panel header="Reglements partiellement affectés"  widgetVar="wvCountNbReglementNonPayeARelancer" 
+							style="background:#ebebeb;">
+							<div class="box #{dashBoardReglementController.cSbNbDocumentNonTransformeARelancerSurPeriode}" >
+							<i class="fa fa-file-text-o"></i>
+							<h2>#{dashBoardReglementController.nbFactureNonTotalementPayesARelancerSurPeriode} Règlements partiellement affectés</h2>
+							<h3>Reste à affecter : <p:outputLabel value="#{dashBoardReglementController.totauxCaPeriodeFactureNonTotalementPayeeARelancer.resteAReglerComplet}">
+								<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />		
+							</p:outputLabel></h3>
+							<p>Du 
+							<p:outputLabel value="#{dashBoardReglementController.dateDebut}">
+								<f:convertDateTime pattern="#{msg.date_pattern}"
+										               timeZone="#{msg.time_zone}" type="localDate"/>		
+							</p:outputLabel>
+							  au 
+							<p:outputLabel value="#{dashBoardReglementController.dateFin}">
+								<f:convertDateTime pattern="#{msg.date_pattern}"
+										               timeZone="#{msg.time_zone}" type="localDate"/>		
+							</p:outputLabel>
+							
+							
+							</p>
+							<!-- 							<p>Du #{dashBoardReglementController.dateDebut} au #{dashBoardReglementController.dateFin}</p> -->
+<!-- 						    <p:commandButton value="Ajax Submit" id="ajax" update="growl" actionListener="#{buttonView.buttonAction}" styleClass="ui-priority-primary" /> -->
+						    <p:selectBooleanButton  style="width:50%;" id="Reglement15jours" value="false" onLabel="Sélection active" offLabel="Afficher" onIcon="ui-icon-check" offIcon="ui-icon-close" >
+								<p:ajax oncomplete="PF('wvListeReglement').filter()" 
+										event="change" 
+										update="@this,
+												@widgetVar(wvDashReglementPanelReglement),
+												@widgetVar(wvCountNbReglementNonPaye),
+												@widgetVar(wvCountNbReglementPaye),
+												@widgetVar(wvListeReglement),
+												@widgetVar(wvListeReglementMois),
+												@widgetVar(wvGraphiqueReglement),
+												@widgetVar(wvCountNbReglementNonPayeARelancer),
+												@widgetVar(wvTauxReglementPaye),
+												@widgetVar(wvTabViewReglementJour),
+												@widgetVar(wvPanelReglementJourDataTable),
+												@widgetVar(wvListeReglementMoisArticles),
+												@widgetVar(wvListeReglementJour),
+												@widgetVar(wvListeReglementJourArticles)"
+										listener="#{dashBoardReglementController.refreshDashBoard('nontransformearelancer')}"/>	 
+        					</p:selectBooleanButton>
+							</div> 
+						</p:panel>
+					</div>
+					<div class="ui-g-12 ui-md-6 ui-lg-3" style="background:#ebebeb;">
+						<p:panel header="Règlements non affectés" style="background:#ebebeb;" widgetVar="wvCountNbReglementNonPaye">
+							<div class="box #{dashBoardReglementController.cSbNbDocumentNonTransformeSurPeriode}">
+						
+							
+							<i class="fa fa-file-text-o"></i>
+							<h2>#{dashBoardReglementController.nbFactureNonTotalementPayesSurPeriode} Règlements non affectés</h2>
+							<h3>Montant à affecter : <p:outputLabel value="#{dashBoardReglementController.totauxCaPeriodeFactureNonTotalementPayee.resteAReglerComplet}">
+								<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />		
+							</p:outputLabel></h3>
+							<p>Du 
+							<p:outputLabel value="#{dashBoardReglementController.dateDebut}">
+								<f:convertDateTime pattern="#{msg.date_pattern}"
+										               timeZone="#{msg.time_zone}" type="localDate"/>		
+							</p:outputLabel>
+							  au 
+							<p:outputLabel value="#{dashBoardReglementController.dateFin}">
+								<f:convertDateTime pattern="#{msg.date_pattern}"
+										               timeZone="#{msg.time_zone}" type="localDate"/>		
+							</p:outputLabel>
+							
+							
+							</p>
+							 <p:selectBooleanButton style="width:50%;" id="Reglementnontrans" value="false" onLabel="Sélection active" offLabel="Afficher" onIcon="ui-icon-check" offIcon="ui-icon-close" >
+								<p:ajax oncomplete="PF('wvListeReglement').filter()" 
+										event="change" 
+										update="@this,
+												@widgetVar(wvDashReglementPanelReglement),
+												@widgetVar(wvCountNbReglementNonPaye),
+												@widgetVar(wvCountNbReglementPaye),
+												@widgetVar(wvListeReglement),
+												@widgetVar(wvListeReglementMois),
+												@widgetVar(wvGraphiqueReglement),
+												@widgetVar(wvCountNbReglementNonPayeARelancer),
+												@widgetVar(wvTauxReglementPaye),
+												@widgetVar(wvTabViewReglementJour),
+												@widgetVar(wvPanelReglementJourDataTable),
+												@widgetVar(wvListeReglementMoisArticles),
+												@widgetVar(wvListeReglementJour),
+												@widgetVar(wvListeReglementJourArticles)"
+										listener="#{dashBoardReglementController.refreshDashBoard('nontransforme')}"/>	 
+        					 </p:selectBooleanButton>
+							</div>
+						</p:panel>
+					</div>
+					<div class="ui-g-12 ui-md-6 ui-lg-3 " style="background:#ebebeb;"> 
+						<p:panel header="Taux de règlement (entièrement affecté)" widgetVar="wvTauxReglementPaye" 
+						style="background:#ebebeb;">
+							<div class="box #{dashBoardReglementController.cSbNbDocumentTransformeSurPeriode}" >
+								<p:tabView style="text-align:left;">
+									<p:tab title="Montant" >
+									<h3 style="text-align:center;">Déjà affecté : <p:outputLabel value="#{dashBoardReglementController.totauxCaPeriodeFactureTotalementPayee.mtTtcCalc}">
+								<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />		
+							</p:outputLabel></h3>
+									<div class="knob-container  ui-corner-all" style="text-align:center;">
+										<p:knob labelTemplate="{value}%" value="#{dashBoardReglementController.tauxTotalementPayesCa}" height="70"
+											width="70" disabled="true"/>
+									</div>
+									</p:tab>
+									<p:tab title="Nombre de Règlements" >
+									<h3 style="text-align:center;">#{dashBoardReglementController.nbFactureTotalementPayesSurPeriode} Règlements affectés</h3>
+									<div class="knob-container  ui-corner-all" style="text-align:center;">
+										<p:knob labelTemplate="{value}%" value="#{dashBoardReglementController.tauxTotalementPayesNb}" height="70"
+											width="70" disabled="true" />
+									</div>
+									</p:tab>
+								</p:tabView>
+								<p:selectBooleanButton  style="width:50%;" id="ReglementPaye" value="false" onLabel="Sélection active" offLabel="Afficher" onIcon="ui-icon-check" offIcon="ui-icon-close" >
+								<p:ajax oncomplete="PF('wvListeReglement').filter()" event="change" 
+										update="@this,
+												@widgetVar(wvDashReglementPanelReglement),
+												@widgetVar(wvCountNbReglementNonPaye),
+												@widgetVar(wvCountNbReglementPaye),
+												@widgetVar(wvListeReglement),
+												@widgetVar(wvListeReglementMois),
+												@widgetVar(wvGraphiqueReglement),
+												@widgetVar(wvCountNbReglementNonPayeARelancer),
+												@widgetVar(wvTauxReglementPaye),
+												@widgetVar(wvTabViewReglementJour),
+												@widgetVar(wvPanelReglementJourDataTable),
+												@widgetVar(wvListeReglementMoisArticles),
+												@widgetVar(wvListeReglementJour),
+												@widgetVar(wvListeReglementJourArticles)"
+								listener="#{dashBoardReglementController.refreshDashBoard('transforme')}"/>	 
+        					</p:selectBooleanButton>
+<!-- 							<i class="fa fa-file-text-o"></i> -->
+<!-- 								<i class="fa fa-long-arrow-down" aria-hidden="true"></i> -->
+<!-- 							<h2>- 0.36 %</h2> -->
+<!-- 						  <h:graphicImage name="dashboard/fleche-montante.png" library="images" /> -->
+<!-- 							<p>En légère baisse</p> -->
+<!-- 							<h:outputText value="Tendance" /> -->
+<!-- 						  <h:graphicImage name="dashboard/fleche-montante.png" library="images" /> -->
+							</div> 
+						</p:panel>
+					</div>
+				</div>
+
+				<div class="ui-g-12 ui-md-12">
+				<p:panel header="Liste des Règlements" widgetVar="wvDashReglementPanelReglement" >
+
+						<p:dataTable 	id="taReglement" 
+										var="a"
+										value="#{dashBoardReglementController.valueLignesDocument}"
+										scrollable="true"
+										scrollHeight="150"
+										liveResize="true"							
+										widgetVar="wvListeReglement" 
+										resizableColumns="true" 
+										paginator="true"
+										rows="#{msg.modele_datatable_ligne_par_page_debut}"
+										paginatorTemplate="#{msg.modele_datatable_paginator}"
+										rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+										emptyMessage="#{msg.message_datatable_vide}"
+										currentPageReportTemplate="#{msg.modele_datatable_page_courante}"
+										selectionMode="single" 
+										rowKey="#{a.codeDocument}" 
+										reflow="true">
+							
+							<f:facet name="header">
+							
+							<span style="float:left;">
+									        <p:commandButton id="idBtnListePrintEcranDasboardReglement"
+							 title="Imprimer la liste" 
+			onsuccess="window.open('#{request.contextPath}/output?__report=/reports/reglement/ListeDashboardReglement.rptdesign&amp;__format=pdf')"
+			actionListener="#{dashBoardReglementController.actImprimerListeReglement}" styleClass="ui-priority-primary boutonPrint" style="color : white;" icon="fa fa-print"
+			process="@this" ></p:commandButton>
+									    </span>
+									    
+        						Liste des Règlements
+        						
+        						<span style="float:right;" class="searchbar_list">
+						            <p:outputPanel>
+							                <p:inputText id="globalFilter" onkeyup="PF('wvListeReglement').filter()" style="width:150px" placeholder="Rechercher"/>
+							            </p:outputPanel>
+						        </span>
+    						</f:facet>
+    						 
+							<p:column width="15%" rendered="true" filterMatchMode="contains"
+								filterBy="#{a.codeDocument}" sortBy="#{a.codeDocument}"  >
+								<f:facet name="header">
+									<h:outputText value="Code règlement" />
+								</f:facet>
+<!-- 								<h:outputText value="#{a.codeDocument}" /> -->
+								<p:commandLink value="#{a.codeDocument}"
+									action="#{dashBoardReglementController.ouvertureDocumentBean.detailDocument(dashBoardReglementController.ouvertureDocumentBean.recupCodeDocument(a.codeDocument,dashBoardReglementController.ouvertureDocumentBean.getTypeDocumentReglement()))}" 
+									update=":form:tabView" oncomplete="activeTabCenter('#{dashBoardReglementController.ouvertureDocumentBean.event.cssLgrTab}');">
+								</p:commandLink>								
+							</p:column>
+
+							<p:column width="38%" filterMatchMode="contains" 
+								filterBy="#{a.libelleDocument}" sortBy="#{a.libelleDocument}" >
+								<f:facet name="header">
+									<h:outputText value="Libellé" />
+								</f:facet>
+								<h:outputText value="#{a.libelleDocument}" id="idListeLibelleReglement"/>
+								<p:tooltip id="toolTipListeLibelleReglement" value="#{a.libelleDocument}" shared="true" for="idListeLibelleReglement" showEffect="clip" position="top"/>
+							</p:column>
+
+							<p:column styleClass="center" width="12%"
+								filterMatchMode="contains" filterBy="#{factureController.customFormatDate(a.dateDocument)}"
+								sortBy="#{a.dateDocument}">
+								<f:facet name="header">
+									<h:outputText value="Date document" />
+								</f:facet>
+								<h:outputText value="#{a.dateDocument}">
+									<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="center" width="20%"
+								filterMatchMode="contains" filterBy="#{a.codeTiers}"
+								sortBy="#{a.codeTiers}">
+								<f:facet name="header">
+									<h:outputText value="Code Tiers" />
+								</f:facet>
+<!-- 								<p:commandLink value="#{a.codeTiers}" -->
+<!-- 							action="#{etatFournisseurBean.detailTiers}" -->
+<!-- 							update=":form:tabView" -->
+<!-- 							oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');"> -->
+<!-- 							<f:setPropertyActionListener value="#{doc.taTiers}" -->
+<!-- 								target="#{etatFournisseurBean.detailLigneTiers}" /> -->
+<!-- 						</p:commandLink> -->
+<!-- 								<h:outputText value="#{a.codeTiers}"/> -->
+										<p:commandLink value="#{a.codeTiers}"
+											action="#{dashBoardReglementController.ouvertureDocumentBean.detailTiers(dashBoardReglementController.ouvertureDocumentBean.recupCodetiers(a.codeTiers))}" update=":form:tabView"
+											oncomplete="activeTabCenter('#{dashBoardReglementController.ouvertureDocumentBean.event.cssLgrTab}');">
+										</p:commandLink>
+							</p:column>
+
+							<p:column styleClass="center" width="25%"
+								filterMatchMode="contains" filterBy="#{a.nomTiers}"
+								sortBy="#{a.nomTiers}">
+								<f:facet name="header">
+									<h:outputText value="Tiers" />
+								</f:facet>
+								<h:outputText value="#{a.nomTiers}">
+								</h:outputText>
+							</p:column>
+
+<!-- 							<p:column styleClass="right" width="12%" -->
+<!-- 								filterMatchMode="contains" filterBy="#{a.netHtCalc}" -->
+<!-- 								sortBy="#{a.netHtCalc}"> -->
+<!-- 								<f:facet name="header"> -->
+<!-- 									<h:outputText value="Montant HT" /> -->
+<!-- 								</f:facet> -->
+<!-- 								<h:outputText value="#{a.netHtCalc}"> -->
+<!-- 										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" /> -->
+<!-- 								</h:outputText> -->
+<!-- 							</p:column> -->
+
+<!-- 							<p:column styleClass="right" width="10%" -->
+<!-- 								filterMatchMode="contains" filterBy="#{a.netTvaCalc}" -->
+<!-- 								sortBy="#{a.netTvaCalc}"> -->
+<!-- 								<f:facet name="header"> -->
+<!-- 									<h:outputText value="Montant TVA" /> -->
+<!-- 								</f:facet> -->
+<!-- 								<h:outputText value="#{a.netTvaCalc}"> -->
+<!-- 										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" /> -->
+<!-- 								</h:outputText> -->
+<!-- 							</p:column> -->
+
+							<p:column styleClass="right" width="12%"
+								filterMatchMode="contains" filterBy="#{a.netTtcCalc}"
+								sortBy="#{a.netTtcCalc}">
+								<f:facet name="header">
+									<h:outputText value="Montant" />
+								</f:facet>
+								<h:outputText value="#{a.netTtcCalc}">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+
+<!-- 							<p:column styleClass="center" width="12%" -->
+<!-- 								filterMatchMode="contains" filterBy="#{a.dateLivDocument}" -->
+<!-- 								sortBy="#{a.dateLivDocument}"> -->
+<!-- 								<f:facet name="header"> -->
+<!-- 									<h:outputText value="Expire le" /> -->
+<!-- 								</f:facet> -->
+<!-- 								<h:outputText value="#{a.dateLivDocument}"> -->
+<!-- 									<f:convertDateTime pattern="#{msg.date_pattern}" -->
+<!-- 										timeZone="#{msg.time_zone}" /> -->
+<!-- 								</h:outputText> -->
+<!-- 							</p:column> -->
+
+<!-- 							<p:column styleClass="right" width="12%" -->
+<!-- 								filterMatchMode="contains" filterBy="#{a.resteAReglerComplet}" -->
+<!-- 								sortBy="#{a.resteAReglerComplet}"> -->
+<!-- 								<f:facet name="header"> -->
+<!-- 									<h:outputText value="Reste à régler" /> -->
+<!-- 								</f:facet> -->
+<!-- 								<h:outputText value="#{a.resteAReglerComplet}"> -->
+<!-- 										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" /> -->
+<!-- 								</h:outputText> -->
+<!-- 							</p:column>							 -->
+						</p:dataTable>
+					</p:panel>
+				</div>
+				
+				<div class="ui-g-12 ui-md-12" style="background:#ebebeb;">
+				<div class="ui-g-12 ui-md-4">
+<!-- 					<p:panel header="Période du #{dashBoardProformaController.dateDebut} au #{dashBoardProformaController.dateFin}" > -->
+						<p:panel id="idPanelMensuelTitrePeriodeReglement">
+						<f:facet name="header">
+							<h:outputText value="Période du " />
+							<h:outputText value="#{dashBoardReglementController.dateDebut}" >
+								<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" type="localDate"/>
+							</h:outputText>
+							<h:outputText value=" au " />
+							<h:outputText value="#{dashBoardReglementController.dateFin}" >
+								<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" type="localDate"/>
+							</h:outputText>
+						</f:facet>
+					</p:panel>
+
+					<p:tabView widgetVar="wvGraphiqueReglement">
+						<p:tab title="Reglement">
+								<p:chart type="bar" model="#{dashBoardReglementController.barChartModelReglement}" 
+								
+								responsive="true" 
+								style="height:300px;">
+								
+							<p:ajax event="itemSelect" 
+									listener="#{dashBoardReglementController.itemSelectMois}" 
+									update="@widgetVar(wvListeReglementMois),
+											@widgetVar(wvGraphiqueReglementJour),
+											@widgetVar(wvTabViewReglementJour),
+											@widgetVar(wvPanelReglementJourDataTable),
+											@widgetVar(wvListeReglementMoisArticles)"
+											style="cursor: hand"/>
+							</p:chart>
+
+						</p:tab>
+					</p:tabView>
+					</div>
+					
+					
+					<div class="ui-g-12 ui-md-8">
+				
+					<p:tabView>
+						<p:tab title="Liste des règlements par mois">
+            			<h:panelGrid columns="2" cellpadding="10">
+                	
+						<br/>
+						
+						<p:dataTable id="idReglementMois" var="a"
+							value="#{dashBoardReglementController.listeDocumentDetailMois}"
+							scrollable="true"
+							scrollHeight="135"
+							liveResize="true"
+							
+							widgetVar="wvListeReglementMois" resizableColumns="true" 
+							paginator="true"
+							rows="#{msg.modele_datatable_ligne_par_page_debut}"
+							paginatorTemplate="#{msg.modele_datatable_paginator}"
+							rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+							emptyMessage="#{msg.message_datatable_vide}"
+							currentPageReportTemplate="#{msg.modele_datatable_page_courante}"
+							
+							selectionMode="single" rowKey="#{a.codeDocument}" reflow="true">
+							
+							<f:facet name="header">
+							
+							<span style="float:left;">
+									        <p:commandButton id="idBtnListePrintEcranDasboardReglementMois"
+							 title="Imprimer la liste" 
+			onsuccess="window.open('#{request.contextPath}/output?__report=/reports/reglement/ListeDashboardReglement.rptdesign&amp;__format=pdf')"
+			actionListener="#{dashBoardReglementController.actImprimerListeReglementMois}" styleClass="ui-priority-primary boutonPrint" style="color : white;" icon="fa fa-print"
+			process="@this" ></p:commandButton>
+									    </span>
+
+    								#{dashBoardReglementController.infosLabelRapportMensuelDataTable}
+    						</f:facet>
+    						 
+							<p:column width="20%" rendered="true" filterMatchMode="contains"
+								filterBy="#{a.codeDocument}" sortBy="#{a.codeDocument}"  >
+								<f:facet name="header">
+									<h:outputText value="Code" />
+								</f:facet>
+<!-- 								<h:outputText value="#{a.codeDocument}" /> -->
+								<p:commandLink value="#{a.codeDocument}"
+									action="#{ouvertureDocumentBean.detailDocument(ouvertureDocumentBean.recupCodeDocument(a.codeDocument,ouvertureDocumentBean.getTypeDocumentReglement()))}" 
+									update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+								</p:commandLink>
+
+							</p:column>
+
+							<p:column width="33%" filterMatchMode="contains" 
+								filterBy="#{a.libelleDocument}" sortBy="#{a.libelleDocument}">
+								<f:facet name="header">
+									<h:outputText value="Libellé" />
+								</f:facet>
+								<h:outputText value="#{a.libelleDocument}" />
+							</p:column>
+
+							<p:column styleClass="center" width="17%"
+								filterMatchMode="contains" filterBy="#{factureController.customFormatDate(a.dateDocument)}"
+								sortBy="#{a.dateDocument}">
+								<f:facet name="header">
+									<h:outputText value="Date" />
+								</f:facet>
+								<h:outputText value="#{a.dateDocument}">
+									<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="center" width="20%"
+								filterMatchMode="contains" filterBy="#{a.codeTiers}"
+								sortBy="#{a.codeTiers}">
+								<f:facet name="header">
+									<h:outputText value="Code Tiers" />
+								</f:facet>
+
+<!-- 								<h:outputText value="#{a.codeTiers}"> -->
+<!-- 								</h:outputText> -->
+										<p:commandLink value="#{a.codeTiers}"
+											action="#{ouvertureDocumentBean.detailTiers(ouvertureDocumentBean.recupCodetiers(a.codeTiers))}" update=":form:tabView"
+											oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+										</p:commandLink>
+							</p:column>
+
+							<p:column styleClass="center" width="20%"
+								filterMatchMode="contains" filterBy="#{a.nomTiers}"
+								sortBy="#{a.nomTiers}">
+								<f:facet name="header">
+									<h:outputText value="Tiers" />
+								</f:facet>
+								<h:outputText value="#{a.nomTiers}">
+								</h:outputText>
+							</p:column>
+
+<!-- 							<p:column styleClass="right" width="12%" -->
+<!-- 								filterMatchMode="contains" filterBy="#{a.netHtCalc}" -->
+<!-- 								sortBy="#{a.netHtCalc}"> -->
+<!-- 								<f:facet name="header"> -->
+<!-- 									<h:outputText value="HT" /> -->
+<!-- 								</f:facet> -->
+<!-- 								<h:outputText value="#{a.netHtCalc}"> -->
+<!-- 										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" /> -->
+<!-- 								</h:outputText> -->
+<!-- 							</p:column> -->
+
+<!-- 							<p:column styleClass="right" width="10%" -->
+<!-- 								filterMatchMode="contains" filterBy="#{a.netTvaCalc}" -->
+<!-- 								sortBy="#{a.netTvaCalc}"> -->
+<!-- 								<f:facet name="header"> -->
+<!-- 									<h:outputText value="TVA" /> -->
+<!-- 								</f:facet> -->
+<!-- 								<h:outputText value="#{a.netTvaCalc}"> -->
+<!-- 										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" /> -->
+<!-- 								</h:outputText> -->
+<!-- 							</p:column> -->
+
+							<p:column styleClass="right" width="12%"
+								filterMatchMode="contains" filterBy="#{a.netTtcCalc}"
+								sortBy="#{a.netTtcCalc}">
+								<f:facet name="header">
+									<h:outputText value="Montant" />
+								</f:facet>
+								<h:outputText value="#{a.netTtcCalc}">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+
+<!-- 							<p:column styleClass="center" width="12%" -->
+<!-- 								filterMatchMode="contains" filterBy="#{a.dateLivDocument}" -->
+<!-- 								sortBy="#{a.dateLivDocument}"> -->
+<!-- 								<f:facet name="header"> -->
+<!-- 									<h:outputText value="Expire le" /> -->
+<!-- 								</f:facet> -->
+<!-- 								<h:outputText value="#{a.dateLivDocument}"> -->
+<!-- 									<f:convertDateTime pattern="#{msg.date_pattern}" -->
+<!-- 										timeZone="#{msg.time_zone}" /> -->
+<!-- 								</h:outputText> -->
+<!-- 							</p:column> -->
+<!-- 							<p:column styleClass="right" width="12%" -->
+<!-- 								filterMatchMode="contains" filterBy="#{a.resteAReglerComplet}" -->
+<!-- 								sortBy="#{a.resteAReglerComplet}"> -->
+<!-- 								<f:facet name="header"> -->
+<!-- 									<h:outputText value="Reste à régler" /> -->
+<!-- 								</f:facet> -->
+<!-- 								<h:outputText value="#{a.resteAReglerComplet}"> -->
+<!-- 										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" /> -->
+<!-- 								</h:outputText> -->
+<!-- 							</p:column> -->
+							
+						</p:dataTable>
+                		
+            			</h:panelGrid>
+        				</p:tab>
+						<p:tab title="Détail des articles par mois" rendered="false">
+						<h:panelGrid columns="2" cellpadding="10">
+						
+						<p:dataTable id="taReglementArticlesParTiersParMois" var="a"
+							value="#{dashBoardReglementController.listeDocumentArticleParTiersParMois}"
+							scrollable="true"
+							scrollHeight="135"
+							liveResize="true"
+							
+							widgetVar="wvListeReglementMoisArticles" resizableColumns="true" 
+							paginator="true"
+							rows="#{msg.modele_datatable_ligne_par_page_debut}"
+							paginatorTemplate="#{msg.modele_datatable_paginator}"
+							rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+							emptyMessage="#{msg.message_datatable_vide}"
+							currentPageReportTemplate="#{msg.modele_datatable_page_courante}"
+							
+							selectionMode="single" rowKey="#{a.codeDocument}" reflow="true">
+							
+							<f:facet name="header">
+
+    								#{dashBoardReglementController.infosLabelRapportArticlesDataTable}
+    						</f:facet>
+    					
+							<p:column styleClass="center" width="20%"
+								filterMatchMode="contains" filterBy="#{a.codeDocument}"
+								sortBy="#{a.codeDocument}">
+								<f:facet name="header">
+									<h:outputText value="Code" />
+								</f:facet>
+<!-- 								<h:outputText value="#{a.codeDocument}"> -->
+<!-- 								</h:outputText> -->
+								<p:commandLink value="#{a.codeDocument}"
+									action="#{ouvertureDocumentBean.detailDocument(ouvertureDocumentBean.recupCodeDocument(a.codeDocument,ouvertureDocumentBean.getTypeDocumentReglement()))}" 
+									update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+								</p:commandLink>
+							</p:column>
+							
+							<p:column width="20%" filterMatchMode="contains" 
+								filterBy="#{a.libellecArticle}" sortBy="#{a.libellecArticle}">
+								<f:facet name="header">
+									<h:outputText value="Libellé article(s)" />
+								</f:facet>
+								<h:outputText value="#{a.libellecArticle}" />
+							</p:column>
+
+							<p:column styleClass="center" width="15%"
+								filterMatchMode="contains" filterBy="#{factureController.customFormatDate(a.dateDocument)}"
+								sortBy="#{a.dateDocument}">
+								<f:facet name="header">
+									<h:outputText value="Fait le" />
+								</f:facet>
+								<h:outputText value="#{a.dateDocument}">
+									<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="center" width="20%"
+								filterMatchMode="contains" filterBy="#{a.codeTiers}"
+								sortBy="#{a.codeTiers}">
+								<f:facet name="header">
+									<h:outputText value="Code Tiers" />
+								</f:facet>
+
+<!-- 								<h:outputText value="#{a.codeTiers}"> -->
+<!-- 								</h:outputText> -->
+										<p:commandLink value="#{a.codeTiers}"
+											action="#{ouvertureDocumentBean.detailTiers(ouvertureDocumentBean.recupCodetiers(a.codeTiers))}" update=":form:tabView"
+											oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+										</p:commandLink>
+							</p:column>
+
+							<p:column styleClass="center" width="20%"
+								filterMatchMode="contains" filterBy="#{a.nomTiers}"
+								sortBy="#{a.nomTiers}">
+								<f:facet name="header">
+									<h:outputText value="Tiers" />
+								</f:facet>
+								<h:outputText value="#{a.nomTiers}">
+								</h:outputText>
+							</p:column>
+
+<!-- 							<p:column styleClass="right" width="15%" -->
+<!-- 								filterMatchMode="contains" filterBy="#{a.mtHtLDocument}" -->
+<!-- 								sortBy="#{a.mtHtLDocument}"> -->
+<!-- 								<f:facet name="header"> -->
+<!-- 									<h:outputText value="HT" /> -->
+<!-- 								</f:facet> -->
+<!-- 								<h:outputText value="#{a.mtHtLDocument}"> -->
+<!-- 										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" /> -->
+<!-- 								</h:outputText> -->
+<!-- 							</p:column> -->
+
+							<p:column styleClass="right" width="15%"
+								filterMatchMode="contains" filterBy="#{a.mtTtcLDocument}"
+								sortBy="#{a.mtTtcLDocument}">
+								<f:facet name="header">
+									<h:outputText value="Montant" />
+								</f:facet>
+								<h:outputText value="#{a.mtTtcLDocument}">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+							
+						</p:dataTable>
+						</h:panelGrid>
+						</p:tab>
+	 				</p:tabView>
+						
+					</div>
+					
+					</div>	
+				
+<!-- 					//////////////////////////////////////////////////////////////////////////// -->
+<!-- 					Début second graphique proformaJour lié a son datatable -->
+				
+				<div class="ui-g-12 ui-md-12" style="background:#ebebeb;">
+				<div class="ui-g-12 ui-md-12">
+					
+					<p:tabView widgetVar="wvTabViewReglementJour">
+								
+						<p:tab title="Détail des règlements par jour pour #{dashBoardReglementController.nomMoisDetail}" 
+						rendered="#{dashBoardReglementController.afficheDocumentJour}">
+						<br/><br/>
+								<h:panelGrid columns="2" cellpadding="0" >
+								
+						<f:facet name="header">
+        						Graphique journalier des documents pour le mois de #{dashBoardReglementController.nomMoisDetail} pour un montant de #{dashBoardReglementController.montantTotalHtMois} € de type #{dashBoardReglementController.infoEtatDocument}
+    						</f:facet>
+						
+					</h:panelGrid>
+					
+<!-- 								rendered="#{dashBoardProformaController.afficheProformaJour}" -->
+								<p:chart type="bar" model="#{dashBoardReglementController.barChartModelReglementJour}" widgetVar="wvGraphiqueReglementJour" 
+								responsive="true" 
+								style="height:240px;">
+								
+							<p:ajax event="itemSelect" listener="#{dashBoardReglementController.itemSelectJour}" update="@widgetVar(wvListeReglementJour),@widgetVar(wvPanelReglementJourDataTable)" style="cursor: pointer"/>
+							</p:chart>
+
+						</p:tab>
+					
+					</p:tabView>
+					</div>
+					
+					
+						<div class="ui-g-12 ui-md-12">
+						
+					<p:tabView widgetVar="wvPanelReglementJourDataTable">
+					
+						<p:tab title="Liste des règlements par jour" rendered="#{dashBoardReglementController.afficheDocumentJourDataTable}">
+						<h:panelGrid columns="2" cellpadding="10">
+				
+						<p:dataTable id="taReglementJour" var="a"
+							value="#{dashBoardReglementController.listeDocumentDetailJour}"
+							scrollable="true"
+							scrollHeight="150"
+							liveResize="true"
+							widgetVar="wvListeReglementJour" resizableColumns="true" 
+							
+							paginator="true"
+							rows="#{msg.modele_datatable_ligne_par_page_debut}"
+							paginatorTemplate="#{msg.modele_datatable_paginator}"
+							rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+							emptyMessage="#{msg.message_datatable_vide}"
+							currentPageReportTemplate="#{msg.modele_datatable_page_courante}"
+							
+							selectionMode="single" rowKey="#{a.codeDocument}" reflow="true">
+							
+							<f:facet name="header">
+							
+							<span style="float:left;">
+									        <p:commandButton id="idBtnListePrintEcranDasboardReglementJour"
+							 title="Imprimer la liste" 
+			onsuccess="window.open('#{request.contextPath}/output?__report=/reports/reglement/ListeDashboardReglement.rptdesign&amp;__format=pdf')"
+			actionListener="#{dashBoardReglementController.actImprimerListeReglementJour}" styleClass="ui-priority-primary boutonPrint" style="color : white;" icon="fa fa-print"
+			process="@this" ></p:commandButton>
+									    </span>
+									    
+        						#{dashBoardReglementController.infosLabelRapportJournalierDataTable}
+    						</f:facet>
+    						 
+							<p:column width="20%" rendered="true" filterMatchMode="contains"
+								filterBy="#{a.codeDocument}" sortBy="#{a.codeDocument}"  >
+								<f:facet name="header">
+									<h:outputText value="Code" />
+								</f:facet>
+<!-- 								<h:outputText value="#{a.codeDocument}" /> -->
+								<p:commandLink value="#{a.codeDocument}"
+									action="#{ouvertureDocumentBean.detailDocument(ouvertureDocumentBean.recupCodeDocument(a.codeDocument,ouvertureDocumentBean.getTypeDocumentReglement()))}" 
+									update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+								</p:commandLink>
+							</p:column>
+
+							<p:column width="33%" filterMatchMode="contains" 
+								filterBy="#{a.libelleDocument}" sortBy="#{a.libelleDocument}">
+								<f:facet name="header">
+									<h:outputText value="Libellé" />
+								</f:facet>
+								<h:outputText value="#{a.libelleDocument}" />
+							</p:column>
+
+							<p:column styleClass="center" width="17%"
+								filterMatchMode="contains" filterBy="#{factureController.customFormatDate(a.dateDocument)}"
+								sortBy="#{a.dateDocument}">
+								<f:facet name="header">
+									<h:outputText value="Date" />
+								</f:facet>
+								<h:outputText value="#{a.dateDocument}">
+									<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="center" width="20%"
+								filterMatchMode="contains" filterBy="#{a.codeTiers}"
+								sortBy="#{a.codeTiers}">
+								<f:facet name="header">
+									<h:outputText value="Code Tiers" />
+								</f:facet>
+
+<!-- 								<h:outputText value="#{a.codeTiers}"> -->
+<!-- 								</h:outputText> -->
+										<p:commandLink value="#{a.codeTiers}"
+											action="#{ouvertureDocumentBean.detailTiers(ouvertureDocumentBean.recupCodetiers(a.codeTiers))}" update=":form:tabView"
+											oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+										</p:commandLink>
+							</p:column>
+
+							<p:column styleClass="center" width="20%"
+								filterMatchMode="contains" filterBy="#{a.nomTiers}"
+								sortBy="#{a.nomTiers}">
+								<f:facet name="header">
+									<h:outputText value="Tiers" />
+								</f:facet>
+								<h:outputText value="#{a.nomTiers}">
+								</h:outputText>
+							</p:column>
+
+<!-- 							<p:column styleClass="right" width="12%" -->
+<!-- 								filterMatchMode="contains" filterBy="#{a.netHtCalc}" -->
+<!-- 								sortBy="#{a.netHtCalc}"> -->
+<!-- 								<f:facet name="header"> -->
+<!-- 									<h:outputText value="HT" /> -->
+<!-- 								</f:facet> -->
+<!-- 								<h:outputText value="#{a.netHtCalc}"> -->
+<!-- 										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" /> -->
+<!-- 								</h:outputText> -->
+<!-- 							</p:column> -->
+
+<!-- 							<p:column styleClass="right" width="10%" -->
+<!-- 								filterMatchMode="contains" filterBy="#{a.netTvaCalc}" -->
+<!-- 								sortBy="#{a.netTvaCalc}"> -->
+<!-- 								<f:facet name="header"> -->
+<!-- 									<h:outputText value="TVA" /> -->
+<!-- 								</f:facet> -->
+<!-- 								<h:outputText value="#{a.netTvaCalc}"> -->
+<!-- 										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" /> -->
+<!-- 								</h:outputText> -->
+<!-- 							</p:column> -->
+
+							<p:column styleClass="right" width="12%"
+								filterMatchMode="contains" filterBy="#{a.netTtcCalc}"
+								sortBy="#{a.netTtcCalc}">
+								<f:facet name="header">
+									<h:outputText value="Montant" />
+								</f:facet>
+								<h:outputText value="#{a.netTtcCalc}">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+
+<!-- 							<p:column styleClass="center" width="12%" -->
+<!-- 								filterMatchMode="contains" filterBy="#{a.dateLivDocument}" -->
+<!-- 								sortBy="#{a.dateLivDocument}"> -->
+<!-- 								<f:facet name="header"> -->
+<!-- 									<h:outputText value="Expire le" /> -->
+<!-- 								</f:facet> -->
+<!-- 								<h:outputText value="#{a.dateLivDocument}"> -->
+<!-- 									<f:convertDateTime pattern="#{msg.date_pattern}" -->
+<!-- 										timeZone="#{msg.time_zone}" /> -->
+<!-- 								</h:outputText> -->
+<!-- 							</p:column> -->
+
+							
+						</p:dataTable>
+						</h:panelGrid>
+						</p:tab>
+						
+<!-- 						<p:tab title="Détail des articles par jour" rendered="#{dashBoardReglementController.afficheDocumentJourDataTable}" rendered="false"> -->
+						<p:tab title="Détail des articles par jour" rendered="false">
+						<h:panelGrid columns="2" cellpadding="10">
+						
+						<br/>
+						
+						<p:dataTable id="taReglementArticlesParTiersParJour" var="a"
+							value="#{dashBoardReglementController.listeDocumentArticleParTiersParJour}"
+							scrollable="true"
+							scrollHeight="150"
+							liveResize="true"
+							
+							widgetVar="wvListeReglementJourArticles" resizableColumns="true" 
+							paginator="true"
+							rows="#{msg.modele_datatable_ligne_par_page_debut}"
+							paginatorTemplate="#{msg.modele_datatable_paginator}"
+							rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+							emptyMessage="#{msg.message_datatable_vide}"
+							currentPageReportTemplate="#{msg.modele_datatable_page_courante}"
+							
+							selectionMode="single" rowKey="#{a.codeDocument}" reflow="true">
+							
+							<f:facet name="header">
+
+    								#{dashBoardReglementController.infosLabelRapportArticlesJourDataTable}
+    						</f:facet>
+    						
+							<p:column styleClass="center" width="20%"
+								filterMatchMode="contains" filterBy="#{a.codeDocument}"
+								sortBy="#{a.codeDocument}">
+								<f:facet name="header">
+									<h:outputText value="Code" />
+								</f:facet>
+<!-- 								<h:outputText value="#{a.codeDocument}"> -->
+<!-- 								</h:outputText> -->
+								<p:commandLink value="#{a.codeDocument}"
+									action="#{ouvertureDocumentBean.detailDocument(ouvertureDocumentBean.recupCodeDocument(a.codeDocument,ouvertureDocumentBean.getTypeDocumentReglement()))}" 
+									update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+								</p:commandLink>
+							</p:column>
+							
+							<p:column width="20%" filterMatchMode="contains" 
+								filterBy="#{a.libellecArticle}" sortBy="#{a.libellecArticle}">
+								<f:facet name="header">
+									<h:outputText value="Libellé article(s)" />
+								</f:facet>
+								<h:outputText value="#{a.libellecArticle}" />
+							</p:column>
+
+							<p:column styleClass="center" width="15%"
+								filterMatchMode="contains" filterBy="#{factureController.customFormatDate(a.dateDocument)}"
+								sortBy="#{a.dateDocument}">
+								<f:facet name="header">
+									<h:outputText value="Fait le" />
+								</f:facet>
+								<h:outputText value="#{a.dateDocument}">
+									<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="center" width="20%"
+								filterMatchMode="contains" filterBy="#{a.codeTiers}"
+								sortBy="#{a.codeTiers}">
+								<f:facet name="header">
+									<h:outputText value="Code Tiers" />
+								</f:facet>
+
+<!-- 								<h:outputText value="#{a.codeTiers}"> -->
+<!-- 								</h:outputText> -->
+										<p:commandLink value="#{a.codeTiers}"
+											action="#{ouvertureDocumentBean.detailTiers(ouvertureDocumentBean.recupCodetiers(a.codeTiers))}" update=":form:tabView"
+											oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+										</p:commandLink>
+							</p:column>
+
+							<p:column styleClass="center" width="20%"
+								filterMatchMode="contains" filterBy="#{a.nomTiers}"
+								sortBy="#{a.nomTiers}">
+								<f:facet name="header">
+									<h:outputText value="Tiers" />
+								</f:facet>
+								<h:outputText value="#{a.nomTiers}">
+								</h:outputText>
+							</p:column>
+
+<!-- 							<p:column styleClass="right" width="15%" -->
+<!-- 								filterMatchMode="contains" filterBy="#{a.mtHtLDocument}" -->
+<!-- 								sortBy="#{a.mtHtLDocument}"> -->
+<!-- 								<f:facet name="header"> -->
+<!-- 									<h:outputText value="HT" /> -->
+<!-- 								</f:facet> -->
+<!-- 								<h:outputText value="#{a.mtHtLDocument}"> -->
+<!-- 										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" /> -->
+<!-- 								</h:outputText> -->
+<!-- 							</p:column> -->
+
+							<p:column styleClass="right" width="15%"
+								filterMatchMode="contains" filterBy="#{a.mtTtcLDocument}"
+								sortBy="#{a.mtTtcLDocument}">
+								<f:facet name="header">
+									<h:outputText value="Montant" />
+								</f:facet>
+								<h:outputText value="#{a.mtTtcLDocument}">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+							
+						</p:dataTable>
+						</h:panelGrid>
+						</p:tab>
+						</p:tabView>
+					</div>
+					
+					</div>
+
+
+                    <div class="ui-g-12 ui-md-6">
+                        <p:panel header="Calendrier" style="height:100%" rendered="false">
+                            <p:schedule value="#{dashBoardBean.eventModel}" widgetVar="myschedule" timeZone="GMT+1">
+<!--                                 <p:ajax event="dateSelect" listener="#{dashBoardBean.onDateSelect}" update="eventDetails" oncomplete="PF('eventDialog').show();" /> -->
+					            <p:ajax event="eventSelect" listener="#{dashBoardBean.onEventSelect}" update="eventDetails" oncomplete="PF('eventDialog').show();" />
+<!-- 					            <p:ajax event="eventMove" listener="#{dashBoardBean.onEventMove}" update="messages" /> -->
+<!-- 					            <p:ajax event="eventResize" listener="#{dashBoardBean.onEventResize}" update="messages" /> -->
+                            </p:schedule>
+                        </p:panel>
+                    </div>
+                    <div class="ui-g-12 ui-md-4">
+<!--                         <p:panel header="Activité" style="height:100%"> -->
+<!--                             <div class="activity-header"> -->
+<!--                                 <div class="ui-g"> -->
+<!--                                     <div class="ui-g-6"> -->
+<!--                                         <span style="font-weight:bold">Last Activity</span> -->
+<!--                                         <p>Updated 1 minute ago</p> -->
+<!--                                     </div> -->
+<!--                                     <div class="ui-g-6" style="text-align:right"> -->
+<!--                                         <p:commandButton type="button" icon="fa fa-refresh" /> -->
+<!--                                     </div> -->
+<!--                                 </div> -->
+<!--                             </div> -->
+<!--                             <ul class="activity-list"> -->
+<!--                                 <li> -->
+<!--                                     <div class="count">$900</div> -->
+<!--                                     <div class="ui-g"> -->
+<!--                                         <div class="ui-g-6">Income</div> -->
+<!--                                         <div class="ui-g-6">95%</div> -->
+<!--                                     </div> -->
+<!--                                 </li> -->
+<!--                                 <li> -->
+<!--                                     <div class="count">$250</div> -->
+<!--                                     <div class="ui-g"> -->
+<!--                                         <div class="ui-g-6">Tax</div> -->
+<!--                                         <div class="ui-g-6">24%</div> -->
+<!--                                     </div> -->
+<!--                                 </li> -->
+<!--                                 <li> -->
+<!--                                     <div class="count">$125</div> -->
+<!--                                     <div class="ui-g"> -->
+<!--                                         <div class="ui-g-6">Invoices</div> -->
+<!--                                         <div class="ui-g-6">55%</div> -->
+<!--                                     </div> -->
+<!--                                 </li> -->
+<!--                                 <li> -->
+<!--                                     <div class="count">$250</div> -->
+<!--                                     <div class="ui-g"> -->
+<!--                                         <div class="ui-g-6">Expenses</div> -->
+<!--                                         <div class="ui-g-6">15%</div> -->
+<!--                                     </div> -->
+<!--                                 </li> -->
+<!--                                 <li> -->
+<!--                                     <div class="count">$350</div> -->
+<!--                                     <div class="ui-g"> -->
+<!--                                         <div class="ui-g-6">Bonus</div> -->
+<!--                                         <div class="ui-g-6">5%</div> -->
+<!--                                     </div> -->
+<!--                                 </li> -->
+<!--                                 <li> -->
+<!--                                     <div class="count">$500</div> -->
+<!--                                     <div class="ui-g"> -->
+<!--                                         <div class="ui-g-6">Revenue</div> -->
+<!--                                         <div class="ui-g-6">25%</div> -->
+<!--                                     </div> -->
+<!--                                 </li> -->
+<!--                             </ul> -->
+<!--                         </p:panel> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+<!--         <p:dialog widgetVar="eventDialog" header="Détail" showEffect="clip" hideEffect="clip"> -->
+<!-- 	        <h:panelGrid id="eventDetails" columns="2"> -->
+<!-- 	            <p:outputLabel for="title" value="Titre"/> -->
+<!-- 	            <p:inputText id="title" value="#{dashBoardBean.event.title}" required="true" disabled="true"/> -->
+	 
+<!-- 	            <p:outputLabel for="from" value="Du" /> -->
+<!-- 	            <p:calendar id="from" value="#{dashBoardBean.event.startDate}" timeZone="GMT+1" pattern="dd/MM/yyyy HH:mm" disabled="true"/> -->
+	 
+<!-- 	            <p:outputLabel for="to" value="Au" /> -->
+<!-- 	            <p:calendar id="to" value="#{dashBoardBean.event.endDate}" timeZone="GMT+1" pattern="dd/MM/yyyy HH:mm" disabled="true"/> -->
+	 
+<!-- 	            <p:outputLabel for="allDay" value="Toute la journée" /> -->
+<!-- 	            <h:selectBooleanCheckbox id="allDay" value="#{dashBoardBean.event.allDay}" disabled="true"/> -->
+	 
+<!-- 				<p:commandButton id="addButton" value="Fermer" oncomplete="PF('myschedule').update();PF('eventDialog').hide();" /> -->
+				
+<!-- 				<p:commandLink value="#{dashBoardBean.event.codeObjet}" action="#{dashBoardBean.openDocument}" update=":form:tabView" oncomplete="activeTabCenter('#{dashBoardBean.event.cssLgrTab}');"> -->
+<!-- 				</p:commandLink> -->
+<!-- 	        </h:panelGrid> -->
+<!--    		</p:dialog>     -->
+    
+</ui:composition>

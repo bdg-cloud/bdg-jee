@@ -1,0 +1,509 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:pe="http://primefaces.org/ui/extensions" 
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:p="http://primefaces.org/ui">
+
+	<!-- 		<f:metadata> -->
+	<!-- 			<f:viewParam name="paramId" value="#{unStockBean.parameter}"/> -->
+	<!-- 			<f:event type="preRenderView" listener="#{unStockBean.refresh}" /> -->
+	<!-- 		</f:metadata> -->
+
+	<!--  h:outputText value="produit #{paramId}" /> -->
+	
+<!-- 	<f:validateBean> -->
+	<f:validateBean disabled="true">
+
+
+		<p:tabView id="idTabViewProduit" binding="#{produitController.tabViewProduit}" styleClass="Container">
+
+			<p:tab title="Produit" titleStyleClass="tab-min tab-produit" titletip="Produit">
+				<!--         <p:tab title="Produit" titleStyleClass="tab-min tab-default"> -->
+
+				<div class="Container100 NoIndent">
+	
+								<p:commandButton value="Annuler" icon="fa fa-undo" actionListener="#{produitController.actAnnuler}"
+									process="@this"
+									update="idTabViewProduit:idPanelProduit,:form:messages,@form"
+									disabled="#{produitController.etatBouton('annuler')}" />
+								<p:commandButton value="Enregistrer" icon="fa fa-save"
+									actionListener="#{produitController.actEnregistrer}" process="@this"
+									update="idTabViewProduit:idPanelProduit,:form:messages,@form,@widgetVar(wvDataTableListeProduits)"
+									disabled="#{produitController.etatBouton('enregistrer')}" />
+								<p:commandButton value="Insérer" icon="fa fa-plus-circle" actionListener="#{produitController.actInserer}"
+									process="@this"
+									update="idTabViewProduit:idPanelProduit,:form:messages,@form"
+									disabled="#{produitController.etatBouton('inserer')}" />
+								<p:commandButton value="Modifier" icon="fa fa-pencil" actionListener="#{produitController.actModifier}"
+									process="@this"
+									update="idTabViewProduit:idPanelProduit,:form:messages,@form"
+									disabled="#{produitController.etatBouton('modifier')}" />
+								<p:commandButton value="Supprimer" icon="fa fa-trash"
+									actionListener="#{produitController.actSupprimer}" process="@this"
+									update="idTabViewProduit:idPanelProduit,:form:messages,@form,@widgetVar(wvDataTableListeProduits)"
+									disabled="#{produitController.etatBouton('supprimer')}" />
+								<p:commandButton value="Fermer" icon="fa fa-close" process="@this" update=":form:messages"
+									disabled="#{produitController.etatBouton('fermer')}"
+									onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())" />
+								<!-- 			<p:commandButton value="Imprimer" styleClass="btn-print btn" actionListener="#{produitController.actImprimer}" disabled="#{produitController.etatBouton('imprimer')}" /> -->
+
+								<p:commandButton value="Imprimer" icon="fa fa-print"
+									onsuccess="window.open('#{request.contextPath}/output?__report=/reports/FicheProduit.rptdesign&amp;id_produit=#{produitController.selectedTaProduitDTO.id}&amp;urlcb=#{produitController.urlPourEdition}&amp;__format=pdf')"
+									actionListener="#{produitController.actImprimer}" disabled="#{produitController.etatBouton('imprimer')}" />
+
+								<!-- 			<p:commandButton value="Controles de conformité" styleClass="btn" disabled="true" />  -->
+
+
+					</div>
+
+
+					<div class="ui-grid-row">
+
+						<div class="ui-grid-col-6">
+
+							<p:panel id="idPanelProduit" header="Descriptif" toggleable="true" widgetVar="panelProduit">
+
+								<!--         <p:ajax event="toggle" listener="#{panelView.onToggle}" update="msgs" /> -->
+
+
+								<p:panelGrid columns="2" styleClass="ui-panelgrid-blank">
+									<p:outputLabel value="Code" />
+									<p:inputText value="#{produitController.selectedTaProduitDTO.code}" disabled="#{produitController.editable()}"
+										validator="#{produitController.validateProduit}">
+										<f:attribute name="nomChamp" value="#{const.C_CODE_PRODUIT}" />
+										<p:ajax event="blur" update="@this" />
+									</p:inputText>
+
+									<p:outputLabel value="Libellé" />
+									<p:inputText value="#{produitController.selectedTaProduitDTO.libelle}"
+										disabled="#{produitController.editable()}" validator="#{produitController.validateProduit}">
+										<f:attribute name="nomChamp" value="#{const.C_LIBELLE_PRODUIT}" />
+										<p:ajax event="blur" update="@this" />
+									</p:inputText>
+
+									<p:outputLabel value="Description" />
+									<p:inputText value="#{produitController.selectedTaProduitDTO.description}"
+										disabled="#{produitController.editable()}" validator="#{produitController.validateProduit}">
+										<f:attribute name="nomChamp" value="#{const.C_DESCRIPTION_PRODUIT}" />
+										<p:ajax event="blur" update="@this" />
+									</p:inputText>
+									
+									<p:outputLabel value="Libellé HTML" />
+									<p:inputText value="#{produitController.selectedTaProduitDTO.libelleHtml}"
+										disabled="#{produitController.editable()}" validator="#{produitController.validateProduit}">
+										<f:attribute name="nomChamp" value="#{const.C_LIBELLE_PRODUIT}" />
+										<p:ajax event="blur" update="@this" />
+									</p:inputText>
+
+									<p:outputLabel value="Description HTML" />
+									<pe:ckEditor value="#{produitController.selectedTaProduitDTO.descriptionHtml}" width="100%" 
+										toolbar="[[ 'Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript','-', 'RemoveFormat' ],[ 'Styles', 'Format', 'Font', 'FontSize' ],
+                  [ 'TextColor', 'BGColor' ],[ 'Image', 'Table', 'HorizontalRule', 'SpecialChar', 'PageBreak' ],[ 'Link', 'Unlink', 'Anchor' ],
+                  [ 'NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-','Blockquote', 'CreateDiv', '-', 'JustifyLeft', 'JustifyCenter','JustifyRight', 'JustifyBlock', '-', 'BidiLtr', 'BidiRtl' ],
+                  [ 'Find', 'Replace', '-', 'SelectAll', '-', 'SpellChecker', 'Scayt' ],[ 'Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 'Undo','Redo' ],
+                  [ 'Preview', 'Print', '-',  'Source', 'Maximize' ]]"
+										disabled="#{produitController.editable()}" 
+										readonly="#{produitController.editable()}" 
+										rendered="#{!produitController.editable()}"
+										validator="#{produitController.validateProduit}">
+										<f:attribute name="nomChamp" value="#{const.C_DESCRIPTION_PRODUIT}" />
+										<p:ajax event="blur" update="@this" />
+									</pe:ckEditor>
+									<p:outputLabel value="#{produitController.selectedTaProduitDTO.descriptionHtml}" escape="false" rendered="#{produitController.editable()}"/>
+									
+									<p:outputLabel value="Identifiant module" />
+									<p:inputText value="#{produitController.selectedTaProduitDTO.identifiantModule}" disabled="#{produitController.editable()}"
+										validator="#{produitController.validateProduit}">
+										<f:attribute name="nomChamp" value="#{const.C_IDENTIFIANT_MODULE_PRODUIT}" />
+										<p:ajax event="blur" update="@this" />
+									</p:inputText>
+
+									<p:outputLabel value="Code type" />
+									<p:autoComplete value="#{produitController.taTypeProduit}"
+										completeMethod="#{produitController.typeProduitAutoComplete}" disabled="#{produitController.editable()}"
+										var="famille" itemLabel="#{famille.code}" itemValue="#{famille}" forceSelection="true" dropdown="true"
+										placeholder="Type de produit" styleClass="Wid70">
+										<p:column>
+											<h:outputText value="#{famille.code}" />
+										</p:column>
+										<p:column>
+											<h:outputText value="#{famille.libelle}" />
+										</p:column>
+
+										<f:attribute name="nomChamp" value="#{const.C_CODE_TYPE_PRODUIT}" />
+										<p:ajax event="itemSelect" listener="#{produitController.autcompleteSelection}" update="@this" />
+									</p:autoComplete>
+
+									<p:outputLabel value="Code niveau" />
+									<p:autoComplete value="#{produitController.taTNiveau}" converter="entityConverter"
+										completeMethod="#{produitController.tNiveauAutoComplete}" disabled="#{produitController.editable()}"
+										var="famille" itemLabel="#{famille.code}" itemValue="#{famille}" forceSelection="true" dropdown="true"
+										placeholder="Niveau de produit" styleClass="Wid70">
+										<p:column>
+											<h:outputText value="#{famille.code}" />
+										</p:column>
+										<p:column>
+											<h:outputText value="#{famille.libelle}" />
+										</p:column>
+
+										<f:attribute name="nomChamp" value="#{const.C_CODE_NIVEAU_PRODUIT}" />
+										<p:ajax event="itemSelect" listener="#{produitController.autcompleteSelection}" update="@this" />
+									</p:autoComplete>									
+									
+									<p:outputLabel value="Sous produit" />
+									<p:selectBooleanCheckbox value="#{produitController.selectedTaProduitDTO.sousProduit}"
+										disabled="#{produitController.editable()}">
+										<p:ajax event="change" update="@this" />
+									</p:selectBooleanCheckbox>
+									
+									<p:outputLabel value="Compose" />
+									<p:selectBooleanCheckbox value="#{produitController.selectedTaProduitDTO.compose}"
+										disabled="#{produitController.editable()}">
+										<p:ajax event="change" update="@this" />
+									</p:selectBooleanCheckbox>
+									
+									<p:outputLabel value="Version produit" />
+									<p:inputText value="#{produitController.selectedTaProduitDTO.versionProduit}"
+										disabled="#{produitController.editable()}" validator="#{produitController.validateProduit}">
+										<f:attribute name="nomChamp" value="#{const.C_VERSION_PRODUIT}" />
+										<p:ajax event="blur" update="@this" />
+									</p:inputText>
+
+								</p:panelGrid>
+
+							</p:panel>
+						<p:panel id="idPanelPrixParPosteInstalle" header="Prix par poste installé" toggleable="true" widgetVar="panelPrixParPosteInstalle">
+							<h:panelGrid columns="2" cellpadding="10">
+
+								<p:outputLabel value="Prix HT " />
+								<p:inputText value="#{produitController.selectedTaProduitDTO.prixHTParPosteInstalle}"
+									disabled="#{produitController.editable()}" validator="#{produitController.validateProduit}">
+									<f:attribute name="nomChamp" value="#{const.C_PRIX_HT_PRODUIT}" />
+									<p:ajax event="blur" update="@this" />
+								</p:inputText>
+
+								<p:outputLabel value="Prix TTC" />
+								<p:inputText value="#{produitController.selectedTaProduitDTO.prixTTCParPosteInstalle}"
+									disabled="#{produitController.editable()}" validator="#{produitController.validateProduit}">
+									<f:attribute name="nomChamp" value="#{const.C_PRIX_TTC_PRODUIT}" />
+									<p:ajax event="blur" update="@this" />
+								</p:inputText>
+							</h:panelGrid>
+
+						</p:panel>
+						<p:panel id="idPanelPrixWs" header="Prix web service" toggleable="true" widgetVar="panelPrixWs">
+							<h:panelGrid columns="2" cellpadding="10">
+
+								<p:outputLabel value="Prix HT " />
+								<p:inputText value="#{produitController.selectedTaProduitDTO.prixHTWs}"
+									disabled="#{produitController.editable()}" validator="#{produitController.validateProduit}">
+									<f:attribute name="nomChamp" value="#{const.C_PRIX_HT_PRODUIT}" />
+									<p:ajax event="blur" update="@this" />
+								</p:inputText>
+
+								<p:outputLabel value="Prix TTC" />
+								<p:inputText value="#{produitController.selectedTaProduitDTO.prixTTCWs}"
+									disabled="#{produitController.editable()}" validator="#{produitController.validateProduit}">
+									<f:attribute name="nomChamp" value="#{const.C_PRIX_TTC_PRODUIT}" />
+									<p:ajax event="blur" update="@this" />
+								</p:inputText>
+							</h:panelGrid>
+
+						</p:panel>
+						</div>
+
+					<div class="ui-grid-col-6">
+						<p:panel id="idPanelSupp" header="infos complémentaires" toggleable="true" widgetVar="panelPrix">
+							<h:panelGrid columns="2" cellpadding="10">
+
+								<p:outputLabel value="Vendable" />
+								<p:selectBooleanCheckbox value="#{produitController.selectedTaProduitDTO.vendable}"
+									disabled="#{produitController.editable()}">
+									<p:ajax event="change" update="@this" />
+								</p:selectBooleanCheckbox>
+								
+								<p:outputLabel value="Eligible commission" />
+								<p:selectBooleanCheckbox value="#{produitController.selectedTaProduitDTO.eligibleCommission}"
+									disabled="#{produitController.editable()}">
+									<p:ajax event="change" update="@this" />
+								</p:selectBooleanCheckbox>
+
+								<p:outputLabel value="Taux TVA" />
+								<p:inputText value="#{produitController.selectedTaProduitDTO.tauxTVA}"
+									disabled="#{produitController.editable()}" validator="#{produitController.validateProduit}">
+									<f:attribute name="nomChamp" value="#{const.C_TVA_PRODUIT}" />
+									<p:ajax event="blur" update="@this" />
+								</p:inputText>
+							</h:panelGrid>
+
+						</p:panel>
+						
+						<p:panel id="idPanelPrixLight" header="Prix Light" toggleable="true" widgetVar="panelPrixLight">
+							<h:panelGrid columns="2" cellpadding="10">
+
+								<p:outputLabel value="Prix HT " />
+								<p:inputText value="#{produitController.selectedTaProduitDTO.prixHTLight}"
+									disabled="#{produitController.editable()}" validator="#{produitController.validateProduit}">
+									<f:attribute name="nomChamp" value="#{const.C_PRIX_HT_PRODUIT}" />
+									<p:ajax event="blur" update="@this" />
+								</p:inputText>
+
+								<p:outputLabel value="Prix TTC" />
+								<p:inputText value="#{produitController.selectedTaProduitDTO.prixTTCLight}"
+									disabled="#{produitController.editable()}" validator="#{produitController.validateProduit}">
+									<f:attribute name="nomChamp" value="#{const.C_PRIX_TTC_PRODUIT}" />
+									<p:ajax event="blur" update="@this" />
+								</p:inputText>
+							</h:panelGrid>
+
+						</p:panel>						
+						<p:panel id="idPanelPrix" header="Prix premium" toggleable="true" widgetVar="panelPrix">
+							<h:panelGrid columns="2" cellpadding="10">
+								<p:outputLabel value="Prix HT" />
+								<p:inputText value="#{produitController.selectedTaProduitDTO.prixHT}" disabled="#{produitController.editable()}"
+									validator="#{produitController.validateProduit}">
+									<f:attribute name="nomChamp" value="#{const.C_PRIX_HT_PRODUIT}" />
+									<p:ajax event="blur" update="@this" />
+								</p:inputText>
+
+								<p:outputLabel value="Prix TTC" />
+								<p:inputText value="#{produitController.selectedTaProduitDTO.prixTTC}"
+									disabled="#{produitController.editable()}" validator="#{produitController.validateProduit}">
+									<f:attribute name="nomChamp" value="#{const.C_PRIX_TTC_PRODUIT}" />
+									<p:ajax event="blur" update="@this" />
+								</p:inputText>
+							</h:panelGrid>
+						</p:panel>
+
+						
+					</div>
+
+
+				</div>
+
+<!-- <hr style="clear:both;"/> -->
+			</p:tab>
+
+			<p:tab title="Composition" titleStyleClass="tab-min tab-controle-conf" titletip="Composition">
+				Sélection des sous produits
+				<br/>
+				<p:commandButton value="Annuler" icon="fa fa-undo" actionListener="#{produitController.actAnnuler}"
+					process="@this"
+					update="idTabViewProduit:idPanelProduit,:form:messages,@form" />
+				<p:commandButton value="Enregistrer" icon="fa fa-save"
+					actionListener="#{produitController.actEnregistrer}" process="@this"
+					update="idTabViewProduit:idPanelProduit,:form:messages,@form" />
+				
+				<p:pickList value="#{produitController.listeProduitCompose}" var="ctrl2" effect="bounce"
+					itemValue="#{ctrl2}" itemLabel="#{ctrl2.code}" 
+					showCheckbox="true" responsive="true" showSourceFilter="true" showTargetFilter="true" filterMatchMode="contains"
+					converter="produitPickListConverter">
+
+					<f:facet name="sourceCaption">Produits disponibles</f:facet>
+					<f:facet name="targetCaption">Produits sélectionnés</f:facet>
+
+					        <p:ajax event="transfer" listener="#{produitController.onTransfer}" update=":form:messages" />
+<!-- 					<p:ajax event="select" listener="#{produitController.onSelect}" update=":form:messages" /> -->
+					<!--         <p:ajax event="unselect" listener="#{produitController.onUnselect}" update="msg" /> -->
+					<!--         <p:ajax event="reorder" listener="#{produitController.onReorder}" update="msg" /> -->
+
+					<p:column style="width:10%">
+						<h:outputText styleClass="ui-ctrl ui-ctrl-#{ctrl2.code}" />
+					</p:column>
+
+					<p:column style="width:90%;">
+						<h:outputText value="#{ctrl.code} - #{ctrl2.libelle}" />
+					</p:column>
+				</p:pickList>
+			</p:tab>
+			
+			<p:tab title="Dépendance" titleStyleClass="tab-min tab-controle-conf" titletip="Dépendance">
+				Sélection des dépendances
+				<br/>
+				<p:commandButton value="Annuler" icon="fa fa-undo" actionListener="#{produitController.actAnnuler}"
+					process="@this"
+					update="idTabViewProduit:idPanelProduit,:form:messages,@form" />
+				<p:commandButton value="Enregistrer" icon="fa fa-save"
+					actionListener="#{produitController.actEnregistrer}" process="@this"
+					update="idTabViewProduit:idPanelProduit,:form:messages,@form"/>
+				
+				<p:pickList value="#{produitController.listeProduitDependant}" var="ctrl" effect="bounce"
+					itemValue="#{ctrl}" itemLabel="#{ctrl.code}"
+					showCheckbox="true" responsive="true" showSourceFilter="true" showTargetFilter="true" filterMatchMode="contains"
+					converter="produitPickListConverter">
+
+					<f:facet name="sourceCaption">Produits disponibles</f:facet>
+					<f:facet name="targetCaption">Produits sélectionnés</f:facet>
+					
+					 <p:ajax event="transfer" listener="#{produitController.onTransfer}" update=":form:messages" />
+					<!--         <p:ajax event="transfer" listener="#{pickListView.onTransfer}" update="msg" /> -->
+<!-- 					<p:ajax event="select" listener="#{produitController.onSelect}" update=":form:messages" /> -->
+					<!--         <p:ajax event="unselect" listener="#{pickListView.onUnselect}" update="msg" /> -->
+					<!--         <p:ajax event="reorder" listener="#{pickListView.onReorder}" update="msg" /> -->
+
+					<p:column style="width:10%">
+						<h:outputText styleClass="ui-ctrl ui-ctrl-#{ctrl.code}" />
+					</p:column>
+
+					<p:column style="width:90%;">
+						<h:outputText value="#{ctrl.code} - #{ctrl.libelle}" />
+					</p:column>
+				</p:pickList>
+			</p:tab>
+			
+			<p:tab title="Setup" titleStyleClass="tab-min" titletip="Setup">
+			
+			<div class="ui-grid ui-grid-responsive">
+					<div class="ui-grid-row">
+						<div class="ui-grid-col-12">
+
+							<p:menubar styleClass="menu-onglet" widgetVar="wvMenuBarSetup">
+								<p:menuitem value="Annuler" styleClass="btn-cancel btn" actionListener="#{produitController.actAnnulerSetup}"
+									process="@this"
+									update="@widgetVar(wvPanelSetup),@widgetVar(wvDatatableSetup),@widgetVar(wvMenuBarSetup),:form:messages,@parent"
+									disabled="#{produitController.etatBoutonSetup('annuler')}" />
+								<p:menuitem value="Enregistrer" styleClass="btn-save btn"
+									actionListener="#{produitController.actEnregistrerSetup}" process="@this"
+									update="@widgetVar(wvPanelSetup),@widgetVar(wvDatatableSetup),@widgetVar(wvMenuBarSetup),:form:messages,@parent"
+									disabled="#{produitController.etatBoutonSetup('enregistrer')}" />
+								<p:menuitem value="Insérer" styleClass="btn-insert btn" actionListener="#{produitController.actInsererSetup}"
+									process="@this"
+									update="@widgetVar(wvPanelSetup),@widgetVar(wvDatatableSetup),@widgetVar(wvMenuBarSetup),:form:messages,@parent"
+									disabled="#{produitController.etatBoutonSetup('inserer')}" />
+								<p:menuitem value="Modifier" styleClass="btn-update btn" actionListener="#{produitController.actModifierSetup}"
+									process="@this"
+									update="@widgetVar(wvPanelSetup),@widgetVar(wvDatatableSetup),@widgetVar(wvMenuBarSetup),:form:messages,@parent"
+									disabled="#{produitController.etatBoutonSetup('modifier')}" />
+								<p:menuitem value="Supprimer" styleClass="btn-delete btn"
+									actionListener="#{produitController.actSupprimerSetup}" process="@this"
+									update="@widgetVar(wvPanelSetup),@widgetVar(wvDatatableSetup),@widgetVar(wvMenuBarSetup),:form:messages,@parent"
+									disabled="#{produitController.etatBoutonSetup('supprimer')}" />
+									
+<!-- 								<p:commandButton value="Fermer" styleClass="btn-close btn" process="@this" update=":form:messages" -->
+<!-- 									disabled="#{produitController.etatBouton('fermer')}" -->
+<!-- 									onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())" /> -->
+
+<!-- 								<p:commandButton value="Imprimer" styleClass="btn-print btn" -->
+<!-- 									onsuccess="window.open('#{request.contextPath}/output?__report=/reports/FicheProduit.rptdesign&amp;id_produit=#{produitController.selectedTaProduitDTO.id}&amp;urlcb=#{produitController.urlPourEdition}&amp;__format=pdf')" -->
+<!-- 									actionListener="#{produitController.actImprimer}" disabled="#{produitController.etatBouton('imprimer')}" /> -->
+
+
+							</p:menubar>
+
+						</div>
+					</div>
+
+
+					<div class="ui-grid-row">
+
+						<div class="ui-grid-col-9">
+						
+							<p:dataTable  var="setup"
+								widgetVar = "wvDatatableSetup"
+								styleClass="datatable mt10"
+								value="#{produitController.taProduit.listeSetup}"
+								rowKey="#{setup.idSetup}"
+								selection="#{produitController.selectedTaSetup}"
+								selectionMode="single"
+								dblClickSelect="true"
+								resizableColumns="true"
+								paginator="true" 
+								editable="true"
+								rows="#{msg.modele_datatable_ligne_par_page_debut}"
+								paginatorTemplate="#{msg.modele_datatable_paginator}"
+								rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+								emptyMessage="#{msg.message_datatable_vide}"
+								currentPageReportTemplate="#{msg.modele_datatable_page_courante}">
+								
+								<p:ajax event="rowSelect" update="@widgetVar(wvPanelSetup)" />
+				
+								<p:column sortBy="#{setup.libelle}">
+									<f:facet name="header">
+										<h:outputText value="Libelle" />
+									</f:facet>
+									<h:outputText value="#{setup.libelle}" />
+								</p:column>
+								
+								<p:column sortBy="#{setup.description}">
+									<f:facet name="header">
+										<h:outputText value="Description" />
+									</f:facet>
+									<h:outputText value="#{setup.description}" />
+								</p:column>
+							</p:dataTable>
+							</div>
+<div class="ui-grid-col-3">
+							<p:panel id="idPanelSetup" header="Descriptif setup" toggleable="true" widgetVar="wvPanelSetup">
+
+								<!--         <p:ajax event="toggle" listener="#{panelView.onToggle}" update="msgs" /> -->
+
+								<h:panelGrid columns="2" cellpadding="10">
+								
+									<p:outputLabel value="Description" />
+									<p:inputText value="#{produitController.selectedTaSetup.description}" disabled="#{produitController.editableSetup()}"
+										validator="#{produitController.validateProduit}">
+										<f:attribute name="nomChamp" value="#{const.C_CODE_PRODUIT}" />
+										<p:ajax event="blur" update="@this" />
+									</p:inputText>
+									
+									<p:outputLabel value="Libelle" />
+									<p:inputText value="#{produitController.selectedTaSetup.libelle}" disabled="#{produitController.editableSetup()}"
+										validator="#{produitController.validateProduit}">
+										<f:attribute name="nomChamp" value="#{const.C_CODE_PRODUIT}" />
+										<p:ajax event="blur" update="@this" />
+									</p:inputText>
+									
+									<p:outputLabel value="Fichier" />
+									<p:inputText value="#{produitController.selectedTaSetup.fichierSetup}" disabled="#{produitController.editableSetup()}"
+										validator="#{produitController.validateProduit}">
+										<f:attribute name="nomChamp" value="#{const.C_CODE_PRODUIT}" />
+										<p:ajax event="blur" update="@this" />
+									</p:inputText>
+									
+									<p:outputLabel value="Actif" />
+									<p:selectBooleanCheckbox value="#{produitController.selectedTaSetup.actif}"
+										disabled="#{produitController.editableSetup()}">
+										<p:ajax event="change" update="@this" />
+									</p:selectBooleanCheckbox>
+									
+									<p:outputLabel value="Mise à jour" />
+									<p:selectBooleanCheckbox value="#{produitController.selectedTaSetup.maj}"
+										disabled="#{produitController.editableSetup()}">
+										<p:ajax event="change" update="@this" />
+									</p:selectBooleanCheckbox>
+									
+									<p:outputLabel value="Version (build svn)" />
+									<p:inputText value="#{produitController.selectedTaSetup.versionProduit}" disabled="#{produitController.editableSetup()}"
+										validator="#{produitController.validateProduit}">
+										<f:attribute name="nomChamp" value="#{const.C_CODE_PRODUIT}" />
+										<p:ajax event="blur" update="@this" />
+									</p:inputText>
+									
+									<p:outputLabel value="Date" />
+									<p:calendar pattern="dd/MM/yyyy" mask="true" locale="fr" navigator="true" 
+										value="#{produitController.selectedTaSetup.dateSetup}" disabled="#{produitController.editableSetup()}"
+										validator="#{produitController.validateProduit}">
+										<f:attribute name="nomChamp" value="#{const.C_CODE_PRODUIT}" />
+										<p:ajax event="blur" update="@this" />
+									</p:calendar>
+
+								</h:panelGrid>
+							</p:panel>
+						</div>
+					</div>
+				</div>
+					
+			
+			
+			</p:tab>
+
+
+
+		</p:tabView>
+
+
+	</f:validateBean>
+
+</ui:composition>

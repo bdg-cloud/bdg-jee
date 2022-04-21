@@ -1,0 +1,1840 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<library xmlns="http://www.eclipse.org/birt/2005/design" version="3.2.23" id="1">
+    <property name="units">in</property>
+    <property name="theme">defaultTheme</property>
+    <data-sources>
+        <script-data-source name="DataSourceScript" id="12"/>
+    </data-sources>
+    <data-sets>
+        <script-data-set name="Data Set Fiche Fabrication" id="11">
+            <list-property name="resultSetHints">
+                <structure>
+                    <property name="position">1</property>
+                    <property name="name">codeDocument</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">2</property>
+                    <property name="name">libelleDocument</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">3</property>
+                    <property name="name">commentaire</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">4</property>
+                    <property name="name">dluo</property>
+                    <property name="dataType">date</property>
+                </structure>
+                <structure>
+                    <property name="position">5</property>
+                    <property name="name">typeDocument</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">6</property>
+                    <property name="name">dateDebT</property>
+                    <property name="dataType">date</property>
+                </structure>
+                <structure>
+                    <property name="position">7</property>
+                    <property name="name">dateFinT</property>
+                    <property name="dataType">date</property>
+                </structure>
+            </list-property>
+            <list-property name="columnHints">
+                <structure>
+                    <property name="columnName">codeDocument</property>
+                    <text-property name="displayName">codeDocument</text-property>
+                </structure>
+                <structure>
+                    <property name="columnName">libelleDocument</property>
+                    <text-property name="displayName">libelleDocument</text-property>
+                </structure>
+                <structure>
+                    <property name="columnName">commentaire</property>
+                    <text-property name="displayName">commentaire</text-property>
+                </structure>
+                <structure>
+                    <property name="columnName">dluo</property>
+                    <text-property name="displayName">dluo</text-property>
+                </structure>
+                <structure>
+                    <property name="columnName">typeDocument</property>
+                </structure>
+                <structure>
+                    <property name="columnName">dateDebT</property>
+                </structure>
+                <structure>
+                    <property name="columnName">dateFinT</property>
+                </structure>
+            </list-property>
+            <list-property name="parameters"/>
+            <structure name="cachedMetaData">
+                <list-property name="resultSet">
+                    <structure>
+                        <property name="position">1</property>
+                        <property name="name">codeDocument</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">2</property>
+                        <property name="name">libelleDocument</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">3</property>
+                        <property name="name">commentaire</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">4</property>
+                        <property name="name">dluo</property>
+                        <property name="dataType">date</property>
+                    </structure>
+                    <structure>
+                        <property name="position">5</property>
+                        <property name="name">typeDocument</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">6</property>
+                        <property name="name">dateDebT</property>
+                        <property name="dataType">date</property>
+                    </structure>
+                    <structure>
+                        <property name="position">7</property>
+                        <property name="name">dateFinT</property>
+                        <property name="dataType">date</property>
+                    </structure>
+                </list-property>
+            </structure>
+            <property name="dataSource">DataSourceScript</property>
+            <method name="open"><![CDATA[count=0;
+
+Fabrication = reportContext.getHttpServletRequest().getSession().getAttribute("fabrication");
+liste = new Packages.java.util.ArrayList();
+liste.add(Fabrication);
+
+//importPackage(Packages.java.util.logging);
+//var fileHandler = new FileHandler("c:/tmp/birt.log.xml", true);
+//var rootLogger = Logger.getLogger("");
+//rootLogger.addHandler(fileHandler);
+
+//Packages.java.util.logging.Logger.getLogger("").info(Fabrication )
+//if(Fabrication==null) {
+//	Packages.java.util.logging.Logger.getLogger("").info("OPEN NULL " )
+//} else {
+//	Packages.java.util.logging.Logger.getLogger("").info("OPEN /////////////////////// "+Fabrication.getVersion() )
+//}]]></method>
+            <method name="fetch"><![CDATA[if(count < liste.size()) {
+	
+	Fabrication = liste.get(count);
+	
+	//Packages.java.util.logging.Logger.getLogger("").info("count - "+count);
+	//Packages.java.util.logging.Logger.getLogger("").info("liste.size() - "+liste.size());
+	
+	if(Fabrication.getTypeDocument()==null){row["typeDocument"] = "";}
+	else{row["typeDocument"]=Fabrication.getTypeDocument();}
+	//Packages.java.util.logging.Logger.getLogger("").info("typeDocument - "+Fabrication.getTypeDocument());
+	//
+	//if(Fabrication.getLignesGeneral()==null){row["lignesGeneral"] = "";}
+	//else{row["lignesGeneral"]=Fabrication.getLignesGeneral();}
+	//Packages.java.util.logging.Logger.getLogger("").info("lignesGeneral - "+row["lignesGeneral"]);
+	//
+	if(Fabrication.getCodeDocument()==null){row["codeDocument"] = "";}
+	else{row["codeDocument"]=Fabrication.getCodeDocument();}
+	//Packages.java.util.logging.Logger.getLogger("").info("codeDocument - "+row["codeDocument"]);
+	//
+	if(Fabrication.getDateDebT()==null){row["dateDebT"] = "";}
+	else{row["dateDebT"]=Fabrication.getDateDebT();}
+	//Packages.java.util.logging.Logger.getLogger("").info("dateDebT - "+row["dateDebT"]);
+	//
+	if(Fabrication.getDateFinT()==null){row["dateFinT"] = "";}
+	else{row["dateFinT"]=Fabrication.getDateFinT();}
+	//Packages.java.util.logging.Logger.getLogger("").info("dateFinT - "+row["dateFinT"]);
+	//
+	//if(Fabrication.getDateDocument()==null){row["dateDocument"] = "";}
+	//else{row["dateDocument"]=Fabrication.getDateDocument();}
+	//Packages.java.util.logging.Logger.getLogger("").info("dateDocument - "+row["dateDocument"]);
+	//
+	//if(Fabrication.getDateLivDocument()==null){row["dateLivDocument"] = "";}
+	//else{row["dateLivDocument"]=Fabrication.getDateLivDocument();}
+	//Packages.java.util.logging.Logger.getLogger("").info("dateLivDocument - "+row["dateLivDocument"]);
+	//
+	if(Fabrication.getLibelleDocument()==null){row["libelleDocument"] = "";}
+	else{row["libelleDocument"]=Fabrication.getLibelleDocument();}
+	//Packages.java.util.logging.Logger.getLogger("").info("libelleDocument - "+row["libelleDocument"]);
+	//
+	if(Fabrication.getCommentaire()==null){row["commentaire"] = "";}
+	else{row["commentaire"]=Fabrication.getCommentaire();}
+	//Packages.java.util.logging.Logger.getLogger("").info("commentaire - "+row["commentaire"]);
+	//
+	//if(Fabrication.getListProduits().getTaLot().getDluo()==null){row["dluo"] = "";}
+	//else{row["dluo"]=Fabrication.getListProduits().getTaLot().getDluo();}
+	//Packages.java.util.logging.Logger.getLogger("").info("dluo - "+row["dluo"]);
+	
+	count++;
+	return true;
+}
+
+	//Packages.java.util.logging.Logger.getLogger("").info("liste.size() - "+liste.size());
+
+
+return false;
+]]></method>
+        </script-data-set>
+        <script-data-set name="Data Set Fiche Fabrication ListeMatPremieres" id="13">
+            <list-property name="resultSetHints">
+                <structure>
+                    <property name="position">1</property>
+                    <property name="name">codeArticle</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">2</property>
+                    <property name="name">libellecArticle</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">3</property>
+                    <property name="name">libLDocument</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">4</property>
+                    <property name="name">qteLDocument</property>
+                    <property name="dataType">decimal</property>
+                </structure>
+                <structure>
+                    <property name="position">5</property>
+                    <property name="name">qte2LDocument</property>
+                    <property name="dataType">decimal</property>
+                </structure>
+                <structure>
+                    <property name="position">6</property>
+                    <property name="name">u1LDocument</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">7</property>
+                    <property name="name">u2LDocument</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">8</property>
+                    <property name="name">prixULDocument</property>
+                    <property name="dataType">decimal</property>
+                </structure>
+                <structure>
+                    <property name="position">9</property>
+                    <property name="name">tauxTvaLDocument</property>
+                    <property name="dataType">decimal</property>
+                </structure>
+                <structure>
+                    <property name="position">10</property>
+                    <property name="name">compteLDocument</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">11</property>
+                    <property name="name">codeTvaLDocument</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">12</property>
+                    <property name="name">codeTTvaLDocument</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">13</property>
+                    <property name="name">mtHtLDocument</property>
+                    <property name="dataType">decimal</property>
+                </structure>
+                <structure>
+                    <property name="position">14</property>
+                    <property name="name">mtTtcLDocument</property>
+                    <property name="dataType">decimal</property>
+                </structure>
+                <structure>
+                    <property name="position">15</property>
+                    <property name="name">remTxLDocument</property>
+                    <property name="dataType">decimal</property>
+                </structure>
+                <structure>
+                    <property name="position">16</property>
+                    <property name="name">remHtLDocument</property>
+                    <property name="dataType">decimal</property>
+                </structure>
+                <structure>
+                    <property name="position">17</property>
+                    <property name="name">numLot</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">18</property>
+                    <property name="name">dluo</property>
+                    <property name="dataType">date</property>
+                </structure>
+                <structure>
+                    <property name="position">19</property>
+                    <property name="name">quantite1</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">20</property>
+                    <property name="name">quantite2</property>
+                    <property name="dataType">string</property>
+                </structure>
+            </list-property>
+            <list-property name="columnHints">
+                <structure>
+                    <property name="columnName">codeArticle</property>
+                </structure>
+                <structure>
+                    <property name="columnName">libellecArticle</property>
+                </structure>
+                <structure>
+                    <property name="columnName">libLDocument</property>
+                </structure>
+                <structure>
+                    <property name="columnName">qteLDocument</property>
+                </structure>
+                <structure>
+                    <property name="columnName">qte2LDocument</property>
+                </structure>
+                <structure>
+                    <property name="columnName">u1LDocument</property>
+                </structure>
+                <structure>
+                    <property name="columnName">u2LDocument</property>
+                </structure>
+                <structure>
+                    <property name="columnName">prixULDocument</property>
+                </structure>
+                <structure>
+                    <property name="columnName">tauxTvaLDocument</property>
+                </structure>
+                <structure>
+                    <property name="columnName">compteLDocument</property>
+                </structure>
+                <structure>
+                    <property name="columnName">codeTvaLDocument</property>
+                </structure>
+                <structure>
+                    <property name="columnName">codeTTvaLDocument</property>
+                </structure>
+                <structure>
+                    <property name="columnName">mtHtLDocument</property>
+                </structure>
+                <structure>
+                    <property name="columnName">mtTtcLDocument</property>
+                </structure>
+                <structure>
+                    <property name="columnName">remTxLDocument</property>
+                </structure>
+                <structure>
+                    <property name="columnName">remHtLDocument</property>
+                </structure>
+                <structure>
+                    <property name="columnName">numLot</property>
+                </structure>
+                <structure>
+                    <property name="columnName">dluo</property>
+                </structure>
+                <structure>
+                    <property name="columnName">quantite1</property>
+                </structure>
+                <structure>
+                    <property name="columnName">quantite2</property>
+                </structure>
+            </list-property>
+            <list-property name="parameters"/>
+            <structure name="cachedMetaData">
+                <list-property name="resultSet">
+                    <structure>
+                        <property name="position">1</property>
+                        <property name="name">codeArticle</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">2</property>
+                        <property name="name">libellecArticle</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">3</property>
+                        <property name="name">libLDocument</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">4</property>
+                        <property name="name">qteLDocument</property>
+                        <property name="dataType">decimal</property>
+                    </structure>
+                    <structure>
+                        <property name="position">5</property>
+                        <property name="name">qte2LDocument</property>
+                        <property name="dataType">decimal</property>
+                    </structure>
+                    <structure>
+                        <property name="position">6</property>
+                        <property name="name">u1LDocument</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">7</property>
+                        <property name="name">u2LDocument</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">8</property>
+                        <property name="name">prixULDocument</property>
+                        <property name="dataType">decimal</property>
+                    </structure>
+                    <structure>
+                        <property name="position">9</property>
+                        <property name="name">tauxTvaLDocument</property>
+                        <property name="dataType">decimal</property>
+                    </structure>
+                    <structure>
+                        <property name="position">10</property>
+                        <property name="name">compteLDocument</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">11</property>
+                        <property name="name">codeTvaLDocument</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">12</property>
+                        <property name="name">codeTTvaLDocument</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">13</property>
+                        <property name="name">mtHtLDocument</property>
+                        <property name="dataType">decimal</property>
+                    </structure>
+                    <structure>
+                        <property name="position">14</property>
+                        <property name="name">mtTtcLDocument</property>
+                        <property name="dataType">decimal</property>
+                    </structure>
+                    <structure>
+                        <property name="position">15</property>
+                        <property name="name">remTxLDocument</property>
+                        <property name="dataType">decimal</property>
+                    </structure>
+                    <structure>
+                        <property name="position">16</property>
+                        <property name="name">remHtLDocument</property>
+                        <property name="dataType">decimal</property>
+                    </structure>
+                    <structure>
+                        <property name="position">17</property>
+                        <property name="name">numLot</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">18</property>
+                        <property name="name">dluo</property>
+                        <property name="dataType">date</property>
+                    </structure>
+                    <structure>
+                        <property name="position">19</property>
+                        <property name="name">quantite1</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">20</property>
+                        <property name="name">quantite2</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                </list-property>
+            </structure>
+            <property name="dataSource">DataSourceScript</property>
+            <method name="open"><![CDATA[count=0;
+
+//importPackage(Packages.java.util.logging);
+//var fileHandler = new FileHandler("c:/tmp/log/Fab_LMatPrem.log.xml", true);
+//var rootLogger = Logger.getLogger("");
+//rootLogger.addHandler(fileHandler);
+
+ListeFabrication = reportContext.getHttpServletRequest().getSession().getAttribute("fabrication");
+liste = new Packages.java.util.ArrayList();
+
+
+//liste.add(ListeFabrication.getListMatierePremieres());
+
+
+ListeFabrication.findProduit();
+//Packages.java.util.logging.Logger.getLogger("").info("OPEN /////////////////////// "+ListFabrication.getListProduits());
+
+for (i = 0; i < ListeFabrication.getListMatierePremieres().size(); i++) {
+    liste.add(ListeFabrication.getListMatierePremieres().get(i));
+    //Packages.java.util.logging.Logger.getLogger("").info("liste - "+liste);
+} 
+
+//for each ( i in ListeFabrication.getListProduits()) {
+//	Packages.java.util.logging.Logger.getLogger("").info("liste - "+i);
+//	liste.add(i);
+//}]]></method>
+            <method name="fetch"><![CDATA[if(count< liste.size()) {
+	
+	ListeFabrication = liste.get(count);
+	
+	if(ListeFabrication.getTaArticle().getCodeArticle()==null){row["codeArticle"] = "";}
+	else{row["codeArticle"]=ListeFabrication.getTaArticle().getCodeArticle();}
+	//
+	if(ListeFabrication.getTaArticle().getLibellecArticle()==null){row["libellecArticle"] = "";}
+	else{row["libellecArticle"]=ListeFabrication.getTaArticle().getLibellecArticle();}
+	//
+	if(ListeFabrication.getLibLDocument()==null){row["libLDocument"] = "";}
+	else{row["libLDocument"]=ListeFabrication.getLibLDocument();}
+	//
+	if(ListeFabrication.getQteLDocument()==null){row["qteLDocument"] = "";}
+	else{row["qteLDocument"]=ListeFabrication.getQteLDocument();}
+	//
+	if(ListeFabrication.getQte2LDocument()==null){row["qte2LDocument"] = "";}
+	else{row["qte2LDocument"]=ListeFabrication.getQte2LDocument();}
+	//
+	if(ListeFabrication.getU1LDocument()==null){row["u1LDocument"] = "";}
+	else{row["u1LDocument"]=ListeFabrication.getU1LDocument();}
+	//
+	if(ListeFabrication.getU2LDocument()==null){row["u2LDocument"] = "";}
+	else{row["u2LDocument"]=ListeFabrication.getU2LDocument();}
+	//
+	//row["quantite1"] = (ListeFabrication.getQteLDocument().toString()+ListeFabrication.getU1LDocument());
+	//row["quantite2"] = (ListeFabrication.getQte2LDocument().toString()+ListeFabrication.getU2LDocument());
+	//
+	row["quantite1"] = (row["qteLDocument"]+" "+row["u1LDocument"]);
+	row["quantite2"] = (row["qte2LDocument"]+" "+row["u2LDocument"]);
+	//
+	if(ListeFabrication.getPrixULDocument()==null){row["prixULDocument"] = "";}
+	else{row["prixULDocument"]=ListeFabrication.getPrixULDocument();}
+	//
+	if(ListeFabrication.getPrixU2LDocument()==null){row["prixU2LDocument"] = "";}
+	else{row["prixU2LDocument"]=ListeFabrication.getPrixU2LDocument();}
+	//
+	if(ListeFabrication.getTauxTvaLDocument()==null){row["tauxTvaLDocument"] = "";}
+	else{row["tauxTvaLDocument"]=ListeFabrication.getTauxTvaLDocument();}
+	//
+	if(ListeFabrication.getCompteLDocument()==null){row["compteLDocument"] = "";}
+	else{row["compteLDocument"]=ListeFabrication.getCompteLDocument();}
+	//
+	if(ListeFabrication.getCodeTvaLDocument()==null){row["codeTvaLDocument"] = "";}
+	else{row["codeTvaLDocument"]=ListeFabrication.getCodeTvaLDocument();}
+	//
+	if(ListeFabrication.getCodeTTvaLDocument()==null){row["codeTTvaLDocument"] = "";}
+	else{row["codeTTvaLDocument"]=ListeFabrication.getCodeTTvaLDocument();}
+	//
+	if(ListeFabrication.getMtTtcLDocument()==null){row["mtTtcLDocument"] = "";}
+	else{row["mtTtcLDocument"]=ListeFabrication.getMtTtcLDocument();}
+	//
+	if(ListeFabrication.getRemTxLDocument()==null){row["remTxLDocument"] = "";}
+	else{row["remTxLDocument"]=ListeFabrication.getRemTxLDocument();}
+	//
+	if(ListeFabrication.getRemHtLDocument()==null){row["remHtLDocument"] = "";}
+	else{row["remHtLDocument"]=ListeFabrication.getRemHtLDocument();}
+	//
+	if(ListeFabrication.getTaLot().getNumLot()==null){row["numLot"] = "";}
+	else{row["numLot"]=ListeFabrication.getTaLot().getNumLot();}
+	//
+	if(ListeFabrication.getTaLot().getDluo()==null){row["dluo"] = "";}
+	else{row["dluo"]=ListeFabrication.getTaLot().getDluo();}
+	
+	count++;
+	return true;
+}
+
+return false;
+]]></method>
+        </script-data-set>
+        <script-data-set name="Data Set Fiche Fabrication ListeProduits" id="14">
+            <list-property name="resultSetHints">
+                <structure>
+                    <property name="position">1</property>
+                    <property name="name">codeArticle</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">2</property>
+                    <property name="name">libellecArticle</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">3</property>
+                    <property name="name">libLDocument</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">4</property>
+                    <property name="name">qteLDocument</property>
+                    <property name="dataType">decimal</property>
+                </structure>
+                <structure>
+                    <property name="position">5</property>
+                    <property name="name">qte2LDocument</property>
+                    <property name="dataType">decimal</property>
+                </structure>
+                <structure>
+                    <property name="position">6</property>
+                    <property name="name">u1LDocument</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">7</property>
+                    <property name="name">u2LDocument</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">8</property>
+                    <property name="name">prixULDocument</property>
+                    <property name="dataType">decimal</property>
+                </structure>
+                <structure>
+                    <property name="position">9</property>
+                    <property name="name">tauxTvaLDocument</property>
+                    <property name="dataType">decimal</property>
+                </structure>
+                <structure>
+                    <property name="position">10</property>
+                    <property name="name">compteLDocument</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">11</property>
+                    <property name="name">codeTvaLDocument</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">12</property>
+                    <property name="name">codeTTvaLDocument</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">13</property>
+                    <property name="name">mtHtLDocument</property>
+                    <property name="dataType">decimal</property>
+                </structure>
+                <structure>
+                    <property name="position">14</property>
+                    <property name="name">mtTtcLDocument</property>
+                    <property name="dataType">decimal</property>
+                </structure>
+                <structure>
+                    <property name="position">15</property>
+                    <property name="name">remTxLDocument</property>
+                    <property name="dataType">decimal</property>
+                </structure>
+                <structure>
+                    <property name="position">16</property>
+                    <property name="name">remHtLDocument</property>
+                    <property name="dataType">decimal</property>
+                </structure>
+                <structure>
+                    <property name="position">17</property>
+                    <property name="name">numLot</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">18</property>
+                    <property name="name">dluo</property>
+                    <property name="dataType">date-time</property>
+                </structure>
+                <structure>
+                    <property name="position">19</property>
+                    <property name="name">quantite1</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">20</property>
+                    <property name="name">quantite2</property>
+                    <property name="dataType">string</property>
+                </structure>
+            </list-property>
+            <list-property name="columnHints">
+                <structure>
+                    <property name="columnName">codeArticle</property>
+                </structure>
+                <structure>
+                    <property name="columnName">libellecArticle</property>
+                </structure>
+                <structure>
+                    <property name="columnName">libLDocument</property>
+                </structure>
+                <structure>
+                    <property name="columnName">qteLDocument</property>
+                </structure>
+                <structure>
+                    <property name="columnName">qte2LDocument</property>
+                </structure>
+                <structure>
+                    <property name="columnName">u1LDocument</property>
+                </structure>
+                <structure>
+                    <property name="columnName">u2LDocument</property>
+                </structure>
+                <structure>
+                    <property name="columnName">prixULDocument</property>
+                </structure>
+                <structure>
+                    <property name="columnName">tauxTvaLDocument</property>
+                </structure>
+                <structure>
+                    <property name="columnName">compteLDocument</property>
+                </structure>
+                <structure>
+                    <property name="columnName">codeTvaLDocument</property>
+                </structure>
+                <structure>
+                    <property name="columnName">codeTTvaLDocument</property>
+                </structure>
+                <structure>
+                    <property name="columnName">mtHtLDocument</property>
+                </structure>
+                <structure>
+                    <property name="columnName">mtTtcLDocument</property>
+                </structure>
+                <structure>
+                    <property name="columnName">remTxLDocument</property>
+                </structure>
+                <structure>
+                    <property name="columnName">remHtLDocument</property>
+                </structure>
+                <structure>
+                    <property name="columnName">numLot</property>
+                </structure>
+                <structure>
+                    <property name="columnName">dluo</property>
+                </structure>
+                <structure>
+                    <property name="columnName">quantite1</property>
+                </structure>
+                <structure>
+                    <property name="columnName">quantite2</property>
+                </structure>
+            </list-property>
+            <list-property name="parameters"/>
+            <structure name="cachedMetaData">
+                <list-property name="resultSet">
+                    <structure>
+                        <property name="position">1</property>
+                        <property name="name">codeArticle</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">2</property>
+                        <property name="name">libellecArticle</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">3</property>
+                        <property name="name">libLDocument</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">4</property>
+                        <property name="name">qteLDocument</property>
+                        <property name="dataType">decimal</property>
+                    </structure>
+                    <structure>
+                        <property name="position">5</property>
+                        <property name="name">qte2LDocument</property>
+                        <property name="dataType">decimal</property>
+                    </structure>
+                    <structure>
+                        <property name="position">6</property>
+                        <property name="name">u1LDocument</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">7</property>
+                        <property name="name">u2LDocument</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">8</property>
+                        <property name="name">prixULDocument</property>
+                        <property name="dataType">decimal</property>
+                    </structure>
+                    <structure>
+                        <property name="position">9</property>
+                        <property name="name">tauxTvaLDocument</property>
+                        <property name="dataType">decimal</property>
+                    </structure>
+                    <structure>
+                        <property name="position">10</property>
+                        <property name="name">compteLDocument</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">11</property>
+                        <property name="name">codeTvaLDocument</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">12</property>
+                        <property name="name">codeTTvaLDocument</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">13</property>
+                        <property name="name">mtHtLDocument</property>
+                        <property name="dataType">decimal</property>
+                    </structure>
+                    <structure>
+                        <property name="position">14</property>
+                        <property name="name">mtTtcLDocument</property>
+                        <property name="dataType">decimal</property>
+                    </structure>
+                    <structure>
+                        <property name="position">15</property>
+                        <property name="name">remTxLDocument</property>
+                        <property name="dataType">decimal</property>
+                    </structure>
+                    <structure>
+                        <property name="position">16</property>
+                        <property name="name">remHtLDocument</property>
+                        <property name="dataType">decimal</property>
+                    </structure>
+                    <structure>
+                        <property name="position">17</property>
+                        <property name="name">numLot</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">18</property>
+                        <property name="name">dluo</property>
+                        <property name="dataType">date-time</property>
+                    </structure>
+                    <structure>
+                        <property name="position">19</property>
+                        <property name="name">quantite1</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">20</property>
+                        <property name="name">quantite2</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                </list-property>
+            </structure>
+            <property name="dataSource">DataSourceScript</property>
+            <method name="open"><![CDATA[count=0;
+//x = 0;
+//importPackage(Packages.java.util.logging);
+//var fileHandler = new FileHandler("c:/tmp/log/Fab_LProd.log.xml", true);
+//var rootLogger = Logger.getLogger("");
+//rootLogger.addHandler(fileHandler);
+
+ListeFabrication = reportContext.getHttpServletRequest().getSession().getAttribute("fabrication");
+//Packages.java.util.logging.Logger.getLogger("").info("ListeFabrication - "+ListeFabrication);
+liste = new Packages.java.util.ArrayList();
+//Packages.java.util.logging.Logger.getLogger("").info("liste - "+liste);
+
+ListeFabrication.findProduit();
+//Packages.java.util.logging.Logger.getLogger("").info("OPEN /////////////////////// "+ListFabrication.getListProduits());
+//Packages.java.util.logging.Logger.getLogger("").info("length - "+ListeFabrication.getListProduits().length);
+//Packages.java.util.logging.Logger.getLogger("").info("size() - "+ListeFabrication.getListProduits().size());
+for (i = 0; i < ListeFabrication.getListProduits().size(); i++) {
+    liste.add(ListeFabrication.getListProduits().get(i));
+    //Packages.java.util.logging.Logger.getLogger("").info("liste - "+liste);
+} 
+
+//for each ( i in ListeFabrication.getListProduits()) {
+//	Packages.java.util.logging.Logger.getLogger("").info("liste "+x+" - "+i);
+//	liste.add(i);
+//	x++;
+//}
+
+//liste.add(ListeFabrication.getListProduits());
+
+//Packages.java.util.logging.Logger.getLogger("").info(ListeFabrication )
+//if(ListeFabrication==null) {
+//	Packages.java.util.logging.Logger.getLogger("").info("OPEN NULL " )
+//} else {
+//	Packages.java.util.logging.Logger.getLogger("").info("OPEN /////////////////////// "+ListFabrication.getListProduits().size() )
+//}]]></method>
+            <method name="fetch"><![CDATA[if(count < liste.size()) {
+	
+	ListeFabrication = liste.get(count);
+	
+	//Packages.java.util.logging.Logger.getLogger("").info("count - "+count);
+	//Packages.java.util.logging.Logger.getLogger("").info("liste.size() - "+liste.size());
+	
+	//Packages.java.util.logging.Logger.getLogger("").info("ListeFabrication - "+ListeFabrication);
+	//Packages.java.util.logging.Logger.getLogger("").info("getTaArticle - "+ListeFabrication.getTaArticle());
+	//Packages.java.util.logging.Logger.getLogger("").info("codeArticle - "+ListeFabrication.getTaArticle().getCodeArticle());
+	
+	if(ListeFabrication.getTaArticle().getCodeArticle()==null){row["codeArticle"] = "";}
+	else{row["codeArticle"]=ListeFabrication.getTaArticle().getCodeArticle();}
+	//
+	if(ListeFabrication.getTaArticle().getLibellecArticle()==null){row["libellecArticle"] = "";}
+	else{row["libellecArticle"]=ListeFabrication.getTaArticle().getLibellecArticle();}
+	//
+	if(ListeFabrication.getLibLDocument()==null){row["libLDocument"] = "";}
+	else{row["libLDocument"]=ListeFabrication.getLibLDocument();}
+	//
+	if(ListeFabrication.getQteLDocument()==null){row["qteLDocument"] = "";}
+	else{row["qteLDocument"]=ListeFabrication.getQteLDocument();}
+	//
+	if(ListeFabrication.getQte2LDocument()==null){row["qte2LDocument"] = "";}
+	else{row["qte2LDocument"]=ListeFabrication.getQte2LDocument();}
+	//
+	if(ListeFabrication.getU1LDocument()==null){row["u1LDocument"] = "";}
+	else{row["u1LDocument"]=ListeFabrication.getU1LDocument();}
+	//
+	if(ListeFabrication.getU2LDocument()==null){row["u2LDocument"] = "";}
+	else{row["u2LDocument"]=ListeFabrication.getU2LDocument();}
+	//
+	//row["quantite1"] = (ListeFabrication.getQteLDocument().toString()+ListeFabrication.getU1LDocument());
+	//row["quantite2"] = (ListeFabrication.getQte2LDocument().toString()+ListeFabrication.getU2LDocument());
+	//
+	row["quantite1"] = (row["qteLDocument"]+" "+row["u1LDocument"]);
+	row["quantite2"] = (row["qte2LDocument"]+" "+row["u2LDocument"]);
+	//
+	if(ListeFabrication.getPrixULDocument()==null){row["prixULDocument"] = "";}
+	else{row["prixULDocument"]=ListeFabrication.getPrixULDocument();}
+	//
+	if(ListeFabrication.getPrixU2LDocument()==null){row["prixU2LDocument"] = "";}
+	else{row["prixU2LDocument"]=ListeFabrication.getPrixU2LDocument();}
+	//
+	if(ListeFabrication.getTauxTvaLDocument()==null){row["tauxTvaLDocument"] = "";}
+	else{row["tauxTvaLDocument"]=ListeFabrication.getTauxTvaLDocument();}
+	//
+	if(ListeFabrication.getCompteLDocument()==null){row["compteLDocument"] = "";}
+	else{row["compteLDocument"]=ListeFabrication.getCompteLDocument();}
+	//
+	if(ListeFabrication.getCodeTvaLDocument()==null){row["codeTvaLDocument"] = "";}
+	else{row["codeTvaLDocument"]=ListeFabrication.getCodeTvaLDocument();}
+	//
+	if(ListeFabrication.getCodeTTvaLDocument()==null){row["codeTTvaLDocument"] = "";}
+	else{row["codeTTvaLDocument"]=ListeFabrication.getCodeTTvaLDocument();}
+	//
+	if(ListeFabrication.getMtTtcLDocument()==null){row["mtTtcLDocument"] = "";}
+	else{row["mtTtcLDocument"]=ListeFabrication.getMtTtcLDocument();}
+	//
+	if(ListeFabrication.getRemTxLDocument()==null){row["remTxLDocument"] = "";}
+	else{row["remTxLDocument"]=ListeFabrication.getRemTxLDocument();}
+	//
+	if(ListeFabrication.getRemHtLDocument()==null){row["remHtLDocument"] = "";}
+	else{row["remHtLDocument"]=ListeFabrication.getRemHtLDocument();}
+	//
+	if(ListeFabrication.getTaLot().getNumLot()==null){row["numLot"] = "";}
+	else{row["numLot"]=ListeFabrication.getTaLot().getNumLot();}
+	//
+	if(ListeFabrication.getTaLot().getDluo()==null){row["dluo"] = "";}
+	else{row["dluo"]=ListeFabrication.getTaLot().getDluo();}
+	
+	count++;
+	return true;
+}
+
+return false;
+]]></method>
+        </script-data-set>
+        <script-data-set name="DataSetScriptAdresse" id="15">
+            <list-property name="resultSetHints">
+                <structure>
+                    <property name="position">1</property>
+                    <property name="name">adresse1</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">2</property>
+                    <property name="name">adresse2</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">3</property>
+                    <property name="name">adresse3</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">4</property>
+                    <property name="name">codePostal</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">5</property>
+                    <property name="name">ville</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">6</property>
+                    <property name="name">pays</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">7</property>
+                    <property name="name">typeAdresse</property>
+                    <property name="dataType">string</property>
+                </structure>
+            </list-property>
+            <list-property name="columnHints">
+                <structure>
+                    <property name="columnName">adresse1</property>
+                </structure>
+                <structure>
+                    <property name="columnName">adresse2</property>
+                </structure>
+                <structure>
+                    <property name="columnName">adresse3</property>
+                </structure>
+                <structure>
+                    <property name="columnName">codePostal</property>
+                </structure>
+                <structure>
+                    <property name="columnName">ville</property>
+                </structure>
+                <structure>
+                    <property name="columnName">pays</property>
+                </structure>
+                <structure>
+                    <property name="columnName">typeAdresse</property>
+                </structure>
+            </list-property>
+            <structure name="cachedMetaData">
+                <list-property name="resultSet">
+                    <structure>
+                        <property name="position">1</property>
+                        <property name="name">adresse1</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">2</property>
+                        <property name="name">adresse2</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">3</property>
+                        <property name="name">adresse3</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">4</property>
+                        <property name="name">codePostal</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">5</property>
+                        <property name="name">ville</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">6</property>
+                        <property name="name">pays</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">7</property>
+                        <property name="name">typeAdresse</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                </list-property>
+            </structure>
+            <property name="dataSource">DataSourceScript</property>
+            <method name="open"><![CDATA[count=0;
+//imprimeObjet = new Packages.fr.legrain.edition.ImprimeObjet();
+//liste = imprimeObjet.l;
+
+tiers = reportContext.getHttpServletRequest().getSession().getAttribute("tiers");
+liste = new Packages.java.util.ArrayList();
+liste.add(tiers);
+
+tiers = liste.get(count);
+arrayAdresse = tiers.getTaAdresses().toArray();]]></method>
+            <method name="fetch"><![CDATA[if(count<arrayAdresse.length) {
+	adresse = arrayAdresse[count];
+	if(adresse.getAdresse1Adresse()==null){row["adresse1"]="";}
+	else{row["adresse1"] = adresse.getAdresse1Adresse();}
+	if(adresse.getAdresse2Adresse()==null){row["adresse2"]="";}
+	else{row["adresse2"] = adresse.getAdresse2Adresse();}
+	if(adresse.getAdresse3Adresse()==null){row["adresse3"]="";}
+	else{row["adresse3"] = adresse.getAdresse3Adresse();}
+	if(adresse.getCodepostalAdresse()==null){row["codePostal"]="";}
+	else{row["codePostal"] = adresse.getCodepostalAdresse();}
+	if(adresse.getVilleAdresse()==null){row["ville"]="";}
+	else{row["ville"] = adresse.getVilleAdresse();}
+	if(adresse.getPaysAdresse()==null){row["pays"]="";}
+	else{row["pays"] = adresse.getPaysAdresse();}
+	if(adresse.getTaTAdr()==null || adresse.getTaTAdr().getCodeTAdr()==null ){row["typeAdresse"]="";}
+	else{row["typeAdresse"] = adresse.getTaTAdr().getCodeTAdr();}
+	
+	count++;
+	return true;
+}
+return false;]]></method>
+        </script-data-set>
+        <script-data-set name="DataSetScriptCompl" id="16">
+            <list-property name="resultSetHints">
+                <structure>
+                    <property name="position">1</property>
+                    <property name="name">tvaIComCompl</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">2</property>
+                    <property name="name">siretCompl</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">3</property>
+                    <property name="name">codeTiers</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">4</property>
+                    <property name="name">nomTiers</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">5</property>
+                    <property name="name">prenomTiers</property>
+                    <property name="dataType">string</property>
+                </structure>
+            </list-property>
+            <list-property name="columnHints">
+                <structure>
+                    <property name="columnName">tvaIComCompl</property>
+                </structure>
+                <structure>
+                    <property name="columnName">siretCompl</property>
+                </structure>
+                <structure>
+                    <property name="columnName">codeTiers</property>
+                </structure>
+                <structure>
+                    <property name="columnName">nomTiers</property>
+                </structure>
+                <structure>
+                    <property name="columnName">prenomTiers</property>
+                </structure>
+            </list-property>
+            <structure name="cachedMetaData">
+                <list-property name="resultSet">
+                    <structure>
+                        <property name="position">1</property>
+                        <property name="name">tvaIComCompl</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">2</property>
+                        <property name="name">siretCompl</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">3</property>
+                        <property name="name">codeTiers</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">4</property>
+                        <property name="name">nomTiers</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">5</property>
+                        <property name="name">prenomTiers</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                </list-property>
+            </structure>
+            <property name="dataSource">DataSourceScript</property>
+            <method name="open"><![CDATA[count=0;
+//imprimeObjet = new Packages.fr.legrain.edition.ImprimeObjet();
+//liste = imprimeObjet.l;
+
+tiers = reportContext.getHttpServletRequest().getSession().getAttribute("tiers");
+liste = new Packages.java.util.ArrayList();
+liste.add(tiers);]]></method>
+            <method name="fetch"><![CDATA[if(count< liste.size()) {
+	
+	tiers = liste.get(count);
+	if(tiers.getTaCompl()!=null){
+	
+		if(tiers.getCodeTiers()==null){row["codeTiers"] = "";}
+		else{row["codeTiers"]=tiers.getCodeTiers();}
+		if(tiers.getNomTiers()==null){row["nomTiers"] = "";}
+		else{row["nomTiers"]=tiers.getNomTiers();}
+		if(tiers.getPrenomTiers()==null){row["prenomTiers"] = "";}
+		else{row["prenomTiers"]=tiers.getPrenomTiers();}
+		if(tiers.getTaCompl() == null || tiers.getTaCompl().getTvaIComCompl() == null){
+			row["tvaIComCompl"]="";
+		}
+		else{
+			row["tvaIComCompl"]=tiers.getTaCompl().getTvaIComCompl();
+		}
+		if(tiers.getTaCompl() == null || tiers.getTaCompl().getSiretCompl() == null){
+			row["siretCompl"]="";
+		}
+		else{
+			row["siretCompl"]=tiers.getTaCompl().getSiretCompl();
+		}
+	
+		count++;
+		return true;
+	}
+}
+return false;]]></method>
+        </script-data-set>
+        <script-data-set name="DataSetScriptCPaiement" id="17">
+            <list-property name="resultSetHints">
+                <structure>
+                    <property name="position">1</property>
+                    <property name="name">codeCPaiement</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">2</property>
+                    <property name="name">libCPaiement</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">3</property>
+                    <property name="name">reportCPaiement</property>
+                    <property name="dataType">integer</property>
+                </structure>
+                <structure>
+                    <property name="position">4</property>
+                    <property name="name">finMoisCPaiement</property>
+                    <property name="dataType">integer</property>
+                </structure>
+            </list-property>
+            <list-property name="columnHints">
+                <structure>
+                    <property name="columnName">codeCPaiement</property>
+                </structure>
+                <structure>
+                    <property name="columnName">libCPaiement</property>
+                </structure>
+                <structure>
+                    <property name="columnName">reportCPaiement</property>
+                </structure>
+                <structure>
+                    <property name="columnName">finMoisCPaiement</property>
+                </structure>
+            </list-property>
+            <structure name="cachedMetaData">
+                <list-property name="resultSet">
+                    <structure>
+                        <property name="position">1</property>
+                        <property name="name">codeCPaiement</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">2</property>
+                        <property name="name">libCPaiement</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">3</property>
+                        <property name="name">reportCPaiement</property>
+                        <property name="dataType">integer</property>
+                    </structure>
+                    <structure>
+                        <property name="position">4</property>
+                        <property name="name">finMoisCPaiement</property>
+                        <property name="dataType">integer</property>
+                    </structure>
+                </list-property>
+            </structure>
+            <property name="dataSource">DataSourceScript</property>
+            <method name="open"><![CDATA[count=0;
+//imprimeObjet = new Packages.fr.legrain.edition.ImprimeObjet();
+//liste = imprimeObjet.l;
+
+tiers = reportContext.getHttpServletRequest().getSession().getAttribute("tiers");
+liste = new Packages.java.util.ArrayList();
+liste.add(tiers);
+
+]]></method>
+            <method name="fetch"><![CDATA[if(count< liste.size()) {
+	
+	tiers = liste.get(count);
+	if(tiers.getTaCPaiement()!=null){
+	
+	
+	if(tiers.getTaCPaiement() == null || tiers.getTaCPaiement().getCodeCPaiement() == null){
+		row["codeCPaiement"]=null;
+	}
+	else{
+		row["codeCPaiement"]=tiers.getTaCPaiement().getCodeCPaiement();
+	}
+	if(tiers.getTaCPaiement() == null || tiers.getTaCPaiement().getLibCPaiement() == null){
+		row["libCPaiement"]=null;
+	}
+	else{
+		row["libCPaiement"]=tiers.getTaCPaiement().getLibCPaiement();
+	}
+	if(tiers.getTaCPaiement() == null || tiers.getTaCPaiement().getReportCPaiement() == null){
+		row["reportCPaiement"]=null;
+	}
+	else{
+		row["reportCPaiement"]=tiers.getTaCPaiement().getReportCPaiement();
+	}
+	if(tiers.getTaCPaiement() == null || tiers.getTaCPaiement().getFinMoisCPaiement() == null){
+		row["finMoisCPaiement"]=null;
+	}
+	else{
+		row["finMoisCPaiement"]=tiers.getTaCPaiement().getFinMoisCPaiement();
+	}
+	
+		count++;
+		return true;
+	}
+}
+return false;]]></method>
+        </script-data-set>
+        <script-data-set name="DataSetScriptEmail" id="18">
+            <list-property name="resultSetHints">
+                <structure>
+                    <property name="position">1</property>
+                    <property name="name">email</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">2</property>
+                    <property name="name">codeTiers</property>
+                    <property name="dataType">string</property>
+                </structure>
+            </list-property>
+            <list-property name="columnHints">
+                <structure>
+                    <property name="columnName">email</property>
+                </structure>
+                <structure>
+                    <property name="columnName">codeTiers</property>
+                </structure>
+            </list-property>
+            <structure name="cachedMetaData">
+                <list-property name="resultSet">
+                    <structure>
+                        <property name="position">1</property>
+                        <property name="name">email</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">2</property>
+                        <property name="name">codeTiers</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                </list-property>
+            </structure>
+            <property name="dataSource">DataSourceScript</property>
+            <method name="open"><![CDATA[count=0;
+//imprimeObjet = new Packages.fr.legrain.edition.ImprimeObjet();
+//liste = imprimeObjet.l;
+
+tiers = reportContext.getHttpServletRequest().getSession().getAttribute("tiers");
+liste = new Packages.java.util.ArrayList();
+liste.add(tiers);
+
+tiers = liste.get(count);
+liste = tiers.getTaEmails().toArray();]]></method>
+            <method name="fetch"><![CDATA[if(count<liste.length) {
+	email = liste[count];
+	if(email.getAdresseEmail()==null){row["email"]="";}
+	else{row["email"] = email.getAdresseEmail();}
+	
+	if(email.getTaTiers()==null || email.getTaTiers().getCodeTiers()==null){row["codeTiers"]="";}
+	else{row["codeTiers"] = email.getTaTiers().getCodeTiers();}
+
+	
+	count++;
+	return true;
+}
+return false;]]></method>
+        </script-data-set>
+        <script-data-set name="DataSetScriptTel" id="19">
+            <list-property name="resultSetHints">
+                <structure>
+                    <property name="position">1</property>
+                    <property name="name">numeroTelephone</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">2</property>
+                    <property name="name">posteTelephone</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">3</property>
+                    <property name="name">contact</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">4</property>
+                    <property name="name">nomContact</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">5</property>
+                    <property name="name">prenomContact</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">6</property>
+                    <property name="name">typeTelephone</property>
+                    <property name="dataType">string</property>
+                </structure>
+            </list-property>
+            <list-property name="columnHints">
+                <structure>
+                    <property name="columnName">numeroTelephone</property>
+                </structure>
+                <structure>
+                    <property name="columnName">posteTelephone</property>
+                </structure>
+                <structure>
+                    <property name="columnName">contact</property>
+                </structure>
+                <structure>
+                    <property name="columnName">nomContact</property>
+                </structure>
+                <structure>
+                    <property name="columnName">prenomContact</property>
+                </structure>
+                <structure>
+                    <property name="columnName">typeTelephone</property>
+                </structure>
+            </list-property>
+            <structure name="cachedMetaData">
+                <list-property name="resultSet">
+                    <structure>
+                        <property name="position">1</property>
+                        <property name="name">numeroTelephone</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">2</property>
+                        <property name="name">posteTelephone</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">3</property>
+                        <property name="name">contact</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">4</property>
+                        <property name="name">nomContact</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">5</property>
+                        <property name="name">prenomContact</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">6</property>
+                        <property name="name">typeTelephone</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                </list-property>
+            </structure>
+            <property name="dataSource">DataSourceScript</property>
+            <method name="open"><![CDATA[count=0;
+//imprimeObjet = new Packages.fr.legrain.edition.ImprimeObjet();
+//liste = imprimeObjet.l;
+
+tiers = reportContext.getHttpServletRequest().getSession().getAttribute("tiers");
+liste = new Packages.java.util.ArrayList();
+liste.add(tiers);
+
+tiers = liste.get(count);
+//if(tiers.getTaTelephones().size()!=0){
+	liste = tiers.getTaTelephones().toArray();
+//}
+
+]]></method>
+            <method name="fetch"><![CDATA[if(count<liste.length) {
+	telephone = liste[count];
+	if(telephone.getNumeroTelephone()==null){row["numeroTelephone"]="";}
+	else{row["numeroTelephone"] = telephone.getNumeroTelephone();}
+	if(telephone.getPosteTelephone()==null){row["posteTelephone"]="";}
+	else{row["posteTelephone"] = telephone.getPosteTelephone();}
+	if(telephone.getTaTiers()==null || telephone.getTaTiers().getCodeTiers()==null){row["contact"]="";}
+	else{row["contact"] = telephone.getTaTiers().getCodeTiers();}
+	if(telephone.getTaTiers()==null || telephone.getTaTiers().getNomTiers()==null){row["nomContact"]="";}
+	else{row["nomContact"] = telephone.getTaTiers().getNomTiers();}
+	if(telephone.getTaTiers()==null || telephone.getTaTiers().getPrenomTiers()==null){row["prenomContact"]="";}
+	else{row["prenomContact"] = telephone.getTaTiers().getPrenomTiers();}
+	if(telephone.getTaTTel()==null || telephone.getTaTTel().getCodeTTel()==null){row["typeTelephone"]="";}
+	else{row["typeTelephone"] = telephone.getTaTTel().getCodeTTel();}
+	
+	count++;
+	return true;
+}
+return false;]]></method>
+        </script-data-set>
+        <script-data-set name="DataSetScriptWeb" id="20">
+            <list-property name="resultSetHints">
+                <structure>
+                    <property name="position">1</property>
+                    <property name="name">web</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">2</property>
+                    <property name="name">codeTiers</property>
+                    <property name="dataType">string</property>
+                </structure>
+            </list-property>
+            <list-property name="columnHints">
+                <structure>
+                    <property name="columnName">web</property>
+                </structure>
+                <structure>
+                    <property name="columnName">codeTiers</property>
+                </structure>
+            </list-property>
+            <structure name="cachedMetaData">
+                <list-property name="resultSet">
+                    <structure>
+                        <property name="position">1</property>
+                        <property name="name">web</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">2</property>
+                        <property name="name">codeTiers</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                </list-property>
+            </structure>
+            <property name="dataSource">DataSourceScript</property>
+            <method name="open"><![CDATA[count=0;
+//imprimeObjet = new Packages.fr.legrain.edition.ImprimeObjet();
+//liste = imprimeObjet.l;
+
+tiers = reportContext.getHttpServletRequest().getSession().getAttribute("tiers");
+liste = new Packages.java.util.ArrayList();
+liste.add(tiers);
+
+arrayWebs = null;
+tiers = liste.get(count);
+//if(tiers.getTaWebs() != null){
+	//arrayWebs = tiers.getTaWebs().toArray();
+//}
+//else{
+//	arrayWebs = new Packages.java.lang.String[0];
+//}
+arrayWebs = tiers.getTaWebs().toArray();]]></method>
+            <method name="fetch"><![CDATA[if(arrayWebs != null){
+if(count<arrayWebs.length) {
+	web = arrayWebs[count];
+	if(web.getAdresseWeb()==null){row["web"]="";}
+	else{row["web"] = web.getAdresseWeb();}
+	
+	if(web.getTaTiers()==null || web.getTaTiers().getCodeTiers()==null){row["codeTiers"]="";}
+	else{row["codeTiers"] = web.getTaTiers().getCodeTiers();}
+
+	count++;
+	return true;
+}
+return false;
+}
+]]></method>
+        </script-data-set>
+        <script-data-set name="DataSetTiers" id="21">
+            <list-property name="resultSetHints">
+                <structure>
+                    <property name="position">1</property>
+                    <property name="name">codeTiers</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">2</property>
+                    <property name="name">nomTiers</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">3</property>
+                    <property name="name">codeCompta</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">4</property>
+                    <property name="name">prenomTiers</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">5</property>
+                    <property name="name">surnomTiers</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">6</property>
+                    <property name="name">codeTCivilite</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">7</property>
+                    <property name="name">actifTiers</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">8</property>
+                    <property name="name">ttcTiers</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">9</property>
+                    <property name="name">nomEntreprise</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">10</property>
+                    <property name="name">codeTTiers</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">11</property>
+                    <property name="name">compte</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">12</property>
+                    <property name="name">codeTEntite</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">13</property>
+                    <property name="name">commentaire</property>
+                    <property name="dataType">string</property>
+                </structure>
+            </list-property>
+            <list-property name="columnHints">
+                <structure>
+                    <property name="columnName">codeTiers</property>
+                </structure>
+                <structure>
+                    <property name="columnName">nomTiers</property>
+                </structure>
+                <structure>
+                    <property name="columnName">codeCompta</property>
+                </structure>
+                <structure>
+                    <property name="columnName">prenomTiers</property>
+                </structure>
+                <structure>
+                    <property name="columnName">surnomTiers</property>
+                </structure>
+                <structure>
+                    <property name="columnName">codeTCivilite</property>
+                </structure>
+                <structure>
+                    <property name="columnName">actifTiers</property>
+                </structure>
+                <structure>
+                    <property name="columnName">ttcTiers</property>
+                </structure>
+                <structure>
+                    <property name="columnName">nomEntreprise</property>
+                </structure>
+                <structure>
+                    <property name="columnName">codeTTiers</property>
+                </structure>
+                <structure>
+                    <property name="columnName">compte</property>
+                </structure>
+                <structure>
+                    <property name="columnName">codeTEntite</property>
+                </structure>
+                <structure>
+                    <property name="columnName">commentaire</property>
+                </structure>
+            </list-property>
+            <structure name="cachedMetaData">
+                <list-property name="resultSet">
+                    <structure>
+                        <property name="position">1</property>
+                        <property name="name">codeTiers</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">2</property>
+                        <property name="name">nomTiers</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">3</property>
+                        <property name="name">codeCompta</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">4</property>
+                        <property name="name">prenomTiers</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">5</property>
+                        <property name="name">surnomTiers</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">6</property>
+                        <property name="name">codeTCivilite</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">7</property>
+                        <property name="name">actifTiers</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">8</property>
+                        <property name="name">ttcTiers</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">9</property>
+                        <property name="name">nomEntreprise</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">10</property>
+                        <property name="name">codeTTiers</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">11</property>
+                        <property name="name">compte</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">12</property>
+                        <property name="name">codeTEntite</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">13</property>
+                        <property name="name">commentaire</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                </list-property>
+            </structure>
+            <property name="dataSource">DataSourceScript</property>
+            <method name="open"><![CDATA[count=0;
+//dao = new Packages.fr.legrain.articles.dao.TaArticleDAO();
+//art = dao.findById(params["paramIdArticle"]);
+
+//imprimeObjet = new Packages.fr.legrain.edition.ImprimeObjet();
+//liste = imprimeObjet.l;
+
+tiers = reportContext.getHttpServletRequest().getSession().getAttribute("tiers");
+liste = new Packages.java.util.ArrayList();
+liste.add(tiers);]]></method>
+            <method name="fetch"><![CDATA[if(count < liste.size()) {
+	//if(true){
+	tiers = liste.get(count);
+	
+	if(tiers.getCodeTiers()==null){row["codeTiers"] = "";}
+	else{row["codeTiers"]=tiers.getCodeTiers();}
+	
+	if(tiers.getNomTiers()==null){row["nomTiers"] = "";}
+	else{row["nomTiers"]=tiers.getNomTiers();}
+	
+	if(tiers.getCodeCompta()==null){row["codeCompta"] = "";}
+	else{row["codeCompta"]=tiers.getCodeCompta();}
+	
+	if(tiers.getPrenomTiers()==null){row["prenomTiers"] = "";}
+	else{row["prenomTiers"]=tiers.getPrenomTiers();}
+	
+	if(tiers.getSurnomTiers()==null){row["surnomTiers"] = tiers.getSurnomTiers();}
+	else{row["surnomTiers"]="";}
+	
+	if(tiers.getSurnomTiers()==null){row["surnomTiers"] = tiers.getSurnomTiers();}
+	else{row["surnomTiers"]="";}
+	
+	if(tiers.getTaTCivilite() == null || tiers.getTaTCivilite().getCodeTCivilite() == null){row["codeTCivilite"]="";}
+	else{row["codeTCivilite"]=tiers.getTaTCivilite().getCodeTCivilite();}
+	
+	if(tiers.getActifTiers() == null){row["actifTiers"]=null;}
+	else{if(tiers.getActifTiers()==1){row["actifTiers"] = "VRAI";}else{row["actifTiers"]="FAUX";}}
+	
+	if(tiers.getTtcTiers() == null){row["ttcTiers"]=null;}
+    else{if(tiers.getTtcTiers()==1){row["ttcTiers"] = "VRAI";}else{row["ttcTiers"]="FAUX";}}
+	
+	if(tiers.getTaEntreprise() == null || tiers.getTaEntreprise().getNomEntreprise() == null){
+		row["nomEntreprise"]="";
+	}
+	else{
+		row["nomEntreprise"]=tiers.getTaEntreprise().getNomEntreprise();
+	}
+	if(tiers.getTaTTiers() == null || tiers.getTaTTiers().getCodeTTiers() == null){
+		row["codeTTiers"]="";
+	}
+	else{
+		row["codeTTiers"]=tiers.getTaTTiers().getCodeTTiers();
+	}
+	if(tiers.getCompte() == null){row["compte"]="";}
+	else{row["compte"]=tiers.getCompte();}
+	
+	if(tiers.getTaTEntite() == null || tiers.getTaTEntite().getCodeTEntite() == null){
+		row["codeTEntite"]="";
+	}
+	else{
+		row["codeTEntite"]=tiers.getTaTEntite().getCodeTEntite();
+	}
+	if(tiers.getTaCommentaire() == null || tiers.getTaCommentaire().getCommentaire() == null){
+		row["commentaire"]="";
+	}
+	else{
+		row["commentaire"]=tiers.getTaCommentaire().getCommentaire();
+	}
+	
+	count++;
+	return true;
+}
+
+return false;]]></method>
+        </script-data-set>
+    </data-sets>
+    <themes>
+        <theme name="defaultTheme" id="4">
+            <styles>
+                <style name="Footer_1" id="5">
+                    <property name="borderTopStyle">solid</property>
+                </style>
+                <style name="Header_rouge" id="6">
+                    <property name="fontFamily">"@Microsoft YaHei"</property>
+                    <property name="fontSize">xx-large</property>
+                    <property name="fontStyle">normal</property>
+                    <property name="color">#800000</property>
+                    <property name="borderBottomColor">#800000</property>
+                    <property name="borderBottomStyle">solid</property>
+                </style>
+                <style name="List_Column_Headers" id="7">
+                    <property name="fontFamily">sans-serif</property>
+                    <property name="fontSize">12pt</property>
+                    <property name="borderBottomStyle">solid</property>
+                    <property name="borderTopStyle">none</property>
+                    <property name="textAlign">left</property>
+                </style>
+                <style name="List_foot_row" id="8">
+                    <property name="borderBottomWidth">thin</property>
+                </style>
+                <style name="List_Name" id="9">
+                    <property name="backgroundColor">#C0C0C0</property>
+                    <property name="fontFamily">"@Meiryo UI"</property>
+                    <property name="fontSize">14pt</property>
+                    <property name="borderBottomStyle">solid</property>
+                </style>
+                <style name="Style1" id="10">
+                    <property name="fontSize">12pt</property>
+                    <property name="canShrink">true</property>
+                </style>
+            </styles>
+        </theme>
+    </themes>
+    <page-setup>
+        <simple-master-page name="NewSimpleMasterPage" id="3"/>
+    </page-setup>
+</library>

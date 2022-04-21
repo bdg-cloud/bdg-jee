@@ -1,0 +1,227 @@
+<!-- <!DOCTYPE html> -->
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+<!-- <p:tabView id="idTabViewArticle" widgetVar="wvtabViewGandiSimpleHosting" binding="#{gandiSimpleHostingController.tabViewGandiSimpleHosting}" styleClass="verticalTab" cache="false">
+</p:tabView> -->
+<p:panel id="idGandiServerPanel" widgetVar="wvGandiServerPanel">
+			<div class="ui-g-12 ui-md-6 dashboard-buttons ">
+					<p:commandButton value="Fermer" styleClass="icon icon-close menuitem-fermer-droite boutonRond" process="@this" 
+														onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())"/>
+				</div>
+				
+				<!-- <div class="ui-g-12 ui-md-6">
+                        <div class="dashboard-title">
+                            <h2>Gandi server</h2>
+                        </div>
+                    </div> -->
+		
+			<br />
+			<p:messages id="messages" showDetail="true" autoUpdate="true" closable="true" />
+			 <br />
+
+			<p:dataTable id="dataTable" var="server"
+				value="#{gandiServerController.values}"
+				rowKey="#{server.id}"
+				editable="true" 
+				selection="#{gandiServerController.selectedServer}"
+				selectionMode="single" 
+				paginator="true" rows="20"
+				resizableColumns="true"
+				widgetVar="wvServerIassDataTable"
+				paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+				 rowsPerPageTemplate="10,20,50,100">
+
+				<p:ajax event="rowEdit" listener="#{gandiServerController.OnRowEditServer}"  />
+
+				<f:facet name="header">  
+           			Server (#{gandiServerController.values.size()})
+        		</f:facet>
+
+				<p:column selectionMode="multiple" style="width:18px" />
+				<!-- ajouter sur le datatable pour une seule ligne selectionMode="single"-->
+
+				
+
+				<p:column sortBy="#{server.id}" filterBy="#{server.id}">
+						<f:facet name="header">
+							<h:outputText value="ID" />
+						</f:facet>
+							
+						<h:outputText value="#{server.id}" />		
+				</p:column>		
+				
+				<p:column sortBy="#{server.hostname}" filterBy="#{server.hostname}">
+						<f:facet name="header">
+							<h:outputText value="Hostname" />
+						</f:facet>
+							
+						<h:outputText value="#{server.hostname}" />		
+				</p:column>		
+				
+				<p:column sortBy="#{server.state}" filterBy="#{server.state}">
+						<f:facet name="header">
+							<h:outputText value="Etat" />
+						</f:facet>
+							
+						<h:outputText value="#{server.state}" />		
+				</p:column>	
+				<p:column sortBy="#{server.date_created}" filterBy="#{server.date_created}">
+						<f:facet name="header">
+							<h:outputText value="Date de création"></h:outputText>
+						</f:facet>
+							
+						<h:outputText value="#{server.date_created}"><f:convertDateTime pattern="dd/MM/yyyy  HH:mm:ss" timeZone="Europe/Paris"/></h:outputText>	
+				</p:column>
+				
+				<p:column>
+						<f:facet name="header">
+							<h:outputText value="Action"></h:outputText>
+						</f:facet>
+							
+						<p:commandButton rendered="#{server.state == 'running'? false : true }" value="Start" id="idSartServerButton"
+						 update="@widgetVar(wvServerIassDataTable)"
+						  icon="fa fa-play" action="#{gandiServerController.startServer}" styleClass="ui-priority-primary">
+							<f:setPropertyActionListener target="#{gandiServerController.selectedServer}" value="#{server}" />
+						</p:commandButton>
+						
+						<p:commandButton rendered="#{server.state == 'running'? true : false }" value="Stop" id="idStopServerButton"
+						 update="@widgetVar(wvServerIassDataTable)"
+						  icon="fa fa-stop" action="#{gandiServerController.stopServer}" styleClass="redback">
+							<f:setPropertyActionListener target="#{gandiServerController.selectedServer}" value="#{server}" />
+						</p:commandButton>
+				</p:column>
+				
+				
+
+				<!-- <p:column style="width:32px">
+						<p:rowEditor rendered="true"/>
+						<p:rowEditor/>
+					</p:column> -->
+			</p:dataTable>
+
+		<!-- <p:dialog header="Détail" widgetVar="controleDialog" resizable="false"
+			id="controleDlg">
+			<h:form id="controleDetailForm">
+				<p:panelGrid id="display" columns="2" cellpadding="4"
+					style="margin:0 auto;">
+					<f:validateBean disabled="true">
+						<h:outputText value="ID :"/>
+						<h:outputText
+							value="#{gandiServerController.selectedTaControle.idControle}" />
+							
+						<h:outputText value="Champ :"/>
+						<p:inputText value="#{gandiServerController.selectedTaControle.champ}" />
+						
+						<h:outputText value="Contexte :"/>
+						<p:inputText value="#{gandiServerController.selectedTaControle.contexte}" />
+						
+						<h:outputText value="Client :"/>
+						<p:inputText value="#{gandiServerController.selectedTaControle.client}" />
+						
+						<h:outputText value="Serveur :"/>
+						<p:inputText value="#{gandiServerController.selectedTaControle.serveur}" />
+						
+						<h:outputText value="Controle Defaut :"/>
+						<p:inputText value="#{gandiServerController.selectedTaControle.controleDefaut}" />
+						
+						<h:outputText value="Controle Utilisateur :"/>
+						<p:inputText value="#{gandiServerController.selectedTaControle.controleUtilisateur}" />
+
+					</f:validateBean>
+
+					<f:facet name="footer">
+						<p:commandButton value="Mettre à jour"
+							update=":form:dataTable, :growl"
+							oncomplete="handleSubmitRequest(xhr, status, args, 'controleDlg','newControleForm'); "
+							actionListener="#{gandiServerController.doUpdateControle}" />
+					</f:facet>
+				</p:panelGrid>
+			</h:form>
+		</p:dialog>
+		
+		<p:dialog header="Copie" widgetVar="copieDialog" resizable="false"
+			id="copieDlg">
+			<h:form id="controleCopieForm">
+				<p:panelGrid id="display" columns="2" cellpadding="4"
+					style="margin:0 auto;">
+					<f:validateBean disabled="true">
+							
+						<h:outputText value="Champ :"/>
+						<p:inputText value="#{gandiServerController.copieTaControle.champ}" />
+						
+						<h:outputText value="Contexte :"/>
+						<p:inputText value="#{gandiServerController.copieTaControle.contexte}" />
+						
+						<h:outputText value="Client :"/>
+						<p:inputText value="#{gandiServerController.copieTaControle.client}" />
+						
+						<h:outputText value="Serveur :"/>
+						<p:inputText value="#{gandiServerController.copieTaControle.serveur}" />
+						
+						<h:outputText value="Controle Defaut :"/>
+						<p:inputText value="#{gandiServerController.copieTaControle.controleDefaut}" />
+						
+						<h:outputText value="Controle Utilisateur :"/>
+						<p:inputText value="#{gandiServerController.copieTaControle.controleUtilisateur}" />
+
+					</f:validateBean>
+
+					<f:facet name="footer">
+						<p:commandButton value="Enregistrer"
+							update=":form:dataTable, :growl"
+							oncomplete="handleSubmitRequest(xhr, status, args, 'copieDlg','controleCopieForm'); "
+							actionListener="#{gandiServerController.doCopieControle}" />
+					</f:facet>
+				</p:panelGrid>
+			</h:form>
+		</p:dialog>
+
+		<p:dialog header="Nouveau" onLoad="reset()"
+			widgetVar="newControleDialog" resizable="false" id="newControleDlg">
+			<h:form id="newControleForm">
+				<p:panelGrid id="displayNewControle" columns="2" cellpadding="4"
+					style="margin:0 auto;">
+					<f:validateBean disabled="true">
+						<h:outputText value="ID :"/>
+						<p:inputText
+							value="#{gandiServerController.newTaControle.idControle}" />
+							
+						<h:outputText value="Champ :"/>
+						<p:inputText value="#{gandiServerController.newTaControle.champ}" />
+						
+						<h:outputText value="Contexte :"/>
+						<p:inputText value="#{gandiServerController.newTaControle.contexte}" />
+						
+						<h:outputText value="Client :"/>
+						<p:inputText value="#{gandiServerController.newTaControle.client}" />
+						
+						<h:outputText value="Serveur :"/>
+						<p:inputText value="#{gandiServerController.newTaControle.serveur}" />
+						
+						<h:outputText value="Controle Defaut :"/>
+						<p:inputText value="#{gandiServerController.newTaControle.controleDefaut}" />
+						
+						<h:outputText value="Controle Utilisateur :"/>
+						<p:inputText value="#{gandiServerController.newTaControle.controleUtilisateur}" />
+
+						
+					</f:validateBean>
+
+					<f:facet name="footer">
+						<p:commandButton value="Valider" update=":form:dataTable, :growl"
+							oncomplete=" handleSubmitRequest(xhr, status, args, 'newControleDlg','newControleForm');"
+							actionListener="#{gandiServerController.doCreateControle}" />
+						<p:commandButton type="reset" value="Vider"></p:commandButton>
+					</f:facet>
+				</p:panelGrid>
+			</h:form>
+		</p:dialog> -->
+
+		<p:growl id="growl" showDetail="true" life="5000" />
+
+</p:panel>
+</ui:composition>

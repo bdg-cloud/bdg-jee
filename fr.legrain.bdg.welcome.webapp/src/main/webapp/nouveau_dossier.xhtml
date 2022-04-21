@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui" 	style="background-color:#032a47;margin:-10px;">
+	
+
+<!-- <h:head> -->
+<!-- 	<title>BDG - Création d'un nouveau dossier</title> -->
+<!-- 	<link rel="shortcut icon" type="image/x-icon" href="#{resource['images:favicon.ico']}" /> -->
+
+<!-- 	<f:facet name="first"> -->
+<!-- 	</f:facet> -->
+
+<!-- </h:head> -->
+
+    <h:head>
+        <f:facet name="first">
+        	<meta name="google-site-verification" content="ACtlqiIAr0V_UdCF6n10QhS5k2ozT4FQWvhPTwFiDGk" />
+            <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+            <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+            <meta name="apple-mobile-web-app-capable" content="yes" />
+            <meta name="keywords" content="logiciel facturation devis gestion commerciale traçabilité client produits SAAS cloud"/>
+			<meta name="description" content="Logiciel de gestion commerciale, devis ,facture, traçabilité en mode SAAS, Cloud. Mais aussi gestion des stocks et lots, comptes clients, paiement en ligne. Dès 5 € HT / mois"/>
+			<meta http-equiv="content-language" content="fr"/>
+        </f:facet>
+        <title>Bureau de Gestion Cloud, logiciel de gestion en ligne pour les entreprises  - Création d'un nouveau dossier</title>
+        <link rel="shortcut icon" type="image/x-icon" href="#{resource['images:favicon.ico']}" />
+
+    </h:head>
+
+<h:body>
+	<h:form>
+
+	<f:facet name="last">
+		<!-- surcharge des CSS primefaces -->
+		<h:outputStylesheet library="css" name="theme-bdg-nouveau-dossier.css" />
+	</f:facet>
+	
+	<f:metadata>
+		<f:viewParam name="p" value="#{nouveauDossierBean.paramPartenaire}" />
+		<f:event type="preRenderView" listener="#{nouveauDossierBean.refresh}" />
+	</f:metadata>
+
+	<div id="bandeau-bdg-large" class="bandeau-bdg-large">
+		<div class="center-block">
+			<h:graphicImage class="center-block" library="images" name="logo-bdg-grd.png" title="Solstyce" width="170" style="padding:55px;" />
+			<br />
+		<p:outputLabel style="font-size:35px;color:white;font-weight:bold;">
+		Tous les modules de Bureau de Gestion gratuit pendant 45 jours
+		</p:outputLabel>		
+		</div>
+	</div>
+	<div  class="ui-g" style="background-color:#032a47;">
+			<div class="ui-g-12 ui-md-4">
+			
+			</div>
+			<div class="ui-g-12 ui-md-4" style="padding: 25px;">
+			<div class="card" style="background-color:white;padding: 25px;border-radius: 15px;">
+				<div class="card" style="background-color:white;padding: 5px;">
+				<p:outputLabel value="Nouveau sur bdg.cloud ? Créez votre dossier sans engagement."  style="font-size: 18px;"></p:outputLabel>
+				<br/>
+				<p:outputLabel value="(*) Zones obligatoires" style="font-size: 12px;"></p:outputLabel>
+				</div>
+				<div class="card" style="background-color:white;padding: 5px;">
+				<p:inputText value="#{nouveauDossierBean.nomEntreprise}" required="true"
+								requiredMessage="Veuillez saisir un nom d'entreprise"  style="width: 95%;background-color: #cbdecd;height: 30px;" placeholder="Nom de l'entreprise (*) "/>
+				</div>
+				<div class="card" style="background-color:white;padding: 5px;">
+				<p:inputText id="idNomDossier2" value="#{nouveauDossierBean.nomDossier}" required="true"
+									requiredMessage="Veuillez saisir un nom pour le dossier à créer" placeholder="Nom de votre dossier à créer (*) "
+									 style="width: 95%;background-color: #cbdecd;height: 30px;">
+									<f:ajax event="blur" render="idMessagesNouveauDossier" />
+				</p:inputText>
+				</div>
+
+				<div class="card" style="background-color:white;padding: 5px;">
+				<p:inputText value="#{nouveauDossierBean.emailEntreprise}" required="true"
+							requiredMessage="Veuillez saisir une adresse email" placeholder="Adresse Email pour le dossier (*) "
+							 style="width: 95%;background-color: #cbdecd;height: 30px;"/>
+				</div>
+				<div class="card" style="background-color:white;padding: 5px;">
+<!-- 						<p:outputLabel value="Mot de passe : " /> -->
+				<p:password id="pwd1" value="#{nouveauDossierBean.motDePasse}" feedback="true" required="true" inline="true"
+							requiredMessage="Veuillez saisir un mot de passe" weakLabel="Sécurité faible"
+							promptLabel="Veuillez saisir votre nouveau mot de passe" goodLabel="Sécurité correcte"
+							strongLabel="Sécurité forte" placeholder="Veuillez saisir un mot de passe (*) "  style="width:95%; background-color: #cbdecd;height: 30px;"/>
+				</div>
+				<div class="card" style="background-color:white;padding: 5px;">
+<!-- 						<p:outputLabel value="Confirmation du mot de passe : " /> -->
+						<p:password id="pwd2" value="#{nouveauDossierBean.confirmationMotDePasse}" required="true"
+							requiredMessage="Veuillez saisir la confirmation de votre mot de passe" 
+							 placeholder="Confirmez le mot de passe (*) "  style="width: 95%;background-color: #cbdecd;height: 30px;"/>
+				</div>
+				
+				<div class="card" style="background-color:white;padding: 5px;">
+				<p:outputLabel value="Code Alliance ( laissez vide si vous ne le connaissez pas )" />
+				<p:inputText value="#{nouveauDossierBean.codePartenaire}" disabled="#{nouveauDossierBean.paramPartenaire!=null}" style="width: 95%;background-color: #cbdecd;height: 30px;" placeholder="Code partenaire"/>
+				</div>
+
+				<div class="card" style="background-color:white;padding: 10px;text-align: center; margin: 15px;">
+				<p:commandButton value="Créer mon dossier" widgetVar="wvBtnCreerDossier" onclick="PF('wvBtnCreerDossier').disable()"
+						oncomplete="PF('wvBtnCreerDossier').enable()" actionListener="#{nouveauDossierBean.ajoutDossier}"
+						rendered="#{!nouveauDossierBean.actionOk}" update="@form" style="width: 65%;height:50px;font-style: italic;font-size: x-large;" />
+
+					<p:messages id="idMessagesNouveauDossier" autoUpdate="true" showDetail="true" />
+				</div>
+				
+			</div>
+			
+			</div>
+			<div class="ui-g-12 ui-md-4">
+				<div class="card ui-g-6 ui-md-6" style="margin: 25px;">
+				<p  style="color:white;font-size:14px;">
+				<span><i class="fa fa-thumbs-o-up"></i></span> Vous disposez de 45 jours d'utilisation gratuite suite à la création de votre dossier, sans aucun engagement, ni code de carte bleue.
+				</p>
+<!-- 				<p:outputLabel value="Vous disposez de 45 jours d'utilisation gratuite suite à la création de votre dossier." style="color:white;margin:10px;"/> -->
+				<br/>
+				<p:outputLabel value="A l'issue de ces 45 jours, vous serez libre de choisir les fonctionnalités dont vous avez besoin." style="color:white;"/>
+				<br/>
+				<br/>
+<!-- 				<p:outputLabel value="Par la suite et à tout moment, vous pourrez ajouter de nouvelles fonctionnalités à votre dossier." style="color:white;margin:10px;"/> -->
+<!-- 				<br/> -->
+				<p:outputLabel  style="color:white;">
+				Besoin d'aide ? <br/> Appelez-nous au 05.63.30.31.44, nous répondrons à toutes vos questions.
+				</p:outputLabel>
+				<br/>
+				<br/>
+				<p:outputLabel  style="color:white;">
+				<span><i class="fa fa-info-circle"></i></span>  Pensez à vérifier dans vos spams si vous ne voyez pas le mail de confirmation de création de votre dossier.
+				</p:outputLabel>
+				<br/>
+				<br/>
+				<p:outputLabel  style="color:white;">
+				Le Bureau de Gestion Cloud est un service
+				</p:outputLabel>
+				<br/>
+				<h:graphicImage name="logo-legrain-blanc.png" id="logo2" library="images" style="width:199px;" />
+				
+				</div>
+			</div>
+	
+	</div>
+
+</h:form>	
+<!-- 	<div id="bandeau-bdg-fin"> -->
+<!-- 		<div> -->
+			<!-- <h:graphicImage library="images" name="Bureau de Gestion.svg" title="Solstyce" width="75" height="50" /> -->
+<!-- 		</div> -->
+<!-- 	</div> -->
+
+<!-- 	Ici emplacement ancien code formulaire  -->
+
+	<p:ajaxStatus style="width:32px;height:32px;position:fixed;right:7px;bottom:7px">
+	    <f:facet name="start">
+	        <p:graphicImage name="images/preloader.gif" library="icarus-layout" style="width: 32px;"/>
+	    </f:facet>
+	
+	    <f:facet name="complete">
+	        <h:outputText value="" />
+	    </f:facet>
+     </p:ajaxStatus>
+
+	<h:outputScript name="/js/functions.js" />
+	<h:outputScript name="/js/locale_fr.js" />
+	<h:outputScript name="/js/google.js"  />
+</h:body>
+</html>

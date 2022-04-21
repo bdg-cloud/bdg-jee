@@ -1,0 +1,217 @@
+==========================================
+
+CREATE TABLE Users(username VARCHAR(64) PRIMARY KEY, passwd VARCHAR(64));
+CREATE TABLE UserRoles(username VARCHAR(64), userRoles VARCHAR(32));
+===============================================
+
+./standalone.sh --debug 8787 -b 0.0.0.0
+
+=================================================
+
+<logger category="org.jboss.security">
+    <level name="TRACE"/>
+</logger>
+
+================================================
+Correction d'une séquence/serial encorrecte dans postgres (re-synchronisation avec les derniers id) :
+set schema 'demo';
+SELECT setval('ta_controle_id_controle_seq', COALESCE((SELECT MAX(id_controle)+1 FROM ta_controle), 1), false);
+
+http://stackoverflow.com/questions/244243/how-to-reset-postgres-primary-key-sequence-when-it-falls-out-of-sync
+================================================
+--Liste toutes les tables et leur clé primaire
+select tc.table_schema, tc.table_name, kc.column_name 
+from  
+    information_schema.table_constraints tc,  
+    information_schema.key_column_usage kc  
+where 
+    tc.constraint_type = 'PRIMARY KEY' 
+    and kc.table_name = tc.table_name and kc.table_schema = tc.table_schema
+    and kc.constraint_name = tc.constraint_name
+order by 1, 2;
+
+================================================
+<module-option name="principalsQuery" value="select passwd from users where username=?"/>
+<module-option name="rolesQuery" value="select r.userRoles, 'Roles' from UserRoles r, users u where r.username = u.username and u.username=?"/>
+
+<module-option name="principalsQuery" value="select passwd from ta_utilisateur where username=?"/>
+<module-option name="rolesQuery" value="select ro.role, 'Roles' from ta_r_role_utilisateur r, ta_utilisateur u, ta_roles ro where r.id_utilisateur = u.id and r.id_role = ro.id and u.username=?"/>
+==================================================
+
+pg_dump -i -h localhost -p 5432 -F c -b -v -f "/home/nicolas/Bureau/backup_bdg.backup" bdg
+pg_dump -i -h localhost -p 5432 -F c -b -v -f "/donnees/Projet/Java/Eclipse/GestionCommerciale_branche_2_0_13_JEE_E43/fr.legrain.bdg.ear/divers/sql/dump_postgresql/backup_bdg.backup" bdg
+
+pg_restore -i -h localhost -p 5432 -U $PGUSER -d bdg -n public -v $BDG_FILESYSTEM_PATH/bdg/update/backup_bdg.backup
+pg_restore -i -h localhost -p 5432 -U bdg -d bdg -v backup_bdg.backup
+
+==================================================
+
+To set the default password:
+    Run the psql command from the postgres user account:
+    sudo -u postgres psql postgres
+    Set the password:
+    \password postgres
+    Enter a password.
+    Close psql.
+    \q
+    
+==================================================
+**** IP Fixe de Le Grain : 90.63.218.1/32 ********
+**************************************************
+/etc/postgresql/9.1/main/pg_hba.conf
+# "local" is for Unix domain socket connections only
+local   all             all                                     md5
+==> host    all             all             192.168.1.0/24            md5
+ou
+==> host    all             all             all            			  md5
+
+/etc/postgresql/9.1/main/postgresql.conf
+==> listen_addresses = '*'
+
+==================================================
+** Mauvais encoding dans la base template qui empêche la création d'une nouvelle base avec createdb
+
+update pg_database set datistemplate=false where datname='template1';
+drop database Template1;
+create database template1 with owner=postgres encoding='UTF-8'
+	lc_collate='en_US.utf8' lc_ctype='en_US.utf8' template template0;
+update pg_database set datistemplate=true where datname='template1';
+
+==================================================
+** Générer un encodage perl manquant
+
+locale-gen en_US.UTF-8
+==================================================
+** Voir le trafic réseau
+
+netstat -nputw should do the trick. Add c for continuous updating. 
+
+==================================================
+** Utilitaire pour analyser le trafic réseau
+http://www.binarytides.com/linux-commands-monitor-network/
+
+sudo apt-get install iftop
+sudo apt-get install nethogs
+sudo apt-get install bmon
+sudo apt-get install tcptrack
+
+==================================================
+
+nicolas:lgrxxxxx
+legrain:lgr
+insert into Users values('nicolas','VLICnfhhmeKqsofW4g8gD18GuPR1U6PBjf/1BgoeYW4=');
+insert into Users values('legrain','CPb1ngVAlEYiyUF2zQ0SnyKLNRvBQWnBB1MLc+FcC70=');
+insert into UserRoles values('nicolas','admin');
+insert into UserRoles values('legrain','utilisateur');
+
+A corresponding login-config.xml entry would be:
+
+<security-domain name="BDGRealm">  
+    <authentication>  
+          <login-module code="org.jboss.security.auth.spi.DatabaseServerLoginModule" flag="required">  
+               <module-option name="dsJndiName" value="java:/BDGFirebirdDS"/>  
+               <module-option name="principalsQuery" value="select passwd from users where username=?"/>  
+               <module-option name="rolesQuery" value="select r.userRoles, 'Roles' from UserRoles r, users u where r.username = u.username and u.username=?"/>  
+               <module-option name="hashAlgorithm" value="SHA-256"/>  
+               <module-option name="hashEncoding" value="base64"/>  
+          </login-module>  
+     </authentication>  
+ </security-domain> 
+  
+==================================================
+
+echo -n "admin" | openssl dgst -sha256 -binary | openssl base64 
+
+==================================================
+
+  
+  <security-domain name="your-client-login-name" cache-type="default">
+  	<authentication>
+    	<login-module code="org.jboss.security.ClientLoginModule" flag="required"/>
+    </authentication>
+  </security-domain>
+  
+  picketbox remplace jbosssx pour la sécurité à partir de jboss 7
+  picketbox-XXX.jar contient donc "org.jboss.security.ClientLoginModule"
+  ce jar peut être pris dans les modules de jboss as
+  
+  =====================================================
+  
+  certaines librairies comme jboss-client.jar doivent utiliser eclipse buddy policy dans leur manifest
+  
+  =================================
+  primefaces avec jboss as 7.2
+  faire un module
+  <?xml version="1.0" encoding="UTF-8"?>
+
+<module xmlns="urn:jboss:module:1.1" name="org.primefaces">
+    <resources>
+        <resource-root path="primefaces-3.4.2.jar"/>
+        <!-- Insert resources here -->
+    </resources>
+</module>
+
+=============================
+firebird faire un module
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<module xmlns="urn:jboss:module:1.0" name="org.firebirdsql">
+  <resources>
+    <resource-root path="jaybird-full-2.2.2.jar"/>
+  </resources>
+  <dependencies>
+    <module name="javax.api"/>
+    <module name="javax.transaction.api"/>
+  </dependencies>
+</module>
+===========================
+module primefaces, ajouter "Dependencies: org.primefaces" dans le MANIFEST.MF du war
+<?xml version="1.0" encoding="UTF-8"?>
+
+<module xmlns="urn:jboss:module:1.1" name="org.primefaces">
+    <resources>
+        <resource-root path="primefaces-3.4.2.jar"/>
+        <!-- Insert resources here -->
+    </resources>
+
+<dependencies>
+        <module name="javax.faces.api" />
+<module name="javax.servlet.api" />
+<module name="javax.xml.bind.api" />
+<module name="javax.api" />
+<module name="javax.el.api" />
+    </dependencies>
+</module>
+===========================
+Avec Jaybird 2.2, il semble obligatoire pour les procédures stockées de retourner une valeur
+Toute les procédures qui ne renvoyaient rien doivent être modifier pour renvoyer par example, le nombre d'enregistrement affecté.
+Il n'est pas nécessaire d'enregistrer cette valeur de retour en paramètre OUT.
+
+PROCEDURE AAAAAAAA (A VARCHAR(255), B VARCHAR(255), ...)
+RETURNS (retour integer)
+AS
+...
+retour = row_count;
+suspend;
+...
+*****
+ANNULE_MODIFICATION
+RENTRE_EN_MODIFICATION
+======================================
+# liquibase : diff entre 2 schema
+
+./liquibase --driver=org.postgresql.Driver --url=jdbc:postgresql:bdg --username=postgres --password=lgrxxxxx --referenceUrl=jdbc:postgresql:bdg --referenceUsername=postgres --referencePassword=lgrxxxxx --defaultSchemaName=demo --referenceDefaultSchemaName=public diff
+======================================
+/usr/bin/rsync -arvzpgo --delete-after $USER@$IP_SERV:/var/named/ $REP_BCK_COMPLET/var_named
+======================================
+for i in $(mysql --user=$USER --password=$PASSWORD --host=$HOST --batch --skip-column-names -e "show databases"| sed  's/ /%/g'); do
+       /usr/bin/mysqldump --user=$USER --password=$PASSWORD $i > $DEST$i.sql
+done
+======================================
+Création d'un utilisateur système (pour lancer un service par exemple)
+
+adduser --shell /bin/bash  --system --no-create-home --group sonar
+======================================
+
+  
+  

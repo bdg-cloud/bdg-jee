@@ -1,0 +1,541 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:o="http://omnifaces.org/ui"
+                xmlns:lgr="http://legrain.fr/ui"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui">
+    
+    	<o:importConstants type="fr.legrain.document.model.TaAbonnement" />
+    	
+    <ui:define name="head">
+        <script type="text/javascript">
+            //<![CDATA[
+            function skinChart() {
+                this.cfg.shadow = false;
+                this.cfg.title = '';
+                this.cfg.seriesColors = ['#E88524', '#EDAE5C'];
+                this.cfg.grid = {
+                    background: '#ffffff',
+                    borderColor: '#ffffff',
+                    gridLineColor: '#F5F5F5',
+                    shadow: false
+                };
+                this.cfg.axesDefaults = {
+                    rendererOptions: {
+                        textColor: '#666F77'
+                    }
+                };
+                this.cfg.seriesDefaults = {
+                    shadow: false,
+                    lineWidth: 1,
+                    markerOptions: {
+                        shadow: false,
+                        size: 7,
+                        style: 'circle'
+                    }
+                }
+            }
+            //]]>  
+        </script>
+        <style type="text/css">
+            .main-content {
+                padding: 0;
+            }
+            
+            #main-wrapper-content-abonnement {
+                padding: 10px;
+            }
+        </style>
+    </ui:define>
+    
+    
+        <div class="dashboard">
+            <div class="dashboard-header">
+                <div class="ui-g">
+                        <p:commandButton value="Fermer" styleClass="icon icon-close menuitem-fermer-droite" process="@this" 
+							onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())"/>
+					<!-- <i class="fa fa-file-text-o fa-3x" style="color:#e88524"></i> -->
+					<h:graphicImage name="dashboard/abonnement.svg" library="images" height="60px" style="margin-top:1px;" />
+                    <div class="ui-g-12 ui-md-6">
+                        <div class="dashboard-title">
+                            <h2>Abonnement : Tableau de bord</h2>
+
+                        </div>
+                    </div>
+
+                    <div class="ui-g-12 ui-g-nopad">
+
+                    </div>
+                </div>
+            </div>
+            
+            <div id="main-wrapper-content-abonnement">
+
+                    
+                <div class="ui-g">
+
+
+				<div class="ui-g-12 ui-md-12">
+				<p:panel collapsed="true" toggleable="true" id="idPanelCriteresDashboardAbonnement" >
+						<f:facet name="header">
+							<h:outputText value="Critères et paramètres du tableau de bord - " />
+							<h:outputText value="Période du " />
+							<h:outputText value="#{dashBoardAbonnementController.dateDebut}" >
+								<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" type="localDate"/>
+							</h:outputText>
+							<h:outputText value=" au " />
+							<h:outputText value="#{dashBoardAbonnementController.dateFin}" >
+								<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" type="localDate"/>
+							</h:outputText>
+							
+						</f:facet>
+						
+					<div class="ui-g-12 ui-md-3">
+					<div class="card">
+		
+						<p:panel header="Période en cours" styleClass="panelgrey" widgetVar="wvPanelCardChoixPeriode">
+						<f:facet name="footer">
+						<i class="fa fa-calendar fa-2x facturecolor" aria-hidden="true" ></i>
+							<p:commandButton oncomplete="PF('wvListeAbonnement').filter()" 
+											 update="@this,
+											 		idPanelCriteresDashboardAbonnement,
+											 		@widgetVar(wvDashAbonnementPanelAbonnement),
+											 		@widgetVar(wvCountNbAbonnementNonPaye),
+											 		@widgetVar(wvCountNbAbonnementPaye),
+											 		@widgetVar(wvListeAbonnement),
+											 		@widgetVar(wvListeAbonnementParTiers),
+													@widgetVar(wvPanelBlocBox),
+													@widgetVar(wvAboEnCours),
+													@widgetVar(wvAboSuspendus)" 
+													
+								 
+											 			
+							action="#{dashBoardAbonnementController.refreshDashBoard('annuler')}" value="Appliquer" id="periode" styleClass="ui-green" 
+							style="width:80%;margin-left: 15px;bottom: 5px;">
+							</p:commandButton>
+							
+						</f:facet>
+						<div class="ui-g-12 ui-md-12" >
+						<h:panelGrid columns="2" cellpadding="0">
+							<p:outputLabel for="idSelectOneMenuChoixPeriode" value="Choix période " />
+						        <p:selectOneMenu id="idSelectOneMenuChoixPeriode" value="#{dashBoardAbonnementController.selectedChoixPeriode}" widgetVar="wvSelectChoixPeriode" >
+						        	<f:selectItems value="#{dashBoardAbonnementController.listeChoixPeriode}" var="choix" itemLabel="#{choix}" itemValue="#{choix}"/>
+						        	<p:ajax update="@this, @widgetVar(wvCalendarDebut),@widgetVar(wvCalendarFin)" event="change" listener="#{dashBoardAbonnementController.initPeriode()}"/>
+						        </p:selectOneMenu>
+						
+						 <p:outputLabel value="Du"/>
+											<p:calendar value="#{dashBoardAbonnementController.dateDebut}"
+												showOn="button" 
+												navigator="true" 
+												pattern="#{msg.date_pattern}" 
+												mask="true" 
+												locale="fr" 
+												timeZone="#{msg.time_zone}"
+												maxdate="#{dashBoardAbonnementController.dateFin}"
+												size="8" widgetVar="wvCalendarDebut">
+												<p:ajax event="dateSelect" listener="#{dashBoardAbonnementController.initPeriodePerso()}" update="@this, @widgetVar(wvSelectChoixPeriode), @widgetVar(wvPanelCardChoixPeriode)" />
+												<p:ajax event="change" listener="#{dashBoardAbonnementController.initPeriodePerso()}" update="@this, @widgetVar(wvSelectChoixPeriode), @widgetVar(wvPanelCardChoixPeriode)"/>
+											</p:calendar>
+
+						 <p:outputLabel value="au"/>
+											<p:calendar value="#{dashBoardAbonnementController.dateFin}"
+												showOn="button" 
+												navigator="true" 
+												pattern="#{msg.date_pattern}" 
+												mask="true" 
+												locale="fr" 
+												mindate="#{dashBoardAbonnementController.dateDebut}"
+												timeZone="#{msg.time_zone}"
+												size="8"  widgetVar="wvCalendarFin">
+												<p:ajax event="dateSelect" listener="#{dashBoardAbonnementController.initPeriodePerso()}" update="@this, @widgetVar(wvSelectChoixPeriode), @widgetVar(wvPanelCardChoixPeriode)" />
+												<p:ajax event="change" listener="#{dashBoardAbonnementController.initPeriodePerso()}" update="@this, @widgetVar(wvSelectChoixPeriode), @widgetVar(wvPanelCardChoixPeriode)"/>
+											</p:calendar>
+
+        				</h:panelGrid>
+        				</div>
+
+								</p:panel>
+    				</div>
+    				</div>
+				</p:panel>
+				</div>
+				
+				
+				<div class="ui-g-12 ui-md-12" style="padding:0;">
+				
+				
+				<p:panel widgetVar="wvPanelBlocBox" styleClass="panel-no-style" style="padding:0;"><!-- PANEL GLOBAL QUI ENGLOBE LES DEUX RANGEES DE BOX -->
+				
+				
+					<p:panel widgetVar="wvPanelBlocBoxPeriode1" styleClass="panel-no-style" rendered="#{!dashBoardAbonnementController.comparaison}" style="padding:0;"><!-- PANEL POUR LA PERIODE 1 -->
+					
+					<div class="ui-g-12 ui-md-12" style="background:#ebebeb; padding:0;" >
+					<div class="ui-g-12 ui-md-6 ui-lg-3">
+						
+							<p:panel style="background:#ebebeb;" widgetVar="wvAboEnCours">
+								
+								<div class="box #{dashBoardAbonnementController.cSbNbDocumentSurPeriode}" >
+								<div class="titre-box"><h2> Abonnements en cours</h2>
+								</div>
+								<h4>&#160;</h4>
+								<h2>#{dashBoardAbonnementController.nbAbonnementEnCoursSurPeriode} Abonnements en cours</h2>
+								<h3>Total HT : <p:outputLabel value="#{dashBoardAbonnementController.totauxCaPeriodeAbonnementEnCours.mtHtCalc}">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />		
+								</p:outputLabel>
+									Total TTC :
+									<p:outputLabel value="#{dashBoardAbonnementController.totauxCaPeriodeAbonnementEnCours.mtTtcCalc}">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />		
+									</p:outputLabel>
+								</h3>
+								<p>Du 
+								<p:outputLabel value="#{dashBoardAbonnementController.dateDebut}">
+									<f:convertDateTime pattern="#{msg.date_pattern}"
+											               timeZone="#{msg.time_zone}" type="localDate"/>		
+								</p:outputLabel>
+								  au 
+								<p:outputLabel value="#{dashBoardAbonnementController.dateFin}">
+									<f:convertDateTime pattern="#{msg.date_pattern}"
+											               timeZone="#{msg.time_zone}" type="localDate"/>		
+								</p:outputLabel>
+								
+								
+								</p>
+	
+							<p:selectBooleanButton style="width:50%;" id="Abonnementencours" 
+													value="true" onLabel="Sélection active"
+													widgetVar="wvAbonnementEnCours" 
+													offLabel="Afficher" onIcon="ui-icon-check" offIcon="ui-icon-close">
+									<p:ajax oncomplete="PF('wvListeAbonnement').filter()" 
+											update="@this,
+													@widgetVar(wvDashAbonnementPanelAbonnement),
+													@widgetVar(wvCountNbAbonnementNonPaye),
+													@widgetVar(wvCountNbAbonnementPaye),
+													@widgetVar(wvListeAbonnement),
+													@widgetVar(wvListeAbonnementParTiers),
+													@widgetVar(wvListeAbonnementMois),
+													@widgetVar(wvAboEnCours),
+													@widgetVar(wvAboSuspendus)
+													"
+											listener="#{dashBoardAbonnementController.refreshDashBoard('encours')}"/>	 
+	        					</p:selectBooleanButton>
+								</div> 
+							</p:panel>
+											
+							
+						</div>
+						<div class="ui-g-12 ui-md-6 ui-lg-3">
+						
+							<p:panel style="background:#ebebeb;" widgetVar="wvAboSuspendus">
+								
+								<div class="box #{dashBoardAbonnementController.cSbNbDocumentNonTransformeSurPeriode}" >
+								<div class="titre-box"><h2> Abonnements suspendus</h2>
+								</div>
+								<h4>&#160;</h4>
+								<h2>#{dashBoardAbonnementController.nbAbonnementSuspenduSurPeriode} Abonnements suspendus</h2>
+								<h3>Total HT : <p:outputLabel value="#{dashBoardAbonnementController.totauxCaPeriodeAbonnementSuspendu.mtHtCalc}">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />		
+								</p:outputLabel>
+									Total TTC :
+									<p:outputLabel value="#{dashBoardAbonnementController.totauxCaPeriodeAbonnementSuspendu.mtTtcCalc}">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />		
+									</p:outputLabel>
+								</h3>
+								<!-- <p>Du 
+								<p:outputLabel value="#{dashBoardAbonnementController.dateDebut}">
+									<f:convertDateTime pattern="#{msg.date_pattern}"
+											               timeZone="#{msg.time_zone}" />		
+								</p:outputLabel>
+								  au 
+								<p:outputLabel value="#{dashBoardAbonnementController.dateFin}">
+									<f:convertDateTime pattern="#{msg.date_pattern}"
+											               timeZone="#{msg.time_zone}" />		
+								</p:outputLabel>
+								
+								
+								</p> -->
+	
+							<p:selectBooleanButton style="width:50%;" id="Abonnementsuspendu" 
+													value="true" onLabel="Sélection active"
+													widgetVar="wvAbonnementSuspendu" 
+													offLabel="Afficher" onIcon="ui-icon-check" offIcon="ui-icon-close">
+									<p:ajax oncomplete="PF('wvListeAbonnement').filter()" 
+											update="@this,
+													@widgetVar(wvDashAbonnementPanelAbonnement),
+													@widgetVar(wvCountNbAbonnementNonPaye),
+													@widgetVar(wvCountNbAbonnementPaye),
+													@widgetVar(wvListeAbonnement),
+													@widgetVar(wvListeAbonnementParTiers),
+													@widgetVar(wvListeAbonnementMois),
+													@widgetVar(wvAboEnCours),
+													@widgetVar(wvAboSuspendus)
+													"
+											listener="#{dashBoardAbonnementController.refreshDashBoard('suspendu')}"/>	 
+	        					</p:selectBooleanButton>
+								</div> 
+							</p:panel>
+											
+							
+						</div>
+						<div class="ui-g-12 ui-md-6 ui-lg-3">
+						
+							<p:panel style="background:#ebebeb;" widgetVar="wvCountNbAbonnementPaye">
+								
+								<div class="box #{dashBoardAbonnementController.cSbNbDocumentNonTransformeARelancerSurPeriode}" >
+								<div class="titre-box"><h2> Abonnements annulés</h2>
+								</div>
+								<h4>&#160;</h4>
+								<h2>#{dashBoardAbonnementController.nbAbonnementAnnuleSurPeriode} Abonnements annulés</h2>
+								<h3>Total HT : <p:outputLabel value="#{dashBoardAbonnementController.totauxCaPeriodeAbonnementAnnule.mtHtCalc}">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />		
+								</p:outputLabel>
+									Total TTC :
+									<p:outputLabel value="#{dashBoardAbonnementController.totauxCaPeriodeAbonnementAnnule.mtTtcCalc}">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />		
+									</p:outputLabel>
+								</h3>
+								<p>Du 
+								<p:outputLabel value="#{dashBoardAbonnementController.dateDebut}">
+									<f:convertDateTime pattern="#{msg.date_pattern}"
+											               timeZone="#{msg.time_zone}" type="localDate"/>		
+								</p:outputLabel>
+								  au 
+								<p:outputLabel value="#{dashBoardAbonnementController.dateFin}">
+									<f:convertDateTime pattern="#{msg.date_pattern}"
+											               timeZone="#{msg.time_zone}" type="localDate"/>		
+								</p:outputLabel>
+								
+								
+								</p>
+	
+							<p:selectBooleanButton style="width:50%;" id="Abonnementtous" 
+													value="true" onLabel="Sélection active"
+													widgetVar="wvAbonnementTous" 
+													offLabel="Afficher" onIcon="ui-icon-check" offIcon="ui-icon-close">
+									<p:ajax oncomplete="PF('wvListeAbonnement').filter()" 
+											update="@this,
+													@widgetVar(wvDashAbonnementPanelAbonnement),
+													@widgetVar(wvCountNbAbonnementNonPaye),
+													@widgetVar(wvCountNbAbonnementPaye),
+													@widgetVar(wvListeAbonnement),
+													@widgetVar(wvListeAbonnementParTiers),
+													@widgetVar(wvListeAbonnementMois),
+													@widgetVar(wvAboSuspendus),
+													@widgetVar(wvAboEnCours)
+													"
+											listener="#{dashBoardAbonnementController.refreshDashBoard('annuler')}"/>	 
+	        					</p:selectBooleanButton>
+								</div> 
+							</p:panel>
+											
+							
+						</div>
+									
+					
+					</div>
+					</p:panel><!-- FIN PANEL POUR LA PERIODE 1 -->
+				
+					<!-- PANEL PERIODE 2 INCLUDE -->
+
+				</p:panel><!-- FIN PANEL BOX GLOBAL -->
+				</div>
+				<div class="ui-g-12 ui-md-12" style="margin-top: 20px;">
+				<p:panel  widgetVar="wvDashAbonnementPanelAbonnement" styleClass="panel-no-style">
+					<p:tabView id="idTabViewListesAbonnementsDashAbonnement" widgetVar="wvTabViewListesAbonnementsDashAbonnement" styleClass="tabview-no-background ">
+				        <p:tab title="Abonnements" >
+				        <div class="ui-g-12 ui-md-12 ">
+							<p:dataTable 	id="taAbonnement" 
+											var="a"
+											value="#{dashBoardAbonnementController.valueLignesAbonnement}"
+											styleClass="background-color-white"
+											scrollable="true"
+											scrollHeight="205"
+											liveResize="true"							
+											widgetVar="wvListeAbonnement" 
+											resizableColumns="true" 
+											paginator="true"
+											rows="#{msg.modele_datatable_ligne_par_page_debut}"
+											paginatorTemplate="#{msg.modele_datatable_paginator}"
+											rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+											emptyMessage="#{msg.message_datatable_vide}"
+											currentPageReportTemplate="#{msg.modele_datatable_page_courante}"
+											selectionMode="single" 
+											rowKey="#{a.codeDocument}" 
+											reflow="true">
+								
+								<f:facet name="header">
+								<f:facet name="{Exporters}">
+						            <h:commandLink>
+						                <p:graphicImage library="images" name="excel.png" width="24"/>
+						                <p:dataExporter type="xls" target="taAbonnement" fileName="liste_Abonnement" />
+						            </h:commandLink>
+						            
+						            <h:commandLink>
+						                <p:graphicImage  library="images" name="csv.png"  width="24"/>
+						                <p:dataExporter type="csv" target="taAbonnement" fileName="liste_Abonnement" options="#{separateurCsvController.csvOptions}" />
+						            </h:commandLink>
+						 
+						            <h:commandLink>
+						                <p:graphicImage  library="images" name="xml.png"  width="24"/>
+						                <p:dataExporter type="xml" target="taAbonnement" fileName="liste_Abonnement" />
+						            </h:commandLink>
+						        </f:facet>
+	        						
+	        						<span style="float:left;">
+									        <p:commandButton id="idBtnListePrintEcranDasboardAbonnement"
+							 title="Imprimer la liste" 
+			onsuccess="window.open('#{request.contextPath}/output?__report=/reports/documents/abonnement/ListeDashboardAbonnement.rptdesign&amp;__format=pdf')"
+			actionListener="#{dashBoardAbonnementController.actImprimerListeAbonnement}" styleClass="ui-priority-primary boutonPrint" style="color : white;" icon="fa fa-print"
+			process="@this" ></p:commandButton>
+			<!-- styleClass="ui-priority-primary boutonPrint -->
+									    </span>
+									    
+									       #{dashBoardAbonnementController.infoLabel}
+									       
+							   <span style="float:right;" class="searchbar_list">
+						            <p:outputPanel>
+							                <p:inputText id="globalFilter" onkeyup="PF('wvListeAbonnement').filter()" style="width:150px" placeholder="Rechercher"/>
+							            </p:outputPanel>
+						        </span>
+
+	    						</f:facet>
+	    						
+	    						<p:column style="width:16px">
+						            <p:rowToggler />
+						        </p:column>
+	    						 
+			
+								<p:column 	sortBy="#{a.codeDocument}" 
+											filterBy="#{a.codeDocument}" 
+											filterMatchMode="contains">
+									<f:facet name="header">
+										<h:outputText value="Code" />
+									</f:facet>
+									<p:commandLink value="#{a.codeDocument}"
+										action="#{dashBoardAbonnementController.ouvertureDocumentBean.detailAbonnement(dashBoardAbonnementController.ouvertureDocumentBean.recupCodeAbonnement(a.codeDocument))}" 
+										update=":form:tabView" oncomplete="activeTabCenter('#{dashBoardAbonnementController.ouvertureDocumentBean.event.cssLgrTab}');">
+									</p:commandLink>
+								</p:column>
+								
+								<p:column 	styleClass="center"
+											sortBy="#{a.dateDocument}"
+											filterBy="#{abonnementController.customFormatDate(a.dateDocument)}" 
+											filterMatchMode="contains">
+								
+									<f:facet name="header">
+										<h:outputText value="Date du document" />
+									</f:facet>
+									<h:outputText value="#{a.dateDocument}">
+										<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+									</h:outputText>
+								</p:column>
+								
+								<p:column 	styleClass="center"
+											sortBy="#{a.dateDebut}"
+											filterBy="#{abonnementController.customFormatDate(a.dateDebut)}" 
+											filterMatchMode="contains">
+								
+									<f:facet name="header">
+										<h:outputText value="Date de début" />
+									</f:facet>
+									<h:outputText value="#{a.dateDebut}">
+										<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}" />
+									</h:outputText>
+								</p:column>
+								<p:column 	styleClass="center"
+											sortBy="#{a.dateFin}"
+											filterBy="#{abonnementController.customFormatDate(a.dateFin)}" 
+											filterMatchMode="contains">
+								
+									<f:facet name="header">
+										<h:outputText value="Date de fin" />
+									</f:facet>
+									<h:outputText value="#{a.dateFin}">
+										<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+									</h:outputText>
+								</p:column>
+								
+								<p:column 	sortBy="#{a.codeTiers}"
+											filterBy="#{a.codeTiers}" 
+											filterMatchMode="contains">
+								
+									<f:facet name="header">
+										<h:outputText value="Code tiers" />
+									</f:facet>
+									<h:outputText value="#{a.codeTiers}" />
+								</p:column>
+								
+								<p:column 	sortBy="#{a.nomTiers}"
+											filterBy="#{a.nomTiers}" 
+											filterMatchMode="contains">
+									<f:facet name="header">
+										<h:outputText value="Nom" />
+									</f:facet>
+									<h:outputText value="#{a.nomTiers}" />
+								</p:column>
+								
+								<p:column headerText="Suspendu" sortBy="#{a.suspension}" filterBy="#{a.suspension}" filterMatchMode="equals" styleClass="center">
+							            <f:facet name="filter">
+							                <p:selectOneButton onchange="PF('wvListeAbonnement').filter()" >
+							                    <f:converter converterId="javax.faces.Boolean" />
+							                    <f:selectItem itemLabel="Tous" itemValue="" />
+							                    <f:selectItem itemLabel="Oui" itemValue="true" />
+							                    <f:selectItem itemLabel="Non" itemValue="false" />
+							                </p:selectOneButton>
+									</f:facet>
+									<p:selectBooleanCheckbox value="#{a.suspension}"  disabled="true"/>
+								</p:column>
+								
+						
+								
+							<p:column headerText="Annulé" sortBy="#{a.dateAnnulation != null ? true : false}" filterBy="#{a.dateAnnulation != null ? true : false}" filterMatchMode="equals" styleClass="center">
+							            <f:facet name="filter">
+							                <p:selectOneButton onchange="PF('wvListeAbonnement').filter()" >
+							                    <f:converter converterId="javax.faces.Boolean" />
+							                    <f:selectItem itemLabel="Tous" itemValue="" />
+							                    <f:selectItem itemLabel="Oui" itemValue="true" />
+							                    <f:selectItem itemLabel="Non" itemValue="false" />
+							                </p:selectOneButton>
+									</f:facet>
+									<p:selectBooleanCheckbox value="#{a.dateAnnulation != null ? true : false}"  disabled="true"/>
+								</p:column> 
+								
+							<p:column 	styleClass="center"
+											sortBy="#{a.dateAnnulation}"
+											filterBy="#{abonnementController.customFormatDate(a.dateAnnulation)}" 
+											filterMatchMode="contains">
+								
+									<f:facet name="header">
+										<h:outputText value="Date d'annulation" />
+									</f:facet>
+									<h:outputText value="#{a.dateAnnulation}">
+										<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+									</h:outputText>
+							</p:column>				
+							</p:dataTable>
+							</div>
+						</p:tab>
+						<!-- TAB FACTURE PAR TIERS -->
+						
+						<!-- DEBUT DES TABS COMPARAISONS -->
+						
+						<!-- TAB FACTURE PAR TIERS COMP-->
+						
+						<!-- FIN DES TABS COMPARAISONS -->
+					</p:tabView>
+					</p:panel>
+				</div>
+					
+				
+
+                </div>
+            </div>
+        </div>
+        
+
+    
+</ui:composition>

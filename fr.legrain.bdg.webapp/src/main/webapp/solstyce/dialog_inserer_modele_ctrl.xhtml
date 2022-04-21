@@ -1,0 +1,70 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core" 
+	xmlns:ui="http://java.sun.com/jsf/facelets" 
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/template_dialog_lgr.xhtml">
+	
+	<ui:define name="head">
+		 <title>Ajout de controles à partir d'un modèle</title>
+        <style type="text/css">
+            .ui-widget {
+                font-size: 90%;
+            }
+        </style>
+	</ui:define>
+
+	<ui:define name="content">
+		    	<h:form id="idDialogInsererModeleCtrl">
+
+			<p:dataTable id="idModeleGroupeCtrlDataTable" 
+				var="table"
+				rendered="#{dansDialogue == null ? true : false}"
+				value="#{ajoutModeleControleController.values}"
+				rowKey="#{table.idModeleGroupe}" 
+				class="datatable"
+				selection="#{ajoutModeleControleController.selection}" 
+				paginator="true"
+				rows="#{msg.modele_datatable_ligne_par_page_debut}"
+				paginatorTemplate="#{msg.modele_datatable_paginator}"
+				rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+				emptyMessage="#{msg.message_datatable_vide}"
+				currentPageReportTemplate="#{msg.modele_datatable_page_courante}">
+
+				<p:column selectionMode="single" style="width:16px;text-align:center"/>
+	
+				<p:column sortBy="#{table.codeGroupe}"
+					filterBy="#{table.codeGroupe}" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="Code" />
+					</f:facet>
+					<h:outputText value="#{table.codeGroupe}" />
+				</p:column>
+				
+				<p:column sortBy="#{table.libelle}"
+					filterBy="#{table.libelle}" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="Libellé" />
+					</f:facet>
+					<h:outputText value="#{table.libelle}" />
+				</p:column>
+				
+				<p:column sortBy="#{table.listeModeleConformite.size()}">
+					<f:facet name="header">
+						<h:outputText value="Nb controles dans le modèle" />
+					</f:facet>
+					<h:outputText value="#{table.listeModeleConformite.size()}" />
+				</p:column>
+			</p:dataTable>
+			
+			<div class="text-center">
+				<p:commandButton value="Annuler" styleClass="btn-cancel btn" actionListener="#{ajoutModeleControleController.actFermerDialog}" process="@this"/>
+				<p:commandButton id="btnEnregistrer" value="Enregistrer" styleClass="btn-save btn" actionListener="#{ajoutModeleControleController.actEnregistrer}" disabled="#{ajoutModeleControleController.selection!=null}" update="@form" widgetVar="widgetVarBtnEnregistrer"/>
+			</div>
+
+		</h:form>
+		
+<!-- 		<h:outputScript name="/js/functions.js"  /> -->
+	</ui:define>
+     
+</ui:composition>

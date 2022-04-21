@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<title>Dev - Test</title>
+	<link rel="shortcut icon" type="image/x-icon"
+		href="#{resource['images:favicon.ico']}" />
+
+	<f:facet name="first">
+	</f:facet>
+</h:head>
+<h:body>
+	<f:facet name="last">
+		<!-- surcharge des CSS primefaces -->
+		<h:outputStylesheet library="css" name="hacks.css" />
+<!-- 		<h:outputStylesheet library="css" name="icarus-bdg.css" /> -->
+<!-- 		<h:outputStylesheet library="css" name="theme-bdg.css" /> -->
+	</f:facet>
+
+	<p:layout fullPage="true" widgetVar="widgetLayoutPage">
+
+		<!-- 		<p:ajax event="toggle" listener="#{leftBean.handleToggle}"/> -->
+
+		<p:layoutUnit position="north" size="100" gutter="0" class="north">
+			<div class="ui-grid ui-grid-responsive">
+				<div class="ui-grid-col-2">
+					<p:link href="/index.xhtml">
+						<p:graphicImage library="images" name="logo.jpeg" height="32px" width="32px"/>
+						<h:outputText value="BDG" />
+					</p:link>
+				</div>
+				<div class="ui-grid-col-3">
+					<p:ajaxStatus>
+						<f:facet name="start">
+							<p:graphicImage library="images" name="ajax-loader.gif" />
+						</f:facet>
+						<f:facet name="complete">
+							<!-- 							<h:outputText value="Done!" /> -->
+						</f:facet>
+					</p:ajaxStatus>
+				</div>
+				<div class="ui-grid-col-10 text-right">
+					<p:commandLink value="déconnexion" actionListener="#{auth.logout}" />
+				</div>
+
+
+			</div>
+		</p:layoutUnit>
+
+
+		<p:layoutUnit position="center" gutter="4" class="center">
+		
+			<h:form id="form">
+				<p:growl id="growl" showDetail="true" sticky="true" />
+				
+				<p:outputLabel value="#{devBean.versionProg}" escape="false" /><br/>
+								
+				<p:outputLabel value="#{devBean.versionProg}" escape="false" />
+
+<!-- <br/> -->
+<!-- <br/> -->
+<!-- <p:commandButton value="Notif Android" update="@form" actionListener="#{devBean.notifAndroid}"/> -->
+<!-- <br/> -->
+<!-- <br/> -->
+				
+				
+
+	<p:panel widgetVar="wvPanelClient" header="Client du dossier - Appli Espace Client">
+	
+		<p:panelGrid columns="1">
+			<h:panelGroup style="width:100%">
+				<p:autoComplete value="#{devBean.taTiersDTO}" converter="entityConverter"
+					completeMethod="#{devBean.tiersAutoCompleteDTOLight}"
+					var="tiers" itemLabel="#{tiers.codeTiers} • #{tiers.nomTiers}" itemValue="#{tiers}" forceSelection="true"
+					dropdown="true" placeholder="Tiers" style="display:grid">
+					<p:column>
+							<h:outputText value="#{tiers.codeTiers}"/>
+					</p:column>	
+	
+					<p:column>
+						<h:outputText value="#{tiers.nomTiers}" />
+					</p:column>
+		
+					<p:column>
+						<h:outputText value="#{tiers.prenomTiers}" />
+					</p:column>
+	
+					<p:column>
+						<h:outputText value="#{tiers.nomEntreprise}" />
+					</p:column>
+	
+					<p:ajax event="itemSelect" update="@this" />
+				</p:autoComplete>
+			</h:panelGroup>
+						
+			<p:inputText value="#{devBean.titrePushTiersEspaceClient}" placeholder="Titre *" style="width:100%">
+				<p:ajax event="blur" update="@this" />
+			</p:inputText>
+			<p:inputTextarea value="#{devBean.contenuPushTiersEspaceClient}" placeholder="Résumé *" style="width:100%">
+				<p:ajax event="blur" update="@this" />
+			</p:inputTextarea>
+			<p:panelGrid columns="3">
+				<h:panelGroup>
+					<p:inputTextarea value="#{devBean.contenuLongPushTiersEspaceClient}" placeholder="Contenu" style="width:100%">
+						<p:ajax event="blur" update="@this" />
+					</p:inputTextarea>
+					<br/>
+					Exemple : 
+					<br/>
+					Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent malesuada cursus ante, eu viverra arcu. <br/>
+					Nulla ut enim et ante mattis fermentum. Ut eget enim iaculis, finibus nibh in, vehicula neque. <br/>
+					Aenean quis sem quis magna consequat maximus vel non tellus. <br/>
+					Vestibulum at mauris tempor, suscipit tellus et, tempor nibh. In pulvinar purus a efficitur egestas. <br/>
+					Sed id risus quis enim facilisis euismod. Curabitur non gravida neque. Nulla a dui lacinia, interdum arcu a, euismod orci. <br/>
+					Nam sed justo purus. In id sem ligula. Quisque aliquam imperdiet tellus vitae fringilla. Nullam vitae varius libero. <br/>
+					Proin vitae mauris est. Maecenas porttitor ultrices mattis. Nam viverra rhoncus dolor at tempor.
+				</h:panelGroup>	 
+				<p:outputLabel value="OU"/>
+				<h:panelGroup>
+					<p:inputText value="#{devBean.imagePushTiersEspaceClient}" placeholder="URL image" style="width:100%">
+						<p:ajax event="blur" update="@this" />
+					</p:inputText>
+					<br/>
+					Exemple : 
+					<br/>
+					https://www.legrain.fr/images/accueil/logo-legrain-informatique1.png
+				</h:panelGroup>	
+			</p:panelGrid>
+
+			<h:panelGroup>
+				<p:inputText value="#{devBean.urlPushTiersEspaceClient}" placeholder="URL page web" style="width:100%">
+					<p:ajax event="blur" update="@this" />
+				</p:inputText>
+				Exemple : https://www.legrain.fr
+			</h:panelGroup>	
+
+	        <p:commandButton value="Envoyer" update="@widgetVar(wvPanelClient)" process="@this" actionListener="#{devBean.notifAndroidTiersEspaceClient}"/>
+	        <p:commandButton value="Envoyer à tous les client" update="@widgetVar(wvPanelClient)" process="@this" actionListener="#{devBean.notifAndroidTiersEspaceClientTous}"/>
+		</p:panelGrid>
+	</p:panel>
+				
+	<p:panel widgetVar="wvPanelUtilisateur" header="Utilisateur du dossier - Appli BDG">
+		<p:panelGrid columns="1">
+			<p:autoComplete value="#{devBean.taUtilisateurDTO}" converter="entityConverter"
+				completeMethod="#{devBean.utilisateurAutoCompleteDTOLight}"
+				var="tiers" itemLabel="#{tiers.username}" itemValue="#{tiers}" forceSelection="true"
+				dropdown="true" placeholder="Utilisateur">
+				<p:column>
+						<h:outputText value="#{tiers.username}"/>
+				</p:column>	
+
+				<p:column>
+					<h:outputText value="#{tiers.email}" />
+				</p:column>
+
+				<p:ajax event="itemSelect" update="@this" />
+			</p:autoComplete>
+						
+			<p:inputText value="#{devBean.titrePushUtilisateur}" placeholder="Titre">
+				<p:ajax event="blur" update="@this" />
+			</p:inputText>
+			<p:inputTextarea value="#{devBean.contenuPushUtilisateur}" placeholder="Contenu">
+				<p:ajax event="blur" update="@this" />
+			</p:inputTextarea>
+			
+			<p:commandButton value="Envoyer" update="@widgetVar(wvPanelUtilisateur)" process="@this" actionListener="#{devBean.notifAndroidUtilisateur}"/>
+			<p:commandButton value="Envoyer à tous les utilisateurs" update="@widgetVar(wvPanelUtilisateur)" process="@this" actionListener="#{devBean.notifAndroidUtilisateurTous}"/>
+		</p:panelGrid>
+	</p:panel>
+
+				
+			</h:form>
+	
+		</p:layoutUnit>
+
+	</p:layout>
+
+		<h:outputScript name="/js/functions.js"  />
+
+</h:body>
+</html>

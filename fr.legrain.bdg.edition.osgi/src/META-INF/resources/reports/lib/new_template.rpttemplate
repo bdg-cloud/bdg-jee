@@ -1,0 +1,499 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<report xmlns="http://www.eclipse.org/birt/2005/design" version="3.2.23" id="1">
+    <property name="createdBy">Eclipse BIRT Designer Version 4.7.0.v201706222054</property>
+    <property name="units">in</property>
+    <method name="initialize"><![CDATA[function findValue (key){
+	var result = null;
+    if(reportContext.getHttpServletRequest()!=null) {
+		result = reportContext.getHttpServletRequest().getSession().getAttribute(key);
+	} else {
+		result = reportContext.getAppContext().get(key);
+	}
+	return result;
+}
+	function upperCase(s){
+	var result = null;
+    if(s!=null) {
+    	s = s.toUpperCase();
+    }
+    return s;
+}
+
+function nullToEmptyString(s){
+    if(s==null) {
+    	s = "";
+    }
+    return s;
+}
+reportContext.setPersistentGlobalVariable("findValue", findValue);
+
+edition = findValue("edition");]]></method>
+    <text-property name="displayName">essai</text-property>
+    <property name="iconFile">/templates/chart_listing.gif</property>
+    <property name="bidiLayoutOrientation">ltr</property>
+    <property name="imageDPI">96</property>
+    <data-sources>
+        <script-data-source name="Data Source" id="4"/>
+    </data-sources>
+    <data-sets>
+        <script-data-set name="DataSetListeFacture" id="6">
+            <list-property name="resultSetHints">
+                <structure>
+                    <property name="position">1</property>
+                    <property name="name">code</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">2</property>
+                    <property name="name">date</property>
+                    <property name="dataType">date</property>
+                </structure>
+                <structure>
+                    <property name="position">3</property>
+                    <property name="name">codeTiers</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">4</property>
+                    <property name="name">nom</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">5</property>
+                    <property name="name">prenom</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">6</property>
+                    <property name="name">entreprise</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">7</property>
+                    <property name="name">ht</property>
+                    <property name="dataType">decimal</property>
+                </structure>
+                <structure>
+                    <property name="position">8</property>
+                    <property name="name">tva</property>
+                    <property name="dataType">decimal</property>
+                </structure>
+                <structure>
+                    <property name="position">9</property>
+                    <property name="name">ttc</property>
+                    <property name="dataType">decimal</property>
+                </structure>
+                <structure>
+                    <property name="position">10</property>
+                    <property name="name">dateEcheance</property>
+                    <property name="dataType">date</property>
+                </structure>
+                <structure>
+                    <property name="position">11</property>
+                    <property name="name">compteur</property>
+                    <property name="dataType">string</property>
+                </structure>
+            </list-property>
+            <list-property name="columnHints">
+                <structure>
+                    <property name="columnName">code</property>
+                </structure>
+                <structure>
+                    <property name="columnName">date</property>
+                </structure>
+                <structure>
+                    <property name="columnName">codeTiers</property>
+                </structure>
+                <structure>
+                    <property name="columnName">nom</property>
+                </structure>
+                <structure>
+                    <property name="columnName">prenom</property>
+                </structure>
+                <structure>
+                    <property name="columnName">entreprise</property>
+                </structure>
+                <structure>
+                    <property name="columnName">ht</property>
+                </structure>
+                <structure>
+                    <property name="columnName">tva</property>
+                </structure>
+                <structure>
+                    <property name="columnName">ttc</property>
+                </structure>
+                <structure>
+                    <property name="columnName">dateEcheance</property>
+                </structure>
+                <structure>
+                    <property name="columnName">compteur</property>
+                </structure>
+            </list-property>
+            <structure name="cachedMetaData">
+                <list-property name="resultSet">
+                    <structure>
+                        <property name="position">1</property>
+                        <property name="name">code</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">2</property>
+                        <property name="name">date</property>
+                        <property name="dataType">date</property>
+                    </structure>
+                    <structure>
+                        <property name="position">3</property>
+                        <property name="name">codeTiers</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">4</property>
+                        <property name="name">nom</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">5</property>
+                        <property name="name">prenom</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">6</property>
+                        <property name="name">entreprise</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">7</property>
+                        <property name="name">ht</property>
+                        <property name="dataType">decimal</property>
+                    </structure>
+                    <structure>
+                        <property name="position">8</property>
+                        <property name="name">tva</property>
+                        <property name="dataType">decimal</property>
+                    </structure>
+                    <structure>
+                        <property name="position">9</property>
+                        <property name="name">ttc</property>
+                        <property name="dataType">decimal</property>
+                    </structure>
+                    <structure>
+                        <property name="position">10</property>
+                        <property name="name">dateEcheance</property>
+                        <property name="dataType">date</property>
+                    </structure>
+                    <structure>
+                        <property name="position">11</property>
+                        <property name="name">compteur</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                </list-property>
+            </structure>
+            <property name="dataSource">Data Source</property>
+            <method name="open"><![CDATA[count=0;
+
+ if(listeFacture = findValue("listeFacture")) {
+
+liste = listeFacture;
+}
+
+listeFacture = findValue("listeFacture");
+
+]]></method>
+            <method name="fetch"><![CDATA[if(count<liste.size()) {
+	c = liste.get(count);
+	
+	if (c.getCodeDocument() != null) {
+	row["code"] = c.getCodeDocument();
+	} else {
+				Packages.java.util.logging.Logger.getLogger("").info("code document null");
+				row["code"] = ""
+			}	
+	if (c.getDateDocument() != null) {
+	row["date"] = c.getDateDocument();
+	} else {
+				Packages.java.util.logging.Logger.getLogger("").info("date document null");
+				row["date"] = ""
+			}	
+	if (c.getCodeTiers() != null) {
+	row["codeTiers"] = c.getCodeTiers();
+	} else {
+				Packages.java.util.logging.Logger.getLogger("").info("code tiers null");
+				row["codeTiers"] = ""
+			}	
+	if (c.getNomTiers() != null) {
+	row["nom"] = c.getNomTiers();
+	} else {
+				Packages.java.util.logging.Logger.getLogger("").info("nom null");
+				row["nom"] = ""
+			}
+	if (c.getPrenomTiers() != null) {
+	row["prenom"] = c.getPrenomTiers();
+	} else {
+				Packages.java.util.logging.Logger.getLogger("").info("prenom null");
+				row["prenom"] = ""
+			}
+	if (c.getNomEntreprise() != null) {
+	row["entreprise"] = c.getNomEntreprise();
+	} else {
+				Packages.java.util.logging.Logger.getLogger("").info("entreprise null");
+				row["entreprise"] = ""
+			}
+	if (c.getNetHtCalc() != null) {
+	row["ht"] = c.getNetHtCalc();
+	} else {
+				Packages.java.util.logging.Logger.getLogger("").info("ht null");
+				row["ht"] = ""
+			}
+	if (c.getNetTvaCalc() != null) {
+	row["tva"] = c.getNetTvaCalc();
+	} else {
+				Packages.java.util.logging.Logger.getLogger("").info("tva null");
+				row["tva"] = ""
+			}
+	if (c.getNetTtcCalc() != null) {
+	row["ttc"] = c.getNetTtcCalc();
+	} else {
+				Packages.java.util.logging.Logger.getLogger("").info("ttc null");
+				row["ttc"] = ""
+			}
+	if (c.getDateEchDocument() != null) {
+	row["dateEcheance"] = c.getDateEchDocument();
+	} else {
+				Packages.java.util.logging.Logger.getLogger("").info("date echéance null");
+				row["dateEcheance"] = ""
+			}
+											 					
+	count++;
+	return true;
+}
+return false;]]></method>
+        </script-data-set>
+    </data-sets>
+    <page-setup>
+        <simple-master-page name="Simple MasterPage" id="2">
+            <page-footer>
+                <text id="3">
+                    <property name="contentType">html</property>
+                    <text-property name="content"><![CDATA[<value-of>new Date()</value-of>]]></text-property>
+                </text>
+            </page-footer>
+        </simple-master-page>
+    </page-setup>
+    <body>
+        <table id="7">
+            <property name="dataSet">DataSetListeFacture</property>
+            <list-property name="boundDataColumns">
+                <structure>
+                    <property name="name">code</property>
+                    <text-property name="displayName">code</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["code"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">date</property>
+                    <text-property name="displayName">date</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["date"]</expression>
+                    <property name="dataType">date</property>
+                </structure>
+                <structure>
+                    <property name="name">codeTiers</property>
+                    <text-property name="displayName">codeTiers</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["codeTiers"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">nom</property>
+                    <text-property name="displayName">nom</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["nom"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">prenom</property>
+                    <text-property name="displayName">prenom</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["prenom"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">entreprise</property>
+                    <text-property name="displayName">entreprise</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["entreprise"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">ht</property>
+                    <text-property name="displayName">ht</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["ht"]</expression>
+                    <property name="dataType">decimal</property>
+                </structure>
+                <structure>
+                    <property name="name">tva</property>
+                    <text-property name="displayName">tva</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["tva"]</expression>
+                    <property name="dataType">decimal</property>
+                </structure>
+                <structure>
+                    <property name="name">ttc</property>
+                    <text-property name="displayName">ttc</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["ttc"]</expression>
+                    <property name="dataType">decimal</property>
+                </structure>
+                <structure>
+                    <property name="name">dateEcheance</property>
+                    <text-property name="displayName">dateEcheance</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["dateEcheance"]</expression>
+                    <property name="dataType">date</property>
+                </structure>
+                <structure>
+                    <property name="name">compteur</property>
+                    <text-property name="displayName">compteur</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["compteur"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+            </list-property>
+            <column id="66"/>
+            <column id="67"/>
+            <column id="68"/>
+            <column id="69"/>
+            <column id="70"/>
+            <column id="71"/>
+            <column id="72"/>
+            <column id="73"/>
+            <column id="74"/>
+            <column id="75"/>
+            <column id="76"/>
+            <header>
+                <row id="8">
+                    <cell id="9">
+                        <label id="10">
+                            <text-property name="text">code</text-property>
+                        </label>
+                    </cell>
+                    <cell id="11">
+                        <label id="12">
+                            <text-property name="text">date</text-property>
+                        </label>
+                    </cell>
+                    <cell id="13">
+                        <label id="14">
+                            <text-property name="text">codeTiers</text-property>
+                        </label>
+                    </cell>
+                    <cell id="15">
+                        <label id="16">
+                            <text-property name="text">nom</text-property>
+                        </label>
+                    </cell>
+                    <cell id="17">
+                        <label id="18">
+                            <text-property name="text">prenom</text-property>
+                        </label>
+                    </cell>
+                    <cell id="19">
+                        <label id="20">
+                            <text-property name="text">entreprise</text-property>
+                        </label>
+                    </cell>
+                    <cell id="21">
+                        <label id="22">
+                            <text-property name="text">ht</text-property>
+                        </label>
+                    </cell>
+                    <cell id="23">
+                        <label id="24">
+                            <text-property name="text">tva</text-property>
+                        </label>
+                    </cell>
+                    <cell id="25">
+                        <label id="26">
+                            <text-property name="text">ttc</text-property>
+                        </label>
+                    </cell>
+                    <cell id="27">
+                        <label id="28">
+                            <text-property name="text">dateEcheance</text-property>
+                        </label>
+                    </cell>
+                    <cell id="29">
+                        <label id="30">
+                            <text-property name="text">compteur</text-property>
+                        </label>
+                    </cell>
+                </row>
+            </header>
+            <detail>
+                <row id="31">
+                    <cell id="32">
+                        <data id="33">
+                            <property name="resultSetColumn">code</property>
+                        </data>
+                    </cell>
+                    <cell id="34">
+                        <data id="35">
+                            <property name="resultSetColumn">date</property>
+                        </data>
+                    </cell>
+                    <cell id="36">
+                        <data id="37">
+                            <property name="resultSetColumn">codeTiers</property>
+                        </data>
+                    </cell>
+                    <cell id="38">
+                        <data id="39">
+                            <property name="resultSetColumn">nom</property>
+                        </data>
+                    </cell>
+                    <cell id="40">
+                        <data id="41">
+                            <property name="resultSetColumn">prenom</property>
+                        </data>
+                    </cell>
+                    <cell id="42">
+                        <data id="43">
+                            <property name="resultSetColumn">entreprise</property>
+                        </data>
+                    </cell>
+                    <cell id="44">
+                        <data id="45">
+                            <property name="resultSetColumn">ht</property>
+                        </data>
+                    </cell>
+                    <cell id="46">
+                        <data id="47">
+                            <property name="resultSetColumn">tva</property>
+                        </data>
+                    </cell>
+                    <cell id="48">
+                        <data id="49">
+                            <property name="resultSetColumn">ttc</property>
+                        </data>
+                    </cell>
+                    <cell id="50">
+                        <data id="51">
+                            <property name="resultSetColumn">dateEcheance</property>
+                        </data>
+                    </cell>
+                    <cell id="52">
+                        <data id="53">
+                            <property name="resultSetColumn">compteur</property>
+                        </data>
+                    </cell>
+                </row>
+            </detail>
+            <footer>
+                <row id="54">
+                    <cell id="55"/>
+                    <cell id="56"/>
+                    <cell id="57"/>
+                    <cell id="58"/>
+                    <cell id="59"/>
+                    <cell id="60"/>
+                    <cell id="61"/>
+                    <cell id="62"/>
+                    <cell id="63"/>
+                    <cell id="64"/>
+                    <cell id="65"/>
+                </row>
+            </footer>
+        </table>
+    </body>
+</report>

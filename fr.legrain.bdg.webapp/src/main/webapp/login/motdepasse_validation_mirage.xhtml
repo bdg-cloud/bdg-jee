@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<f:facet name="first">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<meta name="viewport"
+			content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+	</f:facet>
+	<title>Bureau de gestion</title>
+</h:head>
+
+<h:body styleClass="login-body layout-light">
+
+	<f:facet name="last">
+		<!-- surcharge des CSS primefaces -->
+		<h:outputStylesheet library="css" name="theme-bdg.css" />
+	</f:facet>
+
+	<f:metadata>
+		<f:viewParam name="p" value="#{mdpOublieBean.param}" />
+		<f:viewAction action="#{mdpOublieBean.onload}" />
+	</f:metadata>
+
+	<div class="login-content">
+		<div class="login-panel">
+			<div class="login-panel-content">
+				<!--<h:form styleClass="forms"> -->
+				
+				<h:form>
+					<div class="logo-container" style="display: flex; justify-content: center;">
+						<h:graphicImage library="images" name="Bureau de Gestion.svg" title="Bureau de gestion" width="300" height="200" />
+					</div>
+					<div class="ui-g" style="display: flex; justify-content: center; flex-direction: column; margin: auto;">
+						<p:panel header="Modification de votre mot de passe" styleClass="panel-login" rendered="#{!mdpOublieBean.actionOk}">
+							<div class="ui-g-12" style="padding-top: 35px;">
+								<p:outputLabel value="Dossier : #{mdpOublieBean.tenantDossier}" size="25" style="width:60%;" />
+								<br />
+							</div>
+							<div class="ui-g-12" style="padding-top: 10px;">
+								<p:outputLabel value="Identifiant : #{mdpOublieBean.identifiant}" size="25" style="width:60%;" />
+								<br />
+							</div>
+							<div class="ui-g-12" style="padding-top: 10px;">
+								<p:outputLabel value="Adresse email : #{mdpOublieBean.adresseEmail}" size="25" style="width:60%" />
+							</div>
+							<div class="ui-g-12" style="padding-top: 10px;">
+								<p:password id="pwd1" value="#{mdpOublieBean.nouveauMotDePasse}"
+									placeholder="Nouveau mot de passe" feedback="true"
+									required="true" weakLabel="Sécurité faible"
+									promptLabel="Veuillez saisir votre nouveau mot de passe"
+									goodLabel="Sécurité correcte" strongLabel="Sécurité forte"
+									size="25" style="width:60%" />
+								<!-- 							match="pwd2"  -->
+								<br /> <br />
+								<p:password id="pwd2"
+									value="#{mdpOublieBean.confirmationMotDePasse}"
+									placeholder="Confirmation du mot de passe" required="true" size="25" style="width:60%" />
+							</div>
+
+							<div class="ui-g-12 buttons" style="justify-content: center;">
+								<p:commandButton id="id_btn_login" style="margin-bottom: 15px;"  actionListener="#{mdpOublieBean.changeMotDePasse}" value="Modifier mon mot de passe" update="@form" />
+							</div>
+
+							<p:messages styleClass="errors" autoUpdate="true" showSummary="true" />
+						</p:panel>
+
+						<p:panel header="Modification de votre mot de passe" styleClass="panel-login" rendered="#{mdpOublieBean.actionOk}">
+							<p:messages styleClass="errors" autoUpdate="true" showDetail="true" showSummary="true" />
+						</p:panel>
+
+
+
+						<div class="ui-g-12 footer-login" style="color: #5e81ac;">
+							<span>Legrain Informatique</span>
+							<br /> 
+							<span>All rights reserved.</span>
+						</div>
+					</div>
+
+					<style type="text/css">
+						html {
+							height: 100%;
+						}
+						
+						.ui-button-text, .ui-button-text-only .ui-button-text {
+							padding: 8px !important;
+							transition: none !important;
+						}
+						
+						.ui-panel .ui-panel-title {
+							font-size: 17px;
+						}
+					</style>
+
+				</h:form>
+			</div>
+		</div>
+		<div class="desert"></div>
+	</div>
+
+	<h:outputStylesheet name="css/layout-green-dark.css" library="mirage-layout" />
+
+</h:body>
+
+</html>

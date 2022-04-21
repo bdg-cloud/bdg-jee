@@ -1,0 +1,326 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<p:panel id="genCodeExtendedFormPrincipal" widgetVar="genCodeExtendedForm">
+
+<!-- 		<p class="subtitle"> -->
+<!-- 			<p:outputLabel value="Gestion de la génération des codes" rendered="#{dansDialogue == null ? true : false}" /> -->
+<!-- 		</p> -->
+
+		<!-- bouton -->
+		<p:panel id="genCodeExtendedDataTableF" class="mt30" style="position:relative;"
+			rendered="#{dansDialogue == null ? true : false}">
+			
+			<p:commandButton id="idLinkAideGenCodeExt" value="Aide" title="Aide" process="@this"
+				styleClass="icon-aidecontextuelle icon" >
+			</p:commandButton>
+
+			<p:overlayPanel for="idLinkAideGenCodeExt" hideEffect="fade" dynamic="true" showCloseIcon="true" styleClass="overlay-aide-contextuelle overlay-aide-contextuelle-center">
+				<ui:include src="/aide_contextuelle/gencodextended_general.xhtml" />
+			</p:overlayPanel>
+
+				<p:commandButton value="Modifier" title="Modifier" process="@this"
+				update="@form" 
+				actionListener="#{genCodeExtendedController.actDialogModifier}"
+				styleClass="icon-update icon" >
+				<p:ajax event="dialogReturn" listener="#{genCodeExtendedController.handleReturnDialogTypes}" update=":form"/>
+			</p:commandButton>
+
+			
+<!-- 			<p:commandButton id="genCodeExtendedModifier" title="Modifier" -->
+<!-- 				process="@this" class="icon-update icon" -->
+<!-- 				disabled="#{genCodeExtendedController.etatBouton('modifier')}" -->
+<!-- 				update="@widgetVar(varGenCodeExPanel), @this, @parent:genCodeExtendedSupprimer" -->
+<!-- 				actionListener="#{genCodeExtendedController.actModifier}" /> -->
+
+<!-- 			<p:commandButton id="genCodeExtendedSupprimer" title="Supprimer" -->
+<!-- 				class="icon-delete icon" -->
+<!-- 				disabled="#{genCodeExtendedController.etatBouton('supprimer')}" -->
+<!-- 				type="button" onclick="PF('genCodeExtendedcd1').show()"> -->
+<!-- 			</p:commandButton> -->
+
+			<p:commandButton id="genCodeExtendedFermer" title="Fermer"
+				class="icon-close icon menuitem-fermer-droite" type="button"
+				onclick="PF('genCodeExtendedcd2').show()"
+				rendered="#{dansDialogue == null ? true : false}" />
+				
+			<p:commandButton id="genCodeExtendedFermerDialogue" title="Fermer"
+				process="@this" class="icon-close icon menuitem-fermer-droite"
+				actionListener="#{genCodeExtendedController.actFermerDialog}"
+				rendered="#{dansDialogue != null ? true : false}" />
+	
+			<p:confirmDialog
+				message="#{msg_diag.alert_suppresion}"
+				header="Confirmation" severity="alert" appendTo="@(body)"
+				widgetVar="genCodeExtendedcd1">
+				<p:commandButton value="#{msg_diag.Oui}" update="@form"
+					oncomplete="PF('genCodeExtendedcd1').hide()">
+					<p:ajax listener="#{genCodeExtendedController.actSupprimer}" />
+				</p:commandButton>
+				<p:commandButton value="#{msg_diag.Non}"
+					onclick="PF('genCodeExtendedcd1').hide();" type="button" />
+			</p:confirmDialog>
+
+			<p:confirmDialog
+				message="#{msg_diag.alert_fermeture_onglet}"
+				header="Confirmation" severity="alert"
+				widgetVar="genCodeExtendedcd2" appendTo="@(body)">
+				<p:commandButton value="#{msg_diag.Oui}"
+					onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())"
+					oncomplete="PF('genCodeExtendedcd2').hide()" />
+
+				<p:commandButton value="#{msg_diag.Non}"
+					onclick="PF('genCodeExtendedcd2').hide();" type="button" />
+			</p:confirmDialog>
+			
+			
+		</p:panel>
+
+		<p:dataTable id="genCodeExtendedDataTable" var="table"
+			rendered="#{dansDialogue == null ? true : false}"
+			value="#{genCodeExtendedController.values}"
+			rowKey="#{table.idGenCodeEx}" selectionMode="single"
+			class="datatable" selection="#{genCodeExtendedController.selection}" paginator="false"
+			rows="#{msg.modele_datatable_ligne_par_page_debut}"
+			paginatorTemplate="#{msg.modele_datatable_paginator}"
+			rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+			emptyMessage="#{msg.message_datatable_vide}"
+			currentPageReportTemplate="#{msg.modele_datatable_page_courante}">
+			
+			<p:ajax event="rowSelect" listener="#{genCodeExtendedController.onRowSelect}" />
+
+			<f:facet name="{Exporters}">
+				<h:commandLink>
+					<p:graphicImage library="images" name="excel.png" width="24" />
+					<p:dataExporter type="xls" target="genCodeExtendedDataTable"
+						fileName="genCodeExtended" />
+				</h:commandLink>
+
+				<h:commandLink>
+					<p:graphicImage library="images" name="pdf.png" width="24" />
+					<p:dataExporter type="pdf" target="genCodeExtendedDataTable"
+						fileName="genCodeExtended" />
+				</h:commandLink>
+
+				<h:commandLink>
+					<p:graphicImage library="images" name="csv.png" width="24" />
+					<p:dataExporter type="csv" target="genCodeExtendedDataTable"
+						fileName="genCodeExtended" />
+				</h:commandLink>
+
+				<h:commandLink>
+					<p:graphicImage library="images" name="xml.png" width="24" />
+					<p:dataExporter type="xml" target="genCodeExtendedDataTable"
+						fileName="genCodeExtended" />
+				</h:commandLink>
+			</f:facet>
+
+			<p:column sortBy="#{table.cleGencode}">
+				<f:facet name="header">
+<!-- 					<p:panel styleClass="panel-aide-contextuelle"> -->
+					<h:outputText value="Entité " />
+					<p:commandLink id="idLinkAideGenCodeExtEntite" styleClass="lien-aide-contextuelle" >
+						<i class="fa fa-info-circle animated swing"></i>
+					</p:commandLink>
+					<p:overlayPanel for="idLinkAideGenCodeExtEntite" hideEffect="fade" dynamic="true" showCloseIcon="true" styleClass="overlay-aide-contextuelle">
+						<ui:include src="/aide_contextuelle/gencodextended_entite.xhtml" />
+					</p:overlayPanel>
+<!-- 					</p:panel> -->
+					</f:facet>
+				<h:outputText value="#{table.cleGencode}" />
+			</p:column>
+			<p:column sortBy="#{table.codeGencode}">
+				<f:facet name="header">
+					<h:outputText value="Code concerné" />
+				</f:facet>
+				<h:outputText value="#{table.codeGencode}" />
+			</p:column>			
+
+			<p:column sortBy="#{table.valeurGenCode}">
+				<f:facet name="header">
+					<h:outputText value="valeur" />
+				</f:facet>
+				<h:outputText value="#{table.valeurGenCode}" />
+			</p:column>
+		</p:dataTable>
+
+		
+	</p:panel>
+
+	<p:messages id="genCodeExtendedMessages" showDetail="true"
+		autoUpdate="true" closable="true" />
+
+	<p:panel id="genCodeExtendedPanel" visible="true" widgetVar="varGenCodeExPanel">
+		<p:panel resizable="false" id="genCodeExtendedPanelCache" 
+			rendered="#{genCodeExtendedController.modeEcran.dataSetEnModif()}" >
+<!-- 			<h:form id="genCodeExtendedFormCreation"> -->
+				<f:validateBean disabled="true">
+					<div class="ui-grid ui-grid-responsive" id="genCodeExtendedGridResp">
+					<div class="ui-grid-row">
+							<div class="ui-grid-col-12 ">
+							</div>
+						</div>
+					</div>					
+						<div class="ui-grid-row" >
+							<div class="ui-grid-col-4">
+								<h:outputText value="Code :"></h:outputText>
+							</div>
+							<div class="ui-grid-col-8">
+								<h:outputText
+									value="#{genCodeExtendedController.nouveau.cleGencode}">
+<!-- 									<f:attribute name="nomChamp" value="#{const.C_CLE_GENCODE}" /> -->
+<!-- 									<p:ajax event="blur" update="@this"/> -->
+								</h:outputText>
+							</div>
+						</div>
+						<div class="ui-grid-row">
+							<div class="ui-grid-col-1">
+								<h:outputText value="Valeur :"></h:outputText>
+							</div>
+<!-- 							onkeyup="doGetCaretPosition('dialogue:valGenCode')" -->
+							<div class="ui-grid-col-9" >
+							<p:focus>
+								<p:inputText id="valGenCode" widgetVar="valeurGenCode"
+								styleClass="longInput"
+									value="#{genCodeExtendedController.nouveau.valeurGenCode}"
+									 validator="#{genCodeExtendedController.validateObject}"									 
+									onfocus="doGetCaretPosition('dialogue:valGenCode')"
+									onclick="doGetCaretPosition('dialogue:valGenCode')" 
+									onkeyup="doGetCaretPosition('dialogue:valGenCode')" >
+									<f:attribute name="nomChamp" value="#{const.C_VALEUR_GENCODE}"/>
+ 									<p:ajax event="change"   update="@this,@parent:verif"/> 
+								</p:inputText>
+							</p:focus>
+							</div>
+
+							<div class="ui-grid-col-2" >						
+		    					<p:commandButton id="dynaButton" value="Aide ?" type="button" icon="ui-icon-extlink"/>
+			    					<p:menu overlay="true" toggleable="true" trigger="dynaButton" my="left top" at="left bottom">
+			<!-- 						<p:submenu label="Choisir"> -->
+										<p:submenu label="N° Automatique {@num}">
+											<p:menuitem value="Défaut {@num}" actionListener="#{genCodeExtendedController.numero('{@num}')}"
+												update="@widgetVar(valeurGenCode),@parent:verif"/>
+											<p:menuitem value="Sur 2 chiffres {@num:2}" actionListener="#{genCodeExtendedController.numero('{@num:2}')}"
+												update="@widgetVar(valeurGenCode),@parent:verif" />
+											<p:menuitem value="Sur 3 chiffres {@num:3}" actionListener="#{genCodeExtendedController.numero('{@num:3}')}"
+												update="@widgetVar(valeurGenCode),@parent:verif" />
+										</p:submenu>
+										
+										<p:submenu label="Code exercice {@exo}">
+											<p:menuitem value="Code exercice {@exo}" actionListener="#{genCodeExtendedController.numero('{@exo}')}"
+												update="@widgetVar(valeurGenCode),@parent:verif"/>
+										</p:submenu>
+										
+										<p:submenu label="Date du jour {@date}">
+											<p:menuitem value="Défaut {@date:jj/MM/aaaa}" actionListener="#{genCodeExtendedController.date('{@date:jj/MM/aaaa}')}"
+												update="@widgetVar(valeurGenCode),@parent:verif" />
+											<p:menuitem value="Format inversé {@date:aa/MM/jj}" actionListener="#{genCodeExtendedController.date('{@date:aa/MM/jj}')}"
+												update="@widgetVar(valeurGenCode),@parent:verif" />
+											<p:menuitem value="Quantième {@quant}" actionListener="#{genCodeExtendedController.date('{@quant}')}"
+												update="@widgetVar(valeurGenCode),@parent:verif" />
+											<p:menuitem value="Heure/minutes {@heure:HH-mm}" actionListener="#{genCodeExtendedController.date('{@heure:HH-mm}')}"
+												update="@widgetVar(valeurGenCode),@parent:verif" />
+											<p:menuitem value="Heure/minutes/secondes {@heure:HH-mm-ss}" actionListener="#{genCodeExtendedController.date('{@heure:HH-mm-ss}')}"
+												update="@widgetVar(valeurGenCode),@parent:verif" />
+											<p:menuitem value="Mois {@datem:MM}" actionListener="#{genCodeExtendedController.date('{@datem:MM}')}"
+												update="@widgetVar(valeurGenCode),@parent:verif" />		
+											<p:menuitem value="Annee {@datea:aaaa}" actionListener="#{genCodeExtendedController.date('{@datea:aaaa}')}"
+												update="@widgetVar(valeurGenCode),@parent:verif" />	
+											<p:menuitem value="Annee {@datea:aa}" actionListener="#{genCodeExtendedController.date('{@datea:aa}')}"
+												update="@widgetVar(valeurGenCode),@parent:verif" />									
+										</p:submenu>
+										<p:submenu label="Date du document {@dated}">
+											<p:menuitem value="Défaut {@dated:jj/MM/aaaa}" actionListener="#{genCodeExtendedController.date('{@dated:jj/MM/aaaa}')}"
+												update="@widgetVar(valeurGenCode),@parent:verif" />
+											<p:menuitem value="Format inversé {@dated:aa/MM/jj}" actionListener="#{genCodeExtendedController.date('{@dated:aa/MM/jj}')}"
+												update="@widgetVar(valeurGenCode),@parent:verif" />
+											<p:menuitem value="Quantième {@dated_quant}" actionListener="#{genCodeExtendedController.date('{@dated_quant}')}"
+												update="@widgetVar(valeurGenCode),@parent:verif" />		
+											<p:menuitem value="Mois {@datedm:MM}" actionListener="#{genCodeExtendedController.date('{@datedm:MM}')}"
+												update="@widgetVar(valeurGenCode),@parent:verif" />		
+											<p:menuitem value="Annee {@dateda:aaaa}" actionListener="#{genCodeExtendedController.date('{@dateda:aaaa}')}"
+												update="@widgetVar(valeurGenCode),@parent:verif" />	
+											<p:menuitem value="Annee {@dateda:aa}" actionListener="#{genCodeExtendedController.date('{@dateda:aa}')}"
+												update="@widgetVar(valeurGenCode),@parent:verif" />								
+										</p:submenu>										
+										
+										<p:submenu label="Fournisseur">
+											<p:menuitem value="nom fournisseur" actionListener="#{genCodeExtendedController.fournisseur('{@nom}')}"
+												update="@widgetVar(valeurGenCode),@parent:verif" />
+											<p:menuitem value="code fournisseur" actionListener="#{genCodeExtendedController.fournisseur('{@codef}')}"
+												update="@widgetVar(valeurGenCode),@parent:verif" />
+										</p:submenu>
+										<p:submenu label="Document parent">
+											<p:menuitem value="code document parent" actionListener="#{genCodeExtendedController.fournisseur('{@coded}')}"
+												update="@widgetVar(valeurGenCode),@parent:verif" />
+										</p:submenu>										
+										<p:submenu label="Description">
+											<p:menuitem value="Description article" actionListener="#{genCodeExtendedController.description('{@desc}')}"
+												update="@widgetVar(valeurGenCode),@parent:verif" />
+										</p:submenu>
+										<p:submenu label="Type document">
+											<p:menuitem value="code type document" actionListener="#{genCodeExtendedController.description('{@codetype}')}"
+												update="@widgetVar(valeurGenCode),@parent:verif" />
+										</p:submenu>										
+<!-- 									</p:submenu> -->
+									</p:menu>							
+							</div>
+						</div>
+						<div class="ui-grid-row" >
+							<div class="ui-grid-col-4">
+								<h:outputText value="Exemple cccc :"></h:outputText>
+							</div>
+						<div class="ui-grid-col-8">
+								<h:outputText id="verif" widgetVar="valeurVerifiee"
+									value="#{genCodeExtendedController.nouveau.valeurVerifie}">
+<!-- 									<f:attribute name="nomChamp" value="#{const.C_VALEUR_VERIF}" /> -->
+<!-- 									<p:ajax event="blur" update="@this"/> -->
+								</h:outputText>
+						 </div>
+						</div>
+
+				<div class="ui-grid-row">
+					<div class="ui-grid-col-4">
+
+					</div>
+					<div class="ui-grid-col-8"></div>
+				</div>
+				
+				<div class="ui-grid-row">
+							<div class="ui-grid-col-12 text-center">
+								<p:commandButton id="genCodeExtendedEnregistrer" value="Enregistrer" styleClass="btn-save btn"
+									process="@this"
+									disabled="#{genCodeExtendedController.etatBouton('enregistrer')}"
+									update="@widgetVar(genCodeExtendedForm), @widgetVar(varGenCodeExPanel)"
+									actionListener="#{genCodeExtendedController.actEnregistrer}" />
+								
+								<p:commandButton id="genCodeExtendedAnnuler" value="Annuler" styleClass="btn-cancel btn"
+									process="@this"
+									disabled="#{genCodeExtendedController.etatBouton('annuler')}"
+									update="@widgetVar(genCodeExtendedForm), @widgetVar(varGenCodeExPanel)"
+									actionListener="#{genCodeExtendedController.actAnnuler}"
+									rendered="#{dansDialogue != null ? false : true }" />
+								
+								<p:commandButton id="genCodeExtendedAnnulerDialogue" value="Annuler"
+								styleClass="btn-cancel btn" process="@this"
+								disabled="#{genCodeExtendedController.etatBouton('annuler')}"
+								actionListener="#{genCodeExtendedController.actFermerDialog}"
+								rendered="#{dansDialogue != null ? true : false}" />
+							</div>
+						</div>
+
+				</f:validateBean>
+
+<!-- 			</h:form> -->
+		</p:panel>
+	</p:panel>
+<!-- oncomplete="setCaretPositionIsa('dialogue:valGenCode',#{genCodeExtendedController.caretPosition})" -->
+<!-- update="@widgetVar(valeurGenCode)" -->
+	<p:remoteCommand name="command1" 
+		actionListener="#{genCodeExtendedController.action1}"		  
+		 update="@this,@widgetVar(valeurVerifiee)"
+		 />	
+</ui:composition>

@@ -1,0 +1,212 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<p:panel id="idGroupeCtrlFormPrincipal" widgetVar="widgetVarGroupeCtrlForm">
+
+		<p class="subtitle">
+			<p:outputLabel value="Groupe de controle"
+				rendered="#{dansDialogue == null ? true : false}" />
+		</p>
+		
+		<!-- bouton -->
+		<p:panel id="idGroupeCtrlDataTableF" class="mt30" style="position:relative;"
+			rendered="#{dansDialogue == null ? true : false}">
+			
+			<p:commandButton id="idInsererGroupeCtrl" value="Ajouter" title="Insérer" process="@this"
+				update=":form:tabView,:form:messages,:form" 
+				actionListener="#{groupeControleController.actDialogTypes}"
+				styleClass="icon-insert icon" >
+				<p:ajax event="dialogReturn" listener="#{groupeControleController.handleReturnDialogTypes}" 
+					update=":form"/>
+			</p:commandButton>
+			
+<!-- 			<p:commandButton id="groupeCtrlInsérer" value="Insérer" process="@this" -->
+<!-- 				disabled="#{groupeControleController.etatBouton('inserer')}" -->
+<!-- 				update="@widgetVar(varGroupeCtrlPanel), @this, @parent:groupeCtrlModifier, @parent:groupeCtrlSupprimer" -->
+<!-- 				actionListener="#{groupeControleController.actInserer}" -->
+<!-- 				class="btn-insert btn" /> -->
+
+			<p:commandButton id="idModifierGroupeCtrl" value="Modifier" title="Modifier" process="@this"
+				update=":form:tabView,:form:messages,:form" 
+				actionListener="#{groupeControleController.actDialogModifier}"
+				styleClass="icon-update icon" >
+				<p:ajax event="dialogReturn" listener="#{groupeControleController.handleReturnDialogTypes}" update=":form"/>
+			</p:commandButton>
+			
+<!-- 			<p:commandButton id="groupeCtrlModifier" value="Modifier" -->
+<!-- 				process="@this" class="btn-update btn" -->
+<!-- 				disabled="#{groupeControleController.etatBouton('modifier')}" -->
+<!-- 				update="@widgetVar(varGroupeCtrlPanel), @parent:groupeCtrlInsérer, @this, @parent:groupeCtrlSupprimer" -->
+<!-- 				actionListener="#{groupeControleController.actModifier}" /> -->
+
+			<p:commandButton id="groupeCtrlSupprimer" value="Supprimer" process="@this" title="Supprimer"
+				styleClass="icon-delete icon menuitem-poubelle-droite"
+				disabled="#{groupeControleController.etatBouton('supprimer')}"
+				actionListener="#{groupeControleController.actSupprimer}"
+				update="@widgetVar(wvGroupeControleDataTable)"
+				 >
+<!-- 				type="button" onclick="PF('famillecd1').show()" -->
+				<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer cet enregistrement ?" icon="ui-icon-alert" />
+			</p:commandButton>
+
+			<p:commandButton id="groupeCtrlFermer" title="Fermer" process="@this"
+				class="icon-close icon menuitem-fermer-droite" onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())">
+<!-- 				type="button" onclick="PF('famillecd2').show()" -->
+				<p:confirm header="Confirmation" message="#{msg_diag.alert_fermeture_onglet}" icon="ui-icon-alert" disabled="#{!groupeControleController.modeEcran.dataSetEnModif()}"/>
+			</p:commandButton>
+
+			<p:commandButton id="groupeCtrlFermerDialogue" title="Fermer" 
+				process="@this" class="icon-close icon menuitem-fermer-droite"
+				actionListener="#{groupeControleController.actFermerDialog}"
+				rendered="#{dansDialogue != null ? true : false}" />
+
+<!-- 			<p:confirmDialog message="#{msg_diag.alert_suppresion}" -->
+<!-- 				header="Confirmation" severity="alert" appendTo="@(body)" -->
+<!-- 				widgetVar="groupeCtrlcd1"> -->
+<!-- 				<p:commandButton value="#{msg_diag.Oui}" update="@form" -->
+<!-- 					oncomplete="PF('groupeCtrlcd1').hide()"> -->
+<!-- 					<p:ajax listener="#{groupeControleController.actSupprimer}" /> -->
+<!-- 				</p:commandButton> -->
+<!-- 				<p:commandButton value="#{msg_diag.Non}" -->
+<!-- 					onclick="PF('groupeCtrlcd1').hide();" type="button" /> -->
+<!-- 			</p:confirmDialog> -->
+
+<!-- 			<p:confirmDialog message="#{msg_diag.alert_fermeture_onglet}" -->
+<!-- 				header="Confirmation" severity="alert" widgetVar="groupeCtrlcd2" -->
+<!-- 				appendTo="@(body)"> -->
+<!-- 				<p:commandButton value="#{msg_diag.Oui}" -->
+<!-- 					onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())" -->
+<!-- 					oncomplete="PF('groupeCtrlcd2').hide()" /> -->
+<!-- 				<p:commandButton value="#{msg_diag.Non}" -->
+<!-- 					onclick="PF('groupeCtrlcd2').hide();" type="button" /> -->
+<!-- 			</p:confirmDialog> -->
+		</p:panel>
+
+		<p:dataTable id="groupeCtrlDataTable" widgetVar="wvGroupeControleDataTable" var="table"
+			rendered="#{dansDialogue == null ? true : false}"
+			value="#{groupeControleController.values}" rowKey="#{table.id}"
+			selectionMode="single" class="datatable"
+			selection="#{groupeControleController.selection}" paginator="false"
+			rows="#{msg.modele_datatable_ligne_par_page_debut}"
+			paginatorTemplate="#{msg.modele_datatable_paginator}"
+			rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+			emptyMessage="#{msg.message_datatable_vide}"
+			currentPageReportTemplate="#{msg.modele_datatable_page_courante}">
+
+			<p:ajax event="rowSelect"
+				listener="#{groupeControleController.onRowSelect}" />
+
+			<f:facet name="{Exporters}">
+				<h:commandLink>
+					<p:graphicImage library="images" name="excel.png" width="24" />
+					<p:dataExporter type="xls" target="groupeCtrlDataTable"
+						fileName="type_groupeCtrl" />
+				</h:commandLink>
+
+				<h:commandLink>
+					<p:graphicImage library="images" name="pdf.png" width="24" />
+					<p:dataExporter type="pdf" target="groupeCtrlDataTable"
+						fileName="type_groupeCtrl" />
+				</h:commandLink>
+
+				<h:commandLink>
+					<p:graphicImage library="images" name="csv.png" width="24" />
+					<p:dataExporter type="csv" target="groupeCtrlDataTable"
+						fileName="type_groupeCtrl" />
+				</h:commandLink>
+
+				<h:commandLink>
+					<p:graphicImage library="images" name="xml.png" width="24" />
+					<p:dataExporter type="xml" target="groupeCtrlDataTable"
+						fileName="type_groupeCtrl" />
+				</h:commandLink>
+
+				<!-- 				<p:commandButton value="Imprimer" styleClass="btn-print btn" -->
+				<!-- 						onsuccess="window.open('#{request.contextPath}/output?__report=/reports/dima_tmp1.rptdesign&amp;__format=pdf')" -->
+				<!-- 						actionListener="#{groupeControleController.actImprimer}" -->
+				<!-- 						disabled="#{groupeControleController.etatBouton('imprimer')}"/> -->
+			</f:facet>
+
+			<p:column sortBy="#{table.codeGroupe}">
+<!-- 				filterBy="#{table.codeGroupeCtrl}" filterMatchMode="contains"> -->
+				<f:facet name="header">
+					<h:outputText value="Code" />
+				</f:facet>
+				<h:outputText value="#{table.codeGroupe}" />
+			</p:column>
+			<p:column sortBy="#{table.libelle}">
+<!-- 			 filterBy="#{table.libelle}" filterMatchMode="contains"> -->
+				<f:facet name="header">
+					<h:outputText value="Libellé" />
+				</f:facet>
+				<h:outputText value="#{table.libelle}" />
+			</p:column>
+		</p:dataTable>
+	</p:panel>
+	<!-- 	 -->
+
+	<p:messages id="groupeCtrlMessages" showDetail="true" autoUpdate="true"
+		closable="true" />
+
+	<p:panel id="groupeCtrlPanel" visible="true" widgetVar="varGroupeCtrlPanel">
+		<p:panel onLoad="reset()" resizable="false" id="groupeCtrlPanelCache"
+			rendered="#{groupeControleController.modeEcran.dataSetEnModif()}">
+			<!-- 			<h:form id="groupeCtrlFormCreation"> -->
+			<f:validateBean disabled="true">
+				<div class="ui-grid ui-grid-responsive" id="groupeCtrlGridResp">
+					<div class="ui-grid-row">
+						<div class="ui-grid-col-4">
+							<h:outputText value="Code :"></h:outputText>
+						</div>
+						<div class="ui-grid-col-8">
+							<h:inputText id="idTxtCodeGroupeCtrl" value="#{groupeControleController.nouveau.codeGroupe}" styleClass="Input50"
+								required="true"
+								requiredMessage="#{msg_diag.alert_champs_obligatoir}" validator="#{groupeControleController.validateObject}">
+									<f:attribute name="nomChamp" value="#{const.C_CODE_GROUPE_CTRL}" />
+									<p:ajax event="blur" update="@this"/>
+							</h:inputText>
+						</div>
+					</div>
+					<div class="ui-grid-row">
+
+						<div class="ui-grid-col-4">
+							<h:outputText value="Libelle :"></h:outputText>
+						</div>
+						<div class="ui-grid-col-8">
+							<h:inputText id="idTxtLibelleGroupeCtrl" value="#{groupeControleController.nouveau.libelle}" styleClass="Input100"
+								required="true"
+								requiredMessage="#{msg_diag.alert_champs_obligatoir}" validator="#{groupeControleController.validateObject}">
+									<f:attribute name="nomChamp" value="#{const.C_LIBELLE_GROUPE_CTRL}" />
+									<p:ajax event="blur" update="@this"/>
+							</h:inputText>
+						</div>
+					</div>
+					<div class="ui-grid-row">
+						<div class="ui-grid-col-12 text-center">
+							<p:commandButton id="idEnregistrerGroupeCtrl" value="Enregistrer" styleClass="btn-save btn"
+								disabled="#{groupeControleController.etatBouton('enregistrer')}"
+								update="@widgetVar(widgetVarGroupeCtrlForm), @widgetVar(varGroupeCtrlPanel)" process="@this"
+								actionListener="#{groupeControleController.actEnregistrer}" />
+							
+							<p:commandButton id="groupeCtrlAnnuler" value="Annuler" styleClass="btn-cancel btn"
+								disabled="#{groupeControleController.etatBouton('annuler')}"
+								update="@widgetVar(widgetVarGroupeCtrlForm), @widgetVar(varGroupeCtrlPanel)" process="@this"
+								actionListener="#{groupeControleController.actAnnuler}" 
+								rendered="#{dansDialogue != null ? false : true}" />
+
+							<p:commandButton id="groupeCtrlAnnulerDialogue" value="Annuler"
+								styleClass="btn-cancel btn" process="@this"
+								disabled="#{groupeControleController.etatBouton('annuler')}"
+								actionListener="#{groupeControleController.actFermerDialog}"
+								rendered="#{dansDialogue != null ? true : false}" />
+						</div>
+					</div>
+				</div>
+			</f:validateBean>
+			<!-- 			</h:form> -->
+		</p:panel>
+	</p:panel>
+</ui:composition>

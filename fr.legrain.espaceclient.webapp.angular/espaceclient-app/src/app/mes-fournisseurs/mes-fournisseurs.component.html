@@ -1,0 +1,26 @@
+<p>mes-fournisseurs works!</p>
+
+<ul class="heroes">
+  <li *ngFor="let frs of fournisseurs">
+    <span class="badge">{{frs.codeDossier}} - {{frs.nomEntreprise}}</span> 
+  </li>
+</ul>
+
+
+<p-table [value]="fournisseurs" selectionMode="single" [(selection)]="selectedFournisseur" dataKey="codeDossier"
+	(onRowSelect)="onRowSelect($event)" (onRowUnselect)="onRowUnselect($event)">
+    <ng-template pTemplate="header">
+        <tr>
+            <th>Code dossier</th>
+            <th>Entreprise</th>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-frs>
+        <tr [pSelectableRow]="frs">
+            <td>{{frs.codeDossier}}</td>
+            <td>{{frs.nomEntreprise}}</td>
+        </tr>
+    </ng-template>
+</p-table>
+
+<p-toast [style]="{marginTop: '80px'}"></p-toast>

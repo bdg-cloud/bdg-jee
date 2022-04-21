@@ -1,0 +1,19 @@
+version: "3.8"
+services:
+  registry:
+    restart: always
+    container_name: registry
+    image: registry:2
+    ports:
+      - 444:443
+    environment:
+      REGISTRY_HTTP_ADDR: 0.0.0.0:443
+      REGISTRY_HTTP_TLS_CERTIFICATE: /certs/fullchain.pem
+      REGISTRY_HTTP_TLS_KEY: /certs/privkey.pem
+      REGISTRY_AUTH: htpasswd
+      REGISTRY_AUTH_HTPASSWD_PATH: /auth/htpasswd
+      REGISTRY_AUTH_HTPASSWD_REALM: Registry Realm
+    volumes:
+      - /etc/letsencrypt/live/registry.legrain.dev/certs:/certs
+      - /home/admin82/auth:/auth
+      

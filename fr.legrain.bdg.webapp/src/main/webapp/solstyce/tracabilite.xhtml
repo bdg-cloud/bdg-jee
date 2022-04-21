@@ -1,0 +1,160 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+
+	<p:menubar styleClass="menu-onglet">
+		<p:menuitem title="Fermer" styleClass="icon icon-close" process="@this" update=":form:messages"
+			onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())">
+			<!-- 		menuitem-fermer-droite -->
+			<!-- 			<p:confirm header="Confirmation" message="#{msg_diag.alert_fermeture_onglet}" icon="ui-icon-alert" /> -->
+		</p:menuitem>
+	</p:menubar>
+
+	<!-- 	<p:panel> -->
+	<!-- 	Recherche -->
+	<!-- 	</p:panel> -->
+
+	<div class="ui-grid ui-grid-responsive">
+
+		<div class="ui-grid-row">
+
+			<div class="ui-grid-col-12">
+
+
+				<p:tabView value="#{detailLotController.listeLot}" var="d" widgetVar="wvTabViewTracabilite">
+					<p:tab title="#{d.taLot.numLot}" closable="true">
+					
+						<p:panel header="Détail du lot : #{d.taLot.numLot}" toggleable="true">
+							<p:outputLabel value="Numéro de lot : #{d.taLot.numLot}" />
+							<br/>
+							<p:outputLabel value="Code article : "/>
+							<p:commandLink value="#{d.taLot.taArticle.codeArticle}"
+								action="#{ouvertureDocumentBean.detailArticle(ouvertureDocumentBean.recupCodeArticle(d.taLot.taArticle.codeArticle))}" 
+								update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');" process="@this">
+							</p:commandLink>
+							<br/>
+							<p:outputLabel value="Date du lot : "/>
+							<h:outputText value="#{d.taLot.dateLot}">
+								<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+							</h:outputText>
+							<br/>
+							<p:outputLabel value="DDM : "/>
+							<h:outputText value="#{d.taLot.dluo}">
+								<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+							</h:outputText>
+							<p:selectOneRadio value="#{d.sens}" >
+					            <f:selectItem itemLabel="Origine" itemValue="origine"/>
+					            <f:selectItem itemLabel="Utilisation" itemValue="utilisation" />
+					            <f:selectItem itemLabel="Tout" itemValue="tout" />
+					            <p:ajax event="click" listener="#{detailLotController.actChangeSens(d.taLot.numLot)}" update="@widgetVar(wv#{d.taLot.numLot})"/>
+					        </p:selectOneRadio>
+					        <p:commandButton value="Imprimer" styleClass="btn-print btn"
+								onsuccess="window.open('#{request.contextPath}/output?__report=/reports/solstyce/tracabilite.rptdesign&amp;__format=pdf')"
+								actionListener="#{detailLotController.actImprimer}">
+									<f:attribute name="numlot" value="#{d.taLot.numLot}"/>
+							</p:commandButton>
+						</p:panel>
+						
+						<p:separator />
+
+						<p:treeTable resizableColumns="true" id="idArbre" value="#{d.root}" var="node" animate="true" dynamic="true" style="width:100%" widgetVar="wv#{d.taLot.numLot}" selectionMode="single">
+							<p:ajax event="expand" listener="#{detailLotController.onNodeExpand}" />
+
+							<p:column headerText="Traçabilité">
+								<p:graphicImage styleClass="ui-treetable-toggler ui-icon icon-lots-tree" rendered="#{node.type eq 'Lot'}"/> 
+								<p:graphicImage styleClass="ui-treetable-toggler ui-icon icon-fabrication-tree" rendered="#{node.type eq 'Fab'}"/>
+								<p:graphicImage styleClass="ui-treetable-toggler ui-icon icon-reception-tree" rendered="#{node.type eq 'BR'}"/>
+								<p:graphicImage styleClass="ui-treetable-toggler ui-icon ui-icon-circle-plus" rendered="#{node.type eq 'Origine'}"/>
+								<p:graphicImage styleClass="ui-treetable-toggler ui-icon ui-icon-circle-minus" rendered="#{node.type eq 'Utilisation'}"/>
+								<h:outputText value="#{node}" />
+								<h:outputText value=" (#{node.mpf})" rendered="#{node.type eq 'Lot' and node.mpf != null}"/>
+							</p:column>
+						
+							<p:column headerText="Document">
+								<h:outputText value="Fabrication " rendered="#{node.type eq 'Fab'}"/>
+								<p:commandLink value="#{node.fab.codeDocument}" rendered="#{node.type eq 'Fab'}"
+									action="#{ouvertureDocumentBean.detailDocument(ouvertureDocumentBean.recupCodeDocument(node.fab.codeDocument,ouvertureDocumentBean.getTypeDocumentFabrication()))}" 
+									update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');" process="@this">
+								</p:commandLink>
+								<h:outputText value=" - #{node.fab.dateDebR}" rendered="#{node.type eq 'Fab'}">
+									<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+								</h:outputText>
+								<h:outputText value=" - #{node.fab.codeTFabrication}/#{node.fab.liblTFabrication}" rendered="#{node.type eq 'Fab' and node.br.codeTFabrication!=null}"/>
+<!-- 								<p:tooltip id="toolTipListeSyntheseLibelleFacture" value="#{ligne.dto.libLDocument}" shared="true" for="idListeSyntheseLibelleFacture" showEffect="clip" position="top"/> -->
+					
+								<h:outputText value="Bon de réception " rendered="#{node.type eq 'BR'}"/>
+								<p:commandLink value="#{node.br.codeDocument}" rendered="#{node.type eq 'BR'}"
+									action="#{ouvertureDocumentBean.detailDocument(ouvertureDocumentBean.recupCodeDocument(node.br.codeDocument,ouvertureDocumentBean.getTypeDocumentBonReception()))}" 
+									update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');" process="@this">
+							</p:commandLink>	
+								<h:outputText value=" - #{node.br.dateDocument}" rendered="#{node.type eq 'BR'}">
+									<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+								</h:outputText>
+								<h:outputText value=" - #{node.br.codeTReception}/#{node.br.liblTReception}" rendered="#{node.type eq 'BR' and node.br.codeTReception!=null}"/>
+							</p:column>
+							
+							<p:column headerText="Lot">
+								<h:outputText value="#{node.traca.lot.numLot}" />
+							</p:column>
+							
+							<p:column headerText="Article" styleClass="center">
+								<p:commandLink value="#{node.traca.lot.codeArticle}"
+								action="#{ouvertureDocumentBean.detailArticle(ouvertureDocumentBean.recupCodeArticle(node.traca.lot.codeArticle))}" 
+								update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');" process="@this">
+								</p:commandLink>
+							</p:column>
+							
+							<p:column headerText="Qté" styleClass="right">
+								<h:outputText value="#{node.qte}" />
+							</p:column>
+							
+							<p:column headerText="Unité" styleClass="center">
+								<h:outputText value="#{node.unite}" />
+							</p:column>
+							
+							<p:column headerText="Détail lot" styleClass="center">
+								<p:commandLink actionListener="#{detailLotController.afficheTraca}" update="@form" rendered="#{node.nom ne d.taLot.numLot and node.type eq 'Lot'}" oncomplete="activeLastTabTracabilite();">
+									<p:graphicImage library="images" name="zoom.png" title="Détail complet" alt="Détail complet" height="12" />
+									<f:attribute name="numLot" value="#{node.nom}" />
+								</p:commandLink>
+							</p:column>
+						</p:treeTable>
+						
+						<!-- <p:tree value="#{d.root}" var="node" animate="true" dynamic="true" style="width:100%" widgetVar="wv#{d.taLot.numLot}" > -->
+<!-- 							<p:ajax event="expand" listener="#{detailLotController.onNodeExpand}" /> -->
+							
+<!-- 							<p:treeNode type="Lot" icon="icon-lots-tree"> -->
+<!-- 								<h:outputText value="#{node} (Article #{node.traca.lot.codeArticle}) #{node.qte} #{node.unite} (#{node.mpf})" /> -->
+<!-- 								<p:commandLink actionListener="#{detailLotController.afficheTraca}" update="@form" rendered="#{node.nom ne d.taLot.numLot}" oncomplete="activeLastTabTracabilite();"> -->
+<!-- 									<p:graphicImage library="images" name="zoom.png" title="Détail complet" alt="Détail complet" height="12" /> -->
+<!-- 									<f:attribute name="numLot" value="#{node.nom}" /> -->
+<!-- 								</p:commandLink> -->
+<!-- 							</p:treeNode> -->
+
+<!-- 							<p:treeNode type="Fab" icon="icon-fabrication-tree"> -->
+<!-- 								<h:outputText value="#{node}" /> -->
+<!-- 							</p:treeNode> -->
+
+<!-- 							<p:treeNode type="BR" icon="icon-reception-tree"> -->
+<!-- 								<h:outputText value="#{node}" /> -->
+<!-- 							</p:treeNode> -->
+
+<!-- 							<p:treeNode type="Origine" icon="ui-icon-circle-plus"> -->
+<!-- 								<h:outputText value="#{node}" /> -->
+<!-- 							</p:treeNode> -->
+
+<!-- 							<p:treeNode type="Utilisation" icon="ui-icon-circle-minus"> -->
+<!-- 								<h:outputText value="#{node}" /> -->
+<!-- 							</p:treeNode> -->
+
+<!-- 						</p:tree> -->
+						
+					</p:tab>
+				</p:tabView>
+
+			</div>
+		</div>
+	</div>
+
+
+</ui:composition>

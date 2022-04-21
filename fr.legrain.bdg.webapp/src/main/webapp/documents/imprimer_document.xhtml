@@ -1,0 +1,301 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+    xmlns:pe="http://primefaces.org/ui/extensions">
+
+	<p:menubar styleClass="menu-onglet" id="idMenuBoutonDocumentAImprimer" widgetVar="wvMenuBoutonDocumentAImprimer">
+
+		<p:menuitem title="Fermer l'écran" value="Fermer" styleClass="icon icon-close menuitem-fermer-droite"
+			process="@this" 
+			actionListener="#{imprimerDocumentController.actFermer}"
+			update=":form:messages"
+			disabled="#{imprimerDocumentController.etatBouton('fermer')}"
+			onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())">
+			
+			<p:confirm header="Confirmation" message="#{msg_diag.alert_fermeture_onglet}" icon="ui-icon-alert" disabled="#{!imprimerDocumentController.modeEcran.dataSetEnModif()}"/>
+		</p:menuitem>
+	</p:menubar>
+	<div class="container">
+		<p:fieldset legend="Etape 1/3 : Type de document recherché"  toggleable="true"  >
+			<p:panelGrid columns="3" cellspacing="20" layout="grid" style="text-align:center;">
+					<p:outputLabel value="Type de document" />
+					<p:selectOneMenu value="#{imprimerDocumentController.selectedTypeSelection}" var="t" id="idSelectionDocSelection"
+						converter="entityConverter">
+						<f:selectItems value="#{imprimerDocumentController.listeTypeDocSelection}" var="theme" itemLabel="#{theme.name}"
+							itemValue="#{theme}" />
+						<p:column style="width:10%">
+							<h:graphicImage name="#{t.displayName}" library="images" height="30px" style="margin-top:1px;" />
+						</p:column>
+
+						<p:column>
+							<h:outputText value="#{t.name}" />
+						</p:column>
+						<p:ajax
+							update=":form:messages,idImageDocSelection,idPanelParametresDocumentAImprimer"
+							listener="#{imprimerDocumentController.actChangeDocSelection()}" />
+					</p:selectOneMenu>
+					<h:graphicImage name="#{imprimerDocumentController.pathImageSelectionDocSelection}" library="images" height="45px"
+								style="margin-top:1px;" id="idImageDocSelection" />
+					</p:panelGrid>
+		</p:fieldset>
+	</div>
+	<div class="container">
+		<p:fieldset legend="Etape 2/3 : Saisissez les critères de sélection des documents" id="idCriteresFiltresDocumentAImprimer" toggleable="true" toggleSpeed="50" >
+
+		<div class="ui-g">
+		
+			<div class="ui-g-12 ui-lg-4">
+				<div class="card">
+						<p:panel header="Période"  style="width:100%;text-align: center;">
+						<p:panelGrid columns="2" columnClasses="ui-grid-col-4 right,ui-grid-col-8" styleClass="ui-panelgrid-blank" layout="grid" >
+							<i class="fa fa-calendar fa-3x" aria-hidden="true"></i>
+								<p:panelGrid columns="2" cellpadding="0">
+									<p:outputLabel value="Du" />
+									<p:calendar value="#{imprimerDocumentController.dateDeb}" showOn="button" navigator="true" pattern="#{msg.date_pattern}"
+										mask="true" locale="fr" timeZone="#{msg.time_zone}">
+										<p:ajax event="dateSelect" update="@this" />
+										<p:ajax event="change" update="@this" />
+									</p:calendar>
+
+									<p:outputLabel value="au" />
+									<p:calendar value="#{imprimerDocumentController.dateFin}" showOn="button" navigator="true" pattern="#{msg.date_pattern}"
+										mask="true" locale="fr" timeZone="#{msg.time_zone}">
+										<p:ajax event="dateSelect" update="@this" />
+										<p:ajax event="change" update="@this" />
+									</p:calendar>
+								</p:panelGrid>
+							
+
+						</p:panelGrid>
+						</p:panel>
+					</div>
+				<!--Fin div card-->
+				</div>
+				<div class="ui-g-12 ui-lg-8">
+				<div class="ui-g-12 ui-lg-6">
+				<div class="card">
+					<p:panel header="Retrouver un document à partir d'un code tiers" id="idPanelParamFiltreTierDocumentAImprimer">
+						<p:panelGrid columns="2" columnClasses="ui-grid-col-3,ui-grid-col-3,ui-grid-col-3,ui-grid-col-3" styleClass="ui-panelgrid-blank" layout="grid" >
+						<p:outputLabel value="Le tiers"/>
+						<p:autoComplete value="#{imprimerDocumentController.taTiersDTO}" id="idtiersselectionDocNonRegle" converter="entityConverter"
+							completeMethod="#{imprimerDocumentController.tiersAutoCompleteDTOLight}" 
+							 var="tiers" itemLabel="#{tiers.codeTiers}" itemValue="#{tiers}" forceSelection="true"
+									maxResults="#{imprimerDocumentController.taPreferencesService.nbMaxChargeListeTiers()}"
+									moreText="Il y a #{component.maxResults} affichés sur #{component.suggestions.size()} au total, Veuillez affiner votre recherche ou cliquer ici pour en afficher plus ..."
+							dropdown="true" placeholder="Tiers" disabled="true">
+							<p:column>
+								<h:outputText value="#{tiers.codeTiers}" />
+							</p:column>
+
+							<p:column>
+								<h:outputText value="#{tiers.nomTiers}" />
+							</p:column>
+
+							<f:attribute name="nomChamp" value="#{const.C_CODE_TIERS}" />
+							<p:ajax event="itemSelect" listener="#{imprimerDocumentController.autcompleteSelection}"
+								update="" />
+								<p:ajax event="moreText" listener="#{imprimerDocumentController.onMoreTextTiers}" />
+						</p:autoComplete>		    				
+
+						</p:panelGrid>	
+					</p:panel>
+				</div>
+				</div>
+		<div class="ui-g-12 ui-lg-6">
+				<div class="card">
+					<p:panel header="Retrouver un document à partir d'un code" id="idPanelParametresDocumentAImprimer">
+						<p:panelGrid columns="2" columnClasses="ui-grid-col-4 right,ui-grid-col-8" styleClass="ui-panelgrid-blank" layout="grid" >
+							<i class="fa fa-file-text-o fa-3x" aria-hidden="true"></i>
+								<p:panelGrid columns="1" cellpadding="0">
+									<p:outputLabel value="du code"/>
+						<p:autoComplete value="#{imprimerDocumentController.documentDebDTO}" id="idFacture" converter="entityConverter"
+							completeMethod="#{imprimerDocumentController.factureAutoCompleteDTOLight}" 
+							 var="doc" itemLabel="#{doc.codeDocument}" itemValue="#{doc}" forceSelection="true"
+							dropdown="true" placeholder="#{imprimerDocumentController.selectedTypeSelection.name}">
+							<p:column>
+								<h:outputText value="#{doc.codeDocument}" />
+							</p:column>
+
+							<p:column>
+								<h:outputText value="#{doc.libelleDocument}" />
+							</p:column>
+
+							<p:column>
+								<h:outputText value="#{doc.codeTiers}" />
+							</p:column>
+							
+							<f:attribute name="nomChamp" value="#{const.C_CODE_DOCUMENT}" />
+							<p:ajax event="itemSelect" listener="#{imprimerDocumentController.autcompleteSelection}"
+								update="" />
+						</p:autoComplete>
+						
+						<p:outputLabel value="au code"/>
+						<p:autoComplete value="#{imprimerDocumentController.documentFinDTO}"  converter="entityConverter"
+							completeMethod="#{imprimerDocumentController.factureAutoCompleteDTOLight}" 
+							 var="doc" itemLabel="#{doc.codeDocument}" itemValue="#{doc}" forceSelection="true"
+							dropdown="true" placeholder="#{imprimerDocumentController.selectedTypeSelection.name}">
+							<p:column>
+								<h:outputText value="#{doc.codeDocument}" />
+							</p:column>
+
+							<p:column>
+								<h:outputText value="#{doc.libelleDocument}" />
+							</p:column>
+
+							<p:column>
+								<h:outputText value="#{doc.codeTiers}" />
+							</p:column>
+							
+							<f:attribute name="nomChamp" value="#{const.C_CODE_DOCUMENT}" />
+							<p:ajax event="itemSelect" listener="#{imprimerDocumentController.autcompleteSelection}"
+								update="" />
+						</p:autoComplete>
+								</p:panelGrid>				
+						</p:panelGrid>				
+					</p:panel>
+				</div>
+					</div>			
+				</div>				
+			</div>
+
+			<div class="card" style="text-align: center;">
+				<p:commandButton value="Valider les critères" actionListener="#{imprimerDocumentController.actRefresh}" update="idPanelListeDocumentAImprimer"
+					style="width:20%; height:45px;" icon="fa fa-check" />
+			</div>
+
+		</p:fieldset>
+	</div>
+	<div class="container">
+
+		<p:fieldset legend="Etape 3/3 : Sélectionnez les documents à imprimer dans la liste"  toggleable="true" toggleSpeed="50">
+			<p:panel header="Sélection des docuements" id="idPanelListeDocumentAImprimer">
+				<div class="ui-g">
+	    			<div class="ui-g-12">
+	    				<p:dataTable id="dataTableListeDocumentAImprimer" 
+	    				var="doc"
+						widgetVar="wvDataTableListeDocumentAImprimer" 
+						class="datatable" 
+						value="#{imprimerDocumentController.listeDocumentDTO}" 
+						rowKey="#{doc.id}"
+						selection="#{imprimerDocumentController.selectedDocument}"
+						dblClickSelect="true"
+						resizableColumns="true"
+						paginator="true" 
+						rows="#{msg.modele_datatable_ligne_par_page_debut}"
+						paginatorTemplate="#{msg.modele_datatable_paginator}"
+						rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+						emptyMessage="#{msg.message_datatable_vide}"
+						currentPageReportTemplate="#{msg.modele_datatable_page_courante}">
+<!-- 	    					<f:facet name="header"> -->
+<!-- 	    						<p:outputLabel value="Liste des tiers à prendre en compte dans le(s) document(s) à créer ()"/> -->
+<!-- 	    					</f:facet> -->
+
+			 			<p:ajax event="rowSelectCheckbox" update="@parent:idGroupeBoutonImprimerEtValidation" />
+			        	<p:ajax event="rowUnselectCheckbox"  update="@parent:idGroupeBoutonImprimerEtValidation" />
+			        	<p:ajax event="toggleSelect"  update="@parent:idGroupeBoutonImprimerEtValidation" />
+
+	    				    <p:column selectionMode="multiple" style="width:16px;text-align:center"/>
+	    				    
+	    				    <p:column sortBy="#{doc.codeDocument}" filterBy="#{doc.codeDocument}" filterMatchMode="contains">
+								<f:facet name="header">
+									<h:outputText value="Code document" />
+								</f:facet>
+<!-- 								<h:outputText value="#{doc.codeTiers}" /> -->
+								<p:commandLink value="#{doc.codeDocument}"
+									action="#{ouvertureDocumentBean.detailDocument(imprimerDocumentController.recupCodeDocument(doc.codeDocument))}" update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+								</p:commandLink>
+							</p:column>
+
+	    				    <p:column sortBy="#{doc.libelleDocument}" filterBy="#{doc.libelleDocument}" filterMatchMode="contains">
+								<f:facet name="header">
+									<h:outputText value="Libellé" />
+								</f:facet>
+								<h:outputText value="#{doc.libelleDocument}" />
+							</p:column>
+	    				    <p:column sortBy="#{doc.dateDocument}" filterBy="#{doc.dateDocument}" filterMatchMode="contains">
+								<f:facet name="header">
+									<h:outputText value="Date document" />
+								</f:facet>
+								<h:outputText value="#{doc.dateDocument}" >
+									<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+								</h:outputText>									
+							</p:column>
+	    				    <p:column sortBy="#{doc.dateEchDocument}" filterBy="#{doc.dateEchDocument}" filterMatchMode="contains">
+								<f:facet name="header">
+									<h:outputText value="Date échéance" />
+								</f:facet>
+								<h:outputText value="#{doc.dateEchDocument}" >
+									<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+								</h:outputText>									
+							</p:column>
+												
+	    				    <p:column sortBy="#{doc.codeTiers}" filterBy="#{doc.codeTiers}" filterMatchMode="contains">
+								<f:facet name="header">
+									<h:outputText value="Code tiers" />
+								</f:facet>
+								<p:commandLink value="#{doc.codeTiers}"
+									action="#{ouvertureDocumentBean.detailTiers(imprimerDocumentController.recupCodetiers(doc.codeTiers))}" update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+								</p:commandLink>
+							</p:column>
+	    				    <p:column sortBy="#{doc.netTtcCalc}" filterBy="#{doc.netTtcCalc}" filterMatchMode="contains">
+								<f:facet name="header">
+									<h:outputText value="Net TTC" />
+								</f:facet>
+								<h:outputText value="#{doc.netTtcCalc}" />
+							</p:column>
+
+	    				    <p:column sortBy="#{doc.regleCompletDocument}" filterBy="#{doc.regleCompletDocument}" filterMatchMode="contains">
+								<f:facet name="header">
+									<h:outputText value="Déjà réglé" />
+								</f:facet>
+								<h:outputText value="#{doc.regleCompletDocument}" />
+							</p:column>
+
+	    				    <p:column sortBy="#{doc.resteAReglerComplet}" filterBy="#{doc.resteAReglerComplet}" filterMatchMode="contains">
+								<f:facet name="header">
+									<h:outputText value="Reste à régler" />
+								</f:facet>
+								<h:outputText value="#{doc.resteAReglerComplet}" />
+							</p:column>
+	    				</p:dataTable>
+	    				
+	    				<div class="ui-g-12" style="text-align:center;">
+		    				
+		    				<p:commandButton value="Tout cocher" actionListener="#{imprimerDocumentControlleractToutcocherDocuments}" 
+		    				onclick="PF('wvDataTableListeDocumentAImprimer').selectAllRows()"
+		    				update="dataTableListeDocumentAImprimer,@parent:idGroupeBoutonImprimerEtValidation"/>
+		    				<p:commandButton value="Tout décocher" actionListener="#{imprimerDocumentController.actToutDecocherDocuments}" 
+		    				onclick="PF('wvDataTableListeDocumentAImprimer').unselectAllRows()"
+		    				update="dataTableListeDocumentAImprimer,@parent:idGroupeBoutonImprimerEtValidation"/>
+		    				
+<!-- 		    				<p:commandButton value="Inverser les cochés" actionListener="#{generationDocumentMultipleController.actInverserLesCochesDocument}"  -->
+<!-- 		    				 rendered="false"  -->
+<!-- 		    				update="idPanelListeDoc,dataTableListeDoc"/>	    				 -->
+<!-- 		    				<p:commandButton value="Supprimer les non cochés" actionListener="#{generationDocumentMultipleController.actSupprimerNonCochesDocument}"   -->
+<!-- 		    				rendered="false"  -->
+<!-- 		    				update="dataTableListeDocumentAImprimer"/> -->
+	    			
+	    				</div>
+	    			</div>
+					<div class="card" style="text-align: center;">
+						<h:panelGroup id="idGroupeBoutonImprimerEtValidation">
+							<p:commandButton value="Imprimer" actionListener="#{imprimerDocumentController.actImprimerSelection}"
+								 style="width:20%; height:45px;" icon="fa fa-print"
+								 oncomplete="window.open('imprimer-liste')" rendered="#{imprimerDocumentController.selectedDocument.size() le 50}">
+								<p:confirm header="Confirmation" 
+									disabled="#{imprimerDocumentController.selectedTypeSelection.name != 'Facture'}" 
+									message="Etes-vous sur de vouloir mettre à disposition du client ces factures ? Ensuite, vous ne pourrez plus les modifier ?" 
+									icon="ui-icon-alert" />
+	
+							</p:commandButton>
+							<p:outputLabel value="L'édition en série est limité à 50 documents à la fois. Veuillez réduire la sélection." rendered="#{imprimerDocumentController.selectedDocument.size() gt 50}"></p:outputLabel>
+						</h:panelGroup>
+					</div>
+				</div>
+			</p:panel>
+		</p:fieldset>
+	</div>	
+
+</ui:composition>

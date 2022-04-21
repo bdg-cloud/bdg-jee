@@ -1,0 +1,209 @@
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+	
+<!-- 	<f:metadata> -->
+<!-- 		<f:viewParam name="parameter" value="#{controleLotController.parameter}"/> -->
+<!-- 		<f:event type="preRenderView" listener="#{controleLotController.refresh}" /> -->
+<!-- 	</f:metadata> -->
+	
+		<p:menubar styleClass="menu-onglet">
+			<p:menuitem title="Envoyer" styleClass="icon icon-envoi-mail" update="@form"
+				actionListener="#{envoyerEmailController.actEnvoyerEmail}" />
+				
+<!-- 			<p:menuitem title="Enregistrer" styleClass="icon icon-save" actionListener="#{envoyerEmailController.actEnregistrer}" -->
+<!-- 				process="@this" update="@form" disabled="#{envoyerEmailController.etatBouton('modifier')}" />		 -->
+			
+<!-- 			<p:menuitem title="Joindre" styleClass="icon icon-trombone" process="@this"  -->
+<!-- 				actionListener="#{envoyerEmailController.actDialogPieceJointe}"/> -->
+				
+			<p:menuitem title="Joindre" styleClass="icon icon-trombone"
+				oncomplete="$('.classHiddenCommandForDialogPieceJointeReturnEmail').click()"
+				process="@this"/>
+			
+			<p:menuitem title="Fermer" styleClass="icon icon-close menuitem-fermer-droite"
+				actionListener="#{envoyerEmailController.actFermerDialog}"
+				process="@this" >
+				<p:confirm header="Confirmation" message="#{msg_diag.alert_fermeture_onglet}" icon="ui-icon-alert" disabled="#{!envoyerEmailController.modeEcran.dataSetEnModif()}"/>
+			</p:menuitem>
+		</p:menubar>
+		
+		<p:commandButton styleClass="classHiddenCommandForDialogPieceJointeReturnEmail" actionListener="#{envoyerEmailController.actDialogPieceJointe}" style="display:none" process="@this"  >
+        	<p:ajax event="dialogReturn" listener="#{envoyerEmailController.handleReturnDialogPieceJointe}" update="@widgetVar(wvPanelPJEmail)"  />  
+    	</p:commandButton>
+		
+		
+		<p:separator/>
+		
+		<p:messages autoUpdate="true" showDetail="true"/>
+		
+		<p:panel id="idPanelGlobalEmail" widgetVar="wvPanelGlobalEmail">
+			<div class="ui-g ui-g-nopad">
+				
+<!-- 				<div class="ui-g-12 ui-g-nopad"> -->
+<!-- 					<div class="ui-g-2 ui-g-nopad"> -->
+<!-- 						<p:outputLabel value="Adresse expéditeur"/> -->
+<!-- 					</div> -->
+<!-- 					<div class="ui-g-4 ui-g-nopad"> -->
+<!-- 						<p:inputText value="exp add" disabled="true"/> -->
+<!-- 					</div> -->
+					
+<!-- 					<div class="ui-g-2 ui-g-nopad"> -->
+<!-- 						<p:outputLabel value="Nom expéditeur"/> -->
+<!-- 					</div> -->
+<!-- 					<div class="ui-g-4 ui-g-nopad"> -->
+<!-- 						<p:inputText value="exp" disabled="true"/> -->
+<!-- 					</div> -->
+<!-- 				</div> -->
+				
+<!-- 				<div class="ui-g-2 ui-g-nopad"> -->
+<!-- 					<p:outputLabel value="Répondre à"/> -->
+<!-- 				</div> -->
+<!-- 				<div class="ui-g-10"> -->
+<!-- 					<p:inputText value="repondre à" disabled="true"/> -->
+<!-- 				</div> -->
+				
+				<div class="ui-g-2 ui-g-nopad">
+					<p:outputLabel value="Destinataire"/>
+				</div>
+				<div class="ui-g-10">
+					<div class="ui-g-11 ui-g-nopad">
+						<p:autoComplete value="#{envoyerEmailController.taEmailDTODestinataires}"
+									completeMethod="#{envoyerEmailController.adresseEmailAutoCompleteLight}"
+									var="adr"
+									itemLabel="#{adr.adresseEmail}" itemValue="#{adr}" multiple="true"
+									forceSelection="true" dropdown="true" placeholder="Destinataire"
+									converter="entityConverter">
+									<p:column>
+										<f:facet name="header">
+										</f:facet>
+										<h:outputText value="#{adr.adresseEmail}" />
+									</p:column>
+									<p:column>
+										<h:outputText value=" &lt; #{adr.nomTiers} #{adr.prenomTiers} &gt;" />
+									</p:column>
+		
+									<f:attribute name="nomChamp" value="#{const.C_ADRESSE_EMAIL}_DESTINATAIRE" />
+									<p:ajax event="itemSelect" listener="#{envoyerEmailController.autcompleteSelection}" update="@this" />
+									<p:ajax event="itemUnselect" listener="#{envoyerEmailController.autcompleteUnSelect}" update="@this" />
+						</p:autoComplete>
+					</div>
+					<div class="ui-g-1 ui-g-nopad">
+						<p:commandButton value="+" title="+" process="@this" update="@widgetVar(wvPanelGlobalEmail)" actionListener="#{envoyerEmailController.actPlusDeDestinataire}"/>				
+					</div>
+					<p:chips value="#{envoyerEmailController.adressesDestinataire}" rendered="#{envoyerEmailController.showPlusDestinataire}"/>
+				</div>
+				
+				<div class="ui-g-2">
+					<p:outputLabel value="Cc"/>
+				</div>
+				<div class="ui-g-10">
+					<div class="ui-g-11 ui-g-nopad">
+						<p:autoComplete value="#{envoyerEmailController.taEmailDTOCcs}"
+							completeMethod="#{envoyerEmailController.adresseEmailAutoCompleteLight}"
+							var="adr"
+							itemLabel="#{adr.adresseEmail}" itemValue="#{adr}" multiple="true"
+							forceSelection="true" dropdown="true" placeholder="Copie"
+							converter="entityConverter">
+							<p:column>
+								<f:facet name="header">
+								</f:facet>
+								<h:outputText value="#{adr.adresseEmail}" />
+							</p:column>
+							<p:column>
+								<h:outputText value=" &lt;#{adr.codeTiers}&gt;" />
+							</p:column>
+	
+							<f:attribute name="nomChamp" value="#{const.C_ADRESSE_EMAIL}_CC" />
+							<p:ajax event="itemSelect" listener="#{envoyerEmailController.autcompleteSelection}" update="@this" />
+							<p:ajax event="itemUnselect" listener="#{envoyerEmailController.autcompleteUnSelect}" update="@this" />
+						</p:autoComplete>
+					</div>
+					<div class="ui-g-1 ui-g-nopad">
+						<p:commandButton value="+" title="+" process="@this" update="@widgetVar(wvPanelGlobalEmail)" actionListener="#{envoyerEmailController.actPlusDeCc}"/>				
+					</div>
+					<p:chips value="#{envoyerEmailController.adressesCc}" rendered="#{envoyerEmailController.showPlusCc}"/>
+				</div>
+				
+				<div class="ui-g-2">
+					<p:outputLabel value="Bcc"/>
+				</div>
+				<div class="ui-g-10">
+					<div class="ui-g-11 ui-g-nopad">
+						<p:autoComplete value="#{envoyerEmailController.taEmailDTOBccs}"
+							completeMethod="#{envoyerEmailController.adresseEmailAutoCompleteLight}"
+							var="adr"
+							itemLabel="#{adr.adresseEmail}" itemValue="#{adr}" multiple="true"
+							forceSelection="true" dropdown="true" placeholder="Copie cachée"
+							converter="entityConverter">
+							<p:column>
+								<f:facet name="header">
+								</f:facet>
+								<h:outputText value="#{adr.adresseEmail}" />
+							</p:column>
+							<p:column>
+								<h:outputText value=" &lt; #{adr.codeTiers} &gt;" />
+							</p:column>
+	
+							<f:attribute name="nomChamp" value="#{const.C_ADRESSE_EMAIL}_BCC" />
+							<p:ajax event="itemSelect" listener="#{envoyerEmailController.autcompleteSelection}" update="@this" />
+							<p:ajax event="itemUnselect" listener="#{envoyerEmailController.autcompleteUnSelect}" update="@this" />
+						</p:autoComplete>
+					</div>
+					<div class="ui-g-1 ui-g-nopad">
+						<p:commandButton value="+" title="+" process="@this" update="@widgetVar(wvPanelGlobalEmail)" actionListener="#{envoyerEmailController.actPlusDeBcc}"/>				
+					</div>
+					<p:chips value="#{envoyerEmailController.adressesBcc}" rendered="#{envoyerEmailController.showPlusBcc}"/>
+				</div>
+				
+				<div class="ui-g-2">
+					<p:outputLabel value="Sujet"/>
+				</div>
+				<div class="ui-g-10">
+					<p:inputText value="#{envoyerEmailController.selectedTaMessageEmailDTO.subject}" style="width:100%"/>
+				</div>
+				
+				<div class="ui-g-12">
+					<p:textEditor secure="false" value="#{envoyerEmailController.selectedTaMessageEmailDTO.bodyPlain}" style="width:100%; height:200px;" >
+						<f:facet name="toolbar">
+					        <span class="ql-formats">
+					<!--             <button class="ql-bold"></button> -->
+					<!--             <button class="ql-italic"></button> -->
+								Message
+					        </span>
+    					</f:facet>
+					</p:textEditor>
+				</div>
+				
+			</div>
+			<p:panel id="idPanelPJEmail" widgetVar="wvPanelPJEmail" header="Pièces jointes">
+				<p:dataTable value="#{envoyerEmailController.piecesJointes}" var="pj" emptyMessage="Pas de pièce jointes">
+					<p:column headerText="Fichier">
+						<i class="#{pj.iconFileType()}" aria-hidden="true" style="display: inline;"/>
+						<p:outputLabel value=" #{pj.nomFichier}"/>
+					</p:column>
+					<p:column headerText="Taille" styleClass="center">
+						<p:outputLabel value="#{pj.calculeTailleKo()} Ko"/>
+					</p:column>
+					<p:column headerText="Actions" styleClass="center">
+						<p:commandLink value="Supprimer" action="#{envoyerEmailController.actSupprimerPieceJointe(pj)}" update="@widgetVar(wvPanelPJEmail)"/>
+					</p:column>
+				</p:dataTable>
+			</p:panel>
+		</p:panel>
+		
+		<p:confirmDialog global="true" showEffect="fade">
+				<p:commandButton id="idConfirmDialogCtrlLotOui" value="Oui" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+				<p:commandButton id="idConfirmDialogCtrlLotNon" value="Non" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+		</p:confirmDialog>
+		
+		<style type="text/css">
+			.ui-panel .ui-panel-content {
+				padding: 0;
+			}
+		</style>
+		
+</ui:composition>

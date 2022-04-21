@@ -1,0 +1,164 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:p="http://primefaces.org/ui">
+	
+	<o:importConstants type="fr.legrain.moncompte.admin.webapp.app.LgrTab" />
+
+	<!-- 	<f:metadata> -->
+	<!-- 		<f:viewParam name="modeEcranDefaut" value="#{panierController.modeEcranDefaut}" /> -->
+	<!-- 		<f:event type="preRenderView" listener="#{panierController.refresh}" /> -->
+	<!-- 	</f:metadata> -->
+
+	<p:panel>
+
+Gestion des partenaires
+		
+	</p:panel>
+	
+		<p:dataTable id="dataTablePartenaire" 
+		var="client" 
+		widgetVar="wvDataTableListePartenaire"
+		styleClass="datatable mt10" 
+		value="#{partenaireController.values}" 
+		rowKey="#{client.id}"
+		selection="#{partenaireController.selectedTaClient}"
+		selectionMode="single" 
+		dblClickSelect="true"
+		resizableColumns="true" 
+		paginator="true" 
+		rows="#{msg.modele_datatable_ligne_par_page_debut}"
+		paginatorTemplate="#{msg.modele_datatable_paginator}" 
+		rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+		emptyMessage="#{msg.message_datatable_vide}" 
+		currentPageReportTemplate="#{msg.modele_datatable_page_courante}">
+
+		<!-- 				<p:ajax event="rowDblselect" listener="#{clientController.onRowSelect}" update=":form:tabView,:form:messages,@form" oncomplete="activeLastTabCenter()"/> -->
+		<!-- 				<p:ajax event="rowSelect" listener="#{clientController.onRowSelect}" disabled="#{clientController.pasDejaOuvert()}" update=":form:tabView,:form:messages,@form" />  -->
+
+<!-- 		<p:ajax event="rowSelect" listener="#{clientController.onRowSelect}" update=":form:tabView,:form:messages" -->
+<!-- 			oncomplete="PF('wvOverlayListeClient').hide();" /> -->
+
+		<f:facet name="{Exporters}">
+			<h:commandLink>
+				<p:graphicImage library="images" name="excel.png" width="24" />
+				<p:dataExporter type="xls" target="dataTableListePartenaire" fileName="liste_partenaire" />
+			</h:commandLink>
+
+			<h:commandLink>
+				<p:graphicImage library="images" name="pdf.png" width="24" />
+				<p:dataExporter type="pdf" target="dataTableListePartenaire" fileName="liste_partenaire" />
+			</h:commandLink>
+
+			<h:commandLink>
+				<p:graphicImage library="images" name="csv.png" width="24" />
+				<p:dataExporter type="csv" target="dataTableListePartenaire" fileName="liste_partenaire" />
+			</h:commandLink>
+
+			<h:commandLink>
+				<p:graphicImage library="images" name="xml.png" width="24" />
+				<p:dataExporter type="xml" target="dataTableListePartenaire" fileName="liste_partenaire" />
+			</h:commandLink>
+		</f:facet>
+		
+		 <p:column style="width:16px">
+            <p:rowToggler />
+        </p:column>
+
+		<p:column sortBy="#{client.code}" filterBy="#{client.code}">
+			<f:facet name="header">
+				<h:outputText value="Code client" />
+			</f:facet>
+			<h:outputText value="#{client.code}" />
+		</p:column>
+
+		<p:column sortBy="#{client.nom}" filterBy="#{client.nom}">
+			<f:facet name="header">
+				<h:outputText value="Nom" />
+			</f:facet>
+			<h:outputText value="#{client.nom}" />
+		</p:column>
+		
+		<p:column sortBy="#{client.prenom}" filterBy="#{client.prenom}">
+			<f:facet name="header">
+				<h:outputText value="Prénom" />
+			</f:facet>
+			<h:outputText value="#{client.prenom}" />
+		</p:column>
+		
+		<p:column sortBy="#{client.taPartenaire.codePartenaire}" filterBy="#{client.taPartenaire.codePartenaire}">
+			<f:facet name="header">
+				<h:outputText value="Code partenaire" />
+			</f:facet>
+			<h:outputText value="#{client.taPartenaire.codePartenaire}" />
+		</p:column>
+		
+		<p:column sortBy="#{client.taPartenaire.taTypePartenaire.libelle}" filterBy="#{client.taPartenaire.taTypePartenaire.libelle}">
+			<f:facet name="header">
+				<h:outputText value="Type partenaire" />
+			</f:facet>
+			<h:outputText value="#{client.taPartenaire.taTypePartenaire.libelle}" />
+		</p:column>
+		
+		<p:column sortBy="#{client.taPartenaire.dateDebut}">
+			<f:facet name="header">
+				<h:outputText value="Date début" />
+			</f:facet>
+			<h:outputText value="#{client.taPartenaire.dateDebut}" >
+				<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+			</h:outputText>
+		</p:column>
+		
+		<p:column sortBy="#{client.taPartenaire.actif}" styleClass="center">
+			<f:facet name="header">
+				<h:outputText value="Actif" />
+			</f:facet>
+			<p:selectBooleanCheckbox value="#{client.taPartenaire.actif}" disabled="true"/>
+		</p:column>
+		
+		<p:column>
+			<f:facet name="header">
+				<h:outputText value="Actions" />
+			</f:facet>
+			<p:commandLink value="Détail" action="#{partenaireBean.openPartenaire}" update=":form:tabView" oncomplete="activeTabCenter('#{LgrTab.CSS_CLASS_TAB_PARTENAIRE}');">
+				<f:setPropertyActionListener target="#{partenaireBean.client}" value="#{client}" />
+			</p:commandLink>
+
+		</p:column>
+		
+		<p:rowExpansion>
+            <p:panelGrid  columns="2" >
+                <f:facet name="header">
+                    RIB
+                </f:facet>
+ 
+                <h:outputText value="Titulaire du compte" />
+                <h:outputText value="#{client.taPartenaire.titulaireCompteBanque}" />
+ 
+                <h:outputText value="Nom de la banque" />
+                <h:outputText value="#{client.taPartenaire.nomBanque}" />
+ 
+                <h:outputText value="Adresse 1" />
+                <h:outputText value="#{client.taPartenaire.adresse1Banque}" />
+ 
+                <h:outputText value="Adresse 2" />
+                <h:outputText value="#{client.taPartenaire.adresse2Banque}" />
+                
+                <h:outputText value="Code postal" />
+                <h:outputText value="#{client.taPartenaire.cpBanque}" />
+                
+                <h:outputText value="Ville" />
+                <h:outputText value="#{client.taPartenaire.villeBanque}" />
+                
+                <h:outputText value="IBAN" />
+                <h:outputText value="#{client.taPartenaire.ibanBanque}" />
+                
+                <h:outputText value="BIC / SWIFT" />
+                <h:outputText value="#{client.taPartenaire.bicSwiftBanque}" />
+            </p:panelGrid>
+        </p:rowExpansion>
+
+	</p:dataTable>
+</ui:composition>

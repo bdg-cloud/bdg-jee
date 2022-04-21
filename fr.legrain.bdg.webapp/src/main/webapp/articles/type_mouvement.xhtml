@@ -1,0 +1,196 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<!-- 	<f:metadata> -->
+	<!-- 		<f:viewParam name="modeEcranDefaut" value="#{typeMouvementController.modeEcranDefaut}" /> -->
+	<!-- 		<f:event type="preRenderView" listener="#{typeMouvementController.refresh}" /> -->
+	<!-- 	</f:metadata> -->
+
+	<p:panel id="typeMouvementFormPrincipal" widgetVar="widgetVartypeMouvementForm">
+
+
+		<p class="subtitle">
+			<p:outputLabel value="Gestion des types de mouvements" style="position:relative;"
+				rendered="#{dansDialogue == null ? true : false}" />
+		</p>
+
+		<!-- 		rendered="#{dansDialogue == null ? true : false}" -->
+		<p:dataTable id="typeMouvementDataTable" widgetVar="wvTypeMouvementDataTable" var="table"
+			rendered="#{dansDialogue == null ? true : false}"
+			value="#{typeMouvementController.values}" rowKey="#{table.id}"
+			selectionMode="single" styleClass="datatable"
+			selection="#{typeMouvementController.selection}" paginator="true"
+			rows="#{msg.modele_datatable_ligne_par_page_debut}"
+			paginatorTemplate="#{msg.modele_datatable_paginator}"
+			rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+			emptyMessage="#{msg.message_datatable_vide}"
+			currentPageReportTemplate="#{msg.modele_datatable_page_courante}">
+
+			<p:ajax event="rowSelect" listener="#{typeMouvementController.onRowSelect}" />
+
+			<f:facet name="{Exporters}">
+				<h:commandLink>
+					<p:graphicImage library="images" name="excel.png" width="24" />
+					<p:dataExporter type="xls" target="typeMouvementDataTable"
+						fileName="type_tiers" />
+				</h:commandLink>
+
+				<h:commandLink>
+					<p:graphicImage library="images" name="pdf.png" width="24" />
+					<p:dataExporter type="pdf" target="typeMouvementDataTable"
+						fileName="type_tiers" />
+				</h:commandLink>
+
+				<h:commandLink>
+					<p:graphicImage library="images" name="csv.png" width="24" />
+					<p:dataExporter type="csv" target="typeMouvementDataTable"
+						fileName="type_tiers" options="#{separateurCsvController.csvOptions}" />
+				</h:commandLink>
+
+				<h:commandLink>
+					<p:graphicImage library="images" name="xml.png" width="24" />
+					<p:dataExporter type="xml" target="typeMouvementDataTable"
+						fileName="type_tiers" />
+				</h:commandLink>
+			</f:facet>
+
+			<p:column sortBy="#{table.code}" filterBy="#{table.code}" filterMatchMode="contains">
+				<f:facet name="header">
+					<h:outputText value="Code" />
+				</f:facet>
+				<h:outputText value="#{table.code}" />
+			</p:column>
+
+			<p:column sortBy="#{table.libelle}"
+				filterBy="#{table.libelle}" filterMatchMode="contains">
+				<f:facet name="header">
+					<h:outputText value="Libellé" />
+				</f:facet>
+				<h:outputText value="#{table.libelle}" />
+			</p:column>
+
+		</p:dataTable>
+
+		<!-- bouton -->
+		<p:panel id="typeMouvementDataTableF" styleClass="mt30 bg-grey"
+			rendered="#{dansDialogue == null ? true : false}">
+			<p:commandButton id="typeMouvementInserer" value="Insérer" process="@this"
+				disabled="#{typeMouvementController.etatBouton('inserer')}"
+				update="@widgetVar(vartypeMouvementPanel), @this, @parent:typeMouvementModifier, @parent:typeMouvementSupprimer"
+				actionListener="#{typeMouvementController.actInserer}" styleClass="btn-insert btn" />
+
+			<p:commandButton id="typeMouvementModifier" value="Modifier"
+				process="@this" class="btn-update btn"
+				disabled="#{typeMouvementController.etatBouton('modifier')}"
+				update="@widgetVar(vartypeMouvementPanel), @parent:typeMouvementInserer, @this, @parent:typeMouvementSupprimer"
+				actionListener="#{typeMouvementController.actModifier}" />
+
+			<p:commandButton id="typeMouvementSupprimer" value="Supprimer"
+				styleClass="btn-delete btn menuitem-poubelle-droite"
+				disabled="#{typeMouvementController.etatBouton('supprimer')}"
+				actionListener="#{typeMouvementController.actSupprimer}"
+				update="@widgetVar(wvTypeMouvementDataTable)" process="@this"
+				 >
+<!-- 				type="button" onclick="PF('famillecd1').show()" -->
+				<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer cet enregistrement ?" icon="ui-icon-alert" />
+			</p:commandButton>
+
+			<p:commandButton id="typeMouvementFermer" title="Fermer"
+				class="btn-close btn menuitem-fermer-droite" 
+				rendered="#{dansDialogue == null ? true : false}" onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())">
+<!-- 				type="button" onclick="PF('famillecd2').show()" -->
+				<p:confirm header="Confirmation" message="#{msg_diag.alert_fermeture_onglet}" icon="ui-icon-alert" disabled="#{!typeMouvementController.modeEcran.dataSetEnModif()}"/>
+			</p:commandButton>
+
+			<p:commandButton id="typeMouvementFermerDialogue" title="Fermer"
+				process="@this" class="btn-close btn menuitem-fermer-droite"
+				actionListener="#{typeMouvementController.actFermerDialog}"
+				rendered="#{dansDialogue != null ? true : false}" />
+
+<!-- 			<p:confirmDialog message="#{msg_diag.alert_suppresion}" -->
+<!-- 				header="Confirmation" severity="alert" appendTo="@(body)" -->
+<!-- 				widgetVar="typeMouvementcd1"> -->
+<!-- 				<p:commandButton value="#{msg_diag.Oui}" update="@form" -->
+<!-- 					oncomplete="PF('typeMouvementcd1').hide()"> -->
+<!-- 					<p:ajax listener="#{typeMouvementController.actSupprimer}" /> -->
+<!-- 				</p:commandButton> -->
+<!-- 				<p:commandButton value="#{msg_diag.Non}" -->
+<!-- 					onclick="PF('typeMouvementcd1').hide();" type="button" /> -->
+<!-- 			</p:confirmDialog> -->
+
+<!-- 			<p:confirmDialog message="#{msg_diag.alert_fermeture_onglet}" -->
+<!-- 				header="Confirmation" severity="alert" widgetVar="typeMouvementcd2" -->
+<!-- 				appendTo="@(body)"> -->
+<!-- 				<p:commandButton value="#{msg_diag.Oui}" -->
+<!-- 					onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())" -->
+<!-- 					oncomplete="PF('typeMouvementcd2').hide()" /> -->
+
+<!-- 				<p:commandButton value="#{msg_diag.Non}" -->
+<!-- 					onclick="PF('typeMouvementcd2').hide();" type="button" /> -->
+<!-- 			</p:confirmDialog> -->
+		</p:panel>
+	</p:panel>
+
+	<p:messages id="typeMouvementMessages" showDetail="true" autoUpdate="true"
+		closable="true" />
+
+	<p:panel id="typeMouvementPanel" visible="true" widgetVar="vartypeMouvementPanel">
+		<p:panel resizable="false" id="typeMouvementPanelCache"
+			rendered="#{typeMouvementController.modeEcran.dataSetEnModif()}">
+			<!-- 			<h:form id="typeMouvementFormCreation"> -->
+			<f:validateBean disabled="true">
+				<div class="ui-grid ui-grid-responsive" id="typeMouvementGridResp">
+					<div class="ui-grid-row">
+						<div class="ui-grid-col-4">
+							<h:outputText value="Code :"></h:outputText>
+						</div>
+						<div class="ui-grid-col-8">
+							<h:inputText value="#{typeMouvementController.nouveau.code}" styleClass="Input50"
+								required="true" requiredMessage="#{msg_diag.alert_champs_obligatoir}" validator="#{typeMouvementController.validateMouvement}">
+								<f:attribute name="nomChamp" value="#{const.C_CODE_TYPE_MOUVEMENT}" />
+								<p:ajax event="blur" update="@this"/>
+							</h:inputText>
+						</div>
+					</div>
+					<div class="ui-grid-row">
+						<div class="ui-grid-col-4">
+							<h:outputText value="Libelle :" ></h:outputText>
+						</div>
+						<div class="ui-grid-col-8">
+							<h:inputText value="#{typeMouvementController.nouveau.libelle}" styleClass="Input100"
+								required="true" requiredMessage="#{msg_diag.alert_champs_obligatoir}" validator="#{typeMouvementController.validateMouvement}">
+								<f:attribute name="nomChamp" value="#{const.C_LIBELLE}" />
+								<p:ajax event="blur" update="@this"/>
+							</h:inputText>
+						</div>
+					</div>
+	
+					<div class="ui-grid-row">
+						<div class="ui-grid-col-12 text-center">
+							<p:commandButton value="Enregistrer" styleClass="btn-save btn"
+								disabled="#{typeMouvementController.etatBouton('enregistrer')}"
+								update="@widgetVar(widgetVartypeMouvementForm), @widgetVar(vartypeMouvementPanel)"
+								actionListener="#{typeMouvementController.actEnregistrer}" />
+							<p:commandButton id="typeMouvementAnnuler" value="Annuler"
+								styleClass="btn-cancel btn"
+								disabled="#{typeMouvementController.etatBouton('annuler')}"
+								update="@widgetVar(widgetVartypeMouvementForm), @widgetVar(vartypeMouvementPanel)"
+								actionListener="#{typeMouvementController.actAnnuler}"
+								rendered="#{dansDialogue == null ? true : false}" />
+
+							<p:commandButton id="typeMouvementAnnulerDialogue" value="Annuler"
+								styleClass="btn-cancel btn" process="@this"
+								disabled="#{typeMouvementController.etatBouton('annuler')}"
+								actionListener="#{typeMouvementController.actFermerDialog}"
+								rendered="#{dansDialogue != null ? true : false}" />
+						</div>
+					</div>
+				</div>
+			</f:validateBean>
+			<!-- 			</h:form> -->
+		</p:panel>
+	</p:panel>
+</ui:composition>

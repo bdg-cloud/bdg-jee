@@ -1,0 +1,35 @@
+<ui:composition 
+	xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:f="http://java.sun.com/jsf/core" 
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets" 
+	xmlns:p="http://primefaces.org/ui" xmlns:pi="http://primefaces.org/icarus">
+	
+	<f:view locale="#{languageBean.localeCode}" />
+
+	<h:form>
+		<p:selectOneMenu class="combo_langue" value="#{languageBean.localeCode}">
+			<f:selectItems value="#{languageBean.countriesInMap}" />
+			<p:ajax listener="#{languageBean.countryLocaleCodeChanged}" />
+		</p:selectOneMenu>
+	</h:form>
+
+	<h:form id="menuform">.
+   
+        <pi:menu widgetVar="IcarusMenu">
+
+			<p:menuitem icon="fa fa-home" value="Tableau de bord" outcome="/index.xhtml" />
+			
+			<p:submenu label="Fournisseurs" icon="fa fa-user">
+				<p:menuitem icon="fa fa-user-plus" value="Ajouter une liaison" outcome="/ajout-fournisseur.xhtml" />
+			</p:submenu>
+			
+			<p:submenu label="Document" icon="fa fa-file-o">
+				<p:menuitem icon="fa fa-users" value="Mes fournisseurs" outcome="/page-mes-fournisseurs.xhtml" />
+			</p:submenu>
+
+		</pi:menu>
+
+	</h:form>
+
+</ui:composition>

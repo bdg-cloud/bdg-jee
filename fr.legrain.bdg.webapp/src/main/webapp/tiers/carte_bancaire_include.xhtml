@@ -1,0 +1,288 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
+xmlns:f="http://java.sun.com/jsf/core" 
+xmlns:h="http://java.sun.com/jsf/html"
+xmlns:ui="http://java.sun.com/jsf/facelets" 
+xmlns:o="http://omnifaces.org/ui" 
+xmlns:p="http://primefaces.org/ui">
+
+
+<!-- 	<f:metadata> -->
+<!-- 		<f:viewParam name="idTiers" value="#{carteBancaireController.paramId}" /> -->
+<!-- 		<f:event type="preRenderView" listener="#{carteBancaireController.refresh}" /> -->
+<!-- 	</f:metadata> -->
+
+	
+			<p:panel  widgetVar="banqueForm#{variableNomWvIDUnique}">
+		
+				<p:menubar styleClass="menu-onglet" widgetVar="wvMenuCompteBanqueTiers#{variableNomWvIDUnique}">
+					<p:menuitem title="Enregistrer les modifications en cours" styleClass="icon-save icon" actionListener="#{carteBancaireController.actEnregistrer}"
+						process="@this" update="@widgetVar(panelListeCompteTiers#{variableNomWvIDUnique}),@widgetVar(wvMenuCompteBanqueTiers#{variableNomWvIDUnique}),@widgetVar(wvDetailCompteBanque#{variableNomWvIDUnique}),@widgetVar(wvBanqueDataTable#{variableNomWvIDUnique})" disabled="#{carteBancaireController.etatBouton('enregistrer')}" />
+		
+					<p:menuitem title="Ajouter une nouvelle carte bancaire" styleClass="icon-insert icon" actionListener="#{carteBancaireController.actInserer}"
+						process="@this" update="@widgetVar(panelListeCompteTiers#{variableNomWvIDUnique}),@widgetVar(wvMenuCompteBanqueTiers#{variableNomWvIDUnique}),@widgetVar(wvDetailCompteBanque#{variableNomWvIDUnique}),@widgetVar(wvBanqueDataTable#{variableNomWvIDUnique})" disabled="#{carteBancaireController.etatBouton('inserer')}" />
+		
+					<p:menuitem title="Modifier la carte courante" styleClass="icon-update icon" actionListener="#{carteBancaireController.actModifier}" process="@this"
+						update="@widgetVar(panelListeCompteTiers#{variableNomWvIDUnique}),@widgetVar(wvMenuCompteBanqueTiers#{variableNomWvIDUnique}),@widgetVar(wvDetailCompteBanque#{variableNomWvIDUnique}),@widgetVar(wvBanqueDataTable#{variableNomWvIDUnique})" disabled="#{carteBancaireController.etatBouton('modifier')}" />
+		
+					<p:menuitem title="Annuler les modifications en cours" styleClass="icon-cancel icon" actionListener="#{carteBancaireController.actAnnuler}"
+						process="@this" update="@widgetVar(panelListeCompteTiers#{variableNomWvIDUnique}),@widgetVar(wvMenuCompteBanqueTiers#{variableNomWvIDUnique}),@widgetVar(wvDetailCompteBanque#{variableNomWvIDUnique}),@widgetVar(wvBanqueDataTable#{variableNomWvIDUnique})" disabled="#{carteBancaireController.etatBouton('annuler')}" />
+						
+<!-- 					<p:menuitem value="Créer la carte dans le service bancaire (Stripe)" actionListener="#{carteBancaireController.actCreerCarteDansStripe}" -->
+<!-- 						process="@this" update="@widgetVar(panelListeCompteTiers#{variableNomWvIDUnique}),@widgetVar(wvMenuCompteBanqueTiers#{variableNomWvIDUnique}),@widgetVar(wvDetailCompteBanque#{variableNomWvIDUnique}),@widgetVar(wvBanqueDataTable#{variableNomWvIDUnique})"  -->
+<!-- 						rendered="#{auth.isDevLgr()}" /> -->
+<!-- 						disabled="#{carteBancaireController.etatBouton('inserer') or carteBancaireController.carteExisteDansStripe()}" -->
+	<p:menuitem value="Créer une carte dans le service bancaire (Stripe)" rendered="#{auth.isDevLgr()}"
+					oncomplete="$('.classHiddenCommandForDialogCreerSourceReturnCarteBancaire').click()" process="@this" update=":form:messages" />
+					
+						
+					<p:menuitem title="Supprimer le compte courant" styleClass="icon icon-delete menuitem-poubelle-droite"
+						actionListener="#{carteBancaireController.actSupprimer}" process="@this" update="@widgetVar(panelListeCompteTiers#{variableNomWvIDUnique}),@widgetVar(wvMenuCompteBanqueTiers#{variableNomWvIDUnique}),@widgetVar(wvDetailCompteBanque#{variableNomWvIDUnique}),@widgetVar(wvBanqueDataTable#{variableNomWvIDUnique})" 
+						disabled="#{carteBancaireController.etatBouton('supprimer')}">
+						<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer cette carte bancaire ?" icon="ui-icon-alert" />
+					</p:menuitem>
+				</p:menubar>
+				
+				<p:commandButton styleClass="classHiddenCommandForDialogCreerSourceReturnCarteBancaire" actionListener="#{carteBancaireController.actCreerCarteDansStripe}" 
+					style="display:none" process="@this" rendered="#{auth.isDevLgr()}">
+					<p:ajax event="dialogReturn" listener="#{carteBancaireController.handleReturnDialogCreerSource}" update=":form:messages, @widgetVar(panelListeCompteTiers#{variableNomWvIDUnique})" />
+				</p:commandButton>
+		
+				<p:panel header="Liste des cartes bancaires du tiers" widgetVar="panelListeCompteTiers#{variableNomWvIDUnique}">
+					<p:dataTable  widgetVar="wvBanqueDataTable#{variableNomWvIDUnique}" var="table" value="#{carteBancaireController.values}"
+					 rowKey="#{table.id}" selectionMode="single" 
+						selection="#{carteBancaireController.selectedTaCarteBancaireDTO}"
+						scrollable="true" scrollHeight="100"
+						 rows="#{msg.modele_datatable_ligne_par_page_debut}"
+						paginatorTemplate="#{msg.modele_datatable_paginator}" rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+						emptyMessage="#{msg.message_datatable_vide}" currentPageReportTemplate="#{msg.modele_datatable_page_courante}">
+		
+						<p:ajax event="rowSelect" listener="#{carteBancaireController.onRowSelect}" update="@widgetVar(wvDetailCompteBanque#{variableNomWvIDUnique}),@widgetVar(wvMenuCompteBanqueTiers#{variableNomWvIDUnique})" />
+		
+						
+						<f:facet name="header">
+							<h:outputText value="#{carteBancaireController.values.size()} carte(s) bancaire(s)" />
+						</f:facet>
+		
+						<p:column sortBy="#{table.type}" filterBy="#{table.type}" filterMatchMode="contains" styleClass="center">
+							<f:facet name="header">
+								<h:outputText value="Type" />
+							</f:facet>
+							<h:outputText value="#{table.type}" />
+						</p:column>
+		
+						<p:column sortBy="#{table.numeroCarte}" filterBy="#{table.numeroCarte}" filterMatchMode="contains" styleClass="center">
+							<f:facet name="header">
+								<h:outputText value="Numéro" />
+							</f:facet>
+							<h:outputText value="#{table.numeroCarte}" rendered="#{table.last4 == null}"/>
+							<h:outputText value="**** #{table.last4}" rendered="#{table.last4 != null}"/>
+						</p:column>
+		
+		
+						<p:column  styleClass="center">
+							<f:facet name="header">
+								<h:outputText value="Date expiration" />
+							</f:facet>
+							<h:outputText value="#{table.moisExpiration}/#{table.anneeExpiration}" />
+							
+						</p:column>
+						
+<!-- 						<p:column  styleClass="center"> -->
+<!-- 							<f:facet name="header"> -->
+<!-- 								<h:outputText value="Pays" /> -->
+<!-- 							</f:facet> -->
+<!-- 							<h:outputText value="#{table.paysOrigine}" /> -->
+							
+<!-- 						</p:column> -->
+		
+<!-- 						<p:column sortBy="#{table.cptcomptable}" filterBy="#{table.cptcomptable}" filterMatchMode="contains" styleClass="center"> -->
+<!-- 							<f:facet name="header"> -->
+<!-- 								<h:outputText value="compte comptable" /> -->
+<!-- 							</f:facet> -->
+<!-- 							<h:outputText value="#{table.cptcomptable}" /> -->
+<!-- 						</p:column> -->
+					</p:dataTable>
+		
+		
+					<p:panel  header="Détail" widgetVar="wvDetailCompteBanque#{variableNomWvIDUnique}">
+						<div class="ui-grid ui-grid-responsive">
+							<div class="ui-grid-row">
+								<div class="ui-grid-col-6">
+									<p:panel  header="Infos Générales" toggleable="true" widgetVar="panelDiversBanque">
+										<h:panelGrid columns="2" cellpadding="10">
+											<p:outputLabel value="Titulaire du compte" />
+											<p:inputText value="#{carteBancaireController.selectedTaCarteBancaireDTO.nomProprietaire}" validator="#{carteBancaireController.validateCompteBanque}"
+												disabled="#{carteBancaireController.editable()}">
+												<f:attribute name="nomChamp" value="#{const.C_TITULAIRE_BANQUE}" />
+												<p:ajax event="blur" update="@this" />
+											</p:inputText>
+		
+		
+											<p:outputLabel value="Type de compte : " />
+											<p:autoComplete value="#{carteBancaireController.taTBanqueDTO}" required="true"
+												completeMethod="#{carteBancaireController.typeCompteBanqueAutoCompleteLight}" disabled="#{carteBancaireController.editable()}" var="type"
+												itemLabel="#{type.codeTBanque}" itemValue="#{type}" forceSelection="true" dropdown="true" placeholder="Type de compte"
+												converter="entityConverter">
+												<p:column>
+													<h:outputText value="#{type.codeTBanque}" />
+												</p:column>
+												<p:column>
+													<h:outputText value="#{type.liblTBanque}" />
+												</p:column>
+												<p:column>
+													<f:facet name="header">
+														<p:commandButton value="Ajouter" title="Insérer" process="@this" update="@this"
+															actionListener="#{carteBancaireController.actDialogTypeCompteBanque}" styleClass="btn-insert btn">
+															<p:ajax event="dialogReturn" listener="#{carteBancaireController.handleReturnDialogTypeCompteBanque}" update="@parent:@parent" />
+														</p:commandButton>
+													</f:facet>
+													<h:outputText value="#{type.codeTBanque}" />
+												</p:column>
+		
+												<f:attribute name="nomChamp" value="#{const.C_CODE_T_BANQUE}" />
+												<p:ajax event="itemSelect" listener="#{carteBancaireController.autcompleteSelection}" update="@this" />
+											</p:autoComplete>
+		
+		
+											<p:outputLabel value="Compte comptable" />
+											<p:inputText value="#{carteBancaireController.selectedTaCarteBancaireDTO.cptcomptable}" validator="#{carteBancaireController.validateCompteBanque}"
+												disabled="#{carteBancaireController.editable()}">
+												<f:attribute name="nomChamp" value="#{const.C_COMPTE_BANQUE}" />
+												<p:ajax event="blur" update="@this" />
+											</p:inputText>
+										</h:panelGrid>
+									</p:panel>
+								</div>
+							<div class="ui-grid-col-6">
+								<div class="ui-grid-row">
+		
+									<div class="ui-grid-col-12">
+										<p:panel header="Divers" toggleable="true" widgetVar="panelRibBanque">
+											<h:panelGrid columns="2" cellpadding="10">
+												<p:outputLabel value="Numéro" />
+												<p:inputText value="#{carteBancaireController.selectedTaCarteBancaireDTO.numeroCarte}" validator="#{carteBancaireController.validateCompteBanque}"
+													disabled="#{carteBancaireController.editable()}">
+													<f:attribute name="nomChamp" value="#{const.C_CODE_BANQUE}" />
+													<p:ajax event="blur" update="@this" />
+												</p:inputText>
+		
+												<p:outputLabel value="Mois expiration" />
+												<p:inputText value="#{carteBancaireController.selectedTaCarteBancaireDTO.moisExpiration}" validator="#{carteBancaireController.validateCompteBanque}"
+													disabled="#{carteBancaireController.editable()}">
+													<f:attribute name="nomChamp" value="#{const.C_CODE_GUICHET_BANQUE}" />
+													<p:ajax event="blur" update="@this" />
+												</p:inputText>
+		
+		
+												<p:outputLabel value="Année expiration" />
+												<p:inputText value="#{carteBancaireController.selectedTaCarteBancaireDTO.moisExpiration}" validator="#{carteBancaireController.validateCompteBanque}"
+													disabled="#{carteBancaireController.editable()}">
+													<f:attribute name="nomChamp" value="#{const.C_COMPTE_BANQUE}" />
+													<p:ajax event="blur" update="@this" />
+												</p:inputText>
+		
+		
+												<p:outputLabel value="Cryptogramme" />
+												<p:inputText value="#{carteBancaireController.selectedTaCarteBancaireDTO.cvc}" validator="#{carteBancaireController.validateCompteBanque}"
+													disabled="#{carteBancaireController.editable()}">
+													<f:attribute name="nomChamp" value="#{const.C_CLE_RIB_BANQUE}" />
+													<p:ajax event="blur" update="@this" />
+												</p:inputText>
+												
+												<p:outputLabel value="Type" />
+												<p:inputText value="#{carteBancaireController.selectedTaCarteBancaireDTO.type}" validator="#{carteBancaireController.validateCompteBanque}"
+													disabled="#{carteBancaireController.editable()}">
+													<f:attribute name="nomChamp" value="#{const.C_CLE_RIB_BANQUE}" />
+													<p:ajax event="blur" update="@this" />
+												</p:inputText>
+											</h:panelGrid>
+										</p:panel>
+									</div>
+									</div>
+								</div>
+							</div>
+		
+							<div class="ui-grid-row">
+		
+								<div class="ui-grid-col-6">
+									<p:panel  header="Domiciliation" toggleable="true" widgetVar="panelDomiciliationBanque">
+										<h:panelGrid columns="2" cellpadding="10">
+											<p:outputLabel value="Etablissement" />
+											<p:inputText value="#{carteBancaireController.selectedTaCarteBancaireDTO.nomBanque}" validator="#{carteBancaireController.validateCompteBanque}"
+												disabled="#{carteBancaireController.editable()}">
+												<f:attribute name="nomChamp" value="#{const.C_NOM_BANQUE}" />
+												<p:ajax event="blur" update="@this" />
+											</p:inputText>
+		
+		
+											<p:outputLabel value="Adresse(1)" />
+											<p:inputText value="#{carteBancaireController.selectedTaCarteBancaireDTO.adresse1}" validator="#{carteBancaireController.validateCompteBanque}"
+												disabled="#{carteBancaireController.editable()}">
+												<f:attribute name="nomChamp" value="#{const.C_ADRESSE1_BANQUE}" />
+												<p:ajax event="blur" update="@this" />
+											</p:inputText>
+		
+		
+											<p:outputLabel value="Adresse(2)" />
+											<p:inputText value="#{carteBancaireController.selectedTaCarteBancaireDTO.adresse2}" validator="#{carteBancaireController.validateCompteBanque}"
+												disabled="#{carteBancaireController.editable()}">
+												<f:attribute name="nomChamp" value="#{const.C_ADRESSE2_BANQUE}" />
+												<p:ajax event="blur" update="@this" />
+											</p:inputText>
+		
+		
+											<p:outputLabel value="Code postal" />
+											<p:inputText value="#{carteBancaireController.selectedTaCarteBancaireDTO.codePostal}" validator="#{carteBancaireController.validateCompteBanque}"
+												disabled="#{carteBancaireController.editable()}">
+												<f:attribute name="nomChamp" value="#{const.C_CP_BANQUE}" />
+												<p:ajax event="blur" update="@this" />
+											</p:inputText>
+		
+		
+											<p:outputLabel value="Ville" />
+											<p:inputText value="#{carteBancaireController.selectedTaCarteBancaireDTO.ville}" validator="#{carteBancaireController.validateCompteBanque}"
+												disabled="#{carteBancaireController.editable()}">
+												<f:attribute name="nomChamp" value="#{const.C_VILLE_BANQUE}" />
+												<p:ajax event="blur" update="@this" />
+											</p:inputText>
+										</h:panelGrid>
+									</p:panel>
+								</div>
+								<div class="ui-grid-col-6">
+									<p:panel  header="Autres identifiants" toggleable="true" widgetVar="panelParamAutres">
+										<h:panelGrid columns="2" cellpadding="10">
+		
+<!-- 											<p:outputLabel value="IBAN" /> -->
+<!-- 											<p:inputText value="#{carteBancaireController.selectedTaCarteBancaireDTO.iban}" validator="#{carteBancaireController.validateCompteBanque}" -->
+<!-- 												disabled="#{carteBancaireController.editable()}"> -->
+<!-- 												<f:attribute name="nomChamp" value="#{const.C_IBAN_BANQUE}" /> -->
+<!-- 												<p:ajax event="blur" update="@this" /> -->
+<!-- 											</p:inputText> -->
+		
+		
+<!-- 											<p:outputLabel value="BIC" /> -->
+<!-- 											<p:inputText value="#{carteBancaireController.selectedTaCarteBancaireDTO.codeBIC}" validator="#{carteBancaireController.validateCompteBanque}" -->
+<!-- 												disabled="#{carteBancaireController.editable()}"> -->
+<!-- 												<f:attribute name="nomChamp" value="#{const.C_CODE_B_I_C_BANQUE}" /> -->
+<!-- 												<p:ajax event="blur" update="@this" /> -->
+<!-- 											</p:inputText> -->
+		
+		
+<!-- 											<p:outputLabel value="Nom du compte" /> -->
+<!-- 											<p:inputText value="#{carteBancaireController.selectedTaCarteBancaireDTO.nomCompte}" validator="#{carteBancaireController.validateCompteBanque}" -->
+<!-- 												disabled="#{carteBancaireController.editable()}"> -->
+<!-- 												<f:attribute name="nomChamp" value="#{const.C_NOM_COMPTE}" /> -->
+<!-- 												<p:ajax event="blur" update="@this" /> -->
+<!-- 											</p:inputText> -->
+										</h:panelGrid>
+									</p:panel>
+								</div>
+							</div>
+						</div>
+					</p:panel>
+		
+		
+				</p:panel>
+			</p:panel>
+		
+</ui:composition>

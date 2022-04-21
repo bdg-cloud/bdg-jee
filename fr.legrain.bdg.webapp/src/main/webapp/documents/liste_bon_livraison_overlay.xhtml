@@ -1,0 +1,276 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:p="http://primefaces.org/ui">
+	
+	<o:importConstants type="fr.legrain.bdg.webapp.app.LgrTab" />
+	
+	<p:commandLink id="listeBLBtn" >
+		<i class="top-submenu-icon fa fa-fw fa-truck"></i>
+<!-- 		<i class="top-bar-badge animated rubberBand"><h:outputText value="#{topBarController.nbClient}"/></i> -->
+<!-- 		<i class="fa fa-book animated swing" aria-hidden="true"></i> -->
+		<span><h:outputText value="Liste des livraisons" /></span>
+	</p:commandLink>
+	
+	<p:overlayPanel id="idListeBLPanel" for="listeBLBtn" hideEffect="fade" dynamic="true" 
+		dismissable="true" appendTo="@(body)" widgetVar="wvOverlayListeBL" showCloseIcon="true">
+		
+	<h:form>
+		<div class="dashboard-title" style="background:#f6f6f6;">
+              <h:panelGrid columns="3" cellpadding="5">
+            	<h:graphicImage name="dashboard/bon-de-livraison.svg" library="images" height="35px" style="margin-top:1px;" />
+                <p:outputLabel value="Liste des bons de livraison" style="font-size:20px;"/>
+              </h:panelGrid>  
+              <p:separator/>
+        </div>
+	<p:menubar styleClass="menu-onglet" widgetVar="wvMenuListeBL" id="idMenuListeBL">
+		 <p:menuitem title="Créer un nouveau bon de livraison" update=":form:tabView,:form:messages,@widgetVar(wvMenuListeBL),@widgetVar(wvDataTableListeBL)"  
+		 	actionListener="#{bonLivraisonController.nouveau}" styleClass="icon icon-insert" disabled="#{bonLivraisonController.etatBouton('inserer')}" oncomplete="PF('wvOverlayListeBL').hide();"/>
+<!-- 		 oncomplete="rc2();" -->
+<!-- 		 <p:menuitem title="Détail" update=":form:tabView,:form:messages" actionListener="#{bonLivraisonController.detail}" styleClass="icon icon-detail" disabled="#{bonLivraisonController.modeEcran.dataSetEnModif()}" oncomplete="PF('wvOverlayListeBL').hide();"/> -->
+<!-- 		 <p:menuitem title="Supprimer les bons de livraison sélectionnés" update=":form:tabView,@widgetVar(wvMenuListeBL),@widgetVar(wvDataTableListeBL),:form:messages,@form"  -->
+<!-- 		 actionListener="#{bonLivraisonController.supprimer}" styleClass="icon icon-delete" disabled="#{bonLivraisonController.etatBouton('supprimerListe')}"> -->
+<!-- 	 		<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer les bons de livraison sélectionnés ?" icon="ui-icon-alert" /> -->
+<!-- 	 	</p:menuitem> -->
+		 <p:menuitem title="Rafraîchir la liste" update=":form:tabView,@form,@widgetVar(wvMenuListeBL),@widgetVar(wvDataTableListeBL),:form:messages" actionListener="#{bonLivraisonController.refresh}" styleClass="icon icon-refresh" disabled="#{bonLivraisonController.modeEcran.dataSetEnModif()}"/>
+	</p:menubar>
+	<p:sticky target="idMenuListeBL" />
+	 
+	<p:dataTable id="dataTableListeBonLivraison" var="bonLivraison"
+				widgetVar="wvDataTableListeBL"
+				value="#{bonLivraisonController.values}"
+				rowKey="#{bonLivraison.id}"
+				selection="#{bonLivraisonController.selectedDocumentDTOs}"
+				dblClickSelect="true"
+				styleClass="datatable mt10"
+				resizableColumns="true"
+				paginator="true" 
+				rows="#{msg.modele_datatable_ligne_par_page_debut}"
+				paginatorTemplate="#{msg.modele_datatable_paginator}"
+				rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+				emptyMessage="#{msg.message_datatable_vide}"
+				currentPageReportTemplate="#{msg.modele_datatable_page_courante}"
+				disabledSelection="#{bonLivraisonController.modeEcran.dataSetEnModif()}">
+				
+<!-- 				<p:ajax event="rowDblselect" listener="#{bonLivraisonController.onRowSelect}" update=":form:tabView,:form:messages,@form" oncomplete="activeLastTabCenter();"/>  -->
+<!-- 				<p:ajax event="rowSelect" listener="#{bonLivraisonController.onRowSelect}" update=":form:tabView,:form:messages" oncomplete="PF('wvOverlayListeBL').hide();"/> -->
+				
+<!-- 				<p:ajax event="rowDblselect" listener="#{bonLivraisonController.onRowSelect}" update=":form:tabView,:form:messages" /> -->
+				<p:ajax event="rowSelect" delay="#{msg.datatable_rowselect_delay}" listener="#{bonLivraisonController.onRowSelect}" update=":form:tabView,:form:messages" oncomplete="activeTabCenter('#{LgrTab.CSS_CLASS_TAB_LIVRAISON}');PF('wvOverlayListeBL').hide();scrollToTop();"/>
+				
+				<f:facet name="header">  
+           			<h:outputText value="Bon de livraison" />
+           			<span style="float:right;" class="searchbar_list">
+			            <p:outputPanel>
+				                <p:inputText id="globalFilter" onkeyup="PF('wvDataTableListeBL').filter()" style="width:150px" placeholder="Rechercher"/>
+				            </p:outputPanel>
+			        </span>
+        		</f:facet>
+
+		  		<f:facet name="{Exporters}">
+		            <h:commandLink>
+		                <p:graphicImage library="images" name="excel.png" width="24"/>
+		                <p:dataExporter type="xls" target="dataTableListeBonLivraison" fileName="liste_bon_reception" />
+		            </h:commandLink>
+		 
+		            <p:commandLink onsuccess="window.open('#{request.contextPath}/output?__report=/reports/documents/bl/ListeDesLivraisons.rptdesign&amp;__format=pdf')"
+			actionListener="#{bonLivraisonController.actImprimerListeDesLivraisons}" process="@this">
+		                <p:graphicImage  library="images" name="pdf.png"  width="24"/>
+<!-- 		                <p:dataExporter type="pdf" target="dataTableListeTiers" fileName="liste_tiers" /> -->
+		            </p:commandLink>
+		 
+		            <h:commandLink>
+		                <p:graphicImage  library="images" name="csv.png"  width="24"/>
+		                <p:dataExporter type="csv" target="dataTableListeBonLivraison" fileName="liste_bon_reception" options="#{separateurCsvController.csvOptions}" />
+		            </h:commandLink>
+		 
+		            <h:commandLink>
+		                <p:graphicImage  library="images" name="xml.png"  width="24"/>
+		                <p:dataExporter type="xml" target="dataTableListeBonLivraison" fileName="liste_bon_reception" />
+		            </h:commandLink>
+		        </f:facet>
+		        
+		        <p:column selectionMode="multiple" style="width:16px;text-align:center" exportable="false"/>
+			
+				<p:column style="width:16px" exportable="false">
+					<f:facet name="header">
+						<h:outputText value="" />
+					</f:facet>
+					<p:commandButton title="Détail" update=":form:tabView,:form:messages" 
+						action="#{bonLivraisonController.detail}" styleClass="icon icon-detail icon-grille" 
+						disabled="#{bonLivraisonController.modeEcran.dataSetEnModif()}" oncomplete="PF('wvOverlayListeBL').hide();">
+						<f:setPropertyActionListener target="#{bonLivraisonController.selectedDocumentDTO}" value="#{bonLivraison}" />
+					</p:commandButton>
+				</p:column>
+        
+<!-- 				<p:column sortBy="#{bonLivraison.id}"> -->
+<!-- 					<f:facet name="header"> -->
+<!-- 						<h:outputText value="ID" /> -->
+<!-- 					</f:facet> -->
+<!-- 					<h:outputText value="#{bonLivraison.id}" /> -->
+<!-- 				</p:column> -->
+
+<!-- 				<p:column sortBy="#{bonLivraison.codeDocument}"> -->
+<!-- 					<f:facet name="header"> -->
+<!-- 						<h:outputText value="Code" /> -->
+<!-- 					</f:facet> -->
+<!-- 					<h:outputText value="#{bonLivraison.codeDocument}" /> -->
+<!-- 				</p:column> -->
+				
+<!-- 				<p:column sortBy="#{bonLivraison.dateDocument}"> -->
+<!-- 					<f:facet name="header"> -->
+<!-- 						<h:outputText value="Date" /> -->
+<!-- 					</f:facet> -->
+<!-- 					<h:outputText value="#{bonLivraison.dateDocument}"> -->
+<!-- 						<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/> -->
+<!-- 					</h:outputText> -->
+<!-- 				</p:column> -->
+				
+<!-- 				<p:column sortBy="#{bonLivraison.codeTiers}"> -->
+<!-- 					<f:facet name="header"> -->
+<!-- 						<h:outputText value="Code tiers" /> -->
+<!-- 					</f:facet> -->
+<!-- 					<h:outputText value="#{bonLivraison.codeTiers}" /> -->
+<!-- 				</p:column> -->
+				<p:column sortBy="#{bonLivraison.codeDocument}"
+							filterMatchMode="contains" 
+							filterBy="#{bonLivraison.codeDocument}">
+					<f:facet name="header">
+						<h:outputText value="Code" />
+					</f:facet>
+					<h:outputText value="#{bonLivraison.codeDocument}" />
+				</p:column>
+				
+				<p:column 	styleClass="center"
+							sortBy="#{bonLivraison.dateDocument}"
+							filterMatchMode="contains" 
+							filterBy="#{bonLivraisonController.customFormatDate(bonLivraison.dateDocument)}">
+					<f:facet name="header">
+						<h:outputText value="Date" />
+					</f:facet>
+					<h:outputText value="#{bonLivraison.dateDocument}">
+						<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+					</h:outputText>
+				</p:column>
+				
+				<p:column sortBy="#{bonLivraison.codeTiers}"
+							filterMatchMode="contains" 
+							filterBy="#{bonLivraison.codeTiers}">
+					<f:facet name="header">
+						<h:outputText value="Code tiers" />
+					</f:facet>
+					<h:outputText value="#{bonLivraison.codeTiers}" />
+				</p:column>
+
+				<p:column 	sortBy="#{bonLivraison.nomTiers}"
+							filterMatchMode="contains" 
+							filterBy="#{bonLivraison.nomTiers}">
+					<f:facet name="header">
+						<h:outputText value="Nom" />
+					</f:facet>
+					<h:outputText value="#{bonLivraison.nomTiers}" />
+				</p:column>
+				
+				<p:column 	sortBy="#{bonLivraison.prenomTiers}"
+							filterMatchMode="contains" 
+							filterBy="#{bonLivraison.prenomTiers}">
+					<f:facet name="header">
+						<h:outputText value="Prénom" />
+					</f:facet>
+					<h:outputText value="#{bonLivraison.prenomTiers}" />
+				</p:column>
+
+				<p:column 	sortBy="#{bonLivraison.nomEntreprise}"
+							filterMatchMode="contains" 
+							filterBy="#{bonLivraison.nomEntreprise}" >
+					<f:facet name="header">
+						<h:outputText value="Entreprise" />
+					</f:facet>
+					<h:outputText value="#{bonLivraison.nomEntreprise}" />
+				</p:column>
+
+				<p:column 	styleClass="right" 
+							filterMatchMode="contains" 
+							filterBy="#{bonLivraison.netHtCalc}" 
+							sortBy="#{bonLivraison.netHtCalc}"
+							exportFunction="#{separateurCsvController.exportNumber}">
+				
+					<f:facet name="header">
+						<h:outputText value="HT" />
+					</f:facet>
+					<h:outputText value="#{bonLivraison.netHtCalc}" >
+						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+					</h:outputText>
+				</p:column>
+				
+				<p:column 	styleClass="right" 
+							filterMatchMode="contains" 
+							filterBy="#{bonLivraison.netTvaCalc}" 
+							sortBy="#{bonLivraison.netTvaCalc}"
+							exportFunction="#{separateurCsvController.exportNumber}">
+					<f:facet name="header">
+						<h:outputText value="TVA" />
+					</f:facet>
+					<h:outputText value="#{bonLivraison.netTvaCalc}" >
+						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+					</h:outputText>
+				</p:column>
+
+				<p:column 	styleClass="right" 
+							filterMatchMode="contains" 
+							filterBy="#{bonLivraison.netTtcCalc}" 
+							sortBy="#{bonLivraison.netTtcCalc}"
+							exportFunction="#{separateurCsvController.exportNumber}">
+					<f:facet name="header">
+						<h:outputText value="TTC" />
+					</f:facet>
+					<h:outputText value="#{bonLivraison.netTtcCalc}">
+						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+					</h:outputText>
+				</p:column>
+
+				<p:column 	styleClass="center" 
+							filterMatchMode="contains" 
+							filterBy="#{bonLivraisonController.customFormatDate(bonLivraison.dateLivDocument)}" 
+							sortBy="#{bonLivraison.dateLivDocument}">
+					<f:facet name="header">
+						<h:outputText value="Date livraison :" />
+					</f:facet>
+					<h:outputText value="#{bonLivraison.dateLivDocument}" >
+					<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+					</h:outputText>
+				</p:column>
+								
+				<p:column style="width:16px" exportable="false">
+					<f:facet name="header">
+						<h:outputText value="" />
+					</f:facet>
+					
+<!--
+commentaire :  déclenche un bouton invisible pour mettre à jour le message personnalisé
+ -->
+ 					<p:commandButton title="Supprimer" styleClass="icon-delete icon icon-grille" widgetVar="widgetVarBtnSupprimerBLListe"
+						action="#{bonLivraisonController.actBeforeSupprimer(bonLivraison)}" oncomplete="$('.classHiddenCommandForSuppressionBL').click()"
+						process="@this"
+						update="@widgetVar(widgetVarBtnSupprimerBLListe2)">
+						<f:setPropertyActionListener target="#{bonLivraisonController.selectedDocumentDTO}" value="#{bonLivraison}" />
+<!-- 						<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer ce bon de livraison ?" icon="ui-icon-alert" /> -->
+<!-- 			<p:confirm header="Confirmation de la suppression" message="#{bonlivraisonController.messageSuppression}" icon="ui-icon-alert" /> -->
+					</p:commandButton>
+						
+				</p:column>
+
+			</p:dataTable>
+		<p:commandButton styleClass="classHiddenCommandForSuppressionBL" widgetVar="widgetVarBtnSupprimerBLListe2" 
+		actionListener="#{bonLivraisonController.actSupprimer}" style="display:none" process="@this" 
+		 update="@widgetVar(wvDataTableListeBL)" >
+        <p:confirm header="Confirmation de la suppression" message="#{bonlivraisonController.messageSuppression}" icon="ui-icon-alert" /> 
+    </p:commandButton>
+		</h:form>
+	</p:overlayPanel>
+	
+<!-- 	</h:form> -->
+
+</ui:composition>

@@ -1,0 +1,316 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
+xmlns:f="http://java.sun.com/jsf/core" 
+xmlns:h="http://java.sun.com/jsf/html"
+xmlns:ui="http://java.sun.com/jsf/facelets" 
+xmlns:o="http://omnifaces.org/ui" 
+xmlns:p="http://primefaces.org/ui">
+
+<!-- 	<div class="ui-g-12 ui-md-12"> -->
+<!-- 		<h:panelGrid columns="2" cellpadding="0"> -->
+<!-- 			<p:outputLabel value="Votre dossier est très volumineux, Cliquez sur le bouton pour raffraîchir les données" style="font-weight : bold;" -->
+<!-- 				rendered="#{tiersController.dashBoardParTiersController.grosFichierTiers}"> -->
+<!-- 			</p:outputLabel> -->
+<!-- 			<p:commandButton process="@this" rendered="#{tiersController.dashBoardParTiersController.grosFichierTiers}" -->
+<!-- 							update="@this,idZoneTotauxArticle, @widgetVar(wvTiersListeArticleExhaustive),@widgetVar(wvTiersListeArticleRegroupee),@widgetVar(wvTiersListeArticleFamille), idGraphiqueParFamilleTiersArticle, idGraphiqueParArticlesTiersArticle,@widgetVar(wvRappelPeriodePanelTiersArticle)"  -->
+<!-- 							action="#{tiersController.dashBoardParTiersController.initAllValueArticle(tiersController.selectedTaTiersDTO.getCodeTiers())}" -->
+<!-- 				value="Raffraîchir" styleClass="ui-orange" style="width:100%;" /> -->
+<!-- 		</h:panelGrid> -->
+<!-- 	</div>				 -->
+				
+				<div class="ui-g-12 ui-md-12">
+				<p:panel header="Critères et paramètres du tableau de bord" collapsed="true" toggleable="true" toggleOrientation="horizontal" >
+					<div class="ui-g-12 ui-md-4">
+					<p:fieldset style="margin-bottom:20px;">
+<!-- 						 <h:graphicImage name="dashboard/periode.png" library="images" /> -->
+		
+						<p:panel header="Période" styleClass="panelgrey">
+						<f:facet name="footer">
+<!-- 						oncomplete="PF('wvTiersListeFacture').filter()" -->
+							<p:commandButton  
+							process="@this"
+							update="@this,idZoneTotauxFacture, @widgetVar(wvTiersListeFacture) ,idGraphiqueParTiersFacture,@widgetVar(wvRappelPeriodePanelTiersFacture)" 
+							action="#{tiersController.dashBoardParTiersController.initAllValueFacture(tiersController.selectedTaTiersDTO.getCodeTiers())}" value="Appliquer" styleClass="ui-orange" 
+							style="width:100%;" />
+							
+						</f:facet>
+						 <div class="ui-g-12 ui-md-2" >
+						<i class="fa fa-calendar fa-3x" aria-hidden="true"></i>
+<!-- 						 <h:graphicImage name="dashboard/periode.png" library="images" /> -->
+						 </div>
+						 <div class="ui-g-12 ui-md-10">
+			        	<h:panelGrid columns="2" cellpadding="0">
+						 <p:outputLabel value="Du"/>
+											<p:calendar value="#{tiersController.dashBoardParTiersController.dateDebutFacture}"
+												showOn="button" 
+												navigator="true" 
+												pattern="#{msg.date_pattern}" 
+												mask="true" 
+												locale="fr" 
+												timeZone="#{msg.time_zone}" >
+												<p:ajax event="dateSelect"/>
+													<p:ajax event="change"/>
+											</p:calendar>
+<!-- 												<f:convertDateTime pattern="#{msg.date_pattern}" -->
+<!-- 													timeZone="#{msg.time_zone}" /> -->
+
+						 <p:outputLabel value="au"/>
+											<p:calendar value="#{tiersController.dashBoardParTiersController.dateFinFacture}"
+												showOn="button" 
+												navigator="true" 
+												pattern="#{msg.date_pattern}" 
+												mask="true" 
+												locale="fr" 
+												timeZone="#{msg.time_zone}" >
+												<p:ajax event="dateSelect"/>
+													<p:ajax event="change"/>
+											</p:calendar>
+
+        				</h:panelGrid>
+        				</div>
+        				 <p:separator />
+
+
+								</p:panel>
+    				</p:fieldset>
+    				</div>
+
+					<div class="ui-g-12 ui-md-4">
+
+    				</div>
+					<div class="ui-g-12 ui-md-4">
+
+    				</div>
+				</p:panel>
+				<p:panel widgetVar="wvRappelPeriodePanelTiersFacture"  style="font-size : 20px;">
+				<p:outputLabel>Période du </p:outputLabel>
+				 <h:outputText value="#{tiersController.dashBoardParTiersController.dateDebutFacture}"  style="font-weight : bold;">
+				 	<f:convertDateTime type="date" pattern="dd MMMM yyyy" timeZone="#{msg.time_zone}"/>
+				 </h:outputText>
+				 <p:outputLabel> au  </p:outputLabel>
+				 <h:outputText value="#{tiersController.dashBoardParTiersController.dateFinFacture}"  style="font-weight : bold;">
+				 	<f:convertDateTime type="date" pattern="dd MMMM yyyy" timeZone="#{msg.time_zone}"/>
+				 </h:outputText>
+				 
+				</p:panel>
+				</div>
+
+				<div class="ui-g-12 ui-md-12 ui-lg-8">
+				<p:outputPanel id="idZoneTotauxFacture">
+				<div class="card-group">
+					<div class="card card-dash">
+						<h3 align="center card-title"><span style="font-size : 30px;">#{tiersController.dashBoardParTiersController.nbFacture}</span> factures réalisées</h3>
+						<div class="card-body"></div>
+						<div class="card-footer">
+							<p:outputLabel value="CA HT : "/> 
+							<p:outputLabel value="#{tiersController.dashBoardParTiersController.montantTotalHtFacture}" >
+							<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+							</p:outputLabel>
+							<!-- <p:separator></p:separator>
+							<p:outputLabel value="Nombre : "/> 
+							<p:outputLabel value="#{tiersController.dashBoardParTiersController.nbFacture}"/> -->
+						
+	<!-- 				</h:panelGroup> -->
+							<p:commandButton title="Détails" style="width:100%" styleClass="btn-liste btn"
+								process="@this"
+								update="@this,@widgetVar(wvTiersListeFacture),idGraphiqueParTiersFacture"
+								actionListener="#{tiersController.dashBoardParTiersController.initValueLignesFacture(tiersController.selectedTaTiersDTO.getCodeTiers())}"
+								  >
+							</p:commandButton>
+						</div>
+					</div>
+					<div class="card card-dash">
+						<h3 align="center card-title"><span style="font-size : 30px;">#{tiersController.dashBoardParTiersController.nbFactureNonTransforme}</span> factures non totalement réglées</h3>
+						<div class="card-body"></div>
+						<div class="card-footer">
+							<p:outputLabel value="Reste à régler TTC : "/> <br/>
+							<p:outputLabel value="#{tiersController.dashBoardParTiersController.montantTotalTtcNonRegleFacture}">
+							<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+							</p:outputLabel>
+							<!-- <p:separator></p:separator>
+							<p:outputLabel value="Nombre : "/> 
+							<p:outputLabel value="#{tiersController.dashBoardParTiersController.nbFactureNonTransforme}"/> -->
+						
+							<p:commandButton title="Détails" style="width:100%" styleClass="btn-liste btn"
+								process="@this"
+								update="@this,@widgetVar(wvTiersListeFacture),idGraphiqueParTiersFacture"
+								actionListener="#{tiersController.dashBoardParTiersController.initValueLignesFactureNonTransforme(tiersController.selectedTaTiersDTO.getCodeTiers())}" >
+							</p:commandButton>	
+						</div>	
+					</div>		
+					<div class="card card-dash">
+						<h3 align="center card-title"><span style="font-size : 30px;">#{tiersController.dashBoardParTiersController.nbFactureNonTransformeARelancer}</span> factures à relancer</h3>
+						<div class="card-body"></div>
+						<div class="card-footer">
+							<p:outputLabel value="Reste à régler TTC : "/> <br/>
+							<p:outputLabel value="#{tiersController.dashBoardParTiersController.montantTotalHtNonTransfoARelancerFacture}">
+							<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+							</p:outputLabel>
+							<!-- <p:separator></p:separator>
+							<p:outputLabel value="Nombre : "/> 
+							<p:outputLabel value="#{tiersController.dashBoardParTiersController.nbFactureNonTransformeARelancer}"/> -->
+						
+							<p:commandButton title="Détails" style="width:100%" styleClass="btn-liste btn"
+								process="@this"
+								update="@this,idTiersListeFacture,idGraphiqueParTiersFacture"
+								actionListener="#{tiersController.dashBoardParTiersController.initValueLignesFactureNonTransformeARelancer(tiersController.selectedTaTiersDTO.getCodeTiers())}" >
+							</p:commandButton>	
+						</div>
+					</div>			
+					<div class="card card-dash">
+						<h3 align="center card-title"><span style="font-size : 30px;">#{tiersController.dashBoardParTiersController.nbFactureTransforme}</span> factures entièrement réglées</h3><br/>
+						<div class="card-body"></div>
+						<div class="card-footer">
+							<p:outputLabel value="CA HT : "/> 
+							<p:outputLabel value="#{tiersController.dashBoardParTiersController.montantTotalHtTransfoFacture}">
+							<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+							</p:outputLabel>
+							<!-- <p:separator></p:separator>
+							<p:outputLabel value="Nombre : "/> 
+							<p:outputLabel value="#{tiersController.dashBoardParTiersController.nbFactureTransforme}"/> -->
+						
+							<p:commandButton title="Détails" style="width:100%" styleClass="btn-liste btn"
+								process="@this"
+								update="@this,@widgetVar(wvTiersListeFacture),idGraphiqueParTiersFacture"
+								actionListener="#{tiersController.dashBoardParTiersController.initValueLignesFactureTransforme(tiersController.selectedTaTiersDTO.getCodeTiers())}" >
+							</p:commandButton>
+						</div>
+					</div>				
+				</div>
+				</p:outputPanel>
+				</div>
+<!-- 				</h:panelGroup> -->
+				<div class="ui-g-12 ui-md-12">
+				
+				<div class="ui-g-12 ui-md-12 ui-lg-8">
+					<div class="card">
+						<h3 align="center">Liste des factures pour ce tiers</h3>
+		<p:dataTable id="idTiersListeFacture"
+					 sortBy="#{listefacture.codeDocument}" 
+					 sortOrder="descending" 
+					 var="listefacture" 
+					 value="#{tiersController.dashBoardParTiersController.valueLignesFacture}"
+					 scrollable="true"
+					 scrollHeight="300"
+					 liveResize="true" 
+					 widgetVar="wvTiersListeFacture">
+			<p:ajax event="rowToggle" listener="#{tiersController.onRowToggle}" update=":@this"/>
+		
+        <f:facet name="header">
+        
+         <!-- <span class="boutonPrintLeft"> -->
+         	<div class="list-header-button-print">
+				<span style="float:left"> <p:commandButton id="idBtnListePrintEcranDasboardListeLignesParTiersFacture" title="Imprimer la liste"
+									onsuccess="window.open('#{request.contextPath}/output?__report=/reports/tiers/ListeDashboardListeLignesParTiersFacture.rptdesign&amp;__format=pdf')"
+									actionListener="#{dashBoardParTiersController.actImprimerListeLignesParTiers(tiersController.selectedTaTiersDTO.getNomTiers())}"
+									styleClass="ui-priority-primary boutonPrint" style="color : white;" icon="fa fa-print" process="@this"></p:commandButton>
+				</span>
+					<span style="float: left;"> <p:commandButton 
+							title="Imprimer la #{dashBoardParTiersController.titreListeSyntheseParTiersTous}"
+							onsuccess="window.open('#{request.contextPath}/output?__report=/reports/tiers/ListeDashboardListeLignesParTiersSynthese.rptdesign&amp;__format=pdf')"
+							actionListener="#{dashBoardParTiersController.actImprimerListeArticleTousGroupeTiers}" process="@this"
+							styleClass="ui-priority-primary boutonPrint" style="color : white;" icon="fa fa-print" />
+					</span>
+
+					<span style="float: left;"> <p:commandButton 
+							title="Imprimer la #{dashBoardParTiersController.titreListeSyntheseParTiersArticleTous}"
+							onsuccess="window.open('#{request.contextPath}/output?__report=/reports/tiers/ListeDashboardListeLignesParTiersEtArticlesSynthese.rptdesign&amp;__format=pdf')"
+							actionListener="#{dashBoardParTiersController.actImprimerListeArticleTousGroupeTiersArticles}" process="@this"
+							styleClass="ui-priority-primary boutonPrint" style="color : white;" icon="fa fa-print" />
+					</span>
+					
+					<span style="float: left;"> <p:commandButton 
+							title="Imprimer le #{dashBoardParTiersController.titreEditionListeDetailParTiersArticleTous}"
+							onsuccess="window.open('#{request.contextPath}/output?__report=/reports/tiers/ListeDashboardListeLignesParTiersEtArticleDetail.rptdesign&amp;__format=pdf')"
+							actionListener="#{dashBoardParTiersController.actImprimerListeArticleTousDetailGroupeTiers}" process="@this"
+							styleClass="ui-priority-primary boutonPrint" style="color : white;" icon="fa fa-print" />
+					</span>				
+								    
+            	Cliquez pour afficher le détail d'un document
+            </div>	
+        </f:facet>
+        <p:column style="width:16px">
+            <p:rowToggler />
+        </p:column>
+        <p:column headerText="Code" sortBy="#{listefacture.codeDocument}" filterBy="#{listefacture.codeDocument}" filterMatchMode="contains">
+<!--             <h:outputText value="#{listeproforma.codeDocument}" /> -->
+								<p:commandLink value="#{listefacture.codeDocument}"
+									action="#{ouvertureDocumentBean.detailDocument(ouvertureDocumentBean.recupCodeDocument(listefacture.codeDocument,ouvertureDocumentBean.getTypeDocumentFacture()))}" 
+									update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+								</p:commandLink>            
+        </p:column>
+        <p:column headerText="Libellé" sortBy="#{listefacture.libelleDocument}" filterBy="#{listefacture.libelleDocument}" filterMatchMode="contains">
+            <h:outputText value="#{listefacture.libelleDocument}" id="idListeLibelleFactureOngletTiers"/>
+			<p:tooltip id="toolTipListeLibelleFactureOngletTiers" value="#{listefacture.libelleDocument}" shared="true" for="idListeLibelleFactureOngletTiers" showEffect="clip" position="top"/>
+        </p:column>
+        <p:column styleClass="right" headerText="HT" sortBy="#{listefacture.netHtCalc}" filterBy="#{listefacture.netHtCalc}" filterMatchMode="contains">
+            <h:outputText value="#{listefacture.netHtCalc}" >
+			<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+			</h:outputText>
+        </p:column>
+        <!-- <p:column styleClass="right" headerText="TVA" sortBy="#{listefacture.netTvaCalc}" filterBy="#{listefacture.netTvaCalc}" filterMatchMode="contains" >
+            <h:outputText value="#{listefacture.netTvaCalc}" >
+			<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+			</h:outputText>
+        </p:column> -->
+        <p:column styleClass="right" headerText="TTC" sortBy="#{listefacture.netTtcCalc}" filterBy="#{listefacture.netTtcCalc}" filterMatchMode="contains">
+            <h:outputText value="#{listefacture.netTtcCalc}" >
+			<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+			</h:outputText>
+        </p:column>
+        <p:column styleClass="center" headerText="Date" sortBy="#{listefacture.dateDocument}" filterBy="#{listefacture.dateDocument}" filterMatchMode="contains">
+            <h:outputText value="#{listefacture.dateDocument}" >
+            		<f:convertDateTime pattern="#{msg.date_pattern}"
+					timeZone="#{msg.time_zone}" />
+            </h:outputText>
+        </p:column>
+        <p:column styleClass="center" headerText="Echéance" sortBy="#{listefacture.dateEchDocument}" filterBy="#{listefacture.dateEchDocument}" filterMatchMode="contains">
+            <h:outputText value="#{listefacture.dateEchDocument}" >
+            		<f:convertDateTime pattern="#{msg.date_pattern}"
+					timeZone="#{msg.time_zone}" />
+            </h:outputText>
+        </p:column>
+         <p:column styleClass="right" headerText="A régler TTC" sortBy="#{listefacture.resteAReglerComplet}" filterBy="#{listefacture.resteAReglerComplet}" filterMatchMode="contains">
+            <h:outputText value="#{listefacture.resteAReglerComplet}" >
+			<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+			</h:outputText>
+        </p:column>
+<!--         <p:rowExpansion> -->
+<!--         	<p:dataTable id="idTiersListeDetailFacture" var="listedetailproforma" value="#{tiersController.dashBoardParTiersController.listeFactureTiersPeriode}" widgetVar="wvTiersListeDetailFacture"> -->
+        		
+<!--         	</p:dataTable> -->
+<!--         </p:rowExpansion> -->
+		<p:rowExpansion>
+			<p:commandButton value="Payer par carte bancaire" 
+				disabled="#{listefacture.resteAReglerComplet le 0}"
+				actionListener="#{tiersController.dashBoardParTiersController.actInitPaiementCarteBancaire}" process="@this"  >
+				<f:attribute name="idDocument" value="#{listefacture.id}"/>
+		        <p:ajax event="dialogReturn" update="@this, @widgetVar(wvTiersListeFacture)" 
+						listener="#{tiersController.dashBoardParTiersController.handleReturnDialoguePaiementParCarte}" />  
+		    </p:commandButton>
+			<p:commandButton value="Régler la facture" 
+				actionListener="#{tiersController.dashBoardParTiersController.actDialogGenerationReglement}" process="@this"  >
+				<f:attribute name="idDocument" value="#{listefacture.id}"/>
+		        <p:ajax event="dialogReturn" update="@this, @widgetVar(wvTiersListeFacture)" 
+						listener="#{tiersController.dashBoardParTiersController.handleReturnDialogGestionReglement}" />  
+		    </p:commandButton>		    
+		</p:rowExpansion>	
+    </p:dataTable>
+					</div>				
+				</div>
+				<div class="ui-g-12 ui-md-12 ui-lg-4 ">
+					<div class="card">
+					<p:tab title="Facture" rendered="true">
+					
+						<h3 align="center">Graphique</h3>
+								<p:chart type="bar" model="#{tiersController.dashBoardParTiersController.barChartModelFacture}"
+								id="idGraphiqueParTiersFacture" 
+								widgetVar="wvGraphiqueParTiersFacture"
+								responsive="true" 
+								style="height:300px;">
+								</p:chart>
+					</p:tab>
+					</div>				
+				</div>
+				</div>
+				
+</ui:composition>

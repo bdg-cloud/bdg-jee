@@ -1,0 +1,73 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core" 
+	xmlns:ui="http://java.sun.com/jsf/facelets" 
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/template_dialog_lgr.xhtml">
+	
+	<ui:define name="head">
+		<title>Détail du lot</title>
+	<style type="text/css">
+.ui-widget {
+	font-size: 90%;
+}
+</style>
+	</ui:define>
+
+	<ui:define name="content">
+	<h:form id="idDialogDetailLot">
+	
+		<p:outputLabel value="Détail du lot : #{detailLotController.parameter}" />
+		<p:ajaxStatus>
+			<f:facet name="start">
+				<p:graphicImage library="images" name="ajax-loader.gif" />
+			</f:facet>
+			<f:facet name="complete">
+				<!-- <h:outputText value="Done!" /> -->
+			</f:facet>
+		</p:ajaxStatus>
+		<p:separator />
+
+		<p:tree value="#{detailLotController.root}" var="node" animate="true" dynamic="true">
+			<!-- 	orientation="horizontal" -->
+			
+			<p:ajax event="expand" listener="#{detailLotController.onNodeExpand}" />
+<!--         	<p:ajax event="collapse" update=":form:messages" listener="#{detailLotController.onNodeCollapse}" /> -->
+<!--         	<p:ajax event="select" update=":form:messages" listener="#{detailLotController.onNodeSelect}" /> -->
+<!--         	<p:ajax event="unselect" update=":form:messages" listener="#{detailLotController.onNodeUnselect}" /> -->
+			
+			<p:treeNode type="Lot" icon="icon-lots-tree">
+				<h:outputText value="#{node}" />
+<!-- 				<p:commandLink actionListener="#{detailLotController.actDialogDetailLot}"> -->
+<!-- 					<p:graphicImage library="images" name="zoom.png" title="Détail" alt="Détail" height="10" /> -->
+<!-- 					<f:attribute name="lot" value="#{node.nom}" /> -->
+<!-- 					<f:attribute name="fermerDetail" value="#{true}" /> -->
+<!-- 				</p:commandLink> -->
+			</p:treeNode>
+
+			<p:treeNode type="Fab" icon="icon-fabrication-tree">
+				<h:outputText value="#{node}" />
+			</p:treeNode>
+
+			<p:treeNode type="BR" icon="icon-reception-tree">
+				<h:outputText value="#{node}" />
+			</p:treeNode>
+			
+			<p:treeNode type="Origine" icon="ui-icon-circle-plus">
+				<h:outputText value="#{node}" />
+			</p:treeNode>
+			
+			<p:treeNode type="Utilisation" icon="ui-icon-circle-minus">
+				<h:outputText value="#{node}" />
+			</p:treeNode>
+
+			<!--  <p:treeNode expandedIcon="ui-icon-folder-open" collapsedIcon="ui-icon-folder-collapsed"> -->
+			<!--     <h:outputText value="#{doc.name}"/> -->
+			<!-- </p:treeNode> -->
+
+		</p:tree>
+
+	</h:form>
+	</ui:define>
+     
+</ui:composition>

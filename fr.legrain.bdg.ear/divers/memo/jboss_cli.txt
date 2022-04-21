@@ -1,0 +1,26 @@
+./bin/jboss_cli.sh
+
+"connect" pour se connecter
+
+cd, ls et pwd pour naviguer dans la structure de sous-système.
+
+
+pwd
+/subsystem=undertow/server=default-server/host=other-host
+
+Modifier la liste de sous domaine d'un host (virtualhost)
+/subsystem=undertow/server=default-server/host=other-host:write-attribute(name=alias,value=["demo.solstyce.com","demo1.solstyce.com","demo2.solstyce.com"])
+
+//////////////////
+<subsystem xmlns="urn:jboss:domain:undertow:1.1">
+	<buffer-cache name="default"/>
+	<server name="default-server">
+		<http-listener name="default" socket-binding="http"/>
+		<host name="default-host" alias="localhost">
+        	 ...
+		</host>
+ 		<host name="other-host" alias="demo.solstyce.com, demo1.solstyce.com, demo3.solstyce.com" default-web-module="fr.legrain.bdg.webapp.war"/>
+ 	</server>
+	...
+</subsystem>
+//////////////////

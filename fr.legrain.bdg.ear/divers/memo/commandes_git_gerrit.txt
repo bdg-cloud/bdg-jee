@@ -1,0 +1,74 @@
+*******
+* GIT *
+*******
+
+==========================================================================
+
+Passage des dépots sur GIT
+
+svn2git file:///data3/prog/svn --username=nicolas -v --trunk trunk --authors ../authors.txt
+
+git push ssh://nicolas@192.168.1.12:22/data3/prog/git/bdg-jee.git b_2_0_13_JEE:master
+
+chown -R prog:prog ../test.git/
+chmod -R g+w *
+
+git push ssh://nicolas@192.168.1.12:22/data3/prog/git/bdg.git --all
+
+svn2git file:///data3/prog/svn --username=nicolas -v --trunk trunk --authors ../authors.txt
+
+==========================================================================
+http://blog.neutrino.es/2012/git-copy-a-file-or-directory-from-another-repository-preserving-history/
+
+Git: Copy a file or directory from another repository preserving the history
+Posted on Friday, 16th March 2012 11 comments
+
+How to copy a file or directory from another GIT repository while preserving its history?
+
+Internet is full of magic formulas each one more complex.
+
+Here I’m proposing a much simpler and faster one that is to make a git format-patch for the entire history of the file or subdirectory that we want and then import it into the destination repository.
+View Raw Code
+
+    mkdir /tmp/mergepatchs
+    cd ~/repo/org
+    export reposrc=myfile.c #or mydir
+    git format-patch -o /tmp/mergepatchs $(git log $reposrc|grep ^commit|tail -1|awk '{print $2}')^..HEAD $reposrc
+    cd ~/repo/dest
+    git am /tmp/mergepatchs/*.patch
+==========================================================================
+   
+
+
+**********
+* GERRIT *
+**********
+
+============================================================================
+htpasswd -c /data1/gerrit/gerrit-users admin
+============================================================================
+
+Listen 8089
+<VirtualHost *:8089>
+  ProxyRequests Off
+  ProxyVia Off
+  ProxyPreserveHost On
+
+  <Proxy *>
+    Order deny,allow
+    Allow from all
+  </Proxy>
+
+  <Location /login/>
+    AuthType Basic
+    AuthName "Gerrit Code Review"
+    AuthUserFile /data1/gerrit/gerrit-users
+    Require valid-user
+    Order Deny,Allow
+    Allow from all
+  </Location>
+
+  ProxyPass / http://127.0.0.1:8089/
+</VirtualHost>
+============================================================================
+

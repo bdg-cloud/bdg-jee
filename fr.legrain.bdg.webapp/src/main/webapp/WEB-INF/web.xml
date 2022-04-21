@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://xmlns.jcp.org/xml/ns/javaee" 
+xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd" version="3.1">
+  <display-name>fr.legrain.bdg.webapp</display-name>
+  <welcome-file-list>
+    <welcome-file>index.xhtml</welcome-file>
+  </welcome-file-list>
+  <session-config>
+    <session-timeout>500</session-timeout>
+  </session-config>
+  <mime-mapping>
+    <extension>ico</extension>
+    <mime-type>image/vnd.microsoft.icon</mime-type>
+  </mime-mapping>
+  <mime-mapping>
+    <extension>woff2</extension>
+    <mime-type>application/x-font-woff2</mime-type>
+  </mime-mapping>
+  <mime-mapping>
+    <extension>eot</extension>
+    <mime-type>application/vnd.ms-fontobject</mime-type>
+  </mime-mapping>
+  <mime-mapping>
+    <extension>otf</extension>
+    <mime-type>font/opentype</mime-type>
+  </mime-mapping>
+  <mime-mapping>
+    <extension>ttf</extension>
+    <mime-type>application/x-font-ttf</mime-type>
+  </mime-mapping>
+  <mime-mapping>
+    <extension>woff</extension>
+    <mime-type>application/x-font-woff</mime-type>
+  </mime-mapping>
+  <servlet>
+    <servlet-name>Faces Servlet</servlet-name>
+    <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>Faces Servlet</servlet-name>
+    <url-pattern>*.jsf</url-pattern>
+    <url-pattern>*.xhtml</url-pattern>
+  </servlet-mapping>
+  <context-param>
+    <param-name>primefaces.THEME</param-name>
+<!--     <param-value>#{auth.theme}</param-value> -->
+<!--     <param-value>mirage-#{guestPreferences.theme}</param-value> -->
+    <param-value>#{guestPreferences.themeWebXml}</param-value>
+  </context-param>
+  <context-param>
+    <param-name>primefaces.FONT_AWESOME</param-name>
+    <param-value>true</param-value>
+  </context-param>
+  <context-param>
+    <param-name>primefaces.SUBMIT</param-name>
+    <param-value>partial</param-value>
+  </context-param>
+  <context-param>
+    <param-name>javax.faces.FACELETS_SKIP_COMMENTS</param-name>
+    <param-value>true</param-value>
+  </context-param>
+  <context-param>
+    <param-name>javax.faces.ENABLE_WEBSOCKET_ENDPOINT</param-name>
+    <param-value>true</param-value>
+ </context-param>
+  <context-param>
+    <param-name>facelets.LIBRARIES</param-name>
+    <param-value>/WEB-INF/legrain.taglib.xml</param-value>
+  </context-param>
+<!--   <servlet> -->
+<!--     <servlet-name>Push Servlet</servlet-name> -->
+<!--     <servlet-class>org.primefaces.push.PushServlet</servlet-class> -->
+<!--     <init-param> -->
+<!--       <param-name>org.atmosphere.cpr.broadcasterCacheClass</param-name> -->
+<!--       <param-value>org.atmosphere.cache.UUIDBroadcasterCache</param-value> -->
+<!--     </init-param> -->
+<!--     <load-on-startup>0</load-on-startup> -->
+<!--     <async-supported>true</async-supported> -->
+<!--   </servlet> -->
+<!--   <servlet-mapping> -->
+<!--     <servlet-name>Push Servlet</servlet-name> -->
+<!--     <url-pattern>/primepush/*</url-pattern> -->
+<!--   </servlet-mapping> -->
+  <servlet>
+    <servlet-name>EngineServlet</servlet-name>
+    <servlet-class>org.eclipse.birt.report.servlet.BirtEngineServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>EngineServlet</servlet-name>
+    <url-pattern>/output</url-pattern>
+  </servlet-mapping>
+  <context-param>
+    <param-name>BIRT_RESOURCE_PATH</param-name>
+    <param-value>/reports/lib</param-value>
+  </context-param>
+  <servlet>
+    <servlet-name>BarcodeServlet</servlet-name>
+    <servlet-class>org.krysalis.barcode4j.servlet.BarcodeServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>BarcodeServlet</servlet-name>
+    <url-pattern>/gensvg</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>BarcodeServlet</servlet-name>
+    <url-pattern>/genbc</url-pattern>
+  </servlet-mapping>
+  <mime-mapping>
+    <extension>xhtml</extension>
+    <mime-type>text/html</mime-type>
+  </mime-mapping>
+  <mime-mapping>
+    <extension>svg</extension>
+    <mime-type>image/svg+xml</mime-type>
+  </mime-mapping>
+  <mime-mapping>
+    <extension>svgz</extension>
+    <mime-type>image/svg+xml</mime-type>
+  </mime-mapping>
+  <error-page>
+    <exception-type>org.krysalis.barcode4j.BarcodeException</exception-type>
+    <location>/errsvg</location>
+  </error-page>
+  <filter>
+    <filter-name>javamelody</filter-name>
+    <filter-class>net.bull.javamelody.MonitoringFilter</filter-class>
+    <async-supported>true</async-supported>
+  </filter>
+  <filter-mapping>
+    <filter-name>javamelody</filter-name>
+    <url-pattern>/*</url-pattern>
+    <dispatcher>REQUEST</dispatcher>
+    <dispatcher>ASYNC</dispatcher>
+  </filter-mapping>
+  <listener>
+    <listener-class>net.bull.javamelody.SessionListener</listener-class>
+  </listener>
+  <context-param>
+    <param-name>javax.faces.STATE_SAVING_METHOD</param-name>
+    <param-value>server</param-value>
+  </context-param>
+  <context-param>
+    <param-name>javax.faces.PARTIAL_STATE_SAVING</param-name>
+    <param-value>true</param-value>
+  </context-param>
+  <context-param>
+    <param-name>javax.faces.FULL_STATE_SAVING_VIEW_IDS</param-name>
+    <param-value>/index.xhtml</param-value>
+  </context-param>
+  <context-param>
+    <param-name>javax.faces.validator.DISABLE_DEFAULT_BEAN_VALIDATOR</param-name>
+    <param-value>true</param-value>
+  </context-param>
+  <filter>
+    <filter-name>UrlRewriteFilter</filter-name>
+    <filter-class>org.tuckey.web.filters.urlrewrite.UrlRewriteFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>UrlRewriteFilter</filter-name>
+    <url-pattern>/auth/*</url-pattern>
+    <dispatcher>REQUEST</dispatcher>
+    <dispatcher>FORWARD</dispatcher>
+  </filter-mapping>
+  <security-role>
+    <description>Administrateur</description>
+    <role-name>admin</role-name>
+  </security-role>
+  <security-role>
+    <description>Utilisateur</description>
+    <role-name>utilisateur</role-name>
+  </security-role>
+  <security-constraint>
+    <web-resource-collection>
+      <web-resource-name>SSL</web-resource-name>
+      <url-pattern>/*</url-pattern>
+    </web-resource-collection>
+    <user-data-constraint>
+      <transport-guarantee>CONFIDENTIAL</transport-guarantee>
+    </user-data-constraint>
+  </security-constraint>
+  <login-config>
+    <auth-method>FORM</auth-method>
+    <form-login-config>
+      <form-login-page>/login/login.xhtml</form-login-page>
+      <form-error-page>/error.xhtml</form-error-page>
+    </form-login-config>
+  </login-config>
+</web-app>

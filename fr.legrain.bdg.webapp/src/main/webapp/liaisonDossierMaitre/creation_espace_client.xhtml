@@ -1,0 +1,57 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:o="http://omnifaces.org/ui"
+                xmlns:c="http://java.sun.com/jsp/jstl/core">
+                
+                <o:importConstants type="fr.legrain.bdg.webapp.app.LgrTab" />
+    
+
+    			<p:menubar styleClass="menu-onglet">
+				<p:menuitem title="Fermer" styleClass="icon icon-close menuitem-fermer-droite" process="@this" 
+					actionListener="#{liaisonDossierMaitreController.actFermer}"
+					onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())">
+				</p:menuitem>
+			</p:menubar>
+    
+    
+				<p:panel widgetVar="wvCreationEspaceClient" titre="Création espace client">
+					        <div class="ui-g">
+					            <p:panel header="Création espace client" styleClass="panel-login-espace-client" rendered="#{!liaisonDossierMaitreController.tiersExiste}">
+					            
+					                <div class="ui-g-12" style="padding-top:35px;">
+					                    <p:inputText value="#{liaisonDossierMaitreController.loginCreation}" placeholder="Email" id="j_username_creation" size="25" style="width:60%;"/><br/>
+					                </div>
+					                <div class="ui-g-12" style="padding-top:10px;">
+					                    <p:password value="#{liaisonDossierMaitreController.passwordCreation}" placeholder="Mot de passe" id="j_password_creation" size="25" style="width:60%" />
+					                </div>
+
+					                <p:commandButton id="id_btn_CreationEspaceClient" action="#{liaisonDossierMaitreController.loginCreation}" value="Enregistrer" ajax="false" update="@widgetVar(wvCreationEspaceClient)" />
+					                
+					                
+					                
+					                <p:messages styleClass="errors" autoUpdate="true" />
+					            </p:panel>
+					            
+					            <p:panel header="Saisir votre code tiers" styleClass="panel-saisie-code-tiers" rendered="#{liaisonDossierMaitreController.tiersExiste}">
+					            	<div class="ui-g-12" style="padding-top:35px;">
+										<p:outputLabel value="#{liaisonDossierMaitreController.messageInfoSaisieTiers}" style="width:60%;"></p:outputLabel>
+					            	 </div>
+					                <div class="ui-g-12" style="padding-top:35px;">
+					                    <p:inputText value="#{liaisonDossierMaitreController.codeTiersCreation}" placeholder="Code tiers" id="codeTiers" size="25" style="width:60%;"/><br/>
+					                </div>
+
+					                <p:commandButton id="id_btn_laison_code_tiers" action="#{liaisonDossierMaitreController.liaisonCompteExistant}" value="Enregistrer" ajax="false" update="@widgetVar(wvCreationEspaceClient)" />
+					                 <p:commandButton id="id_btn_laison_code_tiers_abandon" action="#{liaisonDossierMaitreController.abandonLiaisonCompteExistant}" value="Abandonner" ajax="false" update="@widgetVar(wvCreationEspaceClient)" />
+					                
+					                
+					                <p:messages styleClass="errors" autoUpdate="true" />
+					            </p:panel>
+					        </div>
+				</p:panel>
+    
+    
+  </ui:composition>  
+ 

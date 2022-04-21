@@ -1,0 +1,45 @@
+<a [routerLink]="['/catalogue']" routerLinkActive="active">
+    <div>&lt;&lt; Catalogue</div>
+</a>
+
+<div class="p-grid">
+
+    <div class="p-col-4">
+        <p-carousel [value]="listeIdImage" [numVisible]="1" [numScroll]="1" class="boutique">
+            <ng-template let-id pTemplate="item">
+                <div style="display: flex; align-items: center;" *ngIf="art">
+                    <app-article-image-defaut [idArticle]='art.id' [idImage]='id' class="boutique-image-article-carousel">
+                    </app-article-image-defaut>
+                </div>
+            </ng-template>
+        </p-carousel>
+    </div>
+
+    <div class="p-col-8">
+        <h1 *ngIf="art">{{art.libellecArticle}}</h1>
+
+        <div *ngIf="art" [innerHTML]="art.resumeCatWeb" class="boutique-article-resume"></div>
+
+        <div class="p-grid">
+            <div class="p-col-1">
+                <span *ngIf="art && afficherPrix && art.prixttcPrix && !prixCatalogueHt" class="boutique-prix-article">{{art.prixttcPrix}} € <span style="font-size: small;">TTC</span></span>
+                <span *ngIf="art && afficherPrix && art.prixPrix && prixCatalogueHt" class="boutique-prix-article">{{art.prixPrix}} € <span style="font-size: small;">HT</span></span>
+            </div>
+            <div class="p-col-11">
+                <p-button *ngIf="art && afficherPanier && art.prixttcPrix" (click)="addToCart(art)" icon="pi pi-shopping-cart" [disabled]="art.nonDisponibleCatalogueWeb" label="Ajouter au panier"></p-button>
+            </div>
+            <div class="p-col-1">
+            </div>
+            <div class="p-col-11">
+                <p-button *ngIf="art && (afficherDemandeRenseignement || !art.prixttcPrix)" (onClick)="handleClick($event, art)" icon="pi pi-question-circle" label="Demande de renseignement"></p-button>
+            </div>
+        </div>
+        <div *ngIf="art" [innerHTML]="art.descriptionLongueCatWeb" class="boutique-article-description"></div>
+    </div>
+
+    
+
+</div>
+
+
+<p-toast [style]="{marginTop: '80px'}"></p-toast>

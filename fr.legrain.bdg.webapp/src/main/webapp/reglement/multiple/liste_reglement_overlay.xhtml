@@ -1,0 +1,191 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:o="http://omnifaces.org/ui" xmlns:p="http://primefaces.org/ui">
+
+	<o:importConstants type="fr.legrain.bdg.webapp.app.LgrTab" />
+
+	<p:commandLink id="listeReglementBtn">
+		<i class="top-submenu-icon fa fa-fw fa-user"></i>
+		<span><h:outputText value="Liste des règlements" /></span>
+	</p:commandLink>
+
+	<p:overlayPanel id="idListeReglementPanel" for="listeReglementBtn" hideEffect="fade" dynamic="true" dismissable="true" appendTo="@(body)"
+		widgetVar="wvOverlayListeReglement" showCloseIcon="true" >
+		<h:form>
+			<div class="dashboard-title" style="background: #f6f6f6;">
+				<h:panelGrid columns="3" cellpadding="5">
+					<h:graphicImage name="dashboard/tier.svg" library="images" height="35px" style="margin-top:1px;" />
+					<p:outputLabel value="Liste des Règlements" style="font-size:20px;" />
+				</h:panelGrid>
+				<p:separator />
+			</div>
+			<p:menubar styleClass="menu-onglet" widgetVar="wvMenuListeReglement" id="idMenuListeReglement">
+				<p:menuitem title="Ajouter un nouveau Réglement"
+					update=":form:tabView,:form:messages,@widgetVar(wvMenuListeReglement),@widgetVar(wvDataTableListeGestReglement2)
+ 					 @widgetVar(wvDataTableListeReglement),@widgetVar(wvBandeauActionReglement),@widgetVar(wvPanelRenderedReglement)"
+					actionListener="#{reglementController.nouveau}" styleClass="icon icon-insert" disabled="#{reglementController.etatBouton('inserer')}"
+					oncomplete="PF('wvOverlayListeReglement').hide();" />
+
+				<p:menuitem title="Rafraîchir la liste" update="@form,:form:messages" actionListener="#{reglementController.refresh}" styleClass="icon icon-refresh"
+					disabled="#{reglementController.modeEcran.dataSetEnModif()}" />
+
+			</p:menubar>
+
+			<p:sticky target="idMenuListeReglement" />
+
+
+			<!-- 	stickyHeader="true" -->
+
+			<p:dataTable 
+			id="dataTableListeGestReglement2" 
+			var="doc" 
+			widgetVar="wvDataTableListeGestReglement2" 
+			class="datatable" 
+			value="#{reglementController.values}"
+			rowKey="#{doc.dto.idDocument}" 
+			selection="#{reglementController.filteredValues}" 
+			dblClickSelect="true" 
+			resizableColumns="true" 
+			paginator="true" 
+			rows="#{msg.modele_datatable_ligne_par_page_debut}" 
+			paginatorTemplate="#{msg.modele_datatable_paginator}"
+			rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}" 
+			emptyMessage="#{msg.message_datatable_vide}"
+			currentPageReportTemplate="#{msg.modele_datatable_page_courante}" 
+			disabledSelection="#{reglementController.modeEcran.dataSetEnModif()}">
+
+				<p:ajax event="rowSelect" delay="#{msg.datatable_rowselect_delay}" listener="#{reglementController.onRowSelect}"
+					update=":form:tabView,:form:messages,@widgetVar(wvBandeauActionReglement)"
+					oncomplete="activeTabCenter('#{LgrTab.CSS_CLASS_TAB_REGLEMENT}');PF('wvOverlayListeReglement').hide();scrollToTop();" />
+
+				<f:facet name="header">
+					<h:outputText value="Reglement" />
+
+				</f:facet>
+
+				<f:facet name="{Exporters}">
+					<h:commandLink>
+						<p:graphicImage library="images" name="excel.png" width="24" />
+						<p:dataExporter type="xls" target="dataTableListeGestReglement2" fileName="liste_reglements" />
+					</h:commandLink>
+
+					<p:commandLink onsuccess="window.open('#{request.contextPath}/output?__report=/reports/reglement/ListeDesReglements.rptdesign&amp;__format=pdf')"
+			actionListener="#{reglementController.actImprimerListeDesReglements}" process="@this">
+		                <p:graphicImage  library="images" name="pdf.png"  width="24"/>
+<!-- 		                <p:dataExporter type="pdf" target="dataTableListeTiers" fileName="liste_tiers" /> -->
+		            </p:commandLink>
+
+
+					<h:commandLink>
+						<p:graphicImage library="images" name="csv.png" width="24" />
+						<p:dataExporter type="csv" target="dataTableListeGestReglement2" fileName="liste_reglements" options="#{separateurCsvController.csvOptions}" />
+					</h:commandLink>
+
+					<h:commandLink>
+						<p:graphicImage library="images" name="xml.png" width="24" />
+						<p:dataExporter type="xml" target="dataTableListeGestReglement2" fileName="liste_reglements" />
+					</h:commandLink>
+				</f:facet>
+
+				<p:column selectionMode="multiple" style="width:16px;text-align:center" exportable="false"/>
+
+				<p:column style="width:16px" exportable="false">
+					<f:facet name="header">
+						<h:outputText value="" />
+					</f:facet>
+					<p:commandButton title="Détail" update=":form:tabView,:form:messages,@widgetVar(wvBandeauActionReglement),@widgetVar(wvPanelRenderedReglement)"
+						action="#{reglementController.detail}" styleClass="icon icon-detail icon-grille" disabled="#{reglementController.modeEcran.dataSetEnModif()}"
+						oncomplete="PF('wvOverlayListeReglement').hide();">
+						<f:setPropertyActionListener target="#{reglementController.selection}" value="#{doc}" />
+					</p:commandButton>
+				</p:column>
+
+				<p:column sortBy="#{doc.dto.codeDocument}" filterBy="#{doc.dto.codeDocument}" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="Code règlement" />
+					</f:facet>
+					<h:outputText value="#{doc.dto.codeDocument}" />
+				</p:column>
+				
+				<p:column
+					 sortBy="#{doc.dto.dateDocument}"
+				 	 filterMatchMode="contains"
+				 	 filterBy="#{reglementController.customFormatDate(doc.dto.dateDocument)}">
+					<f:facet name="header">
+						<h:outputText value="Date règlement" />
+					</f:facet>
+					<h:outputText value="#{doc.dto.dateDocument}">
+						<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}" />
+					</h:outputText>
+				</p:column>
+				
+
+				<p:column sortBy="#{doc.dto.codeTiers}" filterBy="#{doc.dto.codeTiers}" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="Code tiers" />
+					</f:facet>
+					<h:outputText value="#{doc.dto.codeTiers}">
+					</h:outputText>
+				</p:column>
+				
+				<p:column sortBy="#{doc.dto.netTtcCalc}" filterBy="#{doc.dto.netTtcCalc}" filterMatchMode="contains"
+							exportFunction="#{separateurCsvController.exportNumber}">
+					<f:facet name="header">
+						<h:outputText value="Montant" />
+					</f:facet>
+					<h:outputText value="#{doc.dto.netTtcCalc}">
+						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+					</h:outputText>
+				</p:column>
+
+				<p:column sortBy="#{doc.dto.libelleDocument}" filterBy="#{doc.dto.libelleDocument}" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="Libellé" />
+					</f:facet>
+					<h:outputText value="#{doc.dto.libelleDocument}" />
+				</p:column>
+
+				<p:column sortBy="#{doc.dto.codeTPaiement}" filterBy="#{doc.dto.codeTPaiement}" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="Type paiement" />
+					</f:facet>
+					<h:outputText value="#{doc.dto.codeTPaiement}" />
+				</p:column>
+
+				<p:column sortBy="#{doc.dto.iban}" filterBy="#{doc.dto.iban}" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="Compte bancaire (iban)" />
+					</f:facet>
+					<h:outputText value="#{doc.dto.iban}" />
+				</p:column>
+				
+				<p:column sortBy="#{doc.dto.dateExport}" filterBy="#{doc.dto.dateExport}" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="Exporté" />
+					</f:facet>
+					<h:outputText value="#{doc.dto.dateExport}">
+						<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}" />
+					</h:outputText>
+				</p:column>
+
+				<p:column style="width:16px" exportable="false">
+					<f:facet name="header">
+						<h:outputText value="" />
+					</f:facet>
+
+					<p:commandButton title="Supprimer" styleClass="icon-delete icon icon-grille" widgetVar="widgetVarBtnSupprimerListeReglement"
+					disabled="#{doc.dto.dateExport!=null or reglementController.documentDTOEstVerrouille(doc).verrouille}"
+						action="#{reglementController.actSupprimer}" process="@this" update="@widgetVar(wvDataTableListeGestReglement2)">
+						<f:setPropertyActionListener target="#{reglementController.selection}" value="#{doc}" />
+						<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer ce règlement ?" icon="ui-icon-alert" />
+					</p:commandButton>
+				</p:column>
+
+
+			</p:dataTable>
+
+
+
+		</h:form>
+	</p:overlayPanel>
+
+</ui:composition>

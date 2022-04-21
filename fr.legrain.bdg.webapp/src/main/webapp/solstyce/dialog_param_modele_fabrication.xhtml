@@ -1,0 +1,38 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core" 
+	xmlns:ui="http://java.sun.com/jsf/facelets" 
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/template_dialog_lgr.xhtml">
+	
+	<ui:define name="head">
+		 <title>Nouvelle fabrication à partir du modèle</title>
+	<style type="text/css">
+.ui-widget {
+	font-size: 90%;
+}
+</style>
+	</ui:define>
+
+	<ui:define name="content">
+		<h:form id="idDialogParamModeleFabrication">
+		<div class="ui-grid ui-grid-responsive">
+			<div class="ui-grid-row">
+				<div class="ui-grid-col-4">
+					<h:outputText value="Quantité à traiter :" />
+				</div>
+				<div class="ui-grid-col-8">
+					<p:inputText value="#{paramDialogModeleFabController.qteModele}"/>
+				</div>
+			</div>
+			<div class="ui-grid-row">
+				<div class="ui-grid-col-12 text-center">
+					<p:commandButton value="Créer" styleClass="btn-save btn" actionListener="#{paramDialogModeleFabController.actValiderDialogParamModeleFab}"/>
+					<p:commandButton value="Annuler" styleClass="btn-cancel btn" actionListener="#{paramDialogModeleFabController.actAnnulerCreerModele}"/>
+				</div>
+			</div>
+		</div>
+	</h:form>
+	</ui:define>
+     
+</ui:composition>

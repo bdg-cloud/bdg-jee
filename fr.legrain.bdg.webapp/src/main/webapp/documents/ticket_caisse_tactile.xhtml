@@ -1,0 +1,911 @@
+<ui:composition 
+	xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:f="http://java.sun.com/jsf/core" 
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets" 
+	xmlns:p="http://primefaces.org/ui" 
+	xmlns:lgr="http://legrain.fr/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+<!-- 	xmlns:lgrjsf="http://java.sun.com/jsf/composite/lgr-jsf-component" -->
+
+
+
+<style>
+html {
+	background-color: #727070 !important;
+}
+body {
+	margin-top: 10px;
+	margin-bottom: 10px;
+	margin-left: 32px;
+	margin-right: 32px;
+}
+.ui-widget-content,
+.ui-datagrid,
+.ui-datagrid-content,
+.ui-datagrid-content-column {
+	background-color: #727070 !important;
+}
+
+<ui:fragment rendered="#{ticketDeCaisseController.modeManuel}">
+.liste-ligne .ui-datatable-scrollable-body {
+	height: 210px;
+}
+.liste-ligne {
+	height: 278px;
+	width:  435px;
+}
+.liste-ligne-largeur {
+	width:  435px;
+}
+</ui:fragment>
+<ui:fragment rendered="#{!ticketDeCaisseController.modeManuel}">
+.liste-ligne .ui-datatable-scrollable-body {
+	height: 483px;
+}
+.liste-ligne {
+	height: 555px;
+	width:  1078px;
+}
+.liste-ligne-largeur {
+	width:  1078px;
+}
+</ui:fragment>
+.width-100pc {
+	width:100%;
+}
+.width-saisie {
+	width:70%;
+}
+.btn-calc {
+	text-align:center;
+	width:50px;
+	height:40px;
+	margin-bottom: 5px;
+	background-color: #b3b6b9 !important;
+}
+.btn-article {
+	width:100px; 
+	height:100px; 
+}
+.btn-action-gros {
+	width:99px; 
+	height:79px; 
+}
+.btn-action-petit {
+	width:99px; 
+	height:58px; 
+}
+.btn-action{
+	text-align:center;
+	width:100px;
+	margin-bottom: 5px;
+}
+.btn-action-annuler{
+	background-color: #b3abef !important;
+	background:#b3abef url("#{resource['images/caisse/annuler.png']}") no-repeat center center !important; 
+}
+.btn-action-nouveau{
+	background-color: #76ca67 !important;
+	background:#76ca67 url("#{resource['images/caisse/nouveau.png']}") no-repeat center center !important; 
+}
+.btn-action-client{
+	background-color: #c162d9 !important;
+	background:#c162d9 url("#{resource['images/caisse/client.png']}") no-repeat center center !important; 
+}
+.btn-action-gros span {
+	margin-top: 55px;
+}
+.btn-action-article{
+	background-color: #52a5e2 !important;
+	background:#52a5e2 url("#{resource['images/caisse/article.png']}") no-repeat center center !important; 
+}
+.btn-action-remise{
+	background-color: #26cdb3 !important;
+	background:#26cdb3 url("#{resource['images/caisse/remise.png']}") no-repeat center center !important; 
+}
+.btn-action-vide{
+	background-color: #bbbfc3 !important;
+}
+.btn-action-paiement{
+	background-color: #f5ac10 !important;
+}
+.btn-action-paiement-cb{
+	background:#f5ac10 url("#{resource['images/caisse/carte-bancaire.png']}") no-repeat center center !important; 
+}
+.btn-action-paiement-cheque{
+	background:#f5ac10 url("#{resource['images/caisse/cheque.png']}") no-repeat center center !important; 
+}
+.btn-action-paiement-encaisser{
+	background:#f5ac10 url("#{resource['images/caisse/encaissement.png']}") no-repeat center center !important; 
+}
+.btn-action-paiement-espece{
+	background:#f5ac10 url("#{resource['images/caisse/espece.png']}") no-repeat center center !important; 
+}
+.btn-action-petit span {
+	margin-top: 37px;
+}
+.btn-action-ticket{
+	background-color: #26cdb3 !important;
+	width:210px; 
+	height:35px;
+	background: #26cdb3 url("#{resource['images/caisse/ticket.png']}") no-repeat center center !important; 
+}
+.btn-action-ticket span{
+	margin-top: 0px;
+	margin-left: 55px;
+}
+.btn-saisie-par {
+	background-color: #26cbd3 !important;
+}
+.btn-navigation-page {
+	background-color: #727070 !important;
+}
+.btn-navigation-page-droite {
+	
+}
+.btn-navigation-page-gauche {
+	
+}
+.ui-button.ui-state-default {
+	border-bottom: 0px;
+}
+.btn-navigation-lignes {
+	background-color: #4e9c98 !important;
+}
+.btn-article .ui-button-text {
+	height:100px; 
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+.ui-datagrid-column {
+	padding:0px;
+}
+.ui-datagrid-column .ui-panel-content.ui-widget-content{
+	padding:0px;
+}
+.ui-datagrid-column .ui-panel.ui-widget.ui-widget-content.ui-corner-all {
+	padding:0px;
+}
+.ui-datagrid-column {
+	padding-right: 6px;
+}
+.ui-panel-content.ui-widget-content {
+	padding:0px;
+}
+.ui-panel-titlebar .ui-widget-header .ui-helper-clearfix .ui-corner-all{
+	padding:0px;
+}
+.btn-famille-article {
+	background-color: #e03645 !important;
+}
+.btn-article-ligne-1 {
+	background-color: #9487e4 !important;
+}
+.btn-article-ligne-2 {
+	background-color: #76ca67 !important;
+}
+.btn-article-ligne-3 {
+	background-color: #f5ab0e !important;
+}
+<ui:fragment rendered="#{ticketDeCaisseController.modeManuel}">
+.hauteur-ligne-famille-et-gille {
+	height: 320px;
+}
+</ui:fragment>
+<ui:fragment rendered="#{!ticketDeCaisseController.modeManuel}">
+.hauteur-ligne-famille-et-gille {
+	height: 620px;
+}
+</ui:fragment>
+.panel-fonctions {
+	padding: 0px;
+}
+.ui-datatable.ui-widget.ui-datatable-scrollable.liste-ligne {
+	background-color: white !important;
+}
+.ui-widget-content.ui-datatable-selectable,
+.ui-widget-content.ui-datatable-empty-message {
+	background-color: white !important;
+	color : black !important;
+}
+.ui-datatable-data .ui-widget-content {
+	background-color: white !important;
+	color : black !important;
+}
+.ui-dialog-content .ui-outputlabel {
+	color : white !important;
+}
+
+</style>
+
+<script>
+//<![CDATA[
+
+function scrollIntoView(element, container) {
+	//https://stackoverflow.com/questions/1805808/how-do-i-scroll-a-row-of-a-table-into-view-element-scrollintoview-using-jquery
+	var containerTop = $(container).scrollTop(); 
+	var containerBottom = containerTop + $(container).height(); 
+	var elemTop = element.offsetTop;
+	var elemBottom = elemTop + $(element).height(); 
+	if (elemTop < containerTop) {
+		$(container).scrollTop(elemTop);
+	} else if (elemBottom > containerBottom) {
+		$(container).scrollTop(elemBottom - $(container).height());
+	}
+}
+
+function aa() {
+	scrollIntoView($('.liste-ligne tr:last').get(0),$('.liste-ligne .ui-datatable-scrollable-body').get(0));
+} 
+//]]>
+</script> 
+
+<p:panel widgetVar="wvPanelCaisse" rendered="#{ticketDeCaisseController.afficheCaisse}">
+	<p:panel widgetVar="wvPanelEntete">
+		<div class="ui-g ui-g-nopad" style="color:white;">
+			<div class="ui-g-3 ui-g-nopad">
+				Client : <h:outputText value="#{ticketDeCaisseController.selectedDocumentDTO.nomTiers}" title="#{ticketDeCaisseController.selectedDocumentDTO.nomTiers}" />
+			</div>
+			<div class="ui-g-3 ui-g-nopad">
+				
+			</div>
+			
+			<div class="ui-g-3 ui-g-nopad">
+				
+			</div>
+			<div class="ui-g-3 ui-g-nopad" style="text-align: right;">
+				Date :
+				<h:outputText value="#{ticketDeCaisseController.selectedDocumentDTO.dateDocument}">
+					<f:convertDateTime pattern="#{msg.datetime_pattern}" timeZone="#{msg.time_zone}"/>
+				</h:outputText>
+			</div>
+		</div>
+	</p:panel>	
+	
+	<div class="ui-g ui-g-nopad">
+		<div class="ui-g-8 ui-g-nopad">
+			<ui:fragment rendered="#{ticketDeCaisseController.modeManuel}">
+				<!-- 	    	<p:commandButton title="Rechercher une famille d'article" icon="fa fa-search"/> -->
+		    	<p:commandButton title="Précédent" icon="fa fa-backward" oncomplete="PF('wvDatagridFamille').getPaginator().prev()" styleClass="btn-navigation-page btn-navigation-page-gauche"/>
+		    	<p:commandButton title="Suivant" icon="fa fa-forward" oncomplete="PF('wvDatagridFamille').getPaginator().next()" 
+		    		styleClass="btn-navigation-page btn-navigation-page-droite" style="position: absolute; left: 627px;"/>
+		    </ui:fragment>
+		</div>
+			<div class="ui-g-4 ui-g-nopad" style="color:white; text-align: right; font-family: 'PT_Sans', sans-serif;">
+					Utilisateur : 
+					<p:commandLink update="@form" actionListener="#{ticketDeCaisseController.actShowAdminCaisse}">
+				        <h:outputText value="#{auth.username}"/>
+				    </p:commandLink>
+			</div>
+	    <div class="ui-g-10 ui-g-nopad" >
+	
+			<ui:fragment rendered="#{ticketDeCaisseController.modeManuel}">
+			    <div class="ui-g-7 ui-g-nopad hauteur-ligne-famille-et-gille">
+			   		<p:dataGrid columns="6" rows="6" layout="grid" 
+			   			value="#{ticketDeCaisseController.listeFamilleArticleCaisse}" var="fam" widgetVar="wvDatagridFamille"
+			   			disabled="#{ticketDeCaisseController.editable()}"
+			        	paginator="false" emptyMessage="Famille d'article" paginatorPosition="top">
+			        	
+			        	<p:panel >
+			        		<p:commandButton value="#{fam.libcFamille}" styleClass="center btn-article btn-famille-article"
+			        			action="#{ticketDeCaisseController.actChangeFamilleArticle}" 
+			        			disabled="#{ticketDeCaisseController.editable()}" 
+			        			update="@widgetVar(wvDatagridArticle),@(.footer-table-ligne)">
+			        				<f:setPropertyActionListener value="#{fam}" target="#{ticketDeCaisseController.selectedFamilleDTO}" />
+			        		</p:commandButton>
+			        	</p:panel>
+			<!-- 	                <p:graphicImage name="demo/images/car/#{car.brand}.gif"/>  -->
+			<!-- 	                <p:commandLink update=":form:carDetail" oncomplete="PF('carDialog').show()" title="View Detail"> -->
+			<!-- 	                    <h:outputText styleClass="ui-icon ui-icon-search" style="margin:0 auto;" /> -->
+			<!-- 	                    <f:setPropertyActionListener value="#{car}" target="#{dataGridView.selectedCar}" /> -->
+			<!-- 	                </p:commandLink> -->
+			
+			        </p:dataGrid>
+			    </div>
+		    </ui:fragment>
+	    	<div class="ui-g-5 ui-g-nopad hauteur-ligne-famille-et-gille">
+	<!--     		selection="#{ticketDeCaisseController.selectedLigneJSF}" selectionMode="single"  -->
+	<!--             scrollHeight="210px;" -->
+	    		<p:dataTable value="#{ticketDeCaisseController.valuesLigne}" styleClass="liste-ligne"
+	    		 		var="ligne" 
+						rowKey="#{ligne.dto.numLigneLDocument}" 
+	    				widgetVar="widgetVarDataTableLigneTicketCaisseTactile"
+	 					scrollable="true"
+						emptyMessage="">
+						
+	<!-- 		<p:ajax event="rowSelect" delay="#{msg.datatable_rowselect_delay}" listener="#{ticketDeCaisseController.actOuvreDetailLigne}" update="@widgetVar(wvPanelDetailLigneDetail)" oncomplete="PF('wvDialogDetailLigne').show();"/> -->
+						
+	    			<f:facet name="header">
+	    				<p:outputLabel value="#{ticketDeCaisseController.selectedDocumentDTO.codeDocument}"/>
+	    			</f:facet>
+	    			<p:column headerText="Code" style="width:50px;">
+	    				<h:outputText value="#{ligne.taArticle.codeArticle}" />
+	    			</p:column>
+	    			<p:column headerText="Qte" style="width:40px;">
+	    				<h:outputText value="#{ligne.dto.qteLDocument}" />
+	    			</p:column>
+	    			<p:column headerText="Article">
+	    				<h:outputText value="#{ligne.dto.libLDocument}" />
+	    				<br/>
+	    				<ui:fragment rendered="#{!ticketDeCaisseController.modeManuel}">
+	    					Prix : <h:outputText value="#{ligne.dto.prixULDocument}" disabled="true">
+								<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+							</h:outputText>
+	<!-- 						Remise : <h:outputText value="#{ligne.dto.remTxLDocument}"/> -->
+	    				</ui:fragment>
+	    			</p:column>
+	    			<p:column headerText="Prix" style="width:60px;">
+	<!--     				<h:outputText value="#{ligne.dto.prixULDocument}"> -->
+	<!-- 						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" /> -->
+	<!-- 					</h:outputText> -->
+						<h:outputText value="#{ligne.dto.mtTtcLDocument}" disabled="true">
+							<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+						</h:outputText>
+	    			</p:column>
+	    			
+	    			<p:column style="width:30px;">
+						<p:commandButton icon="fa fa-pencil" action="#{ticketDeCaisseController.actOuvreDetailLigne}" 
+							update="@widgetVar(wvPanelDetailLigneDetail)" 
+							oncomplete="PF('wvDialogDetailLigne').show();">
+							<f:setPropertyActionListener value="#{ligne}" target="#{ticketDeCaisseController.selectedLigneJSF}"/>
+						</p:commandButton>
+	    			</p:column>
+	
+	    			<f:facet name="footer">
+	    				
+	    			</f:facet>
+	    		</p:dataTable>
+	    		<p:panel styleClass="footer-table-ligne" style="padding:0px;">
+		   			<div class="ui-g-12 ui-g-nopad liste-ligne-largeur" style="text-align:right;color: red;background-color: white; font-weight: bold; font-family: 'PT_Sans', sans-serif;">
+		   					TOTAL <h:outputText value="#{ticketDeCaisseController.selectedDocumentDTO.netTtcCalc}" style="margin-left:40px; margin-right:10px;">
+								<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+							</h:outputText>
+							<!--  <h:outputText value="#{ticketDeCaisseController.selectedDocumentDTO.netHtCalc}"> -->
+		<!-- 						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" /> -->
+		<!-- 					</h:outputText> -->
+		<!-- 					<h:outputText value="#{ticketDeCaisseController.selectedDocumentDTO.netTvaCalc}"> -->
+		<!-- 						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" /> -->
+		<!-- 					</h:outputText> -->
+		   				</div>
+		    		<div class="ui-g-12 ui-g-nopad liste-ligne-largeur" style="text-align:center;">
+		    			<div class="ui-g-12 ui-g-nopad" style="background-color: #4a4a4a">
+			    				<p:commandButton icon="fa fa-chevron-up" style="text-align:center; width:70px; height:20px; margin-right:20px;" styleClass="btn-navigation-lignes"/>
+								<p:commandButton icon="fa fa-chevron-down" style="text-align:center; width:70px; height:20px; margin-right:20px;" styleClass="btn-navigation-lignes"/>
+								<h:outputText value=" Nb réf : #{ticketDeCaisseController.valuesLigne.size()}" style="color:white; font-family: 'PT_Sans', sans-serif;"/>
+							</div>
+		    		</div>
+	    		</p:panel>
+	    	</div>
+			
+			<ui:fragment rendered="#{ticketDeCaisseController.modeManuel}">
+				<div class="ui-g-12 ui-g-nopad">
+			<!--     	<p:commandButton title="Rechercher un article" icon="fa fa-search"/> -->
+			    	<p:commandButton title="Précédent" icon="fa fa-backward" oncomplete="PF('wvDatagridArticle').getPaginator().prev()" styleClass="btn-navigation-page btn-navigation-page-gauche"/>
+			    	<p:commandButton title="Suivant" icon="fa fa-forward" oncomplete="PF('wvDatagridArticle').getPaginator().next()" style="position: absolute;left: 1073px;" styleClass="btn-navigation-page btn-navigation-page-droite"/>
+			    </div>
+			    <div class="ui-g-12 ui-g-nopad">
+			    	<p:dataGrid columns="10" rows="30" layout="grid" 
+			    		value="#{ticketDeCaisseController.listeArticleCaisse}" var="art"
+			    		disabled="#{ticketDeCaisseController.editable()}" rowIndexVar="rowIndex"
+			        	paginator="false" emptyMessage="Pas d'article" paginatorPosition="top" widgetVar="wvDatagridArticle">
+			        
+			        	<p:panel >
+			        		
+			        		<p:commandButton value="#{art.libellecArticle}" title="#{art.libellecArticle}" 
+			        			styleClass="center btn-article #{(rowIndex lt  10) ? 'btn-article-ligne-1' : ((rowIndex lt  20) ? 'btn-article-ligne-2':'btn-article-ligne-3')}"
+			        			disabled="#{ticketDeCaisseController.editable()}" 
+			        			action="#{ticketDeCaisseController.actChoixArticle}" 
+			        			update="@widgetVar(widgetVarDataTableLigneTicketCaisseTactile),@(.footer-table-ligne)"
+			        			oncomplete="aa();">
+			        			<f:setPropertyActionListener value="#{art}" target="#{ticketDeCaisseController.selectedArticleDTO}" />
+			        		</p:commandButton>
+				        </p:panel>
+				        
+			        </p:dataGrid>
+			    </div>
+		    </ui:fragment>
+	
+	    </div>
+	
+		<div class="ui-g-2 ui-g-nopad">
+			  <div class="ui-g-12 ui-g-nopad">
+	    		<p:panel widgetVar="wvPanelFonctions" styleClass="panel-fonctions">
+		    		<div class="ui-g-6 ui-g-nopad">
+		    			<p:commandButton value="Annuler" styleClass="btn-action btn-action-gros btn-action-annuler"
+		    				actionListener="#{ticketDeCaisseController.actAnnuler}"
+		    				disabled="#{ticketDeCaisseController.etatBouton('annuler')}"
+		    				update="@widgetVar(widgetVarDataTableLigneTicketCaisseTactile),@widgetVar(wvPanelEntete),
+		    					@widgetVar(wvPanelFonctions),@widgetVar(wvDatagridArticle),@widgetVar(wvDatagridFamille)"/>
+		    		</div>
+		    		<div class="ui-g-6 ui-g-nopad">		
+		    			<p:commandButton value="Nouveau" styleClass="btn-action btn-action-gros btn-action-nouveau"
+		    				actionListener="#{ticketDeCaisseController.actInserer}" 
+		    				oncomplete="$('.width-saisie').focus();"
+		    				disabled="#{ticketDeCaisseController.etatBouton('inserer') or (ticketDeCaisseController.taSessionCaisse==null)}"
+		    				update="@widgetVar(widgetVarDataTableLigneTicketCaisseTactile),@widgetVar(wvPanelEntete),@widgetVar(wvPanelFonctions),@widgetVar(wvDatagridArticle),@widgetVar(wvDatagridFamille)"/>
+		    		</div>
+		    		<div class="ui-g-6 ui-g-nopad">		
+		    			<p:commandButton value="Client" styleClass="btn-action btn-action-gros btn-action-client"
+		    				disabled="#{ticketDeCaisseController.etatBouton('annuler')}"
+		    				oncomplete="PF('wvDialogClient').show();" actionListener="#{ticketDeCaisseController.actOuvreTiers}"/>	
+		    		</div>
+		    		<div class="ui-g-6 ui-g-nopad">		
+		    			<p:commandButton value="Article" styleClass="btn-action btn-action-gros btn-action-article"
+		    				disabled="#{ticketDeCaisseController.etatBouton('annuler')}"
+		    				oncomplete="PF('wvDialogArticle').show();" actionListener="#{ticketDeCaisseController.actOuvreArticle}"/>	
+		    		</div>
+		    		<div class="ui-g-6 ui-g-nopad">	
+		    			<p:commandButton value="Remise" oncomplete="PF('wvDialogRemiseGlobale').show();" 
+		    				disabled="#{ticketDeCaisseController.etatBouton('annuler')}"
+		    				styleClass="btn-action btn-action-petit btn-action-remise"
+		    				actionListener="#{ticketDeCaisseController.actInitRemiseGlobale}"/>
+		    		</div>
+		    		<div class="ui-g-6 ui-g-nopad">
+		    			<p:commandButton value="." actionListener="#{ticketDeCaisseController.actSwitchScanManuel}"
+		    			 update="@form" styleClass="btn-action btn-action-petit btn-action-vide"/>
+		    		</div>
+		    		<div class="ui-g-6 ui-g-nopad">	
+		    			<p:commandButton value="C.B." styleClass="btn-action btn-action-petit btn-action-paiement btn-action-paiement-cb"
+		    				disabled="#{ticketDeCaisseController.etatBouton('annuler')}"
+		    				actionListener="#{ticketDeCaisseController.actInitPaiementCarteBancaire}">
+		    				<p:ajax event="dialogReturn" listener="#{ticketDeCaisseController.handleReturnDialoguePaiementParCarte}" update=":form:messages" oncomplete="impressionDirecteTicketCaisse();" /> 
+		    			</p:commandButton>
+		    		</div>
+		    		<div class="ui-g-6 ui-g-nopad">
+		    			<p:commandButton value="Chèque" styleClass="btn-action btn-action-petit btn-action-paiement btn-action-paiement-cheque" 
+		    				disabled="#{ticketDeCaisseController.etatBouton('annuler')}"
+		    				update="@widgetVar(wvDialogCheque)" oncomplete="PF('wvDialogCheque').show();" actionListener="#{ticketDeCaisseController.actInitPaiementCheque}"/>
+		    		</div>
+		    		<div class="ui-g-6 ui-g-nopad">		
+		    			<p:commandButton value="Encaisser" styleClass="btn-action btn-action-petit btn-action-paiement btn-action-paiement-encaisser" 
+		    				oncomplete="PF('wvDialogEncaisser').show();"  
+		    				disabled="#{ticketDeCaisseController.etatBouton('annuler')}"
+		    				actionListener="#{ticketDeCaisseController.actEncaisser}"/>
+		    		</div>
+		    		<div class="ui-g-6 ui-g-nopad">
+		    			<p:commandButton value="Espèces" styleClass="btn-action btn-action-petit btn-action-paiement btn-action-paiement-espece" 
+		    				disabled="#{ticketDeCaisseController.etatBouton('annuler')}"
+		    				update="@widgetVar(wvDialogEspeces)" oncomplete="PF('wvDialogEspeces').show();" 
+		    				actionListener="#{ticketDeCaisseController.actInitPaiementEspeces}"/>
+		    		</div>	
+	<!-- 	    			<p:commandButton value="Manuel / Douchette" icon="fa fa-barcode" sstyleClass="btn-action btn-action-petit" actionListener="#{ticketDeCaisseController.actSwitchScanManuel}"/> -->
+					<div class="ui-g-12 ui-g-nopad">
+		    			<p:commandButton value="Ticket" styleClass="btn-action btn-action-petit btn-action-ticket"
+		    				disabled="#{ticketDeCaisseController.etatBouton('inserer')}"
+		    				onsuccess="impressionDirecteTicketCaisse();" />
+		    		</div>
+		    		
+	<!-- 	    		<div class="ui-g-12 ui-g-nopad" style="text-align: center; margin-bottom: 5px;"> -->
+	<!-- 	    			Saisie par : -->
+	<!-- 	    		</div> -->
+	<!-- 	    		<div class="ui-g-12 ui-g-nopad"> -->
+	<!-- 	    		<div class="ui-g-4 ui-g-nopad" style="text-align: center; margin-bottom: 5px;">	 -->
+	<!-- 	    			<p:commandButton value="Quantité" styleClass="btn-saisie-par" actionListener="#{ticketDeCaisseController.actModeSaisieQte}"/> -->
+	<!-- 	    		</div> -->
+	<!-- 	    		<div class="ui-g-4 ui-g-nopad" style="text-align: center; margin-bottom: 5px;"> -->
+	<!-- 	    			<p:commandButton value="Prix" styleClass="btn-saisie-par" actionListener="#{ticketDeCaisseController.actModeSaisiePrix}"/> -->
+	<!-- 	    		</div> -->
+	<!-- 	    		<div class="ui-g-4 ui-g-nopad" style="text-align: center; margin-bottom: 5px;">	  -->
+	<!-- 	    			<p:commandButton value="CB." styleClass="btn-saisie-par" actionListener="#{ticketDeCaisseController.actModeSaisieCodeBarre}"/> -->
+	<!-- 	    		</div>	 -->
+	
+	<!-- 	    		</div> -->
+	    		</p:panel>
+	    	
+		   		<p:inputText styleClass="width-saisie" value="#{ticketDeCaisseController.zoneSaisie}" widgetVar="wvZoneSaisie" style="margin-bottom: 5px;">
+		   			<p:ajax event="keyup"/>
+		   		</p:inputText>
+		   		<p:commandButton value="OK" styleClass="btn-cb-caisse-tactile" 
+		   			actionListener="#{ticketDeCaisseController.actValidationManuelleCodeBarre}" 
+		   			update="@widgetVar(widgetVarDataTableLigneTicketCaisseTactile),@widgetVar(wvZoneSaisie),@(.footer-table-ligne)"
+		   			oncomplete="aa();"/>
+		   		<div class="ui-g-3 ui-g-nopad">	 
+		   			<p:commandButton value="7" styleClass="btn-calc" actionListener="#{ticketDeCaisseController.actBtn7}" update="@widgetVar(wvZoneSaisie)"/>
+		   		</div>
+		   		<div class="ui-g-3 ui-g-nopad">	 
+		   			<p:commandButton value="8" styleClass="btn-calc" actionListener="#{ticketDeCaisseController.actBtn8}" update="@widgetVar(wvZoneSaisie)"/>
+		   		</div>
+		   		<div class="ui-g-3 ui-g-nopad">	 
+		   			<p:commandButton value="9" styleClass="btn-calc" actionListener="#{ticketDeCaisseController.actBtn9}" update="@widgetVar(wvZoneSaisie)"/>
+		   		</div>
+		   		<div class="ui-g-3 ui-g-nopad">	 
+		   			<p:commandButton icon="fa fa-chevron-left" styleClass="btn-calc" actionListener="#{ticketDeCaisseController.actBtnAnnuler}" update="@widgetVar(wvZoneSaisie)"/>
+		   		</div>
+		   			
+		   		<div class="ui-g-3 ui-g-nopad">	 
+		   			<p:commandButton value="4" styleClass="btn-calc" actionListener="#{ticketDeCaisseController.actBtn4}" update="@widgetVar(wvZoneSaisie)"/>
+		   		</div>
+		   		<div class="ui-g-3 ui-g-nopad">	 
+		   			<p:commandButton value="5" styleClass="btn-calc" actionListener="#{ticketDeCaisseController.actBtn5}" update="@widgetVar(wvZoneSaisie)"/>
+		   		</div>
+		   		<div class="ui-g-3 ui-g-nopad">	 
+		   			<p:commandButton value="6" styleClass="btn-calc" actionListener="#{ticketDeCaisseController.actBtn6}" update="@widgetVar(wvZoneSaisie)"/>
+		   		</div>
+		   		<div class="ui-g-3 ui-g-nopad">	 
+		   			<p:commandButton icon="fa fa-times" styleClass="btn-calc" actionListener="#{ticketDeCaisseController.actBtnMultipliQte}" update="@widgetVar(wvZoneSaisie)"/>
+		   		</div>
+		   			
+		   		<div class="ui-g-3 ui-g-nopad">	 
+		   			<p:commandButton value="1" styleClass="btn-calc" actionListener="#{ticketDeCaisseController.actBtn1}" update="@widgetVar(wvZoneSaisie)"/>
+		   		</div>
+		   		<div class="ui-g-3 ui-g-nopad">	 
+		   			<p:commandButton value="2" styleClass="btn-calc" actionListener="#{ticketDeCaisseController.actBtn2}" update="@widgetVar(wvZoneSaisie)"/>
+		   		</div>
+		   		<div class="ui-g-3 ui-g-nopad">	 
+		   			<p:commandButton value="3" styleClass="btn-calc" actionListener="#{ticketDeCaisseController.actBtn3}" update="@widgetVar(wvZoneSaisie)"/>
+		   		</div>
+		   		<div class="ui-g-3 ui-g-nopad">	 
+		   			<p:commandButton value="*" styleClass="btn-calc"/>
+		   		</div>
+		   			
+		   		<div class="ui-g-3 ui-g-nopad">	 
+		   			<p:commandButton value="0" styleClass="btn-calc" actionListener="#{ticketDeCaisseController.actBtn0}" update="@widgetVar(wvZoneSaisie)"/>
+		   		</div>
+		   		<div class="ui-g-3 ui-g-nopad">	 
+		   			<p:commandButton value="*" styleClass="btn-calc"/>
+		   		</div>
+		   		<div class="ui-g-3 ui-g-nopad">	 
+		   			<p:commandButton value="*" styleClass="btn-calc"/>
+		   		</div>
+		   		<div class="ui-g-3 ui-g-nopad">	 
+		   			<p:commandButton icon="fa fa-check" styleClass="btn-calc" actionListener="#{ticketDeCaisseController.actBtnValider}" update="@widgetVar(wvZoneSaisie)"/>
+		   		</div>
+		   	</div>
+		    
+	    </div>
+	    
+	 
+	</div>
+</p:panel>
+ 
+<p:dialog header="Client" widgetVar="wvDialogClient">
+	<p:ajax event="close" update="@widgetVar(wvPanelEntete)" />
+	<p:panel widgetVar="wvPanelClientDetail">
+		<p:outputLabel value="Recherche par code " />
+		<p:autoComplete value="#{ticketDeCaisseController.taTiersDTO}" id="idtiersTicketCaisse" converter="entityConverter"
+			completeMethod="#{ticketDeCaisseController.tiersAutoCompleteDTOLight}"
+			var="tiers" itemLabel="#{tiers.codeTiers}" itemValue="#{tiers}" forceSelection="true"
+			dropdown="true" placeholder="Tiers">
+			<p:column>
+				<h:outputText value="#{tiers.codeTiers}" required="true" requiredMessage="#{msg_diag.alert_champs_obligatoir}" />
+			</p:column>
+	
+			<p:column>
+				<h:outputText value="#{tiers.nomTiers}" />
+			</p:column>
+
+			<p:column>
+				<h:outputText value="#{tiers.prenomTiers}" />
+			</p:column>
+
+			<p:column>
+				<h:outputText value="#{tiers.nomEntreprise}" />
+			</p:column>
+
+	
+			<f:attribute name="nomChamp" value="#{const.C_CODE_TIERS}" />
+			<p:ajax event="itemSelect" listener="#{ticketDeCaisseController.autcompleteSelection}" onsuccess="PF('wvDialogClient').hide();"/>
+		</p:autoComplete>
+		<p:commandButton icon="fa fa-plus" actionListener="#{ticketDeCaisseController.actNouveauTiers}" update="@widgetVar(wvPanelClientDetail)"/>
+		<hr/>
+		<p:panel rendered="#{ticketDeCaisseController.taTiersDTO != null}">
+			<p:panelGrid columns="2" style="width:100%;" >
+				<f:facet name="header">Nouveau client</f:facet>
+				
+				<p:outputLabel value="Code client : " styleClass="labelchob" />
+				<p:inputText value="#{ticketDeCaisseController.taTiersDTO.codeTiers}" disabled="true"/>
+				
+				<p:outputLabel value="Nom : " styleClass="labelchob" />
+				<p:inputText value="#{ticketDeCaisseController.taTiersDTO.nomTiers}">
+					<f:attribute name="nomChamp" value="#{const.C_NOM_TIERS}" />
+					<p:ajax event="blur"/>
+				</p:inputText>
+				
+				<p:outputLabel value="Prénom : " styleClass="labelchob" />
+				<p:inputText value="#{ticketDeCaisseController.taTiersDTO.prenomTiers}">
+					<f:attribute name="nomChamp" value="#{const.C_PRENOM_TIERS}" />
+					<p:ajax event="blur"/>
+				</p:inputText>
+				
+				<p:outputLabel value="Raison sociale : " styleClass="labelchob" />
+				<p:inputText value="#{ticketDeCaisseController.taTiersDTO.nomEntreprise}" validator="#{ticketDeCaisseController.validateDocument}">
+					<f:attribute name="nomChamp" value="#{const.C_NOM_ENTREPRISE}" />
+					<p:ajax event="blur"/>
+				</p:inputText>
+				
+				<p:outputLabel value="Adresse 1 : " styleClass="labelchob" />
+				<p:inputText value="#{ticketDeCaisseController.taTiersDTO.adresse1Adresse}" validator="#{ticketDeCaisseController.validateDocument}">
+					<f:attribute name="nomChamp" value="#{const.C_ADRESSE1_ADRESSE}" />
+					<p:ajax event="blur"/>
+				</p:inputText>
+				
+				<p:outputLabel value="Adresse 2 : " />
+				<p:inputText value="#{ticketDeCaisseController.taTiersDTO.adresse2Adresse}" validator="#{ticketDeCaisseController.validateDocument}">
+					<f:attribute name="nomChamp" value="#{const.C_ADRESSE2_ADRESSE}" />
+					<p:ajax event="blur"/>
+				</p:inputText>
+				
+				<p:outputLabel value="Adresse 3 : " />
+				<p:inputText value="#{ticketDeCaisseController.taTiersDTO.adresse3Adresse}" validator="#{ticketDeCaisseController.validateDocument}">
+					<f:attribute name="nomChamp" value="#{const.C_ADRESSE3_ADRESSE}" />
+					<p:ajax event="blur"/>
+				</p:inputText>
+				
+				<p:outputLabel value="Code postal : " />
+				<p:inputText value="#{ticketDeCaisseController.taTiersDTO.codepostalAdresse}" validator="#{ticketDeCaisseController.validateDocument}">
+					<f:attribute name="nomChamp" value="#{const.C_CODEPOSTAL_ADRESSE}" />
+					<p:ajax event="blur"/>
+				</p:inputText>
+				
+				<p:outputLabel value="Ville : "/>
+				<p:inputText value="#{ticketDeCaisseController.taTiersDTO.villeAdresse}" validator="#{ticketDeCaisseController.validateDocument}">
+					<f:attribute name="nomChamp" value="#{const.C_VILLE_ADRESSE}" />
+					<p:ajax event="blur"/>
+				</p:inputText>
+				
+				<p:outputLabel value="Pays : " />
+				<p:inputText value="#{ticketDeCaisseController.taTiersDTO.paysAdresse}" validator="#{ticketDeCaisseController.validateDocument}">
+					<f:attribute name="nomChamp" value="#{const.C_PAYS_ADRESSE}" />
+					<p:ajax event="blur"/>
+				</p:inputText>
+				
+				<p:outputLabel value="Téléphone : "/>
+				<p:inputText value="#{ticketDeCaisseController.taTiersDTO.numeroTelephone}" validator="#{ticketDeCaisseController.validateDocument}">
+					<f:attribute name="nomChamp" value="#{const.C_NUMERO_TELEPHONE}" />
+					<p:ajax event="blur"/>
+				</p:inputText>
+				
+				<p:outputLabel value="Email : " />
+				<p:inputText value="#{ticketDeCaisseController.taTiersDTO.adresseEmail}" validator="#{ticketDeCaisseController.validateDocument}">
+					<f:attribute name="nomChamp" value="#{const.C_ADRESSE_EMAIL}" />
+					<p:ajax event="blur"/>
+				</p:inputText>
+				
+				<p:commandButton value="Enregistrer" title="Enregistrer" icon="fa fa-save" actionListener="#{ticketDeCaisseController.actEnregistrerTiers}" onsuccess="PF('wvDialogClient').hide();"/>
+			</p:panelGrid>
+		</p:panel>
+	</p:panel>
+</p:dialog>
+
+<p:dialog header="Article" widgetVar="wvDialogArticle">
+	<p:ajax event="close" update="@widgetVar(wvPanelEntete)" />
+	<p:panel widgetVar="wvPanelArticleDetail">
+		<p:outputLabel value="Recherche par code " />
+		<p:autoComplete value="#{ticketDeCaisseController.taArticleDTO}" id="idarticleTicketCaisse" converter="entityConverter"
+			completeMethod="#{ticketDeCaisseController.articleAutoCompleteDTOLight}"
+			var="article" itemLabel="#{article.codeTiers}" itemValue="#{article}" forceSelection="true"
+			dropdown="true" placeholder="Article">
+			<p:column>
+				<h:outputText value="#{article.codeArticle}" required="true" requiredMessage="#{msg_diag.alert_champs_obligatoir}" />
+			</p:column>
+	
+			<p:column>
+				<h:outputText value="#{article.libellecArticle}" />
+			</p:column>
+										<p:column >
+										<h:outputText value="#{art.commentaireArticle}" rendered="#{ticketDeCaisseController.rechercheAvecCommentaire(false)}"/>
+									</p:column>
+	
+			<f:attribute name="nomChamp" value="#{const.C_CODE_ARTICLE}_RECHERCHE" />
+			<p:ajax event="itemSelect" listener="#{ticketDeCaisseController.autcompleteSelection}" 
+				onsuccess="PF('wvDialogArticle').hide();" update="@widgetVar(widgetVarDataTableLigneTicketCaisseTactile),@widgetVar(wvZoneSaisie),@(.footer-table-ligne)"/>
+		</p:autoComplete>
+	</p:panel>
+</p:dialog>
+
+<p:dialog header="Detail ligne" widgetVar="wvDialogDetailLigne">
+	<p:ajax event="close" update="@widgetVar(widgetVarDataTableLigneTicketCaisseTactile),@(.footer-table-ligne)" />
+	<p:ajax event="open" update="@widgetVar(wvPanelDetailLigneDetail)" />
+	<p:panel widgetVar="wvPanelDetailLigneDetail">
+		<p:panel rendered="#{ticketDeCaisseController.selectedLigneJSF!=null and ticketDeCaisseController.selectedLigneJSF.dto!=null}">
+			<p:panelGrid columns="2" style="width:100%;">
+				<f:facet name="header">Détail</f:facet>
+				
+				<p:outputLabel value="Code article : " />
+				<p:inputText value="#{ticketDeCaisseController.selectedLigneJSF.dto.codeArticle}" disabled="true"/>
+				<p:outputLabel value="Libelle : " />
+				<p:inputText value="#{ticketDeCaisseController.selectedLigneJSF.dto.libLDocument}" disabled="true"/>
+				
+				<p:outputLabel value="Quantité : " styleClass="labelchob" />
+				<h:panelGroup>
+					<p:commandButton icon="fa fa-minus" actionListener="#{ticketDeCaisseController.actQteLigneMoinsUn}" update="@widgetVar(wvPanelDetailLigneDetail)"/>
+					<p:inputText value="#{ticketDeCaisseController.selectedLigneJSF.dto.qteLDocument}" validator="#{ticketDeCaisseController.validateLignesDocument}">
+						<f:attribute name="nomChamp" value="#{const.C_QTE_L_DOCUMENT}" /> 
+						<p:ajax event="blur" update="@this"/>
+					</p:inputText>
+					<p:commandButton icon="fa fa-plus" actionListener="#{ticketDeCaisseController.actQteLignePlusUn}" update="@widgetVar(wvPanelDetailLigneDetail)"/>
+				</h:panelGroup>
+				
+				<p:outputLabel value="Prix unitaire : " styleClass="labelchob" />
+				<p:inputText value="#{ticketDeCaisseController.selectedLigneJSF.dto.prixULDocument}" validator="#{ticketDeCaisseController.validateLignesDocument}">
+					<f:attribute name="nomChamp" value="#{const.C_PRIX_U_L_DOCUMENT}" />
+					<p:ajax event="blur" update="@this"/>
+				</p:inputText>
+				
+				<p:outputLabel value="Remise ligne : " />
+				<p:inputText value="#{ticketDeCaisseController.selectedLigneJSF.dto.remTxLDocument}" validator="#{ticketDeCaisseController.validateLignesDocument}">
+					<f:attribute name="nomChamp" value="#{const.C_REM_TX_L_DOCUMENT}" /> 
+					<p:ajax event="blur" update="@this"/>
+				</p:inputText>
+				
+				<p:commandButton value="Enregistrer" title="Enregistrer" icon="fa fa-save" 
+					update="@widgetVar(widgetVarDataTableLigneTicketCaisseTactile),@widgetVar(wvZoneSaisie),@(.footer-table-ligne)"
+					actionListener="#{ticketDeCaisseController.actEnregistrerLigne}" onsuccess="PF('wvDialogDetailLigne').hide();"/>
+					
+				<p:commandButton value="Supprimer" title="Supprimer" icon="fa fa-save" 
+					update="@widgetVar(widgetVarDataTableLigneTicketCaisseTactile),@widgetVar(wvZoneSaisie),@(.footer-table-ligne)"
+					actionListener="#{ticketDeCaisseController.actSupprimerLigneTicket}" onsuccess="PF('wvDialogDetailLigne').hide();">
+					<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer cet enregistrement ?" icon="ui-icon-alert" />
+				</p:commandButton>
+			</p:panelGrid>
+		</p:panel>
+	</p:panel>
+</p:dialog>
+
+<p:dialog header="Règlement en espèces" widgetVar="wvDialogEspeces">
+	<p:panel widgetVar="wvPanelEspecesDetail">
+		<p:panelGrid columns="2" style="width:100%;">
+			<p:outputLabel value="Montant paiement  : " />
+			<p:inputText value="#{ticketDeCaisseController.selectedDocumentDTO.montantReglement}" disabled="true">
+				<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />					
+			</p:inputText>
+			<p:outputLabel value="Reçu du client : " styleClass="labelchob" />
+			<p:inputText value="#{ticketDeCaisseController.especesRecuClient}">
+				<p:ajax event="blur" update="@parent" listener="#{ticketDeCaisseController.actCalculeMonaieARendreEspeces}"/>
+			</p:inputText>
+			<p:outputLabel value="A rendre : "  />
+			<p:inputText value="#{ticketDeCaisseController.especesARendreClient}" disabled="true">
+				<p:ajax event="blur" update="@this"/>
+			</p:inputText>
+			<p:outputLabel value="Libellé paiement : " />
+			<p:inputText value="#{ticketDeCaisseController.libellePaiement}">
+				<p:ajax event="blur" update="@this"/>
+			</p:inputText>
+			<p:commandButton value="Enregistrer" title="Enregistrer" icon="fa fa-save" process="@this" update="@form" actionListener="#{ticketDeCaisseController.actPaiementEspeces}" oncomplete="PF('wvDialogEspeces').hide();impressionDirecteTicketCaisse();"/>
+			<p:commandButton value="Annuler" title="Annuler" icon="fa fa-cancel" process="@this" update="@form" actionListener="#{ticketDeCaisseController.actAnnulerPaiementEspeces}" oncomplete="PF('wvDialogEspeces').hide();"/>
+		</p:panelGrid>
+	</p:panel>
+</p:dialog>
+
+<p:dialog header="Règlement par chèque" widgetVar="wvDialogCheque">
+	<p:panel widgetVar="wvPanelChequeDetail">
+		<p:panelGrid columns="2" style="width:100%;">
+			<p:outputLabel value="Montant paiement : " styleClass="labelchob"/>
+			<p:inputText value="#{ticketDeCaisseController.selectedDocumentDTO.montantReglement}" disabled="true">
+				<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />					
+			</p:inputText>
+			
+			<p:outputLabel value="Libellé paiement : " styleClass="labelchob" />
+			<p:inputText value="#{ticketDeCaisseController.libellePaiement}">
+				<p:ajax event="blur" update="@this"/>
+			</p:inputText>
+			
+			<p:commandButton value="Enregistrer" title="Enregistrer" process="@this" icon="fa fa-save" update="@form" actionListener="#{ticketDeCaisseController.actPaiementCheque}" oncomplete="PF('wvDialogCheque').hide();impressionDirecteTicketCaisse();"/>
+			<p:commandButton value="Annuler" title="Annuler" process="@this" icon="fa fa-cancel" update="@form" actionListener="#{ticketDeCaisseController.actAnnulerPaiementCheque}" oncomplete="PF('wvDialogCheque').hide();"/>
+		</p:panelGrid>
+	</p:panel>
+</p:dialog>
+
+<p:dialog header="Remise globale" widgetVar="wvDialogRemiseGlobale">
+	<p:panel widgetVar="wvPanelRemiseGlobaleDetail">
+		<p:panelGrid columns="2" style="width:100%;">
+			<p:outputLabel value="Remise globale %" />
+			<p:inputText value="#{ticketDeCaisseController.selectedDocumentDTO.txRemHtDocument}">
+				<f:attribute name="nomChamp" value="#{const.C_TX_REM_HT_DOCUMENT}" />
+				<p:ajax event="blur" update="@this" />
+			</p:inputText>
+			
+<!-- 			<p:outputLabel value="Remise sur HT" /> -->
+<!-- 			<p:inputText value="#{ticketDeCaisseController.selectedDocumentDTO.remHtDocument}" disabled="true"> -->
+<!-- 				<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" /> -->
+<!-- 			</p:inputText> -->
+			<p:commandButton value="Enregistrer" title="Enregistrer" icon="fa fa-save" update="@form" actionListener="#{ticketDeCaisseController.actRemiseGlobale}" oncomplete="PF('wvDialogCheque').hide();"/>
+		</p:panelGrid>
+	</p:panel>
+</p:dialog>
+
+<p:dialog header="Règlements" widgetVar="wvDialogEncaisser">
+	<p:panel widgetVar="wvPanelEncaisserDetail">
+		<p:outputLabel value="Multi règlement (prochainement disponible) " />
+	</p:panel>
+</p:dialog>
+
+<p:dialog header="Fond de caisse (ouverture)" widgetVar="wvDialogFondCaisseOuverture">
+	<p:panel widgetVar="wvPanelFondCaisseOuvertureDetail">
+		<p:outputLabel value="Somme présente dans la caisse : " />
+		<p:inputText value="#{ticketDeCaisseController.taFondDeCaisseOuverture.montant}">
+			<p:ajax/>
+		</p:inputText>
+		<br/>
+		<p:commandButton value="Annuler" title="Annuler" icon="fa fa-cancel" process="@this" update="@form" oncomplete="PF('wvDialogFondCaisseOuverture').hide();"/>
+		<p:commandButton update="@form" value="Nouvelle session" process="@this" oncomplete="PF('wvDialogFondCaisseOuverture').hide();"
+			actionListener="#{ticketDeCaisseController.actDemarrerSessionCaisse}"/>
+	</p:panel>
+</p:dialog>
+
+<p:dialog header="Fond de caisse (cloture)" widgetVar="wvDialogFondCaisseCloture">
+	<p:panel widgetVar="wvPanelFondCaisseClotureDetail">
+		<p:outputLabel value="Somme présente dans la caisse : " />
+		<p:inputText value="#{ticketDeCaisseController.taFondDeCaisseCloture.montant}">
+			<p:ajax/>
+		</p:inputText>
+		<br/>
+		<p:commandButton value="Annuler" title="Annuler" icon="fa fa-cancel" process="@this" update="@form" oncomplete="PF('wvDialogFondCaisseCloture').hide();"/>
+		<p:commandButton update="@form" value="Cloture session" process="@this" oncomplete="PF('wvDialogFondCaisseCloture').hide();"
+			actionListener="#{ticketDeCaisseController.actCloturerSessionCaisse}"/>
+	</p:panel>
+</p:dialog>
+
+<p:dialog header="Dépot caisse" widgetVar="wvDialogDepotCaisse">
+	<p:panel widgetVar="wvPanelDepotCaisseDetail">
+		<p:outputLabel value="Somme déposée dans la caisse : " />
+		<p:inputText value="#{ticketDeCaisseController.depotCaisse.montant}">
+			<p:ajax/>
+		</p:inputText>
+		<br/>
+		<p:commandButton value="Annuler" title="Annuler" icon="fa fa-cancel" process="@this" update="@form" oncomplete="PF('wvDialogDepotCaisse').hide();"/>
+		<p:commandButton update="@form" value="Déposer" process="@this" oncomplete="PF('wvDialogDepotCaisse').hide();"
+			actionListener="#{ticketDeCaisseController.actDepotCaisse}"/>
+	</p:panel>
+</p:dialog>
+
+<p:dialog header="Retrait caisse" widgetVar="wvDialogRetraitCaisse">
+	<p:panel widgetVar="wvPanelRetraitCaisseDetail">
+		<p:outputLabel value="Somme retirée de la caisse : " />
+		<p:inputNumber value="#{ticketDeCaisseController.retraitCaisse.montant}" symbol="#{msg.input_number_symbol}" symbolPosition="#{msg.input_number_symbolPosition}">
+			<p:ajax/>
+		</p:inputNumber>
+		<br/>
+		<p:commandButton value="Annuler" title="Annuler" icon="fa fa-cancel" process="@this" update="@form" oncomplete="PF('wvDialogRetraitCaisse').hide();"/>
+		<p:commandButton update="@form" value="Retirer" process="@this" oncomplete="PF('wvDialogRetraitCaisse').hide();"
+			actionListener="#{ticketDeCaisseController.actRetraitCaisse}"/>
+	</p:panel>
+</p:dialog>
+
+<p:panel widgetVar="wvPanelAdminCaisse" rendered="#{!ticketDeCaisseController.afficheCaisse}">
+	<p:commandLink update="@form" actionListener="#{ticketDeCaisseController.actShowCaisse}">
+		<h:outputText value="Caisse"/>
+	</p:commandLink>
+	<br/>
+	<br/>
+	<p:panelGrid columns="2" rendered="#{ticketDeCaisseController.taSessionCaisse!=null}">
+		<f:facet name="header">Session de caisse active</f:facet>
+		<p:outputLabel value="N°" />
+		<p:outputLabel value="#{ticketDeCaisseController.taSessionCaisse.codeSessionCaisse}" />
+		<p:outputLabel value="Date début" />
+		<p:outputLabel value="#{ticketDeCaisseController.taSessionCaisse.dateDebutSession}" />
+	</p:panelGrid>
+	<br/>
+	<p:commandButton update="@form,@widgetVar(wvDialogFondCaisseOuverture)" process="@this" value="Nouvelle session" oncomplete="PF('wvDialogFondCaisseOuverture').show();"
+		actionListener="#{ticketDeCaisseController.actInitDemarrerSessionCaisse}" rendered="#{ticketDeCaisseController.taSessionCaisse==null}"/>
+		    				
+	<br/>
+	<p:commandButton update="@form,@widgetVar(wvDialogFondCaisseCloture)" process="@this" value="Cloturer session (Ticket Z)" oncomplete="PF('wvDialogFondCaisseCloture').show();"
+		actionListener="#{ticketDeCaisseController.actInitCloturerSessionCaisse}" rendered="#{ticketDeCaisseController.taSessionCaisse!=null}"/>
+	<br/>
+	<p:commandButton update="@form" value="Ticket X" process="@this" actionListener="#{ticketDeCaisseController.actInitTicketX}"
+		rendered="#{ticketDeCaisseController.taSessionCaisse!=null}"/>
+	<br/>
+	<p:commandButton update="@form" value="Dépot" process="@this" actionListener="#{ticketDeCaisseController.actInitDepotCaisse}" 
+		oncomplete="PF('wvDialogDepotCaisse').show();"
+		rendered="#{ticketDeCaisseController.taSessionCaisse!=null}"/>
+	<br/>
+	<p:commandButton update="@form" value="Retrait" process="@this" actionListener="#{ticketDeCaisseController.actInitRetraitCaisse}" 
+		oncomplete="PF('wvDialogRetraitCaisse').show();"
+		rendered="#{ticketDeCaisseController.taSessionCaisse!=null}"/>
+</p:panel>
+
+	<p:remoteCommand name="scanCodeBarreCaisseTactile" 
+		oncomplete="if($('.ui-datatable.liste-ligne:visible').length > 0) {$('.btn-cb-caisse-tactile').click();}"
+		process="@this">
+	</p:remoteCommand>
+	
+<!-- 	&__action=print&__printer=SPRT- -->
+	<p:remoteCommand name="impressionDirecteTicketCaisse"
+		onsuccess="window.open('#{request.contextPath}/output?__report=/reports/documents/facture/FicheTicketCaisseTicket.rptdesign&amp;__format=pdf')"
+	    actionListener="#{ticketDeCaisseController.actImprimerTactile}" 
+	    process="@this">
+	</p:remoteCommand>
+
+</ui:composition>

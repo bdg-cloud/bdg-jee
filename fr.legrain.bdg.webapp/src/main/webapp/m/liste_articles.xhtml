@@ -1,0 +1,146 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/template.xhtml">
+
+    <ui:define name="head">
+        <script type="text/javascript">
+            function skinChart() {
+                this.cfg.shadow = false;
+                this.cfg.title = '';
+                this.cfg.seriesColors = ['#0097A7', '#0277BD', '#E53935'];
+                this.cfg.grid = {
+                    background: '#ffffff',
+                    borderColor: '#ffffff',
+                    gridLineColor: '#F5F5F5',
+                    shadow: false
+                };
+                this.cfg.axesDefaults = {
+                    rendererOptions: {
+                        textColor: '#666F77'
+                    }
+                };
+                this.cfg.seriesDefaults = {
+                    shadow: false,
+                    lineWidth:1,
+                    markerOptions: {
+                        shadow: false,
+                        size:7,
+                        style:'circle'
+                    }
+                };
+                this.cfg.axes.yaxis.tickOptions.show = false;
+            }
+        </script>
+        <style type="text/css">
+            .jqplot-target, .jqplot-axis {
+                color: #546E7A;
+            }
+        </style>
+    </ui:define>
+    
+    <ui:define name="subheader">
+        Liste des articles
+    </ui:define>
+
+
+    <ui:define name="content">
+        
+       Liste des articles
+        
+        <h:form id="form" prependId="true"> 
+        
+        <ui:include src="confirm_dialog.xhtml"/>
+        
+	<p:menubar styleClass="menu-onglet" widgetVar="wvMenuListeArticle">
+		<p:menuitem value="Ajouter" title="Ajouter" update="@form" 	action="#{articleController.nouveauResponsive}"  disabled="#{articleController.etatBouton('inserer')} " icon="fa fa-plus-circle" ajax="false"/>
+	 	<p:menuitem value="Détail" title="Détail" update="@form" action="#{articleController.detailResponsive}"   icon="fa fa-eye" ajax="false"/>
+	 	<p:menuitem value="Supprimer" title="Supprimer" update="@form" actionListener="#{articleController.supprimer}"  disabled="#{articleController.etatBouton('supprimer')}" icon="fa fa-trash">
+							<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer cet enregistrement ?" icon="fa fa-exclamation-triangle" />
+		</p:menuitem>					
+	 	<p:menuitem value="Rafraîchir" title="Rafraîchir" update="@form" actionListener="#{articleController.refresh}"  disabled="#{articleController.modeEcran.dataSetEnModif()}" icon="fa fa-refresh"/>
+	</p:menubar>
+		<div class="text-center">
+		
+		<p:selectOneRadio id="choixAffiche" value="#{articleController.affiche}">
+			<f:selectItem  itemValue="#{const.C_MATIERE_PREMIERE}" itemLabel="Matière P"/>
+			<f:selectItem  itemValue="#{const.C_PRODUIT_FINI}" itemLabel="Produit F"/>
+			<f:selectItem  itemValue="#{const.C_TOUS}" itemLabel="Tous"/>
+			<p:ajax update="@form" listener="#{articleController.refresh()}" />
+		</p:selectOneRadio>
+		
+	</div>
+	<p:dataTable id="dataTableListeArticles" var="taArticle"
+				widgetVar="wvDataTableListeArticle"
+				styleClass="datatable mt10"
+				value="#{articleController.values}"
+				rowKey="#{taArticle.id}"
+				selection="#{articleController.selectedTaArticleDTO}"
+				selectionMode="single"
+				dblClickSelect="true"
+				resizableColumns="true"
+				paginator="true" 
+				rows="#{msg.modele_datatable_ligne_par_page_debut}"
+				paginatorTemplate="#{msg.modele_datatable_paginator}"
+				rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+				emptyMessage="#{msg.message_datatable_vide}"
+				currentPageReportTemplate="#{msg.modele_datatable_page_courante}"
+				disabledSelection="#{articleController.modeEcran.dataSetEnModif()}" reflow="true">
+				
+
+<!-- 				<p:ajax event="rowDblselect" listener="#{articleController.onRowSelect}" update="@form" oncomplete="activeLastTabCenter()"/> -->
+<!-- 				<p:ajax event="rowSelect" listener="#{articleController.onRowSelect}" disabled="#{articleController.pasDejaOuvert()}" update="@form" />  -->
+
+  <f:facet name="{Exporters}">
+            <h:commandLink>
+                <p:graphicImage library="images" name="excel.png" width="24"/>
+                <p:dataExporter type="xls" target="dataTableListeArticles" fileName="liste_articles" />
+            </h:commandLink>
+ 
+            <h:commandLink>
+                <p:graphicImage  library="images" name="pdf.png"  width="24"/>
+                <p:dataExporter type="pdf" target="dataTableListeArticles" fileName="liste_articles"/>
+            </h:commandLink>
+ 
+            <h:commandLink>
+                <p:graphicImage  library="images" name="csv.png"  width="24"/>
+                <p:dataExporter type="csv" target="dataTableListeArticles" fileName="liste_articles" />
+            </h:commandLink>
+ 
+            <h:commandLink>
+                <p:graphicImage  library="images" name="xml.png"  width="24"/>
+                <p:dataExporter type="xml" target="dataTableListeArticles" fileName="liste_articles" />
+            </h:commandLink>
+        </f:facet>
+        
+				<p:column sortBy="#{taArticle.codeArticle}">
+					<f:facet name="header">
+						<h:outputText value="Code" />
+					</f:facet>
+					<h:outputText value="#{taArticle.codeArticle}" />
+				</p:column>
+				
+				<p:column sortBy="#{taArticle.libellecArticle}">
+					<f:facet name="header">
+						<h:outputText value="Libellé" />
+					</f:facet>
+					<h:outputText value="#{taArticle.libellecArticle}" />
+				</p:column>
+				
+                    <p:column headerText="Action" footerText="Action" styleClass="ui-fluid actions">
+                      <p:panelGrid columns="3" styleClass="ui-panelgrid-blank" layout="grid">
+						
+						<p:commandLink icon="fa fa-eye"  type="button"  actionListener="#{articleController.repondreMessage}" ajax="false" >
+						 <p:graphicImage  library="images" name="zoom.png"  title="Détail" alt="Détail" height="16"/>
+						  <f:attribute name="idArticle" value="#{taArticle.id}"/>
+						</p:commandLink>
+
+					  </p:panelGrid>
+                    </p:column>					
+			</p:dataTable>        
+        </h:form>
+    </ui:define>
+
+</ui:composition>

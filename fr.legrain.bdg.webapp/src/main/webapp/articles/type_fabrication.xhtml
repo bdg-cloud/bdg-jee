@@ -1,0 +1,212 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<p:panel id="typeFabricationFormPrincipal" widgetVar="typeFabricationForm">
+
+		<p class="subtitle">
+			<p:outputLabel value="Gestion des types de fabrication"
+				rendered="#{dansDialogue == null ? true : false}" />
+		</p>
+		
+		<!-- bouton -->
+		<p:panel id="typeFabricationDataTableF" class="mt30" style="position:relative;"
+			rendered="#{dansDialogue == null ? true : false}">
+			
+			<p:commandButton id="idInsererTypeFabrication" value="Ajouter" title="Insérer" process="@this"
+				update=":form:tabView,:form:messages,:form" 
+				actionListener="#{typeFabricationController.actDialogTypes}"
+				styleClass="icon-insert icon" >
+				<p:ajax event="dialogReturn" listener="#{typeFabricationController.handleReturnDialogTypes}" 
+					update=":form"/>
+			</p:commandButton>
+			
+<!-- 			<p:commandButton id="typeFabricationInsérer" value="Insérer" process="@this" -->
+<!-- 				disabled="#{typeFabricationController.etatBouton('inserer')}" -->
+<!-- 				update="@widgetVar(varTypeFabricationPanel), @this, @parent:typeFabricationModifier, @parent:typeFabricationSupprimer" -->
+<!-- 				actionListener="#{typeFabricationController.actInserer}" -->
+<!-- 				class="btn-insert btn" /> -->
+
+			<p:commandButton id="idModifierTypeFabrication" value="Modifier" title="Modifier" process="@this"
+				update=":form:tabView,:form:messages,:form" 
+				actionListener="#{typeFabricationController.actDialogModifier}"
+				styleClass="icon-update icon" >
+				<p:ajax event="dialogReturn" listener="#{typeFabricationController.handleReturnDialogTypes}" update=":form"/>
+			</p:commandButton>
+			
+<!-- 			<p:commandButton id="typeFabricationModifier" value="Modifier" -->
+<!-- 				process="@this" class="btn-update btn" -->
+<!-- 				disabled="#{typeFabricationController.etatBouton('modifier')}" -->
+<!-- 				update="@widgetVar(varTypeFabricationPanel), @parent:typeFabricationInsérer, @this, @parent:typeFabricationSupprimer" -->
+<!-- 				actionListener="#{typeFabricationController.actModifier}" /> -->
+
+			<p:commandButton id="typeFabricationSupprimer" value="Supprimer"
+				styleClass="icon-delete icon menuitem-poubelle-droite"
+				disabled="#{typeFabricationController.etatBouton('supprimer')}"
+				actionListener="#{typeFabricationController.actSupprimer}"
+				update="@widgetVar(wvTypeFabricationDataTable)" process="@this"
+				 >
+<!-- 				type="button" onclick="PF('famillecd1').show()" -->
+				<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer cet enregistrement ?" icon="ui-icon-alert" />
+			</p:commandButton>
+
+			<p:commandButton id="typeFabricationFermer" title="Fermer"
+				class="icon-close icon menuitem-fermer-droite" onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())">
+<!-- 				type="button" onclick="PF('famillecd2').show()" -->
+				<p:confirm header="Confirmation" message="#{msg_diag.alert_fermeture_onglet}" icon="ui-icon-alert" disabled="#{!typeFabricationController.modeEcran.dataSetEnModif()}"/>
+			</p:commandButton>
+
+			<p:commandButton id="typeFabricationFermerDialogue" title="Fermer"
+				process="@this" class="icon-close icon menuitem-fermer-droite"
+				actionListener="#{typeFabricationController.actFermerDialog}"
+				rendered="#{dansDialogue != null ? true : false}" />
+
+<!-- 			<p:confirmDialog message="#{msg_diag.alert_suppresion}" -->
+<!-- 				header="Confirmation" severity="alert" appendTo="@(body)" -->
+<!-- 				widgetVar="typeFabricationcd1"> -->
+<!-- 				<p:commandButton value="#{msg_diag.Oui}" update="@form" -->
+<!-- 					oncomplete="PF('typeFabricationcd1').hide()"> -->
+<!-- 					<p:ajax listener="#{typeFabricationController.actSupprimer}" /> -->
+<!-- 				</p:commandButton> -->
+<!-- 				<p:commandButton value="#{msg_diag.Non}" -->
+<!-- 					onclick="PF('typeFabricationcd1').hide();" type="button" /> -->
+<!-- 			</p:confirmDialog> -->
+
+<!-- 			<p:confirmDialog message="#{msg_diag.alert_fermeture_onglet}" -->
+<!-- 				header="Confirmation" severity="alert" widgetVar="typeFabricationcd2" -->
+<!-- 				appendTo="@(body)"> -->
+<!-- 				<p:commandButton value="#{msg_diag.Oui}" -->
+<!-- 					onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())" -->
+<!-- 					oncomplete="PF('typeFabricationcd2').hide()" /> -->
+<!-- 				<p:commandButton value="#{msg_diag.Non}" -->
+<!-- 					onclick="PF('typeFabricationcd2').hide();" type="button" /> -->
+<!-- 			</p:confirmDialog> -->
+		</p:panel>
+
+		<p:dataTable id="typeFabricationDataTable" widgetVar="wvTypeFabricationDataTable" var="table"
+			rendered="#{dansDialogue == null ? true : false}"
+			value="#{typeFabricationController.values}" rowKey="#{table.id}"
+			selectionMode="single" class="datatable"
+			selection="#{typeFabricationController.selection}" paginator="false"
+			rows="#{msg.modele_datatable_ligne_par_page_debut}"
+			paginatorTemplate="#{msg.modele_datatable_paginator}"
+			rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+			emptyMessage="#{msg.message_datatable_vide}"
+			currentPageReportTemplate="#{msg.modele_datatable_page_courante}">
+
+			<p:ajax event="rowSelect"
+				listener="#{typeFabricationController.onRowSelect}" />
+
+			<f:facet name="{Exporters}">
+				<h:commandLink>
+					<p:graphicImage library="images" name="excel.png" width="24" />
+					<p:dataExporter type="xls" target="typeFabricationDataTable"
+						fileName="type_typeFabrication" />
+				</h:commandLink>
+
+				<h:commandLink>
+					<p:graphicImage library="images" name="pdf.png" width="24" />
+					<p:dataExporter type="pdf" target="typeFabricationDataTable"
+						fileName="type_typeFabrication" />
+				</h:commandLink>
+
+				<h:commandLink>
+					<p:graphicImage library="images" name="csv.png" width="24" />
+					<p:dataExporter type="csv" target="typeFabricationDataTable"
+						fileName="type_typeFabrication" options="#{separateurCsvController.csvOptions}" />
+				</h:commandLink>
+
+				<h:commandLink>
+					<p:graphicImage library="images" name="xml.png" width="24" />
+					<p:dataExporter type="xml" target="typeFabricationDataTable"
+						fileName="type_typeFabrication" />
+				</h:commandLink>
+
+				<!-- 				<p:commandButton value="Imprimer" styleClass="btn-print btn" -->
+				<!-- 						onsuccess="window.open('#{request.contextPath}/output?__report=/reports/dima_tmp1.rptdesign&amp;__format=pdf')" -->
+				<!-- 						actionListener="#{typeFabricationController.actImprimer}" -->
+				<!-- 						disabled="#{typeFabricationController.etatBouton('imprimer')}"/> -->
+			</f:facet>
+
+			<p:column sortBy="#{table.codeTFabrication}">
+<!-- 				filterBy="#{table.codeTypeFabrication}" filterMatchMode="contains"> -->
+				<f:facet name="header">
+					<h:outputText value="Code" />
+				</f:facet>
+				<h:outputText value="#{table.codeTFabrication}" />
+			</p:column>
+			<p:column sortBy="#{table.liblTFabrication}">
+<!-- 			 filterBy="#{table.libelle}" filterMatchMode="contains"> -->
+				<f:facet name="header">
+					<h:outputText value="Libellé" />
+				</f:facet>
+				<h:outputText value="#{table.liblTFabrication}" />
+			</p:column>
+		</p:dataTable>
+	</p:panel>
+	<!-- 	 -->
+
+	<p:messages id="typeFabricationMessages" showDetail="true" autoUpdate="true"
+		closable="true" />
+
+	<p:panel id="typeFabricationPanel" visible="true" widgetVar="varTypeFabricationPanel">
+		<p:panel onLoad="reset()" resizable="false" id="typeFabricationPanelCache"
+			rendered="#{typeFabricationController.modeEcran.dataSetEnModif()}">
+			<!-- 			<h:form id="typeFabricationFormCreation"> -->
+			<f:validateBean disabled="true">
+				<div class="ui-grid ui-grid-responsive" id="typeFabricationGridResp">
+					<div class="ui-grid-row">
+						<div class="ui-grid-col-4">
+							<h:outputText value="Code :"></h:outputText>
+						</div>
+						<div class="ui-grid-col-8">
+							<h:inputText id="idTxtCodeTypeFabrication" value="#{typeFabricationController.nouveau.codeTFabrication}" styleClass="Input50"
+								required="true"
+								requiredMessage="#{msg_diag.alert_champs_obligatoir}" validator="#{typeFabricationController.validateObject}">
+									<f:attribute name="nomChamp" value="#{const.C_CODE_T_FABRICATION}" />
+									<p:ajax event="blur" update="@this"/>
+							</h:inputText>
+						</div>
+					</div>
+					<div class="ui-grid-row">
+
+						<div class="ui-grid-col-4">
+							<h:outputText value="Libelle :"></h:outputText>
+						</div>
+						<div class="ui-grid-col-8">
+							<h:inputText id="idTxtLibelleTypeFabrication" value="#{typeFabricationController.nouveau.liblTFabrication}" styleClass="Input100"
+								required="true"
+								requiredMessage="#{msg_diag.alert_champs_obligatoir}" validator="#{typeFabricationController.validateObject}">
+									<f:attribute name="nomChamp" value="#{const.C_LIBL_T_FABRICATION}" />
+									<p:ajax event="blur" update="@this"/>
+							</h:inputText>
+						</div>
+					</div>
+					<div class="ui-grid-row">
+						<div class="ui-grid-col-12 text-center">
+							<p:commandButton id="idEnregistrerTypeFabrication" value="Enregistrer" styleClass="btn-save btn"
+								disabled="#{typeFabricationController.etatBouton('enregistrer')}"
+								update="@widgetVar(typeFabricationForm), @widgetVar(varTypeFabricationPanel)"
+								actionListener="#{typeFabricationController.actEnregistrer}" />
+							
+							<p:commandButton id="typeFabricationAnnuler" value="Annuler" styleClass="btn-cancel btn"
+								disabled="#{typeFabricationController.etatBouton('annuler')}"
+								update="@widgetVar(typeFabricationForm), @widgetVar(varTypeFabricationPanel)"
+								actionListener="#{typeFabricationController.actAnnuler}" 
+								rendered="#{dansDialogue != null ? false : true}" />
+
+							<p:commandButton id="typeFabricationAnnulerDialogue" value="Annuler"
+								styleClass="btn-cancel btn" process="@this"
+								disabled="#{typeFabricationController.etatBouton('annuler')}"
+								actionListener="#{typeFabricationController.actFermerDialog}"
+								rendered="#{dansDialogue != null ? true : false}" />
+						</div>
+					</div>
+				</div>
+			</f:validateBean>
+			<!-- 			</h:form> -->
+		</p:panel>
+	</p:panel>
+</ui:composition>

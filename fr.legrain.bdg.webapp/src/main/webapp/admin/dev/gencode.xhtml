@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<title>Dev - Gestion des codes générés</title>
+	<link rel="shortcut icon" type="image/x-icon"
+		href="#{resource['images:solstyce.ico']}" />
+
+	<f:facet name="first">
+	</f:facet>
+</h:head>
+<h:body>
+	<f:facet name="last">
+		<!-- surcharge des CSS primefaces -->
+		<h:outputStylesheet library="css" name="hacks.css" />
+	</f:facet>
+
+	<p:layout fullPage="true" widgetVar="widgetLayoutPage">
+
+		<!-- 		<p:ajax event="toggle" listener="#{leftBean.handleToggle}"/> -->
+
+		<p:layoutUnit position="north" size="100" gutter="0" class="north">
+			<div class="ui-grid ui-grid-responsive">
+				<div class="ui-grid-col-2">
+					<p:link href="/index.xhtml">
+						<p:graphicImage library="images" name="solstyce_32x32.png" />
+						<h:outputText value="Solstyce" />
+					</p:link>
+				</div>
+				<div class="ui-grid-col-3">
+					<p:ajaxStatus>
+						<f:facet name="start">
+							<p:graphicImage library="images" name="ajax-loader.gif" />
+						</f:facet>
+						<f:facet name="complete">
+							<!-- 							<h:outputText value="Done!" /> -->
+						</f:facet>
+					</p:ajaxStatus>
+				</div>
+				<div class="ui-grid-col-10 text-right">
+					Mon compte -
+					<p:commandLink value="déconnexion" actionListener="#{auth.logout}" />
+				</div>
+
+
+			</div>
+			<!-- 			<ui:include src="../../menu.xhtml" /> -->
+		</p:layoutUnit>
+		<!-- 
+		<p:layoutUnit position="south" size="100" resizable="true">
+		</p:layoutUnit>
+ -->
+		<!-- 		<p:layoutUnit id="idWestUnit" position="west" size="550" resizable="true" collapsed="#{leftBean.collapsed}"  -->
+		<!-- 			collapsible="true" header="" gutter="4" class="west"> -->
+
+
+		<!-- 		</p:layoutUnit> -->
+
+		<!-- 		<p:layoutUnit position="east" size="200" resizable="true" -->
+		<!-- 			collapsible="true" collapsed="true" header="" gutter="2" class="east"> -->
+		<!-- 		</p:layoutUnit> -->
+
+		<p:layoutUnit position="center" gutter="4" class="center">
+		
+			
+					<h:form id="form">
+
+			<p:dataTable id="dataTable" var="taGenCode"
+				value="#{genCodeController.values}"
+				rowKey="#{taGenCode.idGenCode}"
+				selection="#{genCodeController.selectedTaGenCodes}"
+				paginator="true" rows="10"
+				paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+				 rowsPerPageTemplate="10,20,50,100">
+
+				<f:facet name="header">  
+           			Codes
+        		</f:facet>
+
+				<p:column selectionMode="multiple" style="width:18px" />
+				<!-- ajouter sur le datatable pour une seule ligne selectionMode="single"-->
+
+				<p:column sortBy="#{taGenCode.idGenCode}">
+					<f:facet name="header">
+						<h:outputText value="ID" />
+					</f:facet>
+					<p:commandLink value="#{taGenCode.idGenCode}"
+						update=":GenCodeDetailForm:display"
+						oncomplete="PF('GenCodeDialog').show()" title="View">
+						<f:setPropertyActionListener value="#{taGenCode}"
+							target="#{genCodeController.selectedTaGenCode}" />
+					</p:commandLink>
+				</p:column>
+		
+				<p:column sortBy="#{taGenCode.entite}" filterBy="#{taGenCode.entite}">
+					<f:facet name="header">
+						<h:outputText value="Entite" />
+					</f:facet>
+					<h:outputText value="#{taGenCode.entite}" />
+				</p:column>
+				
+				<p:column sortBy="#{taGenCode.fixe}" filterBy="#{taGenCode.fixe}">
+					<f:facet name="header">
+						<h:outputText value="Fixe" />
+					</f:facet>
+					<h:outputText value="#{taGenCode.fixe}" />
+				</p:column>
+
+				<p:column sortBy="#{taGenCode.exo}">
+					<f:facet name="header">
+						<h:outputText value="Exo" />
+					</f:facet>
+					<h:outputText value="#{taGenCode.exo}" />
+				</p:column>
+
+				<p:column sortBy="#{taGenCode.compteur}">
+					<f:facet name="header">
+						<h:outputText value="Compteur" />
+					</f:facet>
+					<h:outputText value="#{taGenCode.compteur}" />
+				</p:column>
+
+				<f:facet name="footer">
+					<p:commandButton value="Nouveau"
+						oncomplete="PF('newGenCodeDialog').show()" icon="ui-icon-star"
+						title="Céer une nouvelle civilité" />
+					<p:commandButton value="Supprimer"
+						actionListener="#{genCodeController.doDeleteGenCode}"
+						update="dataTable" icon="ui-icon-trash" />
+				</f:facet>
+			</p:dataTable>
+		</h:form>
+
+		<p:dialog header="Détail" widgetVar="GenCodeDialog" resizable="false"
+			id="GenCodeDlg">
+			<h:form id="GenCodeDetailForm">
+				<p:panelGrid id="display" columns="2" cellpadding="4"
+					style="margin:0 auto;">
+					<f:validateBean disabled="true">
+						<h:outputText value="ID :"/>
+						<h:outputText
+							value="#{genCodeController.selectedTaGenCode.idGenCode}" />
+							
+						<h:outputText value="Entite :"/>
+						<p:inputText value="#{genCodeController.selectedTaGenCode.entite}" />
+	
+						<h:outputText value="Fixe :"/>
+						<p:inputText value="#{genCodeController.selectedTaGenCode.fixe}" />
+						
+						<h:outputText value="Exo :"/>
+						<p:inputText value="#{genCodeController.selectedTaGenCode.exo}" />
+						
+						<h:outputText value="Compteur :"/>
+						<p:inputText value="#{genCodeController.selectedTaGenCode.compteur}" />
+
+					</f:validateBean>
+
+					<f:facet name="footer">
+						<p:commandButton value="Mettre à jour"
+							update=":form:dataTable"
+							oncomplete="handleSubmitRequest(xhr, status, args, 'GenCodeDlg','newGenCodeForm'); "
+							actionListener="#{genCodeController.doUpdateGenCode}" />
+					</f:facet>
+				</p:panelGrid>
+			</h:form>
+		</p:dialog>
+
+		<p:dialog header="Nouveau" onLoad="reset()"
+			widgetVar="newGenCodeDialog" resizable="false" id="newGenCodeDlg">
+			<h:form id="newGenCodeForm">
+				<p:panelGrid id="displayNewGenCode" columns="2" cellpadding="4"
+					style="margin:0 auto;">
+					<f:validateBean disabled="true">
+						<h:outputText value="ID :"/>
+						<p:inputText
+							value="#{genCodeController.newTaGenCode.idGenCode}" />
+							
+						<h:outputText value="Entite :"/>
+						<p:inputText value="#{genCodeController.newTaGenCode.entite}" />
+	
+						<h:outputText value="Fixe :"/>
+						<p:inputText value="#{genCodeController.newTaGenCode.fixe}" />
+						
+						<h:outputText value="Exo :"/>
+						<p:inputText value="#{genCodeController.newTaGenCode.exo}" />
+						
+						<h:outputText value="Compteur :"/>
+						<p:inputText value="#{genCodeController.newTaGenCode.compteur}" />
+
+						
+					</f:validateBean>
+
+					<f:facet name="footer">
+						<p:commandButton value="Valider" update=":form:dataTable"
+							oncomplete=" handleSubmitRequest(xhr, status, args, 'newGenCodeDlg','newGenCodeForm');"
+							actionListener="#{genCodeController.doCreateGenCode}" />
+						<p:commandButton type="reset" value="Vider"></p:commandButton>
+					</f:facet>
+				</p:panelGrid>
+			</h:form>
+		</p:dialog>
+
+		</p:layoutUnit>
+
+	</p:layout>
+
+	<!-- 	<h:outputScript name="/js/functions.js"  /> -->
+
+</h:body>
+</html>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE urlrewrite
+    PUBLIC "-//tuckey.org//DTD UrlRewrite 4.0//EN"
+    "http://www.tuckey.org/res/dtds/urlrewrite4.0.dtd">
+
+<urlrewrite>
+
+<!--     <rule> -->
+<!--        <from>^/auth/(.*)$</from> -->
+<!--        <to type="redirect">/very/newdir/$1</to> -->
+<!--     </rule> -->
+
+<!--     <rule match-type="wildcard"> -->
+<!--        <from>/auth/**</from> -->
+<!--        <to type="redirect">/roller/history/$1</to> -->
+<!--     </rule> -->
+    
+<!--     //https://dev.demo.promethee.biz:8443/auth/google_oauth2?state=aa -->
+    <rule>
+       <from>^/auth/google_oauth2\?state=(.*)$</from>
+       <to type="redirect">http://dev.$1.promethee.biz</to>
+    </rule>
+    
+<!--     <rule> -->
+<!--         <name>Primary Domain Name Check</name> -->
+<!-- <condition type="scheme" operator="notequal">https</condition> -->
+<!--         <condition name="host" operator="notequal">dev.demo.promethee.biz</condition> -->
+<!--         <from>^(.*)</from> -->
+<!--         <to type="redirect">http://www.primary.com$1</to> -->
+<!--     </rule> -->
+
+
+<!--  <from>^/test1/\?(.*)command=(.*)clean=true(.*)$</from> -->
+<!--        <to type="redirect">$1command=$2clean=false$3</to> -->
+
+</urlrewrite>

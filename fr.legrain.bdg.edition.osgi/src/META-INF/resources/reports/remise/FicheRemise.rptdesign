@@ -1,0 +1,1621 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<report xmlns="http://www.eclipse.org/birt/2005/design" version="3.2.23" id="1">
+    <property name="createdBy">Eclipse BIRT Designer Version 4.6.0.v201606072122</property>
+    <property name="units">in</property>
+    <property name="iconFile">/templates/blank_report.gif</property>
+    <property name="bidiLayoutOrientation">ltr</property>
+    <property name="imageDPI">96</property>
+    <parameters>
+        <scalar-parameter name="ParamCorr" id="1110">
+            <property name="valueType">static</property>
+            <property name="isRequired">false</property>
+            <property name="dataType">string</property>
+            <property name="distinct">true</property>
+            <simple-property-list name="defaultValue">
+                <value type="constant">CORR</value>
+            </simple-property-list>
+            <property name="paramType">simple</property>
+            <property name="controlType">text-box</property>
+            <structure name="format">
+                <property name="category">Unformatted</property>
+            </structure>
+        </scalar-parameter>
+        <scalar-parameter name="ParamChoix" id="1053">
+            <property name="valueType">static</property>
+            <property name="isRequired">false</property>
+            <property name="dataType">string</property>
+            <property name="distinct">true</property>
+            <simple-property-list name="defaultValue">
+                <value type="constant">choix 1</value>
+            </simple-property-list>
+            <property name="paramType">simple</property>
+            <property name="controlType">text-box</property>
+            <structure name="format">
+                <property name="category">Unformatted</property>
+            </structure>
+        </scalar-parameter>
+        <scalar-parameter name="CoupureLigne" id="3795">
+            <property name="valueType">static</property>
+            <property name="isRequired">false</property>
+            <property name="dataType">integer</property>
+            <property name="distinct">true</property>
+            <simple-property-list name="defaultValue">
+                <value type="constant">54</value>
+            </simple-property-list>
+            <list-property name="selectionList"/>
+            <property name="paramType">simple</property>
+            <property name="controlType">text-box</property>
+            <structure name="format">
+                <property name="category">Unformatted</property>
+            </structure>
+        </scalar-parameter>
+        <scalar-parameter name="PageBreakTotaux" id="7526">
+            <property name="valueType">static</property>
+            <property name="isRequired">false</property>
+            <property name="dataType">integer</property>
+            <property name="distinct">true</property>
+            <simple-property-list name="defaultValue">
+                <value type="constant">27</value>
+            </simple-property-list>
+            <list-property name="selectionList"/>
+            <property name="paramType">simple</property>
+            <property name="controlType">text-box</property>
+            <structure name="format">
+                <property name="category">Unformatted</property>
+            </structure>
+        </scalar-parameter>
+        <scalar-parameter name="PageBreakMaxi" id="7527">
+            <property name="valueType">static</property>
+            <property name="isRequired">false</property>
+            <property name="dataType">integer</property>
+            <property name="distinct">true</property>
+            <simple-property-list name="defaultValue">
+                <value type="constant">36</value>
+            </simple-property-list>
+            <list-property name="selectionList"/>
+            <property name="paramType">simple</property>
+            <property name="controlType">text-box</property>
+            <structure name="format">
+                <property name="category">Unformatted</property>
+            </structure>
+        </scalar-parameter>
+    </parameters>
+    <data-sources>
+        <script-data-source name="DataSourceScript" id="7"/>
+    </data-sources>
+    <data-sets>
+        <script-data-set name="DataSetforList" id="3046">
+            <structure name="cachedMetaData"/>
+            <property name="dataSource">DataSourceScript</property>
+            <method name="open"><![CDATA[count=0;
+]]></method>
+            <method name="fetch"><![CDATA[if(count< 1) {
+	count++;
+	return true;
+}
+return false;]]></method>
+        </script-data-set>
+        <script-data-set name="DataSetScript1" id="2652">
+            <list-property name="resultSetHints">
+                <structure>
+                    <property name="position">1</property>
+                    <property name="name">codeFacture</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">2</property>
+                    <property name="name">dateFacture</property>
+                    <property name="dataType">date</property>
+                </structure>
+                <structure>
+                    <property name="position">3</property>
+                    <property name="name">libelleRemise</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">4</property>
+                    <property name="name">nomBanque</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">5</property>
+                    <property name="name">TypePaiement</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">6</property>
+                    <property name="name">libelleTPaiement</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">7</property>
+                    <property name="name">iban</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">8</property>
+                    <property name="name">bic</property>
+                    <property name="dataType">string</property>
+                </structure>
+            </list-property>
+            <list-property name="columnHints">
+                <structure>
+                    <property name="columnName">codeFacture</property>
+                </structure>
+                <structure>
+                    <property name="columnName">dateFacture</property>
+                </structure>
+                <structure>
+                    <property name="columnName">libelleRemise</property>
+                </structure>
+                <structure>
+                    <property name="columnName">nomBanque</property>
+                </structure>
+                <structure>
+                    <property name="columnName">TypePaiement</property>
+                </structure>
+                <structure>
+                    <property name="columnName">libelleTPaiement</property>
+                </structure>
+                <structure>
+                    <property name="columnName">iban</property>
+                </structure>
+                <structure>
+                    <property name="columnName">bic</property>
+                </structure>
+            </list-property>
+            <structure name="cachedMetaData">
+                <list-property name="resultSet">
+                    <structure>
+                        <property name="position">1</property>
+                        <property name="name">codeFacture</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">2</property>
+                        <property name="name">dateFacture</property>
+                        <property name="dataType">date</property>
+                    </structure>
+                    <structure>
+                        <property name="position">3</property>
+                        <property name="name">libelleRemise</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">4</property>
+                        <property name="name">nomBanque</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">5</property>
+                        <property name="name">TypePaiement</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">6</property>
+                        <property name="name">libelleTPaiement</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">7</property>
+                        <property name="name">iban</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">8</property>
+                        <property name="name">bic</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                </list-property>
+            </structure>
+            <property name="dataSource">DataSourceScript</property>
+            <method name="open"><![CDATA[count=0;
+
+edition = reportContext.getHttpServletRequest().getSession().getAttribute("edition");
+document = edition.get("doc");
+liste = new Packages.java.util.ArrayList();
+liste.add(document);
+
+
+
+
+
+
+]]></method>
+            <method name="fetch"><![CDATA[if(count< liste.size()) {
+//if(count< 1) {
+   document = liste.get(count);
+   row["codeFacture"] = document.getCodeDocument();
+   row["dateFacture"] = document.getDateDocument();
+ row["libelleRemise"] = document.getLibelleDocument();
+ if(document.getTaTPaiement()!=null){
+ 	row["TypePaiement"] =document.getTaTPaiement().getCodeTPaiement();
+	 row["libelleTPaiement"] = document.getTaTPaiement().getLibTPaiement();
+ }else{
+  	row["TypePaiement"] ="";
+	 row["libelleTPaiement"] = "";
+ }
+  if(document.getTaCompteBanque()!=null){
+ 	  row["iban"] = document.getTaCompteBanque().getIban();
+ 	   row["bic"] = document.getTaCompteBanque().getCodeBIC();
+      row["nomBanque"] = document.getTaCompteBanque().getNomBanque();
+  }else{"";
+ 	  row["iban"] = "";
+ 	   row["bic"] = "";
+      row["nomBanque"] = "";
+      }
+	count++;
+	return true;
+}
+return false;]]></method>
+        </script-data-set>
+        <script-data-set name="DataSetScriptLigne" id="3981">
+            <list-property name="resultSetHints">
+                <structure>
+                    <property name="position">1</property>
+                    <property name="name">Tiers</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">2</property>
+                    <property name="name">NomTiers</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">3</property>
+                    <property name="name">libelle</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">4</property>
+                    <property name="name">montant</property>
+                    <property name="dataType">float</property>
+                </structure>
+                <structure>
+                    <property name="position">5</property>
+                    <property name="name">codeReglement</property>
+                    <property name="dataType">string</property>
+                </structure>
+            </list-property>
+            <list-property name="columnHints">
+                <structure>
+                    <property name="columnName">Tiers</property>
+                </structure>
+                <structure>
+                    <property name="columnName">NomTiers</property>
+                </structure>
+                <structure>
+                    <property name="columnName">libelle</property>
+                </structure>
+                <structure>
+                    <property name="columnName">montant</property>
+                </structure>
+                <structure>
+                    <property name="columnName">codeReglement</property>
+                </structure>
+            </list-property>
+            <structure name="cachedMetaData">
+                <list-property name="resultSet">
+                    <structure>
+                        <property name="position">1</property>
+                        <property name="name">Tiers</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">2</property>
+                        <property name="name">NomTiers</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">3</property>
+                        <property name="name">libelle</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">4</property>
+                        <property name="name">montant</property>
+                        <property name="dataType">float</property>
+                    </structure>
+                    <structure>
+                        <property name="position">5</property>
+                        <property name="name">codeReglement</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                </list-property>
+            </structure>
+            <property name="dataSource">DataSourceScript</property>
+            <method name="open"><![CDATA[
+count=1;
+idDocument = null;
+listLDocument = null;
+document = null;
+
+sizeTotal = 0;
+
+taLRemise = new Packages.fr.legrain.document.model.TaLRemise();
+
+
+edition = reportContext.getHttpServletRequest().getSession().getAttribute("edition");
+document = edition.get("doc");
+
+
+idDocument = document.getIdDocument();
+
+IteratorSet = document.getTaLRemises().iterator();
+
+listLDocument=new Packages.java.util.LinkedList(); 
+listLDocument.clear;       
+while (IteratorSet.hasNext()) {
+    taLRemise = IteratorSet.next();
+    listLDocument.add(taLRemise);
+}
+
+sizeTotal=listLDocument.size();]]></method>
+            <method name="fetch"><![CDATA[if(count<= sizeTotal ) {
+
+	if(count <= listLDocument.size()){
+		listDocument = listLDocument.get(count-1);
+      	row["Tiers"] = "";
+      	row["NomTiers"] = "";
+      	row["libelle"] ="";
+      	      	
+     	      	
+      	//on traite les réglements
+      	if(listDocument.getTaReglement() != null ){     	
+		if(listDocument.getTaReglement().getTaTiers() != null){
+   	  		row["Tiers"] = listDocument.getTaReglement().getTaTiers().getCodeTiers();
+   	  		row["NomTiers"] = listDocument.getTaReglement().getTaTiers().getNomTiers();
+   		}  	
+   		    row["codeReglement"] = listDocument.getTaReglement().getCodeDocument();	
+			row["libelle"] = listDocument.getTaReglement().getLibelleDocument();	
+	  		row["montant"] = listDocument.getTaReglement().getNetTtcCalc();
+   		} 		
+   		
+	}
+	count++;
+	return true;	
+}
+return false;]]></method>
+        </script-data-set>
+        <script-data-set name="DataSetScritp2" id="2623">
+            <list-property name="resultSetHints">
+                <structure>
+                    <property name="position">1</property>
+                    <property name="name">dateStart</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">2</property>
+                    <property name="name">dateFin</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">3</property>
+                    <property name="name">nomInfoEntreprise</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">4</property>
+                    <property name="name">adresse1</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">5</property>
+                    <property name="name">adresse2</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">6</property>
+                    <property name="name">adresse3</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">7</property>
+                    <property name="name">ville</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">8</property>
+                    <property name="name">codePostal</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">9</property>
+                    <property name="name">pays</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">10</property>
+                    <property name="name">tvaEntreprise</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">11</property>
+                    <property name="name">tel</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">12</property>
+                    <property name="name">fax</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">13</property>
+                    <property name="name">email</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">14</property>
+                    <property name="name">web</property>
+                    <property name="dataType">string</property>
+                </structure>
+            </list-property>
+            <list-property name="columnHints">
+                <structure>
+                    <property name="columnName">dateStart</property>
+                </structure>
+                <structure>
+                    <property name="columnName">dateFin</property>
+                </structure>
+                <structure>
+                    <property name="columnName">nomInfoEntreprise</property>
+                </structure>
+                <structure>
+                    <property name="columnName">adresse1</property>
+                </structure>
+                <structure>
+                    <property name="columnName">adresse2</property>
+                </structure>
+                <structure>
+                    <property name="columnName">adresse3</property>
+                </structure>
+                <structure>
+                    <property name="columnName">ville</property>
+                </structure>
+                <structure>
+                    <property name="columnName">codePostal</property>
+                </structure>
+                <structure>
+                    <property name="columnName">pays</property>
+                </structure>
+                <structure>
+                    <property name="columnName">tvaEntreprise</property>
+                </structure>
+                <structure>
+                    <property name="columnName">tel</property>
+                </structure>
+                <structure>
+                    <property name="columnName">fax</property>
+                </structure>
+                <structure>
+                    <property name="columnName">email</property>
+                </structure>
+                <structure>
+                    <property name="columnName">web</property>
+                </structure>
+            </list-property>
+            <structure name="cachedMetaData">
+                <list-property name="resultSet">
+                    <structure>
+                        <property name="position">1</property>
+                        <property name="name">dateStart</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">2</property>
+                        <property name="name">dateFin</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">3</property>
+                        <property name="name">nomInfoEntreprise</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">4</property>
+                        <property name="name">adresse1</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">5</property>
+                        <property name="name">adresse2</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">6</property>
+                        <property name="name">adresse3</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">7</property>
+                        <property name="name">ville</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">8</property>
+                        <property name="name">codePostal</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">9</property>
+                        <property name="name">pays</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">10</property>
+                        <property name="name">tvaEntreprise</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">11</property>
+                        <property name="name">tel</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">12</property>
+                        <property name="name">fax</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">13</property>
+                        <property name="name">email</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">14</property>
+                        <property name="name">web</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                </list-property>
+            </structure>
+            <property name="dataSource">DataSourceScript</property>
+            <method name="open"><![CDATA[count=0;
+taInfoEntreprise = null;
+
+edition = reportContext.getHttpServletRequest().getSession().getAttribute("edition");
+taInfoEntreprise = edition.get("taInfoEntreprise");]]></method>
+            <method name="fetch"><![CDATA[libDate = new Packages.fr.legrain.lib.data.LibDate();
+
+//if(count< list.size()) {
+if(count<1) {
+	row["dateStart"] = libDate.dateToString(taInfoEntreprise.getDatedebInfoEntreprise());
+	row["dateFin"] =libDate.dateToString(taInfoEntreprise.getDatefinInfoEntreprise());
+	row["nomInfoEntreprise"] = taInfoEntreprise.getNomInfoEntreprise();
+	row["adresse1"] = taInfoEntreprise.getAdresse1InfoEntreprise();
+	row["adresse2"] = taInfoEntreprise.getAdresse2InfoEntreprise();
+	row["adresse3"] = taInfoEntreprise.getAdresse3InfoEntreprise();
+	row["ville"] = taInfoEntreprise.getVilleInfoEntreprise();
+	row["codePostal"] = taInfoEntreprise.getCodepostalInfoEntreprise();
+	row["pays"] = taInfoEntreprise.getPaysInfoEntreprise();
+	row["tvaEntreprise"] = taInfoEntreprise.getTvaIntraInfoEntreprise();
+	row["tel"] = taInfoEntreprise.getTelInfoEntreprise();
+	row["fax"] = taInfoEntreprise.getFaxInfoEntreprise();
+	row["email"] = taInfoEntreprise.getEmailInfoEntreprise();
+	row["web"] = taInfoEntreprise.getWebInfoEntreprise();
+	count++;
+	return true;
+}
+return false;]]></method>
+        </script-data-set>
+    </data-sets>
+    <page-setup>
+        <simple-master-page name="Simple MasterPage" id="2">
+            <page-footer>
+                <text id="3">
+                    <property name="contentType">html</property>
+                    <text-property name="content"><![CDATA[<value-of>new Date()</value-of>]]></text-property>
+                </text>
+            </page-footer>
+        </simple-master-page>
+    </page-setup>
+    <body>
+        <list id="4">
+            <property name="dataSet">DataSetforList</property>
+            <header>
+                <grid id="2671">
+                    <property name="fontFamily">serif</property>
+                    <property name="marginBottom">0.5cm</property>
+                    <property name="width">100%</property>
+                    <list-property name="boundDataColumns">
+                        <structure>
+                            <property name="name">ss</property>
+                            <expression name="expression">params["ParamChoix"].value</expression>
+                            <property name="dataType">string</property>
+                        </structure>
+                    </list-property>
+                    <column id="2672">
+                        <property name="width">50%</property>
+                    </column>
+                    <column id="3544">
+                        <property name="width">0.2604166666666667in</property>
+                    </column>
+                    <column id="2674">
+                        <property name="width">2.9166666666666665in</property>
+                    </column>
+                    <row id="2675">
+                        <cell id="2676">
+                            <property name="colSpan">1</property>
+                            <property name="rowSpan">1</property>
+                            <property name="backgroundColor">#E7E7E7</property>
+                            <grid id="2699">
+                                <property name="backgroundColor">#E7E7E7</property>
+                                <property name="color">black</property>
+                                <property name="width">100%</property>
+                                <column id="2700"/>
+                                <row id="3553">
+                                    <cell id="3554">
+                                        <data id="3743">
+                                            <property name="dataSet">DataSetScritp2</property>
+                                            <list-property name="boundDataColumns">
+                                                <structure>
+                                                    <property name="name">dateStart</property>
+                                                    <expression name="expression">dataSetRow["dateStart"]</expression>
+                                                    <property name="dataType">string</property>
+                                                </structure>
+                                                <structure>
+                                                    <property name="name">dateFin</property>
+                                                    <expression name="expression">dataSetRow["dateFin"]</expression>
+                                                    <property name="dataType">string</property>
+                                                </structure>
+                                                <structure>
+                                                    <property name="name">nomInfoEntreprise</property>
+                                                    <expression name="expression">dataSetRow["nomInfoEntreprise"]</expression>
+                                                    <property name="dataType">string</property>
+                                                </structure>
+                                                <structure>
+                                                    <property name="name">adresse1</property>
+                                                    <expression name="expression">dataSetRow["adresse1"]</expression>
+                                                    <property name="dataType">string</property>
+                                                </structure>
+                                                <structure>
+                                                    <property name="name">adresse2</property>
+                                                    <expression name="expression">dataSetRow["adresse2"]</expression>
+                                                    <property name="dataType">string</property>
+                                                </structure>
+                                                <structure>
+                                                    <property name="name">adresse3</property>
+                                                    <expression name="expression">dataSetRow["adresse3"]</expression>
+                                                    <property name="dataType">string</property>
+                                                </structure>
+                                                <structure>
+                                                    <property name="name">ville</property>
+                                                    <expression name="expression">dataSetRow["ville"]</expression>
+                                                    <property name="dataType">string</property>
+                                                </structure>
+                                                <structure>
+                                                    <property name="name">codePostal</property>
+                                                    <expression name="expression">dataSetRow["codePostal"]</expression>
+                                                    <property name="dataType">string</property>
+                                                </structure>
+                                                <structure>
+                                                    <property name="name">pays</property>
+                                                    <expression name="expression">dataSetRow["pays"]</expression>
+                                                    <property name="dataType">string</property>
+                                                </structure>
+                                                <structure>
+                                                    <property name="name">tvaEntreprise</property>
+                                                    <expression name="expression">dataSetRow["tvaEntreprise"]</expression>
+                                                    <property name="dataType">string</property>
+                                                </structure>
+                                                <structure>
+                                                    <property name="name">adrInfosEntre</property>
+                                                    <expression name="expression" type="javascript">var value="";
+if(dataSetRow["nomInfoEntreprise"]!=null) value=value.concat(dataSetRow["nomInfoEntreprise"]+"\n");
+if(dataSetRow["adresse1"] !=null) value+=dataSetRow["adresse1"]+"\n";
+if(dataSetRow["adresse2"] !=null) value+=dataSetRow["adresse2"]+"\n";
+if(dataSetRow["adresse3"] !=null) value+=dataSetRow["adresse3"]+"\n";
+if( dataSetRow["codePostal"]!=null) value+=dataSetRow["codePostal"]+"  ";
+if(dataSetRow["ville"] !=null) value+=dataSetRow["ville"]+"\n";
+if(dataSetRow["pays"]!=null) value+=dataSetRow["pays"];</expression>
+                                                    <property name="dataType">string</property>
+                                                </structure>
+                                            </list-property>
+                                            <property name="resultSetColumn">adrInfosEntre</property>
+                                        </data>
+                                    </cell>
+                                </row>
+                            </grid>
+                        </cell>
+                        <cell id="3541">
+                            <property name="colSpan">2</property>
+                            <property name="rowSpan">1</property>
+                            <grid id="3381">
+                                <column id="3382"/>
+                                <row id="3383">
+                                    <cell id="3384">
+                                        <data id="3387">
+                                            <property name="fontSize">15pt</property>
+                                            <property name="fontWeight">bold</property>
+                                            <property name="textAlign">left</property>
+                                            <property name="dataSet">DataSetScript1</property>
+                                            <list-property name="boundDataColumns">
+                                                <structure>
+                                                    <property name="name">codeFacture</property>
+                                                    <expression name="expression">dataSetRow["codeFacture"]</expression>
+                                                    <property name="dataType">string</property>
+                                                </structure>
+                                                <structure>
+                                                    <property name="name">dateFacture</property>
+                                                    <expression name="expression">dataSetRow["dateFacture"]</expression>
+                                                    <property name="dataType">date</property>
+                                                </structure>
+                                                <structure>
+                                                    <property name="name">libelleRemise</property>
+                                                    <expression name="expression">dataSetRow["libelleRemise"]</expression>
+                                                    <property name="dataType">string</property>
+                                                </structure>
+                                                <structure>
+                                                    <property name="name">CodeDocument</property>
+                                                    <expression name="expression" type="javascript">dataSetRow["codeFacture"]</expression>
+                                                    <property name="dataType">string</property>
+                                                </structure>
+                                            </list-property>
+                                            <property name="resultSetColumn">CodeDocument</property>
+                                        </data>
+                                    </cell>
+                                </row>
+                                <row id="3385">
+                                    <cell id="3386">
+                                        <data id="3388">
+                                            <property name="marginBottom">0cm</property>
+                                            <structure name="dateTimeFormat">
+                                                <property name="category">Custom</property>
+                                                <property name="pattern">d MMMM yyyy HH:mm:ss z</property>
+                                                <property name="locale">fr_FR</property>
+                                            </structure>
+                                            <property name="textAlign">left</property>
+                                            <property name="dataSet">DataSetScript1</property>
+                                            <list-property name="boundDataColumns">
+                                                <structure>
+                                                    <property name="name">codeFacture</property>
+                                                    <expression name="expression">dataSetRow["codeFacture"]</expression>
+                                                    <property name="dataType">string</property>
+                                                </structure>
+                                                <structure>
+                                                    <property name="name">dateFacture</property>
+                                                    <expression name="expression">dataSetRow["dateFacture"]</expression>
+                                                    <property name="dataType">date</property>
+                                                </structure>
+                                                <structure>
+                                                    <property name="name">libelleRemise</property>
+                                                    <expression name="expression">dataSetRow["libelleRemise"]</expression>
+                                                    <property name="dataType">string</property>
+                                                </structure>
+                                                <structure>
+                                                    <property name="name">Liaison de colonne</property>
+                                                    <expression name="expression" type="javascript">var value =""; var date = dataSetRow["dateFacture"];&#13;
+var day = date.getDay();&#13;
+var year = (date.getYear()+1900).toString();&#13;
+if((date.getMonth() + 1)>9){&#13;
+var month = (date.getMonth() + 1).toString();&#13;
+}&#13;
+else{&#13;
+var month = "0"+(date.getMonth() + 1).toString();&#13;
+}&#13;
+if(date.getDate()&lt;9){&#13;
+var date = "0"+(date.getDate()).toString();&#13;
+}&#13;
+else{&#13;
+var date = (date.getDate()).toString();&#13;
+}&#13;
+value = "Du  : "+date+"/"+month+"/"+year;</expression>
+                                                    <property name="dataType">string</property>
+                                                </structure>
+                                            </list-property>
+                                            <property name="resultSetColumn">Liaison de colonne</property>
+                                        </data>
+                                    </cell>
+                                </row>
+                                <row id="3520">
+                                    <cell id="3521">
+                                        <data id="3974">
+                                            <property name="dataSet">DataSetScript1</property>
+                                            <list-property name="boundDataColumns">
+                                                <structure>
+                                                    <property name="name">codeFacture</property>
+                                                    <expression name="expression">dataSetRow["codeFacture"]</expression>
+                                                    <property name="dataType">string</property>
+                                                </structure>
+                                                <structure>
+                                                    <property name="name">dateFacture</property>
+                                                    <expression name="expression">dataSetRow["dateFacture"]</expression>
+                                                    <property name="dataType">date</property>
+                                                </structure>
+                                                <structure>
+                                                    <property name="name">libelleRemise</property>
+                                                    <expression name="expression">dataSetRow["libelleRemise"]</expression>
+                                                    <property name="dataType">string</property>
+                                                </structure>
+                                                <structure>
+                                                    <property name="name">libelle Remise</property>
+                                                    <expression name="expression" type="javascript">dataSetRow["libelleRemise"]</expression>
+                                                    <property name="dataType">string</property>
+                                                </structure>
+                                            </list-property>
+                                            <property name="resultSetColumn">libelle Remise</property>
+                                        </data>
+                                    </cell>
+                                </row>
+                                <row id="5903">
+                                    <cell id="5904">
+                                        <data id="7528">
+                                            <property name="dataSet">DataSetScript1</property>
+                                            <list-property name="boundDataColumns">
+                                                <structure>
+                                                    <property name="name">TypePaiement</property>
+                                                    <text-property name="displayName">TypePaiement</text-property>
+                                                    <expression name="expression" type="javascript">dataSetRow["TypePaiement"]</expression>
+                                                    <property name="dataType">string</property>
+                                                </structure>
+                                                <structure>
+                                                    <property name="name">libelleTPaiement</property>
+                                                    <text-property name="displayName">libelleTPaiement</text-property>
+                                                    <expression name="expression" type="javascript">dataSetRow["libelleTPaiement"]</expression>
+                                                    <property name="dataType">string</property>
+                                                </structure>
+                                                <structure>
+                                                    <property name="name">Column Binding</property>
+                                                    <expression name="expression" type="javascript">"De type : "+dataSetRow["TypePaiement"]+" - "+dataSetRow["libelleTPaiement"]</expression>
+                                                    <property name="dataType">string</property>
+                                                    <property name="allowExport">true</property>
+                                                </structure>
+                                            </list-property>
+                                            <property name="resultSetColumn">Column Binding</property>
+                                        </data>
+                                    </cell>
+                                </row>
+                            </grid>
+                        </cell>
+                    </row>
+                    <row id="3565">
+                        <property name="height">0.5cm</property>
+                        <cell id="3566">
+                            <property name="colSpan">3</property>
+                            <property name="rowSpan">1</property>
+                        </cell>
+                    </row>
+                    <row id="3560">
+                        <cell id="3561">
+                            <grid id="3043">
+                                <property name="backgroundColor">#E7E7E7</property>
+                                <property name="marginTop">0cm</property>
+                                <property name="textAlign">left</property>
+                                <property name="width">100%</property>
+                                <column id="3044">
+                                    <property name="width">0.5520833333333334in</property>
+                                </column>
+                                <column id="3677">
+                                    <property name="width">1.2291666666666667in</property>
+                                </column>
+                                <column id="3683">
+                                    <property name="width">0.4895833333333333in</property>
+                                </column>
+                                <column id="3045">
+                                    <property name="width">2.1979166666666665in</property>
+                                </column>
+                                <row id="3390">
+                                    <cell id="3047">
+                                        <property name="colSpan">4</property>
+                                        <property name="rowSpan">1</property>
+                                        <label id="3391">
+                                            <property name="fontSize">12pt</property>
+                                            <property name="fontWeight">bold</property>
+                                            <property name="textUnderline">underline</property>
+                                            <property name="textAlign">left</property>
+                                            <text-property name="text">Nous contacter :</text-property>
+                                        </label>
+                                    </cell>
+                                </row>
+                                <row id="3049">
+                                    <cell id="3050">
+                                        <label id="3392">
+                                            <text-property name="text">Tel :</text-property>
+                                        </label>
+                                    </cell>
+                                    <cell id="3673">
+                                        <data id="3977">
+                                            <property name="dataSet">DataSetScritp2</property>
+                                            <list-property name="boundDataColumns">
+                                                <structure>
+                                                    <property name="name">dateStart</property>
+                                                    <expression name="expression">dataSetRow["dateStart"]</expression>
+                                                    <property name="dataType">string</property>
+                                                </structure>
+                                                <structure>
+                                                    <property name="name">dateFin</property>
+                                                    <expression name="expression">dataSetRow["dateFin"]</expression>
+                                                    <property name="dataType">string</property>
+                                                </structure>
+                                                <structure>
+                                                    <property name="name">nomInfoEntreprise</property>
+                                                    <expression name="expression">dataSetRow["nomInfoEntreprise"]</expression>
+                                                    <property name="dataType">string</property>
+                                                </structure>
+                                                <structure>
+                                                    <property name="name">adresse1</property>
+                                                    <expression name="expression">dataSetRow["adresse1"]</expression>
+                                                    <property name="dataType">string</property>
+                                                </structure>
+                                                <structure>
+                                                    <property name="name">adresse2</property>
+                                                    <expression name="expression">dataSetRow["adresse2"]</expression>
+                                                    <property name="dataType">string</property>
+                                                </structure>
+                                                <structure>
+                                                    <property name="name">adresse3</property>
+                                                    <expression name="expression">dataSetRow["adresse3"]</expression>
+                                                    <property name="dataType">string</property>
+                                                </structure>
+                                                <structure>
+                                                    <property name="name">ville</property>
+                                                    <expression name="expression">dataSetRow["ville"]</expression>
+                                                    <property name="dataType">string</property>
+                                                </structure>
+                                                <structure>
+                                                    <property name="name">codePostal</property>
+                                                    <expression name="expression">dataSetRow["codePostal"]</expression>
+                                                    <property name="dataType">string</property>
+                                                </structure>
+                                                <structure>
+                                                    <property name="name">pays</property>
+                                                    <expression name="expression">dataSetRow["pays"]</expression>
+                                                    <property name="dataType">string</property>
+                                                </structure>
+                                                <structure>
+                                                    <property name="name">tvaEntreprise</property>
+                                                    <expression name="expression">dataSetRow["tvaEntreprise"]</expression>
+                                                    <property name="dataType">string</property>
+                                                </structure>
+                                                <structure>
+                                                    <property name="name">tel</property>
+                                                    <expression name="expression">dataSetRow["tel"]</expression>
+                                                    <property name="dataType">string</property>
+                                                </structure>
+                                                <structure>
+                                                    <property name="name">fax</property>
+                                                    <expression name="expression">dataSetRow["fax"]</expression>
+                                                    <property name="dataType">string</property>
+                                                </structure>
+                                                <structure>
+                                                    <property name="name">email</property>
+                                                    <expression name="expression">dataSetRow["email"]</expression>
+                                                    <property name="dataType">string</property>
+                                                </structure>
+                                                <structure>
+                                                    <property name="name">web</property>
+                                                    <expression name="expression">dataSetRow["web"]</expression>
+                                                    <property name="dataType">string</property>
+                                                </structure>
+                                            </list-property>
+                                            <property name="resultSetColumn">tel</property>
+                                        </data>
+                                    </cell>
+                                    <cell id="3679">
+                                        <label id="3059">
+                                            <text-property name="text">Fax :</text-property>
+                                        </label>
+                                    </cell>
+                                    <cell id="3051">
+                                        <data id="3978">
+                                            <property name="dataSet">DataSetScritp2</property>
+                                            <list-property name="boundDataColumns">
+                                                <structure>
+                                                    <property name="name">dateStart</property>
+                                                    <expression name="expression">dataSetRow["dateStart"]</expression>
+                                                    <property name="dataType">string</property>
+                                                </structure>
+                                                <structure>
+                                                    <property name="name">dateFin</property>
+                                                    <expression name="expression">dataSetRow["dateFin"]</expression>
+                                                    <property name="dataType">string</property>
+                                                </structure>
+                                                <structure>
+                                                    <property name="name">nomInfoEntreprise</property>
+                                                    <expression name="expression">dataSetRow["nomInfoEntreprise"]</expression>
+                                                    <property name="dataType">string</property>
+                                                </structure>
+                                                <structure>
+                                                    <property name="name">adresse1</property>
+                                                    <expression name="expression">dataSetRow["adresse1"]</expression>
+                                                    <property name="dataType">string</property>
+                                                </structure>
+                                                <structure>
+                                                    <property name="name">adresse2</property>
+                                                    <expression name="expression">dataSetRow["adresse2"]</expression>
+                                                    <property name="dataType">string</property>
+                                                </structure>
+                                                <structure>
+                                                    <property name="name">adresse3</property>
+                                                    <expression name="expression">dataSetRow["adresse3"]</expression>
+                                                    <property name="dataType">string</property>
+                                                </structure>
+                                                <structure>
+                                                    <property name="name">ville</property>
+                                                    <expression name="expression">dataSetRow["ville"]</expression>
+                                                    <property name="dataType">string</property>
+                                                </structure>
+                                                <structure>
+                                                    <property name="name">codePostal</property>
+                                                    <expression name="expression">dataSetRow["codePostal"]</expression>
+                                                    <property name="dataType">string</property>
+                                                </structure>
+                                                <structure>
+                                                    <property name="name">pays</property>
+                                                    <expression name="expression">dataSetRow["pays"]</expression>
+                                                    <property name="dataType">string</property>
+                                                </structure>
+                                                <structure>
+                                                    <property name="name">tvaEntreprise</property>
+                                                    <expression name="expression">dataSetRow["tvaEntreprise"]</expression>
+                                                    <property name="dataType">string</property>
+                                                </structure>
+                                                <structure>
+                                                    <property name="name">tel</property>
+                                                    <expression name="expression">dataSetRow["tel"]</expression>
+                                                    <property name="dataType">string</property>
+                                                </structure>
+                                                <structure>
+                                                    <property name="name">fax</property>
+                                                    <expression name="expression">dataSetRow["fax"]</expression>
+                                                    <property name="dataType">string</property>
+                                                </structure>
+                                                <structure>
+                                                    <property name="name">email</property>
+                                                    <expression name="expression">dataSetRow["email"]</expression>
+                                                    <property name="dataType">string</property>
+                                                </structure>
+                                                <structure>
+                                                    <property name="name">web</property>
+                                                    <expression name="expression">dataSetRow["web"]</expression>
+                                                    <property name="dataType">string</property>
+                                                </structure>
+                                            </list-property>
+                                            <property name="resultSetColumn">fax</property>
+                                        </data>
+                                    </cell>
+                                </row>
+                                <row id="3052">
+                                    <cell id="3394">
+                                        <label id="3063">
+                                            <text-property name="text">Web :</text-property>
+                                        </label>
+                                    </cell>
+                                    <cell id="3674">
+                                        <property name="colSpan">3</property>
+                                        <property name="rowSpan">1</property>
+                                        <data id="3980">
+                                            <property name="dataSet">DataSetScritp2</property>
+                                            <list-property name="boundDataColumns">
+                                                <structure>
+                                                    <property name="name">dateStart</property>
+                                                    <expression name="expression">dataSetRow["dateStart"]</expression>
+                                                    <property name="dataType">string</property>
+                                                </structure>
+                                                <structure>
+                                                    <property name="name">dateFin</property>
+                                                    <expression name="expression">dataSetRow["dateFin"]</expression>
+                                                    <property name="dataType">string</property>
+                                                </structure>
+                                                <structure>
+                                                    <property name="name">nomInfoEntreprise</property>
+                                                    <expression name="expression">dataSetRow["nomInfoEntreprise"]</expression>
+                                                    <property name="dataType">string</property>
+                                                </structure>
+                                                <structure>
+                                                    <property name="name">adresse1</property>
+                                                    <expression name="expression">dataSetRow["adresse1"]</expression>
+                                                    <property name="dataType">string</property>
+                                                </structure>
+                                                <structure>
+                                                    <property name="name">adresse2</property>
+                                                    <expression name="expression">dataSetRow["adresse2"]</expression>
+                                                    <property name="dataType">string</property>
+                                                </structure>
+                                                <structure>
+                                                    <property name="name">adresse3</property>
+                                                    <expression name="expression">dataSetRow["adresse3"]</expression>
+                                                    <property name="dataType">string</property>
+                                                </structure>
+                                                <structure>
+                                                    <property name="name">ville</property>
+                                                    <expression name="expression">dataSetRow["ville"]</expression>
+                                                    <property name="dataType">string</property>
+                                                </structure>
+                                                <structure>
+                                                    <property name="name">codePostal</property>
+                                                    <expression name="expression">dataSetRow["codePostal"]</expression>
+                                                    <property name="dataType">string</property>
+                                                </structure>
+                                                <structure>
+                                                    <property name="name">pays</property>
+                                                    <expression name="expression">dataSetRow["pays"]</expression>
+                                                    <property name="dataType">string</property>
+                                                </structure>
+                                                <structure>
+                                                    <property name="name">tvaEntreprise</property>
+                                                    <expression name="expression">dataSetRow["tvaEntreprise"]</expression>
+                                                    <property name="dataType">string</property>
+                                                </structure>
+                                                <structure>
+                                                    <property name="name">tel</property>
+                                                    <expression name="expression">dataSetRow["tel"]</expression>
+                                                    <property name="dataType">string</property>
+                                                </structure>
+                                                <structure>
+                                                    <property name="name">fax</property>
+                                                    <expression name="expression">dataSetRow["fax"]</expression>
+                                                    <property name="dataType">string</property>
+                                                </structure>
+                                                <structure>
+                                                    <property name="name">email</property>
+                                                    <expression name="expression">dataSetRow["email"]</expression>
+                                                    <property name="dataType">string</property>
+                                                </structure>
+                                                <structure>
+                                                    <property name="name">web</property>
+                                                    <expression name="expression">dataSetRow["web"]</expression>
+                                                    <property name="dataType">string</property>
+                                                </structure>
+                                            </list-property>
+                                            <property name="resultSetColumn">web</property>
+                                        </data>
+                                    </cell>
+                                </row>
+                                <row id="3060">
+                                    <cell id="3061">
+                                        <label id="3067">
+                                            <text-property name="text">Email :</text-property>
+                                        </label>
+                                    </cell>
+                                    <cell id="3675">
+                                        <property name="colSpan">3</property>
+                                        <property name="rowSpan">1</property>
+                                        <data id="3979">
+                                            <property name="dataSet">DataSetScritp2</property>
+                                            <list-property name="boundDataColumns">
+                                                <structure>
+                                                    <property name="name">dateStart</property>
+                                                    <expression name="expression">dataSetRow["dateStart"]</expression>
+                                                    <property name="dataType">string</property>
+                                                </structure>
+                                                <structure>
+                                                    <property name="name">dateFin</property>
+                                                    <expression name="expression">dataSetRow["dateFin"]</expression>
+                                                    <property name="dataType">string</property>
+                                                </structure>
+                                                <structure>
+                                                    <property name="name">nomInfoEntreprise</property>
+                                                    <expression name="expression">dataSetRow["nomInfoEntreprise"]</expression>
+                                                    <property name="dataType">string</property>
+                                                </structure>
+                                                <structure>
+                                                    <property name="name">adresse1</property>
+                                                    <expression name="expression">dataSetRow["adresse1"]</expression>
+                                                    <property name="dataType">string</property>
+                                                </structure>
+                                                <structure>
+                                                    <property name="name">adresse2</property>
+                                                    <expression name="expression">dataSetRow["adresse2"]</expression>
+                                                    <property name="dataType">string</property>
+                                                </structure>
+                                                <structure>
+                                                    <property name="name">adresse3</property>
+                                                    <expression name="expression">dataSetRow["adresse3"]</expression>
+                                                    <property name="dataType">string</property>
+                                                </structure>
+                                                <structure>
+                                                    <property name="name">ville</property>
+                                                    <expression name="expression">dataSetRow["ville"]</expression>
+                                                    <property name="dataType">string</property>
+                                                </structure>
+                                                <structure>
+                                                    <property name="name">codePostal</property>
+                                                    <expression name="expression">dataSetRow["codePostal"]</expression>
+                                                    <property name="dataType">string</property>
+                                                </structure>
+                                                <structure>
+                                                    <property name="name">pays</property>
+                                                    <expression name="expression">dataSetRow["pays"]</expression>
+                                                    <property name="dataType">string</property>
+                                                </structure>
+                                                <structure>
+                                                    <property name="name">tvaEntreprise</property>
+                                                    <expression name="expression">dataSetRow["tvaEntreprise"]</expression>
+                                                    <property name="dataType">string</property>
+                                                </structure>
+                                                <structure>
+                                                    <property name="name">tel</property>
+                                                    <expression name="expression">dataSetRow["tel"]</expression>
+                                                    <property name="dataType">string</property>
+                                                </structure>
+                                                <structure>
+                                                    <property name="name">fax</property>
+                                                    <expression name="expression">dataSetRow["fax"]</expression>
+                                                    <property name="dataType">string</property>
+                                                </structure>
+                                                <structure>
+                                                    <property name="name">email</property>
+                                                    <expression name="expression">dataSetRow["email"]</expression>
+                                                    <property name="dataType">string</property>
+                                                </structure>
+                                                <structure>
+                                                    <property name="name">web</property>
+                                                    <expression name="expression">dataSetRow["web"]</expression>
+                                                    <property name="dataType">string</property>
+                                                </structure>
+                                            </list-property>
+                                            <property name="resultSetColumn">email</property>
+                                        </data>
+                                    </cell>
+                                </row>
+                            </grid>
+                        </cell>
+                        <cell id="3562">
+                            <property name="colSpan">1</property>
+                            <property name="rowSpan">1</property>
+                            <property name="backgroundColor">#FFFFFF</property>
+                        </cell>
+                        <cell id="3564">
+                            <property name="colSpan">1</property>
+                            <property name="rowSpan">1</property>
+                            <property name="backgroundColor">#FFFFFF</property>
+                            <property name="borderBottomColor">#DDDDDD</property>
+                            <property name="borderBottomStyle">solid</property>
+                            <property name="borderBottomWidth">thin</property>
+                            <property name="borderLeftColor">#DDDDDD</property>
+                            <property name="borderLeftStyle">solid</property>
+                            <property name="borderLeftWidth">thin</property>
+                            <property name="borderRightColor">#DDDDDD</property>
+                            <property name="borderRightStyle">solid</property>
+                            <property name="borderRightWidth">thin</property>
+                            <grid id="5876">
+                                <property name="dataSet">DataSetScript1</property>
+                                <list-property name="boundDataColumns">
+                                    <structure>
+                                        <property name="name">codeFacture</property>
+                                        <text-property name="displayName">codeFacture</text-property>
+                                        <expression name="expression" type="javascript">dataSetRow["codeFacture"]</expression>
+                                        <property name="dataType">string</property>
+                                    </structure>
+                                    <structure>
+                                        <property name="name">dateFacture</property>
+                                        <text-property name="displayName">dateFacture</text-property>
+                                        <expression name="expression" type="javascript">dataSetRow["dateFacture"]</expression>
+                                        <property name="dataType">date</property>
+                                    </structure>
+                                    <structure>
+                                        <property name="name">libelleRemise</property>
+                                        <text-property name="displayName">libelleRemise</text-property>
+                                        <expression name="expression" type="javascript">dataSetRow["libelleRemise"]</expression>
+                                        <property name="dataType">string</property>
+                                    </structure>
+                                    <structure>
+                                        <property name="name">nomBanque</property>
+                                        <text-property name="displayName">nomBanque</text-property>
+                                        <expression name="expression" type="javascript">dataSetRow["nomBanque"]</expression>
+                                        <property name="dataType">string</property>
+                                    </structure>
+                                    <structure>
+                                        <property name="name">TypePaiement</property>
+                                        <text-property name="displayName">TypePaiement</text-property>
+                                        <expression name="expression" type="javascript">dataSetRow["TypePaiement"]</expression>
+                                        <property name="dataType">string</property>
+                                    </structure>
+                                    <structure>
+                                        <property name="name">libelleTPaiement</property>
+                                        <text-property name="displayName">libelleTPaiement</text-property>
+                                        <expression name="expression" type="javascript">dataSetRow["libelleTPaiement"]</expression>
+                                        <property name="dataType">string</property>
+                                    </structure>
+                                    <structure>
+                                        <property name="name">iban</property>
+                                        <text-property name="displayName">iban</text-property>
+                                        <expression name="expression" type="javascript">dataSetRow["iban"]</expression>
+                                        <property name="dataType">string</property>
+                                    </structure>
+                                    <structure>
+                                        <property name="name">bic</property>
+                                        <text-property name="displayName">bic</text-property>
+                                        <expression name="expression" type="javascript">dataSetRow["bic"]</expression>
+                                        <property name="dataType">string</property>
+                                    </structure>
+                                    <structure>
+                                        <property name="name">Column Binding</property>
+                                        <expression name="expression" type="javascript">dataSetRow["bic"]</expression>
+                                        <property name="dataType">string</property>
+                                        <property name="allowExport">true</property>
+                                    </structure>
+                                    <structure>
+                                        <property name="name">ibanValue</property>
+                                        <expression name="expression" type="javascript">dataSetRow["iban"]</expression>
+                                        <property name="dataType">string</property>
+                                        <property name="allowExport">true</property>
+                                    </structure>
+                                </list-property>
+                                <column id="5877">
+                                    <property name="width">0.6458333333333334in</property>
+                                </column>
+                                <column id="5878">
+                                    <property name="width">1.9479166666666667in</property>
+                                </column>
+                                <row id="5879">
+                                    <cell id="5880">
+                                        <label id="5886">
+                                            <property name="fontWeight">bold</property>
+                                            <text-property name="text">Banque</text-property>
+                                        </label>
+                                    </cell>
+                                    <cell id="5881">
+                                        <data id="5885">
+                                            <property name="resultSetColumn">nomBanque</property>
+                                        </data>
+                                    </cell>
+                                </row>
+                                <row id="5882">
+                                    <cell id="5883">
+                                        <label id="5887">
+                                            <property name="fontWeight">bold</property>
+                                            <text-property name="text">IBAN</text-property>
+                                        </label>
+                                    </cell>
+                                    <cell id="5884">
+                                        <data id="5888">
+                                            <property name="resultSetColumn">ibanValue</property>
+                                        </data>
+                                    </cell>
+                                </row>
+                                <row id="7529">
+                                    <cell id="7530">
+                                        <label id="7532">
+                                            <property name="fontWeight">bold</property>
+                                            <text-property name="text">BIC</text-property>
+                                        </label>
+                                    </cell>
+                                    <cell id="7531">
+                                        <data id="7533">
+                                            <property name="resultSetColumn">Column Binding</property>
+                                        </data>
+                                    </cell>
+                                </row>
+                            </grid>
+                        </cell>
+                    </row>
+                </grid>
+            </header>
+            <detail>
+                <table id="3982">
+                    <property name="borderBottomColor">#000000</property>
+                    <property name="borderBottomStyle">solid</property>
+                    <property name="borderBottomWidth">thin</property>
+                    <property name="borderLeftColor">#000000</property>
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightColor">#000000</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="borderTopColor">#000000</property>
+                    <property name="borderTopStyle">solid</property>
+                    <property name="borderTopWidth">thin</property>
+                    <property name="dataSet">DataSetScriptLigne</property>
+                    <list-property name="boundDataColumns">
+                        <structure>
+                            <property name="name">Tiers</property>
+                            <text-property name="displayName">Tiers</text-property>
+                            <expression name="expression">dataSetRow["Tiers"]</expression>
+                            <property name="dataType">string</property>
+                        </structure>
+                        <structure>
+                            <property name="name">NomTiers</property>
+                            <text-property name="displayName">NomTiers</text-property>
+                            <expression name="expression">dataSetRow["NomTiers"]</expression>
+                            <property name="dataType">string</property>
+                        </structure>
+                        <structure>
+                            <property name="name">libelle</property>
+                            <text-property name="displayName">libelle</text-property>
+                            <expression name="expression">dataSetRow["libelle"]</expression>
+                            <property name="dataType">string</property>
+                        </structure>
+                        <structure>
+                            <property name="name">montant</property>
+                            <text-property name="displayName">montant</text-property>
+                            <expression name="expression">dataSetRow["montant"]</expression>
+                            <property name="dataType">float</property>
+                        </structure>
+                        <structure>
+                            <property name="name">TotalRemise</property>
+                            <property name="dataType">float</property>
+                            <property name="aggregateFunction">SUM</property>
+                            <list-property name="arguments">
+                                <structure>
+                                    <property name="name">Expression</property>
+                                    <expression name="value" type="javascript">row["montant"]</expression>
+                                </structure>
+                            </list-property>
+                        </structure>
+                        <structure>
+                            <property name="name">NbLigne</property>
+                            <property name="dataType">integer</property>
+                            <property name="aggregateFunction">COUNT</property>
+                            <list-property name="arguments">
+                                <structure>
+                                    <property name="name">Expression</property>
+                                    <expression name="value" type="javascript">row["Tiers"]</expression>
+                                </structure>
+                            </list-property>
+                        </structure>
+                        <structure>
+                            <property name="name">codeReglement</property>
+                            <text-property name="displayName">codeReglement</text-property>
+                            <expression name="expression">dataSetRow["codeReglement"]</expression>
+                            <property name="dataType">string</property>
+                        </structure>
+                    </list-property>
+                    <property name="pageBreakInterval">500</property>
+                    <column id="5900">
+                        <property name="width">10%</property>
+                    </column>
+                    <column id="4011">
+                        <property name="width">15%</property>
+                    </column>
+                    <column id="4012">
+                        <property name="width">20%</property>
+                    </column>
+                    <column id="4013">
+                        <property name="width">40%</property>
+                    </column>
+                    <column id="4014">
+                        <property name="width">15%</property>
+                    </column>
+                    <header>
+                        <row id="3983">
+                            <property name="backgroundColor">silver</property>
+                            <property name="fontFamily">serif</property>
+                            <property name="fontWeight">bold</property>
+                            <cell id="5895">
+                                <label id="5901">
+                                    <text-property name="text">Code Reglement</text-property>
+                                </label>
+                            </cell>
+                            <cell id="3984">
+                                <label id="3985">
+                                    <text-property name="text">Tiers</text-property>
+                                </label>
+                            </cell>
+                            <cell id="3986">
+                                <label id="3987">
+                                    <text-property name="text">NomTiers</text-property>
+                                </label>
+                            </cell>
+                            <cell id="3988">
+                                <label id="3989">
+                                    <text-property name="text">libelle</text-property>
+                                </label>
+                            </cell>
+                            <cell id="3990">
+                                <label id="3991">
+                                    <text-property name="text">montant</text-property>
+                                </label>
+                            </cell>
+                        </row>
+                    </header>
+                    <detail>
+                        <row id="3994">
+                            <property name="fontFamily">serif</property>
+                            <list-property name="highlightRules">
+                                <structure>
+                                    <property name="operator">ne</property>
+                                    <property name="backgroundColor">#E5E5E5</property>
+                                    <expression name="testExpr" type="javascript">row[0] % 2</expression>
+                                    <simple-property-list name="value1">
+                                        <value>0</value>
+                                    </simple-property-list>
+                                </structure>
+                            </list-property>
+                            <cell id="5896">
+                                <data id="5902">
+                                    <property name="resultSetColumn">codeReglement</property>
+                                </data>
+                            </cell>
+                            <cell id="3995">
+                                <data id="3996">
+                                    <property name="resultSetColumn">Tiers</property>
+                                </data>
+                            </cell>
+                            <cell id="3997">
+                                <data id="3998">
+                                    <property name="resultSetColumn">NomTiers</property>
+                                </data>
+                            </cell>
+                            <cell id="3999">
+                                <data id="4000">
+                                    <property name="resultSetColumn">libelle</property>
+                                </data>
+                            </cell>
+                            <cell id="4001">
+                                <data id="4002">
+                                    <property name="marginRight">1mm</property>
+                                    <structure name="numberFormat">
+                                        <property name="category">Custom</property>
+                                        <property name="pattern">#0.00</property>
+                                    </structure>
+                                    <structure name="stringFormat">
+                                        <property name="category">Unformatted</property>
+                                        <property name="locale">fr_FR</property>
+                                    </structure>
+                                    <property name="textAlign">right</property>
+                                    <property name="resultSetColumn">montant</property>
+                                </data>
+                            </cell>
+                        </row>
+                    </detail>
+                    <footer>
+                        <row id="5889">
+                            <property name="fontFamily">serif</property>
+                            <property name="fontWeight">bold</property>
+                            <property name="height">0.34375in</property>
+                            <cell id="5897"/>
+                            <cell id="5890"/>
+                            <cell id="5891"/>
+                            <cell id="5892"/>
+                            <cell id="5893">
+                                <property name="fontWeight">bold</property>
+                            </cell>
+                        </row>
+                        <row id="4005">
+                            <property name="backgroundColor">silver</property>
+                            <property name="fontFamily">serif</property>
+                            <property name="fontWeight">bold</property>
+                            <cell id="5898"/>
+                            <cell id="4006"/>
+                            <cell id="4007"/>
+                            <cell id="4008">
+                                <label id="4017">
+                                    <property name="textAlign">right</property>
+                                    <text-property name="text">Total de la remise</text-property>
+                                </label>
+                            </cell>
+                            <cell id="4009">
+                                <property name="fontWeight">bold</property>
+                                <data id="4016">
+                                    <structure name="numberFormat">
+                                        <property name="category">Custom</property>
+                                        <property name="pattern">###,##0.00¤</property>
+                                        <property name="locale">fr_FR</property>
+                                    </structure>
+                                    <property name="textAlign">right</property>
+                                    <property name="resultSetColumn">TotalRemise</property>
+                                </data>
+                            </cell>
+                        </row>
+                        <row id="4018">
+                            <property name="fontFamily">serif</property>
+                            <property name="fontWeight">bold</property>
+                            <property name="fontStyle">italic</property>
+                            <cell id="5899">
+                                <property name="colSpan">2</property>
+                                <property name="rowSpan">1</property>
+                            </cell>
+                            <cell id="4020">
+                                <label id="4023">
+                                    <property name="marginRight">3mm</property>
+                                    <property name="textAlign">right</property>
+                                    <text-property name="text">Nombre de lignes</text-property>
+                                </label>
+                            </cell>
+                            <cell id="4021">
+                                <data id="4024">
+                                    <property name="textAlign">left</property>
+                                    <property name="resultSetColumn">NbLigne</property>
+                                </data>
+                            </cell>
+                            <cell id="4022">
+                                <property name="fontWeight">bold</property>
+                            </cell>
+                        </row>
+                    </footer>
+                </table>
+            </detail>
+        </list>
+    </body>
+</report>

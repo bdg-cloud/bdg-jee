@@ -1,0 +1,413 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                    	xmlns:o="http://omnifaces.org/ui"
+                xmlns:p="http://primefaces.org/ui">
+    
+    	<o:importConstants type="fr.legrain.document.model.TaAvisEcheance" />
+    	
+    <ui:define name="head">
+        <script type="text/javascript">
+            //<![CDATA[
+            function skinChart() {
+                this.cfg.shadow = false;
+                this.cfg.title = '';
+                this.cfg.seriesColors = ['#EA9624', '#5BA5D8'];
+                this.cfg.grid = {
+                    background: '#ffffff',
+                    borderColor: '#ffffff',
+                    gridLineColor: '#F5F5F5',
+                    shadow: false
+                };
+                this.cfg.axesDefaults = {
+                    rendererOptions: {
+                        textColor: '#666F77'
+                    }
+                };
+                this.cfg.seriesDefaults = {
+                    shadow: false,
+                    lineWidth: 1,
+                    markerOptions: {
+                        shadow: false,
+                        size: 7,
+                        style: 'circle'
+                    }
+                }
+            }
+            //]]>  
+        </script>
+        
+    </ui:define>
+    
+    
+    <p:panel widgetVar="wvPanelBlocBoxPeriode2" styleClass="panel-no-style" rendered="#{dashBoardAvisEcheanceController.comparaison}"><!-- PANEL POUR LA PERIODE 2 -->
+					
+						
+						<div class="ui-g-12 ui-md-12" style="background:#ebebeb; padding:0;">
+						
+						
+						<div class="ui-g-12 ui-md-6 ui-lg-3"><!-- DEBUT PANEL BOX 1 COMPARAISON -->
+							
+							<p:panel style="background:#ebebeb;" widgetVar="wvCountNbAvisEcheancePayeComp">
+								<div class="box #{dashBoardAvisEcheanceController.cSbNbDocumentSurPeriode} box-comparaison" >
+								<h2>Avis d'écheance réalisées HT</h2>
+								<h4>&#160;</h4>
+								
+								<p:panelGrid columns="2" layout="grid" styleClass="panelGridComparaison" columnClasses="col1GridCompAvisEcheance,col2GridCompAvisEcheance">
+								
+									<h:panelGroup>
+										<h:outputText value="#{dashBoardAvisEcheanceController.dateDebut}">
+								    		<f:convertDateTime pattern="#{msg.date_pattern}"
+														               timeZone="#{msg.time_zone}" type="localDate"/>
+								    	</h:outputText>
+								    	au
+									    <h:outputText value="#{dashBoardAvisEcheanceController.dateFin}">
+									    	<f:convertDateTime pattern="#{msg.date_pattern}"
+															               timeZone="#{msg.time_zone}" type="localDate"/>
+									    </h:outputText>
+									
+									</h:panelGroup>
+									
+									<h:panelGroup>
+										<h:outputText value="#{dashBoardAvisEcheanceController.dateDebutComp}">
+								    		<f:convertDateTime pattern="#{msg.date_pattern}"
+														               timeZone="#{msg.time_zone}" type="localDate"/>
+								    	</h:outputText>
+								    	au
+									    <h:outputText value="#{dashBoardAvisEcheanceController.dateFinComp}">
+									    	<f:convertDateTime pattern="#{msg.date_pattern}"
+															               timeZone="#{msg.time_zone}" />
+									    </h:outputText>
+									
+									</h:panelGroup>
+									
+							
+								     
+								    <h:outputText value="#{dashBoardAvisEcheanceController.nbAvisEcheanceSurPeriode}" styleClass="bold font-x-large"/>
+								    <h:outputText value="#{dashBoardAvisEcheanceController.nbAvisEcheanceSurPeriodeComp}" styleClass="bold font-x-large" />
+								     
+								     
+								    <h:outputText value="#{dashBoardAvisEcheanceController.totauxCaPeriodeAvisEcheance.mtHtCalc}" styleClass="bold font-x-large">
+								    	<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								    </h:outputText>
+								    <h:outputText value="#{dashBoardAvisEcheanceController.totauxCaPeriodeAvisEcheanceComp.mtHtCalc}" styleClass="bold font-x-large">
+								    	<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								    </h:outputText>
+								     
+								    
+								</p:panelGrid>
+
+	
+								
+	
+							<p:selectBooleanButton style="width:50%;" id="AvisEcheancetous" 
+													value="true" onLabel="Sélection active"
+													widgetVar="wvAvisEcheanceTous" 
+													offLabel="Afficher" onIcon="ui-icon-check" offIcon="ui-icon-close">
+									<p:ajax oncomplete="PF('wvListeAvisEcheance').filter()" 
+											update="@this,
+													@widgetVar(wvDashAvisEcheancePanelAvisEcheance),
+													@widgetVar(wvCountNbAvisEcheanceNonPaye),
+													@widgetVar(wvCountNbAvisEcheancePaye),
+													@widgetVar(wvListeAvisEcheance),
+													@widgetVar(wvListeAvisEcheanceParTiers),
+													@widgetVar(wvListeAvisEcheanceMois),
+													@widgetVar(wvGraphiqueAvisEcheance),
+													@widgetVar(wvCountNbAvisEcheanceNonPayeARelancer),
+													@widgetVar(wvTauxAvisEcheancePaye),
+													@widgetVar(wvTabViewAvisEcheanceJour),
+													@widgetVar(wvPanelAvisEcheanceJourDataTable),
+													@widgetVar(wvListeAvisEcheanceMoisArticles),
+													@widgetVar(wvListeAvisEcheanceJour),
+													@widgetVar(wvListeAvisEcheanceJourArticles),
+													@widgetVar(wvPanelBlocBoxPeriode2),
+													@widgetVar(wvPanelBlocBox),
+								 					@widgetVar(wvPanelMensuelTitrePeriodeAvisEcheance),
+													@widgetVar(wvTabViewListeMois)"
+													
+								 
+											listener="#{dashBoardAvisEcheanceController.refreshDashBoard('tous')}"/>	 
+	        					</p:selectBooleanButton>
+								</div> 
+							</p:panel>
+							</div><!-- FIN PANEL BOX COMPARAISON -->
+							
+							<div class="ui-g-12 ui-md-6 ui-lg-3"><!-- DEBUT PANEL BOX 2 COMPARAISON -->
+							
+							<p:panel style="background:#ebebeb;" widgetVar="wvCountNbAvisEcheanceNonPayeARelancerComp">
+								<div class="box #{dashBoardAvisEcheanceController.cSbNbDocumentNonTransformeARelancerSurPeriode} box-comparaison" >
+								<h2>AvisEcheance à relancer TTC</h2>
+								<h4>Avis d'écheance arrivant à échéance dans moins de 15 jours</h4>
+								<p:panelGrid columns="2" layout="grid" styleClass="panelGridComparaison" columnClasses="col1GridCompAvisEcheance,col2GridCompAvisEcheance">
+								
+									<h:panelGroup>
+										<h:outputText value="#{dashBoardAvisEcheanceController.dateDebut}">
+								    		<f:convertDateTime pattern="#{msg.date_pattern}"
+														               timeZone="#{msg.time_zone}" type="localDate"/>
+								    	</h:outputText>
+								    	au
+									    <h:outputText value="#{dashBoardAvisEcheanceController.dateFin}">
+									    	<f:convertDateTime pattern="#{msg.date_pattern}"
+															               timeZone="#{msg.time_zone}" type="localDate"/>
+									    </h:outputText>
+									
+									</h:panelGroup>
+									
+									<h:panelGroup>
+										<h:outputText value="#{dashBoardAvisEcheanceController.dateDebutComp}">
+								    		<f:convertDateTime pattern="#{msg.date_pattern}"
+														               timeZone="#{msg.time_zone}" type="localDate"/>
+								    	</h:outputText>
+								    	au
+									    <h:outputText value="#{dashBoardAvisEcheanceController.dateFinComp}">
+									    	<f:convertDateTime pattern="#{msg.date_pattern}"
+															               timeZone="#{msg.time_zone}" type="localDate"/>
+									    </h:outputText>
+									
+									</h:panelGroup>
+									
+							
+								     
+								    <h:outputText value="#{dashBoardAvisEcheanceController.nbAvisEcheanceNonTotalementPayesARelancerSurPeriode}" styleClass="bold font-x-large"/>
+								    <h:outputText value="#{dashBoardAvisEcheanceController.nbAvisEcheanceNonTotalementPayesARelancerSurPeriodeComp}" styleClass="bold font-x-large" />
+								     
+								     
+								    <h:outputText value="#{dashBoardAvisEcheanceController.totauxCaPeriodeAvisEcheanceNonTotalementPayeeARelancer.resteAReglerComplet}" styleClass="bold font-x-large">
+								    	<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								    </h:outputText>
+								    <h:outputText value="#{dashBoardAvisEcheanceController.totauxCaPeriodeAvisEcheanceNonTotalementPayeeARelancerComp.resteAReglerComplet}" styleClass="bold font-x-large">
+								    	<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								    </h:outputText>
+								     
+								    
+								</p:panelGrid>
+
+	
+								
+	
+							<p:selectBooleanButton style="width:50%;" id="AvisEcheance15jours" 
+													value="false" onLabel="Sélection active"
+													offLabel="Afficher" onIcon="ui-icon-check" offIcon="ui-icon-close">
+									<p:ajax oncomplete="PF('wvListeAvisEcheance').filter()" 
+											update="@this,
+													@widgetVar(wvDashAvisEcheancePanelAvisEcheance),
+													@widgetVar(wvCountNbAvisEcheanceNonPaye),
+													@widgetVar(wvCountNbAvisEcheancePaye),
+													@widgetVar(wvListeAvisEcheance),
+													@widgetVar(wvListeAvisEcheanceParTiers),
+													@widgetVar(wvListeAvisEcheanceMois),
+													@widgetVar(wvGraphiqueAvisEcheance),
+													@widgetVar(wvCountNbAvisEcheanceNonPayeARelancer),
+													@widgetVar(wvTauxAvisEcheancePaye),
+													@widgetVar(wvTabViewAvisEcheanceJour),
+													@widgetVar(wvPanelAvisEcheanceJourDataTable),
+													@widgetVar(wvListeAvisEcheanceMoisArticles),
+													@widgetVar(wvListeAvisEcheanceJour),
+													@widgetVar(wvListeAvisEcheanceJourArticles),
+													@widgetVar(wvPanelBlocBoxPeriode2),
+													@widgetVar(wvPanelBlocBox),
+								 					@widgetVar(wvPanelMensuelTitrePeriodeAvisEcheance),
+													@widgetVar(wvTabViewListeMois)"
+											listener="#{dashBoardAvisEcheanceController.refreshDashBoard('nontransformearelancer')}"/>	 
+	        					</p:selectBooleanButton>
+								</div> 
+							</p:panel>
+							</div><!-- FIN PANEL BOX 2 COMPARAISON -->
+							
+							<div class="ui-g-12 ui-md-6 ui-lg-3"><!-- DEBUT PANEL BOX 3 COMPARAISON -->
+							
+							<p:panel style="background:#ebebeb;" widgetVar="wvCountNbAvisEcheanceNonPayeComp">
+								<div class="box #{dashBoardAvisEcheanceController.cSbNbDocumentNonTransformeSurPeriode} box-comparaison" >
+								<h2>Avis d'écheance non payés TTC</h2>
+								<h4>&#160;</h4>
+								<p:panelGrid columns="2" layout="grid" styleClass="panelGridComparaison" columnClasses="col1GridCompAvisEcheance,col2GridCompAvisEcheance">
+								
+									<h:panelGroup>
+										<h:outputText value="#{dashBoardAvisEcheanceController.dateDebut}">
+								    		<f:convertDateTime pattern="#{msg.date_pattern}"
+														               timeZone="#{msg.time_zone}" type="localDate"/>
+								    	</h:outputText>
+								    	au
+									    <h:outputText value="#{dashBoardAvisEcheanceController.dateFin}">
+									    	<f:convertDateTime pattern="#{msg.date_pattern}"
+															               timeZone="#{msg.time_zone}" type="localDate"/>
+									    </h:outputText>
+									
+									</h:panelGroup>
+									
+									<h:panelGroup>
+										<h:outputText value="#{dashBoardAvisEcheanceController.dateDebutComp}">
+								    		<f:convertDateTime pattern="#{msg.date_pattern}"
+														               timeZone="#{msg.time_zone}" type="localDate"/>
+								    	</h:outputText>
+								    	au
+									    <h:outputText value="#{dashBoardAvisEcheanceController.dateFinComp}">
+									    	<f:convertDateTime pattern="#{msg.date_pattern}"
+															               timeZone="#{msg.time_zone}" type="localDate"/>
+									    </h:outputText>
+									
+									</h:panelGroup>
+									
+							
+								     
+								    <h:outputText value="#{dashBoardAvisEcheanceController.nbAvisEcheanceNonTotalementPayesSurPeriode}" styleClass="bold font-x-large"/>
+								    <h:outputText value="#{dashBoardAvisEcheanceController.nbAvisEcheanceNonTotalementPayesSurPeriodeComp}" styleClass="bold font-x-large" />
+								     
+								     
+								    <h:outputText value="#{dashBoardAvisEcheanceController.totauxCaPeriodeAvisEcheanceNonTotalementPayee.resteAReglerComplet}" styleClass="bold font-x-large">
+								    	<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								    </h:outputText>
+								    <h:outputText value="#{dashBoardAvisEcheanceController.totauxCaPeriodeAvisEcheanceNonTotalementPayeeComp.resteAReglerComplet}" styleClass="bold font-x-large">
+								    	<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								    </h:outputText>
+								     
+								    
+								</p:panelGrid>
+
+	
+								
+	
+							<p:selectBooleanButton style="width:50%;" id="AvisEcheancenontrans" 
+													value="false" onLabel="Sélection active"
+													offLabel="Afficher" onIcon="ui-icon-check" offIcon="ui-icon-close">
+									<p:ajax oncomplete="PF('wvListeAvisEcheance').filter()" 
+											update="@this,
+													@widgetVar(wvDashAvisEcheancePanelAvisEcheance),
+													@widgetVar(wvCountNbAvisEcheanceNonPaye),
+													@widgetVar(wvCountNbAvisEcheancePaye),
+													@widgetVar(wvListeAvisEcheance),
+													@widgetVar(wvListeAvisEcheanceParTiers),
+													@widgetVar(wvListeAvisEcheanceMois),
+													@widgetVar(wvGraphiqueAvisEcheance),
+													@widgetVar(wvCountNbAvisEcheanceNonPayeARelancer),
+													@widgetVar(wvTauxAvisEcheancePaye),
+													@widgetVar(wvTabViewAvisEcheanceJour),
+													@widgetVar(wvPanelAvisEcheanceJourDataTable),
+													@widgetVar(wvListeAvisEcheanceMoisArticles),
+													@widgetVar(wvListeAvisEcheanceJour),
+													@widgetVar(wvListeAvisEcheanceJourArticles),
+													@widgetVar(wvPanelBlocBoxPeriode2),
+													@widgetVar(wvPanelBlocBox),
+								 					@widgetVar(wvPanelMensuelTitrePeriodeAvisEcheance),
+													@widgetVar(wvTabViewListeMois)"
+											listener="#{dashBoardAvisEcheanceController.refreshDashBoard('nontransforme')}"/>	 
+	        					</p:selectBooleanButton>
+								</div> 
+							</p:panel>
+							</div><!-- FIN PANEL BOX 3 COMPARAISON -->
+							
+							<!-- PANEL BOX 4 COMPARAISON -->
+							<div class="ui-g-12 ui-md-6 ui-lg-3 " style="background:#ebebeb;"> 
+							<p:panel  widgetVar="wvTauxAvisEcheancePayeComp" 
+							style="background:#ebebeb;">
+								<div class="box #{dashBoardAvisEcheanceController.cSbNbDocumentTransformeSurPeriode} box-comparaison" >
+									<p:tabView style="text-align:left;">
+										<p:tab title="Montant TTC" >
+										<h4>Taux de règlement (entièrement réglée)</h4>
+										<p:panelGrid columns="2" layout="grid" styleClass="panelGridComparaison" columnClasses="col1GridCompAvisEcheance,col2GridCompAvisEcheance">
+											<h:panelGroup>
+											<h3 style="text-align:center;">Déjà réglé TTC : <br></br><p:outputLabel value="#{dashBoardAvisEcheanceController.totauxCaPeriodeAvisEcheanceTotalementPayee.mtTtcCalc}">
+												<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />		
+											</p:outputLabel></h3>
+											</h:panelGroup>
+											
+											<h:panelGroup>
+											<h3 style="text-align:center;">Déjà réglé TTC : <br></br><p:outputLabel value="#{dashBoardAvisEcheanceController.totauxCaPeriodeAvisEcheanceTotalementPayeeComp.mtTtcCalc}">
+											<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />		
+											</p:outputLabel></h3>
+											</h:panelGroup>
+											<h:panelGroup>
+											<div class="knob-container  ui-corner-all" style="text-align:center;">
+											<p:knob labelTemplate="{value}%" value="#{dashBoardAvisEcheanceController.tauxTotalementPayesCa}" height="70"
+												width="70" disabled="true"/>
+											</div>
+											</h:panelGroup>
+											<h:panelGroup>
+											<div class="knob-container  ui-corner-all" style="text-align:center;">
+											<p:knob labelTemplate="{value}%" value="#{dashBoardAvisEcheanceController.tauxTotalementPayesCaComp}" height="70"
+												width="70" disabled="true"/>
+											</div>
+											</h:panelGroup>
+										
+										</p:panelGrid>
+										
+									
+										
+										
+										
+										
+										</p:tab>
+										<p:tab title="Nombre de Avis d'écheance" >
+										<h4>Taux de règlement (entièrement réglée)</h4>
+										<p:panelGrid columns="2" layout="grid" styleClass="panelGridComparaison" columnClasses="col1GridCompAvisEcheance,col2GridCompAvisEcheance">
+											<h:panelGroup><h3 style="text-align:center;">#{dashBoardAvisEcheanceController.nbAvisEcheanceTotalementPayesSurPeriode} Avis d'écheance payés</h3></h:panelGroup>
+											<h:panelGroup><h3 style="text-align:center;">#{dashBoardAvisEcheanceController.nbAvisEcheanceTotalementPayesSurPeriodeComp} Avis d'écheance payés</h3></h:panelGroup>
+											<h:panelGroup>
+											<div class="knob-container  ui-corner-all" style="text-align:center;">
+												<p:knob labelTemplate="{value}%" value="#{dashBoardAvisEcheanceController.tauxTotalementPayesNb}" height="70"
+													width="70" disabled="true" />
+											</div>
+											</h:panelGroup>
+											<h:panelGroup>
+											<div class="knob-container  ui-corner-all" style="text-align:center;">
+													<p:knob labelTemplate="{value}%" value="#{dashBoardAvisEcheanceController.tauxTotalementPayesNbComp}" height="70"
+														width="70" disabled="true" />
+											</div>
+											</h:panelGroup>
+										</p:panelGrid>
+										
+										
+										</p:tab>
+									</p:tabView>
+									<p:selectBooleanButton  style="width:50%;" id="AvisEcheancePaye" value="false" onLabel="Sélection active" offLabel="Afficher" onIcon="ui-icon-check" offIcon="ui-icon-close" >
+									<p:ajax oncomplete="PF('wvListeAvisEcheance').filter()" event="change" 
+											update="@this,
+													@widgetVar(wvDashAvisEcheancePanelAvisEcheance),
+													@widgetVar(wvCountNbAvisEcheanceNonPaye),
+													@widgetVar(wvCountNbAvisEcheancePaye),
+													@widgetVar(wvListeAvisEcheance),
+													@widgetVar(wvListeAvisEcheanceParTiers),
+													@widgetVar(wvListeAvisEcheanceMois),
+													@widgetVar(wvGraphiqueAvisEcheance),
+													@widgetVar(wvCountNbAvisEcheanceNonPayeARelancer),
+													@widgetVar(wvTauxAvisEcheancePaye),
+													@widgetVar(wvTabViewAvisEcheanceJour),
+													@widgetVar(wvPanelAvisEcheanceJourDataTable),
+													@widgetVar(wvListeAvisEcheanceMoisArticles),
+													@widgetVar(wvListeAvisEcheanceJour),
+													@widgetVar(wvListeAvisEcheanceJourArticles),
+													@widgetVar(wvPanelBlocBoxPeriode2),
+													@widgetVar(wvPanelBlocBox),
+								 					@widgetVar(wvPanelMensuelTitrePeriodeAvisEcheance),
+													@widgetVar(wvTabViewListeMois)"
+									listener="#{dashBoardAvisEcheanceController.refreshDashBoard('transforme')}"/>	 
+	        					</p:selectBooleanButton>
+								</div> 
+							</p:panel>
+						</div>
+							<!-- FIN PANEL BOX COMPARAISON -->
+							
+							
+							
+							
+							
+		
+							
+							
+							
+							
+							
+							</div><!-- FIN UI-G -->
+							
+							
+							
+							
+							
+					
+					</p:panel><!-- FIN PANEL PERIODE 2 -->
+    
+        
+
+    
+</ui:composition>

@@ -1,0 +1,346 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
+xmlns:f="http://java.sun.com/jsf/core" 
+xmlns:h="http://java.sun.com/jsf/html"
+xmlns:ui="http://java.sun.com/jsf/facelets" 
+xmlns:o="http://omnifaces.org/ui" 
+xmlns:p="http://primefaces.org/ui">
+
+<ui:define name="head">
+<script type="text/javascript">
+
+</script>
+</ui:define>
+				
+<!-- 	<div class="ui-g-12 ui-md-12"> -->
+<!-- 		<h:panelGrid columns="2" cellpadding="0"> -->
+<!-- 			<p:outputLabel value="Votre dossier est très volumineux, Cliquez sur le bouton pour raffraîchir les données" style="font-weight : bold;" -->
+<!-- 				rendered="#{tiersController.dashBoardParTiersController.grosFichierTiers}"> -->
+<!-- 			</p:outputLabel> -->
+<!-- 			<p:commandButton process="@this" rendered="#{tiersController.dashBoardParTiersController.grosFichierTiers}" -->
+<!-- 							update="@this,idZoneTotauxArticle, @widgetVar(wvTiersListeArticleExhaustive),@widgetVar(wvTiersListeArticleRegroupee),@widgetVar(wvTiersListeArticleFamille), idGraphiqueParFamilleTiersArticle, idGraphiqueParArticlesTiersArticle,@widgetVar(wvRappelPeriodePanelTiersArticle)"  -->
+<!-- 							action="#{tiersController.dashBoardParTiersController.initAllValueArticle(tiersController.selectedTaTiersDTO.getCodeTiers())}"  -->
+<!-- 				value="Raffraîchir" styleClass="ui-orange" style="width:100%;" /> -->
+<!-- 		</h:panelGrid> -->
+<!-- 	</div>				 -->
+				<div class="ui-g-12 ui-md-12">				
+				<p:panel header="Critères et paramètres du tableau de bord" collapsed="true" toggleable="true" toggleOrientation="horizontal" >
+					<div class="ui-g-12 ui-md-4">
+					<p:fieldset style="margin-bottom:20px;">		
+					 <p:panel header="Période" styleClass="panelgrey">
+						<f:facet name="footer">
+							<p:commandButton 
+							process="@this" 
+							update="@this,idZoneTotauxArticle, @widgetVar(wvTiersListeArticleExhaustive),@widgetVar(wvTiersListeArticleRegroupee),@widgetVar(wvTiersListeArticleFamille), idGraphiqueParFamilleTiersArticle, idGraphiqueParArticlesTiersArticle,@widgetVar(wvRappelPeriodePanelTiersArticle)" 
+							action="#{tiersController.dashBoardParTiersController.initAllValueArticle(tiersController.selectedTaTiersDTO.getCodeTiers())}" value="Appliquer" styleClass="ui-orange" 
+							style="width:100%;" />
+							
+						</f:facet>
+						 <div class="ui-g-12 ui-md-2" >
+						<i class="fa fa-calendar fa-3x" aria-hidden="true"></i>
+						 </div>
+						 <div class="ui-g-12 ui-md-10">
+			        	<h:panelGrid columns="2" cellpadding="0">
+						 <p:outputLabel value="Du"/>
+											<p:calendar value="#{tiersController.dashBoardParTiersController.dateDebutArticle}"
+												showOn="button" 
+												navigator="true" 
+												pattern="#{msg.date_pattern}" 
+												mask="true" 
+												locale="fr" 
+												timeZone="#{msg.time_zone}" >
+												<p:ajax event="dateSelect"/>
+													<p:ajax event="change"/>
+											</p:calendar>
+
+						 <p:outputLabel value="au"/>
+											<p:calendar value="#{tiersController.dashBoardParTiersController.dateFinArticle}"
+												showOn="button" 
+												navigator="true" 
+												pattern="#{msg.date_pattern}" 
+												mask="true" 
+												locale="fr" 
+												timeZone="#{msg.time_zone}" >
+												<p:ajax event="dateSelect"/>
+													<p:ajax event="change"/>
+											</p:calendar>
+
+        				</h:panelGrid>
+        				</div>
+        				 <p:separator />
+
+
+								</p:panel> 
+    				</p:fieldset>
+    				</div>
+
+					<div class="ui-g-12 ui-md-4">
+
+    				</div>
+    				
+					<div class="ui-g-12 ui-md-4">
+
+    				</div>
+				</p:panel>
+				<p:panel widgetVar="wvRappelPeriodePanelTiersArticle"  style="font-size : 20px;">
+				<p:outputLabel>Période du </p:outputLabel>
+				 <h:outputText value="#{tiersController.dashBoardParTiersController.dateDebutArticle}"  style="font-weight : bold;">
+				 	<f:convertDateTime type="date" pattern="dd MMMM yyyy" timeZone="#{msg.time_zone}"/>
+				 </h:outputText>
+				 <p:outputLabel> au  </p:outputLabel>
+				 <h:outputText value="#{tiersController.dashBoardParTiersController.dateFinArticle}"  style="font-weight : bold;">
+				 	<f:convertDateTime type="date" pattern="dd MMMM yyyy" timeZone="#{msg.time_zone}"/>
+				 </h:outputText>
+				 
+				</p:panel>
+				</div>
+				
+				<!-- <p:outputPanel deferred="true" id="idZoneTotauxArticle"> -->
+				<p:outputPanel id="idZoneTotauxArticle">
+				<div class="ui-g-12 ui-md-6">
+					<div class="ui-g-12 ui-md-6 ui-lg-6">
+	<!-- 				<h:panelGroup id="idZoneTotauxArticle" layout="block" > -->
+						<div class="card text-center card-dash">
+							<h3 align="center"><span style="font-size: 30px;">#{tiersController.dashBoardParTiersController.nbArticle}</span> articles achetés</h3>
+							<p:outputLabel value="CA HT : "/> 
+							<p:outputLabel value="#{tiersController.dashBoardParTiersController.montantTotalHtArticle}" >
+							<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+							</p:outputLabel>
+							<!-- <p:separator></p:separator>
+							<p:outputLabel value="Nombre : "/> 
+							<p:outputLabel value="#{tiersController.dashBoardParTiersController.nbArticle}"/> -->
+						
+	<!-- 				</h:panelGroup> -->
+							<p:commandButton title="Détails" style="width:100%" styleClass="btn-liste btn"
+								process="@this"
+								update="@this,@widgetVar(wvTiersListeArticleRegroupee), @widgetVar(wvTiersListeArticleExhaustive),@widgetVar(wvTiersListeArticleFamille), idGraphiqueParFamilleTiersArticle, idGraphiqueParArticlesTiersArticle,"
+								actionListener="#{tiersController.dashBoardParTiersController.initValueLignesArticle(tiersController.selectedTaTiersDTO.getCodeTiers())}">
+							</p:commandButton>
+						</div>
+					</div>
+					<div class="ui-g-12 ui-md-12">
+					<p:growl id="msgs" showDetail="true" widgetVar="msgs" />
+						<p:tabView class="width-inherit">
+							<p:ajax event="tabChange" listener="#{tiersController.dashBoardParTiersController.onTabListeChange}" update="@widgetVar(wvpanelGraph)"/>
+							<p:tab title="#{tiersController.dashBoardParTiersController.titreTabListeRegroupeeParArticle}">
+								<div class="card">
+									<h3 align="center">Liste regroupée par articles</h3>
+									<p:dataTable id="idTiersListeArticleRegroupee"
+												 sortBy="#{listeArticle.codeArticle}" 
+												 sortOrder="descending" 
+												 var="listeArticle" 
+												 value="#{tiersController.dashBoardParTiersController.valueLignesArticleRegroupee}"
+												 scrollable="true"
+												 scrollHeight="300"
+												 liveResize="true" 
+												 widgetVar="wvTiersListeArticleRegroupee">
+										<p:ajax event="rowToggle" listener="#{tiersController.onRowToggle}" update=":@this"/>
+									
+							        <f:facet name="header">
+							        
+							        <!-- <span class="boutonPrintLeft"> -->
+							        <div class="list-header-button-print">
+							        <span style="float:left">
+									        <p:commandButton id="idBtnListePrintEcranDasboardListeLignesParTiersArticle"
+							 title="Imprimer la liste" 
+			onsuccess="window.open('#{request.contextPath}/output?__report=/reports/tiers/ListeDashboardListeLignesParTiersArticle.rptdesign&amp;__format=pdf')"
+			actionListener="#{dashBoardParTiersController.actImprimerListeLignesParTiersArticle(tiersController.selectedTaTiersDTO.getNomTiers())}" styleClass="ui-priority-primary boutonPrint" style="color : white;" icon="fa fa-print"
+			process="@this" ></p:commandButton>
+									    </span>
+									    
+							            Cliquez pour afficher le détail d'un document
+							            </div>
+							        </f:facet>
+							        
+							        <p:column style="width:16px">
+							            <p:rowToggler />
+							        </p:column>
+							        <p:column headerText="Code Article" sortBy="#{listeArticle.codeArticle}" filterBy="#{listeArticle.codeArticle}" filterMatchMode="contains">
+							<!--             <h:outputText value="#{listeArticle.codeDocument}" /> -->
+															<p:commandLink value="#{listeArticle.codeArticle}"
+																action="#{ouvertureDocumentBean.detailArticle(ouvertureDocumentBean.recupCodeArticle(listeArticle.codeArticle))}" 
+																update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+															</p:commandLink>            
+							        </p:column>
+							        <p:column headerText="Libellé" sortBy="#{listeArticle.libellecArticle}" filterBy="#{listeArticle.libellecArticle}" filterMatchMode="contains">
+							            <h:outputText value="#{listeArticle.libellecArticle}" id="idListeLibelleArticleOngletTiers"/>
+										<p:tooltip id="toolTipListeLibelleArticleOngletTiers" value="#{listeArticle.libellecArticle}" shared="true" for="idListeLibelleArticleOngletTiers" showEffect="clip" position="top"/>
+							        </p:column>
+							        <p:column headerText="Famille" sortBy="#{listeArticle.libcFamille}" filterBy="#{listeArticle.libcFamille}" filterMatchMode="contains">
+								             <h:outputText value="#{listeArticle.libcFamille}">
+											</h:outputText>
+								    </p:column>
+								    <p:column headerText="Montant HT" sortBy="#{listeArticle.mtHtLDocument}" filterBy="#{listeArticle.mtHtLDocument}" filterMatchMode="contains">
+								            <h:outputText value="#{listeArticle.mtHtLDocument}">
+								            <f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+											</h:outputText>
+								    </p:column>	
+							        
+							    
+							    </p:dataTable>
+								</div>
+							</p:tab>
+							<p:tab title="Historique des articles achetés">
+								<div class="card">
+										<h3 align="center">Historique des articles achetés</h3>
+										<p:dataTable id="idTiersListeArticleExhaustive"
+													 sortBy="#{listeArticle.dateDocument}" 
+													 sortOrder="descending" 
+													 var="listeArticle" 
+													 value="#{tiersController.dashBoardParTiersController.valueLignesArticle}"
+													 scrollable="true"
+													 scrollHeight="300"
+													 liveResize="true" 
+													 widgetVar="wvTiersListeArticleExhaustive">
+											<p:ajax event="rowToggle" listener="#{tiersController.onRowToggle}" update=":@this"/>
+										
+								        <f:facet name="header">
+								        
+								        <span class="boutonPrintLeft">
+									        <p:commandButton id="idBtnListePrintEcranDasboardListeLignesParTiersArticleHistorique"
+							 title="Imprimer la liste" 
+			onsuccess="window.open('#{request.contextPath}/output?__report=/reports/tiers/ListeDashboardListeLignesParTiersArticleHistorique.rptdesign&amp;__format=pdf')"
+			actionListener="#{dashBoardParTiersController.actImprimerListeLignesParTiersArticleHistorique(tiersController.selectedTaTiersDTO.getNomTiers())}" styleClass="ui-priority-primary boutonPrint" style="color : white;" icon="fa fa-print"
+			process="@this" ></p:commandButton>
+									    </span>
+									    
+								            Cliquez pour afficher le détail d'un document
+								        </f:facet>
+								        <p:column style="width:16px">
+								            <p:rowToggler />
+								        </p:column>
+								        <p:column headerText="Code Article" width="10%" sortBy="#{listeArticle.codeArticle}" filterBy="#{listeArticle.codeArticle}" filterMatchMode="contains">
+								<!--             <h:outputText value="#{listeArticle.codeDocument}" /> -->
+																<p:commandLink value="#{listeArticle.codeArticle}"
+																	action="#{ouvertureDocumentBean.detailArticle(ouvertureDocumentBean.recupCodeArticle(listeArticle.codeArticle))}" 
+																	update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+																</p:commandLink>            
+								        </p:column>
+								        <p:column headerText="Libellé" width="20%" sortBy="#{listeArticle.libellecArticle}" filterBy="#{listeArticle.libellecArticle}" filterMatchMode="contains">
+								            <h:outputText value="#{listeArticle.libellecArticle}" id="idListeLibelleArticleOngletTiers"/>
+											<p:tooltip id="toolTipListeLibelleArticleOngletTiers" value="#{listeArticle.libellecArticle}" shared="true" for="idListeLibelleArticleOngletTiers" showEffect="clip" position="top"/>
+								        </p:column>
+								        <p:column headerText="Famille" width="20%" sortBy="#{listeArticle.libcFamille}" filterBy="#{listeArticle.libcFamille}" filterMatchMode="contains">
+								             <h:outputText value="#{listeArticle.libcFamille}">
+											</h:outputText>
+								        </p:column>
+								        <p:column headerText="Montant HT" width="10%" sortBy="#{listeArticle.mtHtLDocument}" filterBy="#{listeArticle.mtHtLDocument}" filterMatchMode="contains">
+								            <h:outputText value="#{listeArticle.mtHtLDocument}">
+								            <f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+											</h:outputText>
+								        </p:column>	
+								        <p:column headerText="Fait le" width="10%" sortBy="#{listeArticle.dateDocument}" filterBy="#{listeArticle.dateDocument}" filterMatchMode="contains">
+								            <h:outputText value="#{listeArticle.dateDocument}">
+								            <f:convertDateTime pattern="#{msg.date_pattern}"
+													timeZone="#{msg.time_zone}" />
+											</h:outputText>
+								        </p:column>
+								        
+								        <p:rowExpansion>
+								                <h:outputText value="Facture : " />
+								                <p:commandLink value="#{listeArticle.codeDocument}"
+													action="#{ouvertureDocumentBean.detailDocument(ouvertureDocumentBean.recupCodeDocument(listeArticle.codeDocument,ouvertureDocumentBean.getTypeDocumentFacture()))}" 
+													update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+												</p:commandLink>
+								        </p:rowExpansion>
+								        
+								    
+								    </p:dataTable>
+									
+								</div>
+							</p:tab>
+							<p:tab title="#{tiersController.dashBoardParTiersController.titreTabListeRegroupeeParFamille}">
+								<div class="card">
+								
+								  <h3 align="center">Liste des articles regroupés par famille</h3>
+										<p:dataTable id="idTiersListeArticleFamille"
+													 sortBy="#{listeArticle.codeFamille}" 
+													 sortOrder="descending" 
+													 var="listeArticle" 
+													 value="#{tiersController.dashBoardParTiersController.valueLignesArticleRegroupeeParFamille}"
+													 scrollable="true"
+													 scrollHeight="300"
+													 liveResize="true" 
+													 widgetVar="wvTiersListeArticleFamille">
+											<p:ajax event="rowToggle" listener="#{tiersController.onRowToggle}" update=":@this"/>
+										
+								        <f:facet name="header">
+								        
+								        <span class="boutonPrintLeft">
+									        <p:commandButton id="idBtnListePrintEcranDasboardListeLignesParTiersArticleDetail"
+							 title="Imprimer la liste" 
+			onsuccess="window.open('#{request.contextPath}/output?__report=/reports/tiers/ListeDashboardListeLignesParTiersArticleDetail.rptdesign&amp;__format=pdf')"
+			actionListener="#{dashBoardParTiersController.actImprimerListeLignesParTiersArticleDetail(tiersController.selectedTaTiersDTO.getNomTiers())}" styleClass="ui-priority-primary boutonPrint" style="color : white;" icon="fa fa-print"
+			process="@this" ></p:commandButton>
+									    </span>
+									    
+								            Cliquez pour afficher le détail d'un document
+								        </f:facet>
+								        <p:column style="width:16px">
+								            <p:rowToggler />
+								        </p:column>
+								       <!--  <p:column headerText="Code Article" width="10%">
+																<p:commandLink value="#{listeArticle.codeArticle}"
+																	action="#{ouvertureDocumentBean.detailArticle(ouvertureDocumentBean.recupCodeArticle(listeArticle.codeArticle))}" 
+																	update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+																</p:commandLink>            
+								        </p:column> -->
+								        <!-- <p:column headerText="Libellé" width="20%">
+								            <h:outputText value="#{listeArticle.libellecArticle}" id="idListeLibelleArticleOngletTiers"/>
+											<p:tooltip id="toolTipListeLibelleArticleOngletTiers" value="#{listeArticle.libellecArticle}" shared="true" for="idListeLibelleArticleOngletTiers" showEffect="clip" position="top"/>
+								        </p:column> -->
+								        <p:column headerText="Code Famille" sortBy="#{listeArticle.codeFamille}" filterBy="#{listeArticle.codeFamille}" filterMatchMode="contains">
+								            <h:outputText value="#{listeArticle.codeFamille}">
+											</h:outputText>
+								        </p:column>		
+								        <p:column headerText="libelle Famille" sortBy="#{listeArticle.libcFamille}" filterBy="#{listeArticle.libcFamille}" filterMatchMode="contains">
+								            <h:outputText value="#{listeArticle.libcFamille}">
+											</h:outputText>
+								        </p:column>		
+								        
+								        <p:column headerText="Montant HT" sortBy="#{listeArticle.mtHtLDocument}" filterBy="#{listeArticle.mtHtLDocument}" filterMatchMode="contains">
+								            <h:outputText value="#{listeArticle.mtHtLDocument}">
+								            <f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+											</h:outputText>
+								        </p:column>					        
+								    
+								    </p:dataTable>
+								
+								</div>
+								
+							</p:tab>
+						</p:tabView>
+				    </div>
+				
+
+				</div>
+				</p:outputPanel>
+
+
+						
+				<div class="ui-g-12 ui-md-6 "> 
+				   <p:panel widgetVar="wvpanelGraph">
+						   <div class="ui-g-12 ui-md-12 ">
+								<p:chart type="bar"
+								id="idGraphiqueParFamilleTiersArticle" 
+								widgetVar="wvGraphiqueParFamilleTiersArticle"
+								responsive="true" 
+								rendered="#{tiersController.dashBoardParTiersController.afficheGraphFamille}"
+								model="#{tiersController.dashBoardParTiersController.barChartModelArticleHoriz}" style="#{tiersController.dashBoardParTiersController.styleHeightChartFamille}" />
+								<!-- style="height:300px" -->
+							</div>
+							
+							<div class="ui-g-12 ui-md-12 ">
+								<p:chart type="bar"
+								id="idGraphiqueParArticlesTiersArticle" 
+								widgetVar="wvGraphiqueParArticlesTiersArticle"
+								responsive="true" 
+								rendered="#{tiersController.dashBoardParTiersController.afficheGraphParArticle}"
+								model="#{tiersController.dashBoardParTiersController.barChartModelArticleParArticleHoriz}" style="#{tiersController.dashBoardParTiersController.styleHeightChart}" />
+							</div>
+					
+				   </p:panel>
+						
+				</div> 
+				
+				
+</ui:composition>

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:h="http://java.sun.com/jsf/html" 
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets" 
+	xmlns:p="http://primefaces.org/ui">
+
+	<h:head>
+		<f:facet name="first">
+			<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+			<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+			<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+			<meta name="apple-mobile-web-app-capable" content="yes" />
+		</f:facet>
+	
+		<link href="https://fonts.googleapis.com/css?family=PT+Sans" rel="stylesheet" />
+		<link rel="shortcut icon" type="image/x-icon" href="#{resource['images:favicon.ico']}" />
+	
+		<title>Bureau de gestion</title>
+	</h:head>
+	
+	<h:body styleClass="containerLogin">
+	
+		<h:graphicImage id="image_de_fond" library="images" name="fond-bdg.jpg" width="100%" height="100%" />
+		<h:graphicImage id="image_bdg" library="images" name="logo-bdg.png" width="auto" height="auto" />
+	
+		<f:facet name="last">
+			<!-- surcharge des CSS primefaces -->
+			<h:outputStylesheet library="css" name="theme-compteclient.css" />
+		</f:facet>
+	
+		<f:metadata>
+			<f:viewParam name="p" value="#{mdpOublieController.param}" />
+			<f:viewAction action="#{mdpOublieController.onload}" />
+		</f:metadata>
+	
+		<h:form>
+	
+			<div class="ui-g-12-centrer">
+				<p:panel header="Modification de votre mot de passe" styleClass="titre_formulaire_mdp_oublier" rendered="#{!mdpOublieController.actionOk}">
+				
+					<div class="label-formulaire-validation">
+						<p:outputLabel value="   Dossier : #{mdpOublieController.tenantDossier}" size="25" styleClass="label_mdp_validation" />
+						<br />
+					</div>
+					
+					<div class="label-formulaire-validation">
+						<p:outputLabel value="   Identifiant : #{mdpOublieController.identifiant}" size="25" styleClass="label_mdp_validation" />
+						<br />
+					</div>
+					
+					<div class="label-formulaire-validation">
+						<p:outputLabel value="   Adresse email : #{mdpOublieController.adresseEmail}" size="25" styleClass="label_mdp_validation" />
+					</div>
+					
+					<div class="label-formulaire">
+						<p:password id="pwd1" value="#{mdpOublieController.nouveauMotDePasse}" placeholder="   Nouveau mot de passe" feedback="true"
+							required="true" weakLabel="Sécurité faible" promptLabel="Veuillez saisir votre nouveau mot de passe" goodLabel="Sécurité correcte"
+							strongLabel="Sécurité forte" size="25" styleClass="j_username_mdp_oublier" />
+					</div>
+	
+					<div class="label-formulaire">
+						<p:password id="pwd2" value="#{mdpOublieController.confirmationMotDePasse}" placeholder="   Confirmation du mot de passe" required="true"
+							size="25" styleClass="j_username_mdp_oublier" />
+					</div>
+	
+					<div>
+						<p:commandButton styleClass="btn_retour_mdp_oublier" action="#{auth.retour}" value="Retour" process="@this" />
+					</div>
+					<div>
+						<p:commandButton styleClass="btn_login_mdp_oublier" actionListener="#{mdpOublieController.changeMotDePasse}"
+							value="Modifier mon mot de passe" update="@form" />
+					</div>
+					<p:messages styleClass="errors" autoUpdate="true" showSummary="true" />
+				</p:panel>
+	
+				<p:panel header="Modification de votre mot de passe" styleClass="titre_formulaire_mdp_oublier" rendered="#{mdpOublieController.actionOk}">
+					<p:messages styleClass="errors" autoUpdate="true" showDetail="true" showSummary="true" />
+				</p:panel>
+	
+			</div>
+	
+			<h:outputStylesheet name="css/layout-#{auth.themeCouleur}.css" library="icarus-layout" />
+	
+			<div class="footer_login">
+				<span>BUREAU DE GESTION</span>
+			</div>
+	
+			<span class="footer_right">LEGRAIN informatique</span>
+	
+		</h:form>
+	
+	</h:body>
+
+</html>

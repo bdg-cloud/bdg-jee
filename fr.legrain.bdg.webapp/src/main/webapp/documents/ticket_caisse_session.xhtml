@@ -1,0 +1,50 @@
+<ui:composition 
+	xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:f="http://java.sun.com/jsf/core" 
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets" 
+	xmlns:p="http://primefaces.org/ui" 
+	xmlns:lgr="http://legrain.fr/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+	
+	<p:menubar styleClass="menu-onglet">
+	
+<!-- 		<p:menuitem title="Enregistrer" styleClass="icon icon-save" actionListener="#{sessionCaisseController.actEnregistrer}" -->
+<!-- 			update=":form:messages,@form"> -->
+<!-- 		</p:menuitem> -->
+		
+		<p:menuitem title="Annuler" styleClass="icon icon-cancel" actionListener="#{sessionCaisseController.actAnnuler}"
+			process="@this" update=":form:messages,@form">
+		</p:menuitem>
+
+		<p:menuitem title="Fermer" styleClass="icon icon-close menuitem-fermer-droite"
+						process="@this" 
+						onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())">
+		</p:menuitem>
+		
+	</p:menubar>
+	
+	<p:tabView>
+		<p:tab title="Caisse">
+			<p:commandButton value="Ouverture" actionListener="#{sessionCaisseController.actDemarrerSessionCaisse}"/>
+			<br/>
+			<p:commandButton value="Fond de caisse Ouverture" actionListener="#{sessionCaisseController.actFondDeCaisseOuverture}"/>
+			<br/>
+			<p:commandButton value="Fond de caisse Cloture" actionListener="#{sessionCaisseController.actFondDeCaisseCloture}"/>
+			<br/>
+			<p:commandButton value="Dépot" actionListener="#{sessionCaisseController.actDepotCaisse}"/>
+			<br/>
+			<p:commandButton value="Retrait" actionListener="#{sessionCaisseController.actRetraitCaisse}"/>
+			<br/>
+		</p:tab>
+		<p:tab title="Etat de session (X de caisse)">
+			<p:commandButton value="Ticket X" actionListener="#{sessionCaisseController.actEtatSessionCaisse}"/>
+		</p:tab>
+		<p:tab title="Clôture de session (Z de caisse)">
+			<p:commandButton value="Ticket Z - Cloture" actionListener="#{sessionCaisseController.actCloturerSessionCaisse}"/>
+		</p:tab>
+		<p:tab title="Statistiques">
+		</p:tab>
+	</p:tabView>
+
+</ui:composition>

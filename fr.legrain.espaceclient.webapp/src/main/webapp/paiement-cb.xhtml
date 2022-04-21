@@ -1,0 +1,98 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/template.xhtml">
+
+    <ui:define name="content">
+    
+    	<h:form>
+    	
+    		<p:messages autoUpdate="true" showDetail="true"/>
+    		
+			<ui:fragment rendered="#{paiementController.rcb==null}">
+				<div class="ui-g">
+					<div class="ui-g-12" style="padding: 0">
+						<div class="panier-bandeau-titre" style="height: 60px;text-align: center;">
+							VOTRE REGLEMENT PAR CARTE BANCAIRE TTC <br />
+							<p:graphicImage library="images" name="paiement/cadenas.png" height="16px" />
+							Espace sécurisé
+						</div>
+					</div>
+					<div class="ui-g-12 ui-md-12 ui-lg-12" style="padding: 0;">
+						<p:panelGrid columns="1" style="width:100%; height: 100%;" styleClass="panier" rendered="#{paiementController.rcb==null}">
+							<f:facet name="header">
+								<p:outputLabel value="Fournisseur : #{paiementController.taMesFournisseurs.taFournisseur.raisonSocialeFournisseur}" />
+								<br/>
+								<p:outputLabel value="Montant total à payer : #{paiementController.taFacture.resteAReglerComplet} €" />
+								<br/>
+								<p:graphicImage value="/image_log_frs_cpt_client/#{paiementController.taMesFournisseurs.taFournisseur.idFournisseur}"  height="30"/>
+							</f:facet>
+	
+							<p:panelGrid columns="2" style="margin:auto; width:40%; height: 100%;" styleClass="panier">
+	
+	
+								<p:outputLabel value="Nom du porteur :" />
+								<p:inputText value="#{paiementController.nomCarte}" />
+								
+								<p:outputLabel value="Numéro :" />
+								<p:inputText value="#{paiementController.numCarte}" />
+								
+								<p:outputLabel value="Mois :" />
+								<p:selectOneMenu value="#{paiementController.moisCarte}" style="width:150px">
+									<f:selectItems var="p" itemLabel="#{p}" itemValue="#{p}" value="#{paiementController.listeMoisCB}" />
+								</p:selectOneMenu>
+								
+								<p:outputLabel value="Année :" />
+								<p:selectOneMenu value="#{paiementController.anneeCarte}" style="width:150px">
+									<f:selectItems var="p" itemLabel="#{p}" itemValue="#{p}" value="#{paiementController.listeAnneeCB}" />
+								</p:selectOneMenu>
+								
+								<p:outputLabel value="Cryptogramme :" />
+								<p:inputText value="#{paiementController.cryptoCarte}" />
+								
+<!-- 								<p:commandButton value="Annuler" actionListener="#{paiementController.actAnnuler}"/> -->
+								<p:commandButton value="Annuler" type="button"
+									onclick="window.location.href='/page-fournisseur.xhtml?idFrs=#{paiementController.taMesFournisseurs.idFournisseur}'" ajax="false" />
+								
+								<p:commandButton value="Payer" actionListener="#{paiementController.actPayer}" update="@form" style="margin-left: 110px;">
+								</p:commandButton>
+								
+							</p:panelGrid>
+														
+						</p:panelGrid>
+												
+					</div>
+				</div>
+			</ui:fragment>
+			
+			<ui:fragment rendered="#{paiementController.rcb!=null}">
+				<div class="ui-g">
+
+					<div class="ui-g-12 ui-md-12 ui-lg-12" style="padding: 0; margin-top: 20px;">
+						<p:panelGrid columns="1" style="width:100%; height: 100%;" styleClass="panier center">
+							<f:facet name="header">
+								<p:graphicImage value="/image_log_frs_cpt_client/#{paiementController.taMesFournisseurs.taFournisseur.idFournisseur}"  height="30"/>
+								<br/>
+								<p:outputLabel value="Votre règlement s'est éffectué avec succès" />
+							</f:facet>
+							
+							<p:selectBooleanCheckbox value="#{paiementController.rcb.paye}" disabled="true" />
+							<p:outputLabel style="display: block; width: 400px; margin: auto;" value="Référence du paiement : #{paiementController.rcb.refPaiement}" />
+							<p:outputLabel style="display: block; width: 400px; margin: auto;" value="Code règlement : #{paiementController.rcb.codeReglement}" />
+							<p:outputLabel style="display: block; width: 400px; margin: auto;" value="Id règlement : #{paiementController.rcb.idReglement}" />
+<!-- 							<p:outputLabel style="display: block; width: 300px; margin: auto;" value="Nous vous communiquons un email de confirmation de votre enregistrement." /> -->
+<!-- 							<p:outputLabel style="display: block; width: 200px; margin: auto;" value="Cordialement." /> -->
+<!-- 							<p:outputLabel style="display: block; width: 200px; margin: auto" value="Le service comptabilié." /> -->
+							<p:outputLabel style="display: block; width: 200px; margin: auto; color: #A6A9C0;" value="#{paiementController.taMesFournisseurs.taFournisseur.raisonSocialeFournisseur}"/>
+								
+						</p:panelGrid>
+					</div>
+				</div>
+			</ui:fragment>
+		</h:form>
+
+	</ui:define>
+
+</ui:composition>

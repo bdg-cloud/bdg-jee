@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:h="http://java.sun.com/jsf/html" 
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+	<f:view locale="#{languageBean.localeCode}" />
+	
+	<h:head>
+		<title>Info fournisseur</title>
+		
+		<style type="text/css">
+			.ui-widget {
+				font-size: 90%;
+			}
+		</style>
+		
+	</h:head>
+	
+	<h:body style="background: #fff;">
+	
+		<f:facet name="last">
+			<!-- surcharge des CSS primefaces -->
+			<h:outputStylesheet library="css" name="icarus-bdg.css" />
+			<h:outputStylesheet library="css" name="theme-compteclient.css" />
+		</f:facet>
+	
+		<div class="ui-g  ui-fluid">
+		
+			<h:form id="form">
+				<div class="ui-g-12 ui-lg-4">
+	
+					<div class="container-info-entreprise-info">
+	
+						<h:outputText class="info-entreprise-nom" value="#{infoFournisseurController.taFournisseur.raisonSocialeFournisseur}" />
+	
+						<h:outputText class="contact"
+							value="#{infoFournisseurController.taFournisseur.adresse1Fournisseur} 
+						#{infoFournisseurController.taFournisseur.adresse2Fournisseur} 
+						#{infoFournisseurController.taFournisseur.adresse3Fournisseur}
+						#{infoFournisseurController.taFournisseur.codePostalFournisseur} 
+						#{infoFournisseurController.taFournisseur.villeFournisseur} 
+						#{infoFournisseurController.taFournisseur.paysFournisseur}" />
+	
+	
+						<h:outputText class="contact"
+							value="#{c_langue.popup_info_fournisseur_footer_tel} #{infoFournisseurController.taFournisseur.telFournisseur}
+						Fax #{infoFournisseurController.taFournisseur.faxFournisseur} 
+						Email #{infoFournisseurController.taFournisseur.emailFournisseur} 
+						#{infoFournisseurController.taFournisseur.webFournisseur}" />
+	
+	
+						<h:outputText class="ligne-info-entreprise"
+							value="&lt;strong&gt; #{c_langue.popup_info_fournisseur_footer_raison_sociale} &lt;/strong&gt;
+						#{infoFournisseurController.taFournisseur.raisonSocialeFournisseur} 
+						&lt;strong&gt; #{c_langue.popup_info_fournisseur_footer_siret} &lt;/strong&gt; #{infoFournisseurController.taFournisseur.siretFournisseur} 
+						&lt;strong&gt; #{c_langue.popup_info_fournisseur_footer_rcs} &lt;/strong&gt; #{infoFournisseurController.taFournisseur.rcsFournisseur} 
+						&lt;strong&gt; #{c_langue.popup_info_fournisseur_footer_tva} &lt;/strong&gt; #{infoFournisseurController.taFournisseur.tvaIntraFournisseur} 
+						&lt;strong&gt; #{c_langue.popup_info_fournisseur_footer_capital} &lt;/strong&gt; #{infoFournisseurController.taFournisseur.capitalFournisseur} €"
+							escape="false" />
+					</div>
+	
+				</div>
+				<div class="ui-g-12">
+	
+					<div>
+						<p:outputLabel styleClass="titre1" value="#{c_langue.popuf_info_fournisseur_corp_sous_titre}" />
+					</div>
+	
+					<div>
+						<p:outputLabel styleClass="titre2" value="#{c_langue.popup_info_fournisseur_corp_form_code_client}" />
+					</div>
+					
+					<div class="ui-g-12 ui-lg-10" align="center">
+						<p:inputText value="#{mesFournisseursController.codeClient}" placeholder="#{c_langue.popup_info_fournisseur_corp_form_placeholder_code_client}"
+							class="j_code-client" size="25" autocomplete="off" required="false" />
+					</div>
+
+					<div>
+						<p:outputLabel styleClass="titre3" value="#{c_langue.popup_info_fournisseur_corp_form_cle_fournisseur}" />
+					</div>
+					
+					<div class="ui-g-12 ui-lg-10" align="center">
+						<p:inputText value="#{mesFournisseursController.cleFournisseur}"
+							placeholder="#{c_langue.popup_info_fournisseur_corp_form_placeholder_cle_fournisseur}" class="j_cle-fournisseur" size="25" autocomplete="off"
+							required="false" />
+					</div>
+	
+					<div class="ui-g-12 ui-lg-12">
+						<p:commandButton value="#{c_langue.popup_info_fournisseur_btn_quitter}" actionListener="#{fournisseurController.fermer()}" class="quitter" />
+						
+						<p:commandButton class="connection" value="#{c_langue.popup_info_fournisseur_btn_connection}"
+							actionListener="#{mesFournisseursController.ajouteMonFournisseur(infoFournisseurController.taFournisseur)}"
+							title="#{c_langue.popup_info_fournisseur_alerte_title_btn_connection}" />
+					</div>
+	
+					<div class="ui-g-12" align="center">
+						<p:outputLabel styleClass="info-texte" value="#{c_langue.popuf_info_fournisseur_corp_titre}" />
+						<h:outputText class="nomFrs" value=" #{infoFournisseurController.taFournisseur.raisonSocialeFournisseur}" />
+						<p:graphicImage library="images" name="logo.jpeg" class="logoClient" rendered="#{infoFournisseurController.taFournisseur.blobLogo == null}" />
+						<p:graphicImage value="#{infoFournisseurController.logo}" stream="false" rendered="#{infoFournisseurController.taFournisseur.blobLogo !=null}" />
+					</div>
+					
+					<!-- Remonter des messages d'erreur du controleur pour affichage par PrimeFaces -->
+					<div class="ui-g-12 ui-lg-12">
+						<p:messages id="messages" showDetail="true" autoUpdate="true" closable="true" />
+						<div class="container-info-entreprise-info-footer">					
+					</div>
+					</div>
+				</div>
+				
+				
+	
+			</h:form>
+	
+		</div>
+	
+		<h:outputStylesheet name="css/animate.css" library="icarus-layout" />
+		<h:outputStylesheet name="css/nanoscroller.css" library="icarus-layout" />
+		<h:outputStylesheet name="css/layout-#{auth.themeCouleur}.css" library="icarus-layout" />
+	
+		<h:outputScript name="/js/functions.js" />
+		<h:outputScript name="/js/locale_fr.js" />
+	</h:body>
+
+</html>

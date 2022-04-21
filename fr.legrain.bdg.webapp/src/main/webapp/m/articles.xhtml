@@ -1,0 +1,286 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/template.xhtml">
+
+    <ui:define name="head">
+        <script type="text/javascript">
+            function skinChart() {
+                this.cfg.shadow = false;
+                this.cfg.title = '';
+                this.cfg.seriesColors = ['#0097A7', '#0277BD', '#E53935'];
+                this.cfg.grid = {
+                    background: '#ffffff',
+                    borderColor: '#ffffff',
+                    gridLineColor: '#F5F5F5',
+                    shadow: false
+                };
+                this.cfg.axesDefaults = {
+                    rendererOptions: {
+                        textColor: '#666F77'
+                    }
+                };
+                this.cfg.seriesDefaults = {
+                    shadow: false,
+                    lineWidth:1,
+                    markerOptions: {
+                        shadow: false,
+                        size:7,
+                        style:'circle'
+                    }
+                };
+                this.cfg.axes.yaxis.tickOptions.show = false;
+            }
+        </script>
+        <style type="text/css">
+            .jqplot-target, .jqplot-axis {
+                color: #546E7A;
+            }
+        </style>
+    </ui:define>
+    
+    <ui:define name="subheader">
+        Articles
+    </ui:define>
+
+     <ui:define name="metadata">
+    	 <f:metadata>
+			<f:viewParam name="idArticle" value="#{articleController.paramId}"/>
+			<f:event type="preRenderView" listener="#{articleController.refreshResponsive}" />
+		</f:metadata>
+     </ui:define>
+     
+    <ui:define name="content">
+        
+       Articles
+   <h:form id="form" prependId="true">     
+   
+   <ui:include src="confirm_dialog.xhtml"/>
+   
+   <div class="Container100 Wrapper NoIndent">
+        			<p:menubar styleClass="menu-onglet">
+						<p:menuitem  value="Annuler" title="Annuler" icon="fa fa-undo" actionListener="#{articleController.actAnnuler}" process="@this" update="idPanelArticle,idPanelUnite,idPanelRapport,idPanelStock,@form" disabled="#{articleController.etatBouton('annuler')}" />
+						<p:menuitem  value="Enregistrer" title="Enregistrer" icon="fa fa-save" actionListener="#{articleController.actEnregistrer}" process="@this" update="idPanelArticle,idPanelUnite,idPanelRapport,idPanelStock,@form" disabled="#{articleController.etatBouton('enregistrer')}" />
+						<p:menuitem  value="Insérer" title="Insérer" icon="fa fa-plus-circle" actionListener="#{articleController.actInserer}" process="@this" update="idPanelArticle,idPanelUnite,idPanelRapport,idPanelStock,@form" disabled="#{articleController.etatBouton('inserer')}" />
+						<p:menuitem  value="Modifier" title="Modifier" icon="fa fa-pencil" actionListener="#{articleController.actModifier}" process="@this" update="idPanelArticle,idPanelUnite,idPanelRapport,idPanelStock,@form" disabled="#{articleController.etatBouton('modifier')}" />
+						<p:menuitem  value="Supprimer" title="Supprimer" icon="fa fa-trash" actionListener="#{articleController.actSupprimer}" process="@this" update="idPanelArticle,idPanelUnite,idPanelRapport,idPanelStock,@form" disabled="#{articleController.etatBouton('supprimer')}" >
+							<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer cet enregistrement ?" icon="fa fa-exclamation-triangle" />
+						</p:menuitem>
+<!-- 						<p:menuitem  value="Annuler" title="Fermer" icon="fa fa-close"  process="@this"  -->
+<!-- 						actionListener="#{articleController.actFermer}" -->
+<!-- 						update=":form:messages,@widgetVar(wvMenuListeArticle),@widgetVar(wvDataTableListeArticle)" disabled="#{articleController.etatBouton('fermer')}"  -->
+<!-- 						onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())" /> -->
+						
+						<p:menuitem  value="Imprimer" title="Imprimer" icon="fa fa-print"
+									onsuccess="window.open('#{request.contextPath}/output?__report=/reports/article/FicheArticle.rptdesign&amp;id_article=#{articleController.selectedTaArticleDTO.id}&amp;urlcb=#{articleController.urlPourEdition}&amp;__format=pdf')"
+									actionListener="#{articleController.actImprimer}"
+									disabled="#{articleController.etatBouton('imprimer')}"/>
+					</p:menubar>
+	</div>
+	
+	<div class="Container100 Wrapper NoIndent">				
+        <div class="Container100 ui-fluid NoIndent">
+            <div class="Card">
+            <p:panel id="idPanelArticle" header="Identité" toggleable="true" widgetVar="panelArticle">
+              <p:panelGrid columns="4" columnClasses="ui-grid-col-2,ui-grid-col-4,ui-grid-col-2,ui-grid-col-4" layout="grid" styleClass="ui-panelgrid-blank" style="border:0px none; background-color:transparent;">
+							<p:outputLabel value="Code : " />
+							<p:inputText value="#{articleController.selectedTaArticleDTO.codeArticle}" disabled="#{articleController.editable()}" validator="#{articleController.validateArticle}">
+								<f:attribute name="nomChamp" value="#{const.C_CODE_ARTICLE}" />
+								<p:ajax event="blur" update="@this"/>
+							</p:inputText>
+
+							<p:outputLabel value="Libellé: " />
+							<p:inputText value="#{articleController.selectedTaArticleDTO.libellecArticle}" disabled="#{articleController.editable()}" validator="#{articleController.validateArticle}">
+								<f:attribute name="nomChamp" value="#{const.C_LIBELLEC_ARTICLE}" />
+								<p:ajax event="blur" update="@this"/>
+							</p:inputText>
+							
+							<p:outputLabel value="Description : " />
+							<p:inputText value="#{articleController.selectedTaArticleDTO.libellelArticle}" disabled="#{articleController.editable()}" validator="#{articleController.validateArticle}">
+								<f:attribute name="nomChamp" value="#{const.C_LIBELLEL_ARTICLE}" />
+								<p:ajax event="blur" update="@this"/>
+							</p:inputText>
+
+							<p:outputLabel value="Code famille : " />
+							<p:autoComplete value="#{articleController.taFamilleDTO}"
+								completeMethod="#{articleController.familleArticleAutoCompleteLight}"
+								id="idfamille" disabled="#{articleController.editable()}"
+								var="famille" itemLabel="#{famille.codeFamille}"
+								itemValue="#{famille}" forceSelection="true" dropdown="true"
+								required="true" requiredMessage="Le code famille d'article est obligatoire"
+								placeholder="Famille d'article" converter="entityConverter">
+								<p:column>
+<!-- 									<f:facet name="header"> -->
+<!-- 										<p:commandButton value="Ajouter" title="Insérer" -->
+<!-- 											process="@this" update="@form" -->
+<!-- 											actionListener="#{articleController.actDialogFamille}" -->
+<!-- 											styleClass="btn-insert btn"> -->
+<!-- 											<p:ajax event="dialogReturn" -->
+<!-- 												listener="#{articleController.handleReturnDialogFamille}" -->
+<!-- 												update="@parent:@parent" /> -->
+<!-- 										</p:commandButton> -->
+<!-- 									</f:facet>								 -->
+									<h:outputText value="#{famille.codeFamille}" />
+								</p:column>
+								<p:column>
+									<h:outputText value="#{famille.libcFamille}" />
+								</p:column>
+								<p:column>
+									<h:outputText value="#{famille.liblFamille}" />
+								</p:column>
+									<f:attribute name="nomChamp" value="#{const.C_CODE_FAMILLE}" />
+								<p:ajax event="itemSelect"
+									listener="#{articleController.autcompleteSelection}"
+									update="@this" />
+							</p:autoComplete>
+							
+							<p:outputLabel value="Matière première : " />
+							<p:selectBooleanCheckbox value="#{articleController.selectedTaArticleDTO.matierePremiere}" disabled="#{articleController.editable()}">
+							<p:ajax event="change" update="@this"/>
+							</p:selectBooleanCheckbox>
+							
+							<p:outputLabel value="Produit fini : " />
+							<p:selectBooleanCheckbox value="#{articleController.selectedTaArticleDTO.produitFini}" disabled="#{articleController.editable()}">
+							<p:ajax event="change" update="@this"/>
+							</p:selectBooleanCheckbox>
+
+							<p:outputLabel value="Nb jours DLUO : " />
+							<p:inputText value="#{articleController.selectedTaArticleDTO.paramDluo}" disabled="#{articleController.editable()}" validator="#{articleController.validateArticle}">
+								<f:attribute name="nomChamp" value="#{const.C_PARAM_DLUO}" />
+								<p:ajax event="blur" update="@this"/>
+							</p:inputText>
+							
+							<p:outputLabel value="Code barre (EAN13) : " />
+							<p:inputText value="#{articleController.selectedTaArticleDTO.codeBarre}" disabled="#{articleController.editable()}" validator="#{articleController.validateArticle}">
+								<f:attribute name="nomChamp" value="#{const.C_CODE_BARRE_ARTICLE}" />
+								<p:ajax event="blur" update="@this"/>
+							</p:inputText>
+							<p:barcode value="#{articleController.selectedTaArticleDTO.codeBarre}" type="ean13" rendered="#{articleController.selectedTaArticleDTO.codeBarre != null}" />
+						
+							<p:commandButton value="Imprimer étiquette code barre" styleClass="btn-barcode btn"
+								onsuccess="window.open('#{request.contextPath}/articles/etiquette_cb.xhtml')"
+								actionListener="#{articleController.actImprimerEtiquetteCB}" rendered="#{articleController.selectedTaArticleDTO.codeBarre != null}"/>
+            
+              </p:panelGrid>
+            </p:panel>
+			<p:panel id="idPanelUnite" header="Unités" toggleable="true" widgetVar="panelUnite">
+			  <p:panelGrid columns="4" columnClasses="ui-grid-col-2,ui-grid-col-4,ui-grid-col-2,ui-grid-col-4" layout="grid" styleClass="ui-panelgrid-blank" style="border:0px none; background-color:transparent;">
+						<p:outputLabel value="Code U1 : " />
+						<p:autoComplete value="#{articleController.taUnite1DTO}"
+							completeMethod="#{articleController.uniteAutoCompleteLight}"
+							disabled="#{articleController.editable()}" var="unite"
+							itemLabel="#{unite.codeUnite}" itemValue="#{unite}"
+							forceSelection="true" dropdown="true"
+							placeholder="Unité 1 article" converter="entityConverter">
+							<p:column>
+<!-- 								<f:facet name="header"> -->
+<!-- 									<p:commandButton value="Ajouter" title="Insérer" -->
+<!-- 										process="@this" update="@form" -->
+<!-- 										actionListener="#{articleController.actDialogUnite}" -->
+<!-- 										styleClass="btn-insert btn"> -->
+<!-- 										<p:ajax event="dialogReturn" -->
+<!-- 											listener="#{articleController.handleReturnDialogUnite}" -->
+<!-- 											update="@parent:@parent" /> -->
+<!-- 									</p:commandButton> -->
+<!-- 								</f:facet>												 -->
+										<h:outputText value="#{unite.codeUnite}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{unite.liblUnite}" />
+							</p:column>
+
+												<f:attribute name="nomChamp" value="#{const.C_CODE_UNITE}" />
+												<p:ajax event="itemSelect"
+													listener="#{articleController.autcompleteSelection}"
+													update="@this" />
+											</p:autoComplete>
+
+											<p:outputLabel value="Code U2 : " />
+											<!-- <p:inputText value="#{articleController.selectedTaArticleDTO.codeUnite2}" /> -->
+											<p:autoComplete value="#{articleController.taUnite2DTO}"
+												completeMethod="#{articleController.uniteAutoCompleteLight}"
+												disabled="#{articleController.editable()}" var="unite"
+												itemLabel="#{unite.codeUnite}" itemValue="#{unite}"
+												forceSelection="true" dropdown="true"
+												placeholder="Unité 2 article"  converter="entityConverter">
+												<p:column>
+													<f:facet name="header">
+														<p:commandButton value="Ajouter" title="Insérer"
+															process="@this" update="@form"
+															actionListener="#{articleController.actDialogUnite}"
+															styleClass="btn-insert btn">
+															<p:ajax event="dialogReturn"
+																listener="#{articleController.handleReturnDialogUnite2}"
+																update="@parent:@parent" />
+														</p:commandButton>
+													</f:facet>												
+												
+													<h:outputText value="#{unite.codeUnite}" />
+												</p:column>
+												<p:column>
+													<h:outputText value="#{unite.liblUnite}" />
+												</p:column>
+
+												<f:attribute name="nomChamp" value="#{const.C_CODE_UNITE2}" />
+												<p:ajax event="itemSelect"
+													listener="#{articleController.autcompleteSelection}"
+													update="@this" />
+											</p:autoComplete>
+			  
+			  </p:panelGrid>
+			</p:panel> 
+			<p:panel id="idPanelRapport" header="Rapport entre U1 et U2" toggleable="true" widgetVar="panelRapport">
+			   <p:panelGrid columns="4" columnClasses="ui-grid-col-2,ui-grid-col-4,ui-grid-col-2,ui-grid-col-4" layout="grid" styleClass="ui-panelgrid-blank" style="border:0px none; background-color:transparent;">
+									<p:outputLabel value="Rapport : " />
+									<p:inputText value="#{articleController.selectedTaArticleDTO.rapport}" disabled="#{articleController.editable()}" validator="#{articleController.validateArticle}">
+										<f:attribute name="nomChamp" value="#{const.C_RAPPORT}" />
+										<p:ajax event="blur" update="@this"/>
+									</p:inputText>
+									
+									<p:outputLabel value="" />
+									<p:selectOneRadio  value="#{articleController.selectedTaArticleDTO.sens}" validator="#{articleController.validateArticle}">
+							            <f:selectItem itemLabel="Multiplié par" itemValue="#{true}" />
+							            <f:selectItem itemLabel="Divisé par" itemValue="#{false}" />
+							            <f:attribute name="nomChamp" value="#{const.C_SENS_RAPPORT}" />
+										<p:ajax event="change" update="@this"/>
+							        </p:selectOneRadio>
+
+									<p:outputLabel value="Arrondi : " />
+									<p:inputText value="#{articleController.selectedTaArticleDTO.nbDecimal}" disabled="#{articleController.editable()}" validator="#{articleController.validateArticle}">
+										<f:attribute name="nomChamp" value="#{const.C_NB_DECIMAL}" />
+										<p:ajax event="blur" update="@this"/>
+									</p:inputText>			   
+			   </p:panelGrid>
+			</p:panel>
+			<p:panel id="idPanelStock" header="Stock" toggleable="true" widgetVar="panelStock">
+			  <p:panelGrid columns="4" columnClasses="ui-grid-col-2,ui-grid-col-4,ui-grid-col-2,ui-grid-col-4" layout="grid" styleClass="ui-panelgrid-blank" style="border:0px none; background-color:transparent;">
+										<p:outputLabel value="Stock mini : " />
+										<p:inputText value="#{articleController.selectedTaArticleDTO.stockMinArticle}"
+											disabled="#{articleController.editable()}">
+											<p:ajax event="blur" update="@this" />
+										</p:inputText>
+			  
+			  </p:panelGrid>
+			</p:panel>           
+			</div>
+		</div>	
+		</div>
+			
+		<div class="Container100 Wrapper NoIndent">		        
+        			<p:menubar styleClass="menu-onglet">
+						<p:menuitem   value="Annuler" title="Annuler" icon="fa fa-undo" actionListener="#{articleController.actAnnuler}" process="@this" update="idPanelArticle,idPanelUnite,idPanelRapport,idPanelStock,@form" disabled="#{articleController.etatBouton('annuler')}" />
+						<p:menuitem   value="Enregistrer" title="Enregistrer" icon="fa fa-save" actionListener="#{articleController.actEnregistrer}" process="@this" update="idPanelArticle,idPanelUnite,idPanelRapport,idPanelStock,@form" disabled="#{articleController.etatBouton('enregistrer')}" />
+<!-- 						<p:menuitem   value="Insérer" title="Insérer" icon="fa fa-plus-circle" actionListener="#{articleController.actInserer}" process="@this" update="idTabViewArticle:idPanelArticle,idTabViewArticle:idPanelUnite,idTabViewArticle:idPanelRapport,idTabViewArticle:idPanelStock,:form:messages,@form,@widgetVar(wvMenuListeArticle),@widgetVar(wvDataTableListeArticle)" disabled="#{articleController.etatBouton('inserer')}" /> -->
+<!-- 						<p:menuitem   value="Modifier" title="Modifier" icon="fa fa-pencil" actionListener="#{articleController.actModifier}" process="@this" update="idTabViewArticle:idPanelArticle,idTabViewArticle:idPanelUnite,idTabViewArticle:idPanelRapport,idTabViewArticle:idPanelStock,:form:messages,@form,@widgetVar(wvMenuListeArticle),@widgetVar(wvDataTableListeArticle)" disabled="#{articleController.etatBouton('modifier')}" /> -->
+<!-- 						<p:menuitem   value="Supprimer" title="Supprimer" icon="fa fa-trash" actionListener="#{articleController.actSupprimer}" process="@this" update="idTabViewArticle:idPanelArticle,idTabViewArticle:idPanelUnite,idTabViewArticle:idPanelRapport,idTabViewArticle:idPanelStock,:form:messages,:formLeft:tabViewLeft,@form" disabled="#{articleController.etatBouton('supprimer')}" > -->
+<!-- 							<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer cet enregistrement ?" icon="ui-icon-alert" /> -->
+<!-- 						</p:menuitem> -->
+
+					</p:menubar>
+					</div>
+    </h:form>					
+    </ui:define>
+
+</ui:composition>

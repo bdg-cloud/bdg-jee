@@ -1,0 +1,242 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:p="http://primefaces.org/ui">
+	
+	<o:importConstants type="fr.legrain.bdg.webapp.app.LgrTab" />
+	
+	<p:commandLink id="listeBoncdeAchatBtn" >
+		<i class="top-submenu-icon fa fa-fw fa-file-text-o"></i>
+<!-- 		<i class="top-bar-badge animated rubberBand"><h:outputText value="#{topBarController.nbClient}"/></i> -->
+<!-- 		<i class="fa fa-book animated swing" aria-hidden="true"></i> -->
+		<span><h:outputText value="Liste des bon de commande achat" /></span>
+	</p:commandLink>
+	
+	<p:overlayPanel id="idListeBoncdeAchatPanel" for="listeBoncdeAchatBtn" hideEffect="fade" dynamic="true" 
+		dismissable="true" appendTo="@(body)" widgetVar="wvOverlayListeBoncdeAchat" showCloseIcon="true">
+	
+		<h:form>
+		<div class="dashboard-title" style="background:#f6f6f6;">
+              <h:panelGrid columns="3" cellpadding="5">
+            	<h:graphicImage name="dashboard/bon-de-commande.svg" library="images" height="35px" style="margin-top:1px;" />
+                <p:outputLabel value="Liste des bons de commande achat" style="font-size:20px;"/>
+              </h:panelGrid>  
+              <p:separator/>
+        </div>
+		<p:menubar styleClass="menu-onglet" widgetVar="wvMenuListeBoncdeAchat" id="idMenuListeBoncdeAchat">
+			<p:menuitem title="Créer un nouveau bon de commande achat" update=":form:tabView,:form:messages,@widgetVar(wvMenuListeBoncdeAchat),@widgetVar(wvDataTableListeBoncdeAchat)" 
+				actionListener="#{bonCdeAchatController.nouveau}" styleClass="icon icon-insert" disabled="#{bonCdeAchatController.etatBouton('inserer')}" oncomplete="PF('wvOverlayListeBoncdeAchat').hide();"/>
+	<!-- 	 	<p:menuitem title="Détail" update=":form:tabView,:form:messages" actionListener="#{bonCdeAchatController.detail}" styleClass="icon icon-detail" disabled="#{bonCdeAchatController.modeEcran.dataSetEnModif()}" oncomplete="PF('wvOverlayListeBoncdeAchat').hide();"/> -->
+<!-- 		 	<p:menuitem title="Supprimer les boncdeAchat sélectionnés" update=":form:tabView,@widgetVar(wvDataTableListeBoncdeAchat),@widgetVar(wvMenuListeBoncdeAchat),:form:messages,@form"  -->
+<!-- 		 	actionListener="#{bonCdeAchatController.supprimer}" styleClass="icon icon-delete" disabled="#{bonCdeAchatController.etatBouton('supprimerListe')}"> -->
+<!-- 		 		<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer les boncdeAchat sélectionnés ?" icon="ui-icon-alert" /> -->
+<!-- 		 	</p:menuitem> -->
+		 	<p:menuitem title="Rafraîchir la liste des bons de commande achat" update="@form,@widgetVar(wvDataTableListeBoncdeAchat),@widgetVar(wvMenuListeBoncdeAchat),:form:messages" actionListener="#{bonCdeAchatController.refresh}" styleClass="icon icon-refresh" disabled="#{bonCdeAchatController.modeEcran.dataSetEnModif()}"/>
+		</p:menubar>
+		
+		<p:sticky target="idMenuListeBoncdeAchat" />
+	 
+	<p:dataTable id="dataTableListeBoncdeAchat" var="boncdeAchat"
+				widgetVar="wvDataTableListeBoncdeAchat"
+				value="#{bonCdeAchatController.values}"
+				rowKey="#{boncdeAchat.id}"
+				selection="#{bonCdeAchatController.selectedDocumentDTOs}"
+				dblClickSelect="true"
+				styleClass="datatable mt10"
+				resizableColumns="true"
+				paginator="true" 
+				rows="#{msg.modele_datatable_ligne_par_page_debut}"
+				paginatorTemplate="#{msg.modele_datatable_paginator}"
+				rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+				emptyMessage="#{msg.message_datatable_vide}"
+				currentPageReportTemplate="#{msg.modele_datatable_page_courante}"
+				disabledSelection="#{bonCdeAchatController.modeEcran.dataSetEnModif()}">
+
+				<p:ajax event="rowSelect" delay="#{msg.datatable_rowselect_delay}" listener="#{bonCdeAchatController.onRowSelect}" update=":form:tabView,:form:messages" oncomplete="activeTabCenter('#{LgrTab.CSS_CLASS_TAB_BONCDE}');PF('wvOverlayListeBoncdeAchat').hide();scrollToTop();"/>
+
+			
+				<f:facet name="header">  
+           			<h:outputText value="BoncdeAchat" />
+           			<span style="float:right;" class="searchbar_list">
+			            <p:outputPanel>
+				                <p:inputText id="globalFilter" onkeyup="PF('wvDataTableListeBoncdeAchat').filter()" style="width:150px" placeholder="Rechercher"/>
+				            </p:outputPanel>
+			        </span>
+        		</f:facet>
+
+		  		<f:facet name="{Exporters}">
+		            <h:commandLink>
+		                <p:graphicImage library="images" name="excel.png" width="24"/>
+		                <p:dataExporter type="xls" target="dataTableListeBoncdeAchat" fileName="liste_boncdeAchat" />
+		            </h:commandLink>
+		 
+		            <p:commandLink onsuccess="window.open('#{request.contextPath}/output?__report=/reports/documents/boncdeAchat/ListeDesBoncdeAchat.rptdesign&amp;__format=pdf')"
+			actionListener="#{bonCdeAchatController.actImprimerListeDesBoncdeAchat}" process="@this">
+		                <p:graphicImage  library="images" name="pdf.png"  width="24"/>
+<!-- 		                <p:dataExporter type="pdf" target="dataTableListeTiers" fileName="liste_tiers" /> -->
+		            </p:commandLink>
+		 
+		            <h:commandLink>
+		                <p:graphicImage  library="images" name="csv.png"  width="24"/>
+		                <p:dataExporter type="csv" target="dataTableListeBoncdeAchat" fileName="liste_boncdeAchat" options="#{separateurCsvController.csvOptions}" />
+		            </h:commandLink>
+		 
+		            <h:commandLink>
+		                <p:graphicImage  library="images" name="xml.png"  width="24"/>
+		                <p:dataExporter type="xml" target="dataTableListeBoncdeAchat" fileName="liste_boncdeAchat" />
+		            </h:commandLink>
+		        </f:facet>
+
+				<p:column selectionMode="multiple" style="width:16px;text-align:center" exportable="false"/>
+			
+				<p:column style="width:16px" exportable="false">
+					<f:facet name="header">
+						<h:outputText value="" />
+					</f:facet>
+					<p:commandButton title="Détail" update=":form:tabView,:form:messages" 
+						action="#{bonCdeAchatController.detail}" styleClass="icon icon-detail icon-grille" 
+						disabled="#{bonCdeAchatController.modeEcran.dataSetEnModif()}" oncomplete="PF('wvOverlayListeBoncdeAchat').hide();">
+						<f:setPropertyActionListener target="#{bonCdeAchatController.selectedDocumentDTO}" value="#{boncdeAchat}" />
+					</p:commandButton>
+				</p:column>
+
+
+				<p:column sortBy="#{boncdeAchat.codeDocument}"
+							filterMatchMode="contains" 
+							filterBy="#{boncdeAchat.codeDocument}">
+					<f:facet name="header">
+						<h:outputText value="Code" />
+					</f:facet>
+					<h:outputText value="#{boncdeAchat.codeDocument}" />
+				</p:column>
+				
+				<p:column 	styleClass="center"
+							sortBy="#{boncdeAchat.dateDocument}"
+							filterMatchMode="contains" 
+							filterBy="#{bonCdeAchatController.customFormatDate(boncdeAchat.dateDocument)}">
+					<f:facet name="header">
+						<h:outputText value="Date" />
+					</f:facet>
+					<h:outputText value="#{boncdeAchat.dateDocument}">
+						<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+					</h:outputText>
+				</p:column>
+				
+				<p:column sortBy="#{boncdeAchat.codeTiers}"
+							filterMatchMode="contains" 
+							filterBy="#{boncdeAchat.codeTiers}">
+					<f:facet name="header">
+						<h:outputText value="Code tiers" />
+					</f:facet>
+					<h:outputText value="#{boncdeAchat.codeTiers}" />
+				</p:column>
+
+				<p:column 	sortBy="#{boncdeAchat.nomTiers}"
+							filterMatchMode="contains" 
+							filterBy="#{boncdeAchat.nomTiers}">
+					<f:facet name="header">
+						<h:outputText value="Nom" />
+					</f:facet>
+					<h:outputText value="#{boncdeAchat.nomTiers}" />
+				</p:column>
+				
+				<p:column 	sortBy="#{boncdeAchat.prenomTiers}"
+							filterMatchMode="contains" 
+							filterBy="#{boncdeAchat.prenomTiers}">
+					<f:facet name="header">
+						<h:outputText value="Prénom" />
+					</f:facet>
+					<h:outputText value="#{boncdeAchat.prenomTiers}" />
+				</p:column>
+
+				<p:column 	sortBy="#{boncdeAchat.nomEntreprise}"
+							filterMatchMode="contains" 
+							filterBy="#{boncdeAchat.nomEntreprise}" >
+					<f:facet name="header">
+						<h:outputText value="Entreprise" />
+					</f:facet>
+					<h:outputText value="#{boncdeAchat.nomEntreprise}" />
+				</p:column>
+
+				<p:column 	styleClass="right" 
+							filterMatchMode="contains" 
+							filterBy="#{boncdeAchat.netHtCalc}" 
+							sortBy="#{boncdeAchat.netHtCalc}"
+							exportFunction="#{separateurCsvController.exportNumber}">
+				
+					<f:facet name="header">
+						<h:outputText value="HT" />
+					</f:facet>
+					<h:outputText value="#{boncdeAchat.netHtCalc}" >
+						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+					</h:outputText>
+				</p:column>
+				
+				<p:column 	styleClass="right" 
+							filterMatchMode="contains" 
+							filterBy="#{boncdeAchat.netTvaCalc}" 
+							sortBy="#{boncdeAchat.netTvaCalc}"
+							exportFunction="#{separateurCsvController.exportNumber}">
+					<f:facet name="header">
+						<h:outputText value="TVA" />
+					</f:facet>
+					<h:outputText value="#{boncdeAchat.netTvaCalc}" >
+						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+					</h:outputText>
+				</p:column>
+
+				<p:column 	styleClass="right" 
+							filterMatchMode="contains" 
+							filterBy="#{boncdeAchat.netTtcCalc}" 
+							sortBy="#{boncdeAchat.netTtcCalc}"
+							exportFunction="#{separateurCsvController.exportNumber}">
+					<f:facet name="header">
+						<h:outputText value="TTC" />
+					</f:facet>
+					<h:outputText value="#{boncdeAchat.netTtcCalc}">
+						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+					</h:outputText>
+				</p:column>
+
+				<p:column 	styleClass="center" 
+							filterMatchMode="contains" 
+							filterBy="#{bonCdeAchatController.customFormatDate(boncdeAchat.dateEchDocument)}" 
+							sortBy="#{boncdeAchat.dateEchDocument}">
+					<f:facet name="header">
+						<h:outputText value="Date échéance :" />
+					</f:facet>
+					<h:outputText value="#{boncdeAchat.dateEchDocument}" >
+					<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+					</h:outputText>
+				</p:column>
+				
+					<p:column style="width:16px" exportable="false">
+						<f:facet name="header">
+							<h:outputText value="" />
+						</f:facet>
+<!--
+commentaire :  déclenche un bouton invisible pour mettre à jour le message personnalisé
+ -->						
+						<p:commandButton title="Supprimer" styleClass="icon-delete icon icon-grille" widgetVar="widgetVarBtnSupprimerBoncdeAchatListe"
+							action="#{bonCdeAchatController.actBeforeSupprimer(boncdeAchat)}" oncomplete="$('.classHiddenCommandForSuppressionBCAchat').click()"
+							process="@this"
+							update="@widgetVar(widgetVarBtnSupprimerBoncdeAchatListe2)">
+							<f:setPropertyActionListener target="#{bonCdeAchatController.selectedDocumentDTO}" value="#{boncdeAchat}" />
+						</p:commandButton>
+							
+					</p:column>
+
+			</p:dataTable>
+		<p:commandButton styleClass="classHiddenCommandForSuppressionBCAchat" widgetVar="widgetVarBtnSupprimerBoncdeAchatListe2" 
+		actionListener="#{bonCdeAchatController.actSupprimer}" style="display:none" process="@this" 
+		 update="@widgetVar(wvDataTableListeBoncdeAchat)" >
+        <p:confirm header="Confirmation de la suppression" message="#{bonCdeAchatController.messageSuppression}" icon="ui-icon-alert" /> 
+    </p:commandButton>	
+		</h:form>
+	</p:overlayPanel>
+	
+<!-- 	</h:form> -->
+
+</ui:composition>

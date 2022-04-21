@@ -1,0 +1,64 @@
+<ui:composition 
+	xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:o="http://omnifaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+	
+<!-- 	<c:set var="id" value="#{id}" /> -->
+<!--    <c:set var="maj" value="@this" /> -->
+<!--    <c:set var="pour" value="#{pour}" /> -->
+<!-- 	<c:set var="mode" value="#{pour}" /> -->
+<!-- <c:set var="mode_edition" value="#{modeEdition}" /> -->
+ 
+ 		<!-- 
+ 			'choixEdition' est faux : cas ou on l'on appelle birtviewer dans une nouvelle fenetre dans le onsuccess,
+ 			après avoir placé les valeurs en session HTTP avec la méthode de l'actionListener
+ 		 -->
+		<p:menuitem 
+			title="#{title}" 
+			value="#{value}" 
+			styleClass="#{styleClass}"
+			onsuccess="#{onsuccess}"
+			actionListener="#{actionBean[actionMethod]}"
+			disabled="#{disabled}"
+			update="@parent:@parent:@parent:@parent"
+			rendered="#{!choixEdition}">
+<!-- 			<ui:fragment rendered="#{mode_edition!=null}"> -->
+<!-- 			    <f:attribute name="mode_edition" value="${mode_edition}" /> -->
+<!-- 			</ui:fragment> -->
+<!-- 			<c:if test = "#{mode_edition!=null}"> -->
+<!-- 	       		<f:attribute name="mode_edition" value="${mode_edition}" /> -->
+<!-- 	      	</c:if> -->
+			<c:if test = "#{pourClient!=null}">
+				<f:attribute name="pour_client" value="true" /> 
+			</c:if>
+			<c:if test = "#{confirmMessage!=null}">
+				<p:confirm header="#{confirmHeader}" message="#{confirmMessage}" icon="ui-icon-alert" />
+			</c:if>
+		</p:menuitem>
+	
+		<!-- 
+			'choixEdition' est vrai : cas ou on l'on appelle affiche le dialogue permettant de choisir l'édition dans le oncomplete,
+			le oncomplete execute du JS qui simule un click sur un bouton caché. 
+			L'utilisation d'un bouton permet d'utilisé l'évènement 'dialogReturn' pour réellement déclenché la génération du PDF via les services cette fois.
+		 -->
+		<p:menuitem 
+			title="#{title}" 
+			value="#{value}" 
+			styleClass="#{styleClass}"
+			oncomplete="#{oncomplete}"
+			actionListener="#{actionBean[actionMethod]}"
+			disabled="#{disabled}"
+			rendered="#{choixEdition}">
+				<ui:fragment rendered="#{mode_edition!=null}">
+				    <f:attribute name="mode_edition" value="${mode_edition}" />
+				</ui:fragment>
+<!-- 			<c:if test = "#{mode_edition!=null}"> -->
+<!-- 	       		<f:attribute name="mode_edition" value="${mode_edition}" /> -->
+<!-- 	      	</c:if> -->
+		</p:menuitem>
+
+</ui:composition>

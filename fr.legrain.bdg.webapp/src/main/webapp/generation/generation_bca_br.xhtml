@@ -1,0 +1,477 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+    xmlns:pe="http://primefaces.org/ui/extensions">
+
+	<f:metadata>
+		<ui:param name="variableNomWvIDUnique" value="_BCABR" />
+	</f:metadata>
+	
+	<p:menubar styleClass="menu-onglet" id="idMenuBoutonGenerationLigneALigne#{variableNomWvIDUnique}" widgetVar="wvMenuBoutonGenerationLigneALigne#{variableNomWvIDUnique}">
+
+
+		<p:menuitem title="Fermer l'écran" value="Fermer" styleClass="icon icon-close menuitem-fermer-droite"
+			process="@this" 
+			actionListener="#{generationLALBcaBrMultipleController.actFermer}"
+			update=":form:messages"
+			disabled="#{generationLALBcaBrMultipleController.etatBouton('fermer')}"
+			onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())">
+			
+			<p:confirm header="Confirmation" message="#{msg_diag.alert_fermeture_onglet}" icon="ui-icon-alert" disabled="#{!generationLALBcaBrMultipleController.modeEcran.dataSetEnModif()}"/>
+		</p:menuitem>
+	</p:menubar>
+	<div class="container">
+		<p:fieldset legend="Etape 1/2 : Saisissez les critères de sélection des lignes de commandes à recevoir" id="idCriteresFiltresGenDoc#{variableNomWvIDUnique}" toggleable="true" toggleSpeed="50" >
+
+		<div class="ui-g">
+		
+				<div class="ui-g-12 ui-lg-12">
+					<div class="ui-g-12 ui-lg-6">
+						<div class="card">
+							<div class="ui-g-12 ui-lg-6">
+								<p:panel header="Choix du fournisseur" id="idPanelParamFiltreTierGenDoc">
+									<p:panelGrid columns="2">
+										<p:outputLabel value="Code tiers : " />
+										<p:autoComplete value="#{generationLALBcaBrMultipleController.selectedCritere}"  converter="entityConverter"
+											completeMethod="#{generationLALBcaBrMultipleController.tiersAutoCompleteDTOLight}" required="true"
+											requiredMessage="#{msg_diag.alert_champs_obligatoir} Le tiers est obligatoire" var="tiers" itemLabel="#{tiers.codeTiers}" itemValue="#{tiers}" forceSelection="true"
+											dropdown="true" placeholder="Tiers">
+											<p:column>
+												<h:outputText value="#{tiers.codeTiers}" required="true" requiredMessage="#{msg_diag.alert_champs_obligatoir}" />
+											</p:column>
+
+											<p:column>
+												<h:outputText value="#{tiers.nomTiers}" />
+											</p:column>
+
+
+											<p:column>
+												<h:outputText value="#{tiers.prenomTiers}" />
+											</p:column>
+
+											<p:column>
+												<h:outputText value="#{tiers.nomEntreprise}" />
+											</p:column>
+
+										</p:autoComplete>
+
+									</p:panelGrid>
+								</p:panel>
+							</div>
+							<div class="ui-g-12 ui-lg-6">
+								<p:panel header="Etat" >
+									<p:panelGrid columns="2">
+										<p:outputLabel value="Statut des lignes de commandes" />
+										<p:autoComplete value="#{generationLALBcaBrMultipleController.selectionEtat}" converter="entityConverter" 
+										completeMethod="#{generationLALBcaBrMultipleController.etatAutoComplete}"
+											var="etat" itemLabel="#{etat.codeEtat}" itemValue="#{etat}" forceSelection="true" dropdown="true" placeholder="Statut">
+											<p:column>
+												<h:outputText value="#{etat.taTEtat.codeTEtat}" />
+											</p:column>											
+											<p:column>
+												<h:outputText value="#{etat.codeEtat}" />
+											</p:column>											
+											<p:ajax event="itemSelect" update="@this" />
+										</p:autoComplete>
+
+									</p:panelGrid>
+								</p:panel>
+							</div>
+						</div>
+					</div>
+					<div class="ui-g-12 ui-lg-6">
+				<div class="card">
+						<p:panel collapsed="false" toggleable="true" header="Période"  style="width:100%;text-align: center;" >
+						<p:panelGrid columns="2"  >
+							<i class="fa fa-calendar fa-3x" aria-hidden="true"></i>
+								<p:panelGrid columns="2" cellpadding="0" >
+									<p:outputLabel value="Du" />
+									<p:calendar value="#{generationLALBcaBrMultipleController.dateDeb}" showOn="button" navigator="true" pattern="#{msg.date_pattern}"
+										mask="true" locale="fr" timeZone="#{msg.time_zone}">
+										<p:ajax event="dateSelect" update="@this" />
+										<p:ajax event="change" update="@this" />
+									</p:calendar>
+
+									<p:outputLabel value="au" />
+									<p:calendar value="#{generationLALBcaBrMultipleController.dateFin}" showOn="button" navigator="true" pattern="#{msg.date_pattern}"
+										mask="true" locale="fr" timeZone="#{msg.time_zone}">
+										<p:ajax event="dateSelect" update="@this" />
+										<p:ajax event="change" update="@this" />
+									</p:calendar>
+								</p:panelGrid>
+							
+
+						</p:panelGrid>
+						</p:panel>
+					</div>
+				<!--Fin div card-->
+					</div>			
+				</div>
+
+		</div>
+						<div class="card" style="text-align:center;">
+					<p:commandButton value="Valider les critères" actionListener="#{generationLALBcaBrMultipleController.actRefresh}" 
+		    				 update="idPanelListeDoc#{variableNomWvIDUnique}"  style="width:20%; height:45px;" icon="fa fa-check"/>
+				</div>
+		
+	 	 </p:fieldset>
+	</div>
+		
+			
+	<div class="container">
+		<p:panel widgetVar="wvLigneLaLMessages#{variableNomWvIDUnique}">
+			<p:messages  showDetail="true" closable="true" autoUpdate="false"/>
+		</p:panel>
+		<p:fieldset legend="Etape 2/2 : Liste des lignes de commandes à recevoir"   toggleable="true" toggleSpeed="50">
+			<p:panel header="Sélectionner les lignes de commandes à recevoir" id="idPanelListeDoc#{variableNomWvIDUnique}">
+			<div class="ui-g">
+	    		<div class="ui-g-12" >
+						<p:dataTable id="dataTableListeDoc#{variableNomWvIDUnique}" var="ligne" widgetVar="wvDataTableListeDoc#{variableNomWvIDUnique}" styleClass="datatable mt10"
+							value="#{generationLALBcaBrMultipleController.listeLigneALigneDTO}" rowKey="#{ligne.dto.idLDocument}" selectionMode="single"
+							selection="#{generationLALBcaBrMultipleController.selectedLigneALigneDTO}" dblClickSelect="true" editable="true" resizableColumns="true"
+							paginator="true" rows="#{msg.modele_datatable_ligne_par_page_debut}" paginatorTemplate="#{msg.modele_datatable_paginator}"
+							rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}" emptyMessage="#{msg.message_datatable_vide}"
+							currentPageReportTemplate="#{msg.modele_datatable_page_courante}">
+
+							<p:ajax event="rowEdit" listener="#{generationLALBcaBrMultipleController.onRowEdit}"  update="idNumLot#{variableNomWvIDUnique},@widgetVar(wvLigneLaLMessages#{variableNomWvIDUnique})" />
+							<p:ajax event="rowEditInit" listener="#{generationLALBcaBrMultipleController.onRowEditInit}" update="idAccepte#{variableNomWvIDUnique}"  />
+							<p:ajax event="rowEditCancel" listener="#{generationLALBcaBrMultipleController.onRowCancel}" />
+							<p:ajax event="toggleSelect" process="@this" />
+							<p:ajax event="rowSelectCheckbox"  process="@this" />
+							<p:ajax event="rowUnselectCheckbox" process="@this" />
+							<p:ajax event="rowSelect" process="@this" />
+							<p:ajax event="rowUnselect" process="@this" />
+							<p:ajax event="rowToggle" process="@this" listener="#{generationLALBcaBrMultipleController.onRowToggle}"
+								update="@widgetVar(wvdataTableDispatcheLigne)" oncomplete="ligneSeperationExpend()" />
+
+
+							<p:column style="width:16px">
+								<p:rowEditor styleClass="row-editor-debut" />
+							</p:column>
+							
+							<p:column style="width:16px" styleClass="center">
+								<p:rowToggler />
+							</p:column>
+
+<!-- 							<p:column selectionMode="multiple" style="width:16px;text-align:center" /> -->
+
+
+							<p:column style="width:16px" >
+								<f:facet name="header">
+									<h:outputText value="Accepté" />
+								</f:facet>
+								<p:selectBooleanCheckbox value="#{ligne.dto.accepte}" listener="#{generationLALBcaBrMultipleController.onChecked}" id="idAccepte#{variableNomWvIDUnique}"
+										validator="#{generationLALBcaBrMultipleController.validateDocument}" 
+										 disabled="#{generationLALBcaBrMultipleController.disableSiEtat(ligne) or !generationLALBcaBrMultipleController.editable()}">
+											<f:attribute name="nomChamp" value="#{const.C_ACCEPTE}" />
+									<p:ajax event="change" update="@this" />
+								</p:selectBooleanCheckbox>
+							</p:column>
+								
+
+					
+					
+					
+															
+							<p:column sortBy="#{ligne.dto.codeDocument}" filterBy="#{ligne.dto.codeDocument}" filterMatchMode="contains">
+								<f:facet name="header">
+									<h:outputText value="Code document" />
+								</f:facet>
+								<!-- 								<h:outputText value="#{ligne.dto.codeDocument}" /> -->
+								<p:commandLink value="#{ligne.dto.codeDocument}" style="font-weight: bold;"
+									action="#{ouvertureDocumentBean.detailDocument(ouvertureDocumentBean.recupCodeDocument(ligne.dto.codeDocument,ouvertureDocumentBean.getTypeDocumentBoncdeAchat()))}"
+									update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+								</p:commandLink>
+							</p:column>
+
+							<p:column sortBy="#{ligne.dto.codeArticle}" filterBy="#{ligne.dto.codeArticle}" filterMatchMode="contains">
+								<f:facet name="header">
+									<h:outputText value="Code article" />
+								</f:facet>
+								<h:outputText value="#{ligne.dto.codeArticle}" />
+							</p:column>
+							<p:column sortBy="#{ligne.dto.libelleLigne}" filterBy="#{ligne.dto.libelleLigne}" filterMatchMode="contains">
+								<f:facet name="header">
+									<h:outputText value="libellé" />
+								</f:facet>
+								<h:outputText value="#{ligne.dto.libelleLigne}" />
+							</p:column>
+							<p:column sortBy="#{ligne.dto.datePrevue}" filterBy="#{ligne.dto.datePrevue}" filterMatchMode="contains" styleClass="right">
+								<f:facet name="header">
+									<h:outputText value="Date prévue" />
+
+								</f:facet>
+								<h:outputText value="#{ligne.dto.datePrevue}">
+									<f:convertDateTime pattern="dd/MM/yyyy" timeZone="#{msg.time_zone}" />
+								</h:outputText>
+							</p:column>
+							<p:column sortBy="#{ligne.dto.qteOrigine}" filterBy="#{ligne.dto.qteOrigine}" filterMatchMode="contains" styleClass="right">
+								<f:facet name="header">
+									<h:outputText value="Qté commandée" />
+								</f:facet>
+
+								<h:outputText value="#{ligne.dto.qteOrigine}" />
+							</p:column>
+
+
+							<p:column sortBy="#{ligne.dto.uniteOrigine}" filterBy="#{ligne.dto.uniteOrigine}" filterMatchMode="contains">
+								<f:facet name="header">
+									<h:outputText value="Unité" />
+								</f:facet>
+								<h:outputText value="#{ligne.dto.uniteOrigine}" />
+							</p:column>
+
+
+							<!-- 	    				    <p:column sortBy="#{ligne.dto.prixUnitaire}" filterBy="#{ligne.dto.prixUnitaire}" filterMatchMode="contains"  styleClass="right"> -->
+							<!-- 								<f:facet name="header"> -->
+							<!-- 									<h:outputText value="Prix U." /> -->
+							<!-- 								</f:facet> -->
+							<!-- 								<h:outputText value="#{ligne.dto.prixUnitaire}" /> -->
+							<!-- 							</p:column> -->
+
+
+
+							<p:column styleClass="right" sortBy="#{ligne.dto.qteRecue}" filterBy="#{ligne.dto.qteRecue}" filterMatchMode="contains">
+								<f:facet name="header">
+									<h:outputText value="Qté recue" />
+								</f:facet>
+								<p:cellEditor>
+									<f:facet name="output">
+										<h:outputText value="#{ligne.dto.qteRecue}" />
+									</f:facet>
+									<f:facet name="input">
+										<p:inputText value="#{ligne.dto.qteRecue}" style="width:100%"  disabled="#{generationLALBcaBrMultipleController.disableSiEtat(ligne)}"/>
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+
+
+							<p:column styleClass="right" sortBy="#{ligne.dto.numLot}" filterBy="#{ligne.dto.numLot}" filterMatchMode="contains" id="idNumLot#{variableNomWvIDUnique}">
+								<f:facet name="header">
+									<h:outputText value="Num lot" />
+								</f:facet>
+								<p:cellEditor>
+									<f:facet name="output">
+										<h:outputText value="#{ligne.dto.numLot}">
+										</h:outputText>
+									</f:facet>
+									<f:facet name="input">
+										<p:inputText value="#{ligne.dto.numLot}" style="width:100%"  validator="#{generationLALBcaBrMultipleController.validateDocument}" 
+										 disabled="#{generationLALBcaBrMultipleController.disableSiEtat(ligne)}">
+											<f:attribute name="nomChamp" value="#{const.C_NUM_LOT}" />
+											<p:ajax event="blur" />
+										</p:inputText>
+										
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+
+							<p:column sortBy="#{ligne.dto.groupe}" filterBy="#{ligne.dto.groupe}" filterMatchMode="contains">
+								<f:facet name="header">
+									<h:outputText value="Groupe" />
+								</f:facet>
+								<p:cellEditor>
+									<f:facet name="output">
+										<h:outputText value="#{ligne.dto.groupe}" />
+									</f:facet>
+									<f:facet name="input">
+										<p:inputText value="#{ligne.dto.groupe}" style="width:100%" validator="#{generationLALBcaBrMultipleController.validateDocument}"  
+										disabled="#{generationLALBcaBrMultipleController.disableSiEtat(ligne)}">
+											<f:attribute name="nomChamp" value="#{const.C_GROUPE}" />
+											<p:ajax event="blur" update="@this"/>
+										</p:inputText>
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+					
+					
+							<p:column >
+								<f:facet name="header">
+									<h:outputText value="" />
+								</f:facet>
+								<p:cellEditor>
+									<f:facet name="output">
+										<h:outputText value="#{ligne.taEtat.codeEtat}">
+										</h:outputText>
+									</f:facet>
+									<f:facet name="input">
+										<p:autoComplete value="#{ligne.taEtat}" converter="entityConverter"
+											completeMethod="#{generationLALBcaBrMultipleController.etatLigneAutoComplete}" var="et" itemLabel="#{et.codeEtat}" itemValue="#{et}"
+											forceSelection="true" dropdown="true" placeholder="Etat de la ligne" style="width:100%"  disabled="true">
+											<p:column>
+												<h:outputText value="#{et.taTEtat.codeTEtat}" />
+											</p:column>											
+											<p:column>
+												<h:outputText value="#{et.codeEtat}" />
+											</p:column>	
+											<f:attribute name="nomChamp" value="#{const.C_CODE_ETAT}" />
+											<p:ajax event="itemSelect" listener="#{generationLALBcaBrMultipleController.autcompleteSelection}" />
+										</p:autoComplete>
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+					<p:column style="width:16px">
+						<f:facet name="header">
+							<h:outputText value="" />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<p:commandButton title="Terminer la ligne" styleClass="icon-delete icon icon-grille"
+									action="#{generationLALBcaBrMultipleController.actTerminerLigne()}"
+									process="@this" rendered="#{generationLALBcaBrMultipleController.disableSiTermine(ligne)}"
+									update="@widgetVar(wvDataTableListeDoc#{variableNomWvIDUnique})">
+									<f:setPropertyActionListener target="#{generationLALBcaBrMultipleController.selectedLigneALigneDTO}" value="#{ligne}" />
+									<p:confirm header="Confirmation" message="#{generationLALBcaBrMultipleController.messageTerminerLigne}" icon="ui-icon-alert" />
+								</p:commandButton>
+							</f:facet>
+							<f:facet name="input">
+								<h:outputText value="" />
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+					<p:column style="width:16px">
+						<f:facet name="header">
+							<h:outputText value="" />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<p:commandButton title="Réintégrer la ligne" styleClass="icon-delete icon icon-grille" 
+									action="#{generationLALBcaBrMultipleController.actReintegrerLigne()}"
+									process="@this" rendered="#{!generationLALBcaBrMultipleController.disableSiTermine(ligne)}"
+									update="@widgetVar(wvDataTableListeDoc#{variableNomWvIDUnique})">
+									<f:setPropertyActionListener target="#{generationLALBcaBrMultipleController.selectedLigneALigneDTO}" value="#{ligne}" />
+									<p:confirm header="Confirmation" message="#{generationLALBcaBrMultipleController.messageTerminerLigne}" icon="ui-icon-alert" />
+								</p:commandButton>
+							</f:facet>
+							<f:facet name="input">
+								<h:outputText value="" />
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+							<p:column style="width:26px">
+								<p:rowEditor styleClass="row-editor-fin" />
+							</p:column>
+
+							<p:rowExpansion>
+								<p:menubar styleClass="menu-onglet">
+
+									<p:menuitem title="Insérer" styleClass="icon-insert icon" actionListener="#{generationLALBcaBrMultipleController.actInsererLigneSupplement}"
+										process="@this" update="@widgetVar(wvdataTableDispatcheLigne)" />
+
+									<p:menuitem title="Supprimer" styleClass="icon-delete icon"
+										actionListener="#{generationLALBcaBrMultipleController.actSupprimerLigneSupplement}" process="@this"
+										update="@this,@widgetVar(wvdataTableDispatcheLigne)" />
+								</p:menubar>
+								<p:dataTable 
+								value="#{generationLALBcaBrMultipleController.selectedLigneALigneDTO.getListeSupplement()}" 
+								var="ligne"
+								widgetVar="wvdataTableDispatcheLigne"
+								selectionMode="single" 
+								editable="true" 
+								editMode="cell"
+								styleClass="datatable mt10"
+								selection="#{generationLALBcaBrMultipleController.selectedLigneALigneDTOSupplement}"
+								rowKey="#{ligne.id}"  
+								resizableColumns="true">
+								
+
+<!-- 							<p:ajax event="rowEdit"   listener="#{generationLALBcaBrMultipleController.onRowEditSupplement}" update="@this"  /> -->
+<!-- 							<p:ajax event="rowSelect" /> -->
+							
+								<p:ajax event="cellEdit" listener="#{generationLALBcaBrMultipleController.onCellEdit}" update="@this" />
+<!-- 									<p:column style="width:16px"> -->
+<!-- 										<p:rowEditor styleClass="row-editor-debut" /> -->
+<!-- 									</p:column> -->
+									<!-- 								<p:column selectionMode="multiple" style="width:16px;text-align:center" /> -->
+
+									<p:column headerText="qté reçue" styleClass="ui-cell-editor-exclu-click-selection"  >
+										<p:cellEditor>
+											<f:facet name="output">
+												<h:outputText value="#{ligne.qteRecue}" />
+											</f:facet>
+											<f:facet name="input">
+												<p:inputText  value="#{ligne.qteRecue}" style="width:100%"/>
+											</f:facet>
+										</p:cellEditor>
+									</p:column>
+									
+<!-- 									<p:column styleClass="right"> -->
+<!-- 										<f:facet name="header"> -->
+<!-- 											<h:outputText value="qté reçue" /> -->
+<!-- 										</f:facet> -->
+<!-- 										<p:cellEditor> -->
+<!-- 											<f:facet name="output"> -->
+<!-- 												<h:outputText value="#{ligne.qteRecue}"/> -->
+<!-- 											</f:facet> -->
+<!-- 											<f:facet name="input"> -->
+<!-- 												<p:inputText value="#{ligne.qteRecue}" style="width:100%" /> -->
+<!-- 											</f:facet> -->
+<!-- 										</p:cellEditor> -->
+<!-- 									</p:column> -->
+
+
+									<p:column headerText="num. lot" styleClass="ui-cell-editor-exclu-click-selection"  >
+										<p:cellEditor>
+											<f:facet name="output">
+												<h:outputText value="#{ligne.numLot}" />
+											</f:facet>
+											<f:facet name="input">
+												<p:inputText  value="#{ligne.numLot}" style="width:100%"/>
+											</f:facet>
+										</p:cellEditor>
+									</p:column>
+									
+<!-- 									<p:column styleClass="right"> -->
+<!-- 										<f:facet name="header"> -->
+<!-- 											<h:outputText value="num. lot" /> -->
+<!-- 										</f:facet> -->
+<!-- 										<p:cellEditor> -->
+<!-- 											<f:facet name="output"> -->
+<!-- 												<h:outputText value="#{ligne.numLot}"/> -->
+<!-- 											</f:facet> -->
+<!-- 											<f:facet name="input"> -->
+<!-- 												<p:inputText value="#{ligne.numLot}" style="width:100%" /> -->
+<!-- 											</f:facet> -->
+<!-- 										</p:cellEditor> -->
+<!-- 									</p:column> -->
+
+<!-- 									<p:column style="width:26px"> -->
+<!-- 										<p:rowEditor styleClass="row-editor-fin" /> -->
+<!-- 									</p:column> -->
+
+								</p:dataTable>
+
+
+							</p:rowExpansion>
+						</p:dataTable>
+
+					</div>
+<!-- 	    			<div class="ui-g-12" style="text-align:center;"> -->
+<!-- 	    				<p:commandButton value="Tout cocher" actionListener="#{generationLALBcaBrMultipleController.actToutcocher}"  -->
+<!-- 	    				update="idPanelListeDoc#{variableNomWvIDUnique},dataTableListeDoc#{variableNomWvIDUnique}"/> -->
+<!-- 	    				<p:commandButton value="Tout décocher" actionListener="#{generationLALBcaBrMultipleController.actToutDecocher}"  -->
+<!-- 	    				update="idPanelListeDoc#{variableNomWvIDUnique},dataTableListeDoc#{variableNomWvIDUnique}"/> -->
+<!-- 	    				<p:commandButton value="Inverser les cochés" actionListener="#{generationLALBcaBrMultipleController.actInverserLesCoches}"  rendered="false"  -->
+<!-- 	    				update="idPanelListeDoc#{variableNomWvIDUnique},dataTableListeDoc#{variableNomWvIDUnique}"/>	    				 -->
+<!-- 	    				<p:commandButton value="Supprimer les non cochés" actionListener="#{generationLALBcaBrMultipleController.actSupprimerNonCochesTiers}"  rendered="false"  -->
+<!-- 	    				update="idPanelListeDoc#{variableNomWvIDUnique},dataTableListeDoc#{variableNomWvIDUnique}"/> -->
+	    			
+<!-- 	    			</div> -->
+		    	</div>
+		    	<div class="card" style="text-align:center;">
+				    	<p:commandButton  value="Créer le bon de réception" title="Créer le bon de réception" process="@this"
+						actionListener="#{generationLALBcaBrMultipleController.actEnregistrer}" update="idPanelListeDoc#{variableNomWvIDUnique}" style="width:20%; height:45px;" icon="fa fa-check">
+<!-- 					<p:ajax event="dialogReturn" listener="#{duplicationDocumentBean.handleReturnDialogGenerationDocument}" -->
+<!-- 						oncomplete="activeTabCenter('#{factureController.css}');" />						 -->
+						<p:ajax event="dialogReturn" listener="#{generationLALBcaBrMultipleController.handleReturnDialogGenerationDocument}" update=":form:tabView"
+						oncomplete="activeTabCenter('#{duplicationDocumentBean.css}');" /> 
+				</p:commandButton>
+				</div>
+			</p:panel>
+		</p:fieldset>
+	</div>			
+
+
+</ui:composition>

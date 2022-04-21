@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<arquillian xmlns="http://jboss.org/schema/arquillian"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://jboss.org/schema/arquillian http://jboss.org/schema/arquillian/arquillian_1_0.xsd">
+ 
+    <defaultProtocol type="Servlet 3.0" />
+    
+    <extension qualifier="webdriver">
+<!--     https://docs.jboss.org/author/display/ARQ/Drone -->
+
+<!--         <property name="browser">${browser}</property> -->
+		<property name="browser">firefox</property> <!--  firefox, opera, chrome, PhantomJS -->
+		
+		<property name="firefoxDriverBinary">/ssd/geckodriver</property>
+		<property name="chromeDriverBinary">/ssd/chromedriver</property>
+ 
+ 		<!-- Permet de réutiliser un profil pour lequel l'exception pour le certificat SSL auto-signé a déjà été accepté -->
+        <property name="firefox_profile">/home/nicolas/.mozilla/firefox/8bkuo48k.selenium</property>
+        <!-- Permet d'utiliser une autre version de Firefox que celle par défaut (pour problème FF >=48.0) -->
+        <property name="firefox_binary">/ssd/firefox-45.6.0esr/firefox</property>
+        <property name="acceptSslCerts">true</property>
+		
+		<!-- 	
+			Test sur machine distante :
+			* Démarrer le Hub selenium sur la machine distante
+			java -jar selenium-server-standalone-2.53.0.jar -role hub
+			* Démarrer un noeud pour le hub sur la machine distante aussi (configurer le noeud si besoin)
+			java -jar selenium-server-standalone-2.53.0.jar -role node  -hub http://localhost:4444/grid/register
+			
+			https://rpestano.wordpress.com/2014/06/08/arquillian/
+			https://github.com/SeleniumHQ/selenium/wiki/Grid2
+			
+			ajouter ces propriétées ici (<extension qualifier="webdriver">):
+			<property name="remoteAddress">http://ip_machine_distante:4444/wd/hub</property>
+			<property name="remote">true</property>
+		 -->
+<!-- 		<property name="remoteAddress">http://192.168.1.173:4444/wd/hub</property> -->
+<!-- 		<property name="remote">true</property> -->
+    </extension>
+ 
+    <container qualifier="jboss" default="true">
+    
+		<configuration>
+<!-- propriété maven     <property name="jbossHome">${jboss.home}</property> -->
+<!-- <property name="jbossHome">/donnees/j2ee/wildfly-10.1.0.Final</property> -->
+			<property name="jbossHome">/donnees/j2ee/wildfly-10.1.0.Final.arquillian</property>
+<!--        <property name="jbossHome">/data1/wildfly-8.2.0.Final.arquillian</property> -->
+
+<!--        <property name="modulePath">/donnees/j2ee/wildfly-8.2.0.Final.arquillian/modules</property> -->
+
+<!--        <property name="serverConfig">standalone.xml</property> -->
+			<property name="outputToConsole">true</property>
+
+			<!-- 
+				Pour pouvoir lancer le jboss de test en parralelle,
+				Penser aux éventuels décalage de numéro de port dans le fichier bdg.properties
+			-->
+			<property name="javaVmArguments">-Djboss.socket.binding.port-offset=100</property> 
+			<!-- normalement 9990 pour wildfly 8.2 mais il faut appliquer l'offset "à la main"-->
+			<property name="managementPort">10090</property> 
+<!-- 			<property name="managementPort">10000</property>  -->
+<!--        <property name="managementPort">9990</property> -->
+            
+            <!-- uncomment below for debugging
+            <property name="javaVmArguments">-Xmx512m -XX:MaxPermSize=128m -agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=8787</property>
+            -->
+            
+            <!-- remote -->
+<!--             <property name="managementAddress">127.0.0.1</property> -->
+<!--             <property name="managementPort">9990</property> -->
+<!--             <property name="username">nicolas</property> -->
+<!--             <property name="password">lgr006</property> -->
+		</configuration>
+
+    </container>
+</arquillian>

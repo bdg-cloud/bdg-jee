@@ -1,0 +1,299 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/template.xhtml">
+
+    <ui:define name="head">
+        <script type="text/javascript">
+            function skinChart() {
+                this.cfg.shadow = false;
+                this.cfg.title = '';
+                this.cfg.seriesColors = ['#0097A7', '#0277BD', '#E53935'];
+                this.cfg.grid = {
+                    background: '#ffffff',
+                    borderColor: '#ffffff',
+                    gridLineColor: '#F5F5F5',
+                    shadow: false
+                };
+                this.cfg.axesDefaults = {
+                    rendererOptions: {
+                        textColor: '#666F77'
+                    }
+                };
+                this.cfg.seriesDefaults = {
+                    shadow: false,
+                    lineWidth:1,
+                    markerOptions: {
+                        shadow: false,
+                        size:7,
+                        style:'circle'
+                    }
+                };
+                this.cfg.axes.yaxis.tickOptions.show = false;
+            }
+        </script>
+        <style type="text/css">
+            .jqplot-target, .jqplot-axis {
+                color: #546E7A;
+            }
+        </style>
+    </ui:define>
+    
+    <ui:define name="subheader">
+        Tiers
+    </ui:define>
+    
+     <ui:define name="metadata">
+    	 <f:metadata>
+			<f:viewParam name="idTiers" value="#{tiersController.paramId}"/>
+			<f:event type="preRenderView" listener="#{tiersController.refreshResponsive}" />
+		</f:metadata>
+     </ui:define>
+
+    <ui:define name="content">
+        
+       Tiers
+        
+		
+   <h:form id="form" prependId="true">
+   
+	<ui:include src="confirm_dialog.xhtml"/>
+		
+	<div class="Container100 Wrapper NoIndent">
+		<p:menubar styleClass="menu-onglet" >
+			<p:menuitem value="Annuler" title="Annuler" icon="fa fa-undo" actionListener="#{tiersController.actAnnuler}" process="@this" update="idPanelIdentite,idPanelAdresse,idPanelContact,@form" disabled="#{tiersController.etatBouton('annuler')}"/>
+			<p:menuitem value="Enregistrer" title="Enregistrer" icon="fa fa-save" actionListener="#{tiersController.actEnregistrer}" process="@this"  update="idPanelIdentite,idPanelAdresse,idPanelContact,@form" disabled="#{tiersController.etatBouton('enregistrer')}"/>
+			<p:menuitem value="Insérer" title="Insérer" icon="fa fa-plus-circle" actionListener="#{tiersController.actInserer}" process="@this" update="idPanelIdentite,idPanelAdresse,idPanelContact,@form" disabled="#{tiersController.etatBouton('inserer')}"/>
+			<p:menuitem value="Modifier" title="Modifier" icon="fa fa-pencil" actionListener="#{tiersController.actModifier}" process="@this" update="idPanelIdentite,idPanelAdresse,idPanelContact,@form" disabled="#{tiersController.etatBouton('modifier')}"/>
+			<p:menuitem value="Supprimer" title="Supprimer"  icon="fa fa-trash" actionListener="#{tiersController.actSupprimer}" process="@this" update="idPanelIdentite,idPanelAdresse,idPanelContact,@form" disabled="#{tiersController.etatBouton('supprimer')}">
+				<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer cet enregistrement ?" icon="fa fa-exclamation-triangle" />
+			</p:menuitem>
+	<!-- 		<p:menuitem value="Fermer" title="Fermer" icon="fa fa-close" process="@this"  -->
+	<!-- 		actionListener="#{tiersController.actFermer}" -->
+	<!-- 		update="@form"  -->
+	<!-- 		disabled="#{tiersController.etatBouton('fermer')}" > -->
+	<!-- 			<p:confirm header="Confirmation" message="#{msg_diag.alert_fermeture_onglet}" icon="ui-icon-alert" /> -->
+	<!-- 		</p:menuitem> -->
+			
+			<p:menuitem value="Imprimer" title="Imprimer" icon="fa fa-print"
+							onsuccess="window.open('#{request.contextPath}/output?__report=/reports/tiers/FicheTiers.rptdesign&amp;id_tiers=#{tiersController.selectedTaTiersDTO.id}&amp;__format=pdf')"
+							actionListener="#{tiersController.actImprimer}"
+							disabled="#{tiersController.etatBouton('imprimer')}"/>
+		</p:menubar>  
+	</div>
+	
+	<div class="Container100 Wrapper NoIndent">
+        <div class="Container100 NoIndent ui-fluid">
+            <div class="Card">
+<!--               <div class="CardTopic">Form Elements</div> -->
+<!--                 <div class="Separator"></div> -->
+				<p:panel id="idPanelIdentite" header="Identité" toggleable="true" widgetVar="panelIdentite">
+               		<p:panelGrid columns="4" columnClasses="ui-grid-col-2,ui-grid-col-4,ui-grid-col-2,ui-grid-col-4" layout="grid" styleClass="ui-panelgrid-blank" style="border:0px none; background-color:transparent;">
+
+						<p:outputLabel value="Code : " />
+						<p:inputText  id="idCode" value="#{tiersController.selectedTaTiersDTO.codeTiers}" validator="#{tiersController.validateTiers}" disabled="#{tiersController.editable()}">
+							<f:attribute name="nomChamp" value="#{const.C_CODE_TIERS}" />
+							<p:ajax event="blur" update="@this"/>
+						</p:inputText>
+
+						<p:outputLabel value="Type entité : " />
+
+						<p:autoComplete value="#{tiersController.taTEntiteDTO}"
+							completeMethod="#{tiersController.typeEntiteAutoCompleteLight}"
+							disabled="#{tiersController.editable()}" var="typeEntite"
+							itemLabel="#{typeEntite.codeTEntite}" itemValue="#{typeEntite}"
+							forceSelection="true" dropdown="true" placeholder="Type d'entité"
+							converter="entityConverter" maxResults="#{msg.auto_complete_max_result}">
+							<p:column>
+<!-- 								<f:facet name="header"> -->
+<!-- 									<p:commandButton value="Ajouter" title="Insérer" -->
+<!-- 										process="@this" update="@form" -->
+<!-- 										actionListener="#{tiersController.actDialogTypeEntite}" -->
+<!-- 										styleClass="btn-insert btn"> -->
+<!-- 										<p:ajax event="dialogReturn" -->
+<!-- 											listener="#{tiersController.handleReturnDialogTypeEntite}" -->
+<!-- 											update="@parent:@parent" /> -->
+<!-- 									</p:commandButton> -->
+<!-- 								</f:facet> -->
+								<h:outputText value="#{typeEntite.codeTEntite}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{typeEntite.liblTEntite}" />
+							</p:column>
+
+							<f:attribute name="nomChamp" value="#{const.C_CODE_T_ENTITE}" />
+							<p:ajax event="itemSelect"
+								listener="#{tiersController.autcompleteSelection}"
+								update="@this" />
+						</p:autoComplete>
+						
+						<p:outputLabel value="Type : " />
+						<p:autoComplete value="#{tiersController.taTTiers}"
+							completeMethod="#{tiersController.typeTiersAutoComplete}"
+							disabled="#{tiersController.editable()}" var="typeTiers"
+							itemLabel="#{typeTiers.codeTTiers}" itemValue="#{typeTiers}"
+							forceSelection="true" dropdown="true" placeholder="Type de tiers" maxResults="#{msg.auto_complete_max_result}">
+							<p:column>
+								<h:outputText value="#{typeTiers.codeTTiers}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{typeTiers.libelleTTiers}" />
+							</p:column>
+							<p:column>
+<!-- 								<f:facet name="header"> -->
+<!-- 									<p:commandButton value="Ajouter" title="Insérer" -->
+<!-- 										process="@this" update="@form" -->
+<!-- 										actionListener="#{tiersController.actDialogTypeTiers}" -->
+<!-- 										styleClass="btn-insert btn"> -->
+<!-- 										<p:ajax event="dialogReturn" -->
+<!-- 											listener="#{tiersController.handleReturnDialogTypeTiers}" -->
+<!-- 											update="@parent:@parent" /> -->
+<!-- 									</p:commandButton> -->
+<!-- 								</f:facet> -->
+								<!-- 				            	actionListener="#{aProposBean.actAbout}" -->
+								<h:outputText value="#{typeTiers.compteTTiers}" />
+							</p:column>
+
+							<f:attribute name="nomChamp" value="#{const.C_CODE_T_TIERS}" />
+							<p:ajax event="itemSelect"
+								listener="#{tiersController.autcompleteSelection}"
+								update="@this" />
+						</p:autoComplete>
+
+						<p:outputLabel value="Entreprise : " />
+						<p:inputText value="#{tiersController.selectedTaTiersDTO.nomEntreprise}" validator="#{tiersController.validateTiers}" disabled="#{tiersController.editable()}" >
+							<f:attribute name="nomChamp" value="#{const.C_NOM_ENTREPRISE}" />
+							<p:ajax event="blur" update="@this"/>
+						</p:inputText>
+
+						<p:outputLabel value="Civilité : " />
+						<p:autoComplete value="#{tiersController.taTCivilite}"
+							completeMethod="#{tiersController.civiliteAutoComplete}"
+							disabled="#{tiersController.editable()}" var="civilite"
+							itemLabel="#{civilite.codeTCivilite}" itemValue="#{civilite}"
+							forceSelection="true" dropdown="true" placeholder="Civilité" maxResults="#{msg.auto_complete_max_result}">
+							<p:column>
+<!-- 								<f:facet name="header"> -->
+<!-- 									<p:commandButton value="Ajouter" title="Insérer" -->
+<!-- 										process="@this" update="@form" -->
+<!-- 										actionListener="#{tiersController.actDialogTypeCivilite}" -->
+<!-- 										styleClass="btn-insert btn"> -->
+<!-- 										<p:ajax event="dialogReturn" -->
+<!-- 											listener="#{tiersController.handleReturnDialogTypeCivilite}" -->
+<!-- 											update="@parent:@parent" /> -->
+<!-- 									</p:commandButton> -->
+<!-- 								</f:facet> -->
+
+								<h:outputText value="#{civilite.codeTCivilite}" />
+							</p:column>
+
+							<f:attribute name="nomChamp" value="#{const.C_CODE_T_CIVILITE}" />
+							<p:ajax event="itemSelect"
+								listener="#{tiersController.autcompleteSelection}"
+								update="@this" />
+						</p:autoComplete>
+
+						<p:outputLabel value="Nom : " />
+						<p:inputText value="#{tiersController.selectedTaTiersDTO.nomTiers}" validator="#{tiersController.validateTiers}" disabled="#{tiersController.editable()}">
+							<f:attribute name="nomChamp" value="#{const.C_NOM_TIERS}" />
+							<p:ajax event="blur" update="@this"/>
+						</p:inputText>
+
+						<p:outputLabel value="Prénom : " />
+						<p:inputText value="#{tiersController.selectedTaTiersDTO.prenomTiers}" validator="#{tiersController.validateTiers}" disabled="#{tiersController.editable()}">
+							<f:attribute name="nomChamp" value="#{const.C_PRENOM_TIERS}" />
+							<p:ajax event="blur" update="@this"/>
+<!-- 							<p:ajax event="keyup" listener="#{tiersController.actModifier}" update=":form:messages,@form" immediate="true" /> -->
+						</p:inputText>
+
+						<p:outputLabel value="TVA Intra. : " />
+						<p:inputText value="#{tiersController.selectedTaTiersDTO.tvaIComCompl}" validator="#{tiersController.validateTiers}" disabled="#{tiersController.editable()}" >
+							<f:attribute name="nomChamp" value="#{const.C_TVA_I_COM_COMPL}" />
+							<p:ajax event="blur" update="@this"/>
+						</p:inputText>
+
+					</p:panelGrid>
+					</p:panel>
+				<p:panel id="idPanelAdresse" header="Adresse" toggleable="true" widgetVar="panelAdresse">
+               		<p:panelGrid columns="4" columnClasses="ui-grid-col-2,ui-grid-col-4,ui-grid-col-2,ui-grid-col-4" layout="grid" styleClass="ui-panelgrid-blank" style="border:0px none; background-color:transparent;">
+								<p:outputLabel value="Ligne : " />
+								<p:inputText value="#{tiersController.selectedTaTiersDTO.adresse1Adresse}" validator="#{tiersController.validateTiers}" disabled="#{tiersController.editable()}" >
+									<f:attribute name="nomChamp" value="#{const.C_ADRESSE1_ADRESSE}" />
+									<p:ajax event="blur" update="@this"/>
+								</p:inputText>
+
+								<p:outputLabel value="Ligne (2) : " />
+								<p:inputText value="#{tiersController.selectedTaTiersDTO.adresse2Adresse}" validator="#{tiersController.validateTiers}" disabled="#{tiersController.editable()}" >
+									<f:attribute name="nomChamp" value="#{const.C_ADRESSE2_ADRESSE}" />
+									<p:ajax event="blur" update="@this"/>
+								</p:inputText>
+
+								<p:outputLabel value="Ligne (3) : " />
+								<p:inputText value="#{tiersController.selectedTaTiersDTO.adresse3Adresse}" validator="#{tiersController.validateTiers}" disabled="#{tiersController.editable()}" >
+									<f:attribute name="nomChamp" value="#{const.C_ADRESSE3_ADRESSE}" />
+									<p:ajax event="blur" update="@this"/>
+								</p:inputText>
+
+								<p:outputLabel value="Code postal : " />
+								<p:inputText value="#{tiersController.selectedTaTiersDTO.codepostalAdresse}" validator="#{tiersController.validateTiers}" disabled="#{tiersController.editable()}" >
+									<f:attribute name="nomChamp" value="#{const.C_CODEPOSTAL_ADRESSE}" />
+									<p:ajax event="blur" update="@this"/>
+								</p:inputText>
+
+								<p:outputLabel value="Ville : " />
+								<p:inputText value="#{tiersController.selectedTaTiersDTO.villeAdresse}" validator="#{tiersController.validateTiers}" disabled="#{tiersController.editable()}" >
+									<f:attribute name="nomChamp" value="#{const.C_VILLE_ADRESSE}" />
+									<p:ajax event="blur" update="@this"/>
+								</p:inputText>
+
+								<p:outputLabel value="Pays : " />
+								<p:inputText value="#{tiersController.selectedTaTiersDTO.paysAdresse}" validator="#{tiersController.validateTiers}" disabled="#{tiersController.editable()}" >
+									<f:attribute name="nomChamp" value="#{const.C_PAYS_ADRESSE}" />
+									<p:ajax event="blur" update="@this"/>
+								</p:inputText>					
+					</p:panelGrid>
+				</p:panel>
+				<p:panel id="idPanelContact" header="Contact" toggleable="true" widgetVar="panelContact">
+               		<p:panelGrid columns="4" columnClasses="ui-grid-col-2,ui-grid-col-4,ui-grid-col-2,ui-grid-col-4" layout="grid" styleClass="ui-panelgrid-blank" style="border:0px none; background-color:transparent;">
+								<p:outputLabel value="Téléphone : " />
+								<p:inputText value="#{tiersController.selectedTaTiersDTO.numeroTelephone}" validator="#{tiersController.validateTiers}" disabled="#{tiersController.editable()}" >
+									<f:attribute name="nomChamp" value="#{const.C_NUMERO_TELEPHONE}" />
+									<p:ajax event="blur" update="@this"/>
+								</p:inputText>
+
+								<p:outputLabel value="email : " />
+								<p:inputText value="#{tiersController.selectedTaTiersDTO.adresseEmail}" validator="#{tiersController.validateTiers}" disabled="#{tiersController.editable()}" >
+									<f:attribute name="nomChamp" value="#{const.C_ADRESSE_EMAIL}" />
+									<p:ajax event="blur" update="@this"/>
+								</p:inputText>
+
+								<p:outputLabel value="web : " />
+								<p:inputText value="#{tiersController.selectedTaTiersDTO.adresseWeb}" validator="#{tiersController.validateTiers}" disabled="#{tiersController.editable()}" >
+									<f:attribute name="nomChamp" value="#{const.C_ADRESSE_WEB}" />
+									<p:ajax event="blur" update="@this"/>
+								</p:inputText>
+               		
+               		</p:panelGrid>
+               	</p:panel>										
+			</div>
+		</div>
+		</div>
+		
+		<div class="Container100 Wrapper NoIndent">
+			<p:menubar styleClass="menu-onglet" >
+				<p:menuitem value="Annuler" title="Annuler" icon="fa fa-undo" actionListener="#{tiersController.actAnnuler}" process="@this" update="idPanelIdentite,idPanelAdresse,idPanelContact,@form" disabled="#{tiersController.etatBouton('annuler')}"/>
+				<p:menuitem value="Enregistrer" title="Enregistrer" icon="fa fa-save" actionListener="#{tiersController.actEnregistrer}" process="@this"  update="idPanelIdentite,idPanelAdresse,idPanelContact,@form" disabled="#{tiersController.etatBouton('enregistrer')}"/>
+		<!-- 		<p:menuitem value="Insérer" title="Insérer" icon="fa fa-plus-circle" actionListener="#{tiersController.actInserer}" process="@this" update="idPanelIdentite,idPanelAdresse,idPanelContact,@form" disabled="#{tiersController.etatBouton('inserer')}"/> -->
+		<!-- 		<p:menuitem value="Modifier" title="Modifier" icon="fa fa-pencil" actionListener="#{tiersController.actModifier}" process="@this" update="idPanelIdentite,idPanelAdresse,idPanelContact,@form" disabled="#{tiersController.etatBouton('modifier')}"/> -->
+		<!-- 		<p:menuitem value="Supprimer" title="Supprimer"  icon="fa fa-trash" actionListener="#{tiersController.actSupprimer}" process="@this" update="idPanelIdentite,idPanelAdresse,idPanelContact,@form" disabled="#{tiersController.etatBouton('supprimer')}"> -->
+		<!-- 			<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer cet enregistrement ?" icon="ui-icon-alert" /> -->
+		<!-- 		</p:menuitem> -->
+		
+			</p:menubar> 
+		</div>	
+        </h:form>
+    </ui:define>
+
+</ui:composition>

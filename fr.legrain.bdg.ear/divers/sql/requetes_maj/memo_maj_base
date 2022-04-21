@@ -1,0 +1,19 @@
+Avant d'appliquer le fichier SQL, bien s'assurer que le schema public est bien à jour. sinon il n'y a pas de correspondance
+ entre la structure de la base de données des dossiers existant 
+ et celle des nouveau dossier créer (le nouveaux dossier sont créés à partir de "public")
+ Après une modification du schéma "public" penser à faire un dump de la base "bdg", la création de nouveau schéma se fait à partir des dumps
+
+## Vérifier avant d'envoyer le fichier SQL que l'instruction SQL SET SCHEMA à bien été mise en commentaire
+## Vérifier qu'il n'y ait pas de nom de schéma demo
+
+Envoyer le fichier de mise à jour SQL depuis une machine locale linux
+
+## Penser à modifier le nom du fichier de destination
+mdp serveur distant (xxxxxxxxxxxxxxxxxxxx)
+scp maj_bl.sql login@ip_serveur_distant:/home/login/20170228-1139.sql
+
+aller sur le serveur concerné par la mise à jour des schemas
+/var/lgr/bdg/bin/maj_db_all_dossier.sh login_bdd password_bdd "chemin de mon fichier sql" > date+log.txt 2>&1 
+
+Une fois le fichier SQL de mise à jour appliquer le serveur de production. Penser à le renommer dans eclipse avec la date et l'heure de son application et à le sortir du répertoire "dev".
+Penser à faire un commit sur le SVN.

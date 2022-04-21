@@ -1,0 +1,123 @@
+FROM ubuntu:18.04
+
+# Set the WILDFLY_VERSION env variable
+ENV WILDFLY_VERSION 17.0.1.Final
+ENV WILDFLY_SHA1 eaef7a87062837c215e54511c4ada8951f0bd8d5
+ENV JBOSS_HOME /opt/wildfly
+
+USER root
+
+ARG WILDFLY_NAME
+ARG CLUSTER_PW
+
+ENV WILDFLY_NAME=${WILDFLY_NAME}
+ENV CLUSTER_PW=${CLUSTER_PW}
+
+# https://blog.alexis-hassler.com/2014/08/20/compiler-modcluster-pour-apache24.html
+
+RUN apt-get update
+RUN apt-get install -y git apache2 apache2-dev libtool-bin
+
+RUN git clone https://github.com/modcluster/mod_cluster.git && \
+#RUN git clone https://github.com/modcluster/mod_proxy_cluster.git && \
+#cd mod_proxy_cluster && \
+cd mod_cluster && \
+git checkout 1.3.10.Final && \
+a2enmod proxy && \
+a2enmod proxy_ajp && \
+service apache2 restart && \
+cd native/advertise && ./buildconf && ./configure --with-apxs=/usr/bin/apxs && make && \
+cd ../mod_manager && ./buildconf && ./configure --with-apxs=/usr/bin/apxs && make && \
+cd ../mod_proxy_cluster && ./buildconf && ./configure --with-apxs=/usr/bin/apxs && make && \
+cd ../mod_cluster_slotmem && ./buildconf && ./configure --with-apxs=/usr/bin/apxs && make && \
+libtool --finish /usr/lib/apache2/modules && \
+cd ../.. && \
+cp native/advertise/*.so /usr/lib/apache2/modules/ && \
+cp native/mod_manager/*.so /usr/lib/apache2/modules/ && \
+cp native/mod_proxy_cluster/*.so /usr/lib/apache2/modules/ && \
+cp native/mod_cluster_slotmem/*.so /usr/lib/apache2/modules/ && \
+libtool --finish /usr/lib/apache2/modules && \
+mkdir /var/cache/mod_cluster && \
+echo "MemManagerFile /var/cache/mod_cluster" > /etc/apache2/mods-available/mod_manager.conf && \
+echo "LoadModule cluster_slotmem_module /usr/lib/apache2/modules/mod_cluster_slotmem.so" > /etc/apache2/mods-available/mod_cluster_slotmem.load && \
+a2enmod mod_cluster_slotmem && \
+echo "LoadModule manager_module /usr/lib/apache2/modules/mod_manager.so" > /etc/apache2/mods-available/mod_manager.load && \
+a2enmod mod_manager && \
+echo "LoadModule proxy_module /usr/lib/apache2/modules/mod_proxy.so" > /etc/apache2/mods-available/mod_proxy_cluster.load && \
+echo "LoadModule proxy_ajp_module /usr/lib/apache2/modules/mod_proxy_ajp.so" >> /etc/apache2/mods-available/mod_proxy_cluster.load && \
+echo "LoadModule proxy_cluster_module /usr/lib/apache2/modules/mod_proxy_cluster.so" >> /etc/apache2/mods-available/mod_proxy_cluster.load && \
+a2enmod mod_proxy_cluster && \
+echo "LoadModule advertise_module /usr/lib/apache2/modules/mod_advertise.so" > /etc/apache2/mods-available/mod_advertise.load && \
+a2enmod mod_advertise && \
+service apache2 restart
+
+RUN /bin/bash -c "echo '#!/bin/bash' > /tmp/jboss.sh" && chmod 777 /tmp/jboss.sh
+
+RUN /bin/bash -c "echo 'CONTAINER_IP_ADDR=\$(hostname -i)' >> /tmp/jboss.sh"
+RUN /bin/bash -c "echo 'MODCLUSTER_PORT=\${MODCLUSTER_PORT:-6666}' >> /tmp/jboss.sh"
+RUN /bin/bash -c "echo 'MODCLUSTER_ADVERTISE=\${MODCLUSTER_ADVERTISE:-On}' >> /tmp/jboss.sh"
+RUN /bin/bash -c "echo 'MODCLUSTER_ADVERTISE_GROUP=\${MODCLUSTER_ADVERTISE_GROUP:-224.0.1.105:23364}' >> /tmp/jboss.sh"
+RUN /bin/bash -c "echo 'MODCLUSTER_NET=\${MODCLUSTER_NET:-172.}' >> /tmp/jboss.sh"
+RUN /bin/bash -c "echo 'MODCLUSTER_MANAGER_NET=\${MODCLUSTER_MANAGER_NET:-$MODCLUSTER_NET}' >> /tmp/jboss.sh"
+
+RUN /bin/bash -c "echo 'echo' >> /tmp/jboss.sh"
+RUN /bin/bash -c "echo 'echo \"Starting httpd with mod_cluster\"' >> /tmp/jboss.sh"
+RUN /bin/bash -c "echo 'echo \"===============================\"' >> /tmp/jboss.sh"
+RUN /bin/bash -c "echo 'echo \"MODCLUSTER_PORT            \${MODCLUSTER_PORT}\"' >> /tmp/jboss.sh"
+RUN /bin/bash -c "echo 'echo \"MODCLUSTER_ADVERTISE       \${MODCLUSTER_ADVERTISE}\"' >> /tmp/jboss.sh"
+RUN /bin/bash -c "echo 'echo \"MODCLUSTER_ADVERTISE_GROUP \${MODCLUSTER_ADVERTISE_GROUP}\"' >> /tmp/jboss.sh"
+RUN /bin/bash -c "echo 'echo \"MODCLUSTER_NET             \${MODCLUSTER_NET}\"' >> /tmp/jboss.sh"
+RUN /bin/bash -c "echo 'echo \"MODCLUSTER_MANAGER_NET     \${MODCLUSTER_MANAGER_NET}\"' >> /tmp/jboss.sh"
+RUN /bin/bash -c "echo 'echo \"mod_cluster server advertise url: http://\${CONTAINER_IP_ADDR}:\${MODCLUSTER_PORT}\"' >> /tmp/jboss.sh"
+RUN /bin/bash -c "echo 'echo' >> /tmp/jboss.sh"
+
+
+
+#RUN /bin/bash -c "cat >/etc/apache2/conf-available/mod_cluster.conf <<EOT \n\
+
+#LoadModule proxy_cluster_module modules/mod_proxy_cluster.so \n\
+#LoadModule cluster_slotmem_module modules/mod_cluster_slotmem.so \n\
+#LoadModule manager_module modules/mod_manager.so \n\
+#LoadModule advertise_module modules/mod_advertise.so \n\
+
+#RUN /bin/bash -c "echo 'echo \"MemManagerFile \${HTTPD_MC_BUILD_DIR}/cache/mod_cluster\" >> /etc/apache2/conf-available/mod_cluster.conf' >> /tmp/jboss.sh"
+RUN /bin/bash -c "echo 'echo \"<IfModule manager_module>\" >> /etc/apache2/conf-available/mod_cluster.conf' >> /tmp/jboss.sh"
+RUN /bin/bash -c "echo 'echo \"Listen \${MODCLUSTER_PORT} \" >> /etc/apache2/conf-available/mod_cluster.conf' >> /tmp/jboss.sh"
+RUN /bin/bash -c "echo 'echo \"  <VirtualHost \${CONTAINER_IP_ADDR}:\${MODCLUSTER_PORT}> \" >> /etc/apache2/conf-available/mod_cluster.conf' >> /tmp/jboss.sh"
+RUN /bin/bash -c "echo 'echo \"		ErrorLog logs/mod_cluster_error.log \" >> /etc/apache2/conf-available/mod_cluster.conf' >> /tmp/jboss.sh"
+RUN /bin/bash -c "echo 'echo \"		CustomLog logs/mod_cluster.log common \" >> /etc/apache2/conf-available/mod_cluster.conf' >> /tmp/jboss.sh"
+RUN /bin/bash -c "echo 'echo \"		LogLevel debug \" >> /etc/apache2/conf-available/mod_cluster.conf' >> /tmp/jboss.sh"
+RUN /bin/bash -c "echo 'echo \"    <Directory /> \" >> /etc/apache2/conf-available/mod_cluster.conf' >> /tmp/jboss.sh"
+RUN /bin/bash -c "echo 'echo \"      Require ip \${MODCLUSTER_NET} \" >> /etc/apache2/conf-available/mod_cluster.conf' >> /tmp/jboss.sh"
+RUN /bin/bash -c "echo 'echo \"    </Directory> \" >> /etc/apache2/conf-available/mod_cluster.conf' >> /tmp/jboss.sh"
+RUN /bin/bash -c "echo 'echo \"		AllowDisplay On \" >> /etc/apache2/conf-available/mod_cluster.conf' >> /tmp/jboss.sh"
+RUN /bin/bash -c "echo 'echo \"    ServerAdvertise \${MODCLUSTER_ADVERTISE} http://\${CONTAINER_IP_ADDR}:\${MODCLUSTER_PORT} \" >> /etc/apache2/conf-available/mod_cluster.conf' >> /tmp/jboss.sh"
+RUN /bin/bash -c "echo 'echo \"    AdvertiseGroup \${MODCLUSTER_ADVERTISE_GROUP} \" >> /etc/apache2/conf-available/mod_cluster.conf' >> /tmp/jboss.sh"
+RUN /bin/bash -c "echo 'echo \"    EnableMCPMReceive \" >> /etc/apache2/conf-available/mod_cluster.conf' >> /tmp/jboss.sh"
+RUN /bin/bash -c "echo 'echo \"    <Location /mcm> \" >> /etc/apache2/conf-available/mod_cluster.conf' >> /tmp/jboss.sh"
+RUN /bin/bash -c "echo 'echo \"      SetHandler mod_cluster-manager \" >> /etc/apache2/conf-available/mod_cluster.conf' >> /tmp/jboss.sh"
+RUN /bin/bash -c "echo 'echo \"      Require ip \${MODCLUSTER_MANAGER_NET} \" >> /etc/apache2/conf-available/mod_cluster.conf' >> /tmp/jboss.sh"
+RUN /bin/bash -c "echo 'echo \"   </Location> \" >> /etc/apache2/conf-available/mod_cluster.conf' >> /tmp/jboss.sh"
+RUN /bin/bash -c "echo 'echo \"  </VirtualHost> \" >> /etc/apache2/conf-available/mod_cluster.conf' >> /tmp/jboss.sh"
+RUN /bin/bash -c "echo 'echo \"</IfModule> \" >> /etc/apache2/conf-available/mod_cluster.conf' >> /tmp/jboss.sh"
+
+RUN /tmp/jboss.sh
+
+# Ensure signals are forwarded to the JVM process correctly for graceful shutdown
+ENV LAUNCH_JBOSS_IN_BACKGROUND true
+
+#USER jboss
+
+# Expose the ports we're interested in
+EXPOSE 80/tcp
+EXPOSE 6666/tcp
+EXPOSE 23364/udp
+
+
+#ENTRYPOINT ["/opt/wildfly/bin/domain.sh"]
+
+#CMD apachectl start
+#CMD bash
+#https://stackoverflow.com/questions/44376852/how-to-start-apache2-automatically-in-a-ubuntu-docker-container
+CMD apachectl -D FOREGROUND
+

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+        <f:facet name="first">
+            <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+            <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+            <meta name="apple-mobile-web-app-capable" content="yes" />
+        </f:facet>
+        <title>Bureau de gestion</title>
+        <h:outputScript name="js/layout.js" library="mirage-layout" />
+
+        <script type="text/javascript">
+            //<![CDATA[
+            function changeMode() {
+                var body = $('.login-body');
+
+                if (body) {
+                    if (body.hasClass('layout-dark')) {
+                        body.removeClass('layout-dark').addClass('layout-light');
+                    } else {
+                        body.removeClass('layout-light').addClass('layout-dark');
+                    }
+                }
+            }
+            //]]>
+        </script>
+    </h:head>
+
+    <h:body styleClass="login-body layout-light">
+    	
+    	 <f:facet name="last">
+			<!-- surcharge des CSS primefaces -->
+			<h:outputStylesheet library="css" name="theme-bdg.css" />
+			<h:outputStylesheet library="css" name="theme-mirage-bdg.css" />
+		</f:facet>
+
+        <div class="login-content">
+            <div class="night-switch">
+                <h:form>
+                    <p:commandButton styleClass="dark-switch"  icon="fa fa-sun-o" oncomplete="changeMode()" />
+                    <p:commandButton styleClass="light-switch"  icon="fa fa-moon-o" oncomplete="changeMode()" />
+                </h:form>
+            </div>
+            <div class="login-panel">
+                <div class="login-panel-content">
+                    <div class="logo">
+<!--                         <p:graphicImage name="images/logo-mirage@2x.png" library="mirage-layout" /> -->
+						<h:graphicImage library="images" name="Bureau de Gestion.svg" title="Solstyce" width="300" height="200" />
+                    </div>
+<!--                     <h1>Sign in to Mirage</h1> -->
+<!--                     <p>Welcome, please use the form to sign-in Mirage network</p> -->
+                    
+			    	<h:form id="loginForm" styleClass="forms">
+			    		
+			    		<p:focus />
+			    		
+                        <div class="login-input-wrapper">
+                            <p:outputLabel for="j_username" value="Identifiant" />
+<!--                             <p:inputText id="username" placeholder="Type your username..." /> -->
+                            <p:inputText value="#{auth.username}" placeholder="Saisissez votre identifiant ..." id="j_username"/>
+                            <i class="fa fa-user" />
+                        </div>
+
+                        <div class="login-input-wrapper">
+                            <p:outputLabel for="j_password" value="Mot de passe" />
+<!--                             <p:password id="password" placeholder="Type your password" feedback="false" /> -->
+							<p:password value="#{auth.password}" placeholder="Saisissez votre mot de passe ..." id="j_password" autocomplete="on" />
+                            <i class="fa fa-lock" />
+                        </div>
+
+<!--                         <p:selectManyCheckbox layout="responsive" columns="1"> -->
+<!--                             <f:selectItem itemLabel=" Remember me" itemValue="SaveInfo" /> -->
+<!--                         </p:selectManyCheckbox> -->
+
+                        <div class="buttons">
+<!--                             <p:commandButton value="Login" /> -->
+<!--                             <p:commandButton value="Forget password" styleClass="secondary-button" /> -->
+                            
+                             <p:commandButton id="id_btn_login" action="#{auth.login}" value="Connexion" ajax="false" />
+	                
+<!--                             <p:commandButton styleClass="secondary-button" value="Mot de passe oublié ?" outcome="motdepasse_oublie"/> -->
+							<p:commandButton styleClass="secondary-button lien-mot-de-passe-oublie-page-login" value="Mot de passe oublié ?" action="motdepasse_oublie.xhtml?faces-redirect=true"/>
+                        </div>
+                         <p:messages styleClass="errors" autoUpdate="true" />
+                    </h:form>
+                </div>
+            </div>
+
+            <div class="desert"></div>
+        </div>
+
+        <h:outputStylesheet name="css/layout-green-dark.css" library="mirage-layout" />
+
+    </h:body>
+
+</html>

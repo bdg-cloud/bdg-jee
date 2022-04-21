@@ -1,0 +1,271 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui">
+
+
+	<p:tabView id="idTabViewServiceWebExterne" orientation="left" styleClass="verticalTab" cache="false">
+
+		<p:ajax event="tabChange" update="@widgetVar(panelListeAdresseTiers)" listener="#{serviceWebExterneController.onTabChange}" />
+
+		<p:tab title="Service" titleStyleClass="tab-min tab-tiers" titletip="Service">
+
+			<div class="dashboard-title" style="background: #f6f6f6; margin-bottom: 15px;">
+				<h:panelGrid columns="4" cellpadding="5">
+<!-- 					<h:graphicImage name="dashboard/tier.svg" library="images" height="35px" style="margin-top:1px;" /> -->
+					<p:outputLabel value="Service web externe" style="font-size:20px;" />
+				</h:panelGrid>
+			</div>
+
+			<p:menubar styleClass="menu-onglet">
+				<p:menuitem title="Enregistrer les modifications en cours" styleClass="icon-save icon"
+					actionListener="#{serviceWebExterneController.actEnregistrer}" process="@this"
+					update="idPanelIdentite,idPanelAdresse,:form:messages,@form,@widgetVar(wvMenuListeServiceWebExterne),@widgetVar(wvDataTableListeServiceWebExterne)"
+					disabled="#{serviceWebExterneController.etatBouton('enregistrer')}" />
+				<p:menuitem title="Ajouter" styleClass="icon-insert icon" actionListener="#{serviceWebExterneController.actInserer}"
+					process="@this"
+					update="idPanelIdentite,idPanelAdresse,:form:messages,@form,@widgetVar(wvMenuListeServiceWebExterne),@widgetVar(wvDataTableListeServiceWebExterne)"
+					disabled="#{serviceWebExterneController.etatBouton('inserer')}" />
+				<p:menuitem title="Modifier" styleClass="icon-update icon" actionListener="#{serviceWebExterneController.actModifier}"
+					process="@this"
+					update="idPanelIdentite,idPanelAdresse,:form:messages,@form,@widgetVar(wvMenuListeServiceWebExterne),@widgetVar(wvDataTableListeServiceWebExterne)"
+					disabled="#{serviceWebExterneController.etatBouton('modifier')}" />
+				<p:menuitem title="Annuler les modifications en cours" styleClass="icon-cancel icon" actionListener="#{serviceWebExterneController.actAnnuler}"
+					process="@this"
+					update="idPanelIdentite,idPanelAdresse,:form:messages,@form,@widgetVar(wvMenuListeServiceWebExterne),@widgetVar(wvDataTableListeServiceWebExterne)"
+					disabled="#{serviceWebExterneController.etatBouton('annuler')}">
+					<p:confirm header="Confirmation" message="Etes vous sur de vouloir annuler les modifications en cours ?" icon="ui-icon-alert" />
+				</p:menuitem>
+				<p:menuitem title="Supprimer" styleClass="icon icon-delete menuitem-poubelle-droite"
+					actionListener="#{serviceWebExterneController.actSupprimer}" process="@this"
+					update="idPanelIdentite,idPanelAdresse,:form:messages,@form,@widgetVar(wvDataTableListeServiceWebExterne)"
+					disabled="#{serviceWebExterneController.etatBouton('supprimer')}">
+					<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer ce Tiers ?" icon="ui-icon-alert" />
+				</p:menuitem>
+				<p:menuitem title="Fermer l'onglet" styleClass="icon icon-close menuitem-fermer-droite" process="@this"
+					actionListener="#{serviceWebExterneController.actFermer}" update=":form:messages,@widgetVar(wvMenuListeServiceWebExterne),@widgetVar(wvDataTableListeServiceWebExterne)"
+					disabled="#{serviceWebExterneController.etatBouton('fermer')}" onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())">
+					<p:confirm header="Confirmation" message="#{msg_diag.alert_fermeture_onglet}" icon="ui-icon-alert"
+						disabled="#{!serviceWebExterneController.modeEcran.dataSetEnModif()}" />
+				</p:menuitem>
+
+				<p:separator styleClass="separateur-menu-vertical" />
+
+				<p:menuitem title="Liste des Services externes" styleClass="icon icon-liste" oncomplete="PF('wvOverlayListeServiceWebExterne').show();" />
+			</p:menubar>
+
+
+			<div class="ui-grid ui-grid-responsive">
+
+
+				<div class="ui-grid-row">
+
+					<div class="ui-grid-col-6">
+						<p:panel id="idPanelIdentite" header="Description" toggleable="true" widgetVar="panelIdentite">
+
+
+							<h:panelGrid columns="2" cellpadding="10">
+
+								<p:outputLabel value="Code : " styleClass="labelchob" />
+
+								<p:inputText id="idCode" value="#{serviceWebExterneController.selectedTaServiceWebExterneDTO.codeServiceWebExterne}"
+									validator="#{serviceWebExterneController.validateTaServiceWebExterne}" disabled="#{serviceWebExterneController.editable()}">
+									<f:attribute name="nomChamp" value="#{const.C_CODE_TIERS}" />
+									<p:ajax event="blur" update="@this" />
+								</p:inputText>
+
+
+								<p:outputLabel value="Type de service : " />
+
+								<p:autoComplete value="#{serviceWebExterneController.taTServiceWebExterneDTO}"
+									completeMethod="#{serviceWebExterneController.typeTaServiceWebExterneAutoCompleteLight}" 
+									disabled="#{serviceWebExterneController.editable()}"
+									var="typeService" itemLabel="#{typeService.codeTServiceWebExterne}" 
+									itemValue="#{typeService}" forceSelection="true" dropdown="true"
+									placeholder="Type" converter="entityConverter">
+									<p:column>
+										<f:facet name="header">
+											<!-- 									<p:commandButton value="Ajouter" title="Insérer" -->
+											<!-- 										process="@this" update="@this" -->
+											<!-- 										actionListener="#{serviceWebExterneController.actDialogTypeEntite}" -->
+											<!-- 										styleClass="btn-insert btn"> -->
+											<!-- 										<p:ajax event="dialogReturn" -->
+											<!-- 											listener="#{serviceWebExterneController.handleReturnDialogTypeEntite}" -->
+											<!-- 											update="@parent:@parent" /> -->
+											<!-- 									</p:commandButton> -->
+										</f:facet>
+										<h:outputText value="#{typeService.codeTServiceWebExterne}" />
+									</p:column>
+									<p:column>
+										<h:outputText value="#{typeService.libelleTServiceWebExterne}" />
+									</p:column>
+
+									<f:attribute name="nomChamp" value="#{const.C_CODE_T_SERVICE_WEB_EXTERNE}" />
+									<p:ajax event="itemSelect" listener="#{serviceWebExterneController.autcompleteSelection}" update="@this" />
+								</p:autoComplete>
+
+								<p:outputLabel value="Libelle : " />
+								<p:inputText value="#{serviceWebExterneController.selectedTaServiceWebExterneDTO.libelleServiceWebExterne}"
+									validator="#{serviceWebExterneController.validateTaServiceWebExterne}" disabled="#{serviceWebExterneController.editable()}">
+									<f:attribute name="nomChamp" value="#{const.C_LIBELLE_SERVICE_WEB_EXTERNE}" />
+									<p:ajax event="blur" update="@this" />
+								</p:inputText>
+
+
+
+
+								<p:outputLabel value="Description : " styleClass="labelchob" />
+								<p:inputText value="#{serviceWebExterneController.selectedTaServiceWebExterneDTO.descriptionServiceWebExterne}"
+									validator="#{serviceWebExterneController.validateTaServiceWebExterne}" disabled="#{serviceWebExterneController.editable()}">
+									<!-- 						<p:inputText value="#{serviceWebExterneController.selectedTaServiceWebExterneDTO.nomTiers}" disabled="#{serviceWebExterneController.editable()}"> -->
+									<f:attribute name="nomChamp" value="#{const.C_DESCRIPTION_SERVICE_WEB_EXTERNE}" />
+									<p:ajax event="blur" update="@this" />
+								</p:inputText>
+
+								<p:outputLabel value="URL éditeur : " />
+								<p:inputText value="#{serviceWebExterneController.selectedTaServiceWebExterneDTO.urlEditeur}"
+									validator="#{serviceWebExterneController.validateTaServiceWebExterne}" disabled="#{serviceWebExterneController.editable()}">
+									<f:attribute name="nomChamp" value="#{const.C_URL_EDITEUR_SERVICE_WEB_EXTERNE}" />
+									<p:ajax event="blur" update="@this" />
+								</p:inputText>
+								
+								<p:outputLabel value="URL service : " />
+								<p:inputText value="#{serviceWebExterneController.selectedTaServiceWebExterneDTO.urlService}"
+									validator="#{serviceWebExterneController.validateTaServiceWebExterne}" disabled="#{serviceWebExterneController.editable()}">
+									<f:attribute name="nomChamp" value="#{const.C_URL_SERVICE_SERVICE_WEB_EXTERNE}" />
+									<p:ajax event="blur" update="@this" />
+								</p:inputText>
+								
+								<p:outputLabel value="URL gestion service : " />
+								<p:inputText value="#{serviceWebExterneController.selectedTaServiceWebExterneDTO.urlGestionService}"
+									validator="#{serviceWebExterneController.validateTaServiceWebExterne}" disabled="#{serviceWebExterneController.editable()}">
+									<f:attribute name="nomChamp" value="#{const.C_URL_SERVICE_SERVICE_WEB_EXTERNE}" />
+									<p:ajax event="blur" update="@this" />
+								</p:inputText>
+								
+								<p:outputLabel value="Module BDG : " />
+								<p:inputText value="#{serviceWebExterneController.selectedTaServiceWebExterneDTO.idModuleBdgAutorisation}"
+									validator="#{serviceWebExterneController.validateTaServiceWebExterne}" disabled="true">
+									<f:attribute name="nomChamp" value="#{const.C_URL_SERVICE_SERVICE_WEB_EXTERNE}" />
+									<p:ajax event="blur" update="@this" />
+								</p:inputText>
+
+
+								<p:outputLabel value="Systeme : " />
+								<p:selectBooleanCheckbox value="#{serviceWebExterneController.selectedTaServiceWebExterneDTO.systeme}"
+									disabled="#{serviceWebExterneController.editable()}">
+									<p:ajax event="change" update="@this" />
+								</p:selectBooleanCheckbox>
+
+							</h:panelGrid>
+
+						</p:panel>
+
+					</div>
+
+					<div class="ui-grid-col-6">
+						<div class="ui-grid-row">
+
+							<div class="ui-grid-col-12">
+
+								<p:panel id="idPanelAdresse" header="Divers" toggleable="true" widgetVar="panelAdresse">
+
+									<h:panelGrid columns="2" cellpadding="10">
+
+										<p:outputLabel value="Type d'authentification : " />
+										<p:autoComplete value="#{serviceWebExterneController.taTAuthentificationDTO}" required="true"
+											completeMethod="#{serviceWebExterneController.typeAuthentificationAutoCompleteLight}" disabled="#{serviceWebExterneController.editable()}"
+											var="typeAuth" itemLabel="#{typeAuth.codeTAuthentification}" itemValue="#{typeAuth}" forceSelection="true" dropdown="true"
+											placeholder="Type d'authentification" converter="entityConverter">
+											<p:column>
+												<h:outputText value="#{typeAuth.codeTAuthentification}" />
+											</p:column>
+											<p:column>
+												<h:outputText value="#{typeAuth.libelleTAuthentification}" />
+											</p:column>
+											<p:column>
+												<f:facet name="header">
+													<!-- 									<p:commandButton value="Ajouter" title="Insérer" -->
+													<!-- 										process="@this" update="@this" -->
+													<!-- 										actionListener="#{serviceWebExterneController.actDialogTypeTiers}" -->
+													<!-- 										styleClass="btn-insert btn"> -->
+													<!-- 										<p:ajax event="dialogReturn" -->
+													<!-- 											listener="#{serviceWebExterneController.handleReturnDialogTypeTiers}" -->
+													<!-- 											update="@parent:@parent" /> -->
+													<!-- 									</p:commandButton> -->
+												</f:facet>
+												<!-- 				            	actionListener="#{aProposBean.actAbout}" -->
+												<!-- 								<h:outputText value="#{typeAuth.compteTTiers}" /> -->
+											</p:column>
+
+											<f:attribute name="nomChamp" value="#{const.C_CODE_T_AUTHENTIFICATION}" />
+											<p:ajax event="itemSelect" listener="#{serviceWebExterneController.autcompleteSelection}" update="@this" />
+										</p:autoComplete>
+
+										<p:outputLabel value="Type API : " />
+										<p:inputText value="#{serviceWebExterneController.selectedTaServiceWebExterneDTO.typeAPI}"
+											validator="#{serviceWebExterneController.validateTaServiceWebExterne}" disabled="#{serviceWebExterneController.editable()}">
+											<f:attribute name="nomChamp" value="#{const.C_TYPE_API_SERVICE_WEB_EXTERNE}" />
+											<p:ajax event="blur" update="@this" />
+											<!-- 							<p:ajax event="keyup" listener="#{serviceWebExterneController.actModifier}" update=":form:messages,@form" immediate="true" /> -->
+										</p:inputText>
+
+										<p:outputLabel value="Version API : " />
+										<p:inputText value="#{serviceWebExterneController.selectedTaServiceWebExterneDTO.versionAPI}"
+											validator="#{serviceWebExterneController.validateTaServiceWebExterne}" disabled="#{serviceWebExterneController.editable()}">
+											<f:attribute name="nomChamp" value="#{const.C_VERSION_API_SERVICE_WEB_EXTERNE}" />
+											<p:ajax event="blur" update="@this" />
+										</p:inputText>
+
+										<p:outputLabel value="Actif : " />
+										<p:selectBooleanCheckbox value="#{serviceWebExterneController.selectedTaServiceWebExterneDTO.actif}"
+											disabled="#{serviceWebExterneController.editable()}">
+											<p:ajax event="change" update="@this" />
+										</p:selectBooleanCheckbox>
+
+										<p:outputLabel value="API multi-compte : " />
+										<p:selectBooleanCheckbox value="#{serviceWebExterneController.selectedTaServiceWebExterneDTO.apiMulticompte}"
+											disabled="#{serviceWebExterneController.editable()}">
+											<p:ajax event="change" update="@this" />
+										</p:selectBooleanCheckbox>
+
+									</h:panelGrid>
+
+								</p:panel>
+
+							</div>
+						</div>
+
+					</div>
+
+				</div>
+
+			</div>
+
+			<div class="ui-grid-row">
+				<div class="ui-grid-col-12">
+					<p:panel id="idPanelLogo" header="Logo" toggleable="true" widgetVar="panelLogo">
+						<h:panelGrid columns="2" cellpadding="10">
+
+							<p:fileUpload listener="#{serviceWebExterneController.handleFileUpload}" mode="advanced" dragDropSupport="false" label="Choisir"
+								uploadLabel="Télécharger" cancelLabel="Annuler" auto="true" update="@widgetVar(panelLogo)" sizeLimit="100000" fileLimit="1"
+								disabled="#{serviceWebExterneController.editable()}"
+								allowTypes="/(\.|\/)(gif|jpe?g|png|svg)$/" rendered="#{serviceWebExterneController.taServiceWebExterne.logo==null}" />
+
+							<p:commandButton value="Supprimer" actionListener="#{serviceWebExterneController.supprimerLogo}"
+								disabled="#{serviceWebExterneController.editable()}"
+								rendered="#{serviceWebExterneController.taServiceWebExterne.logo !=null}" update="@widgetVar(panelLogo)" />
+
+							<p:graphicImage value="#{serviceWebExterneController.logo}" stream="false" width="200px"
+								rendered="#{serviceWebExterneController.taServiceWebExterne.logo !=null}" />
+
+						</h:panelGrid>
+					</p:panel>
+				</div>
+			</div>
+
+		</p:tab>
+
+
+
+	</p:tabView>
+
+</ui:composition>

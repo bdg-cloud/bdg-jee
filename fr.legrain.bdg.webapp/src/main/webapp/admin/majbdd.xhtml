@@ -1,0 +1,60 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+
+
+	<p:panel widgetVar="wvMajBddPanel">
+		<p:menubar styleClass="menu-onglet">
+			<p:menuitem title="Fermer"
+				styleClass="icon icon-close menuitem-fermer-droite" process="@this"
+				onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())">
+			</p:menuitem>
+		</p:menubar>
+
+		<p:panel widgetVar="widgetVarMajBddPanel" header="Mise à jour de la base de données">
+		
+			Avant d'appliquer le fichier SQL, bien s'assurer que le schema public est bien à jour.<br/>
+			Sinon il n'y a pas de correspondance entre la structure de la base de données des dossiers existant 
+			et celle des nouveau dossier créer (le nouveaux dossier sont créés à partir de "public").<br/>
+			<br/>
+			Après une modification du schéma "public" penser à faire un dump de la base "bdg", la création de nouveau schéma se fait à partir des dumps.<br/>
+			<br/>
+			## Vérifier avant d'envoyer le fichier SQL que l'instruction SQL SET SCHEMA à bien été mise en commentaire<br/>
+			## Vérifier qu'il n'y ait pas de nom de schéma demo<br/>
+			
+			<hr/>
+			$WORKSPACE_ECLIPSE$/fr.legrain.bdg.ear/divers/sql/requetes_maj/dev/<br/>
+
+			<p:fileUpload listener="#{majBddBean.handleFileUpload}" mode="advanced" dragDropSupport="false" 
+				auto="true" label="Sélectionner le fichier SQL à appliquer" fileLimit="1" allowTypes="/(\.|\/)(sql|txt)$/" update="@this,idBtnUpdate,:form:messages"/>
+			
+			<p:commandButton id="idBtnUpdate" value="Mettre à jour" actionListener="#{majBddBean.majBdd}" disabled="#{majBddBean.fichierSQLMaj==null}"
+				onsuccess="alert('La mise à jour a été effectuée avec succès.')" update="idDwl,idNewName">
+				<p:confirm header="Confirmation" message="Etes vous sur de vouloir mettre à jour la base de données ?" icon="ui-icon-alert" />
+			</p:commandButton>
+			<br/>
+			<p:commandLink id="idDwl" value="Télécharger le fichier de log de la mise à jour #{majBddBean.fileLogMaj.name}" ajax="false" disabled="#{majBddBean.fichierLogMaj==null}">
+				<p:fileDownload value="#{majBddBean.fichierLogMaj}"/>
+			</p:commandLink>
+			<br/>
+			
+			<hr/>
+			Une fois le fichier SQL de mise à jour appliquer le serveur de production bdg.cloud. <br/>
+			Penser à le renommer dans eclipse avec la date et l'heure de son application et à le sortir du répertoire "dev".<br/>
+			Penser à faire un commit sur le SVN.<br/>
+			<p:outputLabel id="idNewName" value="Renommer le fichier dans les sources en : #{majBddBean.nomFichierARenommer}"/>
+			<br/>
+			
+			<hr/>
+			Une fois la base de données correctement mise à jour, faire la promotion Hudson correspondant au serveur mis à jour.
+
+		</p:panel>
+		
+		
+
+	</p:panel>
+
+</ui:composition>

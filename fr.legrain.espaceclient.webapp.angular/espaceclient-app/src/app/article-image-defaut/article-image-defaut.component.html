@@ -1,0 +1,27 @@
+<!--
+    petit : notifications
+        L : 44px
+        H : 31px
+
+    moyen : liste
+        L : 113px
+        H : 81px
+
+    grand : grille et fiche article
+        L : 361px
+        H : 259px
+-->
+<!--<a routerLink="/fiche-produit?idArticle=dataUrl$" routerLinkActive="active">-->
+    <div *ngIf="dataUrl$ | async as d; else loading">
+        <img [src]="d" [attr.max-width]="maxWidth" [attr.max-height]="maxHeight" [attr.height]="hauteur?hauteur:'100%'" [attr.width]="largeur?largeur:'100%'" class="boutique-image-article" />
+    </div>
+    <ng-template #loading>
+        <!--<div>Loading ...</div>-->
+        <img src="../../assets/images/boutique/img-photo-grde.png" [attr.height]="hauteur" class="boutique-image-article"/>
+    </ng-template> 
+
+    <!--
+        <img [src]="dataUrl$ | async" [attr.height]="hauteur" style="display: flex; align-items: center; margin: 0 auto;" />
+        <img src="../../assets/images/boutique/img-photo-grde.png" style="display: flex; align-items: center; margin: 0 auto;" *ngIf="!dataUrl$|async"/>
+    -->
+<!--</a>-->

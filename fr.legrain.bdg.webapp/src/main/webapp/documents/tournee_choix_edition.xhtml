@@ -1,0 +1,91 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+    <p:dialog header="Imprimer l'état des tournées des Bons de livraison" widgetVar="interfacePrintEtatTournee" modal="true" appendTo="@(body)" showEffect="clip" hideEffect="clip" width="900" height="300">
+
+    					     	   				
+    		<p:panel widgetVar="interfaceUpdateEtatTournee" style="margin-left:0%; margin-right:0%;">
+    		
+	<div class="ui-g">
+		<div class="ui-g-12">
+			<p:fieldset legend="Paramètres">
+				<p:panelGrid columns="6">
+					<p:outputLabel value="Date livraison souhaitée" />
+					<p:calendar value="#{tourneeChoixEditionBean.date}" pattern="dd/MM/yyyy"
+						 mask="true" locale="fr" navigator="true" showOn="button" timeZone="#{msg.time_zone}" > 
+					</p:calendar>
+
+					<p:outputLabel value="Avec transporteur" />
+					<p:selectBooleanCheckbox					 	
+						value="#{tourneeChoixEditionBean.avecTransporteur}"  >
+						<p:ajax event="change" update="@this" process="@this"/>
+					</p:selectBooleanCheckbox>
+					
+					<p:outputLabel value="Transporteur : " />
+					<p:autoComplete value="#{tourneeChoixEditionBean.transporteur}"
+						converter="entityConverter"
+						completeMethod="#{tourneeChoixEditionBean.transporteurAutoCompleteDTOLight}"
+						 var="transporteur"
+						itemLabel="#{transporteur.codeTransporteur}" itemValue="#{transporteur}"
+						forceSelection="true" dropdown="true" placeholder="Transporteur" >
+						<p:column>
+							<h:outputText value="#{transporteur.codeTransporteur}" />
+						</p:column>
+
+						<p:column>
+							<h:outputText value="#{transporteur.liblTransporteur}" />
+						</p:column>
+				
+						<f:attribute name="nomChamp" value="#{const.C_CODE_TRANSPORTEUR}" />
+						<p:ajax event="itemSelect" listener="#{tourneeChoixEditionBean.autcompleteSelection}" update="@this" />
+					</p:autoComplete>
+
+
+
+									
+					</p:panelGrid>
+
+			</p:fieldset>
+
+		</div>
+	</div>    		
+    					
+    				<div class="ui-grid-col-12" style=" margin-top:26px;">
+    				<h:graphicImage name="dashboard/tier.svg" library="images" height="26px" style="margin-left:-5px;" />
+					<p:outputLabel value="CHOIX DE L'EDITION" style="font-size: 14px;font-weight: bold; vertical-align: 2px; margin-left:3px;" />    				
+					
+    	<p:selectOneRadio id="identificationEditionEtatTournee" value="#{tourneeChoixEditionBean.identification}"
+    	 unselectable="true" style="margin-right:10px; margin-left:30px; margin-top: 10px; float:right" >
+    				 				
+    		<f:selectItem itemLabel="Liste des Tournées par transporteur" itemValue="ListeEtatTourneeParTransporteur" />
+		
+
+            
+            		
+            <p:ajax update="@this" process="@this"/>           
+        </p:selectOneRadio>
+        			   									
+  				</div>	
+  	
+    				<div class="ui-grid-col-6">
+    	    				
+    					
+    					<div class="ui-grid-col-1" style="position:absolute; bottom:20px; right:30px">
+
+
+    	<p:commandButton value="Imprimer" id="printBL" process="@this"
+    		onsuccess="window.open('#{request.contextPath}/output?__report=/reports/documents/bl/#{tourneeChoixEditionBean.identification}.rptdesign&amp;__format=pdf')"
+			actionListener="#{dashBoardBonlivController.actImprimerListeEtatDesTourneesDesBL(tourneeChoixEditionBean.identification,tourneeChoixEditionBean.transporteur,tourneeChoixEditionBean.date,tourneeChoixEditionBean.avecTransporteur)}" 
+			styleClass="ui-priority-primary boutonPrint" style="color:white; margin-top:10px; float:left" icon="fa fa-print"
+			update="@this"/>
+
+					</div>
+    				 </div>
+ 			
+    			</p:panel>
+    					
+		 </p:dialog>
+</ui:composition>

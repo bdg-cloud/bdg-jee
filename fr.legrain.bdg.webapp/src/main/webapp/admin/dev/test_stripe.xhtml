@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<title>Dev - Stripe - Test</title>
+	<link rel="shortcut icon" type="image/x-icon"
+		href="#{resource['images:solstyce.ico']}" />
+
+	<f:facet name="first">
+	</f:facet>
+</h:head>
+<h:body>
+	<f:facet name="last">
+		<!-- surcharge des CSS primefaces -->
+		<h:outputStylesheet library="css" name="hacks.css" />
+<!-- 		<h:outputStylesheet library="css" name="icarus-bdg.css" /> -->
+<!-- 		<h:outputStylesheet library="css" name="theme-bdg.css" /> -->
+	</f:facet>
+
+	<p:layout fullPage="true" widgetVar="widgetLayoutPage">
+
+		<!-- 		<p:ajax event="toggle" listener="#{leftBean.handleToggle}"/> -->
+
+		<p:layoutUnit position="north" size="100" gutter="0" class="north">
+			<div class="ui-grid ui-grid-responsive">
+				<div class="ui-grid-col-2">
+					<p:link href="/index.xhtml">
+						<p:graphicImage library="images" name="solstyce_32x32.png" />
+						<h:outputText value="Solstyce" />
+					</p:link>
+				</div>
+				<div class="ui-grid-col-3">
+					<p:ajaxStatus>
+						<f:facet name="start">
+							<p:graphicImage library="images" name="ajax-loader.gif" />
+						</f:facet>
+						<f:facet name="complete">
+							<!-- 							<h:outputText value="Done!" /> -->
+						</f:facet>
+					</p:ajaxStatus>
+				</div>
+				<div class="ui-grid-col-10 text-right">
+					Mon compte -
+					<p:commandLink value="déconnexion" actionListener="#{auth.logout}" />
+				</div>
+
+
+			</div>
+			<!-- 			<ui:include src="../../menu.xhtml" /> -->
+		</p:layoutUnit>
+		<!-- 
+		<p:layoutUnit position="south" size="100" resizable="true">
+		</p:layoutUnit>
+ -->
+		<!-- 		<p:layoutUnit id="idWestUnit" position="west" size="550" resizable="true" collapsed="#{leftBean.collapsed}"  -->
+		<!-- 			collapsible="true" header="" gutter="4" class="west"> -->
+
+
+		<!-- 		</p:layoutUnit> -->
+
+		<!-- 		<p:layoutUnit position="east" size="200" resizable="true" -->
+		<!-- 			collapsible="true" collapsed="true" header="" gutter="2" class="east"> -->
+		<!-- 		</p:layoutUnit> -->
+
+		<p:layoutUnit position="center" gutter="4" class="center">
+		
+			<h:form id="form">
+				<p:growl id="growl" showDetail="true" sticky="true" />
+				
+				<p:panel header="Stripe connect" widgetVar="wvPanelStripeConnect" toggleable="true" collapsed="false">
+					<p:commandButton value="Création compte et liens" actionListener="#{devStripeBean.createAccountAndLink}" update="@widgetVar(wvPanelStripeConnect)"></p:commandButton>
+					<p:commandButton  update="@this,@widgetVar(wvPanelStripeConnect)" process="@this"
+							value="Se connecter avec Stripe (OAuth)"
+							onclick="oauthWindowHandle = window.open('','_blank', 'resizable=no,toolbar=no,scrollbars=yes,height=700,width=700,top=145,left=235');" 
+							actionListener="#{gestionOAuthController.msBean.connectOAuth}"/>
+					
+				</p:panel>
+	
+				<p:panel header="Prélèvement" widgetVar="wvPanelPrelevementStripe" toggleable="true" collapsed="true">
+					<p:panelGrid columns="2">
+						<f:facet name="header">
+							Source (compte bancaire)
+						</f:facet>
+						<p:outputLabel value="IBAN"/>
+						<p:inputText value="#{devStripeBean.ibanPrelevment}" placeholder="FRXXXXXXXXXXXXXXXXXXXXXXXX"/>
+						<p:outputLabel value="Nom complet titulaire"/>
+						<p:inputText value="#{devStripeBean.nomPersonneAPrelever}" placeholder="DUPONT JEAN"/>
+						<p:outputLabel value="ID Source Stripe"/>
+						<p:inputText value="#{devStripeBean.idSourceStripe}" placeholder="src_xxxxxxxxxxxxxxxxx"/>
+						<p:commandButton title="creerSourceStripe" update="@this,@widgetVar(wvPanelPrelevementStripe)" actionListener="#{devStripeBean.creerSourceStripe}" />
+					</p:panelGrid>
+					
+					<p:panelGrid columns="2">
+						<f:facet name="header">
+							Customer (client dans Stripe)
+						</f:facet>
+						<p:outputLabel value="Email"/>
+						<p:inputText value="#{devStripeBean.emailCustomerStripe}" placeholder="jean.dupont@orange.fr"/>
+						<p:outputLabel value="Description"/>
+						<p:inputText value="#{devStripeBean.descriptionCustomerStripe}" placeholder="CODE_CLIENT - DUPONT JEAN"/>
+						<p:outputLabel value="ID Source defaut du customer Stripe"/>
+						<p:inputText value="#{devStripeBean.idSourceDefautStripeCustomerStripe}" placeholder="src_xxxxxxxx"/>
+						<p:outputLabel value="ID Customer Stripe"/>
+						<p:inputText value="#{devStripeBean.customerStripeIDPrelevement}" placeholder="cus_xxxxxxxx"/>
+						<p:commandButton title="creerCustomerStripe" update="@this,@widgetVar(wvPanelPrelevementStripe)" actionListener="#{devStripeBean.creerCustomerStripe}" />
+					</p:panelGrid>
+					
+					<p:panelGrid columns="2">
+						<f:facet name="header">
+							Liaision Source ** Customer (si customer deja existant et pas de création dans le bloc au dessus)
+						</f:facet>
+						<p:outputLabel value="ID Source du customer Stripe"/>
+						<p:inputText value="#{devStripeBean.sourceStripeIDLiaison}" placeholder="src_xxxxxxxx"/>
+						<p:outputLabel value="ID Customer Stripe EXISTANT"/>
+						<p:inputText value="#{devStripeBean.customerStripeIDLiaison}" placeholder="cus_xxxxxxxx"/>
+						<p:commandButton title="liaisonCustomerStripe" update="@this,@widgetVar(wvPanelPrelevementStripe)" actionListener="#{devStripeBean.attacherSourceStripe}" />
+					</p:panelGrid>
+					
+					<p:panelGrid columns="2">
+						<f:facet name="header">
+							Prélèvement
+						</f:facet>
+						<p:outputLabel value="Montant"/>
+						<p:inputText value="#{devStripeBean.montantPrelevement}"/>
+						<p:outputLabel value="ID Customer Stripe"/>
+						<p:inputText value="#{devStripeBean.customerStripeIDPrelevement}" placeholder="cus_xxxxxxxx"/>
+						<p:outputLabel value="ID Source Stripe"/>
+						<p:inputText value="#{devStripeBean.sourceStripeIDPrelevement}" placeholder="src_xxxxxxxxxxxxxxxxx"/>
+						<p:outputLabel value="ID Prélevement Stripe"/>
+						<p:inputText value="#{devStripeBean.prelevementStripeIDPrelevement}" placeholder="py_xxxxxxxxxxxxxxxxxx" disabled="true"/>
+						<p:commandButton title="prelevementSEPA" update="@this,@widgetVar(wvPanelPrelevementStripe)" actionListener="#{devStripeBean.prelevementSEPA}" />
+					</p:panelGrid>
+					
+					
+					
+				</p:panel>
+				
+				<br/>
+<br/>
+<p:commandButton value="Appel Web Service REST avec Client BDG" update="@form" actionListener="#{devStripeBean.appelWsRest}"/>
+<br/>
+<br/>
+				
+			</h:form>
+	
+		</p:layoutUnit>
+
+	</p:layout>
+
+		<h:outputScript name="/js/functions.js"  />
+
+</h:body>
+</html>

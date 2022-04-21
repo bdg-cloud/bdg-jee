@@ -1,0 +1,174 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:p="http://primefaces.org/ui">
+	
+	<o:importConstants type="fr.legrain.bdg.webapp.app.LgrTab" />
+	
+	<p:commandLink id="listeEditionCatalogueBtn" >
+		<i class="top-submenu-icon fa fa-fw fa-user"></i>
+		<span><h:outputText value="Liste des éditions catalogue" /></span>
+	</p:commandLink>
+	
+	<p:overlayPanel id="idListeEditionCataloguePanel" for="listeEditionCatalogueBtn" hideEffect="fade" dynamic="true" 
+		dismissable="true" appendTo="@(body)" widgetVar="wvOverlayListeEditionCatalogue" showCloseIcon="true">
+		<h:form>
+		<div class="dashboard-title" style="background:#f6f6f6;">
+              <h:panelGrid columns="3" cellpadding="5">
+<!--             	<h:graphicImage name="dashboard/tier.svg" library="images" height="35px" style="margin-top:1px;" /> -->
+                <p:outputLabel value="Liste des éditions du catalogue" style="font-size:20px;"/>
+              </h:panelGrid>  
+              <p:separator/>
+        </div>
+	<p:menubar styleClass="menu-onglet" widgetVar="wvMenuListeEditionCatalogue" id="idMenuListeEditionCatalogue">
+		 <p:menuitem title="Ajouter une nouvelle édition" update=":form:tabView,:form:messages,@widgetVar(wvMenuListeEditionCatalogue),@widgetVar(wvDataTableListeEditionCatalogue),@widgetVar(wvBandeauActionEditionCatalogue)" 
+		 	actionListener="#{editionCatalogueController.nouveau}" styleClass="icon icon-insert" disabled="#{editionCatalogueController.etatBouton('inserer')}" oncomplete="PF('wvOverlayListeEditionCatalogue').hide();"/>
+
+		 <p:menuitem title="Rafraîchir la liste" update="@form,:form:messages" actionListener="#{editionCatalogueController.refresh}" styleClass="icon icon-refresh" disabled="#{editionCatalogueController.modeEcran.dataSetEnModif()}"/>
+	</p:menubar>
+	
+	<p:sticky target="idMenuListeEditionCatalogue" />
+	 
+	 	
+<!-- 	stickyHeader="true" -->
+	
+	<p:dataTable id="dataTableListeEditionCatalogue" var="taEditionCatalogue"
+				widgetVar="wvDataTableListeEditionCatalogue"
+				value="#{editionCatalogueController.values}"
+				rowKey="#{taEditionCatalogue.id}"
+				sortBy="#{taEditionCatalogue.codeTEdition}"
+				selection="#{editionCatalogueController.selectedTaEditionCatalogueDTOs}"
+				dblClickSelect="true"
+				styleClass="datatable mt10"
+				resizableColumns="true"
+				paginator="true" 
+				expandableRowGroups="true"
+				rows="#{msg.modele_datatable_ligne_par_page_debut}"
+				paginatorTemplate="#{msg.modele_datatable_paginator}"
+				rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+				emptyMessage="#{msg.message_datatable_vide}"
+				currentPageReportTemplate="#{msg.modele_datatable_page_courante}"
+				disabledSelection="#{editionCatalogueController.modeEcran.dataSetEnModif()}">
+				
+<!-- 				<p:ajax event="rowDblselect" listener="#{editionCatalogueController.onRowSelect}" update=":form:tabView,:form:messages,@form" />  -->
+<!-- 				<p:ajax event="rowSelect" listener="#{editionCatalogueController.onRowSelect}" disabled="#{editionCatalogueController.pasDejaOuvert()}" update=":form:tabView,:form:messages,@form" /> -->
+				
+<!-- 				<p:ajax event="rowDblselect" listener="#{editionCatalogueController.onRowSelect}" update=":form:tabView,:form:messages" oncomplete="activeTabCenter('#{LgrTab.CSS_CLASS_TAB_TIERS}');PF('wvOverlayListeEditionCatalogue').hide();scrollToTop();"/> -->
+				<p:ajax event="rowSelect" delay="#{msg.datatable_rowselect_delay}" listener="#{editionCatalogueController.onRowSelect}" update=":form:tabView,:form:messages,@widgetVar(wvBandeauActionEditionCatalogue)" oncomplete="activeTabCenter('#{LgrTab.CSS_CLASS_TAB_EDITION_CATALOGUE}');PF('wvOverlayListeEditionCatalogue').hide();scrollToTop();"/>
+			
+				<f:facet name="header">  
+           			<h:outputText value="EditionCatalogue" />
+<!--            			<p:outputPanel> -->
+<!-- 		                <h:outputText value="Rechercher dans les champs :" /> -->
+<!-- 		                <p:inputText id="globalFilter" onkeyup="PF('carsTable').filter()" style="width:150px" placeholder="Enter keyword"/> -->
+<!-- 		            </p:outputPanel> -->
+        		</f:facet>
+        		
+        		<p:headerRow>
+		            <p:column colspan="7">
+		                <h:outputText value="#{taEditionCatalogue.codeTEdition}" />
+		            </p:column>
+		        </p:headerRow>
+
+		  		<f:facet name="{Exporters}">
+		            <h:commandLink>
+		                <p:graphicImage library="images" name="excel.png" width="24"/>
+		                <p:dataExporter type="xls" target="dataTableListeEditionCatalogue" fileName="liste_tiers" />
+		            </h:commandLink>
+		 
+		            <h:commandLink>
+		                <p:graphicImage  library="images" name="pdf.png"  width="24"/>
+		                <p:dataExporter type="pdf" target="dataTableListeEditionCatalogue" fileName="liste_tiers"/>
+		            </h:commandLink>
+		 
+		            <h:commandLink>
+		                <p:graphicImage  library="images" name="csv.png"  width="24"/>
+		                <p:dataExporter type="csv" target="dataTableListeEditionCatalogue" fileName="liste_tiers" />
+		            </h:commandLink>
+		 
+		            <h:commandLink>
+		                <p:graphicImage  library="images" name="xml.png"  width="24"/>
+		                <p:dataExporter type="xml" target="dataTableListeEditionCatalogue" fileName="liste_tiers" />
+		            </h:commandLink>
+		        </f:facet>
+        
+        		<p:column selectionMode="multiple" style="width:16px;text-align:center" exportable="false"/>
+			
+				<p:column style="width:16px" exportable="false">
+					<f:facet name="header">
+						<h:outputText value="" />
+					</f:facet>
+					<p:commandButton title="Détail" update=":form:tabView,:form:messages,@widgetVar(wvBandeauActionEditionCatalogue)" 
+						action="#{editionCatalogueController.detail}" styleClass="icon icon-detail icon-grille" 
+						disabled="#{editionCatalogueController.modeEcran.dataSetEnModif()}" oncomplete="PF('wvOverlayListeEditionCatalogue').hide();">
+						<f:setPropertyActionListener target="#{editionCatalogueController.selectedTaEditionCatalogueDTO}" value="#{taEditionCatalogue}" />
+					</p:commandButton>
+				</p:column>
+        
+				<p:column sortBy="#{taEditionCatalogue.actif}" styleClass="center" filterBy="#{taEditionCatalogue.actif}" filterMatchMode="equals">
+					<f:facet name="header">
+						<h:outputText value="Actif" />
+					</f:facet>
+					<f:facet name="filter">
+			                <p:selectOneButton onchange="PF('wvDataTableListeEditionCatalogue').filter()">
+			                    <f:converter converterId="javax.faces.Boolean" />
+			                    <f:selectItem itemLabel="Tous" itemValue="" />
+			                    <f:selectItem itemLabel="Vrai" itemValue="true" />
+			                    <f:selectItem itemLabel="Faux" itemValue="false" />
+			                </p:selectOneButton>
+			            </f:facet>
+					<p:selectBooleanCheckbox value="#{taEditionCatalogue.actif}" disabled="true"/>
+				</p:column>
+
+				<p:column sortBy="#{taEditionCatalogue.codeEdition}" filterBy="#{taEditionCatalogue.codeEdition}" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="Code" />
+					</f:facet>
+					<h:outputText value="#{taEditionCatalogue.codeEdition}" />
+				</p:column>
+				
+				<p:column sortBy="#{taEditionCatalogue.libelleEdition}" filterBy="#{taEditionCatalogue.libelleEdition}" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="Libellé" />
+					</f:facet>
+					<h:outputText value="#{taEditionCatalogue.libelleEdition}"/>
+				</p:column>
+				
+				
+				<p:column sortBy="#{taEditionCatalogue.codeTEdition}" filterBy="#{taEditionCatalogue.codeTEdition}" styleClass="center" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="Type" />
+					</f:facet>
+					<h:outputText value="#{taEditionCatalogue.codeTEdition}" />
+				</p:column>
+				
+				<p:column styleClass="center">
+					<f:facet name="header">
+						<h:outputText value="Logo" />
+					</f:facet>
+<!-- 					<p:graphicImage value="/image_service_web_externe/#{taEditionCatalogue.id}"  height="40"/> -->
+				</p:column>
+				
+				<p:column style="width:16px" exportable="false">
+					<f:facet name="header">
+						<h:outputText value="" />
+					</f:facet>
+					
+					<p:commandButton title="Supprimer" styleClass="icon-delete icon icon-grille" widgetVar="widgetVarBtnSupprimerEditionCatalogueListe"
+						action="#{editionCatalogueController.actSupprimer}"
+						process="@this"
+						update="@widgetVar(wvDataTableListeEditionCatalogue)">
+						<f:setPropertyActionListener target="#{editionCatalogueController.selectedTaEditionCatalogueDTO}" value="#{taEditionCatalogue}" />
+						<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer ce tiers ?" icon="ui-icon-alert" />
+					</p:commandButton>
+						
+				</p:column>
+
+			</p:dataTable>
+
+		</h:form>
+	</p:overlayPanel>
+	
+</ui:composition>

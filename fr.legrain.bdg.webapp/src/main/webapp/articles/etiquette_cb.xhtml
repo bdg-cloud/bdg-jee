@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<title>Etiquette code barre</title>
+	<link rel="shortcut icon" type="image/x-icon" href="#{resource['images:favicon.ico']}" />
+
+	<f:facet name="first">
+	</f:facet>
+</h:head>
+
+<h:body onload="window.print();">
+	<f:facet name="last">
+		<!-- surcharge des CSS primefaces -->
+		<h:outputStylesheet library="css" name="print_etiquette_cb.css" />
+	</f:facet>
+
+	<ui:repeat value="${etiquetteCodeBarreBean.listeArticle}" var="p">
+		<div>
+			<p:outputLabel value="#{p.codeArticle}"/>
+			<br/>
+			<p:outputLabel value="#{p.libellecArticle}"/>
+			<br/>
+			<p:barcode value="#{p.codeBarre}" type="ean13" />
+		</div>
+		<br/>
+	</ui:repeat>
+
+</h:body>
+</html>

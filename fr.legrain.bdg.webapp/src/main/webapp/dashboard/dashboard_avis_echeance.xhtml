@@ -1,0 +1,2847 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:o="http://omnifaces.org/ui"
+                xmlns:lgr="http://legrain.fr/ui"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui">
+    
+    	<o:importConstants type="fr.legrain.document.model.TaAvisEcheance" />
+    	
+    <ui:define name="head">
+        <script type="text/javascript">
+            //<![CDATA[
+            function skinChart() {
+                this.cfg.shadow = false;
+                this.cfg.title = '';
+                this.cfg.seriesColors = ['#E88524', '#EDAE5C'];
+                this.cfg.grid = {
+                    background: '#ffffff',
+                    borderColor: '#ffffff',
+                    gridLineColor: '#F5F5F5',
+                    shadow: false
+                };
+                this.cfg.axesDefaults = {
+                    rendererOptions: {
+                        textColor: '#666F77'
+                    }
+                };
+                this.cfg.seriesDefaults = {
+                    shadow: false,
+                    lineWidth: 1,
+                    markerOptions: {
+                        shadow: false,
+                        size: 7,
+                        style: 'circle'
+                    }
+                }
+            }
+            //]]>  
+        </script>
+        <style type="text/css">
+            .main-content {
+                padding: 0;
+            }
+            
+            #main-wrapper-content-facture {
+                padding: 10px;
+            }
+        </style>
+    </ui:define>
+    
+    
+        <div class="dashboard">
+            <div class="dashboard-header">
+                <div class="ui-g">
+                        <p:commandButton value="Fermer" styleClass="icon icon-close menuitem-fermer-droite" process="@this" 
+							onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())"/>
+					<!-- <i class="fa fa-file-text-o fa-3x" style="color:#e88524"></i> -->
+					<h:graphicImage name="dashboard/avis-echeance.svg" library="images" height="60px" style="margin-top:1px;" />
+                    <div class="ui-g-12 ui-md-6">
+                        <div class="dashboard-title">
+                            <h2>Avis d'échéance : Tableau de bord</h2>
+
+                        </div>
+                    </div>
+
+                    <div class="ui-g-12 ui-g-nopad">
+
+                    </div>
+                </div>
+            </div>
+            
+            <div id="main-wrapper-content-facture">
+
+                    
+                <div class="ui-g">
+
+
+				<div class="ui-g-12 ui-md-12">
+				<p:panel collapsed="true" toggleable="true" id="idPanelCriteresDashboardAvisEcheance" >
+						<f:facet name="header">
+							<h:outputText value="Critères et paramètres du tableau de bord - " />
+							<h:outputText value="Période du " />
+							<h:outputText value="#{dashBoardAvisEcheanceController.dateDebut}" >
+								<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" type="localDate"/>
+							</h:outputText>
+							<h:outputText value=" au " />
+							<h:outputText value="#{dashBoardAvisEcheanceController.dateFin}" >
+								<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" type="localDate"/>
+							</h:outputText>
+							
+						</f:facet>
+						
+					<div class="ui-g-12 ui-md-3">
+					<div class="card">
+		
+						<p:panel header="Période en cours" styleClass="panelgrey" widgetVar="wvPanelCardChoixPeriode">
+						<f:facet name="footer">
+						<i class="fa fa-calendar fa-2x facturecolor" aria-hidden="true" ></i>
+							<p:commandButton oncomplete="PF('wvListeAvisEcheance').filter()" 
+											 update="@this,
+											 		idPanelCriteresDashboardAvisEcheance,
+											 		@widgetVar(wvDashAvisEcheancePanelAvisEcheance),
+											 		@widgetVar(wvCountNbAvisEcheanceNonPaye),
+											 		@widgetVar(wvCountNbAvisEcheancePaye),
+											 		@widgetVar(wvListeAvisEcheance),
+											 		@widgetVar(wvListeAvisEcheanceParTiers),
+											 		@widgetVar(wvListeAvisEcheanceMois),
+											 		idPanelMensuelTitrePeriodeAvisEcheance,
+											 		@widgetVar(wvGraphiqueAvisEcheance),
+											 		@widgetVar(wvCountNbAvisEcheanceNonPayeARelancer),
+											 		@widgetVar(wvTauxAvisEcheancePaye),
+											 		@widgetVar(wvTabViewAvisEcheanceJour),
+													@widgetVar(wvPanelAvisEcheanceJourDataTable),
+													@widgetVar(wvListeAvisEcheanceMoisArticles),
+													@widgetVar(wvListeAvisEcheanceJour),
+													@widgetVar(wvListeAvisEcheanceJourArticles),
+													@widgetVar(wvListeAvisEcheanceJourComp),
+													@widgetVar(wvListeAvisEcheanceJourArticlesComp),
+													@widgetVar(wvPanelCardComparaison),
+													@widgetVar(wvPanelBlocBox),
+													@widgetVar(wvPanelMensuelTitrePeriodeAvisEcheance),
+													@widgetVar(wvTabViewListeMois)" 
+													
+								 
+											 			
+							action="#{dashBoardAvisEcheanceController.refreshDashBoard('tous')}" value="Appliquer" id="periode" styleClass="ui-green" 
+							style="width:80%;margin-left: 15px;bottom: 5px;">
+							</p:commandButton>
+							
+						</f:facet>
+						<div class="ui-g-12 ui-md-12" >
+						<h:panelGrid columns="2" cellpadding="0">
+							<p:outputLabel for="idSelectOneMenuChoixPeriode" value="Choix période " />
+						        <p:selectOneMenu id="idSelectOneMenuChoixPeriode" value="#{dashBoardAvisEcheanceController.selectedChoixPeriode}" widgetVar="wvSelectChoixPeriode" >
+						        	<f:selectItems value="#{dashBoardAvisEcheanceController.listeChoixPeriode}" var="choix" itemLabel="#{choix}" itemValue="#{choix}"/>
+						        	<p:ajax update="@this, @widgetVar(wvCalendarDebut),@widgetVar(wvCalendarFin)" event="change" listener="#{dashBoardAvisEcheanceController.initPeriode()}"/>
+						        </p:selectOneMenu>
+						
+						 <p:outputLabel value="Du"/>
+											<p:calendar value="#{dashBoardAvisEcheanceController.dateDebut}"
+												showOn="button" 
+												navigator="true" 
+												pattern="#{msg.date_pattern}" 
+												mask="true" 
+												locale="fr" 
+												timeZone="#{msg.time_zone}"
+												maxdate="#{dashBoardAvisEcheanceController.dateFin}"
+												size="8" widgetVar="wvCalendarDebut">
+												<p:ajax event="dateSelect" listener="#{dashBoardAvisEcheanceController.initPeriodePerso()}" update="@this, @widgetVar(wvSelectChoixPeriode), @widgetVar(wvPanelCardChoixPeriode)" />
+												<p:ajax event="change" listener="#{dashBoardAvisEcheanceController.initPeriodePerso()}" update="@this, @widgetVar(wvSelectChoixPeriode), @widgetVar(wvPanelCardChoixPeriode)"/>
+											</p:calendar>
+
+						 <p:outputLabel value="au"/>
+											<p:calendar value="#{dashBoardAvisEcheanceController.dateFin}"
+												showOn="button" 
+												navigator="true" 
+												pattern="#{msg.date_pattern}" 
+												mask="true" 
+												locale="fr" 
+												mindate="#{dashBoardAvisEcheanceController.dateDebut}"
+												timeZone="#{msg.time_zone}"
+												size="8"  widgetVar="wvCalendarFin">
+												<p:ajax event="dateSelect" listener="#{dashBoardAvisEcheanceController.initPeriodePerso()}" update="@this, @widgetVar(wvSelectChoixPeriode), @widgetVar(wvPanelCardChoixPeriode)" />
+												<p:ajax event="change" listener="#{dashBoardAvisEcheanceController.initPeriodePerso()}" update="@this, @widgetVar(wvSelectChoixPeriode), @widgetVar(wvPanelCardChoixPeriode)"/>
+											</p:calendar>
+
+        				</h:panelGrid>
+        				</div>
+
+								</p:panel>
+    				</div>
+    				</div>
+    				
+    				<!-- CARD COMPARAISON -->
+    				
+    				<div class="ui-g-12 ui-md-3">
+    				<p:panel styleClass="panel-no-style" rendered="#{auth.isDevLgr()}"><!-- ce panel ne sert qu'a caché le choix periode comp si pas admin -->
+    				<div class="card">
+		
+						<p:panel styleClass="panelgrey" widgetVar="wvPanelCardComparaison" >
+						<f:facet name="header">
+							Période de comparaison
+						<span style="float: left">
+							<p:selectBooleanCheckbox value="#{dashBoardAvisEcheanceController.comparaison}">
+								<p:ajax listener="#{dashBoardAvisEcheanceController.refreshDashBoard(dashBoardAvisEcheanceController.codeEtatDocument)}"/>
+								<p:ajax update="@this,
+								 @widgetVar(wvPanelCardComparaison),
+								 @widgetVar(wvPanelBlocBox),
+								 @widgetVar(wvGraphiqueAvisEcheance),
+								 @widgetVar(wvPanelMensuelTitrePeriodeAvisEcheance),
+								 @widgetVar(wvTabViewListeMois),
+								 @widgetVar(wvTabViewAvisEcheanceJour),
+								 @widgetVar(wvPanelAvisEcheanceJourDataTable),
+								 @widgetVar(wvListeAvisEcheanceMoisArticles),
+								 @widgetVar(wvListeAvisEcheanceJour),
+								 @widgetVar(wvListeAvisEcheanceJourArticles),
+								 @widgetVar(wvListeAvisEcheanceJourComp),
+								 @widgetVar(wvListeAvisEcheanceJourArticlesComp),
+								 @widgetVar(wvDashAvisEcheancePanelAvisEcheance)"/>
+								 
+							</p:selectBooleanCheckbox>
+						</span>
+							
+						</f:facet>
+						
+						<div class="ui-g-12 ui-md-12" >
+						<h:panelGrid columns="2" cellpadding="0">
+							<p:outputLabel for="idSelectOneMenuChoixPeriodeComp" value="Choix période " />
+						       <p:selectOneMenu id="idSelectOneMenuChoixPeriodeComp" value="#{dashBoardAvisEcheanceController.selectedChoixPeriodeComp}" widgetVar="wvSelectChoixPeriodeComp" disabled="#{!dashBoardAvisEcheanceController.comparaison}" >
+						        	<f:selectItems value="#{dashBoardAvisEcheanceController.listeChoixPeriodeComp}" var="choix" itemLabel="#{choix}" itemValue="#{choix}"/>
+						        	<p:ajax update="@this, @widgetVar(wvCalendarDebutComp),@widgetVar(wvCalendarFinComp)" event="change" listener="#{dashBoardAvisEcheanceController.initPeriodeComp()}"/>
+						        </p:selectOneMenu>
+						
+						 <p:outputLabel value="Du"/>
+											<p:calendar value="#{dashBoardAvisEcheanceController.dateDebutComp}"
+												showOn="button" 
+												navigator="true" 
+												pattern="#{msg.date_pattern}" 
+												mask="true" 
+												locale="fr" 
+												timeZone="#{msg.time_zone}"
+												size="8"
+												maxdate="#{dashBoardAvisEcheanceController.dateFinComp}"
+												 widgetVar="wvCalendarDebutComp"
+												disabled="#{!dashBoardAvisEcheanceController.comparaison}">
+												<p:ajax event="dateSelect" listener="#{dashBoardAvisEcheanceController.initPeriodePersoComp()}" update="@this, @widgetVar(wvSelectChoixPeriodeComp), @widgetVar(wvPanelCardComparaison)" />
+												<p:ajax event="change" listener="#{dashBoardAvisEcheanceController.initPeriodePersoComp()}" update="@this, @widgetVar(wvSelectChoixPeriodeComp), @widgetVar(wvPanelCardComparaison)"/>
+											</p:calendar>
+
+						 <p:outputLabel value="au"/>
+											<p:calendar value="#{dashBoardAvisEcheanceController.dateFinComp}"
+												showOn="button" 
+												navigator="true" 
+												pattern="#{msg.date_pattern}" 
+												mask="true" 
+												locale="fr" 
+												timeZone="#{msg.time_zone}"
+												size="8" 
+												mindate="#{dashBoardAvisEcheanceController.dateDebutComp}"
+												 widgetVar="wvCalendarFinComp"
+												disabled="#{!dashBoardAvisEcheanceController.comparaison}">
+												<p:ajax event="dateSelect" listener="#{dashBoardAvisEcheanceController.initPeriodePersoComp()}" update="@this, @widgetVar(wvSelectChoixPeriodeComp), @widgetVar(wvPanelCardComparaison)" />
+												<p:ajax event="change" listener="#{dashBoardAvisEcheanceController.initPeriodePersoComp()}" update="@this, @widgetVar(wvSelectChoixPeriodeComp), @widgetVar(wvPanelCardComparaison)"/>
+											</p:calendar>
+
+        				</h:panelGrid>
+        				</div>
+        				
+        				<f:facet name="footer">
+						<i class="fa fa-calendar fa-2x facturecompcolor" aria-hidden="true"></i>
+							<p:commandButton oncomplete="PF('wvListeAvisEcheance').filter()" 
+											 update="@this,
+											 		idPanelCriteresDashboardAvisEcheance,
+											 		@widgetVar(wvDashAvisEcheancePanelAvisEcheance),
+											 		@widgetVar(wvCountNbAvisEcheanceNonPaye),
+											 		@widgetVar(wvCountNbAvisEcheancePaye),
+											 		@widgetVar(wvListeAvisEcheance),
+											 		@widgetVar(wvListeAvisEcheanceParTiers),
+											 		@widgetVar(wvListeAvisEcheanceMois),
+											 		idPanelMensuelTitrePeriodeAvisEcheance,
+											 		@widgetVar(wvGraphiqueAvisEcheance),
+											 		@widgetVar(wvCountNbAvisEcheanceNonPayeARelancer),
+											 		@widgetVar(wvTauxAvisEcheancePaye),
+											 		@widgetVar(wvTabViewAvisEcheanceJour),
+													@widgetVar(wvPanelAvisEcheanceJourDataTable),
+													@widgetVar(wvListeAvisEcheanceMoisArticles),
+													@widgetVar(wvListeAvisEcheanceJour),
+													@widgetVar(wvListeAvisEcheanceJourArticles),
+													@widgetVar(wvPanelCardComparaison),
+								 					@widgetVar(wvPanelBlocBox),
+								 					@widgetVar(wvPanelMensuelTitrePeriodeAvisEcheance),
+												 	@widgetVar(wvTabViewListeMois)" 
+													
+								 
+											 			
+							action="#{dashBoardAvisEcheanceController.refreshDashBoard('tous')}" value="Appliquer" id="periode" styleClass="ui-green" 
+							style="width:80%;margin-left: 15px;bottom: 5px;"
+							disabled="#{!dashBoardAvisEcheanceController.comparaison}"
+							 >
+							 <p:ajax listener="#{dashBoardAvisEcheanceController.refreshDashBoard(dashBoardAvisEcheanceController.codeEtatDocument)}"/>
+							 </p:commandButton>
+							
+						</f:facet>
+
+
+								</p:panel>
+    				</div>
+    				</p:panel>
+    				</div>
+    				
+    				<!-- FIN CARD COMPARAISON -->
+    				
+
+				</p:panel>
+				</div>
+				
+				
+				<div class="ui-g-12 ui-md-12" style="padding:0;">
+				
+				
+				<p:panel widgetVar="wvPanelBlocBox" styleClass="panel-no-style" style="padding:0;"><!-- PANEL GLOBAL QUI ENGLOBE LES DEUX RANGEES DE BOX -->
+				
+				
+					<p:panel widgetVar="wvPanelBlocBoxPeriode1" styleClass="panel-no-style" rendered="#{!dashBoardAvisEcheanceController.comparaison}" style="padding:0;"><!-- PANEL POUR LA PERIODE 1 -->
+					
+					<div class="ui-g-12 ui-md-12" style="background:#ebebeb; padding:0;" >
+						<div class="ui-g-12 ui-md-6 ui-lg-3">
+						
+							<p:panel style="background:#ebebeb;" widgetVar="wvCountNbAvisEcheancePaye">
+								
+								<div class="box #{dashBoardAvisEcheanceController.cSbNbDocumentSurPeriode}" >
+								<div class="titre-box"><h2> Avis d'écheances réalisées</h2>
+								</div>
+								<h4>&#160;</h4>
+								<h2>#{dashBoardAvisEcheanceController.nbAvisEcheanceSurPeriode} Avis d'écheances réalisées</h2>
+								<h3>Total HT : <p:outputLabel value="#{dashBoardAvisEcheanceController.totauxCaPeriodeAvisEcheance.mtHtCalc}">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />		
+								</p:outputLabel>
+								</h3>
+								<p>Du 
+								<p:outputLabel value="#{dashBoardAvisEcheanceController.dateDebut}">
+									<f:convertDateTime pattern="#{msg.date_pattern}"
+											               timeZone="#{msg.time_zone}" type="localDate"/>		
+								</p:outputLabel>
+								  au 
+								<p:outputLabel value="#{dashBoardAvisEcheanceController.dateFin}">
+									<f:convertDateTime pattern="#{msg.date_pattern}"
+											               timeZone="#{msg.time_zone}" type="localDate"/>		
+								</p:outputLabel>
+								
+								
+								</p>
+	
+							<p:selectBooleanButton style="width:50%;" id="AvisEcheancetous" 
+													value="true" onLabel="Sélection active"
+													widgetVar="wvAvisEcheanceTous" 
+													offLabel="Afficher" onIcon="ui-icon-check" offIcon="ui-icon-close">
+									<p:ajax oncomplete="PF('wvListeAvisEcheance').filter()" 
+											update="@this,
+													@widgetVar(wvDashAvisEcheancePanelAvisEcheance),
+													@widgetVar(wvCountNbAvisEcheanceNonPaye),
+													@widgetVar(wvCountNbAvisEcheancePaye),
+													@widgetVar(wvListeAvisEcheance),
+													@widgetVar(wvListeAvisEcheanceParTiers),
+													@widgetVar(wvListeAvisEcheanceMois),
+													@widgetVar(wvGraphiqueAvisEcheance),
+													@widgetVar(wvCountNbAvisEcheanceNonPayeARelancer),
+													@widgetVar(wvTauxAvisEcheancePaye),
+													@widgetVar(wvTabViewAvisEcheanceJour),
+													@widgetVar(wvPanelAvisEcheanceJourDataTable),
+													@widgetVar(wvListeAvisEcheanceMoisArticles),
+													@widgetVar(wvListeAvisEcheanceJour),
+													@widgetVar(wvListeAvisEcheanceJourArticles)"
+											listener="#{dashBoardAvisEcheanceController.refreshDashBoard('tous')}"/>	 
+	        					</p:selectBooleanButton>
+								</div> 
+							</p:panel>
+							
+							
+							
+							
+							
+							
+							
+							
+						</div>
+						
+						
+						<div class="ui-g-12 ui-md-6 ui-lg-3" style="background:#ebebeb;">
+							<p:panel  widgetVar="wvCountNbAvisEcheanceNonPayeARelancer" 
+								style="background:#ebebeb;">
+								
+								<div class="box #{dashBoardAvisEcheanceController.cSbNbDocumentNonTransformeARelancerSurPeriode}" >
+								<div class="titre-box"><h2> Avis d'échéance à relancer</h2>
+								</div>
+								<h4>Avis d'écheances arrivant à échéance dans moins de 15 jours</h4>
+								
+								<h2>#{dashBoardAvisEcheanceController.nbAvisEcheanceNonTotalementPayesARelancerSurPeriodeAboEnCours} Avis d'échéance en cours à relancer</h2>
+								<h3>Montant HT : <p:outputLabel value="#{dashBoardAvisEcheanceController.totauxCaPeriodeAvisEcheanceNonTotalementPayeeARelancerAboEnCours.mtHtCalc}">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />		
+								</p:outputLabel></h3>
+								<p>Du 
+								<p:outputLabel value="#{dashBoardAvisEcheanceController.dateDebut}">
+									<f:convertDateTime pattern="#{msg.date_pattern}"
+											               timeZone="#{msg.time_zone}" type="localDate"/>		
+								</p:outputLabel>
+								  au 
+								<p:outputLabel value="#{dashBoardAvisEcheanceController.dateFin}">
+									<f:convertDateTime pattern="#{msg.date_pattern}"
+											               timeZone="#{msg.time_zone}" type="localDate"/>		
+								</p:outputLabel>
+								
+								
+								</p>
+
+							    <p:selectBooleanButton  style="width:50%;" id="AvisEcheance15jours" value="false" onLabel="Sélection active" offLabel="Afficher" onIcon="ui-icon-check" offIcon="ui-icon-close" >
+									<p:ajax oncomplete="PF('wvListeAvisEcheance').filter()" 
+											event="change" 
+											update="@this,
+													@widgetVar(wvDashAvisEcheancePanelAvisEcheance),
+													@widgetVar(wvCountNbAvisEcheanceNonPaye),
+													@widgetVar(wvCountNbAvisEcheancePaye),
+													@widgetVar(wvListeAvisEcheance),
+													@widgetVar(wvListeAvisEcheanceParTiers),
+													@widgetVar(wvListeAvisEcheanceMois),
+													@widgetVar(wvGraphiqueAvisEcheance),
+													@widgetVar(wvCountNbAvisEcheanceNonPayeARelancer),
+													@widgetVar(wvTauxAvisEcheancePaye),
+													@widgetVar(wvTabViewAvisEcheanceJour),
+													@widgetVar(wvPanelAvisEcheanceJourDataTable),
+													@widgetVar(wvListeAvisEcheanceMoisArticles),
+													@widgetVar(wvListeAvisEcheanceJour),
+													@widgetVar(wvListeAvisEcheanceJourArticles)"
+											listener="#{dashBoardAvisEcheanceController.refreshDashBoard('nontransformearelancer')}"/>	 
+	        					</p:selectBooleanButton>
+								</div> 
+							</p:panel>
+						</div>
+						<div class="ui-g-12 ui-md-6 ui-lg-3" style="background:#ebebeb;">
+							<p:panel style="background:#ebebeb;" widgetVar="wvCountNbAvisEcheanceNonPaye">
+								<div class="box #{dashBoardAvisEcheanceController.cSbNbDocumentNonTransformeSurPeriode}">
+							
+								<div class="titre-box"><h2> Avis d'échéances non payées</h2>
+								</div>
+								<h4>&#160;</h4>
+								<h2>#{dashBoardAvisEcheanceController.nbAvisEcheanceNonTotalementPayesSurPeriodeAboEnCours} Avis d'échéances en cours non payées</h2>
+								<h3>Montant HT : <p:outputLabel value="#{dashBoardAvisEcheanceController.totauxCaPeriodeAvisEcheanceNonTotalementPayeeAboEnCours.mtHtCalc}">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />		
+								</p:outputLabel></h3>
+								<p>Du 
+								<p:outputLabel value="#{dashBoardAvisEcheanceController.dateDebut}">
+									<f:convertDateTime pattern="#{msg.date_pattern}"
+											               timeZone="#{msg.time_zone}" type="localDate"/>		
+								</p:outputLabel>
+								  au 
+								<p:outputLabel value="#{dashBoardAvisEcheanceController.dateFin}">
+									<f:convertDateTime pattern="#{msg.date_pattern}"
+											               timeZone="#{msg.time_zone}" type="localDate"/>		
+								</p:outputLabel>
+								
+								
+								</p>
+								 <p:selectBooleanButton style="width:50%;" id="AvisEcheancenontrans" value="false" onLabel="Sélection active" offLabel="Afficher" onIcon="ui-icon-check" offIcon="ui-icon-close" >
+									<p:ajax oncomplete="PF('wvListeAvisEcheance').filter()" 
+											event="change" 
+											update="@this,
+													@widgetVar(wvDashAvisEcheancePanelAvisEcheance),
+													@widgetVar(wvCountNbAvisEcheanceNonPaye),
+													@widgetVar(wvCountNbAvisEcheancePaye),
+													@widgetVar(wvListeAvisEcheance),
+													@widgetVar(wvListeAvisEcheanceParTiers),
+													@widgetVar(wvListeAvisEcheanceMois),
+													@widgetVar(wvGraphiqueAvisEcheance),
+													@widgetVar(wvCountNbAvisEcheanceNonPayeARelancer),
+													@widgetVar(wvTauxAvisEcheancePaye),
+													@widgetVar(wvTabViewAvisEcheanceJour),
+													@widgetVar(wvPanelAvisEcheanceJourDataTable),
+													@widgetVar(wvListeAvisEcheanceMoisArticles),
+													@widgetVar(wvListeAvisEcheanceJour),
+													@widgetVar(wvListeAvisEcheanceJourArticles)"
+											listener="#{dashBoardAvisEcheanceController.refreshDashBoard('nontransforme')}"/>	 
+	        					 </p:selectBooleanButton>
+								</div>
+							</p:panel>
+						</div>
+						
+						<div class="ui-g-12 ui-md-6 ui-lg-3 " style="background:#ebebeb;"> 
+							<p:panel widgetVar="wvTauxAvisEcheancePaye" 
+							style="background:#ebebeb;">
+								<div class="box #{dashBoardAvisEcheanceController.cSbNbDocumentTransformeSurPeriode}" >
+								<div class="titre-box"><h2>Déjà réglé TTC</h2>
+								</div>
+									<p:tabView style="text-align:left;">
+										<p:tab title="Montant TTC" >
+										<h4>Taux de règlement (entièrement réglée)</h4>
+										<h3 style="text-align:center;">Déjà réglé TTC : <p:outputLabel value="#{dashBoardAvisEcheanceController.totauxCaPeriodeAvisEcheanceTotalementPayee.mtTtcCalc}">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />		
+								</p:outputLabel></h3>
+										 <div class="knob-container  ui-corner-all" style="text-align:center;">
+											<p:knob labelTemplate="{value}%" value="#{dashBoardAvisEcheanceController.tauxTotalementPayesCa}" height="70"
+												width="70" disabled="true"/>
+										</div> 
+										<!-- TEST CHART JS -->
+										</p:tab>
+										<p:tab title="Nombre de Avis d'échéances" >
+										<h4>Taux de règlement (entièrement réglée)</h4>
+										<h3 style="text-align:center;">#{dashBoardAvisEcheanceController.nbAvisEcheanceTotalementPayesSurPeriode} Avis d'échéances payées</h3>
+										<div class="knob-container  ui-corner-all" style="text-align:center;">
+											<p:knob labelTemplate="{value}%" value="#{dashBoardAvisEcheanceController.tauxTotalementPayesNb}" height="70"
+												width="70" disabled="true" />
+										</div>
+										</p:tab>
+									</p:tabView>
+									<p:selectBooleanButton  style="width:50%;" id="AvisEcheancePaye" value="false" onLabel="Sélection active" offLabel="Afficher" onIcon="ui-icon-check" offIcon="ui-icon-close" >
+									<p:ajax oncomplete="PF('wvListeAvisEcheance').filter()" event="change" 
+											update="@this,
+													@widgetVar(wvDashAvisEcheancePanelAvisEcheance),
+													@widgetVar(wvCountNbAvisEcheanceNonPaye),
+													@widgetVar(wvCountNbAvisEcheancePaye),
+													@widgetVar(wvListeAvisEcheance),
+													@widgetVar(wvListeAvisEcheanceParTiers),
+													@widgetVar(wvListeAvisEcheanceMois),
+													@widgetVar(wvGraphiqueAvisEcheance),
+													@widgetVar(wvCountNbAvisEcheanceNonPayeARelancer),
+													@widgetVar(wvTauxAvisEcheancePaye),
+													@widgetVar(wvTabViewAvisEcheanceJour),
+													@widgetVar(wvPanelAvisEcheanceJourDataTable),
+													@widgetVar(wvListeAvisEcheanceMoisArticles),
+													@widgetVar(wvListeAvisEcheanceJour),
+													@widgetVar(wvListeAvisEcheanceJourArticles)"
+									listener="#{dashBoardAvisEcheanceController.refreshDashBoard('transforme')}"/>	 
+	        					</p:selectBooleanButton>
+								</div> 
+							</p:panel>
+						</div>
+					
+					</div>
+					</p:panel><!-- FIN PANEL POUR LA PERIODE 1 -->
+				
+					<!-- PANEL PERIODE 2 INCLUDE -->
+					<ui:include src="/dashboard/box_comparaison_dashboard_avis_echeance.xhtml" >
+					</ui:include>
+				
+				</p:panel><!-- FIN PANEL BOX GLOBAL -->
+				</div>
+				<div class="ui-g-12 ui-md-12" style="margin-top: 20px;">
+				<p:panel  widgetVar="wvDashAvisEcheancePanelAvisEcheance" styleClass="panel-no-style">
+					<p:tabView id="idTabViewListesAvisEcheancesDashAvisEcheance" widgetVar="wvTabViewListesAvisEcheancesDashAvisEcheance" styleClass="tabview-no-background ">
+				        <p:tab title="Avis d'échéances" >
+				        <div class="ui-g-12 ui-md-12 ">
+							<p:dataTable 	id="taAvisEcheance" 
+											var="a"
+											value="#{dashBoardAvisEcheanceController.valueLignesDocument}"
+											styleClass="background-color-white"
+											scrollable="true"
+											scrollHeight="205"
+											liveResize="true"							
+											widgetVar="wvListeAvisEcheance" 
+											resizableColumns="true" 
+											paginator="true"
+											rows="#{msg.modele_datatable_ligne_par_page_debut}"
+											paginatorTemplate="#{msg.modele_datatable_paginator}"
+											rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+											emptyMessage="#{msg.message_datatable_vide}"
+											currentPageReportTemplate="#{msg.modele_datatable_page_courante}"
+											selectionMode="single" 
+											rowKey="#{a.codeDocument}" 
+											reflow="true">
+								
+								<f:facet name="header">
+	        						
+	        						<span style="float:left;">
+									        <p:commandButton id="idBtnListePrintEcranDasboardAvisEcheance"
+							 title="Imprimer la liste" 
+			onsuccess="window.open('#{request.contextPath}/output?__report=/reports/documents/avisEcheance/ListeDashboardAvisEcheance.rptdesign&amp;__format=pdf')"
+			actionListener="#{dashBoardAvisEcheanceController.actImprimerListeAvisEcheance}" styleClass="ui-priority-primary boutonPrint" style="color : white;" icon="fa fa-print"
+			process="@this" ></p:commandButton>
+			<!-- styleClass="ui-priority-primary boutonPrint -->
+									    </span>
+									    
+									       #{dashBoardAvisEcheanceController.infoLabel}
+									       
+							   <span style="float:right;" class="searchbar_list">
+						            <p:outputPanel>
+							                <p:inputText id="globalFilter" onkeyup="PF('wvListeAvisEcheance').filter()" style="width:150px" placeholder="Rechercher"/>
+							            </p:outputPanel>
+						        </span>
+
+	    						</f:facet>
+	    						
+	    						<f:facet name="{Exporters}">
+						            <h:commandLink>
+						                <p:graphicImage library="images" name="excel.png" width="24"/>
+						                <p:dataExporter type="xls" target="taAvisEcheance" fileName="liste_avis_echeance" />
+						            </h:commandLink>
+						            
+						            <h:commandLink>
+						                <p:graphicImage  library="images" name="csv.png"  width="24"/>
+						                <p:dataExporter type="csv" target="taAvisEcheance" fileName="liste_avis_echeance" options="#{separateurCsvController.csvOptions}" />
+						            </h:commandLink>
+						 
+						            <h:commandLink>
+						                <p:graphicImage  library="images" name="xml.png"  width="24"/>
+						                <p:dataExporter type="xml" target="taAvisEcheance" fileName="liste_avis_echeance" />
+						            </h:commandLink>
+								</f:facet>
+	    						
+	    						<p:column style="width:16px">
+						            <p:rowToggler />
+						        </p:column>
+	    						 
+								<p:column width="15%" rendered="true" filterMatchMode="contains"
+									filterBy="#{a.codeDocument}" sortBy="#{a.codeDocument}"  >
+									<f:facet name="header">
+										<h:outputText value="Code document" />
+									</f:facet>
+									<p:commandLink value="#{a.codeDocument}"
+										action="#{dashBoardAvisEcheanceController.ouvertureDocumentBean.detailDocument(dashBoardAvisEcheanceController.ouvertureDocumentBean.recupCodeDocument(a.codeDocument,dashBoardAvisEcheanceController.ouvertureDocumentBean.getTypeDocumentAvisEcheance()))}" 
+										update=":form:tabView" oncomplete="activeTabCenter('#{dashBoardAvisEcheanceController.ouvertureDocumentBean.event.cssLgrTab}');">
+									</p:commandLink>								
+								</p:column>
+	
+								<p:column width="38%" filterMatchMode="contains" 
+									filterBy="#{a.libelleDocument}" sortBy="#{a.libelleDocument}" >
+									<f:facet name="header">
+										<h:outputText value="Libellé" />
+									</f:facet>
+									<h:outputText value="#{a.libelleDocument}" id="idListeLibelleAvisEcheance"/>
+									<p:tooltip id="toolTipListeLibelleAvisEcheance" value="#{a.libelleDocument}" shared="true" for="idListeLibelleAvisEcheance" showEffect="clip" position="top"/>
+								</p:column>
+	
+								<p:column styleClass="center" width="12%"
+									filterMatchMode="contains" filterBy="#{factureController.customFormatDate(a.dateDocument)}"
+									sortBy="#{a.dateDocument}">
+									<f:facet name="header">
+										<h:outputText value="Date document" />
+									</f:facet>
+									<h:outputText value="#{a.dateDocument}">
+										<f:convertDateTime pattern="#{msg.date_pattern}"
+											timeZone="#{msg.time_zone}" />
+									</h:outputText>
+								</p:column>
+	
+								<p:column styleClass="center" width="20%"
+									filterMatchMode="contains" filterBy="#{a.codeTiers}"
+									sortBy="#{a.codeTiers}">
+									<f:facet name="header">
+										<h:outputText value="Code Tiers" />
+									</f:facet>
+	
+											<p:commandLink value="#{a.codeTiers}"
+												action="#{dashBoardAvisEcheanceController.ouvertureDocumentBean.detailTiers(dashBoardAvisEcheanceController.ouvertureDocumentBean.recupCodetiers(a.codeTiers))}" update=":form:tabView"
+												oncomplete="activeTabCenter('#{dashBoardAvisEcheanceController.ouvertureDocumentBean.event.cssLgrTab}');">
+											</p:commandLink>
+								</p:column>
+								
+								<!-- TEST NOM ENTREPRISES -->
+								<p:column styleClass="center" width="25%"
+									filterMatchMode="contains" filterBy="#{a.nomEntreprise}"
+									sortBy="#{a.nomEntreprise}">
+									<f:facet name="header">
+										<h:outputText value="Raison sociale" />
+									</f:facet>
+									<h:outputText value="#{a.nomEntreprise}">
+									</h:outputText>
+								</p:column>
+								
+								<p:column styleClass="center" width="25%"
+									filterMatchMode="contains" filterBy="#{a.nomTiers}"
+									sortBy="#{a.nomTiers}">
+									<f:facet name="header">
+										<h:outputText value="Nom Tiers" />
+									</f:facet>
+									<h:outputText value=" #{a.nomTiers}">
+									</h:outputText>
+								</p:column>
+								
+								<p:column styleClass="center" width="25%"
+									filterMatchMode="contains" filterBy="#{a.prenomTiers}"
+									sortBy="#{a.prenomTiers}">
+									<f:facet name="header">
+										<h:outputText value="Prénom Tiers" />
+									</f:facet>
+									<h:outputText value="#{a.prenomTiers}">
+									</h:outputText>
+								</p:column>
+	
+								
+								
+	
+								<p:column styleClass="right" width="12%"
+									filterMatchMode="contains" filterBy="#{a.netHtCalc}"
+									sortBy="#{a.netHtCalc}">
+									<f:facet name="header">
+										<h:outputText value="Montant HT" />
+									</f:facet>
+									<h:outputText value="#{a.netHtCalc}">
+											<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+									</h:outputText>
+								</p:column>
+	
+								<p:column styleClass="right" width="10%"
+									filterMatchMode="contains" filterBy="#{a.netTvaCalc}"
+									sortBy="#{a.netTvaCalc}">
+									<f:facet name="header">
+										<h:outputText value="Montant TVA" />
+									</f:facet>
+									<h:outputText value="#{a.netTvaCalc}">
+											<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+									</h:outputText>
+								</p:column>
+	
+								<p:column styleClass="right" width="12%"
+									filterMatchMode="contains" filterBy="#{a.netTtcCalc}"
+									sortBy="#{a.netTtcCalc}">
+									<f:facet name="header">
+										<h:outputText value="Montant TTC" />
+									</f:facet>
+									<h:outputText value="#{a.netTtcCalc}">
+											<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+									</h:outputText>
+								</p:column>
+	
+								<p:column styleClass="center" width="12%"
+									filterMatchMode="contains" filterBy="#{factureController.customFormatDate(a.dateEchDocument)}"
+									sortBy="#{a.dateEchDocument}">
+									<f:facet name="header">
+										<h:outputText value="Expire le" />
+									</f:facet>
+									<h:outputText value="#{a.dateEchDocument}">
+										<f:convertDateTime pattern="#{msg.date_pattern}"
+											timeZone="#{msg.time_zone}" />
+									</h:outputText>
+								</p:column>
+	
+								<p:column styleClass="right" width="12%"
+									filterMatchMode="contains" filterBy="#{a.resteAReglerComplet}"
+									sortBy="#{a.resteAReglerComplet}">
+									<f:facet name="header">
+										<h:outputText value="Reste à régler" />
+									</f:facet>
+									<h:outputText value="#{a.resteAReglerComplet}">
+											<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+									</h:outputText>
+								</p:column>		
+								
+								<p:rowExpansion>
+								<p:panel styleClass="panel-no-style menu-expand-dashboard" widgetVar="wvMenuExpandDashboard">
+								<!-- TEST submenu choix edition impression -->
+									<!-- <p:menubar>
+										 <p:submenu  icon="ui-icon-print"  class="ui-icon-print-option" style="z-index: 10;"> 
+								       		<p:menuitem  title="#{c_facture.titre_menu_imprimer} en brouillon" value="Brouillon" icon="fa fa-print"
+												actionListener="#{dashBoardAvisEcheanceController.imprimeEdition(a.id,dashBoardAvisEcheanceController.editionDefautImpression, 'BROUILLON', 'false')}">
+											</p:menuitem >
+											<p:submenu label="Autres modèles"
+												>
+												<p:menu model="#{dashBoardAvisEcheanceController.menuModelEdition}"></p:menu>
+													 <c:forEach items="#{dashBoardAvisEcheanceController.listeEdition}" var="edition" varStatus="loop">
+													       <p:menuitem  title="#{edition.libelleEdition}" value="#{edition.libelleEdition}" actionListener="#{dashBoardAvisEcheanceController.imprimeEdition(a.id,edition, 'BROUILLON', 'false')}">
+															</p:menuitem >
+													   </c:forEach>
+											</p:submenu>
+											<p:separator />
+											onsuccess="window.open('#{request.contextPath}/output?__report=/reports/documents/facture/FicheAvisEcheance.rptdesign&amp;__format=pdf')"
+											
+											
+								          	<p:menuitem title="#{c_facture.titre_menu_imprimer} en Duplicata" value="Duplicata" icon="fa fa-print"
+												actionListener="#{dashBoardAvisEcheanceController.imprimeEdition(a.id,dashBoardAvisEcheanceController.editionDefautImpression, 'DUPLICATA', 'false')}">
+											</p:menuitem>
+											<p:submenu label="Autres modèles"
+												>
+													 <c:forEach items="#{dashBoardAvisEcheanceController.listeEdition}" var="edition" varStatus="loop">
+													       <p:menuitem  title="#{edition.libelleEdition}" value="#{edition.libelleEdition}" actionListener="#{dashBoardAvisEcheanceController.imprimeEdition(a.id,edition, 'DUPLICATA', 'false')}">
+															</p:menuitem >
+													   </c:forEach>
+											</p:submenu>
+											<p:separator />
+											
+											<p:menuitem title="#{c_facture.titre_menu_imprimer} en Payer" value="Avis d'échéance acquittée" icon="fa fa-print"
+											
+											actionListener="#{dashBoardAvisEcheanceController.imprimeEdition(a.id,dashBoardAvisEcheanceController.editionDefautImpression, 'PAYER', 'false')}">
+											<f:attribute name="mode_edition" value="PAYER" />
+											</p:menuitem>
+											<p:submenu label="Autres modèles"
+											>
+													 <c:forEach items="#{dashBoardAvisEcheanceController.listeEdition}" var="edition" varStatus="loop">
+													       <p:menuitem  title="#{edition.libelleEdition}" value="#{edition.libelleEdition}" actionListener="#{dashBoardAvisEcheanceController.imprimeEdition(a.id,edition, 'PAYER', 'false')}">
+															</p:menuitem >
+													   </c:forEach>
+											</p:submenu>
+											<p:separator />
+											disabled="#{(dashBoardAvisEcheanceController.etatBouton('imprimer') or dashBoardAvisEcheanceController.stepEnCours('idLignesAvisEcheance')) or dashBoardAvisEcheanceController.documentDTOEstVerrouille().verrouille}"
+											
+											<p:menuitem title="#{c_facture.titre_menu_imprimer} pour le client" value="Imprimer pour le Client" icon="fa fa-print"
+												actionListener="#{dashBoardAvisEcheanceController.imprimeEdition(a.id,dashBoardAvisEcheanceController.editionDefautImpression, 'CLIENT', 'true')}">
+												actionBean="#{dashBoardAvisEcheanceController}"
+												actionMethod="actImprimer"
+												confirmHeader="Confirmation" 
+												confirmMessage="Etes-vous sur de vouloir mettre à disposition du client cette facture ?. Ensuite, vous ne pourrez plus la modifier ?"
+												pourClient="true"
+												choixEdition="#{dashBoardAvisEcheanceController.choixEdition}"
+											</p:menuitem>
+											<p:submenu label="Autres modèles">
+													 <c:forEach items="#{dashBoardAvisEcheanceController.listeEdition}" var="edition" varStatus="loop">
+													       <p:menuitem  title="#{edition.libelleEdition}" value="#{edition.libelleEdition}" actionListener="#{dashBoardAvisEcheanceController.imprimeEdition(a.id,edition, 'CLIENT', 'false')}">
+															</p:menuitem >
+													   </c:forEach>
+											</p:submenu>
+											
+										</p:submenu>
+									</p:menubar> -->
+								<!-- FIN TEST submenu choix edition impression -->
+								<!-- <p:splitButton id="basic" value="Save" action="#{dashBoardAvisEcheanceController.actInitPaiementCarteBancaire}"  icon="pi pi-save">
+						            <p:menuitem value="Update" action="#{dashBoardAvisEcheanceController.actInitPaiementCarteBancaire}"  icon="pi pi-refresh" />
+						            <p:menuitem value="Delete" action="#{dashBoardAvisEcheanceController.actInitPaiementCarteBancaire}" ajax="false" icon="pi pi-times" />
+						            <p:separator />
+						            <p:menuitem value="Homepage" url="http://www.primefaces.org" icon="pi pi-home" />
+						            
+						        </p:splitButton> -->
+										<p:commandButton value="" 
+											disabled="#{a.resteAReglerComplet le 0}"
+											actionListener="#{dashBoardAvisEcheanceController.actInitPaiementCarteBancaire}" process="@this" styleClass="icon-medium icon-paiment-cb" title="Payer par carte bancaire">
+											<f:attribute name="idDocument" value="#{a.id}"/>
+									        <p:ajax event="dialogReturn" update="@this,
+													 		@widgetVar(wvDashAvisEcheancePanelAvisEcheance),
+													 		@widgetVar(wvCountNbAvisEcheanceNonPaye),
+													 		@widgetVar(wvCountNbAvisEcheancePaye),
+													 		@widgetVar(wvListeAvisEcheance),
+													 		@widgetVar(wvListeAvisEcheanceParTiers),
+													 		@widgetVar(wvListeAvisEcheanceMois),
+													 		@widgetVar(wvGraphiqueAvisEcheance),
+													 		@widgetVar(wvCountNbAvisEcheanceNonPayeARelancer),
+													 		@widgetVar(wvTauxAvisEcheancePaye),
+													 		@widgetVar(wvTabViewAvisEcheanceJour),
+															@widgetVar(wvPanelAvisEcheanceJourDataTable),
+															@widgetVar(wvListeAvisEcheanceMoisArticles),
+															@widgetVar(wvListeAvisEcheanceJour),
+															@widgetVar(wvListeAvisEcheanceJourArticles)" 
+													listener="#{dashBoardAvisEcheanceController.handleReturnDialoguePaiementParCarte}" />  
+									    </p:commandButton>
+										<p:commandButton value="" 
+											actionListener="#{dashBoardAvisEcheanceController.actDialogGenerationReglement}" process="@this"  styleClass="icon-medium icon-reglement"
+											 title="Règlements de la facture">
+											<f:attribute name="idDocument" value="#{a.id}"/>
+									        <p:ajax event="dialogReturn" update="@this,
+													 		@widgetVar(wvDashAvisEcheancePanelAvisEcheance),
+													 		@widgetVar(wvCountNbAvisEcheanceNonPaye),
+													 		@widgetVar(wvCountNbAvisEcheancePaye),
+													 		@widgetVar(wvListeAvisEcheance),
+													 		@widgetVar(wvListeAvisEcheanceParTiers),
+													 		@widgetVar(wvListeAvisEcheanceMois),
+													 		@widgetVar(wvGraphiqueAvisEcheance),
+													 		@widgetVar(wvCountNbAvisEcheanceNonPayeARelancer),
+													 		@widgetVar(wvTauxAvisEcheancePaye),
+													 		@widgetVar(wvTabViewAvisEcheanceJour),
+															@widgetVar(wvPanelAvisEcheanceJourDataTable),
+															@widgetVar(wvListeAvisEcheanceMoisArticles),
+															@widgetVar(wvListeAvisEcheanceJour),
+															@widgetVar(wvListeAvisEcheanceJourArticles)" 
+													listener="#{dashBoardAvisEcheanceController.handleReturnDialogGestionReglement}" />  
+									    </p:commandButton> 
+									</p:panel>
+								</p:rowExpansion>					
+							</p:dataTable>
+							</div>
+						</p:tab>
+						<!-- TAB FACTURE PAR TIERS -->
+						<p:tab title="Détail des avis d'écheance">
+							
+							<div class="ui-g-12 ui-md-12">
+							<p:dataTable id="taAvisEcheanceParTiers" var="a"
+								value="#{dashBoardAvisEcheanceController.listeDocumentFactureParTiers}"
+								scrollable="true"
+								scrollHeight="135"
+								styleClass="background-color-white"
+								liveResize="true"
+								widgetVar="wvListeAvisEcheanceParTiers" resizableColumns="true" 
+								paginator="true"
+								rows="#{msg.modele_datatable_ligne_par_page_debut}"
+								paginatorTemplate="#{msg.modele_datatable_paginator}"
+								rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+								emptyMessage="#{msg.message_datatable_vide}"
+								currentPageReportTemplate="#{msg.modele_datatable_page_courante}"
+								
+								
+								selectionMode="single" rowKey="#{a.codeDocument}" reflow="true">
+								
+								<f:facet name="header">
+								<span style="float:left;">
+									        <p:commandButton id="idBtnListePrintEcranDasboardAvisEcheanceDetail"
+							 title="Imprimer la liste" 
+			onsuccess="window.open('#{request.contextPath}/output?__report=/reports/documents/avisEcheance/ListeDashboardAvisEcheanceDetail.rptdesign&amp;__format=pdf')"
+			actionListener="#{dashBoardAvisEcheanceController.actImprimerListeAvisEcheanceDetail}" styleClass="ui-priority-primary boutonPrint" style="color : white;" icon="fa fa-print"
+			process="@this" ></p:commandButton>
+									    </span>
+										
+	    								Détail des avis d'écheance sur la période 
+	    								<span style="float:right;" class="searchbar_list">
+						            <p:outputPanel>
+							                <p:inputText id="globalFilter" onkeyup="PF('wvListeAvisEcheanceParTiers').filter()" style="width:150px" placeholder="Rechercher"/>
+							            </p:outputPanel>
+						        </span>
+	    						</f:facet>
+	    						<f:facet name="{Exporters}">
+						            <h:commandLink>
+						                <p:graphicImage library="images" name="excel.png" width="24"/>
+						                <p:dataExporter type="xls" target="taAvisEcheanceParTiers" fileName="liste_avis_echeance" />
+						            </h:commandLink>
+						            
+						            <h:commandLink>
+						                <p:graphicImage  library="images" name="csv.png"  width="24"/>
+						                <p:dataExporter type="csv" target="taAvisEcheanceParTiers" fileName="liste_avis_echeance" options="#{separateurCsvController.csvOptions}" />
+						            </h:commandLink>
+						 
+						            <h:commandLink>
+						                <p:graphicImage  library="images" name="xml.png"  width="24"/>
+						                <p:dataExporter type="xml" target="taAvisEcheanceParTiers" fileName="liste_avis_echeance" />
+						            </h:commandLink>
+								</f:facet>
+	    					
+	    						 
+								<p:column width="15%" rendered="true" filterMatchMode="contains"
+									filterBy="#{a.codeDocument}" sortBy="#{a.codeDocument}"  >
+									<f:facet name="header">
+										<h:outputText value="Code document" />
+									</f:facet>
+									<p:commandLink value="#{a.codeDocument}"
+										action="#{dashBoardAvisEcheanceController.ouvertureDocumentBean.detailDocument(dashBoardAvisEcheanceController.ouvertureDocumentBean.recupCodeDocument(a.codeDocument,dashBoardAvisEcheanceController.ouvertureDocumentBean.getTypeDocumentAvisEcheance()))}" 
+										update=":form:tabView" oncomplete="activeTabCenter('#{dashBoardAvisEcheanceController.ouvertureDocumentBean.event.cssLgrTab}');">
+									</p:commandLink>								
+								</p:column>
+
+	
+								<p:column styleClass="center" width="12%"
+									filterMatchMode="contains" filterBy="#{factureController.customFormatDate(a.dateDocument)}"
+									sortBy="#{a.dateDocument}">
+									<f:facet name="header">
+										<h:outputText value="Date document" />
+									</f:facet>
+									<h:outputText value="#{a.dateDocument}">
+										<f:convertDateTime pattern="#{msg.date_pattern}"
+											timeZone="#{msg.time_zone}" />
+									</h:outputText>
+								</p:column>
+								
+								<p:column styleClass="center" width="12%"
+									filterMatchMode="contains" filterBy="#{a.codeArticle}"
+									sortBy="#{a.codeArticle}">
+									<f:facet name="header">
+										<h:outputText value="code Article" />
+									</f:facet>
+									<p:commandLink value="#{a.codeArticle}"
+										action="#{ouvertureDocumentBean.detailArticle(ouvertureDocumentBean.recupCodeArticle(a.codeArticle))}" 
+										update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+									</p:commandLink>
+								</p:column>
+								
+								
+								
+								<p:column styleClass="center" width="12%"
+									filterMatchMode="contains" filterBy="#{a.libellecArticle}"
+									sortBy="#{a.libellecArticle}">
+									<f:facet name="header">
+										<h:outputText value="libelle Article" />
+									</f:facet>
+									<h:outputText value="#{a.libellecArticle}">
+									</h:outputText>
+								</p:column>
+	
+								<p:column styleClass="center" width="12%"
+									filterMatchMode="contains" filterBy="#{a.codeTiers}"
+									sortBy="#{a.codeTiers}">
+									<f:facet name="header">
+										<h:outputText value="Code Tiers" />
+									</f:facet>
+											<p:commandLink value="#{a.codeTiers}"
+												action="#{dashBoardAvisEcheanceController.ouvertureDocumentBean.detailTiers(dashBoardAvisEcheanceController.ouvertureDocumentBean.recupCodetiers(a.codeTiers))}" update=":form:tabView"
+												oncomplete="activeTabCenter('#{dashBoardAvisEcheanceController.ouvertureDocumentBean.event.cssLgrTab}');">
+											</p:commandLink>
+								</p:column>
+								
+								<!-- TEST NOM ENTREPRISES -->
+								<p:column styleClass="center" width="20%"
+									filterMatchMode="contains" filterBy="#{a.nomEntreprise}"
+									sortBy="#{a.nomEntreprise}">
+									<f:facet name="header">
+										<h:outputText value="Raison sociale" />
+									</f:facet>
+									<h:outputText value="#{a.nomEntreprise}">
+									</h:outputText>
+								</p:column>
+								
+								<p:column styleClass="center" width="25%"
+									filterMatchMode="contains" filterBy="#{a.nomTiers}"
+									sortBy="#{a.nomTiers}">
+									<f:facet name="header">
+										<h:outputText value="Nom Tiers" />
+									</f:facet>
+									<h:outputText value=" #{a.nomTiers}">
+									</h:outputText>
+								</p:column>
+								<p:column styleClass="center" width="12%"
+									filterMatchMode="contains" filterBy="#{a.prenomTiers}"
+									sortBy="#{a.prenomTiers}">
+									<f:facet name="header">
+										<h:outputText value="Prénom Tiers" />
+									</f:facet>
+									<h:outputText value="#{a.prenomTiers}">
+									</h:outputText>
+								</p:column>
+								
+								<p:column styleClass="center" width="12%"
+									filterMatchMode="contains" filterBy="#{a.u1LDocument}"
+									sortBy="#{a.u1LDocument}">
+									<f:facet name="header">
+										<h:outputText value="Unité" />
+									</f:facet>
+									<h:outputText value="#{a.u1LDocument}">
+									</h:outputText>
+								</p:column>
+								
+								<p:column styleClass="center" width="12%"
+									filterMatchMode="contains" filterBy="#{a.qteLDocument}"
+									sortBy="#{a.qteLDocument}">
+									<f:facet name="header">
+										<h:outputText value="Quantité" />
+									</f:facet>
+									<h:outputText value="#{a.qteLDocument}">
+									</h:outputText>
+								</p:column>
+								
+	
+								<p:column styleClass="right" width="12%"
+									filterMatchMode="contains" filterBy="#{a.mtHtCalc}"
+									sortBy="#{a.mtHtCalc}">
+									<f:facet name="header">
+										<h:outputText value="Montant HT" />
+									</f:facet>
+									<h:outputText value="#{a.mtHtCalc}">
+											<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+									</h:outputText>
+								</p:column>
+	
+								
+	
+								<p:column styleClass="right" width="12%"
+									filterMatchMode="contains" filterBy="#{a.mtTtcCalc}"
+									sortBy="#{a.mtTtcCalc}">
+									<f:facet name="header">
+										<h:outputText value="Montant TTC" />
+									</f:facet>
+									<h:outputText value="#{a.mtTtcCalc}">
+											<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+									</h:outputText>
+								</p:column>
+
+								
+							</p:dataTable>
+							</div>
+						</p:tab>
+						<!-- DEBUT DES TABS COMPARAISONS -->
+						<p:tab title="Avis d'échéances du #{dashBoardAvisEcheanceController.customFormatDate(dashBoardAvisEcheanceController.dateDebutComp)} au #{dashBoardAvisEcheanceController.customFormatDate(dashBoardAvisEcheanceController.dateFinComp)}" rendered="#{dashBoardAvisEcheanceController.comparaison}">
+				        <div class="ui-g-12 ui-md-12 ">
+							<p:dataTable 	id="taAvisEcheanceComp" 
+											var="a"
+											value="#{dashBoardAvisEcheanceController.valueLignesDocumentComp}"
+											styleClass="background-color-white"
+											scrollable="true"
+											scrollHeight="150"
+											liveResize="true"							
+											widgetVar="wvListeAvisEcheanceComp" 
+											resizableColumns="true" 
+											paginator="true"
+											rows="#{msg.modele_datatable_ligne_par_page_debut}"
+											paginatorTemplate="#{msg.modele_datatable_paginator}"
+											rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+											emptyMessage="#{msg.message_datatable_vide}"
+											currentPageReportTemplate="#{msg.modele_datatable_page_courante}"
+											selectionMode="single" 
+											rowKey="#{a.codeDocument}" 
+											reflow="true">
+								
+								<f:facet name="header">
+	        						
+	        						<span style="float:left;">
+									        <p:commandButton id="idBtnListePrintEcranDasboardAvisEcheance"
+							 title="Imprimer la liste" 
+			onsuccess="window.open('#{request.contextPath}/output?__report=/reports/documents/facture/ListeDashboardAvisEcheance.rptdesign&amp;__format=pdf')"
+			actionListener="#{dashBoardAvisEcheanceController.actImprimerListeAvisEcheanceComp}" styleClass="ui-priority-primary boutonPrint" style="color : white;" icon="fa fa-print"
+			process="@this" ></p:commandButton>
+									    </span>
+<!-- 									<span style="float:left;"> -->
+<!-- 									        <p:commandButton id="idBtnListePrintEcranDasboardAvisEcheanceComp" -->
+<!-- 							 title="Imprimer la comparaison"  -->
+<!-- 			onsuccess="window.open('#{request.contextPath}/output?__report=/reports/documents/facture/ListeDashboardAvisEcheanceComparaison.rptdesign&amp;__format=pdf')" -->
+<!-- 			actionListener="#{dashBoardAvisEcheanceController.actImprimerListeAvisEcheanceComparaison}" styleClass="ui-priority-primary boutonPrint" style="color : white;" icon="fa fa-print" -->
+<!-- 			process="@this" ></p:commandButton> -->
+<!-- 									    </span> -->
+									    
+									       Liste des avis d'écheance
+									       
+							   <span style="float:right;" class="searchbar_list">
+						            <p:outputPanel>
+							                <p:inputText id="globalFilter" onkeyup="PF('wvListeAvisEcheance').filter()" style="width:150px" placeholder="Rechercher"/>
+							            </p:outputPanel>
+						        </span>
+
+	    						</f:facet>
+	    						<f:facet name="{Exporters}">
+						            <h:commandLink>
+						                <p:graphicImage library="images" name="excel.png" width="24"/>
+						                <p:dataExporter type="xls" target="taAvisEcheanceComp" fileName="liste_avis_echeance" />
+						            </h:commandLink>
+						            
+						            <h:commandLink>
+						                <p:graphicImage  library="images" name="csv.png"  width="24"/>
+						                <p:dataExporter type="csv" target="taAvisEcheanceComp" fileName="liste_avis_echeance" options="#{separateurCsvController.csvOptions}" />
+						            </h:commandLink>
+						 
+						            <h:commandLink>
+						                <p:graphicImage  library="images" name="xml.png"  width="24"/>
+						                <p:dataExporter type="xml" target="taAvisEcheanceComp" fileName="liste_avis_echeance" />
+						            </h:commandLink>
+								</f:facet>
+	    						
+	    						<p:column style="width:16px">
+						            <p:rowToggler />
+						        </p:column>
+	    						 
+								<p:column width="15%" rendered="true" filterMatchMode="contains"
+									filterBy="#{a.codeDocument}" sortBy="#{a.codeDocument}"  >
+									<f:facet name="header">
+										<h:outputText value="Code document" />
+									</f:facet>
+									<p:commandLink value="#{a.codeDocument}"
+										action="#{dashBoardAvisEcheanceController.ouvertureDocumentBean.detailDocument(dashBoardAvisEcheanceController.ouvertureDocumentBean.recupCodeDocument(a.codeDocument,dashBoardAvisEcheanceController.ouvertureDocumentBean.getTypeDocumentAvisEcheance()))}" 
+										update=":form:tabView" oncomplete="activeTabCenter('#{dashBoardAvisEcheanceController.ouvertureDocumentBean.event.cssLgrTab}');">
+									</p:commandLink>								
+								</p:column>
+	
+								<p:column width="38%" filterMatchMode="contains" 
+									filterBy="#{a.libelleDocument}" sortBy="#{a.libelleDocument}" >
+									<f:facet name="header">
+										<h:outputText value="Libellé" />
+									</f:facet>
+									<h:outputText value="#{a.libelleDocument}" id="idListeLibelleAvisEcheance"/>
+									<p:tooltip id="toolTipListeLibelleAvisEcheance" value="#{a.libelleDocument}" shared="true" for="idListeLibelleAvisEcheance" showEffect="clip" position="top"/>
+								</p:column>
+	
+								<p:column styleClass="center" width="12%"
+									filterMatchMode="contains" filterBy="#{factureController.customFormatDate(a.dateDocument)}"
+									sortBy="#{a.dateDocument}">
+									<f:facet name="header">
+										<h:outputText value="Date document" />
+									</f:facet>
+									<h:outputText value="#{a.dateDocument}">
+										<f:convertDateTime pattern="#{msg.date_pattern}"
+											timeZone="#{msg.time_zone}" />
+									</h:outputText>
+								</p:column>
+	
+								<p:column styleClass="center" width="20%"
+									filterMatchMode="contains" filterBy="#{a.codeTiers}"
+									sortBy="#{a.codeTiers}">
+									<f:facet name="header">
+										<h:outputText value="Code Tiers" />
+									</f:facet>
+	
+											<p:commandLink value="#{a.codeTiers}"
+												action="#{dashBoardAvisEcheanceController.ouvertureDocumentBean.detailTiers(dashBoardAvisEcheanceController.ouvertureDocumentBean.recupCodetiers(a.codeTiers))}" update=":form:tabView"
+												oncomplete="activeTabCenter('#{dashBoardAvisEcheanceController.ouvertureDocumentBean.event.cssLgrTab}');">
+											</p:commandLink>
+								</p:column>
+								
+								<!-- TEST NOM ENTREPRISES -->
+								<p:column styleClass="center" width="25%"
+									filterMatchMode="contains" filterBy="#{a.nomEntreprise}"
+									sortBy="#{a.nomEntreprise}">
+									<f:facet name="header">
+										<h:outputText value="Raison sociale" />
+									</f:facet>
+									<h:outputText value="#{a.nomEntreprise}">
+									</h:outputText>
+								</p:column>
+								
+								<p:column styleClass="center" width="25%"
+									filterMatchMode="contains" filterBy="#{a.nomTiers}"
+									sortBy="#{a.nomTiers}">
+									<f:facet name="header">
+										<h:outputText value="Nom Tiers" />
+									</f:facet>
+									<h:outputText value=" #{a.nomTiers}">
+									</h:outputText>
+								</p:column>
+								
+								<p:column styleClass="center" width="25%"
+									filterMatchMode="contains" filterBy="#{a.prenomTiers}"
+									sortBy="#{a.prenomTiers}">
+									<f:facet name="header">
+										<h:outputText value="Prénom Tiers" />
+									</f:facet>
+									<h:outputText value="#{a.prenomTiers}">
+									</h:outputText>
+								</p:column>
+	
+								
+								
+	
+								<p:column styleClass="right" width="12%"
+									filterMatchMode="contains" filterBy="#{a.netHtCalc}"
+									sortBy="#{a.netHtCalc}">
+									<f:facet name="header">
+										<h:outputText value="Montant HT" />
+									</f:facet>
+									<h:outputText value="#{a.netHtCalc}">
+											<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+									</h:outputText>
+								</p:column>
+	
+								<p:column styleClass="right" width="10%"
+									filterMatchMode="contains" filterBy="#{a.netTvaCalc}"
+									sortBy="#{a.netTvaCalc}">
+									<f:facet name="header">
+										<h:outputText value="Montant TVA" />
+									</f:facet>
+									<h:outputText value="#{a.netTvaCalc}">
+											<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+									</h:outputText>
+								</p:column>
+	
+								<p:column styleClass="right" width="12%"
+									filterMatchMode="contains" filterBy="#{a.netTtcCalc}"
+									sortBy="#{a.netTtcCalc}">
+									<f:facet name="header">
+										<h:outputText value="Montant TTC" />
+									</f:facet>
+									<h:outputText value="#{a.netTtcCalc}">
+											<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+									</h:outputText>
+								</p:column>
+	
+								<p:column styleClass="center" width="12%"
+									filterMatchMode="contains" filterBy="#{factureController.customFormatDate(a.dateEchDocument)}"
+									sortBy="#{a.dateEchDocument}">
+									<f:facet name="header">
+										<h:outputText value="Expire le" />
+									</f:facet>
+									<h:outputText value="#{a.dateEchDocument}">
+										<f:convertDateTime pattern="#{msg.date_pattern}"
+											timeZone="#{msg.time_zone}" />
+									</h:outputText>
+								</p:column>
+	
+								<p:column styleClass="right" width="12%"
+									filterMatchMode="contains" filterBy="#{a.resteAReglerComplet}"
+									sortBy="#{a.resteAReglerComplet}">
+									<f:facet name="header">
+										<h:outputText value="Reste à régler" />
+									</f:facet>
+									<h:outputText value="#{a.resteAReglerComplet}">
+											<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+									</h:outputText>
+								</p:column>		
+								
+								<p:rowExpansion>
+									<p:commandButton value="Payer par carte bancaire" 
+										disabled="#{a.resteAReglerComplet le 0}"
+										actionListener="#{dashBoardAvisEcheanceController.actInitPaiementCarteBancaire}" process="@this"  >
+										<f:attribute name="idDocument" value="#{a.id}"/>
+								        <p:ajax event="dialogReturn" update="@this,
+												 		@widgetVar(wvDashAvisEcheancePanelAvisEcheance),
+												 		@widgetVar(wvCountNbAvisEcheanceNonPaye),
+												 		@widgetVar(wvCountNbAvisEcheancePaye),
+												 		@widgetVar(wvListeAvisEcheance),
+												 		@widgetVar(wvListeAvisEcheanceParTiers),
+												 		@widgetVar(wvListeAvisEcheanceMois),
+												 		@widgetVar(wvGraphiqueAvisEcheance),
+												 		@widgetVar(wvCountNbAvisEcheanceNonPayeARelancer),
+												 		@widgetVar(wvTauxAvisEcheancePaye),
+												 		@widgetVar(wvTabViewAvisEcheanceJour),
+														@widgetVar(wvPanelAvisEcheanceJourDataTable),
+														@widgetVar(wvListeAvisEcheanceMoisArticles),
+														@widgetVar(wvListeAvisEcheanceJour),
+														@widgetVar(wvListeAvisEcheanceJourArticles)" 
+												listener="#{dashBoardAvisEcheanceController.handleReturnDialoguePaiementParCarte}" />  
+								    </p:commandButton>
+									<p:commandButton value="Régler la facture" 
+										actionListener="#{dashBoardAvisEcheanceController.actDialogGenerationReglement}" process="@this"  >
+										<f:attribute name="idDocument" value="#{a.id}"/>
+								        <p:ajax event="dialogReturn" update="@this,
+												 		@widgetVar(wvDashAvisEcheancePanelAvisEcheance),
+												 		@widgetVar(wvCountNbAvisEcheanceNonPaye),
+												 		@widgetVar(wvCountNbAvisEcheancePaye),
+												 		@widgetVar(wvListeAvisEcheance),
+												 		@widgetVar(wvListeAvisEcheanceParTiers),
+												 		@widgetVar(wvListeAvisEcheanceMois),
+												 		@widgetVar(wvGraphiqueAvisEcheance),
+												 		@widgetVar(wvCountNbAvisEcheanceNonPayeARelancer),
+												 		@widgetVar(wvTauxAvisEcheancePaye),
+												 		@widgetVar(wvTabViewAvisEcheanceJour),
+														@widgetVar(wvPanelAvisEcheanceJourDataTable),
+														@widgetVar(wvListeAvisEcheanceMoisArticles),
+														@widgetVar(wvListeAvisEcheanceJour),
+														@widgetVar(wvListeAvisEcheanceJourArticles)" 
+												listener="#{dashBoardAvisEcheanceController.handleReturnDialogGestionReglement}" />  
+								    </p:commandButton>								    
+								</p:rowExpansion>					
+							</p:dataTable>
+							</div>
+						</p:tab>
+						<!-- TAB FACTURE PAR TIERS COMP-->
+						<p:tab title="Détail des avis d'écheance du #{dashBoardAvisEcheanceController.customFormatDate(dashBoardAvisEcheanceController.dateDebutComp)} au #{dashBoardAvisEcheanceController.customFormatDate(dashBoardAvisEcheanceController.dateFinComp)}" rendered="#{dashBoardAvisEcheanceController.comparaison}">
+							
+							<div class="ui-g-12 ui-md-12 ">
+							<p:dataTable id="taAvisEcheanceParTiersComp" var="a"
+								value="#{dashBoardAvisEcheanceController.listeDocumentFactureParTiersComp}"
+								scrollable="true"
+								scrollHeight="135"
+								styleClass="background-color-white"
+								liveResize="true"
+								widgetVar="wvListeAvisEcheanceParTiersComp" resizableColumns="true" 
+								paginator="true"
+								rows="#{msg.modele_datatable_ligne_par_page_debut}"
+								paginatorTemplate="#{msg.modele_datatable_paginator}"
+								rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+								emptyMessage="#{msg.message_datatable_vide}"
+								currentPageReportTemplate="#{msg.modele_datatable_page_courante}"
+								
+								
+								selectionMode="single" rowKey="#{a.codeDocument}" reflow="true">
+								
+								<f:facet name="header">
+								<span style="float:left;">
+									         <p:commandButton id="idBtnListePrintEcranDasboardAvisEcheanceDetail"
+							 title="Imprimer la liste" 
+			onsuccess="window.open('#{request.contextPath}/output?__report=/reports/documents/avisEcheance/ListeDashboardAvisEcheanceDetail.rptdesign&amp;__format=pdf')"
+			actionListener="#{dashBoardAvisEcheanceController.actImprimerListeAvisEcheanceDetailComp}" styleClass="ui-priority-primary boutonPrint" style="color : white;" icon="fa fa-print"
+			process="@this" ></p:commandButton> 
+									    </span>
+<!-- 								<span style="float:left;"> -->
+<!-- 									         <p:commandButton id="idBtnListePrintEcranDasboardAvisEcheanceDetailComp" -->
+<!-- 							 title="Imprimer la comparaison"  -->
+<!-- 			onsuccess="window.open('#{request.contextPath}/output?__report=/reports/documents/facture/ListeDashboardAvisEcheanceDetailComparaison.rptdesign&amp;__format=pdf')" -->
+<!-- 			actionListener="#{dashBoardAvisEcheanceController.actImprimerListeAvisEcheanceDetailComparaison}" styleClass="ui-priority-primary boutonPrint" style="color : white;" icon="fa fa-print" -->
+<!-- 			process="@this" ></p:commandButton>  -->
+<!-- 									    </span> -->
+										
+	    								Détail des avis d'écheance sur la période 
+	    								<span style="float:right;" class="searchbar_list">
+						            <p:outputPanel>
+							                <p:inputText id="globalFilter" onkeyup="PF('wvListeAvisEcheanceParTiers').filter()" style="width:150px" placeholder="Rechercher"/>
+							            </p:outputPanel>
+						        </span>
+	    						</f:facet>
+	    						
+	    						<f:facet name="{Exporters}">
+						            <h:commandLink>
+						                <p:graphicImage library="images" name="excel.png" width="24"/>
+						                <p:dataExporter type="xls" target="taAvisEcheanceParTiersComp" fileName="liste_avis_echeance" />
+						            </h:commandLink>
+						            
+						            <h:commandLink>
+						                <p:graphicImage  library="images" name="csv.png"  width="24"/>
+						                <p:dataExporter type="csv" target="taAvisEcheanceParTiersComp" fileName="liste_avis_echeance" options="#{separateurCsvController.csvOptions}" />
+						            </h:commandLink>
+						 
+						            <h:commandLink>
+						                <p:graphicImage  library="images" name="xml.png"  width="24"/>
+						                <p:dataExporter type="xml" target="taAvisEcheanceParTiersComp" fileName="liste_avis_echeance" />
+						            </h:commandLink>
+								</f:facet>
+	    					
+	    						 
+								<p:column width="15%" rendered="true" filterMatchMode="contains"
+									filterBy="#{a.codeDocument}" sortBy="#{a.codeDocument}"  >
+									<f:facet name="header">
+										<h:outputText value="Code document" />
+									</f:facet>
+									<p:commandLink value="#{a.codeDocument}"
+										action="#{dashBoardAvisEcheanceController.ouvertureDocumentBean.detailDocument(dashBoardAvisEcheanceController.ouvertureDocumentBean.recupCodeDocument(a.codeDocument,dashBoardAvisEcheanceController.ouvertureDocumentBean.getTypeDocumentAvisEcheance()))}" 
+										update=":form:tabView" oncomplete="activeTabCenter('#{dashBoardAvisEcheanceController.ouvertureDocumentBean.event.cssLgrTab}');">
+									</p:commandLink>								
+								</p:column>
+
+	
+								<p:column styleClass="center" width="12%"
+									filterMatchMode="contains" filterBy="#{factureController.customFormatDate(a.dateDocument)}"
+									sortBy="#{a.dateDocument}">
+									<f:facet name="header">
+										<h:outputText value="Date document" />
+									</f:facet>
+									<h:outputText value="#{a.dateDocument}">
+										<f:convertDateTime pattern="#{msg.date_pattern}"
+											timeZone="#{msg.time_zone}" />
+									</h:outputText>
+								</p:column>
+								
+								<p:column styleClass="center" width="12%"
+									filterMatchMode="contains" filterBy="#{a.codeArticle}"
+									sortBy="#{a.codeArticle}">
+									<f:facet name="header">
+										<h:outputText value="code Article" />
+									</f:facet>
+									<p:commandLink value="#{a.codeArticle}"
+										action="#{ouvertureDocumentBean.detailArticle(ouvertureDocumentBean.recupCodeArticle(a.codeArticle))}" 
+										update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+									</p:commandLink>
+								</p:column>
+								
+								
+								
+								<p:column styleClass="center" width="12%"
+									filterMatchMode="contains" filterBy="#{a.libellecArticle}"
+									sortBy="#{a.libellecArticle}">
+									<f:facet name="header">
+										<h:outputText value="libelle Article" />
+									</f:facet>
+									<h:outputText value="#{a.libellecArticle}">
+									</h:outputText>
+								</p:column>
+	
+								<p:column styleClass="center" width="12%"
+									filterMatchMode="contains" filterBy="#{a.codeTiers}"
+									sortBy="#{a.codeTiers}">
+									<f:facet name="header">
+										<h:outputText value="Code Tiers" />
+									</f:facet>
+											<p:commandLink value="#{a.codeTiers}"
+												action="#{dashBoardAvisEcheanceController.ouvertureDocumentBean.detailTiers(dashBoardAvisEcheanceController.ouvertureDocumentBean.recupCodetiers(a.codeTiers))}" update=":form:tabView"
+												oncomplete="activeTabCenter('#{dashBoardAvisEcheanceController.ouvertureDocumentBean.event.cssLgrTab}');">
+											</p:commandLink>
+								</p:column>
+								
+								<!-- TEST NOM ENTREPRISES -->
+								<p:column styleClass="center" width="20%"
+									filterMatchMode="contains" filterBy="#{a.nomEntreprise}"
+									sortBy="#{a.nomEntreprise}">
+									<f:facet name="header">
+										<h:outputText value="Raison sociale" />
+									</f:facet>
+									<h:outputText value="#{a.nomEntreprise}">
+									</h:outputText>
+								</p:column>
+								
+								<p:column styleClass="center" width="25%"
+									filterMatchMode="contains" filterBy="#{a.nomTiers}"
+									sortBy="#{a.nomTiers}">
+									<f:facet name="header">
+										<h:outputText value="Nom Tiers" />
+									</f:facet>
+									<h:outputText value=" #{a.nomTiers}">
+									</h:outputText>
+								</p:column>
+								<p:column styleClass="center" width="12%"
+									filterMatchMode="contains" filterBy="#{a.prenomTiers}"
+									sortBy="#{a.prenomTiers}">
+									<f:facet name="header">
+										<h:outputText value="Prénom Tiers" />
+									</f:facet>
+									<h:outputText value="#{a.prenomTiers}">
+									</h:outputText>
+								</p:column>
+								
+								<p:column styleClass="center" width="12%"
+									filterMatchMode="contains" filterBy="#{a.u1LDocument}"
+									sortBy="#{a.u1LDocument}">
+									<f:facet name="header">
+										<h:outputText value="Unité" />
+									</f:facet>
+									<h:outputText value="#{a.u1LDocument}">
+									</h:outputText>
+								</p:column>
+								
+								<p:column styleClass="center" width="12%"
+									filterMatchMode="contains" filterBy="#{a.qteLDocument}"
+									sortBy="#{a.qteLDocument}">
+									<f:facet name="header">
+										<h:outputText value="Quantité" />
+									</f:facet>
+									<h:outputText value="#{a.qteLDocument}">
+									</h:outputText>
+								</p:column>
+								
+	
+								<p:column styleClass="right" width="12%"
+									filterMatchMode="contains" filterBy="#{a.mtHtCalc}"
+									sortBy="#{a.mtHtCalc}">
+									<f:facet name="header">
+										<h:outputText value="Montant HT" />
+									</f:facet>
+									<h:outputText value="#{a.mtHtCalc}">
+											<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+									</h:outputText>
+								</p:column>
+	
+								
+	
+								<p:column styleClass="right" width="12%"
+									filterMatchMode="contains" filterBy="#{a.mtTtcCalc}"
+									sortBy="#{a.mtTtcCalc}">
+									<f:facet name="header">
+										<h:outputText value="Montant TTC" />
+									</f:facet>
+									<h:outputText value="#{a.mtTtcCalc}">
+											<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+									</h:outputText>
+								</p:column>
+
+								
+							</p:dataTable>
+							</div>
+						</p:tab>
+						<!-- FIN DES TABS COMPARAISONS -->
+					</p:tabView>
+					</p:panel>
+				</div>
+				
+				<div class="ui-g-12 ui-md-12" style="background:#ebebeb;">
+				<div class="ui-g-12 ui-md-4">
+						<p:panel id="idPanelMensuelTitrePeriodeAvisEcheance" widgetVar="wvPanelMensuelTitrePeriodeAvisEcheance">
+						<f:facet name="header">
+							<h:outputText value="Période du " />
+							<h:outputText value="#{dashBoardAvisEcheanceController.dateDebut}" >
+								<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" type="localDate"/>
+							</h:outputText>
+							<h:outputText value=" au " />
+							<h:outputText value="#{dashBoardAvisEcheanceController.dateFin}" >
+								<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" type="localDate"/>
+							</h:outputText>
+							
+							<h:outputText value=" || " rendered="#{dashBoardAvisEcheanceController.comparaison}"/>
+							
+							<h:outputText value="Période du " rendered="#{dashBoardAvisEcheanceController.comparaison}" />
+							<h:outputText value="#{dashBoardAvisEcheanceController.dateDebutComp}" rendered="#{dashBoardAvisEcheanceController.comparaison}" >
+								<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" type="localDate"/>
+							</h:outputText>
+							<h:outputText value=" au " rendered="#{dashBoardAvisEcheanceController.comparaison}"/>
+							<h:outputText value="#{dashBoardAvisEcheanceController.dateFinComp}" rendered="#{dashBoardAvisEcheanceController.comparaison}">
+								<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" type="localDate"/>
+							</h:outputText>
+							
+							
+						</f:facet>
+					</p:panel>
+					
+					<p:tabView widgetVar="wvGraphiqueAvisEcheance" styleClass="tabview-no-background">
+					<!-- GRAPHIQUE BARRE MENSUEL -->
+						<p:tab title="Avis d'échéance">
+								<p:chart type="bar" model="#{dashBoardAvisEcheanceController.barChartModelAvisEcheance}" 
+								
+								responsive="true" 
+								style="height:300px;" rendered="#{!dashBoardAvisEcheanceController.comparaison}">
+								
+							<p:ajax event="itemSelect" 
+									listener="#{dashBoardAvisEcheanceController.itemSelectMois}" 
+									update="@widgetVar(wvListeAvisEcheanceMois),
+											@widgetVar(wvGraphiqueAvisEcheanceJour),
+											@widgetVar(wvTabViewAvisEcheanceJour),
+											@widgetVar(wvPanelAvisEcheanceJourDataTable),
+											@widgetVar(wvListeAvisEcheanceMoisArticles),
+											@widgetVar(wvTabViewListeMois)"
+											style="cursor: hand"/>
+							</p:chart>
+							<!-- GRAPHIQUE LINE MENSUEL -->
+							<p:chart type="line" model="#{dashBoardAvisEcheanceController.lineChartModelAvisEcheance}" 
+								responsive="true" 
+								style="height:300px;" rendered="#{dashBoardAvisEcheanceController.comparaison and !dashBoardAvisEcheanceController.chevauchementPeriode}" >
+								
+							<p:ajax event="itemSelect" 
+									listener="#{dashBoardAvisEcheanceController.itemSelectMoisComp}" 
+									update="@widgetVar(wvListeAvisEcheanceMois),
+											@widgetVar(wvGraphiqueAvisEcheanceJour),
+											@widgetVar(wvTabViewAvisEcheanceJour),
+											@widgetVar(wvPanelAvisEcheanceJourDataTable),
+											@widgetVar(wvListeAvisEcheanceMoisArticles),
+											@widgetVar(wvListeAvisEcheanceJour),
+											@widgetVar(wvListeAvisEcheanceJourArticles),
+											@widgetVar(wvListeAvisEcheanceJourComp),
+											@widgetVar(wvListeAvisEcheanceJourArticlesComp),
+											@widgetVar(wvTabViewListeMois),
+											@widgetVar(wvTabViewListeJours)"
+											style="cursor: hand"/>
+							</p:chart>
+							<p:outputLabel rendered="#{dashBoardAvisEcheanceController.comparaison and dashBoardAvisEcheanceController.chevauchementPeriode}">
+							Les périodes choisient se chevauchent : Graphique non disponible.
+							</p:outputLabel>
+
+						</p:tab>
+						
+						
+					</p:tabView>
+					</div>
+					
+					
+					<div class="ui-g-12 ui-md-8">
+				
+					<p:tabView styleClass="tabview-no-background background-transparent" widgetVar="wvTabViewListeMois">
+						<p:tab title="Liste des documents par mois">
+            			<h:panelGrid columns="2" cellpadding="10">
+                	
+						<br/>
+						
+						<p:dataTable id="idAvisEcheanceMois" var="a"
+							value="#{dashBoardAvisEcheanceController.listeDocumentDetailMois}"
+							scrollable="true"
+							scrollHeight="135"
+							liveResize="true"
+							styleClass="background-white"
+							widgetVar="wvListeAvisEcheanceMois" resizableColumns="true" 
+							paginator="true"
+							rows="#{msg.modele_datatable_ligne_par_page_debut}"
+							paginatorTemplate="#{msg.modele_datatable_paginator}"
+							rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+							emptyMessage="#{msg.message_datatable_vide}"
+							currentPageReportTemplate="#{msg.modele_datatable_page_courante}"
+							
+							selectionMode="single" rowKey="#{a.codeDocument}" reflow="true">
+							
+							<f:facet name="header">
+									<span style="float:left;">
+									        <p:commandButton id="idBtnListePrintEcranDasboardListeDocMois"
+							 title="Imprimer la liste" 
+			onsuccess="window.open('#{request.contextPath}/output?__report=/reports/documents/avisEcheance/ListeDashboardDocMois.rptdesign&amp;__format=pdf')"
+			actionListener="#{dashBoardAvisEcheanceController.actImprimerListeDocMois}" styleClass="ui-priority-primary boutonPrint" style="color : white;" icon="fa fa-print"
+			process="@this" ></p:commandButton>
+									    </span>
+									    
+    								#{dashBoardAvisEcheanceController.infosLabelRapportMensuelDataTable}
+    						</f:facet>
+    						
+    						<f:facet name="{Exporters}">
+						            <h:commandLink>
+						                <p:graphicImage library="images" name="excel.png" width="24"/>
+						                <p:dataExporter type="xls" target="idAvisEcheanceMois" fileName="liste_avis_echeance" />
+						            </h:commandLink>
+						            
+						            <h:commandLink>
+						                <p:graphicImage  library="images" name="csv.png"  width="24"/>
+						                <p:dataExporter type="csv" target="idAvisEcheanceMois" fileName="liste_avis_echeance" options="#{separateurCsvController.csvOptions}" />
+						            </h:commandLink>
+						 
+						            <h:commandLink>
+						                <p:graphicImage  library="images" name="xml.png"  width="24"/>
+						                <p:dataExporter type="xml" target="idAvisEcheanceMois" fileName="liste_avis_echeance" />
+						            </h:commandLink>
+								</f:facet>
+    						 
+							<p:column width="20%" rendered="true" filterMatchMode="contains"
+								filterBy="#{a.codeDocument}" sortBy="#{a.codeDocument}"  >
+								<f:facet name="header">
+									<h:outputText value="Code" />
+								</f:facet>
+								<p:commandLink value="#{a.codeDocument}"
+									action="#{ouvertureDocumentBean.detailDocument(ouvertureDocumentBean.recupCodeDocument(a.codeDocument,ouvertureDocumentBean.getTypeDocumentAvisEcheance()))}" 
+									update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+								</p:commandLink>
+
+							</p:column>
+
+							<p:column width="33%" filterMatchMode="contains" 
+								filterBy="#{a.libelleDocument}" sortBy="#{a.libelleDocument}">
+								<f:facet name="header">
+									<h:outputText value="Libellé" />
+								</f:facet>
+								<h:outputText value="#{a.libelleDocument}" />
+							</p:column>
+
+							<p:column styleClass="center" width="17%"
+								filterMatchMode="contains" filterBy="#{factureController.customFormatDate(a.dateDocument)}"
+								sortBy="#{a.dateDocument}">
+								<f:facet name="header">
+									<h:outputText value="Date" />
+								</f:facet>
+								<h:outputText value="#{a.dateDocument}">
+									<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="center" width="20%"
+								filterMatchMode="contains" filterBy="#{a.codeTiers}"
+								sortBy="#{a.codeTiers}">
+								<f:facet name="header">
+									<h:outputText value="Code Tiers" />
+								</f:facet>
+
+										<p:commandLink value="#{a.codeTiers}"
+											action="#{ouvertureDocumentBean.detailTiers(ouvertureDocumentBean.recupCodetiers(a.codeTiers))}" update=":form:tabView"
+											oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+										</p:commandLink>
+							</p:column>
+
+							<p:column styleClass="center" width="20%"
+								filterMatchMode="contains" filterBy="#{a.nomTiers}"
+								sortBy="#{a.nomTiers}">
+								<f:facet name="header">
+									<h:outputText value="Tiers" />
+								</f:facet>
+								<h:outputText value="#{a.nomTiers}">
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="right" width="12%"
+								filterMatchMode="contains" filterBy="#{a.netHtCalc}"
+								sortBy="#{a.netHtCalc}">
+								<f:facet name="header">
+									<h:outputText value="HT" />
+								</f:facet>
+								<h:outputText value="#{a.netHtCalc}">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="right" width="10%"
+								filterMatchMode="contains" filterBy="#{a.netTvaCalc}"
+								sortBy="#{a.netTvaCalc}">
+								<f:facet name="header">
+									<h:outputText value="TVA" />
+								</f:facet>
+								<h:outputText value="#{a.netTvaCalc}">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="right" width="12%"
+								filterMatchMode="contains" filterBy="#{a.netTtcCalc}"
+								sortBy="#{a.netTtcCalc}">
+								<f:facet name="header">
+									<h:outputText value="TTC" />
+								</f:facet>
+								<h:outputText value="#{a.netTtcCalc}">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="center" width="12%"
+								filterMatchMode="contains" filterBy="#{factureController.customFormatDate(a.dateEchDocument)}"
+								sortBy="#{a.dateEchDocument}">
+								<f:facet name="header">
+									<h:outputText value="Expire le" />
+								</f:facet>
+								<h:outputText value="#{a.dateEchDocument}">
+									<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" />
+								</h:outputText>
+							</p:column>
+							<p:column styleClass="right" width="12%"
+								filterMatchMode="contains" filterBy="#{a.resteAReglerComplet}"
+								sortBy="#{a.resteAReglerComplet}">
+								<f:facet name="header">
+									<h:outputText value="Reste à régler" />
+								</f:facet>
+								<h:outputText value="#{a.resteAReglerComplet}">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+							
+						</p:dataTable>
+                		
+            			</h:panelGrid>
+        				</p:tab>
+						<p:tab title="Détail des articles par mois">
+						<h:panelGrid columns="2" cellpadding="10">
+						
+						<p:dataTable id="taAvisEcheanceArticlesParTiersParMois" var="a"
+							value="#{dashBoardAvisEcheanceController.listeDocumentArticleParTiersParMois}"
+							scrollable="true"
+							scrollHeight="135"
+							liveResize="true"
+							styleClass="background-white"
+							widgetVar="wvListeAvisEcheanceMoisArticles" resizableColumns="true" 
+							paginator="true"
+							rows="#{msg.modele_datatable_ligne_par_page_debut}"
+							paginatorTemplate="#{msg.modele_datatable_paginator}"
+							rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+							emptyMessage="#{msg.message_datatable_vide}"
+							currentPageReportTemplate="#{msg.modele_datatable_page_courante}"
+							
+							selectionMode="single" rowKey="#{a.codeDocument}" reflow="true">
+							
+							<f:facet name="header">
+									<span style="float:left;">
+									        <p:commandButton id="idBtnListePrintEcranDasboardListeArticleMois"
+							 title="Imprimer la liste" 
+			onsuccess="window.open('#{request.contextPath}/output?__report=/reports/documents/avisEcheance/ListeDashboardArticleMois.rptdesign&amp;__format=pdf')"
+			actionListener="#{dashBoardAvisEcheanceController.actImprimerListeArticleMois}" styleClass="ui-priority-primary boutonPrint" style="color : white;" icon="fa fa-print"
+			process="@this" ></p:commandButton>
+									    </span>
+    								#{dashBoardAvisEcheanceController.infosLabelRapportArticlesDataTable}
+    						</f:facet>
+    						
+    						<f:facet name="{Exporters}">
+						            <h:commandLink>
+						                <p:graphicImage library="images" name="excel.png" width="24"/>
+						                <p:dataExporter type="xls" target="taAvisEcheanceArticlesParTiersParMois" fileName="liste_avis_echeance" />
+						            </h:commandLink>
+						            
+						            <h:commandLink>
+						                <p:graphicImage  library="images" name="csv.png"  width="24"/>
+						                <p:dataExporter type="csv" target="taAvisEcheanceArticlesParTiersParMois" fileName="liste_avis_echeance" options="#{separateurCsvController.csvOptions}" />
+						            </h:commandLink>
+						 
+						            <h:commandLink>
+						                <p:graphicImage  library="images" name="xml.png"  width="24"/>
+						                <p:dataExporter type="xml" target="taAvisEcheanceArticlesParTiersParMois" fileName="liste_avis_echeance" />
+						            </h:commandLink>
+								</f:facet>
+    					
+							<p:column styleClass="center" width="20%"
+								filterMatchMode="contains" filterBy="#{a.codeDocument}"
+								sortBy="#{a.codeDocument}">
+								<f:facet name="header">
+									<h:outputText value="Code" />
+								</f:facet>
+								<p:commandLink value="#{a.codeArticle}"
+									action="#{ouvertureDocumentBean.detailArticle(ouvertureDocumentBean.recupCodeArticle(a.codeArticle))}" 
+									update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+								</p:commandLink>
+							</p:column>
+							
+							<p:column width="20%" filterMatchMode="contains" 
+								filterBy="#{a.libellecArticle}" sortBy="#{a.libellecArticle}">
+								<f:facet name="header">
+									<h:outputText value="Libellé article(s)" />
+								</f:facet>
+								<h:outputText value="#{a.libellecArticle}" />
+							</p:column>
+
+							<p:column styleClass="center" width="15%"
+								filterMatchMode="contains" filterBy="#{factureController.customFormatDate(a.dateDocument)}"
+								sortBy="#{a.dateDocument}">
+								<f:facet name="header">
+									<h:outputText value="Fait le" />
+								</f:facet>
+								<h:outputText value="#{a.dateDocument}">
+									<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="center" width="20%"
+								filterMatchMode="contains" filterBy="#{a.codeTiers}"
+								sortBy="#{a.codeTiers}">
+								<f:facet name="header">
+									<h:outputText value="Code Tiers" />
+								</f:facet>
+
+										<p:commandLink value="#{a.codeTiers}"
+											action="#{ouvertureDocumentBean.detailTiers(ouvertureDocumentBean.recupCodetiers(a.codeTiers))}" update=":form:tabView"
+											oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+										</p:commandLink>
+							</p:column>
+
+							<p:column styleClass="center" width="20%"
+								filterMatchMode="contains" filterBy="#{a.nomTiers}"
+								sortBy="#{a.nomTiers}">
+								<f:facet name="header">
+									<h:outputText value="Tiers" />
+								</f:facet>
+								<h:outputText value="#{a.nomTiers}">
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="right" width="15%"
+								filterMatchMode="contains" filterBy="#{a.mtHtLDocument}"
+								sortBy="#{a.mtHtLDocument}">
+								<f:facet name="header">
+									<h:outputText value="HT" />
+								</f:facet>
+								<h:outputText value="#{a.mtHtLDocument}">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="right" width="15%"
+								filterMatchMode="contains" filterBy="#{a.mtTtcLDocument}"
+								sortBy="#{a.mtTtcLDocument}">
+								<f:facet name="header">
+									<h:outputText value="TTC" />
+								</f:facet>
+								<h:outputText value="#{a.mtTtcLDocument}">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+
+							
+						</p:dataTable>
+						</h:panelGrid>
+						</p:tab>
+						
+						<!-- DEBUT TABS PAR MOIS COMPARAISONS -->
+						<p:tab title="Liste des documents par mois (comparaison)" rendered="#{dashBoardAvisEcheanceController.comparaison}">
+            			<h:panelGrid columns="2" cellpadding="10">
+                	
+						<br/>
+						
+						<p:dataTable id="idAvisEcheanceMoisComp" var="a"
+							value="#{dashBoardAvisEcheanceController.listeDocumentDetailMoisComp}"
+							scrollable="true"
+							scrollHeight="135"
+							liveResize="true"
+							styleClass="background-white"
+							widgetVar="wvListeAvisEcheanceMoisComp" resizableColumns="true" 
+							paginator="true"
+							rows="#{msg.modele_datatable_ligne_par_page_debut}"
+							paginatorTemplate="#{msg.modele_datatable_paginator}"
+							rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+							emptyMessage="#{msg.message_datatable_vide}"
+							currentPageReportTemplate="#{msg.modele_datatable_page_courante}"
+							
+							selectionMode="single" rowKey="#{a.codeDocument}" reflow="true">
+							
+							<f:facet name="header">
+									<span style="float:left;">
+									       <p:commandButton id="idBtnListePrintEcranDasboardListeDocMoisComp"
+							 title="Imprimer la liste" 
+			onsuccess="window.open('#{request.contextPath}/output?__report=/reports/documents/avisEcheance/ListeDashboardDocMois.rptdesign&amp;__format=pdf')"
+			actionListener="#{dashBoardAvisEcheanceController.actImprimerListeDocMoisComp}" styleClass="ui-priority-primary boutonPrint" style="color : white;" icon="fa fa-print"
+			process="@this" ></p:commandButton> 
+									    </span>
+									    
+    								#{dashBoardAvisEcheanceController.infosLabelRapportMensuelDataTableComp}
+    						</f:facet>
+    						
+    						<f:facet name="{Exporters}">
+						            <h:commandLink>
+						                <p:graphicImage library="images" name="excel.png" width="24"/>
+						                <p:dataExporter type="xls" target="idAvisEcheanceMoisComp" fileName="liste_avis_echeance" />
+						            </h:commandLink>
+						            
+						            <h:commandLink>
+						                <p:graphicImage  library="images" name="csv.png"  width="24"/>
+						                <p:dataExporter type="csv" target="idAvisEcheanceMoisComp" fileName="liste_avis_echeance" options="#{separateurCsvController.csvOptions}" />
+						            </h:commandLink>
+						 
+						            <h:commandLink>
+						                <p:graphicImage  library="images" name="xml.png"  width="24"/>
+						                <p:dataExporter type="xml" target="idAvisEcheanceMoisComp" fileName="liste_avis_echeance" />
+						            </h:commandLink>
+								</f:facet>
+    						 
+							<p:column width="20%" rendered="true" filterMatchMode="contains"
+								filterBy="#{a.codeDocument}" sortBy="#{a.codeDocument}"  >
+								<f:facet name="header">
+									<h:outputText value="Code" />
+								</f:facet>
+								<p:commandLink value="#{a.codeDocument}"
+									action="#{ouvertureDocumentBean.detailDocument(ouvertureDocumentBean.recupCodeDocument(a.codeDocument,ouvertureDocumentBean.getTypeDocumentAvisEcheance()))}" 
+									update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+								</p:commandLink>
+
+							</p:column>
+
+							<p:column width="33%" filterMatchMode="contains" 
+								filterBy="#{a.libelleDocument}" sortBy="#{a.libelleDocument}">
+								<f:facet name="header">
+									<h:outputText value="Libellé" />
+								</f:facet>
+								<h:outputText value="#{a.libelleDocument}" />
+							</p:column>
+
+							<p:column styleClass="center" width="17%"
+								filterMatchMode="contains" filterBy="#{factureController.customFormatDate(a.dateDocument)}"
+								sortBy="#{a.dateDocument}">
+								<f:facet name="header">
+									<h:outputText value="Date" />
+								</f:facet>
+								<h:outputText value="#{a.dateDocument}">
+									<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="center" width="20%"
+								filterMatchMode="contains" filterBy="#{a.codeTiers}"
+								sortBy="#{a.codeTiers}">
+								<f:facet name="header">
+									<h:outputText value="Code Tiers" />
+								</f:facet>
+
+										<p:commandLink value="#{a.codeTiers}"
+											action="#{ouvertureDocumentBean.detailTiers(ouvertureDocumentBean.recupCodetiers(a.codeTiers))}" update=":form:tabView"
+											oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+										</p:commandLink>
+							</p:column>
+
+							<p:column styleClass="center" width="20%"
+								filterMatchMode="contains" filterBy="#{a.nomTiers}"
+								sortBy="#{a.nomTiers}">
+								<f:facet name="header">
+									<h:outputText value="Tiers" />
+								</f:facet>
+								<h:outputText value="#{a.nomTiers}">
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="right" width="12%"
+								filterMatchMode="contains" filterBy="#{a.netHtCalc}"
+								sortBy="#{a.netHtCalc}">
+								<f:facet name="header">
+									<h:outputText value="HT" />
+								</f:facet>
+								<h:outputText value="#{a.netHtCalc}">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="right" width="10%"
+								filterMatchMode="contains" filterBy="#{a.netTvaCalc}"
+								sortBy="#{a.netTvaCalc}">
+								<f:facet name="header">
+									<h:outputText value="TVA" />
+								</f:facet>
+								<h:outputText value="#{a.netTvaCalc}">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="right" width="12%"
+								filterMatchMode="contains" filterBy="#{a.netTtcCalc}"
+								sortBy="#{a.netTtcCalc}">
+								<f:facet name="header">
+									<h:outputText value="TTC" />
+								</f:facet>
+								<h:outputText value="#{a.netTtcCalc}">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="center" width="12%"
+								filterMatchMode="contains" filterBy="#{factureController.customFormatDate(a.dateEchDocument)}"
+								sortBy="#{a.dateEchDocument}">
+								<f:facet name="header">
+									<h:outputText value="Expire le" />
+								</f:facet>
+								<h:outputText value="#{a.dateEchDocument}">
+									<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" />
+								</h:outputText>
+							</p:column>
+							<p:column styleClass="right" width="12%"
+								filterMatchMode="contains" filterBy="#{a.resteAReglerComplet}"
+								sortBy="#{a.resteAReglerComplet}">
+								<f:facet name="header">
+									<h:outputText value="Reste à régler" />
+								</f:facet>
+								<h:outputText value="#{a.resteAReglerComplet}">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+							
+						</p:dataTable>
+                		
+            			</h:panelGrid>
+        				</p:tab>
+						<p:tab title="Détail des articles par mois (comparaison)" rendered="#{dashBoardAvisEcheanceController.comparaison}">
+						<h:panelGrid columns="2" cellpadding="10">
+						
+						<p:dataTable id="taAvisEcheanceArticlesParTiersParMoisComp" var="a"
+							value="#{dashBoardAvisEcheanceController.listeDocumentArticleParTiersParMoisComp}"
+							scrollable="true"
+							scrollHeight="135"
+							liveResize="true"
+							styleClass="background-white"
+							widgetVar="wvListeAvisEcheanceMoisArticlesComp" resizableColumns="true" 
+							paginator="true"
+							rows="#{msg.modele_datatable_ligne_par_page_debut}"
+							paginatorTemplate="#{msg.modele_datatable_paginator}"
+							rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+							emptyMessage="#{msg.message_datatable_vide}"
+							currentPageReportTemplate="#{msg.modele_datatable_page_courante}"
+							
+							selectionMode="single" rowKey="#{a.codeDocument}" reflow="true">
+							
+							<f:facet name="header">
+									<span style="float:left;">
+									       <p:commandButton id="idBtnListePrintEcranDasboardListeArticleMoisComp"
+							 title="Imprimer la liste" 
+			onsuccess="window.open('#{request.contextPath}/output?__report=/reports/documents/avisEcheance/ListeDashboardArticleMois.rptdesign&amp;__format=pdf')"
+			actionListener="#{dashBoardAvisEcheanceController.actImprimerListeArticleMoisComp}" styleClass="ui-priority-primary boutonPrint" style="color : white;" icon="fa fa-print"
+			process="@this" ></p:commandButton> 
+									    </span>
+    								#{dashBoardAvisEcheanceController.infosLabelRapportArticlesDataTableComp}
+    						</f:facet>
+    						
+    						<f:facet name="{Exporters}">
+						            <h:commandLink>
+						                <p:graphicImage library="images" name="excel.png" width="24"/>
+						                <p:dataExporter type="xls" target="taAvisEcheanceArticlesParTiersParMoisComp" fileName="liste_avis_echeance" />
+						            </h:commandLink>
+						            
+						            <h:commandLink>
+						                <p:graphicImage  library="images" name="csv.png"  width="24"/>
+						                <p:dataExporter type="csv" target="taAvisEcheanceArticlesParTiersParMoisComp" fileName="liste_avis_echeance" options="#{separateurCsvController.csvOptions}" />
+						            </h:commandLink>
+						 
+						            <h:commandLink>
+						                <p:graphicImage  library="images" name="xml.png"  width="24"/>
+						                <p:dataExporter type="xml" target="taAvisEcheanceArticlesParTiersParMoisComp" fileName="liste_avis_echeance" />
+						            </h:commandLink>
+								</f:facet>
+    					
+							<p:column styleClass="center" width="20%"
+								filterMatchMode="contains" filterBy="#{a.codeDocument}"
+								sortBy="#{a.codeDocument}">
+								<f:facet name="header">
+									<h:outputText value="Code" />
+								</f:facet>
+								<p:commandLink value="#{a.codeArticle}"
+									action="#{ouvertureDocumentBean.detailArticle(ouvertureDocumentBean.recupCodeArticle(a.codeArticle))}" 
+									update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+								</p:commandLink>
+							</p:column>
+							
+							<p:column width="20%" filterMatchMode="contains" 
+								filterBy="#{a.libellecArticle}" sortBy="#{a.libellecArticle}">
+								<f:facet name="header">
+									<h:outputText value="Libellé article(s)" />
+								</f:facet>
+								<h:outputText value="#{a.libellecArticle}" />
+							</p:column>
+
+							<p:column styleClass="center" width="15%"
+								filterMatchMode="contains" filterBy="#{factureController.customFormatDate(a.dateDocument)}"
+								sortBy="#{a.dateDocument}">
+								<f:facet name="header">
+									<h:outputText value="Fait le" />
+								</f:facet>
+								<h:outputText value="#{a.dateDocument}">
+									<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="center" width="20%"
+								filterMatchMode="contains" filterBy="#{a.codeTiers}"
+								sortBy="#{a.codeTiers}">
+								<f:facet name="header">
+									<h:outputText value="Code Tiers" />
+								</f:facet>
+
+										<p:commandLink value="#{a.codeTiers}"
+											action="#{ouvertureDocumentBean.detailTiers(ouvertureDocumentBean.recupCodetiers(a.codeTiers))}" update=":form:tabView"
+											oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+										</p:commandLink>
+							</p:column>
+
+							<p:column styleClass="center" width="20%"
+								filterMatchMode="contains" filterBy="#{a.nomTiers}"
+								sortBy="#{a.nomTiers}">
+								<f:facet name="header">
+									<h:outputText value="Tiers" />
+								</f:facet>
+								<h:outputText value="#{a.nomTiers}">
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="right" width="15%"
+								filterMatchMode="contains" filterBy="#{a.mtHtLDocument}"
+								sortBy="#{a.mtHtLDocument}">
+								<f:facet name="header">
+									<h:outputText value="HT" />
+								</f:facet>
+								<h:outputText value="#{a.mtHtLDocument}">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="right" width="15%"
+								filterMatchMode="contains" filterBy="#{a.mtTtcLDocument}"
+								sortBy="#{a.mtTtcLDocument}">
+								<f:facet name="header">
+									<h:outputText value="TTC" />
+								</f:facet>
+								<h:outputText value="#{a.mtTtcLDocument}">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+
+							
+						</p:dataTable>
+						</h:panelGrid>
+						</p:tab>
+						<!-- FIN TABS PAR MOIS COMPARAISONS -->
+						
+						
+	 				</p:tabView>
+						
+					</div>
+					
+					</div>	
+				
+<!-- 					//////////////////////////////////////////////////////////////////////////// -->
+<!-- 					Début second graphique document lié a son datatable -->
+				
+				<div class="ui-g-12 ui-md-12" style="background:#ebebeb;">
+				<div class="ui-g-12 ui-md-12">
+					
+					<p:tabView widgetVar="wvTabViewAvisEcheanceJour">
+								
+						<p:tab title="Détail des avis d'écheance par jour pour #{dashBoardAvisEcheanceController.nomMoisDetail}" 
+						rendered="#{dashBoardAvisEcheanceController.afficheDocumentJour}">
+						<br/><br/>
+						<h:panelGrid columns="2" cellpadding="0" rendered="#{!dashBoardAvisEcheanceController.comparaison}">
+									
+							<f:facet name="header">
+	        						Graphique journalier des documents pour le mois de #{dashBoardAvisEcheanceController.nomMoisDetail} pour un montant de #{dashBoardAvisEcheanceController.montantTotalHtMois} € de type #{dashBoardAvisEcheanceController.infoEtatDocument}
+	    						</f:facet>
+							
+						</h:panelGrid>
+						<h:panelGrid columns="2" cellpadding="0" rendered="#{dashBoardAvisEcheanceController.comparaison}">
+									
+							<f:facet name="header">
+	        						Graphique journalier des documents pour le mois de #{dashBoardAvisEcheanceController.nomMoisDetail} et #{dashBoardAvisEcheanceController.nomMoisDetailComp} de type #{dashBoardAvisEcheanceController.infoEtatDocument}
+	    						</f:facet>
+	    						<h:outputLabel value="Montant pour  #{dashBoardAvisEcheanceController.nomMoisDetail}:" />
+	    						<h:outputLabel value="#{dashBoardAvisEcheanceController.montantTotalHtMois} €" />
+	    						<h:outputLabel value="Montant pour #{dashBoardAvisEcheanceController.nomMoisDetailComp}:" />
+	    						<h:outputLabel value="#{dashBoardAvisEcheanceController.montantTotalHtMoisComp} €" />
+							
+						</h:panelGrid>
+					
+						 <p:chart type="bar" model="#{dashBoardAvisEcheanceController.barChartModelAvisEcheanceJour}" widgetVar="wvGraphiqueAvisEcheanceJour" 
+								responsive="true" 
+								style="height:240px;" rendered="#{!dashBoardAvisEcheanceController.comparaison}">
+								
+							<p:ajax event="itemSelect" listener="#{dashBoardAvisEcheanceController.itemSelectJour}" update="@widgetVar(wvListeAvisEcheanceJour),@widgetVar(wvPanelAvisEcheanceJourDataTable)" style="cursor: pointer"/>
+							</p:chart> 
+							
+							
+						<p:chart type="line" model="#{dashBoardAvisEcheanceController.lineChartModelAvisEcheanceJour}" widgetVar="wvGraphiqueAvisEcheanceJourComp" 
+								responsive="true" 
+								style="height:240px;" rendered="#{dashBoardAvisEcheanceController.comparaison}">
+								
+							<p:ajax event="itemSelect" listener="#{dashBoardAvisEcheanceController.itemSelectJourComp}" update="@widgetVar(wvListeAvisEcheanceJour),@widgetVar(wvPanelAvisEcheanceJourDataTable)" style="cursor: pointer"/>
+						</p:chart> 
+							
+							
+						
+						
+						</p:tab>
+					
+					</p:tabView>
+					</div>
+					
+					
+						<div class="ui-g-12 ui-md-12">
+						
+					<p:tabView widgetVar="wvPanelAvisEcheanceJourDataTable" styleClass="tabview-no-background background-transparent">
+					
+						<p:tab title="Liste des documents par jour" rendered="#{dashBoardAvisEcheanceController.afficheDocumentJourDataTable}">
+						<h:panelGrid columns="2" cellpadding="10">
+				
+						<p:dataTable id="taAvisEcheanceJour" var="a"
+							value="#{dashBoardAvisEcheanceController.listeDocumentDetailJour}"
+							scrollable="true"
+							scrollHeight="150"
+							liveResize="true"
+							widgetVar="wvListeAvisEcheanceJour" resizableColumns="true" 
+							styleClass="background-white"
+							paginator="true"
+							rows="#{msg.modele_datatable_ligne_par_page_debut}"
+							paginatorTemplate="#{msg.modele_datatable_paginator}"
+							rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+							emptyMessage="#{msg.message_datatable_vide}"
+							currentPageReportTemplate="#{msg.modele_datatable_page_courante}"
+							
+							selectionMode="single" rowKey="#{a.codeDocument}" reflow="true">
+							
+							<f:facet name="header">
+							
+							<span style="float:left;">
+									        <p:commandButton id="idBtnListePrintEcranDasboardListeDocJour"
+							 title="Imprimer la liste" 
+			onsuccess="window.open('#{request.contextPath}/output?__report=/reports/documents/avisEcheance/ListeDashboardDocJour.rptdesign&amp;__format=pdf')"
+			actionListener="#{dashBoardAvisEcheanceController.actImprimerListeDocJour}" styleClass="ui-priority-primary boutonPrint" style="color : white;" icon="fa fa-print"
+			process="@this" ></p:commandButton>
+									    </span>
+									    
+        						#{dashBoardAvisEcheanceController.infosLabelRapportJournalierDataTable}
+    						</f:facet>
+    						
+    						<f:facet name="{Exporters}">
+						            <h:commandLink>
+						                <p:graphicImage library="images" name="excel.png" width="24"/>
+						                <p:dataExporter type="xls" target="taAvisEcheanceJour" fileName="liste_avis_echeance" />
+						            </h:commandLink>
+						            
+						            <h:commandLink>
+						                <p:graphicImage  library="images" name="csv.png"  width="24"/>
+						                <p:dataExporter type="csv" target="taAvisEcheanceJour" fileName="liste_avis_echeance" options="#{separateurCsvController.csvOptions}" />
+						            </h:commandLink>
+						 
+						            <h:commandLink>
+						                <p:graphicImage  library="images" name="xml.png"  width="24"/>
+						                <p:dataExporter type="xml" target="taAvisEcheanceJour" fileName="liste_avis_echeance" />
+						            </h:commandLink>
+								</f:facet>
+    						 
+							<p:column width="20%" rendered="true" filterMatchMode="contains"
+								filterBy="#{a.codeDocument}" sortBy="#{a.codeDocument}"  >
+								<f:facet name="header">
+									<h:outputText value="Code" />
+								</f:facet>
+								<p:commandLink value="#{a.codeDocument}"
+									action="#{ouvertureDocumentBean.detailDocument(ouvertureDocumentBean.recupCodeDocument(a.codeDocument,ouvertureDocumentBean.getTypeDocumentAvisEcheance()))}" 
+									update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+								</p:commandLink>
+							</p:column>
+
+							<p:column width="33%" filterMatchMode="contains" 
+								filterBy="#{a.libelleDocument}" sortBy="#{a.libelleDocument}">
+								<f:facet name="header">
+									<h:outputText value="Libellé" />
+								</f:facet>
+								<h:outputText value="#{a.libelleDocument}" />
+							</p:column>
+
+							<p:column styleClass="center" width="17%"
+								filterMatchMode="contains" filterBy="#{factureController.customFormatDate(a.dateDocument)}"
+								sortBy="#{a.dateDocument}">
+								<f:facet name="header">
+									<h:outputText value="Date" />
+								</f:facet>
+								<h:outputText value="#{a.dateDocument}">
+									<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="center" width="20%"
+								filterMatchMode="contains" filterBy="#{a.codeTiers}"
+								sortBy="#{a.codeTiers}">
+								<f:facet name="header">
+									<h:outputText value="Code Tiers" />
+								</f:facet>
+
+										<p:commandLink value="#{a.codeTiers}"
+											action="#{ouvertureDocumentBean.detailTiers(ouvertureDocumentBean.recupCodetiers(a.codeTiers))}" update=":form:tabView"
+											oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+										</p:commandLink>
+							</p:column>
+
+							<p:column styleClass="center" width="20%"
+								filterMatchMode="contains" filterBy="#{a.nomTiers}"
+								sortBy="#{a.nomTiers}">
+								<f:facet name="header">
+									<h:outputText value="Tiers" />
+								</f:facet>
+								<h:outputText value="#{a.nomTiers}">
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="right" width="12%"
+								filterMatchMode="contains" filterBy="#{a.netHtCalc}"
+								sortBy="#{a.netHtCalc}">
+								<f:facet name="header">
+									<h:outputText value="HT" />
+								</f:facet>
+								<h:outputText value="#{a.netHtCalc}">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="right" width="10%"
+								filterMatchMode="contains" filterBy="#{a.netTvaCalc}"
+								sortBy="#{a.netTvaCalc}">
+								<f:facet name="header">
+									<h:outputText value="TVA" />
+								</f:facet>
+								<h:outputText value="#{a.netTvaCalc}">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="right" width="12%"
+								filterMatchMode="contains" filterBy="#{a.netTtcCalc}"
+								sortBy="#{a.netTtcCalc}">
+								<f:facet name="header">
+									<h:outputText value="TTC" />
+								</f:facet>
+								<h:outputText value="#{a.netTtcCalc}">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="center" width="12%"
+								filterMatchMode="contains" filterBy="#{factureController.customFormatDate(a.dateEchDocument)}"
+								sortBy="#{a.dateEchDocument}">
+								<f:facet name="header">
+									<h:outputText value="Expire le" />
+								</f:facet>
+								<h:outputText value="#{a.dateEchDocument}">
+									<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" />
+								</h:outputText>
+							</p:column>
+
+							
+						</p:dataTable>
+						</h:panelGrid>
+						</p:tab>
+						
+						<p:tab title="Détail des articles par jour" rendered="#{dashBoardAvisEcheanceController.afficheDocumentJourDataTable}">
+						<h:panelGrid columns="2" cellpadding="10">
+						
+						<br/>
+						
+						<p:dataTable id="taAvisEcheanceArticlesParTiersParJour" var="a"
+							value="#{dashBoardAvisEcheanceController.listeDocumentArticleParTiersParJour}"
+							scrollable="true"
+							scrollHeight="150"
+							liveResize="true"
+							styleClass="background-white"
+							widgetVar="wvListeAvisEcheanceJourArticles" resizableColumns="true" 
+							paginator="true"
+							rows="#{msg.modele_datatable_ligne_par_page_debut}"
+							paginatorTemplate="#{msg.modele_datatable_paginator}"
+							rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+							emptyMessage="#{msg.message_datatable_vide}"
+							currentPageReportTemplate="#{msg.modele_datatable_page_courante}"
+							
+							selectionMode="single" rowKey="#{a.codeDocument}" reflow="true">
+							
+							<f:facet name="header">
+							
+							<span style="float:left;">
+									        <p:commandButton id="idBtnListePrintEcranDasboardListeArticleJour"
+							 title="Imprimer la liste" 
+			onsuccess="window.open('#{request.contextPath}/output?__report=/reports/documents/avisEcheance/ListeDashboardArticleJour.rptdesign&amp;__format=pdf')"
+			actionListener="#{dashBoardAvisEcheanceController.actImprimerListeArticleJour}" styleClass="ui-priority-primary boutonPrint" style="color : white;" icon="fa fa-print"
+			process="@this" ></p:commandButton>
+									    </span>
+
+    								#{dashBoardAvisEcheanceController.infosLabelRapportArticlesJourDataTable}
+    						</f:facet>
+    						
+    						<f:facet name="{Exporters}">
+						            <h:commandLink>
+						                <p:graphicImage library="images" name="excel.png" width="24"/>
+						                <p:dataExporter type="xls" target="taAvisEcheanceArticlesParTiersParJour" fileName="liste_avis_echeance" />
+						            </h:commandLink>
+						            
+						            <h:commandLink>
+						                <p:graphicImage  library="images" name="csv.png"  width="24"/>
+						                <p:dataExporter type="csv" target="taAvisEcheanceArticlesParTiersParJour" fileName="liste_avis_echeance" options="#{separateurCsvController.csvOptions}" />
+						            </h:commandLink>
+						 
+						            <h:commandLink>
+						                <p:graphicImage  library="images" name="xml.png"  width="24"/>
+						                <p:dataExporter type="xml" target="taAvisEcheanceArticlesParTiersParJour" fileName="liste_avis_echeance" />
+						            </h:commandLink>
+								</f:facet>
+    						
+							<p:column styleClass="center" width="20%"
+								filterMatchMode="contains" filterBy="#{a.codeDocument}"
+								sortBy="#{a.codeDocument}">
+								<f:facet name="header">
+									<h:outputText value="Code" />
+								</f:facet>
+<!-- 								<h:outputText value="#{a.codeDocument}"> -->
+<!-- 								</h:outputText> -->
+								<p:commandLink value="#{a.codeDocument}"
+									action="#{ouvertureDocumentBean.detailDocument(ouvertureDocumentBean.recupCodeDocument(a.codeDocument,ouvertureDocumentBean.getTypeDocumentAvisEcheance()))}" 
+									update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+								</p:commandLink>
+							</p:column>
+							
+							<p:column width="20%" filterMatchMode="contains" 
+								filterBy="#{a.libellecArticle}" sortBy="#{a.libellecArticle}">
+								<f:facet name="header">
+									<h:outputText value="Libellé article(s)" />
+								</f:facet>
+								<h:outputText value="#{a.libellecArticle}" />
+							</p:column>
+
+							<p:column styleClass="center" width="15%"
+								filterMatchMode="contains" filterBy="#{factureController.customFormatDate(a.dateDocument)}"
+								sortBy="#{a.dateDocument}">
+								<f:facet name="header">
+									<h:outputText value="Fait le" />
+								</f:facet>
+								<h:outputText value="#{a.dateDocument}">
+									<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="center" width="20%"
+								filterMatchMode="contains" filterBy="#{a.codeTiers}"
+								sortBy="#{a.codeTiers}">
+								<f:facet name="header">
+									<h:outputText value="Code Tiers" />
+								</f:facet>
+
+<!-- 								<h:outputText value="#{a.codeTiers}"> -->
+<!-- 								</h:outputText> -->
+										<p:commandLink value="#{a.codeTiers}"
+											action="#{ouvertureDocumentBean.detailTiers(ouvertureDocumentBean.recupCodetiers(a.codeTiers))}" update=":form:tabView"
+											oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+										</p:commandLink>
+							</p:column>
+
+							<p:column styleClass="center" width="20%"
+								filterMatchMode="contains" filterBy="#{a.nomTiers}"
+								sortBy="#{a.nomTiers}">
+								<f:facet name="header">
+									<h:outputText value="Tiers" />
+								</f:facet>
+								<h:outputText value="#{a.nomTiers}">
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="right" width="15%"
+								filterMatchMode="contains" filterBy="#{a.mtHtLDocument}"
+								sortBy="#{a.mtHtLDocument}">
+								<f:facet name="header">
+									<h:outputText value="HT" />
+								</f:facet>
+								<h:outputText value="#{a.mtHtLDocument}">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="right" width="15%"
+								filterMatchMode="contains" filterBy="#{a.mtTtcLDocument}"
+								sortBy="#{a.mtTtcLDocument}">
+								<f:facet name="header">
+									<h:outputText value="TTC" />
+								</f:facet>
+								<h:outputText value="#{a.mtTtcLDocument}">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+							
+						</p:dataTable>
+						</h:panelGrid>
+						</p:tab>
+						
+						
+						<!-- DEBUT DES TABS COMPARAISONS -->
+						<p:tab title="Liste des documents par jour (comparaison)" rendered="#{dashBoardAvisEcheanceController.comparaison and dashBoardAvisEcheanceController.afficheDocumentJourDataTable}">
+						<h:panelGrid columns="2" cellpadding="10">
+				
+						<p:dataTable id="taAvisEcheanceJourComp" var="a"
+							value="#{dashBoardAvisEcheanceController.listeDocumentDetailJourComp}"
+							scrollable="true"
+							scrollHeight="150"
+							liveResize="true"
+							widgetVar="wvListeAvisEcheanceJourComp" resizableColumns="true" 
+							styleClass="background-white"
+							paginator="true"
+							rows="#{msg.modele_datatable_ligne_par_page_debut}"
+							paginatorTemplate="#{msg.modele_datatable_paginator}"
+							rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+							emptyMessage="#{msg.message_datatable_vide}"
+							currentPageReportTemplate="#{msg.modele_datatable_page_courante}"
+							
+							selectionMode="single" rowKey="#{a.codeDocument}" reflow="true">
+							
+							<f:facet name="header">
+							
+							<span style="float:left;">
+									        <p:commandButton id="idBtnListePrintEcranDasboardListeDocJourComp"
+							 title="Imprimer la liste" 
+			onsuccess="window.open('#{request.contextPath}/output?__report=/reports/documents/avisEcheance/ListeDashboardDocJour.rptdesign&amp;__format=pdf')"
+			actionListener="#{dashBoardAvisEcheanceController.actImprimerListeDocJourComp}" styleClass="ui-priority-primary boutonPrint" style="color : white;" icon="fa fa-print"
+			process="@this" ></p:commandButton>
+									    </span>
+									    
+        						#{dashBoardAvisEcheanceController.infosLabelRapportJournalierDataTableComp}
+    						</f:facet>
+    						
+    						<f:facet name="{Exporters}">
+						            <h:commandLink>
+						                <p:graphicImage library="images" name="excel.png" width="24"/>
+						                <p:dataExporter type="xls" target="taAvisEcheanceJourComp" fileName="liste_avis_echeance" />
+						            </h:commandLink>
+						            
+						            <h:commandLink>
+						                <p:graphicImage  library="images" name="csv.png"  width="24"/>
+						                <p:dataExporter type="csv" target="taAvisEcheanceJourComp" fileName="liste_avis_echeance" options="#{separateurCsvController.csvOptions}" />
+						            </h:commandLink>
+						 
+						            <h:commandLink>
+						                <p:graphicImage  library="images" name="xml.png"  width="24"/>
+						                <p:dataExporter type="xml" target="taAvisEcheanceJourComp" fileName="liste_avis_echeance" />
+						            </h:commandLink>
+								</f:facet>
+    						 
+							<p:column width="20%" rendered="true" filterMatchMode="contains"
+								filterBy="#{a.codeDocument}" sortBy="#{a.codeDocument}"  >
+								<f:facet name="header">
+									<h:outputText value="Code" />
+								</f:facet>
+								<p:commandLink value="#{a.codeDocument}"
+									action="#{ouvertureDocumentBean.detailDocument(ouvertureDocumentBean.recupCodeDocument(a.codeDocument,ouvertureDocumentBean.getTypeDocumentAvisEcheance()))}" 
+									update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+								</p:commandLink>
+							</p:column>
+
+							<p:column width="33%" filterMatchMode="contains" 
+								filterBy="#{a.libelleDocument}" sortBy="#{a.libelleDocument}">
+								<f:facet name="header">
+									<h:outputText value="Libellé" />
+								</f:facet>
+								<h:outputText value="#{a.libelleDocument}" />
+							</p:column>
+
+							<p:column styleClass="center" width="17%"
+								filterMatchMode="contains" filterBy="#{factureController.customFormatDate(a.dateDocument)}"
+								sortBy="#{a.dateDocument}">
+								<f:facet name="header">
+									<h:outputText value="Date" />
+								</f:facet>
+								<h:outputText value="#{a.dateDocument}">
+									<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="center" width="20%"
+								filterMatchMode="contains" filterBy="#{a.codeTiers}"
+								sortBy="#{a.codeTiers}">
+								<f:facet name="header">
+									<h:outputText value="Code Tiers" />
+								</f:facet>
+
+										<p:commandLink value="#{a.codeTiers}"
+											action="#{ouvertureDocumentBean.detailTiers(ouvertureDocumentBean.recupCodetiers(a.codeTiers))}" update=":form:tabView"
+											oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+										</p:commandLink>
+							</p:column>
+
+							<p:column styleClass="center" width="20%"
+								filterMatchMode="contains" filterBy="#{a.nomTiers}"
+								sortBy="#{a.nomTiers}">
+								<f:facet name="header">
+									<h:outputText value="Tiers" />
+								</f:facet>
+								<h:outputText value="#{a.nomTiers}">
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="right" width="12%"
+								filterMatchMode="contains" filterBy="#{a.netHtCalc}"
+								sortBy="#{a.netHtCalc}">
+								<f:facet name="header">
+									<h:outputText value="HT" />
+								</f:facet>
+								<h:outputText value="#{a.netHtCalc}">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="right" width="10%"
+								filterMatchMode="contains" filterBy="#{a.netTvaCalc}"
+								sortBy="#{a.netTvaCalc}">
+								<f:facet name="header">
+									<h:outputText value="TVA" />
+								</f:facet>
+								<h:outputText value="#{a.netTvaCalc}">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="right" width="12%"
+								filterMatchMode="contains" filterBy="#{a.netTtcCalc}"
+								sortBy="#{a.netTtcCalc}">
+								<f:facet name="header">
+									<h:outputText value="TTC" />
+								</f:facet>
+								<h:outputText value="#{a.netTtcCalc}">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="center" width="12%"
+								filterMatchMode="contains" filterBy="#{factureController.customFormatDate(a.dateEchDocument)}"
+								sortBy="#{a.dateEchDocument}">
+								<f:facet name="header">
+									<h:outputText value="Expire le" />
+								</f:facet>
+								<h:outputText value="#{a.dateEchDocument}">
+									<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" />
+								</h:outputText>
+							</p:column>
+
+							
+						</p:dataTable>
+						</h:panelGrid>
+						</p:tab>
+						
+						<p:tab title="Détail des articles par jour (comparaison)" rendered="#{dashBoardAvisEcheanceController.comparaison and dashBoardAvisEcheanceController.afficheDocumentJourDataTable}">
+						<h:panelGrid columns="2" cellpadding="10">
+						
+						<br/>
+						
+						<p:dataTable id="taAvisEcheanceArticlesParTiersParJourComp" var="a"
+							value="#{dashBoardAvisEcheanceController.listeDocumentArticleParTiersParJourComp}"
+							scrollable="true"
+							scrollHeight="150"
+							liveResize="true"
+							styleClass="background-white"
+							widgetVar="wvListeAvisEcheanceJourArticlesComp" resizableColumns="true" 
+							paginator="true"
+							rows="#{msg.modele_datatable_ligne_par_page_debut}"
+							paginatorTemplate="#{msg.modele_datatable_paginator}"
+							rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+							emptyMessage="#{msg.message_datatable_vide}"
+							currentPageReportTemplate="#{msg.modele_datatable_page_courante}"
+							
+							selectionMode="single" rowKey="#{a.codeDocument}" reflow="true">
+							
+							<f:facet name="header">
+							
+							<span style="float:left;">
+									       <p:commandButton id="idBtnListePrintEcranDasboardListeArticleJourComp"
+							 title="Imprimer la liste" 
+			onsuccess="window.open('#{request.contextPath}/output?__report=/reports/documents/avisEcheance/ListeDashboardArticleJour.rptdesign&amp;__format=pdf')"
+			actionListener="#{dashBoardAvisEcheanceController.actImprimerListeArticleJourComp}" styleClass="ui-priority-primary boutonPrint" style="color : white;" icon="fa fa-print"
+			process="@this" ></p:commandButton>
+									    </span>
+
+    								#{dashBoardAvisEcheanceController.infosLabelRapportArticlesJourDataTableComp}
+    						</f:facet>
+    						<f:facet name="{Exporters}">
+						            <h:commandLink>
+						                <p:graphicImage library="images" name="excel.png" width="24"/>
+						                <p:dataExporter type="xls" target="taAvisEcheanceArticlesParTiersParJourComp" fileName="liste_avis_echeance" />
+						            </h:commandLink>
+						            
+						            <h:commandLink>
+						                <p:graphicImage  library="images" name="csv.png"  width="24"/>
+						                <p:dataExporter type="csv" target="taAvisEcheanceArticlesParTiersParJourComp" fileName="liste_avis_echeance" options="#{separateurCsvController.csvOptions}" />
+						            </h:commandLink>
+						 
+						            <h:commandLink>
+						                <p:graphicImage  library="images" name="xml.png"  width="24"/>
+						                <p:dataExporter type="xml" target="taAvisEcheanceArticlesParTiersParJourComp" fileName="liste_avis_echeance" />
+						            </h:commandLink>
+								</f:facet>
+							<p:column styleClass="center" width="20%"
+								filterMatchMode="contains" filterBy="#{a.codeDocument}"
+								sortBy="#{a.codeDocument}">
+								<f:facet name="header">
+									<h:outputText value="Code" />
+								</f:facet>
+<!-- 								<h:outputText value="#{a.codeDocument}"> -->
+<!-- 								</h:outputText> -->
+								<p:commandLink value="#{a.codeDocument}"
+									action="#{ouvertureDocumentBean.detailDocument(ouvertureDocumentBean.recupCodeDocument(a.codeDocument,ouvertureDocumentBean.getTypeDocumentAvisEcheance()))}" 
+									update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+								</p:commandLink>
+							</p:column>
+							
+							<p:column width="20%" filterMatchMode="contains" 
+								filterBy="#{a.libellecArticle}" sortBy="#{a.libellecArticle}">
+								<f:facet name="header">
+									<h:outputText value="Libellé article(s)" />
+								</f:facet>
+								<h:outputText value="#{a.libellecArticle}" />
+							</p:column>
+
+							<p:column styleClass="center" width="15%"
+								filterMatchMode="contains" filterBy="#{factureController.customFormatDate(a.dateDocument)}"
+								sortBy="#{a.dateDocument}">
+								<f:facet name="header">
+									<h:outputText value="Fait le" />
+								</f:facet>
+								<h:outputText value="#{a.dateDocument}">
+									<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="center" width="20%"
+								filterMatchMode="contains" filterBy="#{a.codeTiers}"
+								sortBy="#{a.codeTiers}">
+								<f:facet name="header">
+									<h:outputText value="Code Tiers" />
+								</f:facet>
+
+<!-- 								<h:outputText value="#{a.codeTiers}"> -->
+<!-- 								</h:outputText> -->
+										<p:commandLink value="#{a.codeTiers}"
+											action="#{ouvertureDocumentBean.detailTiers(ouvertureDocumentBean.recupCodetiers(a.codeTiers))}" update=":form:tabView"
+											oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+										</p:commandLink>
+							</p:column>
+
+							<p:column styleClass="center" width="20%"
+								filterMatchMode="contains" filterBy="#{a.nomTiers}"
+								sortBy="#{a.nomTiers}">
+								<f:facet name="header">
+									<h:outputText value="Tiers" />
+								</f:facet>
+								<h:outputText value="#{a.nomTiers}">
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="right" width="15%"
+								filterMatchMode="contains" filterBy="#{a.mtHtLDocument}"
+								sortBy="#{a.mtHtLDocument}">
+								<f:facet name="header">
+									<h:outputText value="HT" />
+								</f:facet>
+								<h:outputText value="#{a.mtHtLDocument}">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="right" width="15%"
+								filterMatchMode="contains" filterBy="#{a.mtTtcLDocument}"
+								sortBy="#{a.mtTtcLDocument}">
+								<f:facet name="header">
+									<h:outputText value="TTC" />
+								</f:facet>
+								<h:outputText value="#{a.mtTtcLDocument}">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+							
+						</p:dataTable>
+						</h:panelGrid>
+						</p:tab>
+						
+						
+						
+						
+						
+						
+						
+						
+						</p:tabView>
+					</div>
+					
+					</div>
+
+
+                    <div class="ui-g-12 ui-md-6">
+                        <p:panel header="Calendrier" style="height:100%" rendered="false">
+                            <p:schedule value="#{dashBoardBean.eventModel}" widgetVar="myschedule" timeZone="GMT+1">
+					            <p:ajax event="eventSelect" listener="#{dashBoardBean.onEventSelect}" update="eventDetails" oncomplete="PF('eventDialog').show();" />
+                            </p:schedule>
+                        </p:panel>
+                    </div>
+                    <div class="ui-g-12 ui-md-4">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+
+    
+</ui:composition>

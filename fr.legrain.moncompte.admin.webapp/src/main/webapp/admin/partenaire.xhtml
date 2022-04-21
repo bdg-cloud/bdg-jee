@@ -1,0 +1,290 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:pe="http://primefaces.org/ui/extensions" 
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:p="http://primefaces.org/ui">
+	
+	<o:importConstants type="fr.legrain.moncompte.admin.webapp.app.LgrTab" />
+	
+	<f:metadata>
+		<f:viewParam name="p" value="#{partenaireBean.paramPartenaire}" />
+		<f:event type="preRenderView" listener="#{partenaireBean.preRenderView}" />
+	</f:metadata>
+
+	
+	<p:panel header="#{partenaireBean.client.taPartenaire.codePartenaire}" toggleable="true">
+		<div class="ui-g">
+			<div class="ui-g-12 ui-md-12 ui-lg-6">
+				<p:panelGrid  columns="2" >
+	                <f:facet name="header">
+	                    Informations
+	                </f:facet>
+	                
+					<p:outputLabel value="Nom :"/>
+					<p:outputLabel value="#{partenaireBean.client.nom} #{partenaireBean.client.prenom}"/>
+					
+					<p:outputLabel value="Code client : "/>
+<!-- 					<p:outputLabel value="#{partenaireBean.client.code}"/> -->
+					<p:commandLink value="#{partenaireBean.client.code}" action="#{clientController.openClient}" update=":form:tabView" oncomplete="activeTabCenter('#{LgrTab.CSS_CLASS_TAB_CLIENT}');">
+						<f:setPropertyActionListener target="#{clientController.taClient}" value="#{partenaireBean.client}" />
+					</p:commandLink>
+					
+					<p:outputLabel value="Type de partenaire : "/>
+					<p:outputLabel value="#{partenaireBean.client.taPartenaire.taTypePartenaire.libelle}"/>
+					
+					<p:outputLabel value="Partenaire depuis : "/>
+						<h:outputText value="#{partenaireBean.client.taPartenaire.dateDebut}" >
+							<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+						</h:outputText>
+					
+					<p:outputLabel value="Code Alliance : "/>
+					<p:outputLabel value="#{partenaireBean.client.taPartenaire.codePartenaire}"/>
+					
+					<p:outputLabel value="Date dernier dossier validant : "/>
+						<h:outputText value="#{partenaireBean.datePaiementDernierDossierValidant}" >
+							<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+						</h:outputText>
+				</p:panelGrid>
+			</div>
+			<div class="ui-g-12 ui-md-12 ui-lg-6">
+				<p:panelGrid  columns="2" >
+	                <f:facet name="header">
+	                    Promotion 
+	                </f:facet>
+				
+					<p:outputLabel value="Lien personnalisé"/>
+					<p:link value="#{partenaireBean.lienPartenaire}"  />
+					
+					<p:outputLabel value="Code HTML"/>
+					<p:outputLabel value="&lt;a href=&quot;#{partenaireBean.lienPartenaire}&quot;&gt; BDG &lt;#{'\\'}a&gt;"  />
+					
+					<p:outputLabel value="QR Code"/>
+					<pe:qrCode id="qrCodeElem" 
+			           	renderMethod="canvas"   
+			           	renderMode="2"   
+			           	text="#{partenaireBean.lienPartenaire}"  
+			           	label="BDG"  
+			           	size="100"                   
+			           	fillColor="#7d767d"  
+			           	fontName="Ubuntu"  
+			          	fontColor="#01A9DB"  
+			           	ecLevel="H"                     
+			           	radius="0.5"/>   
+				</p:panelGrid>
+			</div>
+		</div>
+	</p:panel>
+	
+	<p:panel header="Tableau de bord partenaire" toggleable="true">
+		<p>
+			<p:outputLabel value="Suivi de votre compte"/>
+		</p>
+		
+		Du <p:calendar value="#{partenaireBean.debutRechercheCom}" />
+			au <p:calendar value="#{partenaireBean.finRechercheCom}" />
+			<p:commandButton value="Rechercher" actionListener="#{partenaireBean.actRechercheCom}" update="@widgetVar(wvDataTableListeCommission)"/>
+			
+		<p:dataTable id="dataTableCommission" 
+			var="com" 
+			widgetVar="wvDataTableListeCommission"
+			styleClass="datatable mt10" 
+			value="#{partenaireBean.listeCommission}" 
+			rowKey="#{com.id}"
+			selection="#{partenaireBean.selectedCommissions}"
+			dblClickSelect="true"
+			resizableColumns="true" 
+			paginator="true" 
+			rows="#{msg.modele_datatable_ligne_par_page_debut}"
+			paginatorTemplate="#{msg.modele_datatable_paginator}" 
+			rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+			emptyMessage="#{msg.message_datatable_vide}" 
+			currentPageReportTemplate="#{msg.modele_datatable_page_courante}">
+
+			<!-- 				<p:ajax event="rowDblselect" listener="#{clientController.onRowSelect}" update=":form:tabView,:form:messages,@form" oncomplete="activeLastTabCenter()"/> -->
+			<!-- 				<p:ajax event="rowSelect" listener="#{clientController.onRowSelect}" disabled="#{clientController.pasDejaOuvert()}" update=":form:tabView,:form:messages,@form" />  -->
+			
+			<p:column selectionMode="multiple" style="width:16px;text-align:center" />
+			
+			<p:column style="width:16px">
+	            <p:rowToggler />
+	        </p:column>
+	
+			<p:column sortBy="#{com.quandCree}">
+				<f:facet name="header">
+					<h:outputText value="Date" />
+				</f:facet>
+				<h:outputText value="#{com.quandCree}" >
+					<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+				</h:outputText>
+			</p:column>
+			
+			<p:column sortBy="#{com.taPanier.datePaiement}">
+				<f:facet name="header">
+					<h:outputText value="Date paiement panier" />
+				</f:facet>
+				<h:outputText value="#{com.taPanier.datePaiement}" >
+					<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+				</h:outputText>
+			</p:column>
+			
+			<p:column sortBy="#{com.taPanier.taDossier.code}" filterBy="#{com.taPanier.taDossier.code}">
+				<f:facet name="header">
+					<h:outputText value="Dossier" />
+				</f:facet>
+				<h:outputText value="#{com.taPanier.taDossier.code}"/>
+					
+			</p:column>
+	
+			<p:column sortBy="#{com.montantReference}" styleClass="right" filterBy="#{com.montantReference}">
+				<f:facet name="header">
+					<h:outputText value="Montant référence" />
+				</f:facet>
+				<h:outputText value="#{com.montantReference}">	
+					<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+				</h:outputText>
+			</p:column>
+			
+			<p:column sortBy="#{com.pourcentageCommission}" styleClass="center" filterBy="#{com.pourcentageCommission}">
+				<f:facet name="header">
+					<h:outputText value="%" />
+				</f:facet>
+				<h:outputText value="#{com.pourcentageCommission}" />
+			</p:column>
+			
+			<p:column sortBy="#{com.montantCommission}" styleClass="right" filterBy="#{com.montantCommission}">
+				<f:facet name="header">
+					<h:outputText value="Montant commission" />
+				</f:facet>
+				<h:outputText value="#{com.montantCommission}">	
+					<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+				</h:outputText>
+			</p:column>
+	
+			<p:column sortBy="#{com.commissionPayee}" styleClass="center">
+				<f:facet name="header">
+					<h:outputText value="Payée" />
+				</f:facet>
+				<p:selectBooleanCheckbox value="#{com.commissionPayee}" disabled="true"/>
+			</p:column>
+			
+			<p:column sortBy="#{com.datePaiementCommission}">
+				<f:facet name="header">
+					<h:outputText value="Date paiement com." />
+				</f:facet>
+				<h:outputText value="#{com.datePaiementCommission}" >
+					<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+				</h:outputText>
+			</p:column>
+			
+			<p:column>
+				<f:facet name="header">
+					<h:outputText value="Action" />
+				</f:facet>
+				<p:commandLink value="Payé" action="#{partenaireBean.payeCommission}" update="@widgetVar(wvDataTableListeCommission)" rendered="#{!com.commissionPayee}">
+					<f:setPropertyActionListener target="#{partenaireBean.selectedCommission}" value="#{com}" />
+					<p:confirm header="Confirmation" message="Etes vous sur de vouloir marquer cette commission payé ?" icon="ui-icon-alert" />
+				</p:commandLink>
+				.
+				<p:commandLink value="Commentaire" action="#{partenaireBean.actAfficheDialogCommentaire}" oncomplete="PF('wvDlgCommentaireComm').show();" update="@widgetVar(wvDlgPanelCommentaireComm)" rendered="#{!com.commissionPayee}">
+					<f:setPropertyActionListener target="#{partenaireBean.selectedCommission}" value="#{com}" />
+				</p:commandLink>
+			</p:column>
+			
+			<p:rowExpansion>
+	            <p:panelGrid  columns="2" >
+	                <f:facet name="header">
+	                    Détail
+	                </f:facet>
+	 
+	                <h:outputText value="Commentaire partenaire" />
+	                <h:outputText value="#{com.commentairePartenaire}" escape="false"/>
+	                
+	                <h:outputText value="Commentaire Legrain (interne)" />
+	                <h:outputText value="#{com.commentaireLegrain}" escape="false"/>
+	                
+	                <h:outputText value="N° du panier" />
+	                
+	                <p:commandLink value="#{com.taPanier.idPanier}" action="#{panierController.openPanier}" update=":form:tabView" oncomplete="activeTabCenter('#{LgrTab.CSS_CLASS_TAB_PANIER}');">
+						<f:setPropertyActionListener target="#{panierController.selection}" value="#{com.taPanier}" />
+					</p:commandLink>
+<!-- 	                <h:outputText value="#{com.taPanier.idPanier}"/> -->
+	 
+	            </p:panelGrid>
+	            
+		        <p:dataTable id="dataTableLigneCommission" 
+					var="lcom" 
+					widgetVar="wvDataTableLigneCommission"
+					styleClass="datatable mt10" 
+					value="#{com.lignesCommission}" 
+					rowKey="#{lcom.id}"
+					dblClickSelect="true"
+					resizableColumns="true">
+		
+					<p:column sortBy="#{lcom.taProduit.libelle}">
+						<f:facet name="header">
+							<h:outputText value="Produit" />
+						</f:facet>
+						<h:outputText value="#{lcom.taProduit.libelle}"/>
+					</p:column>
+					
+					<p:column sortBy="#{lcom.taLignePanier.montantHT}" styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Montant ligne panier" />
+						</f:facet>
+						<h:outputText value="#{lcom.taLignePanier.montantHT}">	
+							<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+						</h:outputText>
+					</p:column>
+					
+					<p:column sortBy="#{lcom.montantReference}" styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Montant référence" />
+						</f:facet>
+						<h:outputText value="#{lcom.montantReference}">	
+							<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+						</h:outputText>
+					</p:column>
+					
+					<p:column sortBy="#{lcom.montantCommission}" styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Montant com." />
+						</f:facet>
+						<h:outputText value="#{lcom.montantCommission}">	
+							<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+						</h:outputText>
+					</p:column>
+				
+				</p:dataTable>
+				
+	        </p:rowExpansion>
+
+		</p:dataTable>
+		
+		<p:commandButton value="Payer la sélection" actionListener="#{partenaireBean.actPayerSelection}" update="@widgetVar(wvDataTableListeCommission)">
+			<p:confirm header="Confirmation" message="Etes vous sur de vouloir marquer toutes les commissions sélectionnées comme payées ?" icon="ui-icon-alert" />
+		</p:commandButton>
+		
+	</p:panel>
+	
+	<p:dialog header="Commentaire" widgetVar="wvDlgCommentaireComm" minHeight="40">
+		<p:panel widgetVar="wvDlgPanelCommentaireComm">
+			<p:panelGrid>
+				<h:outputText value="Commentaire public" />
+    			<p:textEditor secure="false" value="#{partenaireBean.selectedCommission.commentairePartenaire}" />
+    			
+    			<h:outputText value="Commentaire interne (Legrain)" />
+    			<p:textEditor secure="false" value="#{partenaireBean.selectedCommission.commentaireLegrain}" />
+    		</p:panelGrid>
+    		
+    		<p:commandButton value="Annuler" type="button" onclick="PF('wvDlgCommentaireComm').hide();"/>
+			.
+			<p:commandButton value="Enregistrer"
+				actionListener="#{partenaireBean.actEnregistrerCommentaire}" update="@widgetVar(wvDataTableListeCommission)" 
+				oncomplete="PF('wvDlgCommentaireComm').hide();"/>
+    	</p:panel>
+	</p:dialog>
+
+
+</ui:composition>

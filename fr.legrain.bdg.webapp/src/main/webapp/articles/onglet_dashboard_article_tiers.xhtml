@@ -1,0 +1,223 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
+xmlns:f="http://java.sun.com/jsf/core" 
+xmlns:h="http://java.sun.com/jsf/html"
+xmlns:ui="http://java.sun.com/jsf/facelets" 
+xmlns:o="http://omnifaces.org/ui" 
+xmlns:p="http://primefaces.org/ui">
+
+	<div class="ui-g-12 ui-md-12">
+		<h:panelGrid columns="2" cellpadding="0">
+			<p:outputLabel value="Votre dossier est très volumineux, Cliquez sur le bouton pour raffraîchir les données" style="font-weight : bold;"
+				rendered="#{articleController.dashBoardParArticleController.grosFichierArticles}">
+			</p:outputLabel>
+			<p:commandButton process="@this" rendered="#{articleController.dashBoardParArticleController.grosFichierArticles}"
+				update="@this,idZoneTotauxGeneral, @widgetVar(wvArticleListeGeneral),@widgetVar(wvRappelPeriodePanelArticleGeneral)"
+				action="#{articleController.dashBoardParArticleController.initAllValueGeneral(articleController.selectedTaArticleDTO.getCodeArticle())}"
+				value="Raffraîchir" styleClass="ui-orange" style="width:100%;" />
+		</h:panelGrid>
+	</div>				
+				<div class="ui-g-12 ui-md-12">
+				<p:panel header="Critères et paramètres du tableau de bord" collapsed="true" toggleable="true" toggleOrientation="horizontal" >
+					<div class="ui-g-12 ui-md-4">
+					<p:fieldset style="margin-bottom:20px;">
+<!-- 						 <h:graphicImage name="dashboard/periode.png" library="images" /> -->
+		
+						<p:panel header="Période" styleClass="panelgrey">
+						<f:facet name="footer">
+<!-- 						oncomplete="PF('wvArticleListeFacture').filter()" -->
+							<p:commandButton 
+							process="@this" 
+							update="@this,idZoneTotauxTiers,@widgetVar(wvArticleListeFacture),@widgetVar(wvRappelPeriodePanelArticleTiers) " 
+							action="#{articleController.dashBoardParArticleController.initAllValueTiers(articleController.selectedTaArticleDTO.getCodeArticle())}" value="Appliquer" styleClass="ui-orange" 
+							style="width:100%;" />
+							<!-- @widgetVar(wvArticleListeFacture) ,idGraphiqueParArticleTiers -->
+						</f:facet>
+						 <div class="ui-g-12 ui-md-2" >
+						<i class="fa fa-calendar fa-3x" aria-hidden="true"></i>
+<!-- 						 <h:graphicImage name="dashboard/periode.png" library="images" /> -->
+						 </div>
+						 <div class="ui-g-12 ui-md-10">
+			        	<h:panelGrid columns="2" cellpadding="0">
+						 <p:outputLabel value="Du"/>
+											<p:calendar value="#{articleController.dashBoardParArticleController.dateDebutTiers}"
+												showOn="button" 
+												navigator="true" 
+												pattern="#{msg.date_pattern}" 
+												mask="true" 
+												locale="fr" 
+												timeZone="#{msg.time_zone}" >
+												<p:ajax event="dateSelect"/>
+													<p:ajax event="change"/>
+											</p:calendar>
+
+
+						 <p:outputLabel value="au"/>
+											<p:calendar value="#{articleController.dashBoardParArticleController.dateFinTiers}"
+												showOn="button" 
+												navigator="true" 
+												pattern="#{msg.date_pattern}" 
+												mask="true" 
+												locale="fr" 
+												timeZone="#{msg.time_zone}" >
+												<p:ajax event="dateSelect"/>
+													<p:ajax event="change"/>
+											</p:calendar>
+
+        				</h:panelGrid>
+        				</div>
+        				 <p:separator />
+
+
+								</p:panel>
+    				</p:fieldset>
+    				</div>
+
+					<div class="ui-g-12 ui-md-4">
+
+    				</div>
+					<div class="ui-g-12 ui-md-4">
+
+    				</div>
+				</p:panel>
+				<p:panel widgetVar="wvRappelPeriodePanelArticleTiers"  style="font-size : 20px;">
+				<p:outputLabel>Période du </p:outputLabel>
+				 <h:outputText value="#{articleController.dashBoardParArticleController.dateDebutTiers}"  style="font-weight : bold;">
+				 	<f:convertDateTime type="date" pattern="dd MMMM yyyy" timeZone="#{msg.time_zone}"/>
+				 </h:outputText>
+				 <p:outputLabel> au  </p:outputLabel>
+				 <h:outputText value="#{articleController.dashBoardParArticleController.dateFinTiers}"  style="font-weight : bold;">
+				 	<f:convertDateTime type="date" pattern="dd MMMM yyyy" timeZone="#{msg.time_zone}"/>
+				 </h:outputText>
+				 
+				</p:panel>
+				</div>
+
+<!-- 				<h:panelGroup id="idZoneTotauxFacture" layout="block" > -->
+				<!-- <p:outputPanel deferred="true" id="idZoneTotauxFacture"> -->
+				<p:outputPanel id="idZoneTotauxTiers">
+				<div class="ui-g-12 ui-md-12">
+				
+				<!-- A REMETTRE ET FINIR -->
+				
+				<div class="ui-g-12 ui-md-6 ui-lg-2"> 
+					<div class="card center card-dash">
+						<h3 align="center">Nombre de clients ayant achetés cet article  
+						</h3>
+						<!-- <h:outputText value="du #{articleController.dashBoardParArticleController.dateDebutTiers} au #{articleController.dashBoardParArticleController.dateFinTiers}">
+						  <f:convertDateTime type="date" pattern="dd-MM-yyyy"/>
+						</h:outputText> -->
+						<br/>
+						
+						<!-- <p:outputLabel value="CA HT : "/> --> 
+						<p:outputLabel align="center" style="font-size : 40px;" value="#{articleController.dashBoardParArticleController.nbTiersAyantAcheterArticle}" >
+						<!-- <f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" /> -->
+						</p:outputLabel>
+
+						
+						
+						<!-- <p:separator></p:separator>
+						<p:outputLabel value="Nombre : "/> 
+						<p:outputLabel value="#{articleController.dashBoardParArticleController.nbFacture}"/> -->
+					
+						<p:commandButton title="Détails" style="width:100%" styleClass="btn-liste btn"
+							update="@this,@widgetVar(wvArticleListeTiers)"
+							process="@this"
+							actionListener="#{articleController.dashBoardParArticleController.initValueLignesTiers(articleController.selectedTaArticleDTO.getCodeArticle())}">
+						</p:commandButton>
+						</div> 
+						<!-- ,idGraphiqueParArticleTiers" -->
+				</div> 
+
+				</div>
+				</p:outputPanel>
+				
+				
+				
+				<div class="ui-g-12 ui-md-12">
+				
+				<div class="ui-g-12 ui-md-8 ">
+					<div class="card">
+									    
+						<h3 align="center">Liste des tiers ayant achetés cet article sur la période  </h3>
+		<p:dataTable id="idArticleListeTiers"
+					 sortBy="#{listefacture.codeDocument}" 
+					 sortOrder="descending" 
+					 var="listefacture" 
+					 value="#{articleController.dashBoardParArticleController.valueLignesTiers}"
+					 scrollable="true"
+					 scrollHeight="300"
+					 liveResize="true" 
+					 widgetVar="wvArticleListeTiers">
+			<p:ajax event="rowToggle" listener="#{articleController.onRowToggle}" update=":@this"/>
+		
+        <f:facet name="header">
+        
+        <span style="float:left">
+									        <p:commandButton id="idBtnListePrintEcranDasboardListeLignesParArticleAchatTiers"
+							 title="Imprimer la liste" 
+			onsuccess="window.open('#{request.contextPath}/output?__report=/reports/article/ListeDashboardListeLignesParArticleAchatTiers.rptdesign&amp;__format=pdf')"
+			actionListener="#{dashBoardParArticleController.actImprimerListeLignesParArticle(articleController.selectedTaArticleDTO.getLibellecArticle())}" styleClass="ui-priority-primary boutonPrint" style="color : white;" icon="fa fa-print"
+			process="@this" ></p:commandButton>
+									    </span>
+									    
+            Cliquez pour afficher le détail d'un document
+        </f:facet>
+<!--         <p:column style="width:16px">
+            <p:rowToggler />
+        </p:column> -->
+
+
+        <p:column styleClass="center" headerText="Code tiers" sortBy="#{listefacture.codeTiers}" filterBy="#{listefacture.codeTiers}" filterMatchMode="contains">
+        			<p:commandLink value="#{listefacture.codeTiers}"
+						action="#{articleController.dashBoardParArticleController.ouvertureDocumentBean.detailTiers(dashBoardFactureController.ouvertureDocumentBean.recupCodetiers(listefacture.codeTiers))}" 
+						update=":form:tabView" oncomplete="activeTabCenter('#{articleController.dashBoardParArticleController.ouvertureDocumentBean.event.cssLgrTab}');">
+					</p:commandLink> 
+        </p:column>
+        
+         <p:column styleClass="center" headerText="Nom " sortBy="#{listefacture.nomTiers}" filterBy="#{listefacture.nomTiers}" filterMatchMode="contains">
+            <h:outputText value="#{listefacture.nomTiers}" >
+			</h:outputText>
+        </p:column>
+        <p:column styleClass="center" headerText="Prenom "  sortBy="#{listefacture.prenomTiers}" filterBy="#{listefacture.prenomTiers}" filterMatchMode="contains" >
+            <h:outputText value="#{listefacture.prenomTiers}" >
+			</h:outputText>
+        </p:column>
+        <p:column styleClass="center" headerText="Entreprise " sortBy="#{listefacture.nomEntreprise}" filterBy="#{listefacture.nomEntreprise}" filterMatchMode="contains">
+            <h:outputText value="#{listefacture.nomEntreprise}" >
+			</h:outputText>
+        </p:column>
+
+<!--         <p:rowExpansion> -->
+<!--         	<p:dataTable id="idArticleListeDetailFacture" var="listedetailproforma" value="#{articleController.dashBoardParArticleController.listeFactureArticlePeriode}" widgetVar="wvArticleListeDetailFacture"> -->
+        		
+<!--         	</p:dataTable> -->
+<!--         </p:rowExpansion> -->
+		<!-- <p:rowExpansion>
+			<p:commandButton value="Payer par carte bancaire" 
+				disabled="#{listefacture.resteAReglerComplet le 0}"
+				actionListener="#{articleController.dashBoardParArticleController.actInitPaiementCarteBancaire}" process="@this"  >
+				<f:attribute name="idDocument" value="#{listefacture.id}"/>
+		        <p:ajax event="dialogReturn" update="@this, @widgetVar(wvArticleListeFacture)" 
+						listener="#{articleController.dashBoardParArticleController.handleReturnDialoguePaiementParCarte}" />  
+		    </p:commandButton>
+		</p:rowExpansion> -->	
+    </p:dataTable>
+					</div>				
+				</div>
+				<!-- <div class="ui-g-12 ui-md-4 ">
+					<div class="card">
+					<p:tab title="Facture" rendered="true">
+					
+						<h3 align="center">Graphique</h3>
+								<p:chart type="bar" model="#{articleController.dashBoardParArticleController.barChartModelFacture}"
+								id="idGraphiqueParArticleTiers" 
+								widgetVar="wvGraphiqueParArticleTiers"
+								responsive="true" 
+								style="height:300px;">
+								</p:chart>
+					</p:tab>
+					</div>				
+				</div> -->
+				</div>
+				
+</ui:composition>

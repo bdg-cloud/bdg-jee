@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<title>Dev - Renouvelement de nom de domaine</title>
+	<link rel="shortcut icon" type="image/x-icon"
+		href="#{resource['images:solstyce.ico']}" />
+
+	<f:facet name="first">
+	</f:facet>
+	<!-- surcharge des CSS primefaces -->
+			
+</h:head>
+<h:body>
+	<f:facet name="last">
+		<!-- surcharge des CSS primefaces -->
+		<h:outputStylesheet library="css" name="hacks.css" />
+		<h:outputStylesheet library="css" name="icarus-bdg.css" />
+		<h:outputStylesheet library="css" name="theme-bdg.css" />
+	</f:facet>
+
+	<p:layout fullPage="true" widgetVar="widgetLayoutPage">
+
+		<!-- 		<p:ajax event="toggle" listener="#{leftBean.handleToggle}"/> -->
+
+		<p:layoutUnit position="north" size="100" gutter="0" class="north">
+			<div class="ui-grid ui-grid-responsive">
+				<div class="ui-grid-col-2">
+					<p:link href="/index.xhtml">
+						<p:graphicImage library="images" name="solstyce_32x32.png" />
+						<h:outputText value="Solstyce" />
+					</p:link>
+				</div>
+				<div class="ui-grid-col-3">
+					<p:ajaxStatus>
+						<f:facet name="start">
+							<p:graphicImage library="images" name="ajax-loader.gif" />
+						</f:facet>
+						<f:facet name="complete">
+							<!-- 							<h:outputText value="Done!" /> -->
+						</f:facet>
+					</p:ajaxStatus>
+				</div>
+				<div class="ui-grid-col-10 text-right">
+					Mon compte -
+					<p:commandLink value="déconnexion" actionListener="#{auth.logout}" />
+				</div>
+
+
+			</div>
+		</p:layoutUnit>
+
+
+		<p:layoutUnit position="center" gutter="4" class="center">
+		<div class="ui-g">
+		    <div class="ui-g-6">
+			 <h:form id="form">
+					<p:messages id="messages" showDetail="true" autoUpdate="true" closable="true" />
+				<p:panel header="Domaine : #{gandiRenouvDomainController.nomDomaine}">
+					<h:panelGrid columns="2" cellspacing="30" style="text-align : left;">
+						<h:outputText value="Renouveler le nom de domaine " />
+		    			<p:selectBooleanCheckbox value="#{gandiRenouvDomainController.renouvNom}">
+		    				<p:ajax event="change" update="@this" />
+		    			</p:selectBooleanCheckbox>
+		    			
+		    			<h:outputText value="Année :" />
+		    			<h:outputText value="#{gandiRenouvDomainController.year}" />
+		    			
+		    			<h:outputText value="Durée :" />
+		    			<p:selectOneMenu id="selectOneMenuDureeRenouvDomain" value="#{gandiRenouvDomainController.dureeRenouv}" style="width:125px">
+				            <f:selectItem itemLabel="1 an" itemValue="1" />
+				            <f:selectItem itemLabel="2 ans" itemValue="2" />
+				            <f:selectItem itemLabel="3 ans" itemValue="3" />
+				            <f:selectItem itemLabel="4 ans" itemValue="4" />
+				            <f:selectItem itemLabel="5 ans" itemValue="5" />
+				            <f:selectItem itemLabel="6 ans" itemValue="6" />
+				            <f:selectItem itemLabel="7 ans" itemValue="7" />
+				            <f:selectItem itemLabel="8 ans" itemValue="8" />
+				            <f:selectItem itemLabel="9 ans" itemValue="9" />
+				            <f:selectItem itemLabel="10 ans" itemValue="10" />
+				            <p:ajax event="change" update="@this" />
+				        </p:selectOneMenu>
+		    			
+		    			<h:outputText  value="Renouveler le pack mail (a venir) " />
+		    			<p:selectBooleanCheckbox disabled="true" value="#{gandiRenouvDomainController.renouvPackMail}">
+		    				<p:ajax event="change" update="@this" />
+		    			</p:selectBooleanCheckbox>
+		    			
+		    			<p:commandButton value="Valider"
+									actionListener="#{gandiRenouvDomainController.renouvDomain}" update="form" title="renouveler">
+						</p:commandButton>
+					</h:panelGrid>
+				</p:panel>
+		
+				</h:form>
+		    </div>
+		    <div class="ui-g-6">
+			    <p:panel header="Informations : #{gandiRenouvDomainController.nomDomaine}">
+				     <p:panel header="Pack mail">
+							<h:panelGrid columns="2" cellspacing="30" style="text-align : left;">
+								<h:outputText class="bold" value="Renouvelement automatique du pack mail :" />
+				    			<h:outputText  value="#{gandiRenouvDomainController.packMail.autorenew != null ? 'Oui' : 'Non'}"/>
+								<h:outputText  class="bold" value="Date d'expiration du pack mail :" />
+				    			<h:outputText  value="#{gandiRenouvDomainController.packMail.date_end != null ? gandiRenouvDomainController.packMail.date_end : 'Pas de date d\'expiration'}">
+				    			<f:convertDateTime pattern="dd/MM/yyyy  HH:mm:ss" timeZone="Europe/Paris"/>
+				    			</h:outputText>
+				    			<h:outputText  class="bold" value="Quota du pack mail : " />
+				    			<h:outputText  value="#{gandiRenouvDomainController.packMail.storage_quota} GO">
+				    			</h:outputText>
+				    			<h:outputText  class="bold" value="Status du pack mail : " />
+				    			<h:outputText  value="#{gandiRenouvDomainController.packMail.status}">
+				    			</h:outputText>
+				    			<h:outputText  class="bold" value="Nombre de boite mail max  : " />
+				    			<h:outputText  value="#{gandiRenouvDomainController.packMail.mailbox_quota}">
+				    			</h:outputText>
+							</h:panelGrid>
+					 </p:panel>
+					 <p:panel header="autre">
+					 	<h:panelGrid columns="2" cellspacing="30">
+								
+							</h:panelGrid>
+					 </p:panel>
+				</p:panel>
+		    </div>
+		</div>
+			
+		
+		
+
+
+		<p:growl id="growl" showDetail="true" life="5000" />
+
+	</p:layoutUnit>
+
+	</p:layout>
+
+	<!-- 	<h:outputScript name="/js/functions.js"  /> -->
+
+</h:body>
+</html>

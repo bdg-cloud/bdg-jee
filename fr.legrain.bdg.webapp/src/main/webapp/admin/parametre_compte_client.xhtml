@@ -1,0 +1,611 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html" 
+	xmlns:ui="http://java.sun.com/jsf/facelets" 
+	xmlns:p="http://primefaces.org/ui">
+
+	<p:menubar styleClass="menu-onglet">
+	
+		<p:menuitem title="Enregistrer" styleClass="icon icon-save" actionListener="#{parametreCompteClientController.actEnregistrer}"
+			update=":form:messages,@form">
+		</p:menuitem>
+		
+<!-- 		<p:menuitem title="Modifier" styleClass="icon icon-update" actionListener="#{parametreCompteClientController.actModifier}" -->
+<!-- 			update=":form:messages,@form"> -->
+<!-- 		</p:menuitem> -->
+		
+		<p:menuitem title="Annuler" styleClass="icon icon-cancel" actionListener="#{parametreCompteClientController.actAnnuler}"
+			process="@this" update=":form:messages,@form">
+		</p:menuitem>
+
+		<p:menuitem title="Fermer" styleClass="icon icon-close menuitem-fermer-droite"
+						process="@this" 
+						onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())">
+		</p:menuitem>
+		
+	</p:menubar>
+
+<!-- 		<div class="ui-g"> -->
+<!-- 			<div class="ui-g-12"> -->
+<!-- 				<p:outputLabel value="Envoyer un email de notification à tous les clients pour leur indiquer comment se connecter au compte client. "/> -->
+<!-- 				<p:commandButton value="Envoyer" actionListener="#{parametreCompteClientController.actEnvoyerEmailNotificationTousClient}" -->
+<!-- 					process="@this" update=":form:messages,@form" disabled="true"> -->
+<!-- 				</p:commandButton> -->
+<!-- 				<hr/> -->
+<!-- 			</div> -->
+<!-- 		</div> -->
+
+		<p:tabView>
+
+			<p:tab title="Espace client" titleStyleClass="tab-min" titletip="Paramètres" rendered="#{auth.isDevLgr()}">
+			
+				<div class="ui-g">
+					<div class="ui-g-12">
+					<p:panelGrid columns="3">
+					
+						<p:outputLabel value="Mise à disposition automatique des factures généré à partir de l'espace client"/>
+						<p:selectBooleanCheckbox value="#{parametreCompteClientController.taParamEspaceClient.miseADispositionAutomatiqueDesFactures}"/>
+						<p:outputLabel value=""/>
+						
+						<p:outputLabel value="Afficher les publicités"/>
+						<p:selectBooleanCheckbox value="#{parametreCompteClientController.taParamEspaceClient.affichePublicite}"/>
+						<p:outputLabel value=""/>
+						
+						<p:outputLabel value="Activer l'espace client"/>
+						<p:selectBooleanCheckbox value="#{parametreCompteClientController.taParamEspaceClient.espaceClientActif}" disabled="true"/>
+						<p:outputLabel value=""/>
+						
+						<p:outputLabel value="Autoriser le paiement des factures par carte bancaire"/>
+						<p:selectBooleanCheckbox value="#{parametreCompteClientController.taParamEspaceClient.paiementCb}"/>
+						<p:outputLabel value=""/>
+						
+						<p:outputLabel value="Afficher les devis"/>
+						<p:selectBooleanCheckbox value="#{parametreCompteClientController.taParamEspaceClient.afficheDevis}"/>
+						<p:outputLabel value=""/>
+						
+						<p:outputLabel value="Afficher les factures"/>
+						<p:selectBooleanCheckbox value="#{parametreCompteClientController.taParamEspaceClient.afficheFactures}"/>
+						<p:outputLabel value=""/>
+						
+						<p:outputLabel value="Afficher les commandes"/>
+						<p:selectBooleanCheckbox value="#{parametreCompteClientController.taParamEspaceClient.afficheCommandes}"/>
+						<p:outputLabel value=""/>
+						
+						<p:outputLabel value="Afficher les livraisons"/>
+						<p:selectBooleanCheckbox value="#{parametreCompteClientController.taParamEspaceClient.afficheLivraisons}"/>
+						<p:outputLabel value=""/>
+						
+						<p:outputLabel value="Afficher les avis d'échéance"/>
+						<p:selectBooleanCheckbox value="#{parametreCompteClientController.taParamEspaceClient.afficheAvisEcheance}"/>
+						<p:outputLabel value=""/>
+						
+						<p:outputLabel value="Autoriser la création de nouveau compte par les utilisateurs eux même"/>
+						<p:selectBooleanCheckbox value="#{parametreCompteClientController.taParamEspaceClient.utilisateurPeuCreerCompte}"/>
+						<p:outputLabel value=""/>
+						
+						<p:outputLabel value="Lors de la création du compte par un utilisateur, lier à la fiche tiers si l'adresse email par defaut correspond"/>
+						<p:selectBooleanCheckbox value="#{parametreCompteClientController.taParamEspaceClient.liaisonNouveauCompteEmailAuto}"/>
+						<p:outputLabel value=""/>
+						
+						<p:outputLabel value="Lors de la création du compte par un utilisateur, permettre la saisie d'un code tiers lors de la confirmation"/>
+						<p:selectBooleanCheckbox value="#{parametreCompteClientController.taParamEspaceClient.liaisonNouveauCompteCodeClientAuto}"/>
+						<p:outputLabel value=""/>
+						
+						<p:outputLabel value="Le client peut mettre certaines des ses données à jour lui même"/>
+						<p:selectBooleanCheckbox value="#{parametreCompteClientController.taParamEspaceClient.autoriseMajDonneeParClient}" disabled="true"/>
+						<p:outputLabel value=""/>
+						
+					</p:panelGrid>
+						
+					<p:panelGrid columns="3">
+						<p:outputLabel value="Logo page de connexion"/>
+						<p:panel id="idPanelLogo" header="Logo (max:430x200)" toggleable="true" widgetVar="panelLogo">
+							<h:panelGrid columns="2" cellpadding="10">
+		
+							<p:panel styleClass="panel-aide-contextuelle">
+								<p:fileUpload listener="#{parametreCompteClientController.handleFileUpload}" 
+									mode="advanced" skinSimple="true" dragDropSupport="false" styleClass="file-upload-choisir-logo"
+									label="Choisir" uploadLabel="Télécharger" cancelLabel="Annuler"
+									auto="true" update="@widgetVar(panelLogo)"
+					          		sizeLimit="#{msg.email_taille_max_piecejonte_1mo}" fileLimit="1" allowTypes="/(\.|\/)(gif|jpe?g|png|svg)$/" 
+					          		rendered="#{parametreCompteClientController.taParamEspaceClient.logoLogin==null}"
+					          		/>
+								<p:commandLink id="idLinkAideInfosEntrepriseLogo"
+									styleClass="lien-aide-contextuelle">
+									<i class="fa fa-info-circle animated swing"></i>
+								</p:commandLink>
+								<p:overlayPanel for="idLinkAideInfosEntrepriseLogo"
+									hideEffect="fade" dynamic="true" showCloseIcon="true"
+									styleClass="overlay-aide-contextuelle overlay-aide-contextuelle"
+									widgetVar="wvLinkAideInfosEntrepriseLogo">
+									<ui:include
+										src="/aide_contextuelle/infos_entreprise_logo.xhtml" />
+								</p:overlayPanel>
+							</p:panel>
+		
+								<p:commandButton value="Supprimer" actionListener="#{parametreCompteClientController.supprimerLogo}" 
+									rendered="#{parametreCompteClientController.taParamEspaceClient.logoLogin !=null}" update="@widgetVar(panelLogo)"/>
+					          								
+								<p:graphicImage value="#{parametreCompteClientController.logoLogin}" stream="false" 
+									rendered="#{parametreCompteClientController.taParamEspaceClient.logoLogin !=null}"/>
+									
+								
+							</h:panelGrid>
+						</p:panel>
+						<p:outputLabel value=""/>
+						
+						<p:outputLabel value="Logo pages simples"/>
+						<p:panel header="Logo (max:170x45)" toggleable="true" widgetVar="panelLogoPageSimple">
+							<h:panelGrid columns="2" cellpadding="10">
+		
+								<p:fileUpload listener="#{parametreCompteClientController.handleFileUploadPageSimple}" 
+									mode="advanced" skinSimple="true" dragDropSupport="false" styleClass="file-upload-choisir-logo"
+									label="Choisir" uploadLabel="Télécharger" cancelLabel="Annuler"
+									auto="true" update="@widgetVar(panelLogoPageSimple)"
+					          		sizeLimit="#{msg.email_taille_max_piecejonte_1mo}" fileLimit="1" allowTypes="/(\.|\/)(gif|jpe?g|png|svg)$/" 
+					          		rendered="#{parametreCompteClientController.taParamEspaceClient.logoPagesSimples==null}"
+					          		/>
+		
+								<p:commandButton value="Supprimer" actionListener="#{parametreCompteClientController.supprimerLogoPageSimple}" 
+									rendered="#{parametreCompteClientController.taParamEspaceClient.logoPagesSimples !=null}" update="@widgetVar(panelLogoPageSimple)"/>
+					          								
+								<p:graphicImage value="#{parametreCompteClientController.logoPagesSimples}" stream="false" 
+									rendered="#{parametreCompteClientController.taParamEspaceClient.logoPagesSimples !=null}"/>
+									
+								
+							</h:panelGrid>
+						</p:panel>
+						<p:outputLabel value=""/>
+						
+						<p:outputLabel value="Logo entête"/>
+						<p:panel header="Logo (max:170x45)" toggleable="true" widgetVar="panelLogoHeader">
+							<h:panelGrid columns="2" cellpadding="10">
+		
+								<p:fileUpload listener="#{parametreCompteClientController.handleFileUploadHeader}" 
+									mode="advanced" skinSimple="true" dragDropSupport="false" styleClass="file-upload-choisir-logo"
+									label="Choisir" uploadLabel="Télécharger" cancelLabel="Annuler"
+									auto="true" update="@widgetVar(panelLogoHeader)"
+					          		sizeLimit="#{msg.email_taille_max_piecejonte_1mo}" fileLimit="1" allowTypes="/(\.|\/)(gif|jpe?g|png|svg)$/" 
+					          		rendered="#{parametreCompteClientController.taParamEspaceClient.logoHeader==null}"
+					          		/>
+		
+								<p:commandButton value="Supprimer" actionListener="#{parametreCompteClientController.supprimerLogoHeader}" 
+									rendered="#{parametreCompteClientController.taParamEspaceClient.logoHeader !=null}" update="@widgetVar(panelLogoHeader)"/>
+					          								
+								<p:graphicImage value="#{parametreCompteClientController.logoHeader}" stream="false" 
+									rendered="#{parametreCompteClientController.taParamEspaceClient.logoHeader !=null}"/>
+									
+								
+							</h:panelGrid>
+						</p:panel>
+						<p:outputLabel value=""/>
+						
+						<p:outputLabel value="Logo pied de page "/>
+						<p:fileUpload disabled="true"/>
+						<p:outputLabel value=""/>
+						
+						<p:outputLabel value="Image de fond, page de connexion"/>
+						<p:panel header="Logo (max:170x45)" toggleable="true" widgetVar="panelImageBackgroundLogin">
+							<h:panelGrid columns="2" cellpadding="10">
+		
+								<p:fileUpload listener="#{parametreCompteClientController.handleFileUploadImageBackgroundLogin }" 
+									mode="advanced" skinSimple="true" dragDropSupport="false" styleClass="file-upload-choisir-logo"
+									label="Choisir" uploadLabel="Télécharger" cancelLabel="Annuler"
+									auto="true" update="@widgetVar(panelImageBackgroundLogin)"
+					          		sizeLimit="#{msg.email_taille_max_piecejonte_5mo}" fileLimit="1" allowTypes="/(\.|\/)(gif|jpe?g|png|svg)$/" 
+					          		rendered="#{parametreCompteClientController.taParamEspaceClient.imageBackgroundLogin ==null}"
+					          		/>
+		
+								<p:commandButton value="Supprimer" actionListener="#{parametreCompteClientController.supprimerImageBackgroundLogin}" 
+									rendered="#{parametreCompteClientController.taParamEspaceClient.imageBackgroundLogin !=null}" update="@widgetVar(panelImageBackgroundLogin)"/>
+					          								
+								<p:graphicImage value="#{parametreCompteClientController.imageBackgroundLogin}" stream="false" 
+									rendered="#{parametreCompteClientController.taParamEspaceClient.imageBackgroundLogin !=null}"/>
+									
+								
+							</h:panelGrid>
+						</p:panel>
+						<p:outputLabel value=""/>
+					</p:panelGrid>
+						
+					<p:panelGrid columns="3">
+						
+						<p:outputLabel value="Adresse (URL) personnalisée"/>
+						<p:inputText value="#{parametreCompteClientController.taParamEspaceClient.urlPerso}"/>
+						<p:outputLabel value=""/>
+						
+						<p:outputLabel value="Texte 1 page de connexion"/>
+						<p:inputText value="#{parametreCompteClientController.taParamEspaceClient.texteLogin1}"/>
+						<p:outputLabel value=""/>
+						
+						<p:outputLabel value="Texte 2 page de connexion"/>
+						<p:inputText value="#{parametreCompteClientController.taParamEspaceClient.texteLogin2}"/>
+						<p:outputLabel value=""/>
+						
+						<p:outputLabel value="Texte page accueil"/>
+						<p:inputText value="#{parametreCompteClientController.taParamEspaceClient.texteAccueil}"/>
+						<p:outputLabel value=""/>
+						
+						<p:outputLabel value="Thème par défaut"/>
+<!-- 						<p:inputText value="#{parametreCompteClientController.taParamEspaceClient.themeDefaut}"/> -->
+						<p:selectOneMenu  value="#{parametreCompteClientController.taParamEspaceClient.themeDefaut}" >
+            				<f:selectItem itemLabel="Bleu" itemValue="blue" />
+            				<f:selectItem itemLabel="Bleu gris" itemValue="bluegrey" />
+            				<f:selectItem itemLabel="Bleu clair" itemValue="lightblue" />
+            				<f:selectItem itemLabel="Indigo" itemValue="indigo" />
+            				<f:selectItem itemLabel="Rose" itemValue="pink" />
+            				<f:selectItem itemLabel="Vert" itemValue="green" />
+            				<f:selectItem itemLabel="Vert clair" itemValue="lightgreen" />
+            				<f:selectItem itemLabel="Sarcelle" itemValue="teal" />
+            				<f:selectItem itemLabel="Cyan" itemValue="cyan" />
+            				<f:selectItem itemLabel="Lime" itemValue="lime" />
+            				<f:selectItem itemLabel="Ambre" itemValue="amber" />
+            				<f:selectItem itemLabel="Orange" itemValue="orange" />
+            				<f:selectItem itemLabel="Orange foncé" itemValue="deeporange" />
+            				<f:selectItem itemLabel="Jaune" itemValue="yellow" />
+            				<f:selectItem itemLabel="Violet" itemValue="purple" />
+            				<f:selectItem itemLabel="Vilet foncé" itemValue="deeppurple" />
+            				<f:selectItem itemLabel="Marron" itemValue="brown" />
+            				<p:ajax></p:ajax>
+            			</p:selectOneMenu>
+						<p:outputLabel value=""/>
+						
+						<p:outputLabel value="Compte bancaire paiement par carte bancaire"/>
+						<p:inputText disabled="true"/>
+						<p:outputLabel value=""/>
+						
+						<p:outputLabel value="Compte bancaire paiement par prélèvment"/>
+						<p:inputText disabled="true"/>
+						<p:outputLabel value=""/>
+						
+					</p:panelGrid>
+		 
+					</div>
+				</div>
+			
+			</p:tab>
+			
+			<p:tab title="Catalogue &amp; Boutique" titleStyleClass="tab-min" titletip="Paramètres" rendered="#{auth.isDevLgr()}">
+			
+				<div class="ui-g">
+					
+					
+					<div class="ui-g-4 center">
+						<h:graphicImage library="images" name="boutique/Menu-boutique.svg" style="height:80px" />
+						<p:panelGrid columns="3" style="margin:auto;">
+							<p:outputLabel value="Afficher le menu 'Boutique'"/>
+							<p:selectBooleanCheckbox value="#{parametreCompteClientController.taParamEspaceClient.afficheBoutique}"/>
+						</p:panelGrid>
+					</div>
+					
+					<div class="ui-g-4 center">
+						<h:graphicImage library="images" name="boutique/Catalogue.svg" style="height:80px" />
+						<p:panelGrid columns="3" style="margin:auto;">
+							<p:outputLabel value="Activer l'affichage du catalogue"/>
+							<p:selectBooleanCheckbox value="#{parametreCompteClientController.taParamEspaceClient.afficheCatalogue}"/>
+						</p:panelGrid>
+					</div>
+					
+					<div class="ui-g-4 center">	
+						<h:graphicImage library="images" name="boutique/Prix-catalogue.svg" style="height:80px" />
+						<p:panelGrid columns="3" style="margin:auto;">
+							<p:outputLabel value="Afficher les prix dans le catalogue"/>
+							<p:selectBooleanCheckbox value="#{parametreCompteClientController.taParamEspaceClient.afficherPrixCatalogue}"/>
+						</p:panelGrid>
+					</div>
+					
+					<div class="ui-g-4 center">
+						<h:graphicImage library="images" name="boutique/Panier.svg" style="height:80px" />
+						<p:panelGrid columns="3" style="margin:auto;">
+							<p:outputLabel value="Activer le panier"/>
+							<p:selectBooleanCheckbox value="#{parametreCompteClientController.taParamEspaceClient.activePanier}" />
+						</p:panelGrid>
+					</div>
+					
+<!-- 					<div class="ui-g-4 center"> -->
+<!-- 						<h:graphicImage library="images" name="boutique/livraison.svg" style="height:80px" /> -->
+<!-- 						<p:panelGrid columns="3" style="margin:auto;"> -->
+<!-- 							<p:outputLabel value="Activer la livraison"/> -->
+<!-- 							<p:selectBooleanCheckbox value="#{parametreCompteClientController.taParamEspaceClient.activeLivraison}" /> -->
+<!-- 						</p:panelGrid> -->
+<!-- 					</div> -->
+					
+					<!-- 						<p:outputLabel value="Activer les commandes simplifiés (par email)"/> -->
+<!-- 						<p:selectBooleanCheckbox value="#{parametreCompteClientController.taParamEspaceClient.activeCommandeEmailSimple}" disabled="true"/> -->
+<!-- 						<p:outputLabel value=""/> -->
+						
+<!-- 						<p:outputLabel value="Montant des frais de port fixe"/> -->
+<!-- 						<p:inputText value="#{parametreCompteClientController.taParamEspaceClient.fraisPortFixe}" disabled="true"/> -->
+<!-- 						<p:outputLabel value=""/> -->
+
+					
+					<div class="ui-g-4 center">
+						<h:graphicImage library="images" name="boutique/demande-de-renseignement.svg" style="height:80px" />
+						<p:panelGrid columns="3" style="margin:auto;">
+							<p:outputLabel value="Activer le bouton de demande de renseignement par email dans les fiches produit"/>
+							<p:selectBooleanCheckbox value="#{parametreCompteClientController.taParamEspaceClient.activeEmailRenseignementProduit}"/>
+							<p:outputLabel value=""/>
+						</p:panelGrid>
+					</div>
+
+					
+
+
+					<div class="ui-g-4 center">
+						<h:graphicImage library="images" name="boutique/prix-catalogue-HT.svg" style="height:80px" />
+						<p:panelGrid columns="3" style="margin:auto;">
+							<p:outputLabel value="Affichage des prix catalogue HT"/>
+							<p:selectBooleanCheckbox value="#{parametreCompteClientController.taParamEspaceClient.prixCatalogueHt}"/>
+							<p:outputLabel value=""/>
+						</p:panelGrid>
+					</div>
+<!-- 					<div class="ui-g-4 center"></div> -->
+<!-- 					<div class="ui-g-4 center"></div> -->
+					
+					<div class="ui-g-12">
+						<p:panel header="Livraison et frais de port">
+							<div class="ui-g">
+								<div class="ui-g-4 center">
+									<h:graphicImage library="images" name="boutique/livraison.svg" style="height:80px" />
+									<p:panelGrid columns="3" style="margin:auto;">
+										<p:outputLabel value="Activer la livraison"/>
+										<p:selectBooleanCheckbox value="#{parametreCompteClientController.taParamEspaceClient.activeLivraison}" />
+									</p:panelGrid>
+								</div>
+								<div class="ui-g-8">
+									<p:panelGrid columns="3">
+										<p:outputLabel value="Article frais de port"/>
+										<p:autoComplete value="#{parametreCompteClientController.taArticleFdpDTO}" 
+											completeMethod="#{parametreCompteClientController.articleAutoCompleteDTOLight}"
+												converter="entityConverter" var="art" itemLabel="#{art.codeArticle}" itemValue="#{art}" forceSelection="true" dropdown="true"
+												placeholder="Article Frais de port" style="width:100%">
+												<p:column>
+													<h:outputText value="#{art.codeArticle}" />
+												</p:column>
+					
+												<p:column>
+													<h:outputText value="#{art.libellecArticle}" />
+												</p:column>
+												
+												<p:column>
+													<h:outputText value="#{art.prixPrix} € HT" />
+												</p:column>
+					
+												<f:attribute name="nomChamp" value="#{const.C_CODE_ARTICLE}" />
+												 <p:ajax event="itemSelect" listener="#{parametreCompteClientController.autcompleteSelection}"/>
+												 <p:ajax event="clear" listener="#{parametreCompteClientController.onClearArticle}"/> 									
+										</p:autoComplete>
+										<p:outputLabel value=""/>
+									</p:panelGrid>
+									
+									<p:panelGrid columns="3">
+										<p:outputLabel value="Montant à partir du quel les frais de port sont offert"/>
+										<p:inputText value="#{parametreCompteClientController.taParamEspaceClient.fraisPortLimiteOffert}"/>
+										<p:outputLabel value=""/>
+									</p:panelGrid>
+									
+									<div class="ui-g-12">
+										<p:outputLabel value="Pour activer la livraison, il faut cocher 'activer la livraison' mais aussi sélectionner un article avec un montant supérieur à zéro."/>
+									</div>
+								</div>
+	
+							</div>
+						</p:panel>
+					</div>
+					
+					<div class="ui-g-12">
+						<p:panel header="Point retrait - Click &amp; Collect">
+							<div class="ui-g">
+								<div class="ui-g-4 center">
+									<h:graphicImage library="images" name="boutique/Click-and-collect.svg" style="height:80px" />
+									<p:panelGrid columns="3" style="margin:auto;">
+										<p:outputLabel value="Activer le point retrait - Click &amp; Collect"/>
+										<p:selectBooleanCheckbox value="#{parametreCompteClientController.taParamEspaceClient.activePointRetrait}"/>
+										<p:outputLabel value=""/>
+									</p:panelGrid>
+								</div>
+								<div class="ui-g-4 center">
+									<h:graphicImage library="images" name="boutique/planning-retrait.svg" style="height:80px" />
+									<p:panelGrid columns="3" style="margin:auto;">
+										<p:outputLabel value="Activer le planning de retrait de commande" disabled="true"/>
+										<p:selectBooleanCheckbox value="#{parametreCompteClientController.taParamEspaceClient.activePlanningRetrait}" disabled="false"/>
+										<p:outputLabel value=""/>
+									</p:panelGrid>
+								</div>
+								<div class="ui-g-4 center"></div>
+								<div class="ui-g-12 center">
+									<hr/>
+								</div>
+								<div class="ui-g-3">
+									<p:panelGrid columns="3">
+										<p:outputLabel value="Adresse 1"/>
+										<p:inputText value="#{parametreCompteClientController.taParamEspaceClient.adresse1PointRetrait}"/>
+										<p:outputLabel value=""/>
+										
+										<p:outputLabel value="Adresse 2"/>
+										<p:inputText value="#{parametreCompteClientController.taParamEspaceClient.adresse2PointRetrait}"/>
+										<p:outputLabel value=""/>
+										
+										<p:outputLabel value="Adresse 3"/>
+										<p:inputText value="#{parametreCompteClientController.taParamEspaceClient.adresse3PointRetrait}"/>
+										<p:outputLabel value=""/>
+										
+										<p:outputLabel value="Code postal"/>
+										<p:inputText value="#{parametreCompteClientController.taParamEspaceClient.codepostalPointRetrait}"/>
+										<p:outputLabel value=""/>
+										
+										<p:outputLabel value="Ville"/>
+										<p:inputText value="#{parametreCompteClientController.taParamEspaceClient.villePointRetrait}"/>
+										<p:outputLabel value=""/>
+										
+										<p:outputLabel value="Pays"/>
+										<p:inputText value="#{parametreCompteClientController.taParamEspaceClient.paysPointRetrait}"/>
+										<p:outputLabel value=""/>
+										
+										<p:outputLabel value="Latitude"/>
+										<p:inputText value="#{parametreCompteClientController.taParamEspaceClient.latitudeDecPointRetrait}"/>
+										<p:outputLabel value=""/>
+										
+										<p:outputLabel value="Longitude"/>
+										<p:inputText value="#{parametreCompteClientController.taParamEspaceClient.longitudeDecPointRetrait}"/>
+										<p:outputLabel value=""/>
+									</p:panelGrid>
+								</div>
+								
+								<div class="ui-g-9">
+									<p:panelGrid columns="1">
+										<p:outputLabel value="Texte horaires d'ouverture du point retrait"/>
+										<p:textEditor secure="false" value="#{parametreCompteClientController.taParamEspaceClient.horairesOuverturePointRetrait}" 
+										height="200" placeholder="
+										Exemple : &#13;&#10;
+										lundi 	 9:00–12:30, 14:00–17:30 &#13;&#10;
+										mardi 	 9:00–12:30, 14:00–17:30 &#13;&#10;
+										mercredi 9:00–12:30, 14:00–17:30 &#13;&#10;
+										jeudi 	 9:00–12:30, 14:00–17:30 &#13;&#10;
+										vendredi 9:00–12:30, 14:00–17:00 &#13;&#10;
+										samedi	 9:00–17:00 &#13;&#10;
+										dimanche fermé">
+							
+										</p:textEditor>
+										<p:outputLabel value=""/>
+									</p:panelGrid>
+								</div>
+								
+							</div>
+						</p:panel>
+					</div>
+					
+					
+					<div class="ui-g-12">
+						<p:panel header="Paiement des paniers">
+							<div class="ui-g">
+								<div class="ui-g-3 center">
+									<h:graphicImage library="images" name="boutique/Paiement-retrait-en-magasin.svg" style="height:80px" />
+									<p:panelGrid columns="3" style="margin:auto;">
+										<p:outputLabel value="Proposer le paiement du panier au moment du retrait"/>
+										<p:selectBooleanCheckbox value="#{parametreCompteClientController.taParamEspaceClient.activePaiementPanierSurPlace}" />
+									</p:panelGrid>
+								</div>
+								
+								<div class="ui-g-3 center">
+									<h:graphicImage library="images" name="boutique/Paiement.svg" style="height:80px" />
+									<p:panelGrid columns="3" style="margin:auto;">
+										<p:outputLabel value="Activer le paiement en ligne par carte bancaire"/>
+										<p:selectBooleanCheckbox value="#{parametreCompteClientController.taParamEspaceClient.activePaiementPanierCB}" />
+									</p:panelGrid>
+								</div>
+								
+								<div class="ui-g-3 center">
+									<h:graphicImage library="images" name="boutique/paiement-par-cheque.svg" style="height:80px" />
+									<p:panelGrid columns="3" style="margin:auto;">
+										<p:outputLabel value="Activer le paiement par chèque"/>
+										<p:selectBooleanCheckbox value="#{parametreCompteClientController.taParamEspaceClient.activePaiementPanierCheque}"/>
+										<p:outputLabel value=""/>
+									</p:panelGrid>
+								</div>
+								<div class="ui-g-3 center">
+									<h:graphicImage library="images" name="boutique/Paiement-par-virement.svg" style="height:80px" />
+									<p:panelGrid columns="3" style="margin:auto;">
+										<p:outputLabel value="Activer le paiement par virement"/>
+										<p:selectBooleanCheckbox value="#{parametreCompteClientController.taParamEspaceClient.activePaiementPanierVirement}"/>
+										<p:outputLabel value=""/>
+									</p:panelGrid>
+								</div>
+								<div class="ui-g-12 center">
+									<hr/>
+								</div>
+								<div class="ui-g-12">
+									Informations bancaires du compte devant recevoir les paiements par virement
+								</div>
+								<div class="ui-g-12">
+									<p:panelGrid columns="3">
+										<p:outputLabel value="IBAN"/>
+										<p:inputText value="#{parametreCompteClientController.taParamEspaceClient.ibanPaiementVirement}"/>
+										<p:outputLabel value=""/>
+										
+										<p:outputLabel value="SWIFT"/>
+										<p:inputText value="#{parametreCompteClientController.taParamEspaceClient.swiftPaiementVirement}"/>
+										<p:outputLabel value=""/>
+									</p:panelGrid>
+								</div>
+							</div>
+						</p:panel>
+					</div>
+					
+					<div class="ui-g-12">
+						<p:panel header="Actions suite à une confirmation de commande">
+							<div class="ui-g">
+								<div class="ui-g-8">
+									<p:panelGrid columns="3">
+										<p:outputLabel for="gen" value="Génération de document suite à la confirmation de commande ou au paiement en ligne" />
+										<p:selectOneRadio id="gen" value="#{parametreCompteClientController.taParamEspaceClient.generationDocAuPaiementPanier}" unselectable="true">
+											<f:selectItem itemLabel="Bon de commande" itemValue="bc" />
+											<f:selectItem itemLabel="Facture" itemValue="fact" />
+											<f:selectItem itemLabel="Bon de commande et Facture" itemValue="bc_fact" />
+				<!-- 				            <f:selectItem itemLabel="Aucun" itemValue="" /> -->
+<!-- 				itemDisabled="true" -->
+								        </p:selectOneRadio>	
+								        <p:outputLabel value=""/>	
+									</p:panelGrid>
+								</div>
+								<div class="ui-g-4">
+									<p:panelGrid columns="3">
+										<p:outputLabel value="Activer email de confirmation de commande envoyer au client"/>
+										<p:selectBooleanCheckbox value="#{parametreCompteClientController.taParamEspaceClient.activeEmailConfirmationCmd}" />
+										<p:outputLabel value=""/>
+									</p:panelGrid>
+								</div>
+								<div class="ui-g-12">
+									<p:panelGrid columns="3">
+										<p:outputLabel value="Texte confirmation de commande"/>
+										<p:textEditor secure="false" value="#{parametreCompteClientController.taParamEspaceClient.texteConfirmationPaiementBoutique}" height="200">
+										</p:textEditor>
+										<p:outputLabel value=""/>
+									</p:panelGrid>
+								</div>
+							</div>
+						</p:panel>
+					</div>
+					
+					
+					<div class="ui-g-12">
+						<p:panel header="Textes paramétrables">
+							<div class="ui-g">
+								<div class="ui-g-12">
+									<p:panelGrid columns="3">
+										<p:outputLabel value="Texte accueil catalogue"/>
+										<p:textEditor secure="false" value="#{parametreCompteClientController.taParamEspaceClient.texteAccueilCatalogue}" height="200">
+										</p:textEditor>
+										<p:outputLabel value=""/>
+									</p:panelGrid>
+								</div>
+								
+								<div class="ui-g-12">
+									<p:panelGrid columns="3">
+										<p:outputLabel value="Texte condition générale de vente"/>
+										<p:textEditor secure="false" value="#{parametreCompteClientController.taParamEspaceClient.cgvCatWeb}" height="200">
+										</p:textEditor>
+										<p:outputLabel value=""/>
+									</p:panelGrid>
+								</div>
+								
+							</div>
+						</p:panel>
+					</div>
+					
+			</div>
+		</p:tab>
+					
+		
+		</p:tabView>
+
+	<br />
+
+	<div class="text-center">
+		<p:confirmDialog global="true" showEffect="fade" hideEffect="explode">
+			<p:commandButton value="Oui" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+			<p:commandButton value="Non" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+		</p:confirmDialog>
+	</div>
+
+</ui:composition>

@@ -1,0 +1,1428 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    
+    <ui:define name="head">
+        <script type="text/javascript">
+            //<![CDATA[
+            function skinChart() {
+                this.cfg.shadow = false;
+                this.cfg.title = '';
+                this.cfg.seriesColors = ['#EA9624', '#5BA5D8'];
+                this.cfg.grid = {
+                    background: '#ffffff',
+                    borderColor: '#ffffff',
+                    gridLineColor: '#F5F5F5',
+                    shadow: false
+                };
+                this.cfg.axesDefaults = {
+                    rendererOptions: {
+                        textColor: '#666F77'
+                    }
+                };
+                this.cfg.seriesDefaults = {
+                    shadow: false,
+                    lineWidth: 1,
+                    markerOptions: {
+                        shadow: false,
+                        size: 7,
+                        style: 'circle'
+                    }
+                }
+            }
+            //]]>  
+        </script>
+        <style type="text/css">
+            .main-content {
+                padding: 0;
+            }
+            
+            #main-wrapper-content {
+                padding: 10px;
+            }
+        </style>
+    </ui:define>
+    
+    
+        <div class="dashboard">
+            <div class="dashboard-header">
+                <div class="ui-g">
+                        <p:commandButton value="Fermer" styleClass="icon icon-close menuitem-fermer-droite" process="@this" 
+							onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())"/>
+   						<h:graphicImage name="dashboard/bon-de-commande.svg" id="imagedashboard" library="images"  height="71px" width="71px"  />
+                    <div class="ui-g-12 ui-md-6">
+                        <div class="dashboard-title">
+                            <h2>Bon de commande : Tableau de bord</h2>
+                              
+                     </div>
+                    </div>
+
+                    <div class="ui-g-12 ui-g-nopad">
+
+                    </div>
+                </div>
+            </div>
+            
+            <div id="main-wrapper-content-Boncde">
+
+                    
+                <div class="ui-g">
+
+
+				<div class="ui-g-12 ui-md-12">
+				<p:panel collapsed="true" toggleable="true" id="idPanelCriteresDashboardBoncde" >
+						<f:facet name="header">
+							<h:outputText value="Critères et paramètres du tableau de bord - " />
+							<h:outputText value="Période du " />
+							<h:outputText value="#{dashBoardBoncdeController.dateDebut}" >
+								<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" type="localDate"/>
+							</h:outputText>
+							<h:outputText value=" au " />
+							<h:outputText value="#{dashBoardBoncdeController.dateFin}" >
+								<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" type="localDate"/>
+							</h:outputText>
+						</f:facet>
+						
+						
+					<div class="ui-g-12 ui-md-3">
+					  <div class="card">
+					
+						<p:panel header="Période en cours" styleClass="panelgrey">
+						<f:facet name="footer">
+							<p:commandButton oncomplete="PF('wvListeBoncde').filter()" 
+											update="@this,
+													idPanelCriteresDashboardBoncde,
+													@widgetVar(wvDashBoncdePanelBoncde),
+													@widgetVar(wvCountNbBoncdeNonTransforme),
+													@widgetVar(wvCountNbBoncdeTransforme),
+													@widgetVar(wvListeBoncde),
+													@widgetVar(wvListeBoncdeMois),
+													
+													@widgetVar(wvCountNbBoncdeNonTransformeARelancer),
+													@widgetVar(wvGraphiqueBoncde),
+													@widgetVar(wvTabViewBoncdeJour),
+													@widgetVar(wvPanelBoncdeJourDataTable),
+													@widgetVar(wvListeBoncdeMoisArticles),
+													@widgetVar(wvListeBoncdeJour),
+													@widgetVar(wvListeBoncdeJourArticles),
+													@widgetVar(wvTauxBoncdeTransforme)" 
+							action="#{dashBoardBoncdeController.refreshDashBoard('tous')}" value="Appliquer" id="idPeriodeBoncde" styleClass="ui-orange" 
+							style="width:100%;" />
+							
+							
+							
+						</f:facet>
+						<div class="ui-g-12 ui-md-1" >
+
+						 </div>
+						
+						 <div class="ui-g-12 ui-md-11">
+			        	<h:panelGrid columns="2" cellpadding="0">
+						 <p:outputLabel value="Du"/>
+											<p:calendar value="#{dashBoardBoncdeController.dateDebut}"
+												showOn="button" 
+												navigator="true" 
+												pattern="#{msg.date_pattern}" 
+												mask="true" 
+												locale="fr" 
+												timeZone="#{msg.time_zone}" >
+											</p:calendar>
+
+
+						 <p:outputLabel value="au"/>
+											<p:calendar value="#{dashBoardBoncdeController.dateFin}"
+												showOn="button" 
+												navigator="true" 
+												pattern="#{msg.date_pattern}" 
+												mask="true" 
+												locale="fr" 
+												timeZone="#{msg.time_zone}" >
+											</p:calendar>
+
+        				</h:panelGrid>
+        				</div>
+        				 <p:separator />
+
+
+								</p:panel>
+    					</div>
+    				</div>
+
+					<!-- DEBUT RACCOURCIS PERIODE -->
+					<div class="ui-g-12 ui-md-2">
+					<div class="card">
+					<p:panel header="Raccourcis périodes" styleClass="panelgrey">
+						<p:panelGrid columns="1" cellpadding="0" columnClasses="ui-grid-col-12" style="width:100%">
+							<p:commandButton oncomplete="PF('wvListeBoncde').filter()" 
+											update="@this,
+													idPanelCriteresDashboardBoncde,
+													@widgetVar(wvDashBoncdePanelBoncde),
+													@widgetVar(wvCountNbBoncdeNonTransforme),
+													@widgetVar(wvCountNbBoncdeTransforme),
+													@widgetVar(wvListeBoncde),
+													@widgetVar(wvListeBoncdeMois),
+													
+													@widgetVar(wvGraphiqueBoncde),
+													@widgetVar(wvCountNbBoncdeNonTransformeARelancer),
+													@widgetVar(wvTauxBoncdeTransforme),
+													@widgetVar(wvTabViewBoncdeJour),
+													@widgetVar(wvPanelBoncdeJourDataTable),
+													@widgetVar(wvListeBoncdeMoisArticles),
+													@widgetVar(wvListeBoncdeJour),
+													@widgetVar(wvListeBoncdeJourArticles)"  
+							action="#{dashBoardBoncdeController.initBornePeriodeAujourdhui()}" value="Aujourd'hui" id="idPeriodeBoncdeJourCourant"  
+							 style="font-size: 12px;height: 22px;width:100%;border-bottom: 2px solid #7FA128;"/>
+<!-- 							 styleClass="ui-orange"					 -->
+							<p:commandButton oncomplete="PF('wvListeBoncde').filter()" 
+											update="@this,
+													idPanelCriteresDashboardBoncde,
+													@widgetVar(wvDashBoncdePanelBoncde),
+													@widgetVar(wvCountNbBoncdeNonTransforme),
+													@widgetVar(wvCountNbBoncdeTransforme),
+													@widgetVar(wvListeBoncde),
+													@widgetVar(wvListeBoncdeMois),
+													
+													@widgetVar(wvGraphiqueBoncde),
+													@widgetVar(wvCountNbBoncdeNonTransformeARelancer),
+													@widgetVar(wvTauxBoncdeTransforme),
+													@widgetVar(wvTabViewBoncdeJour),
+													@widgetVar(wvPanelBoncdeJourDataTable),
+													@widgetVar(wvListeBoncdeMoisArticles),
+													@widgetVar(wvListeBoncdeJour),
+													@widgetVar(wvListeBoncdeJourArticles)"  
+							action="#{dashBoardBoncdeController.initBornePeriodeHier()}" value="Hier" id="idPeriodeBoncdeJourPrecedent"  
+							 style="font-size: 12px;height: 22px;width:100%;border-bottom: 2px solid #7FA128;"/>
+							<p:commandButton oncomplete="PF('wvListeBoncde').filter()" 
+											update="@this,
+													idPanelCriteresDashboardBoncde,
+													@widgetVar(wvDashBoncdePanelBoncde),
+													@widgetVar(wvCountNbBoncdeNonTransforme),
+													@widgetVar(wvCountNbBoncdeTransforme),
+													@widgetVar(wvListeBoncde),
+													@widgetVar(wvListeBoncdeMois),
+													
+													@widgetVar(wvGraphiqueBoncde),
+													@widgetVar(wvCountNbBoncdeNonTransformeARelancer),
+													@widgetVar(wvTauxBoncdeTransforme),
+													@widgetVar(wvTabViewBoncdeJour),
+													@widgetVar(wvPanelBoncdeJourDataTable),
+													@widgetVar(wvListeBoncdeMoisArticles),
+													@widgetVar(wvListeBoncdeJour),
+													@widgetVar(wvListeBoncdeJourArticles)"  
+							action="#{dashBoardBoncdeController.initBornePeriodeMoisCourant()}" value="Mois courant" id="idPeriodeBoncdeMoisCourant"  
+							style="font-size: 12px;height: 22px;width:100%;border-bottom: 2px solid #7FA128;"/>
+							<p:commandButton oncomplete="PF('wvListeBoncde').filter()" 
+											update="@this,
+													idPanelCriteresDashboardBoncde,
+													@widgetVar(wvDashBoncdePanelBoncde),
+													@widgetVar(wvCountNbBoncdeNonTransforme),
+													@widgetVar(wvCountNbBoncdeTransforme),
+													@widgetVar(wvListeBoncde),
+													@widgetVar(wvListeBoncdeMois),
+													
+													@widgetVar(wvGraphiqueBoncde),
+													@widgetVar(wvCountNbBoncdeNonTransformeARelancer),
+													@widgetVar(wvTauxBoncdeTransforme),
+													@widgetVar(wvTabViewBoncdeJour),
+													@widgetVar(wvPanelBoncdeJourDataTable),
+													@widgetVar(wvListeBoncdeMoisArticles),
+													@widgetVar(wvListeBoncdeJour),
+													@widgetVar(wvListeBoncdeJourArticles)"  
+							action="#{dashBoardBoncdeController.initBornePeriodeAnneeCourante()}" value="Année courante" id="idPeriodeBoncdeAnneeCourante"  
+							 style="font-size: 12px;height: 22px;width:100%;border-bottom: 2px solid #7FA128;"/>
+						</p:panelGrid>
+					</p:panel>
+					</div>
+    				</div>
+					<!-- FIN RACCOURCIS PERIODE -->
+				</p:panel>
+				</div>
+
+				<div class="ui-g-12 ui-md-12" style="background:#ebebeb;">
+					<div class="ui-g-12 ui-md-6 ui-lg-3">
+						<p:panel header="Bon de commande sur la période" style="background:#ebebeb;" widgetVar="wvCountNbBoncdeTransforme">
+							<div class="box #{dashBoardBoncdeController.cSbNbDocumentSurPeriode}" >
+							<i class="fa fa-file-text-o"></i>
+							<h2>#{dashBoardBoncdeController.nbBoncdeSurPeriode} BC réalisés</h2>
+							<h3>Total HT : #{dashBoardBoncdeController.totauxCaPeriodeBoncde.mtHtCalc} € </h3>
+							<p>Du 
+							<p:outputLabel value="#{dashBoardBoncdeController.dateDebut}">
+								<f:convertDateTime pattern="#{msg.date_pattern}"
+										               timeZone="#{msg.time_zone}" type="localDate"/>		
+							</p:outputLabel>
+							  au 
+							<p:outputLabel value="#{dashBoardBoncdeController.dateFin}">
+								<f:convertDateTime pattern="#{msg.date_pattern}"
+										               timeZone="#{msg.time_zone}" type="localDate"/>		
+							</p:outputLabel>
+							
+							
+							</p>
+
+						<p:selectBooleanButton style="width:50%;" id="BoncdeTous" 
+												value="true" onLabel="Sélection active"
+												widgetVar="wvBoncdeTous" 
+												offLabel="Afficher" onIcon="ui-icon-check" offIcon="ui-icon-close">
+												<p:ajax oncomplete="PF('wvListeBoncde').filter()" 
+														update="@this,
+																@widgetVar(wvDashBoncdePanelBoncde),
+																@widgetVar(wvCountNbBoncdeNonTransforme),
+																@widgetVar(wvCountNbBoncdeTransforme),
+																@widgetVar(wvListeBoncde),
+																@widgetVar(wvListeBoncdeMois),
+																
+																@widgetVar(wvCountNbBoncdeNonTransformeARelancer),
+																@widgetVar(wvGraphiqueBoncde),
+																@widgetVar(wvTabViewBoncdeJour),
+																@widgetVar(wvPanelBoncdeJourDataTable),
+																@widgetVar(wvListeBoncdeMoisArticles),
+																@widgetVar(wvListeBoncdeJour),
+																@widgetVar(wvListeBoncdeJourArticles),
+																@widgetVar(wvTauxBoncdeTransforme)"
+														listener="#{dashBoardBoncdeController.refreshDashBoard('tous')}"/>	 
+        					</p:selectBooleanButton>
+							</div> 
+						</p:panel>
+					</div>
+					<div class="ui-g-12 ui-md-6 ui-lg-3" style="background:#ebebeb;">
+						<p:panel header="Bon de commande en cours" style="background:#ebebeb;" widgetVar="wvCountNbBoncdeNonTransforme">
+							<div class="box #{dashBoardBoncdeController.cSbNbDocumentNonTransformeSurPeriode}">
+						
+							
+							<i class="fa fa-file-text-o"></i>
+							<h2>#{dashBoardBoncdeController.nbBoncdeNonTransformeSurPeriode} BC non transformés</h2>
+							<h3>Total HT : #{dashBoardBoncdeController.totauxCaPeriodeBoncdeNonTransforme.mtHtCalc} € </h3>
+<!-- 							<h3>Total HT : #{dashBoardBoncdeController.listeCaPeriodeBoncdeNonTransforme.empty?'0':dashBoardBoncdeController.listeCaPeriodeBoncdeNonTransforme.get(0).mtHtCalc} € </h3> -->
+							<p>Du 
+							<p:outputLabel value="#{dashBoardBoncdeController.dateDebut}">
+								<f:convertDateTime pattern="#{msg.date_pattern}"
+										               timeZone="#{msg.time_zone}" type="localDate"/>		
+							</p:outputLabel>
+							  au 
+							<p:outputLabel value="#{dashBoardBoncdeController.dateFin}">
+								<f:convertDateTime pattern="#{msg.date_pattern}"
+										               timeZone="#{msg.time_zone}" type="localDate"/>		
+							</p:outputLabel>
+							
+							
+							</p>
+							 <p:selectBooleanButton style="width:50%;" id="Boncdenontrans" value="false" onLabel="Sélection active" offLabel="Afficher" onIcon="ui-icon-check" offIcon="ui-icon-close" >
+								<p:ajax oncomplete="PF('wvListeBoncde').filter()" 
+										event="change" 
+										update="@this,
+												@widgetVar(wvDashBoncdePanelBoncde),
+												@widgetVar(wvCountNbBoncdeNonTransforme),
+												@widgetVar(wvCountNbBoncdeTransforme),
+												@widgetVar(wvListeBoncde),
+												@widgetVar(wvListeBoncdeMois),
+												
+												@widgetVar(wvCountNbBoncdeNonTransformeARelancer),
+												@widgetVar(wvGraphiqueBoncde),
+												@widgetVar(wvTabViewBoncdeJour),
+												@widgetVar(wvPanelBoncdeJourDataTable),
+												@widgetVar(wvListeBoncdeMoisArticles),
+												@widgetVar(wvListeBoncdeJour),
+												@widgetVar(wvListeBoncdeJourArticles),
+												@widgetVar(wvTauxBoncdeTransforme)"
+										listener="#{dashBoardBoncdeController.refreshDashBoard('nontransforme')}"/>	 
+        					 </p:selectBooleanButton>
+							</div>
+						</p:panel>
+					</div>
+					<div class="ui-g-12 ui-md-6 ui-lg-3" style="background:#ebebeb;">
+						<p:panel header="BC arrivant à échéance dans moins de 15 jours"  widgetVar="wvCountNbBoncdeNonTransformeARelancer" 
+							style="background:#ebebeb;">
+							<div class="box #{dashBoardBoncdeController.cSbNbDocumentNonTransformeARelancerSurPeriode}" >
+							<i class="fa fa-file-text-o"></i>
+							<h2>#{dashBoardBoncdeController.nbBoncdeNonTransformeARelancerSurPeriode} BC à relancer</h2>
+							<h3>Total HT : #{dashBoardBoncdeController.totauxCaPeriodeBoncdeNonTransformeARelancer.mtHtCalc} € </h3>
+							<p>Du 
+							<p:outputLabel value="#{dashBoardBoncdeController.dateDebut}">
+								<f:convertDateTime pattern="#{msg.date_pattern}"
+										               timeZone="#{msg.time_zone}" type="localDate"/>		
+							</p:outputLabel>
+							  au 
+							<p:outputLabel value="#{dashBoardBoncdeController.dateFin}">
+								<f:convertDateTime pattern="#{msg.date_pattern}"
+										               timeZone="#{msg.time_zone}" type="localDate"/>		
+							</p:outputLabel>
+							
+							
+							</p>
+							<!-- 							<p>Du #{dashBoardBoncdeController.dateDebut} au #{dashBoardBoncdeController.dateFin}</p> -->
+<!-- 						    <p:commandButton value="Ajax Submit" id="ajax" update="growl" actionListener="#{buttonView.buttonAction}" styleClass="ui-priority-primary" /> -->
+						    <p:selectBooleanButton  style="width:50%;" id="Boncde15jours" value="false" onLabel="Sélection active" offLabel="Afficher" onIcon="ui-icon-check" offIcon="ui-icon-close" >
+								<p:ajax oncomplete="PF('wvListeBoncde').filter()" 
+										event="change" 
+										update="@this,
+												@widgetVar(wvDashBoncdePanelBoncde),
+												@widgetVar(wvCountNbBoncdeNonTransforme),
+												@widgetVar(wvCountNbBoncdeTransforme),
+												@widgetVar(wvListeBoncde),
+												@widgetVar(wvListeBoncdeMois),
+												
+												@widgetVar(wvCountNbBoncdeNonTransformeARelancer),
+												@widgetVar(wvGraphiqueBoncde),
+												@widgetVar(wvTabViewBoncdeJour),
+												@widgetVar(wvPanelBoncdeJourDataTable),
+												@widgetVar(wvListeBoncdeMoisArticles),
+												@widgetVar(wvListeBoncdeJour),
+												@widgetVar(wvListeBoncdeJourArticles),
+												@widgetVar(wvTauxBoncdeTransforme)"
+										listener="#{dashBoardBoncdeController.refreshDashBoard('nontransformearelancer')}"/>	 
+        					</p:selectBooleanButton>
+							</div> 
+						</p:panel>
+					</div>
+					<div class="ui-g-12 ui-md-6 ui-lg-3 " style="background:#ebebeb;"> 
+						<p:panel header="Taux de transformation" widgetVar="wvTauxBoncdeTransforme" 
+						style="background:#ebebeb;">
+							<div class="box #{dashBoardBoncdeController.cSbNbDocumentTransformeSurPeriode}" >
+								<p:tabView style="text-align:left;">
+									<p:tab title="Montant HT" >
+									<h3 style="text-align:center;">Total HT : #{dashBoardBoncdeController.totauxCaPeriodeBoncdeTransforme.mtHtCalc} € </h3>
+									<div class="knob-container  ui-corner-all" style="text-align:center;">
+										<p:knob labelTemplate="{value}%" value="#{dashBoardBoncdeController.tauxTransfoCa}" height="70"
+											width="70" disabled="true"/>
+									</div>
+									</p:tab>
+									<p:tab title="Nombre de Bon de commande" >
+									<h3 style="text-align:center;">#{dashBoardBoncdeController.nbBoncdeTransformeSurPeriode} BC transformés</h3>
+									<div class="knob-container  ui-corner-all" style="text-align:center;">
+										<p:knob labelTemplate="{value}%" value="#{dashBoardBoncdeController.tauxTransfoNb}" height="70"
+											width="70" disabled="true" />
+									</div>
+									</p:tab>
+								</p:tabView>
+								<p:selectBooleanButton  style="width:50%;" id="BoncdeTransforme" value="false" onLabel="Sélection active" offLabel="Afficher" onIcon="ui-icon-check" offIcon="ui-icon-close" >
+								<p:ajax oncomplete="PF('wvListeBoncde').filter()" 
+										event="change" 
+										update="@this,
+												@widgetVar(wvDashBoncdePanelBoncde),
+												@widgetVar(wvCountNbBoncdeNonTransforme),
+												@widgetVar(wvCountNbBoncdeTransforme),
+												@widgetVar(wvListeBoncde),
+												@widgetVar(wvListeBoncdeMois),
+												
+												@widgetVar(wvCountNbBoncdeNonTransformeARelancer),
+												@widgetVar(wvGraphiqueBoncde),
+												@widgetVar(wvTabViewBoncdeJour),
+												@widgetVar(wvPanelBoncdeJourDataTable),
+												@widgetVar(wvListeBoncdeMoisArticles),
+												@widgetVar(wvListeBoncdeJour),
+												@widgetVar(wvListeBoncdeJourArticles),
+												@widgetVar(wvTauxBoncdeTransforme)"
+										listener="#{dashBoardBoncdeController.refreshDashBoard('transforme')}"/>	 
+        					</p:selectBooleanButton>
+
+							</div> 
+						</p:panel>
+					</div>
+				</div>
+
+				<div class="ui-g-12 ui-md-12">
+				<p:panel header="Liste des Bons de commande " widgetVar="wvDashBoncdePanelBoncde" >
+
+						<p:dataTable id="taBoncde" var="a"
+							value="#{dashBoardBoncdeController.valueLignesDocument}"
+							
+							
+							widgetVar="wvListeBoncde" resizableColumns="true" 
+							paginator="true"
+							rows="#{msg.modele_datatable_ligne_par_page_debut}"
+							paginatorTemplate="#{msg.modele_datatable_paginator}"
+							rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+							emptyMessage="#{msg.message_datatable_vide}"
+							currentPageReportTemplate="#{msg.modele_datatable_page_courante}"
+							
+							selectionMode="single" rowKey="#{a.codeDocument}" reflow="true">
+							
+							<f:facet name="header">
+							
+							<span style="float:left;">
+									        <p:commandButton id="idBtnListePrintEcranDasboardBonCde"
+							 title="Imprimer la liste" 
+			onsuccess="window.open('#{request.contextPath}/output?__report=/reports/documents/boncde/ListeDashboardBonCommande.rptdesign&amp;__format=pdf')"
+			actionListener="#{dashBoardBoncdeController.actImprimerListeBoncde}" styleClass="ui-priority-primary boutonPrint" style="color : white;" icon="fa fa-print"
+			process="@this" ></p:commandButton>
+			
+						<p:commandButton widgetVar="wvCheckEtatTourneeBcde" title="Imprimer les tournées" oncomplete="PF('interfacePrintEtatTourneeBC').show()"
+				styleClass="ui-priority-primary boutonPrint" style="color : white;" icon="fa fa-print"
+			process="@this" ></p:commandButton>
+				
+						<p:commandButton widgetVar="wvCheckEtatQteFabriquerBcde" title="Imprimer les quantités à fabriquer" oncomplete="PF('interfacePrintEtatArticleFabBC').show()"
+				styleClass="ui-priority-primary boutonPrint" style="color : white;" icon="fa fa-print"
+			process="@this" ></p:commandButton>
+
+									    </span>
+									    
+        						Liste des Bons de commande
+        						
+        						<span style="float:right;" class="searchbar_list">
+						            <p:outputPanel>
+							                <p:inputText id="globalFilter" onkeyup="PF('wvListeBoncde').filter()" style="width:150px" placeholder="Rechercher"/>
+							            </p:outputPanel>
+						        </span>
+    						</f:facet>
+    						 
+							<p:column width="15%" rendered="true" filterMatchMode="contains"
+								filterBy="#{a.codeDocument}" sortBy="#{a.codeDocument}"  >
+								<f:facet name="header">
+									<h:outputText value="Code document" />
+								</f:facet>
+<!-- 								<h:outputText value="#{a.codeDocument}" /> -->
+								<p:commandLink value="#{a.codeDocument}"
+									action="#{ouvertureDocumentBean.detailDocument(ouvertureDocumentBean.recupCodeDocument(a.codeDocument,ouvertureDocumentBean.getTypeDocumentBoncde()))}" 
+									update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+								</p:commandLink>							</p:column>
+
+							<p:column width="38%" filterMatchMode="contains" 
+								filterBy="#{a.libelleDocument}" sortBy="#{a.libelleDocument}">
+								<f:facet name="header">
+									<h:outputText value="Libellé" />
+								</f:facet>
+								<h:outputText value="#{a.libelleDocument}" id="idListeLibelleBoncde"/>
+								<p:tooltip id="toolTipListeLibelleBoncde" value="#{a.libelleDocument}" shared="true" for="idListeLibelleBoncde" showEffect="clip" position="top"/>
+								
+							</p:column>
+
+							<p:column styleClass="center" width="12%"
+								filterMatchMode="contains" filterBy="#{bonCdeController.customFormatDate(a.dateDocument)}"
+								sortBy="#{a.dateDocument}">
+								<f:facet name="header">
+									<h:outputText value="Fait le" />
+								</f:facet>
+								<h:outputText value="#{a.dateDocument}">
+									<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="center" width="20%"
+								filterMatchMode="contains" filterBy="#{a.codeTiers}"
+								sortBy="#{a.codeTiers}">
+								<f:facet name="header">
+									<h:outputText value="Code Tiers" />
+								</f:facet>
+<!-- 								<h:outputText value="#{a.codeTiers}"> -->
+<!-- 								</h:outputText> -->
+								<p:commandLink value="#{a.codeTiers}"
+											action="#{ouvertureDocumentBean.detailTiers(ouvertureDocumentBean.recupCodetiers(a.codeTiers))}" update=":form:tabView"
+											oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+								</p:commandLink>
+							</p:column>
+
+							<p:column styleClass="center" width="25%"
+								filterMatchMode="contains" filterBy="#{a.nomTiers}"
+								sortBy="#{a.nomTiers}">
+								<f:facet name="header">
+									<h:outputText value="Tiers" />
+								</f:facet>
+								<h:outputText value="#{a.nomTiers}">
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="right" width="12%"
+								filterMatchMode="contains" filterBy="#{a.netHtCalc}"
+								sortBy="#{a.netHtCalc}">
+								<f:facet name="header">
+									<h:outputText value="Montant HT" />
+								</f:facet>
+								<h:outputText value="#{a.netHtCalc}">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="right" width="10%"
+								filterMatchMode="contains" filterBy="#{a.netTvaCalc}"
+								sortBy="#{a.netTvaCalc}">
+								<f:facet name="header">
+									<h:outputText value="Montant TVA" />
+								</f:facet>
+								<h:outputText value="#{a.netTvaCalc}">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="right" width="12%"
+								filterMatchMode="contains" filterBy="#{a.netTtcCalc}"
+								sortBy="#{a.netTtcCalc}">
+								<f:facet name="header">
+									<h:outputText value="Montant TTC" />
+								</f:facet>
+								<h:outputText value="#{a.netTtcCalc}">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="center" width="12%"
+								filterMatchMode="contains" filterBy="#{bonCdeController.customFormatDate(a.dateEchDocument)}"
+								sortBy="#{a.dateEchDocument}">
+								<f:facet name="header">
+									<h:outputText value="Expire le" />
+								</f:facet>
+								<h:outputText value="#{a.dateEchDocument}">
+									<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" />
+								</h:outputText>
+							</p:column>
+
+							
+						</p:dataTable>
+					</p:panel>
+				</div>
+				
+				<!-- DEBUT DIV DETAIL -->
+				
+				<div class="ui-g-12 ui-md-12" style="background:#ebebeb;">
+				
+				<div class="ui-g-12 ui-md-4"><!-- DIV GRAPHIQUE -->
+					<p:panel>
+						<f:facet name="header">
+							<h:outputText value="Période du " />
+							<h:outputText value="#{dashBoardBoncdeController.dateDebut}" >
+								<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" type="localDate"/>
+							</h:outputText>
+							<h:outputText value=" au " />
+							<h:outputText value="#{dashBoardBoncdeController.dateFin}" >
+								<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" type="localDate"/>
+							</h:outputText>
+						</f:facet>
+					
+					<p:tabView>
+						<p:tab title="Bon de commande">
+								<p:chart type="bar" model="#{dashBoardBoncdeController.barChartModelBoncde}"								
+								widgetVar="wvGraphiqueBoncde"
+								responsive="true" 
+								style="height:300px;">
+								
+								<p:ajax event="itemSelect" 
+									listener="#{dashBoardBoncdeController.itemSelectMois}" 
+									update="@widgetVar(wvListeBoncdeMois),
+											@widgetVar(wvListeBoncdeMoisArticles),
+											@widgetVar(wvGraphiqueBoncdeJour),
+											@widgetVar(wvTabViewBoncdeJour),
+											@widgetVar(wvPanelBoncdeJourDataTable)"
+											style="cursor: pointer;"/>
+								</p:chart>
+						</p:tab>
+
+					</p:tabView>
+					</p:panel>
+
+				</div><!-- FIN DIV GRAPHIQUE ui-md-4 -->
+
+                    <div class="ui-g-12 ui-md-8">
+                    
+                    	<!-- DEBUT TABVIEW DETAIL BLOC DROIT -->
+						<p:tabView>
+						<p:tab title="Liste des documents par mois">
+            			<h:panelGrid columns="2" cellpadding="10">
+                	
+						<br/>
+						
+						<p:dataTable id="taBoncdeMois" var="a"
+							value="#{dashBoardBoncdeController.listeDocumentDetailMois}"
+							scrollable="true"
+							scrollHeight="135"
+							liveResize="true"
+							
+							widgetVar="wvListeBoncdeMois" resizableColumns="true" 
+							paginator="true"
+							rows="#{msg.modele_datatable_ligne_par_page_debut}"
+							paginatorTemplate="#{msg.modele_datatable_paginator}"
+							rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+							emptyMessage="#{msg.message_datatable_vide}"
+							currentPageReportTemplate="#{msg.modele_datatable_page_courante}"
+							
+							selectionMode="single" rowKey="#{a.codeDocument}" reflow="true">
+							
+							<f:facet name="header">
+							
+							<span style="float:left;">
+							<p:commandButton id="idBtnListePrintEcranDasboardBoncdeDocMois"
+							 title="Imprimer la liste" 
+			onsuccess="window.open('#{request.contextPath}/output?__report=/reports/documents/boncde/ListeDashboardDocMois.rptdesign&amp;__format=pdf')"
+			actionListener="#{dashBoardBoncdeController.actImprimerListeDocMois}" styleClass="ui-priority-primary boutonPrint" style="color : white;" icon="fa fa-print"
+			process="@this" ></p:commandButton>
+							</span>
+
+    								#{dashBoardBoncdeController.infosLabelRapportMensuelDataTable}
+    						</f:facet>
+    						 
+							<p:column width="20%" rendered="true" filterMatchMode="contains"
+								filterBy="#{a.codeDocument}" sortBy="#{a.codeDocument}"  >
+								<f:facet name="header">
+									<h:outputText value="Code" />
+								</f:facet>
+<!-- 								<h:outputText value="#{a.codeDocument}" /> -->
+								<p:commandLink value="#{a.codeDocument}"
+									action="#{ouvertureDocumentBean.detailDocument(ouvertureDocumentBean.recupCodeDocument(a.codeDocument,ouvertureDocumentBean.getTypeDocumentBoncde()))}" 
+									update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+								</p:commandLink>
+
+							</p:column>
+
+							<p:column width="33%" filterMatchMode="contains" 
+								filterBy="#{a.libelleDocument}" sortBy="#{a.libelleDocument}">
+								<f:facet name="header">
+									<h:outputText value="Libellé" />
+								</f:facet>
+								<h:outputText value="#{a.libelleDocument}" />
+							</p:column>
+
+							<p:column styleClass="center" width="17%"
+								filterMatchMode="contains" filterBy="#{a.dateDocument}"
+								sortBy="#{a.dateDocument}">
+								<f:facet name="header">
+									<h:outputText value="Date" />
+								</f:facet>
+								<h:outputText value="#{a.dateDocument}">
+									<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="center" width="20%"
+								filterMatchMode="contains" filterBy="#{a.codeTiers}"
+								sortBy="#{a.codeTiers}">
+								<f:facet name="header">
+									<h:outputText value="Code Tiers" />
+								</f:facet>
+
+<!-- 								<h:outputText value="#{a.codeTiers}"> -->
+<!-- 								</h:outputText> -->
+										<p:commandLink value="#{a.codeTiers}"
+											action="#{ouvertureDocumentBean.detailTiers(ouvertureDocumentBean.recupCodetiers(a.codeTiers))}" update=":form:tabView"
+											oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+										</p:commandLink>
+							</p:column>
+
+							<p:column styleClass="center" width="20%"
+								filterMatchMode="contains" filterBy="#{a.nomTiers}"
+								sortBy="#{a.nomTiers}">
+								<f:facet name="header">
+									<h:outputText value="Tiers" />
+								</f:facet>
+								<h:outputText value="#{a.nomTiers}">
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="right" width="12%"
+								filterMatchMode="contains" filterBy="#{a.netHtCalc}"
+								sortBy="#{a.netHtCalc}">
+								<f:facet name="header">
+									<h:outputText value="HT" />
+								</f:facet>
+								<h:outputText value="#{a.netHtCalc}">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="right" width="10%"
+								filterMatchMode="contains" filterBy="#{a.netTvaCalc}"
+								sortBy="#{a.netTvaCalc}">
+								<f:facet name="header">
+									<h:outputText value="TVA" />
+								</f:facet>
+								<h:outputText value="#{a.netTvaCalc}">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="right" width="12%"
+								filterMatchMode="contains" filterBy="#{a.netTtcCalc}"
+								sortBy="#{a.netTtcCalc}">
+								<f:facet name="header">
+									<h:outputText value="TTC" />
+								</f:facet>
+								<h:outputText value="#{a.netTtcCalc}">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="center" width="12%"
+								filterMatchMode="contains" filterBy="#{a.dateEchDocument}"
+								sortBy="#{a.dateEchDocument}">
+								<f:facet name="header">
+									<h:outputText value="Expire le" />
+								</f:facet>
+								<h:outputText value="#{a.dateEchDocument}">
+									<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" />
+								</h:outputText>
+							</p:column>
+
+							
+						</p:dataTable>
+                		
+            			</h:panelGrid>
+        				</p:tab>
+						<p:tab title="Détail des articles par mois">
+						<h:panelGrid columns="2" cellpadding="10">
+						
+						<p:dataTable id="taBoncdeArticlesParTiersParMois" var="a"
+							value="#{dashBoardBoncdeController.listeDocumentArticleParTiersParMois}"
+							scrollable="true"
+							scrollHeight="135"
+							liveResize="true"
+							
+							widgetVar="wvListeBoncdeMoisArticles" resizableColumns="true" 
+							paginator="true"
+							rows="#{msg.modele_datatable_ligne_par_page_debut}"
+							paginatorTemplate="#{msg.modele_datatable_paginator}"
+							rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+							emptyMessage="#{msg.message_datatable_vide}"
+							currentPageReportTemplate="#{msg.modele_datatable_page_courante}"
+							
+							selectionMode="single" rowKey="#{a.codeDocument}" reflow="true">
+							
+							<f:facet name="header">
+							
+							<span style="float:left;">
+							<p:commandButton id="idBtnListePrintEcranDasboardBoncdeDocArticleMois"
+							 title="Imprimer la liste" 
+			onsuccess="window.open('#{request.contextPath}/output?__report=/reports/documents/boncde/ListeDashboardArticleMois.rptdesign&amp;__format=pdf')"
+			actionListener="#{dashBoardBoncdeController.actImprimerListeArticleMois}" styleClass="ui-priority-primary boutonPrint" style="color : white;" icon="fa fa-print"
+			process="@this" ></p:commandButton>
+							</span>	
+
+    								#{dashBoardBoncdeController.infosLabelRapportArticlesDataTable}
+    						</f:facet>
+    					
+							<p:column styleClass="center" width="20%"
+								filterMatchMode="contains" filterBy="#{a.codeDocument}"
+								sortBy="#{a.codeDocument}">
+								<f:facet name="header">
+									<h:outputText value="Code" />
+								</f:facet>
+<!-- 								<h:outputText value="#{a.codeDocument}"> -->
+<!-- 								</h:outputText> -->
+								<p:commandLink value="#{a.codeDocument}"
+									action="#{ouvertureDocumentBean.detailDocument(ouvertureDocumentBean.recupCodeDocument(a.codeDocument,ouvertureDocumentBean.getTypeDocumentBoncde()))}" 
+									update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+								</p:commandLink>
+							</p:column>
+							
+							<p:column width="20%" filterMatchMode="contains" 
+								filterBy="#{a.libellecArticle}" sortBy="#{a.libellecArticle}">
+								<f:facet name="header">
+									<h:outputText value="Libellé article(s)" />
+								</f:facet>
+								<h:outputText value="#{a.libellecArticle}" />
+							</p:column>
+
+							<p:column styleClass="center" width="15%"
+								filterMatchMode="contains" filterBy="#{a.dateDocument}"
+								sortBy="#{a.dateDocument}">
+								<f:facet name="header">
+									<h:outputText value="Fait le" />
+								</f:facet>
+								<h:outputText value="#{a.dateDocument}">
+									<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="center" width="20%"
+								filterMatchMode="contains" filterBy="#{a.codeTiers}"
+								sortBy="#{a.codeTiers}">
+								<f:facet name="header">
+									<h:outputText value="Code Tiers" />
+								</f:facet>
+
+<!-- 								<h:outputText value="#{a.codeTiers}"> -->
+<!-- 								</h:outputText> -->
+										<p:commandLink value="#{a.codeTiers}"
+											action="#{ouvertureDocumentBean.detailTiers(ouvertureDocumentBean.recupCodetiers(a.codeTiers))}" update=":form:tabView"
+											oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+										</p:commandLink>
+							</p:column>
+
+							<p:column styleClass="center" width="20%"
+								filterMatchMode="contains" filterBy="#{a.nomTiers}"
+								sortBy="#{a.nomTiers}">
+								<f:facet name="header">
+									<h:outputText value="Tiers" />
+								</f:facet>
+								<h:outputText value="#{a.nomTiers}">
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="right" width="15%"
+								filterMatchMode="contains" filterBy="#{a.mtHtLDocument}"
+								sortBy="#{a.mtHtLDocument}">
+								<f:facet name="header">
+									<h:outputText value="HT" />
+								</f:facet>
+								<h:outputText value="#{a.mtHtLDocument}">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="right" width="15%"
+								filterMatchMode="contains" filterBy="#{a.mtTtcLDocument}"
+								sortBy="#{a.mtTtcLDocument}">
+								<f:facet name="header">
+									<h:outputText value="TTC" />
+								</f:facet>
+								<h:outputText value="#{a.mtTtcLDocument}">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+							
+						</p:dataTable>
+						</h:panelGrid>
+						</p:tab>
+	 				</p:tabView>
+						<!-- FIN TABVIEW DETAIL BLOC DROIT -->
+                    
+                    
+
+                    </div><!-- FIN DIV BLOC DROIT ui-md-8 -->
+                    
+                    
+                   </div><!-- FIN BLOC DETAIL -->
+                   
+                   <!-- DEBUT DETAIL JOUR  -->
+                    
+                    
+                    <div class="ui-g-12 ui-md-12" style="background:#ebebeb;">
+				<div class="ui-g-12 ui-md-12">
+					
+					<p:tabView widgetVar="wvTabViewBoncdeJour">
+								
+						<p:tab title="Détail des Boncde par jour pour #{dashBoardBoncdeController.nomMoisDetail}" 
+						rendered="#{dashBoardBoncdeController.afficheDocumentJour}">
+						<br/><br/>
+								<h:panelGrid columns="2" cellpadding="0" >
+								
+<!-- 						<f:facet name="header"> -->
+<!--         						Graphique journalier des documents pour le mois de #{dashBoardBoncdeController.nomMoisDetail} pour un montant de #{dashBoardBoncdeController.montantTotalHtMois} € de type #{dashBoardBoncdeController.infoEtatDocument} -->
+<!--     						</f:facet> -->
+						
+					</h:panelGrid>
+					
+<!-- 								rendered="#{dashBoardBoncdeController.afficheBoncdeJour}" -->
+								<p:chart type="bar" model="#{dashBoardBoncdeController.barChartModelBoncdeJour}" widgetVar="wvGraphiqueBoncdeJour" 
+								responsive="true" 
+								style="height:240px;">
+								
+							<p:ajax event="itemSelect" listener="#{dashBoardBoncdeController.itemSelectJour}" update="@widgetVar(wvListeBoncdeJour),@widgetVar(wvPanelBoncdeJourDataTable)" style="cursor: pointer"/>
+							</p:chart>
+
+						</p:tab>
+					
+					</p:tabView>
+					</div>
+					
+					
+						<div class="ui-g-12 ui-md-12">
+						
+					<p:tabView widgetVar="wvPanelBoncdeJourDataTable">
+					
+						<p:tab title="Liste des documents par jour" rendered="#{dashBoardBoncdeController.afficheDocumentJourDataTable}">
+						<h:panelGrid columns="2" cellpadding="10">
+				
+						<p:dataTable id="taBoncdeJour" var="a"
+							value="#{dashBoardBoncdeController.listeDocumentDetailJour}"
+							scrollable="true"
+							scrollHeight="150"
+							liveResize="true"
+							widgetVar="wvListeBoncdeJour" resizableColumns="true" 
+							
+							paginator="true"
+							rows="#{msg.modele_datatable_ligne_par_page_debut}"
+							paginatorTemplate="#{msg.modele_datatable_paginator}"
+							rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+							emptyMessage="#{msg.message_datatable_vide}"
+							currentPageReportTemplate="#{msg.modele_datatable_page_courante}"
+							
+							selectionMode="single" rowKey="#{a.codeDocument}" reflow="true">
+							
+							<f:facet name="header">
+							
+							<span style="float:left;">
+							<p:commandButton id="idBtnListePrintEcranDasboardBoncdeDocJour"
+							 title="Imprimer la liste" 
+			onsuccess="window.open('#{request.contextPath}/output?__report=/reports/documents/boncde/ListeDashboardDocJour.rptdesign&amp;__format=pdf')"
+			actionListener="#{dashBoardBoncdeController.actImprimerListeDocJour}" styleClass="ui-priority-primary boutonPrint" style="color : white;" icon="fa fa-print"
+			process="@this" ></p:commandButton>
+							</span>	
+							
+        						#{dashBoardBoncdeController.infosLabelRapportJournalierDataTable}
+    						</f:facet>
+    						 
+							<p:column width="20%" rendered="true" filterMatchMode="contains"
+								filterBy="#{a.codeDocument}" sortBy="#{a.codeDocument}"  >
+								<f:facet name="header">
+									<h:outputText value="Code" />
+								</f:facet>
+<!-- 								<h:outputText value="#{a.codeDocument}" /> -->
+								<p:commandLink value="#{a.codeDocument}"
+									action="#{ouvertureDocumentBean.detailDocument(ouvertureDocumentBean.recupCodeDocument(a.codeDocument,ouvertureDocumentBean.getTypeDocumentBoncde()))}" 
+									update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+								</p:commandLink>
+							</p:column>
+
+							<p:column width="33%" filterMatchMode="contains" 
+								filterBy="#{a.libelleDocument}" sortBy="#{a.libelleDocument}">
+								<f:facet name="header">
+									<h:outputText value="Libellé" />
+								</f:facet>
+								<h:outputText value="#{a.libelleDocument}" />
+							</p:column>
+
+							<p:column styleClass="center" width="17%"
+								filterMatchMode="contains" filterBy="#{a.dateDocument}"
+								sortBy="#{a.dateDocument}">
+								<f:facet name="header">
+									<h:outputText value="Date" />
+								</f:facet>
+								<h:outputText value="#{a.dateDocument}">
+									<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="center" width="20%"
+								filterMatchMode="contains" filterBy="#{a.codeTiers}"
+								sortBy="#{a.codeTiers}">
+								<f:facet name="header">
+									<h:outputText value="Code Tiers" />
+								</f:facet>
+
+<!-- 								<h:outputText value="#{a.codeTiers}"> -->
+<!-- 								</h:outputText> -->
+										<p:commandLink value="#{a.codeTiers}"
+											action="#{ouvertureDocumentBean.detailTiers(ouvertureDocumentBean.recupCodetiers(a.codeTiers))}" update=":form:tabView"
+											oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+										</p:commandLink>
+							</p:column>
+
+							<p:column styleClass="center" width="20%"
+								filterMatchMode="contains" filterBy="#{a.nomTiers}"
+								sortBy="#{a.nomTiers}">
+								<f:facet name="header">
+									<h:outputText value="Tiers" />
+								</f:facet>
+								<h:outputText value="#{a.nomTiers}">
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="right" width="12%"
+								filterMatchMode="contains" filterBy="#{a.netHtCalc}"
+								sortBy="#{a.netHtCalc}">
+								<f:facet name="header">
+									<h:outputText value="HT" />
+								</f:facet>
+								<h:outputText value="#{a.netHtCalc}">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="right" width="10%"
+								filterMatchMode="contains" filterBy="#{a.netTvaCalc}"
+								sortBy="#{a.netTvaCalc}">
+								<f:facet name="header">
+									<h:outputText value="TVA" />
+								</f:facet>
+								<h:outputText value="#{a.netTvaCalc}">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="right" width="12%"
+								filterMatchMode="contains" filterBy="#{a.netTtcCalc}"
+								sortBy="#{a.netTtcCalc}">
+								<f:facet name="header">
+									<h:outputText value="TTC" />
+								</f:facet>
+								<h:outputText value="#{a.netTtcCalc}">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="center" width="12%"
+								filterMatchMode="contains" filterBy="#{a.dateEchDocument}"
+								sortBy="#{a.dateEchDocument}">
+								<f:facet name="header">
+									<h:outputText value="Expire le" />
+								</f:facet>
+								<h:outputText value="#{a.dateEchDocument}">
+									<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" />
+								</h:outputText>
+							</p:column>
+
+							
+						</p:dataTable>
+						</h:panelGrid>
+						</p:tab>
+						
+						<p:tab title="Détail des articles par jour" rendered="#{dashBoardBoncdeController.afficheDocumentJourDataTable}">
+						<h:panelGrid columns="2" cellpadding="10">
+						
+						<br/>
+						
+						<p:dataTable id="taBoncdeArticlesParTiersParJour" var="a"
+							value="#{dashBoardBoncdeController.listeDocumentArticleParTiersParJour}"
+							scrollable="true"
+							scrollHeight="150"
+							liveResize="true"
+							
+							widgetVar="wvListeBoncdeJourArticles" resizableColumns="true" 
+							paginator="true"
+							rows="#{msg.modele_datatable_ligne_par_page_debut}"
+							paginatorTemplate="#{msg.modele_datatable_paginator}"
+							rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+							emptyMessage="#{msg.message_datatable_vide}"
+							currentPageReportTemplate="#{msg.modele_datatable_page_courante}"
+							
+							selectionMode="single" rowKey="#{a.codeDocument}" reflow="true">
+							
+							<f:facet name="header">
+							
+							<span style="float:left;">
+							<p:commandButton id="idBtnListePrintEcranDasboardBoncdeDocArticleJour"
+							 title="Imprimer la liste" 
+			onsuccess="window.open('#{request.contextPath}/output?__report=/reports/documents/boncde/ListeDashboardArticleJour.rptdesign&amp;__format=pdf')"
+			actionListener="#{dashBoardBoncdeController.actImprimerListeArticleJour}" styleClass="ui-priority-primary boutonPrint" style="color : white;" icon="fa fa-print"
+			process="@this" ></p:commandButton>
+							</span>	
+
+    								#{dashBoardBoncdeController.infosLabelRapportArticlesJourDataTable}
+    						</f:facet>
+    						
+							<p:column styleClass="center" width="20%"
+								filterMatchMode="contains" filterBy="#{a.codeDocument}"
+								sortBy="#{a.codeDocument}">
+								<f:facet name="header">
+									<h:outputText value="Code" />
+								</f:facet>
+<!-- 								<h:outputText value="#{a.codeDocument}"> -->
+<!-- 								</h:outputText> -->
+								<p:commandLink value="#{a.codeDocument}"
+									action="#{ouvertureDocumentBean.detailDocument(ouvertureDocumentBean.recupCodeDocument(a.codeDocument,ouvertureDocumentBean.getTypeDocumentBoncde()))}" 
+									update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+								</p:commandLink>
+							</p:column>
+							
+							<p:column width="20%" filterMatchMode="contains" 
+								filterBy="#{a.libellecArticle}" sortBy="#{a.libellecArticle}">
+								<f:facet name="header">
+									<h:outputText value="Libellé article(s)" />
+								</f:facet>
+								<h:outputText value="#{a.libellecArticle}" />
+							</p:column>
+
+							<p:column styleClass="center" width="15%"
+								filterMatchMode="contains" filterBy="#{a.dateDocument}"
+								sortBy="#{a.dateDocument}">
+								<f:facet name="header">
+									<h:outputText value="Fait le" />
+								</f:facet>
+								<h:outputText value="#{a.dateDocument}">
+									<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="center" width="20%"
+								filterMatchMode="contains" filterBy="#{a.codeTiers}"
+								sortBy="#{a.codeTiers}">
+								<f:facet name="header">
+									<h:outputText value="Code Tiers" />
+								</f:facet>
+
+<!-- 								<h:outputText value="#{a.codeTiers}"> -->
+<!-- 								</h:outputText> -->
+										<p:commandLink value="#{a.codeTiers}"
+											action="#{ouvertureDocumentBean.detailTiers(ouvertureDocumentBean.recupCodetiers(a.codeTiers))}" update=":form:tabView"
+											oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+										</p:commandLink>
+							</p:column>
+
+							<p:column styleClass="center" width="20%"
+								filterMatchMode="contains" filterBy="#{a.nomTiers}"
+								sortBy="#{a.nomTiers}">
+								<f:facet name="header">
+									<h:outputText value="Tiers" />
+								</f:facet>
+								<h:outputText value="#{a.nomTiers}">
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="right" width="15%"
+								filterMatchMode="contains" filterBy="#{a.mtHtLDocument}"
+								sortBy="#{a.mtHtLDocument}">
+								<f:facet name="header">
+									<h:outputText value="HT" />
+								</f:facet>
+								<h:outputText value="#{a.mtHtLDocument}">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="right" width="15%"
+								filterMatchMode="contains" filterBy="#{a.mtTtcLDocument}"
+								sortBy="#{a.mtTtcLDocument}">
+								<f:facet name="header">
+									<h:outputText value="TTC" />
+								</f:facet>
+								<h:outputText value="#{a.mtTtcLDocument}">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+							
+						</p:dataTable>
+						</h:panelGrid>
+						</p:tab>
+						</p:tabView>
+					</div>
+					
+					</div>
+                    
+                    
+                    
+                    
+                    <!-- FIN DETAIL JOUR  -->
+                   
+                   
+                   
+                </div>
+            </div>
+        </div>
+ 
+     <p:dialog header="Imprimer l'état des articles à fabriquer à partir des Bons de commande" widgetVar="interfacePrintEtatArticleFabBC" modal="true" appendTo="@(body)" showEffect="clip" hideEffect="clip" width="1200" height="400">
+
+    					     	   				
+    <p:panel widgetVar="interfaceUpdateArticleFabBC" style="margin-left:0%; margin-right:0%;">
+
+    		
+	<div class="ui-g">
+		<div class="ui-g-12">
+			<p:fieldset legend="Paramètres">
+				<p:panelGrid columns="12">
+				
+				<div class="ui-g-9">
+				<p:panel collapsed="true" toggleable="true">
+						<f:facet name="header">
+							<h:outputText value="Période souhaitée" />							
+						</f:facet>				
+
+			        	<h:panelGrid columns="2" cellpadding="0">
+						 <p:outputLabel value="Du"/>
+								<p:calendar value="#{tourneeChoixEditionBean.dateDebut}" pattern="dd/MM/yyyy" mask="true" locale="fr" navigator="true" showOn="button"
+									timeZone="#{msg.time_zone}">
+									<p:ajax event="dateSelect" process="@this" update="@this" />
+									<p:ajax event="change" process="@this" update="@this" />
+								</p:calendar>
+
+						 <p:outputLabel value="au"/>
+								<p:calendar value="#{tourneeChoixEditionBean.dateFin}" pattern="dd/MM/yyyy" mask="true" locale="fr" navigator="true" showOn="button"
+									timeZone="#{msg.time_zone}">
+									<p:ajax event="dateSelect" process="@this" update="@this" />
+									<p:ajax event="change" process="@this" update="@this" />
+								</p:calendar>
+
+        				</h:panelGrid>
+
+									<h:panelGrid columns="2" cellpadding="0">
+										<p:outputLabel value="sur période" />
+										<p:selectBooleanCheckbox value="#{tourneeChoixEditionBean.surPeriode}" >
+										<p:ajax event="change"  update="@this" process="@this"/>
+										</p:selectBooleanCheckbox>
+									</h:panelGrid>
+								</p:panel>
+
+				</div>
+				<div class="ui-g-3">			
+				
+								<p:outputLabel value="Date livraison souhaitée" />
+								<p:calendar value="#{tourneeChoixEditionBean.dateSouhaite}" pattern="dd/MM/yyyy" mask="true" locale="fr" navigator="true" showOn="button"
+									timeZone="#{msg.time_zone}">
+									<p:ajax event="dateSelect" process="@this" update="@this" />
+									<p:ajax event="change" process="@this" update="@this" />
+								</p:calendar>
+							</div>
+
+									
+					</p:panelGrid>
+
+			</p:fieldset>
+
+		</div>
+	</div>     		
+    					
+    				<div class="ui-grid-col-12" style=" margin-top:26px;">
+    				<h:graphicImage name="dashboard/tier.svg" library="images" height="26px" style="margin-left:-5px;" />
+					<p:outputLabel value="CHOIX DE L'EDITION" style="font-size: 14px;font-weight: bold; vertical-align: 2px; margin-left:3px;" />    				
+					
+    	<p:selectOneRadio  value="#{tourneeChoixEditionBean.identification}"
+    	 unselectable="true" style="margin-right:10px; margin-left:30px; margin-top: 10px; float:right" >
+    				 				
+    		<f:selectItem itemLabel="Synthèse des quantités à fabriquer par famille d’article et par article" itemValue="#{dashBoardBoncdeController.listeQteFabriquerParFamilleArticleSynthese}" />
+    		<f:selectItem itemLabel="Détail des quantités à fabriquer par famille d’article et par article" itemValue="#{dashBoardBoncdeController.listeQteFabriquerParFamilleArticleDetail}" />
+		
+
+            
+            		
+            <p:ajax update="@this,@widgetVar(interfaceUpdateArticleFabBC)" />            
+        </p:selectOneRadio>
+        			   									
+  				</div>	
+  	
+    				<div class="ui-grid-col-6">
+    	    				
+    					
+    					<div class="ui-grid-col-1" style="position:absolute; bottom:20px; right:30px">
+
+
+    	<p:commandButton value="Imprimer" id="printBcdeFabrique" process="@this"
+    		oncomplete=""
+    		onsuccess="window.open('#{request.contextPath}/output?__report=/reports/documents/boncde/#{tourneeChoixEditionBean.identification}.rptdesign&amp;__format=pdf')"
+			actionListener="#{dashBoardBoncdeController.actImprimerListeEtatDesQuantiteAFabriquerDesBoncde(tourneeChoixEditionBean.identification,tourneeChoixEditionBean.dateSouhaite,
+			tourneeChoixEditionBean.surPeriode,tourneeChoixEditionBean.dateDebut,tourneeChoixEditionBean.dateFin)}"
+			styleClass="ui-priority-primary boutonPrint" style="color:white; margin-top:10px; float:left" icon="fa fa-print"
+			update="@this"/>
+
+					</div>
+    				 </div>
+ 			
+    			</p:panel>
+    					
+		 </p:dialog>
+        
+    <p:dialog header="Imprimer l'état des tournées des Bons de commande" widgetVar="interfacePrintEtatTourneeBC" modal="true" appendTo="@(body)" showEffect="clip" hideEffect="clip" width="1200" height="400">
+
+    					     	   				
+    <p:panel widgetVar="interfaceUpdateEtatTourneeBcde" style="margin-left:0%; margin-right:0%;">
+    
+	<div class="ui-g">
+		<div class="ui-g-12">
+			<p:fieldset legend="Paramètres">
+				<p:panelGrid columns="12">
+				
+				<div class="ui-g-6">
+				<p:panel collapsed="true" toggleable="true">
+						<f:facet name="header">
+							<h:outputText value="Période souhaitée" />							
+						</f:facet>				
+
+			        	<h:panelGrid columns="2" cellpadding="0">
+						 <p:outputLabel value="Du"/>
+								<p:calendar value="#{tourneeChoixEditionBean.dateDebut}" pattern="dd/MM/yyyy" mask="true" locale="fr" navigator="true" showOn="button"
+									timeZone="#{msg.time_zone}">
+									<p:ajax event="dateSelect" process="@this" update="@this" />
+									<p:ajax event="change" process="@this" update="@this" />
+								</p:calendar>
+
+						 <p:outputLabel value="au"/>
+								<p:calendar value="#{tourneeChoixEditionBean.dateFin}" pattern="dd/MM/yyyy" mask="true" locale="fr" navigator="true" showOn="button"
+									timeZone="#{msg.time_zone}">
+									<p:ajax event="dateSelect" process="@this" update="@this" />
+									<p:ajax event="change" process="@this" update="@this" />
+								</p:calendar>
+
+        				</h:panelGrid>
+
+									<h:panelGrid columns="2" cellpadding="0">
+										<p:outputLabel value="sur période" />
+										<p:selectBooleanCheckbox value="#{tourneeChoixEditionBean.surPeriode}" >
+										<p:ajax event="change"  update="@this" process="@this"/>
+										</p:selectBooleanCheckbox>
+									</h:panelGrid>
+								</p:panel>
+
+				</div>
+				<div class="ui-g-6">			
+				
+								<p:outputLabel value="Date livraison souhaitée" />
+								<p:calendar value="#{tourneeChoixEditionBean.dateSouhaite}" pattern="dd/MM/yyyy" mask="true" locale="fr" navigator="true" showOn="button"
+									timeZone="#{msg.time_zone}">
+									<p:ajax event="dateSelect" process="@this" update="@this" />
+									<p:ajax event="change" process="@this" update="@this" />
+								</p:calendar>
+							</div>
+
+							<p:outputLabel value="Avec transporteur" />
+					<p:selectBooleanCheckbox					 	
+						value="#{tourneeChoixEditionBean.avecTransporteur}"  >
+						<p:ajax event="change" listener="#{tourneeChoixEditionBean.checkAvecTransporteur()}" update="@this,@widgetVar(wvTransporteurBCde)" process="@this"/>
+					</p:selectBooleanCheckbox>
+					
+					<p:outputLabel value="Transporteur : " />
+					<p:autoComplete value="#{tourneeChoixEditionBean.transporteur}"
+						converter="entityConverter"
+						completeMethod="#{tourneeChoixEditionBean.transporteurAutoCompleteDTOLight}"
+						 var="transporteur"
+						itemLabel="#{transporteur.codeTransporteur}" itemValue="#{transporteur}"
+						forceSelection="true" dropdown="true" placeholder="Transporteur" widgetVar="wvTransporteurBCde" >
+						<p:column>
+							<h:outputText value="#{transporteur.codeTransporteur}" />
+						</p:column>
+
+						<p:column>
+							<h:outputText value="#{transporteur.liblTransporteur}" />
+						</p:column>
+				
+						<f:attribute name="nomChamp" value="#{const.C_CODE_TRANSPORTEUR}" />
+						<p:ajax event="itemSelect" listener="#{tourneeChoixEditionBean.autcompleteSelection}" update="@this" />
+					</p:autoComplete>
+
+
+
+									
+					</p:panelGrid>
+
+			</p:fieldset>
+
+		</div>
+	</div>    		
+    					
+    				<div class="ui-grid-col-12" style=" margin-top:26px;">
+    				<h:graphicImage name="dashboard/tier.svg" library="images" height="26px" style="margin-left:-5px;" />
+					<p:outputLabel value="CHOIX DE L'EDITION" style="font-size: 14px;font-weight: bold; vertical-align: 2px; margin-left:3px;" />    				
+					
+    	<p:selectOneRadio  value="#{tourneeChoixEditionBean.identification}"
+    	 unselectable="true" style="margin-right:10px; margin-left:30px; margin-top: 10px; float:right" >
+    				 				
+    		<f:selectItem itemLabel="Liste des Tournées par transporteur" itemValue="ListeEtatTourneeParTransporteur" />
+		
+
+            
+            		
+            <p:ajax update="@this,@widgetVar(interfaceUpdateEtatTourneeBcde)" />            
+        </p:selectOneRadio>
+        			   									
+  				</div>	
+  	
+    				<div class="ui-grid-col-6">
+    	    				
+    					
+    					<div class="ui-grid-col-1" style="position:absolute; bottom:20px; right:30px">
+
+
+    	<p:commandButton value="Imprimer" id="printBcde" process="@this"
+    		oncomplete=""
+    		onsuccess="window.open('#{request.contextPath}/output?__report=/reports/documents/boncde/#{tourneeChoixEditionBean.identification}.rptdesign&amp;__format=pdf')"
+			actionListener="#{dashBoardBoncdeController.actImprimerListeEtatDesTourneesDesBoncde(tourneeChoixEditionBean.identification,tourneeChoixEditionBean.transporteur,tourneeChoixEditionBean.dateSouhaite,tourneeChoixEditionBean.avecTransporteur,
+			tourneeChoixEditionBean.surPeriode,tourneeChoixEditionBean.dateDebut,tourneeChoixEditionBean.dateFin)}" 
+			styleClass="ui-priority-primary boutonPrint" style="color:white; margin-top:10px; float:left" icon="fa fa-print"
+			update="@this"/>
+
+					</div>
+    				 </div>
+ 			
+    			</p:panel>
+    					
+		 </p:dialog>
+    
+</ui:composition>

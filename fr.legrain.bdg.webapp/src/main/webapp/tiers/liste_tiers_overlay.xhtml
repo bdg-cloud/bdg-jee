@@ -1,0 +1,237 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:p="http://primefaces.org/ui">
+	
+	<o:importConstants type="fr.legrain.bdg.webapp.app.LgrTab" />
+	
+<!-- 	<h:form> -->
+
+<!-- <p:ajax event="rowSelect" listener="#{clientController.onRowSelect}" update=":form:tabView,:form:messages" oncomplete="PF('wvOverlayListeClient').hide();"/>  -->
+
+
+<!-- 	<p:commandButton id="movieBtn" value="Dynamic" type="button" /> -->
+	<p:commandLink id="listeTiersBtn" >
+		<i class="top-submenu-icon fa fa-fw fa-user"></i>
+<!-- 		<i class="top-bar-badge animated rubberBand"><h:outputText value="#{topBarController.nbClient}"/></i> -->
+<!-- 		<i class="fa fa-book animated swing" aria-hidden="true"></i> -->
+<!-- 		<span><h:outputText value="Liste tiers" /></span> -->
+	</p:commandLink>
+	
+<!-- 	<p:overlayPanel id="moviePanel" for="movieBtn" hideEffect="fade" dynamic="true"  -->
+<!-- 		dismissable="true" appendTo="@(body)" widgetVar="wvOverlayListeProduit" showCloseIcon="true"> -->
+	
+	<p:overlayPanel id="idListeTiersPanel" for="listeTiersBtn" hideEffect="fade" dynamic="true" 
+		dismissable="true" appendTo="@(body)" widgetVar="wvOverlayListeTiers" showCloseIcon="true">
+		<h:form>
+		<div class="dashboard-title" style="background:#f6f6f6;">
+              <h:panelGrid columns="3" cellpadding="5">
+            	<h:graphicImage name="dashboard/tier.svg" library="images" height="35px" style="margin-top:1px;" />
+                <p:outputLabel value="Liste des Tiers" style="font-size:20px;"/>
+              </h:panelGrid>  
+              <p:separator/>
+        </div>
+	<p:menubar styleClass="menu-onglet" widgetVar="wvMenuListeTiers" id="idMenuListeTiers">
+		 <p:menuitem title="Ajouter un nouveau Tiers" update=":form:tabView,:form:messages,@widgetVar(wvMenuListeTiers),@widgetVar(wvDataTableListeTiers),@widgetVar(wvBandeauActionTiers)" 
+		 actionListener="#{tiersController.nouveau}" styleClass="icon icon-insert" disabled="#{tiersController.etatBouton('inserer')}" oncomplete="PF('wvOverlayListeTiers').hide(); PF('wvtabViewTiers').select(1)"/>
+<!-- 		 <p:menuitem title="Détail" update=":form:tabView,:form:messages" actionListener="#{tiersController.detail}" styleClass="icon icon-detail" disabled="#{tiersController.modeEcran.dataSetEnModif()}" oncomplete="PF('wvOverlayListeTiers').hide();"/> -->
+<!-- 			<p:menuitem title="Supprimer les tiers sélectionnés" update=":form:tabView,@widgetVar(wvMenuListeTiers),@widgetVar(wvDataTableListeTiers),:form:messages,@form"  -->
+<!-- 			actionListener="#{tiersController.supprimer}" styleClass="icon icon-delete" disabled="#{tiersController.etatBouton('supprimerListe')}"> -->
+<!-- 	 		<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer les tiers sélectionnés ?" icon="ui-icon-alert" /> -->
+<!-- 	 	</p:menuitem> -->
+		 <p:menuitem title="Rafraîchir la liste" update="@form,:form:messages" actionListener="#{tiersController.refresh}" styleClass="icon icon-refresh" disabled="#{tiersController.modeEcran.dataSetEnModif()}"/>
+		 
+		 <p:menuitem title="Exporter la liste" ajax="false" styleClass="icon icon-export">
+			<p:fileDownload value="#{tiersController.exportationTiers}"/>
+		 </p:menuitem>
+	</p:menubar>
+	
+	<h:panelGrid columns="2" rendered="#{auth.isDevLgr()}">
+        <h:outputText value="Boutique " />
+        <p:toggleSwitch value="#{tiersController.afficheSeulementBoutique}">
+            <p:ajax listener="#{tiersController.switchAfficheSeulementBoutique}" onstart="PF('wvDataTableListeTiers').clearFilters()" update="@widgetVar(wvDataTableListeTiers)" />
+        </p:toggleSwitch>
+    </h:panelGrid>
+	
+	
+	<p:sticky target="idMenuListeTiers" />
+
+	 	
+<!-- 	stickyHeader="true" -->
+	
+	<p:dataTable id="dataTableListeTiers" var="taTiers"
+				widgetVar="wvDataTableListeTiers"
+				value="#{tiersController.values}"
+				filteredValue="#{tiersController.filteredValues}"
+				rowKey="#{taTiers.id}"
+				selection="#{tiersController.selectedTaTiersDTOs}"
+				dblClickSelect="true"
+				styleClass="datatable mt10"
+				resizableColumns="true"
+				paginator="true"		
+				rows="#{msg.modele_datatable_ligne_par_page_debut}"
+				paginatorTemplate="#{msg.modele_datatable_paginator}"
+				rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+				emptyMessage="#{msg.message_datatable_vide}"
+				currentPageReportTemplate="#{msg.modele_datatable_page_courante}"
+				disabledSelection="#{tiersController.modeEcran.dataSetEnModif()}">
+				
+<!-- 				<p:ajax event="rowDblselect" listener="#{tiersController.onRowSelect}" update=":form:tabView,:form:messages,@form" />  -->
+<!-- 				<p:ajax event="rowSelect" listener="#{tiersController.onRowSelect}" disabled="#{tiersController.pasDejaOuvert()}" update=":form:tabView,:form:messages,@form" /> -->
+				
+<!-- 				<p:ajax event="rowDblselect" listener="#{tiersController.onRowSelect}" update=":form:tabView,:form:messages" oncomplete="activeTabCenter('#{LgrTab.CSS_CLASS_TAB_TIERS}');PF('wvOverlayListeTiers').hide();scrollToTop();"/> -->
+				<p:ajax event="rowSelect" delay="#{msg.datatable_rowselect_delay}" listener="#{tiersController.onRowSelect}" update=":form:tabView,:form:messages,@widgetVar(wvBandeauActionTiers)" oncomplete="activeTabCenter('#{tiersController.CLASS_CSS_TAB_DASH_TIERS}', '#{tiersController.WV_TABVIEW_TIERS}');PF('wvOverlayListeTiers').hide();scrollToTop();"/>
+			
+				<f:facet name="header">
+									      
+           			<h:outputText value="Tiers" />
+           			 <span style="float:right;" class="searchbar_list">
+			            <p:outputPanel>
+				                <p:inputText id="globalFilter" onkeyup="PF('wvDataTableListeTiers').filter()" style="width:150px" placeholder="Rechercher"/>
+				            </p:outputPanel>
+			        </span>			
+        		</f:facet>
+        		
+						
+
+		  		<f:facet name="{Exporters}">
+		            <h:commandLink>
+		                <p:graphicImage library="images" name="excel.png" width="24"/>
+		                <p:dataExporter type="xls" target="dataTableListeTiers" fileName="liste_tiers" />
+		            </h:commandLink>
+		 
+		            <p:commandLink onsuccess="window.open('#{request.contextPath}/output?__report=/reports/tiers/ListeDesTiers.rptdesign&amp;__format=pdf')"
+			actionListener="#{tiersController.actImprimerListeDesTiers}" process="@this">
+		                <p:graphicImage  library="images" name="pdf.png"  width="24"/>
+<!-- 		                <p:dataExporter type="pdf" target="dataTableListeTiers" fileName="liste_tiers" /> -->
+		            </p:commandLink>
+		 
+		            <h:commandLink>
+		                <p:graphicImage  library="images" name="csv.png"  width="24" />
+		                <p:dataExporter type="csv" target="dataTableListeTiers" fileName="liste_tiers" options="#{separateurCsvController.csvOptions}" />
+					
+		            </h:commandLink>
+		 
+		            <h:commandLink>
+		                <p:graphicImage  library="images" name="xml.png"  width="24"/>
+		                <p:dataExporter type="xml" target="dataTableListeTiers" fileName="liste_tiers" />
+		            </h:commandLink>
+		            
+		        </f:facet>
+        
+        		<p:column selectionMode="multiple" style="width:16px;text-align:center" exportable="false"/>
+			
+				<p:column style="width:16px" exportable="false">
+					<f:facet name="header">
+						<h:outputText value="" />
+					</f:facet>
+					<p:commandButton title="Détail" update=":form:tabView,:form:messages,@widgetVar(wvBandeauActionTiers)" 
+						action="#{tiersController.detail}" styleClass="icon icon-detail icon-grille" 
+						disabled="#{tiersController.modeEcran.dataSetEnModif()}" oncomplete="PF('wvOverlayListeTiers').hide();">
+						<f:setPropertyActionListener target="#{tiersController.selectedTaTiersDTO}" value="#{taTiers}" />
+					</p:commandButton>
+				</p:column>
+        
+<!-- 				<p:column sortBy="#{taTiers.id}"> -->
+<!-- 					<f:facet name="header"> -->
+<!-- 						<h:outputText value="ID" /> -->
+<!-- 					</f:facet> -->
+<!-- 					<h:outputText value="#{taTiers.id}" /> -->
+<!-- 				</p:column> -->
+
+				<p:column sortBy="#{taTiers.codeTiers}" filterBy="#{taTiers.codeTiers}" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="Code" />
+					</f:facet>
+					<h:outputText value="#{taTiers.codeTiers}" />
+				</p:column>
+				
+				<p:column sortBy="#{taTiers.nomEntreprise}" filterBy="#{taTiers.nomEntreprise}" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="Raison sociale" />
+					</f:facet>
+					<h:outputText value="#{taTiers.codeTEntite} #{taTiers.nomEntreprise}" />
+				</p:column>
+				
+				<p:column sortBy="#{taTiers.nomTiers}" filterBy="#{taTiers.nomTiers}" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="Nom" />
+					</f:facet>
+					<h:outputText value="#{taTiers.nomTiers}" />
+				</p:column>
+				
+				<p:column sortBy="#{taTiers.prenomTiers}" filterBy="#{taTiers.prenomTiers}" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="Prénom" />
+					</f:facet>
+					<h:outputText value="#{taTiers.prenomTiers}" />
+				</p:column>
+				
+				<p:column sortBy="#{taTiers.codeTTiers}" filterBy="#{taTiers.codeTTiers}" styleClass="center" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="Type Tiers" />
+					</f:facet>
+					<h:outputText value="#{taTiers.codeTTiers}" />
+				</p:column>
+				
+				<p:column sortBy="#{taTiers.codeFamilleTiers}" filterBy="#{taTiers.codeFamilleTiers}" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="Famille" />
+					</f:facet>
+					<h:outputText value="#{taTiers.codeFamilleTiers}" />
+				</p:column>
+				
+				<p:column sortBy="#{taTiers.codepostalAdresse}" filterBy="#{taTiers.codepostalAdresse}" styleClass="center">
+					<f:facet name="header">
+						<h:outputText value="Code Postal" />
+					</f:facet>
+					<h:outputText value="#{taTiers.codepostalAdresse}" />
+				</p:column>
+				
+				<p:column sortBy="#{taTiers.villeAdresse}" filterBy="#{taTiers.villeAdresse}" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="Ville" />
+					</f:facet>
+					<h:outputText value="#{taTiers.villeAdresse}" />
+				</p:column>
+				
+				<p:column sortBy="#{taTiers.actifTiers}" styleClass="center" filterBy="#{taTiers.actifTiers}" filterMatchMode="equals">
+					<f:facet name="header">
+						<h:outputText value="Actif" />
+					</f:facet>
+					<f:facet name="filter">
+			                <p:selectOneButton onchange="PF('wvDataTableListeTiers').filter()">
+			                    <f:converter converterId="javax.faces.Boolean" />
+			                    <f:selectItem itemLabel="Tous" itemValue="" />
+			                    <f:selectItem itemLabel="Vrai" itemValue="true" />
+			                    <f:selectItem itemLabel="Faux" itemValue="false" />
+			                </p:selectOneButton>
+			            </f:facet>
+					<p:selectBooleanCheckbox value="#{taTiers.actifTiers}" disabled="true"/>
+				</p:column>
+				
+				
+				
+				<p:column style="width:16px" exportable="false">
+					<f:facet name="header">
+						<h:outputText value="" />
+					</f:facet>
+					
+					<p:commandButton title="Supprimer" styleClass="icon-delete icon icon-grille" widgetVar="widgetVarBtnSupprimerTiersListe"
+						action="#{tiersController.actSupprimer}"
+						process="@this"
+						update="@widgetVar(wvDataTableListeTiers)">
+						<f:setPropertyActionListener target="#{tiersController.selectedTaTiersDTO}" value="#{taTiers}" />
+						<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer ce tiers ?" icon="ui-icon-alert" />
+					</p:commandButton>
+						
+				</p:column>
+
+			</p:dataTable>
+
+		</h:form>
+	</p:overlayPanel>
+	
+</ui:composition>

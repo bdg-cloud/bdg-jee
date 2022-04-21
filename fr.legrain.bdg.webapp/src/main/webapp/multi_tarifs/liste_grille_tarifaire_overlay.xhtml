@@ -1,0 +1,146 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:o="http://omnifaces.org/ui" xmlns:p="http://primefaces.org/ui">
+
+	<o:importConstants type="fr.legrain.bdg.webapp.app.LgrTab" />
+
+	<p:commandLink id="listeGrilleTarifaireBtn">
+		<i class="top-submenu-icon fa fa-fw fa-user"></i>
+		<span><h:outputText value="Liste des grilles tarifaires" /></span>
+	</p:commandLink>
+
+	<p:overlayPanel id="idListeGrilleTarifairePanel" for="listeGrilleTarifaireBtn" hideEffect="fade" dynamic="true" dismissable="true" appendTo="@(body)"
+		widgetVar="wvOverlayListeGrilleTarifaire" showCloseIcon="true" >
+		<h:form>
+			<div class="dashboard-title" style="background: #f6f6f6;">
+				<p:panel widgetVar="wVPanelTitreGrilleTarifaire">
+					<h:panelGrid columns="3" cellpadding="5">
+						<h:graphicImage name="dashboard/tier.svg" library="images" height="35px" style="margin-top:1px;" />
+						<p:outputLabel value="#{grilleTarifaireController.titreListe}" style="font-size:20px;" />
+					</h:panelGrid>
+				</p:panel>
+				<p:separator />
+			</div>
+			<p:menubar styleClass="menu-onglet" widgetVar="wvMenuListeGrilleTarifaire" id="idMenuListeGrilleTarifaire">
+
+				<p:menuitem title="Rafraîchir la liste" update="@form,:form:messages" actionListener="#{grilleTarifaireController.refreshListOverlay}" styleClass="icon icon-refresh"
+					disabled="#{grilleTarifaireController.modeEcran.dataSetEnModif()}" />
+
+			</p:menubar>
+
+			<p:sticky target="idMenuListeGrilleTarifaire" />
+
+
+			<!-- 	stickyHeader="true" -->
+
+			<p:dataTable 
+			id="dataTableListeGestGrilleTarifaire2" 
+			var="ligne" 
+			widgetVar="wvDataTableListeGestGrilleTarifaire2" 
+			class="datatable" 
+			value="#{grilleTarifaireController.valuesLignesListe}"
+			rowKey="#{ligne.dto.id}" 
+			selection="#{grilleTarifaireController.selectionLigne}" 
+			dblClickSelect="true" 
+			resizableColumns="true"
+			selectionMode="single"
+			paginator="true" 
+			rows="#{msg.modele_datatable_ligne_par_page_debut}" 
+			paginatorTemplate="#{msg.modele_datatable_paginator}"
+			rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}" 
+			emptyMessage="#{msg.message_datatable_vide}"
+			currentPageReportTemplate="#{msg.modele_datatable_page_courante}" 
+			disabledSelection="#{grilleTarifaireController.modeEcran.dataSetEnModif()}">
+
+				<p:ajax event="rowSelect" delay="#{msg.datatable_rowselect_delay}" listener="#{grilleTarifaireController.onRowSelect}"
+					update=":form:tabView,:form:messages,@widgetVar(wvCriteresFiltresGrilleTarifaire),@widgetVar(wvInfosComplementairesGrilleTarifaire),@widgetVar(wvPanelRenderedGrilleTarifaire)"
+					oncomplete="activeTabCenter('#{LgrTab.CSS_CLASS_TAB_GRILLE_TARIFAIRE}');PF('wvOverlayListeGrilleTarifaire').hide();scrollToTop();" />
+
+				<f:facet name="header">
+					<h:outputText value="GrilleTarifaire" />
+
+				</f:facet>
+
+<!-- 				<f:facet name="{Exporters}"> -->
+<!-- 					<h:commandLink> -->
+<!-- 						<p:graphicImage library="images" name="excel.png" width="24" /> -->
+<!-- 						<p:dataExporter type="xls" target="dataTableListeGrilleTarifaire" fileName="liste_tiers" /> -->
+<!-- 					</h:commandLink> -->
+
+<!-- 					<h:commandLink> -->
+<!-- 						<p:graphicImage library="images" name="pdf.png" width="24" /> -->
+<!-- 						<p:dataExporter type="pdf" target="dataTableListeGrilleTarifaire" fileName="liste_tiers" /> -->
+<!-- 					</h:commandLink> -->
+
+<!-- 					<h:commandLink> -->
+<!-- 						<p:graphicImage library="images" name="csv.png" width="24" /> -->
+<!-- 						<p:dataExporter type="csv" target="dataTableListeGrilleTarifaire" fileName="liste_tiers" /> -->
+<!-- 					</h:commandLink> -->
+
+<!-- 					<h:commandLink> -->
+<!-- 						<p:graphicImage library="images" name="xml.png" width="24" /> -->
+<!-- 						<p:dataExporter type="xml" target="dataTableListeGrilleTarifaire" fileName="liste_tiers" /> -->
+<!-- 					</h:commandLink> -->
+<!-- 				</f:facet> -->
+
+<!-- 				<p:column selectionMode="multiple" style="width:16px;text-align:center" exportable="false"/> -->
+
+<!-- 				<p:column style="width:16px" exportable="false"> -->
+<!-- 					<f:facet name="header"> -->
+<!-- 						<h:outputText value="" /> -->
+<!-- 					</f:facet> -->
+<!-- 					<p:commandButton title="Détail" update=":form:tabView,:form:messages,@widgetVar(wvPanelRenderedGrilleTarifaire)" -->
+<!-- 						action="#{grilleTarifaireController.detail}" styleClass="icon icon-detail icon-grille" disabled="#{grilleTarifaireController.modeEcran.dataSetEnModif()}" -->
+<!-- 						oncomplete="PF('wvOverlayListeGrilleTarifaire').hide();"> -->
+<!-- 						<f:setPropertyActionListener target="#{grilleTarifaireController.selectionLigne}" value="#{ligne}" /> -->
+<!-- 					</p:commandButton> -->
+<!-- 				</p:column> -->
+
+				<p:column headerText="Code famille" >
+				<h:outputText value="#{ligne.articleDTO.codeFamille}" />
+			</p:column>
+
+			<p:column headerText="Code article" >
+				<h:outputText value="#{ligne.dto.codeArticle}" />
+			</p:column>
+
+			<p:column headerText="Grille tarifaire" >
+				<h:outputText value="#{ligne.dto.codeTTarif}" />
+			</p:column>
+			
+			<p:column headerText="libellé" >
+				<h:outputText value="#{ligne.dto.libellecArticle}" />
+			</p:column>
+
+			<p:column headerText="Prix ref HT" >
+				<h:outputText value="#{ligne.dto.prixPrix}" />
+          </p:column>
+           
+  			<p:column headerText="Prix ref TTC" >
+				<h:outputText value="#{ligne.dto.prixttcPrix}" />
+          </p:column>        
+           
+  			<p:column headerText="coefficient" >
+				<h:outputText value="#{ligne.dto.coef}" />
+          </p:column>   
+
+			<p:column headerText="Prix Calculé HT" >
+				<h:outputText value="#{ligne.dto.prixPrixCalc}" />
+          </p:column>
+           
+  			<p:column headerText="Prix Calculé TTC" >
+				<h:outputText value="#{ligne.dto.prixttcPrixCalc}" />
+          </p:column> 
+
+			<p:column style="width:26px">
+				<p:rowEditor rendered="true" styleClass="row-editor-fin"/>
+			</p:column>
+
+		</p:dataTable>
+
+
+
+
+		</h:form>
+	</p:overlayPanel>
+
+</ui:composition>

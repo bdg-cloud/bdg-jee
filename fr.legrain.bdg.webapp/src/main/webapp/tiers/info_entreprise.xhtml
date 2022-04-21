@@ -1,0 +1,482 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<p:tabView id="idTabViewInfosEntreprise" styleClass="verticalTab" binding="#{infoEntrepriseController.tabViewInfosEntreprise}"  cache="false">
+
+		<p:ajax event="tabChange" update="@widgetVar(panelComptesBancairesInfosEntreprise)" 
+			listener="#{infoEntrepriseController.onTabChange}" />
+
+		<p:tab title="Infos entreprise" titleStyleClass="tab-min tab-tiers" titletip="Infos entreprise">
+		
+		<p:panelGrid columns="2" styleClass="grille-cartouche" rendered="#{dansDialogue == null ? true : false}">
+			<h:graphicImage library="images" name="lettrines/I-lettrine.png" styleClass="cartouche-picto" />
+			<p:panelGrid columns="1">
+				<h:panelGroup>
+					<p:outputLabel value="Les informations entreprises" styleClass="cartouche-titre"/>
+				</h:panelGroup>
+				<h:panelGroup >
+					<p:outputLabel value="Les informations saisies dans Infos entreprises sont utilisées dans les documents (factures, devis, etc …)." styleClass="cartouche-detail"/>
+				</h:panelGroup>
+			</p:panelGrid>
+		</p:panelGrid>
+		
+		<p:lightBox iframe="true" widgetVar="wvAideMenuInfosEntreprises" width="1200px">
+		</p:lightBox>
+	<p:menubar styleClass="menu-onglet-info-entreprise">
+		<p:menuitem title="Aide à la saisie" styleClass="icon icon-aidecontextuelle" oncomplete="PF('wvAideMenuInfosEntreprises').showURL({src:'#{aide_wiki.infos_entreprise}'})" />
+
+		<p:separator styleClass="separateur-menu-vertical"/>
+
+		<p:menuitem title="Enregistrer les informations de votre entreprise" styleClass="icon-save icon"
+			id="idEnregistrerInfosEntreprise"
+			actionListener="#{infoEntrepriseController.actEnregistrer}"
+			process="@this"
+			update="idPanelIdentite,idPanelAdresse,idPanelContact,idPanelJuridique,:form:messages,@form"
+			disabled="#{infoEntrepriseController.etatBouton('enregistrer')}" />
+		
+		<p:menuitem title="Insérer" styleClass="icon-insert icon"
+			actionListener="#{infoEntrepriseController.actInserer}"
+			process="@this"
+			update="idPanelIdentite,idPanelAdresse,idPanelContact,idPanelJuridique,:form:messages,@form"
+			disabled="#{infoEntrepriseController.etatBouton('inserer')}" />
+		
+		<p:menuitem title="Modifier les informations de votre entreprise" styleClass="icon-update icon"
+			id="idModifierInfosEntreprise"
+			actionListener="#{infoEntrepriseController.actModifier}"
+			process="@this"
+			update="idPanelIdentite,idPanelAdresse,idPanelContact,idPanelJuridique,:form:messages,@form"
+			disabled="#{infoEntrepriseController.etatBouton('modifier')}" />
+		
+		<p:menuitem title="Annuler les modifications en cours" styleClass="icon-cancel icon"
+			actionListener="#{infoEntrepriseController.actAnnuler}"
+			process="@this"
+			update="idPanelIdentite,idPanelAdresse,idPanelContact,idPanelJuridique,:form:messages,@form"
+			disabled="#{infoEntrepriseController.etatBouton('annuler')}" >
+		<p:confirm header="Confirmation" message="Etes vous sur de vouloir annuler les modifications en cours ?"  icon="ui-icon-alert" />
+		</p:menuitem>
+
+<!-- 		<p:menuitem title="Supprimer" styleClass="icon-delete icon  menuitem-poubelle-droite" -->
+<!-- 			actionListener="#{infoEntrepriseController.actSupprimer}" -->
+<!-- 			process="@this" -->
+<!-- 			update="idPanelIdentite,idPanelAdresse,idPanelContact,idPanelJuridique,:form:messages,@form" -->
+<!-- 			disabled="#{infoEntrepriseController.etatBouton('supprimer')}" /> -->
+		
+		<p:menuitem title="Fermer" styleClass="icon-close icon menuitem-fermer-droite"
+			process="@this" update=":form:messages"
+			disabled="#{infoEntrepriseController.etatBouton('fermer')}"
+			onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())">
+			<p:confirm header="Confirmation"
+				message="#{msg_diag.alert_fermeture_onglet}" icon="ui-icon-alert"/>
+		</p:menuitem>
+
+		<p:separator styleClass="separateur-menu-vertical"/>
+
+		<p:menuitem title="Imprimer" styleClass="icon-print icon"
+			onsuccess="window.open('#{request.contextPath}/output?__report=/reports/tiers/FicheTiers.rptdesign&amp;id_tiers=#{infoEntrepriseController.selectedTaTiersDTO.id}&amp;__format=pdf')"
+			actionListener="#{infoEntrepriseController.actImprimer}"
+			disabled="#{infoEntrepriseController.etatBouton('imprimer')}" />
+	</p:menubar>
+
+	<p:overlayPanel widgetVar="wvAideMenuInfosEntreprise" hideEffect="fade" dynamic="true" showCloseIcon="true" styleClass="overlay-aide-contextuelle overlay-aide-contextuelle-big">
+		<ui:include src="/aide_contextuelle/infos_entreprise_general.xhtml" />
+	</p:overlayPanel>
+
+
+	<div class="ui-grid ui-grid-responsive">
+		<div class="ui-grid-row">
+			<div class="ui-grid-col-6">
+				<p:panel id="idPanelIdentite" header="Identité" toggleable="true" widgetVar="panelIdentite">
+					<h:panelGrid columns="2" cellpadding="10">
+						<p:outputLabel value="Raison Sociale : "  styleClass="labelchob" />
+						<p:panel styleClass="panel-aide-contextuelle">
+						<p:inputText
+							id="idNomInfosEntreprise"
+							value="#{infoEntrepriseController.selectedTaTiersDTO.nomEntreprise}"
+							validator="#{infoEntrepriseController.validateTiers}"
+							disabled="#{infoEntrepriseController.editable()}">
+							<f:attribute name="nomChamp" value="#{const.C_NOM_ENTREPRISE}" />
+							<p:ajax event="blur" update="@this" />
+						</p:inputText>
+						<p:commandLink id="idLinkAideInfosEntrepriseRaisonSociale" styleClass="lien-aide-contextuelle" >
+							<i class="fa fa-info-circle animated swing"></i>
+						</p:commandLink>
+						<p:overlayPanel for="idLinkAideInfosEntrepriseRaisonSociale" hideEffect="fade" dynamic="true" showCloseIcon="true" styleClass="overlay-aide-contextuelle">
+							<ui:include src="/aide_contextuelle/infos_entreprise_raison_sociale.xhtml" />
+						</p:overlayPanel>
+					</p:panel>
+						<p:outputLabel value="TVA Intracommunautaire : "/>
+						<p:panel styleClass="panel-aide-contextuelle">
+						<p:inputText
+							value="#{infoEntrepriseController.selectedTaTiersDTO.tvaIComCompl}"
+							validator="#{infoEntrepriseController.validateTiers}"
+							disabled="#{infoEntrepriseController.editable()}">
+							<f:attribute name="nomChamp" value="#{const.C_TVA_I_COM_COMPL}" />
+							<p:ajax event="blur" update="@this" />
+						</p:inputText>
+						<p:commandLink id="idLinkAideInfosEntrepriseTvaIntra" styleClass="lien-aide-contextuelle" >
+							<i class="fa fa-info-circle animated swing"></i>
+						</p:commandLink>
+						<p:overlayPanel for="idLinkAideInfosEntrepriseTvaIntra" hideEffect="fade" dynamic="true" showCloseIcon="true" styleClass="overlay-aide-contextuelle">
+							<ui:include src="/aide_contextuelle/infos_entreprise_tva_intra.xhtml" />
+						</p:overlayPanel>
+					</p:panel>
+					</h:panelGrid>
+				</p:panel>
+				
+				<p:panel id="idPanelJuridique" header="Informations juridiques" toggleable="true" widgetVar="panelJuridique">
+					<h:panelGrid columns="2" cellpadding="10">
+						<p:outputLabel value="RCS / RM : "  />
+						<p:panel styleClass="panel-aide-contextuelle">
+						<p:inputText
+							value="#{infoEntrepriseController.selectedTaInfoJuridiqueDTO.rcsInfoJuridique}"
+							validator="#{infoEntrepriseController.validateJuridique}"
+							disabled="#{infoEntrepriseController.editable()}">
+							<f:attribute name="nomChamp"
+								value="#{const.C_RCS_INFO_JURIDIQUE}" />
+							<p:ajax event="blur" update="@this" />
+						</p:inputText>
+						<p:commandLink id="idLinkAideInfosEntrepriseRcsRm" styleClass="lien-aide-contextuelle" >
+							<i class="fa fa-info-circle animated swing"></i>
+						</p:commandLink>
+						<p:overlayPanel for="idLinkAideInfosEntrepriseRcsRm" hideEffect="fade" dynamic="true" showCloseIcon="true" styleClass="overlay-aide-contextuelle overlay-aide-contextuelle-big">
+							<ui:include src="/aide_contextuelle/infos_entreprise_rcs.xhtml" />
+						</p:overlayPanel>
+					</p:panel>
+
+						<p:outputLabel value="Capital : "  />
+						<p:panel styleClass="panel-aide-contextuelle">
+						<p:inputText
+							value="#{infoEntrepriseController.selectedTaInfoJuridiqueDTO.capitalInfoJuridique}"
+							validator="#{infoEntrepriseController.validateJuridique}"
+							disabled="#{infoEntrepriseController.editable()}">
+							<f:attribute name="nomChamp"
+								value="#{const.C_CAPITAL_INFO_JURIDIQUE}" />
+							<p:ajax event="blur" update="@this" />
+						</p:inputText>
+						<p:commandLink id="idLinkAideInfosEntrepriseCapital" styleClass="lien-aide-contextuelle" >
+							<i class="fa fa-info-circle animated swing"></i>
+						</p:commandLink>
+						<p:overlayPanel for="idLinkAideInfosEntrepriseCapital" hideEffect="fade" dynamic="true" showCloseIcon="true" styleClass="overlay-aide-contextuelle">
+							<ui:include src="/aide_contextuelle/infos_entreprise_capital.xhtml" />
+						</p:overlayPanel>
+					</p:panel>
+
+						<p:outputLabel value="APE : "  />
+						<p:panel styleClass="panel-aide-contextuelle">
+						<p:inputText
+							value="#{infoEntrepriseController.selectedTaInfoJuridiqueDTO.apeInfoJuridique}"
+							validator="#{infoEntrepriseController.validateJuridique}"
+							disabled="#{infoEntrepriseController.editable()}">
+							<f:attribute name="nomChamp"
+								value="#{const.C_APE_INFO_JURIDIQUE}" />
+							<p:ajax event="blur" update="@this" />
+						</p:inputText>
+						<p:commandLink id="idLinkAideInfosEntrepriseApe" styleClass="lien-aide-contextuelle" >
+							<i class="fa fa-info-circle animated swing"></i>
+						</p:commandLink>
+						<p:overlayPanel for="idLinkAideInfosEntrepriseApe" hideEffect="fade" dynamic="true" showCloseIcon="true" styleClass="overlay-aide-contextuelle">
+							<ui:include src="/aide_contextuelle/infos_entreprise_ape.xhtml" />
+						</p:overlayPanel>
+					</p:panel>
+
+						<p:outputLabel value="Siret / Siren : "  />
+						<p:panel styleClass="panel-aide-contextuelle">
+						<p:inputText
+							value="#{infoEntrepriseController.selectedTaInfoJuridiqueDTO.siretInfoJuridique}"
+							validator="#{infoEntrepriseController.validateJuridique}"
+							disabled="#{infoEntrepriseController.editable()}">
+							<f:attribute name="nomChamp"
+								value="#{const.C_SIRET_INFO_JURIDIQUE}" />
+							<p:ajax event="blur" update="@this" />
+						</p:inputText>
+						<p:commandLink id="idLinkAideInfosEntrepriseSiret" styleClass="lien-aide-contextuelle" >
+							<i class="fa fa-info-circle animated swing"></i>
+						</p:commandLink>
+						<p:overlayPanel for="idLinkAideInfosEntrepriseSiret" hideEffect="fade" dynamic="true" showCloseIcon="true" styleClass="overlay-aide-contextuelle">
+							<ui:include src="/aide_contextuelle/infos_entreprise_siret.xhtml" />
+						</p:overlayPanel>
+					</p:panel>
+					</h:panelGrid>
+				</p:panel>
+				<p:panel id="idPanelExercice" header="Exercice comptable" toggleable="true" widgetVar="panelExercice">
+					<h:panelGrid columns="2" cellpadding="10">
+						<p:outputLabel value="Date début d'exercice : "  styleClass="labelchob"/>
+						<p:panel styleClass="panel-aide-contextuelle">
+					<p:calendar
+						value="#{infoEntrepriseController.selectedTaInfoEntrepriseDTO.datedebInfoEntreprise}"
+						pattern="dd/MM/yyyy" mask="true" locale="fr" navigator="true" timeZone="#{msg.time_zone}"  showOn="button" 
+						validator="#{infoEntrepriseController.validateInfoEntreprise}"
+						disabled="#{infoEntrepriseController.editable()}">
+						
+						<f:attribute name="nomChamp" value="#{const.C_DATE_DEBUT}" />
+						<p:ajax event="dateSelect" update="@this" />
+						<p:ajax event="change"  update="@this"/>
+					</p:calendar>
+						<p:commandLink id="idLinkAideInfosEntrepriseDebExo" styleClass="lien-aide-contextuelle" >
+							<i class="fa fa-info-circle animated swing"></i>
+						</p:commandLink>
+						<p:overlayPanel for="idLinkAideInfosEntrepriseDebExo" hideEffect="fade" dynamic="true" showCloseIcon="true" styleClass="overlay-aide-contextuelle">
+							<ui:include src="/aide_contextuelle/infos_entreprise_datedebexo.xhtml" />
+						</p:overlayPanel>
+					</p:panel>
+
+<!-- 						<f:ajax event="blur"  update="@this"/> -->
+						<p:outputLabel value="Date fin d'exercice : "  styleClass="labelchob"/>
+						<p:panel styleClass="panel-aide-contextuelle">
+					<p:calendar
+						value="#{infoEntrepriseController.selectedTaInfoEntrepriseDTO.datefinInfoEntreprise}"
+						pattern="dd/MM/yyyy" mask="true" locale="fr" navigator="true" timeZone="#{msg.time_zone}" showOn="button"  
+						validator="#{infoEntrepriseController.validateInfoEntreprise}"
+						disabled="#{infoEntrepriseController.editable()}">
+						
+						<f:attribute name="nomChamp" value="#{const.C_DATE_FIN}" />
+						<p:ajax event="dateSelect" update="@this" />
+						<p:ajax event="change"  update="@this"/>						
+					</p:calendar>
+						<p:commandLink id="idLinkAideInfosEntrepriseFinExo" styleClass="lien-aide-contextuelle" >
+							<i class="fa fa-info-circle animated swing"></i>
+						</p:commandLink>
+						<p:overlayPanel for="idLinkAideInfosEntrepriseFinExo" hideEffect="fade" dynamic="true" showCloseIcon="true" styleClass="overlay-aide-contextuelle">
+							<ui:include src="/aide_contextuelle/infos_entreprise_datefinexo.xhtml" />
+						</p:overlayPanel>
+					</p:panel>
+
+						<p:outputLabel value="Code exercice : "  styleClass="labelchob"/>
+						<p:panel styleClass="panel-aide-contextuelle">
+						<p:inputText
+							value="#{infoEntrepriseController.selectedTaInfoEntrepriseDTO.codexoInfoEntreprise}"
+							validator="#{infoEntrepriseController.validateJuridique}"
+							disabled="#{infoEntrepriseController.editable()}">
+							<f:attribute name="nomChamp" value="#{const.C_CODEXO_INFO_ENTREPRISE}" />
+							<p:ajax event="blur" update="@this" />
+						</p:inputText>
+						<p:commandLink id="idLinkAideInfosEntrepriseCodeExo" styleClass="lien-aide-contextuelle" >
+							<i class="fa fa-info-circle animated swing"></i>
+						</p:commandLink>
+						<p:overlayPanel for="idLinkAideInfosEntrepriseCodeExo" hideEffect="fade" dynamic="true" showCloseIcon="true" 
+						    styleClass="overlay-aide-contextuelle overlay-aide-contextuelle-big"
+						    widgetVar="wvLinkAideInfosEntrepriseCodeExo">
+							<ui:include src="/aide_contextuelle/infos_entreprise_codeexo.xhtml" />
+						</p:overlayPanel>
+					</p:panel>
+						<p:outputLabel value="Transfert en compta activé : "  styleClass="labelchob"/>
+						<p:panel styleClass="panel-aide-contextuelle">
+						<p:selectBooleanCheckbox
+							value="#{infoEntrepriseController.transfertEnCompta}"
+							disabled="#{infoEntrepriseController.editable()}">
+							<p:ajax event="change" update="@this" />
+						</p:selectBooleanCheckbox>
+						<p:commandLink id="idLinkAideInfosEntrepriseTransfertEnCompta" styleClass="lien-aide-contextuelle" >
+							<i class="fa fa-info-circle animated swing"></i>
+						</p:commandLink>
+						<p:overlayPanel for="idLinkAideInfosEntrepriseTransfertEnCompta" hideEffect="fade" dynamic="true" showCloseIcon="true" 
+						    styleClass="overlay-aide-contextuelle overlay-aide-contextuelle-big"
+						    widgetVar="wvLinkAideInfosEntrepriseTransfertEnCompta">
+							<ui:include src="/aide_contextuelle/infos_entreprise_transfert_en_compta.xhtml" />
+						</p:overlayPanel>
+					</p:panel>					
+					</h:panelGrid>
+				</p:panel>				
+			</div>
+			
+			<div class="ui-grid-col-6">
+				<div class="ui-grid-row">
+					<div class="ui-grid-col-12">
+						<p:panel id="idPanelAdresse" header="Adresse du siège social" toggleable="true" widgetVar="panelAdresse">
+							<h:panelGrid columns="2" cellpadding="10">
+								<p:outputLabel value="Ligne : "  styleClass="labelchob"/>
+								<p:inputText
+									value="#{infoEntrepriseController.selectedTaTiersDTO.adresse1Adresse}"
+									validator="#{infoEntrepriseController.validateTiers}"
+									disabled="#{infoEntrepriseController.editable()}">
+									<f:attribute name="nomChamp"
+										value="#{const.C_ADRESSE1_ADRESSE}" />
+									<p:ajax event="blur" update="@this" />
+								</p:inputText>
+
+								<p:outputLabel value="Ligne (2) : " />
+								<p:inputText
+									value="#{infoEntrepriseController.selectedTaTiersDTO.adresse2Adresse}"
+									validator="#{infoEntrepriseController.validateTiers}"
+									disabled="#{infoEntrepriseController.editable()}">
+									<f:attribute name="nomChamp"
+										value="#{const.C_ADRESSE2_ADRESSE}" />
+									<p:ajax event="blur" update="@this" />
+								</p:inputText>
+
+								<p:outputLabel value="Ligne (3) : " />
+								<p:inputText
+									value="#{infoEntrepriseController.selectedTaTiersDTO.adresse3Adresse}"
+									validator="#{infoEntrepriseController.validateTiers}"
+									disabled="#{infoEntrepriseController.editable()}">
+									<f:attribute name="nomChamp"
+										value="#{const.C_ADRESSE3_ADRESSE}" />
+									<p:ajax event="blur" update="@this" />
+								</p:inputText>
+
+								<p:outputLabel value="Code postal : "  styleClass="labelchob"/>
+								<p:inputText
+									value="#{infoEntrepriseController.selectedTaTiersDTO.codepostalAdresse}"
+									validator="#{infoEntrepriseController.validateTiers}"
+									disabled="#{infoEntrepriseController.editable()}">
+									<f:attribute name="nomChamp"
+										value="#{const.C_CODEPOSTAL_ADRESSE}" />
+									<p:ajax event="blur" update="@this" />
+								</p:inputText>
+
+								<p:outputLabel value="Ville : "  styleClass="labelchob"/>
+								<p:inputText
+									value="#{infoEntrepriseController.selectedTaTiersDTO.villeAdresse}"
+									validator="#{infoEntrepriseController.validateTiers}"
+									disabled="#{infoEntrepriseController.editable()}">
+									<f:attribute name="nomChamp" value="#{const.C_VILLE_ADRESSE}" />
+									<p:ajax event="blur" update="@this" />
+								</p:inputText>
+
+								<p:outputLabel value="Pays : " />
+								<p:inputText
+									value="#{infoEntrepriseController.selectedTaTiersDTO.paysAdresse}"
+									validator="#{infoEntrepriseController.validateTiers}"
+									disabled="#{infoEntrepriseController.editable()}">
+									<f:attribute name="nomChamp" value="#{const.C_PAYS_ADRESSE}" />
+									<p:ajax event="blur" update="@this" />
+								</p:inputText>
+							</h:panelGrid>
+						</p:panel>
+					</div>
+				</div>
+
+				<div class="ui-grid-row">
+					<div class="ui-grid-col-12">
+						<p:panel id="idPanelContact" header="Contact" toggleable="true" widgetVar="panelContact">
+							<h:panelGrid columns="2" cellpadding="10">
+								<p:outputLabel value="Téléphone : " />
+								<p:inputText
+									value="#{infoEntrepriseController.selectedTaTiersDTO.numeroTelephone}"
+									validator="#{infoEntrepriseController.validateTiers}"
+									disabled="#{infoEntrepriseController.editable()}">
+									<f:attribute name="nomChamp"
+										value="#{const.C_NUMERO_TELEPHONE}" />
+									<p:ajax event="blur" update="@this" />
+								</p:inputText>
+
+								<p:outputLabel value="Adresse email : " />
+								<p:inputText
+									value="#{infoEntrepriseController.selectedTaTiersDTO.adresseEmail}"
+									validator="#{infoEntrepriseController.validateTiers}"
+									disabled="#{infoEntrepriseController.editable()}">
+									<f:attribute name="nomChamp" value="#{const.C_ADRESSE_EMAIL}" />
+									<p:ajax event="blur" update="@this" />
+								</p:inputText>
+
+								<p:outputLabel value="Adresse web : " />
+								<p:inputText
+									value="#{infoEntrepriseController.selectedTaTiersDTO.adresseWeb}"
+									validator="#{infoEntrepriseController.validateTiers}"
+									disabled="#{infoEntrepriseController.editable()}">
+									<f:attribute name="nomChamp" value="#{const.C_ADRESSE_WEB}" />
+									<p:ajax event="blur" update="@this" />
+								</p:inputText>
+							</h:panelGrid>
+						</p:panel>
+					</div>
+				</div>
+				
+				<div class="ui-grid-row">
+					<div class="ui-grid-col-12">
+						<p:panel id="idPanelDivers" header="Divers" toggleable="true"
+							widgetVar="panelDivers">
+							<h:panelGrid columns="2" cellpadding="10">
+
+								<p:outputLabel value="Numéro d'agrément sanitaire" />
+								<p:panel styleClass="panel-aide-contextuelle">
+								<p:inputText
+									value="#{infoEntrepriseController.selectedTaTiersDTO.numAgrementSanitaire}"
+									validator="#{infoEntrepriseController.validateTiers}"
+									disabled="#{infoEntrepriseController.editable()}">
+									<f:attribute name="nomChamp"
+										value="#{const.C_NUM_AGREMENT_SANITAIRE}" />
+									<p:ajax event="blur" update="@this" />
+								</p:inputText>
+								<p:commandLink id="idLinkAideInfosEntrepriseNumAgrementSanitaire"
+									styleClass="lien-aide-contextuelle">
+									<i class="fa fa-info-circle animated swing"></i>
+								</p:commandLink>
+								<p:overlayPanel for="idLinkAideInfosEntrepriseNumAgrementSanitaire"
+									hideEffect="fade" dynamic="true" showCloseIcon="true"
+									styleClass="overlay-aide-contextuelle overlay-aide-contextuelle"
+									widgetVar="wvLinkAideInfosEntrepriseNumAgrementSanitaire">
+									<ui:include
+										src="/aide_contextuelle/infos_entreprise_num_agrement_sanitaire.xhtml" />
+								</p:overlayPanel>
+						</p:panel>
+						</h:panelGrid>
+						</p:panel>
+					</div>
+				</div>
+				
+				<div class="ui-grid-row">
+					<div class="ui-grid-col-12">
+						<p:panel id="idPanelLogo" header="Logo (max:350x80)" toggleable="true" widgetVar="panelLogo">
+							<h:panelGrid columns="2" cellpadding="10">
+
+								<p:panel styleClass="panel-aide-contextuelle">
+								<p:fileUpload listener="#{infoEntrepriseController.handleFileUpload}" 
+									mode="advanced" skinSimple="true" dragDropSupport="false" styleClass="file-upload-choisir-logo"
+									label="Choisir" uploadLabel="Télécharger" cancelLabel="Annuler"
+									auto="true" update="@widgetVar(panelLogo)"
+					          		sizeLimit="#{msg.email_taille_max_piecejonte_1mo}" fileLimit="1" allowTypes="/(\.|\/)(gif|jpe?g|png|svg)$/" 
+					          		rendered="#{infoEntrepriseController.taInfoEntreprise.taTiers.blobLogo==null}"
+					          		/>
+								<p:commandLink id="idLinkAideInfosEntrepriseLogo"
+									styleClass="lien-aide-contextuelle">
+									<i class="fa fa-info-circle animated swing"></i>
+								</p:commandLink>
+								<p:overlayPanel for="idLinkAideInfosEntrepriseLogo"
+									hideEffect="fade" dynamic="true" showCloseIcon="true"
+									styleClass="overlay-aide-contextuelle overlay-aide-contextuelle"
+									widgetVar="wvLinkAideInfosEntrepriseLogo">
+									<ui:include
+										src="/aide_contextuelle/infos_entreprise_logo.xhtml" />
+								</p:overlayPanel>
+						</p:panel>
+
+								<p:commandButton value="Supprimer" actionListener="#{infoEntrepriseController.supprimerLogo}" 
+									rendered="#{infoEntrepriseController.taInfoEntreprise.taTiers.blobLogo !=null}" update="@widgetVar(panelLogo)"/>
+					          								
+								<p:graphicImage value="#{infoEntrepriseController.logo}" stream="false" 
+									rendered="#{infoEntrepriseController.taInfoEntreprise.taTiers.blobLogo !=null}"/>
+									
+								
+							</h:panelGrid>
+						</p:panel>
+					</div>
+				</div>
+				
+			</div>
+		</div>
+	</div>
+	</p:tab>
+<!-- 		<p:tab title="Comptes bancaires" titleStyleClass="tab-min" titletip="Comptes bancaires" disabled="#{infoEntrepriseController.disabledTab('')}"  -->
+<!-- 		rendered="#{auth.isDevLgr()}"> -->
+		<p:tab title="Comptes bancaires" titleStyleClass="tab-min" titletip="Comptes bancaires" disabled="#{infoEntrepriseController.disabledTab('')}">
+			<div class="dashboard-title" style="background: #f6f6f6; margin-bottom: 15px;">
+				<h:panelGrid columns="4" cellpadding="5">
+					<h:graphicImage name="dashboard/tier.svg" library="images" height="35px" style="margin-top:1px;" />
+					<p:outputLabel value="Liste des comptes bancaire du Tiers : #{infoEntrepriseController.selectedTaTiersDTO.nomTiers} " style="font-size:20px;" />
+				</h:panelGrid>
+			</div>
+			<p:panel header="Comptes bancaires" widgetVar="panelComptesBancairesInfosEntreprise">
+				<ui:include src="/tiers/compte_banque_include.xhtml" >
+					<ui:param name="dansDialogue" value="true" />
+					<ui:param name="variableNomWvIDUnique" value="_Infos" />
+					<ui:param name="banqueController" value="#{infoEntrepriseController.banqueController}" />
+				</ui:include>
+			</p:panel>
+		</p:tab>	
+	</p:tabView>
+	
+</ui:composition>

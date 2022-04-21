@@ -1,0 +1,178 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:p="http://primefaces.org/ui">
+	
+	<o:importConstants type="fr.legrain.bdg.webapp.app.LgrTab" />
+	
+	<p:commandLink id="listeCompteServiceWebExterneBtn" >
+		<i class="top-submenu-icon fa fa-fw fa-user"></i>
+		<span><h:outputText value="Liste des comptes services web externes" /></span>
+	</p:commandLink>
+	
+	<p:overlayPanel id="idListeCompteServiceWebExternePanel" for="listeCompteServiceWebExterneBtn" hideEffect="fade" dynamic="true" 
+		dismissable="true" appendTo="@(body)" widgetVar="wvOverlayListeCompteServiceExterne" showCloseIcon="true">
+		<h:form>
+		<div class="dashboard-title" style="background:#f6f6f6;">
+              <h:panelGrid columns="3" cellpadding="5">
+<!--             	<h:graphicImage name="dashboard/tier.svg" library="images" height="35px" style="margin-top:1px;" /> -->
+                <p:outputLabel value="Liste des comptes de services Web Externe" style="font-size:20px;"/>
+              </h:panelGrid>  
+              <p:separator/>
+        </div>
+	<p:menubar styleClass="menu-onglet" widgetVar="wvMenuListeCompteServiceWebExterne" id="idMenuListeCompteServiceWebExterne">
+		 <p:menuitem title="Ajouter un nouveau CompteServiceWebExterne" update=":form:tabView,:form:messages,@widgetVar(wvMenuListeCompteServiceWebExterne),@widgetVar(wvDataTableListeCompteServiceWebExterne),@widgetVar(wvBandeauActionCompteServiceWebExterne)" 
+		 	actionListener="#{compteServiceWebExterneController.nouveau}" styleClass="icon icon-insert" disabled="#{compteServiceWebExterneController.etatBouton('inserer')}" oncomplete="PF('wvOverlayListeCompteServiceExterne').hide();"/>
+
+		 <p:menuitem title="Rafraîchir la liste" update="@form,:form:messages" actionListener="#{compteServiceWebExterneController.refresh}" styleClass="icon icon-refresh" disabled="#{compteServiceWebExterneController.modeEcran.dataSetEnModif()}"/>
+	</p:menubar>
+	
+	<p:sticky target="idMenuListeCompteServiceWebExterne" />
+	 
+	 	
+<!-- 	stickyHeader="true" -->
+	
+	<p:dataTable id="dataTableListeCompteServiceWebExterne" 
+				var="taCompteServiceWebExterne"
+				widgetVar="wvDataTableListeCompteServiceWebExterne"
+				value="#{compteServiceWebExterneController.values}"
+				rowKey="#{taCompteServiceWebExterne.id}"
+				selection="#{compteServiceWebExterneController.selectedTaCompteServiceWebExterneDTOs}"
+				dblClickSelect="true"
+				styleClass="datatable mt10"
+				resizableColumns="true"
+				paginator="true" 
+				rows="#{msg.modele_datatable_ligne_par_page_debut}"
+				paginatorTemplate="#{msg.modele_datatable_paginator}"
+				rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+				emptyMessage="#{msg.message_datatable_vide}"
+				currentPageReportTemplate="#{msg.modele_datatable_page_courante}"
+				disabledSelection="#{compteServiceWebExterneController.modeEcran.dataSetEnModif()}">
+				
+<!-- 				<p:ajax event="rowDblselect" listener="#{compteServiceWebExterneController.onRowSelect}" update=":form:tabView,:form:messages,@form" />  -->
+<!-- 				<p:ajax event="rowSelect" listener="#{compteServiceWebExterneController.onRowSelect}" disabled="#{compteServiceWebExterneController.pasDejaOuvert()}" update=":form:tabView,:form:messages,@form" /> -->
+				
+<!-- 				<p:ajax event="rowDblselect" listener="#{compteServiceWebExterneController.onRowSelect}" update=":form:tabView,:form:messages" oncomplete="activeTabCenter('#{LgrTab.CSS_CLASS_TAB_TIERS}');PF('wvOverlayListeCompteServiceExterne').hide();scrollToTop();"/> -->
+				<p:ajax event="rowSelect" delay="#{msg.datatable_rowselect_delay}" listener="#{compteServiceWebExterneController.onRowSelect}" update=":form:tabView,:form:messages,@widgetVar(wvBandeauActionCompteServiceWebExterne)" oncomplete="activeTabCenter('#{LgrTab.CSS_CLASS_TAB_COMPTE_SERVICE_WEB_EXTERNE}');PF('wvOverlayListeCompteServiceExterne').hide();scrollToTop();"/>
+			
+				<f:facet name="header">  
+           			<h:outputText value="CompteServiceWebExterne" />
+<!--            			<p:outputPanel> -->
+<!-- 		                <h:outputText value="Rechercher dans les champs :" /> -->
+<!-- 		                <p:inputText id="globalFilter" onkeyup="PF('carsTable').filter()" style="width:150px" placeholder="Enter keyword"/> -->
+<!-- 		            </p:outputPanel> -->
+        		</f:facet>
+
+		  		<f:facet name="{Exporters}">
+		            <h:commandLink>
+		                <p:graphicImage library="images" name="excel.png" width="24"/>
+		                <p:dataExporter type="xls" target="dataTableListeCompteServiceWebExterne" fileName="liste_tiers" />
+		            </h:commandLink>
+		 
+		            <h:commandLink>
+		                <p:graphicImage  library="images" name="pdf.png"  width="24"/>
+		                <p:dataExporter type="pdf" target="dataTableListeCompteServiceWebExterne" fileName="liste_tiers"/>
+		            </h:commandLink>
+		 
+		            <h:commandLink>
+		                <p:graphicImage  library="images" name="csv.png"  width="24"/>
+		                <p:dataExporter type="csv" target="dataTableListeCompteServiceWebExterne" fileName="liste_tiers" />
+		            </h:commandLink>
+		 
+		            <h:commandLink>
+		                <p:graphicImage  library="images" name="xml.png"  width="24"/>
+		                <p:dataExporter type="xml" target="dataTableListeCompteServiceWebExterne" fileName="liste_tiers" />
+		            </h:commandLink>
+		        </f:facet>
+        
+        		<p:column selectionMode="multiple" style="width:16px;text-align:center" exportable="false"/>
+			
+				<p:column style="width:16px" exportable="false">
+					<f:facet name="header">
+						<h:outputText value="" />
+					</f:facet>
+					<p:commandButton title="Détail" update=":form:tabView,:form:messages,@widgetVar(wvBandeauActionCompteServiceWebExterne)" 
+						action="#{compteServiceWebExterneController.detail}" styleClass="icon icon-detail icon-grille" 
+						disabled="#{compteServiceWebExterneController.modeEcran.dataSetEnModif()}" oncomplete="PF('wvOverlayListeCompteServiceExterne').hide();">
+						<f:setPropertyActionListener target="#{compteServiceWebExterneController.selectedTaCompteServiceWebExterneDTO}" value="#{taCompteServiceWebExterne}" />
+					</p:commandButton>
+				</p:column>
+        
+
+				<p:column sortBy="#{taCompteServiceWebExterne.codeCompteServiceWebExterne}" filterBy="#{taCompteServiceWebExterne.codeCompteServiceWebExterne}" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="Code" />
+					</f:facet>
+					<h:outputText value="#{taCompteServiceWebExterne.codeCompteServiceWebExterne}" />
+				</p:column>
+				
+				<p:column sortBy="#{taCompteServiceWebExterne.libelleCompteServiceWebExterne}" filterBy="#{taCompteServiceWebExterne.libelleCompteServiceWebExterne}" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="Libellé" />
+					</f:facet>
+					<h:outputText value="#{taCompteServiceWebExterne.libelleCompteServiceWebExterne}" />
+				</p:column>
+				
+				<p:column styleClass="center">
+					<f:facet name="header">
+						<h:outputText value="Logo" />
+					</f:facet>
+					<p:graphicImage value="/image_service_web_externe/#{taCompteServiceWebExterne.idServiceWebExterne}"  height="40" title="#{taCompteServiceWebExterne.libelleServiceWebExterne}"/>
+				</p:column>
+				
+				
+				<p:column sortBy="#{taCompteServiceWebExterne.actif}" styleClass="center" filterBy="#{taCompteServiceWebExterne.actif}" filterMatchMode="equals">
+					<f:facet name="header">
+						<h:outputText value="Actif" />
+					</f:facet>
+					<f:facet name="filter">
+			                <p:selectOneButton onchange="PF('wvDataTableListeCompteServiceWebExterne').filter()">
+			                    <f:converter converterId="javax.faces.Boolean" />
+			                    <f:selectItem itemLabel="Tous" itemValue="" />
+			                    <f:selectItem itemLabel="Vrai" itemValue="true" />
+			                    <f:selectItem itemLabel="Faux" itemValue="false" />
+			                </p:selectOneButton>
+			            </f:facet>
+					<p:selectBooleanCheckbox value="#{taCompteServiceWebExterne.actif}" disabled="true"/>
+				</p:column>
+				
+				<p:column sortBy="#{taCompteServiceWebExterne.defaut}" styleClass="center" filterBy="#{taCompteServiceWebExterne.defaut}" filterMatchMode="equals">
+					<f:facet name="header">
+						<h:outputText value="Par défaut" />
+					</f:facet>
+					<f:facet name="filter">
+			                <p:selectOneButton onchange="PF('wvDataTableListeCompteServiceWebExterne').filter()">
+			                    <f:converter converterId="javax.faces.Boolean" />
+			                    <f:selectItem itemLabel="Tous" itemValue="" />
+			                    <f:selectItem itemLabel="Vrai" itemValue="true" />
+			                    <f:selectItem itemLabel="Faux" itemValue="false" />
+			                </p:selectOneButton>
+			            </f:facet>
+					<p:selectBooleanCheckbox value="#{taCompteServiceWebExterne.defaut}" disabled="true"/>
+				</p:column>
+				
+				
+				
+				<p:column style="width:16px" exportable="false">
+					<f:facet name="header">
+						<h:outputText value="" />
+					</f:facet>
+					
+					<p:commandButton title="Supprimer" styleClass="icon-delete icon icon-grille" widgetVar="widgetVarBtnSupprimerCompteServiceWebExterneListe"
+						action="#{compteServiceWebExterneController.actSupprimer}"
+						process="@this"
+						update="@widgetVar(wvDataTableListeCompteServiceWebExterne)">
+						<f:setPropertyActionListener target="#{compteServiceWebExterneController.selectedTaCompteServiceWebExterneDTO}" value="#{taCompteServiceWebExterne}" />
+						<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer ce tiers ?" icon="ui-icon-alert" />
+					</p:commandButton>
+						
+				</p:column>
+
+			</p:dataTable>
+
+		</h:form>
+	</p:overlayPanel>
+	
+</ui:composition>

@@ -1,0 +1,85 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+
+
+	<p:panel widgetVar="wvChangelogPanel">
+		<p:menubar styleClass="menu-onglet">
+			<p:menuitem title="Fermer"
+				styleClass="icon icon-close menuitem-fermer-droite" process="@this"
+				onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())">
+			</p:menuitem>
+		</p:menubar>
+
+		<p:panel widgetVar="widgetVarBugNouveauPanel" 
+			header="Changelog du #{changelogBean.dateDebutStr} au #{changelogBean.dateFinStr} - #{changelogBean.listeBugs.size()}">
+<!-- 			<p:outputLabel value="#{changelogBean.changelog}"/> -->
+			
+<!-- 			<ui:repeat var="b" value="#{changelogBean.listeBugs}" varStatus="status"> -->
+<!-- 				<p:outputLabel value="#{b.id} - #{b.summary}"/><br/> -->
+<!-- 			</ui:repeat> -->
+			
+			<p:dataTable value="#{changelogBean.listeBugs}" var="b" 
+				id="idDatatableChangelog" 
+				paginator="true" 
+				rows="#{msg.modele_datatable_ligne_par_page_debut}"
+				paginatorTemplate="#{msg.modele_datatable_paginator}"
+				rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+				emptyMessage="#{msg.message_datatable_vide}"
+				currentPageReportTemplate="#{msg.modele_datatable_page_courante}">
+				<f:facet name="{Exporters}">
+		            <h:commandLink>
+		                <p:graphicImage library="images" name="excel.png" width="24"/>
+		                <p:dataExporter type="xls" target="idDatatableChangelog" fileName="changelog" />
+		            </h:commandLink>
+		 
+		            <h:commandLink>
+		                <p:graphicImage  library="images" name="pdf.png"  width="24"/>
+		                <p:dataExporter type="pdf" target="idDatatableChangelog" fileName="changelog" />
+		            </h:commandLink>
+		 
+		            <h:commandLink>
+		                <p:graphicImage  library="images" name="csv.png"  width="24"/>
+		                <p:dataExporter type="csv" target="idDatatableChangelog" fileName="changelog" />
+		            </h:commandLink>
+		 
+		            <h:commandLink>
+		                <p:graphicImage  library="images" name="xml.png"  width="24"/>
+		                <p:dataExporter type="xml" target="idDatatableChangelog" fileName="changelog" />
+		            </h:commandLink>
+		        </f:facet>
+		        
+				<p:column headerText="ID" filterBy="#{b.id}" sortBy="#{b.id}" styleClass="center">
+					<p:commandLink onclick="window.open('#{bugsBean.bugzillaURL}/show_bug.cgi?id=#{b.id}')">
+						<p:graphicImage library="images" name="show.jpg" title="#{b.id}" alt="#{b.id}" height="16" />
+					</p:commandLink>
+				</p:column>
+				<p:column headerText="Derniere modification" sortBy="#{b.lastChangeTime}" styleClass="center">
+					<p:outputLabel value="#{b.lastChangeTime}" >
+						<f:convertDateTime pattern="dd/MM/yyyy-HH:mm:ss" timeZone="#{msg.time_zone}"/>
+					</p:outputLabel>
+				</p:column>
+				<p:column headerText="Résumé" filterBy="#{b.summary}" sortBy="#{b.summary}">
+					<p:outputLabel value="#{b.summary}"/>
+				</p:column>
+				<p:column headerText="Priorité" filterBy="#{b.priority}" sortBy="#{b.priority}" styleClass="center">
+					<p:outputLabel value="#{b.priority}"/>
+				</p:column>
+				<p:column headerText="Gravité" filterBy="#{b.severity}" sortBy="#{b.severity}" styleClass="center">
+					<p:outputLabel value="#{b.severity}"/>
+				</p:column>
+				<p:column headerText="Résolution" filterBy="#{b.resolution}" sortBy="#{b.resolution}" styleClass="center">
+					<p:outputLabel value="#{b.resolution}"/>
+				</p:column>
+								
+			</p:dataTable>
+		</p:panel>
+		
+		
+
+	</p:panel>
+
+</ui:composition>

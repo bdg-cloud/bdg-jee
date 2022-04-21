@@ -1,0 +1,314 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+    xmlns:pe="http://primefaces.org/ui/extensions">
+
+	<p:menubar styleClass="menu-onglet" id="idMenuBoutonGenerationLigneALigne" widgetVar="wvMenuBoutonGenerationLigneALigne">
+
+
+		<p:menuitem title="Fermer l'écran" value="Fermer" styleClass="icon icon-close menuitem-fermer-droite"
+			process="@this" 
+			actionListener="#{generationLigneALigneMultipleController.actFermer}"
+			update=":form:messages"
+			disabled="#{generationLigneALigneMultipleController.etatBouton('fermer')}"
+			onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())">
+			
+			<p:confirm header="Confirmation" message="#{msg_diag.alert_fermeture_onglet}" icon="ui-icon-alert" disabled="#{!generationLigneALigneMultipleController.modeEcran.dataSetEnModif()}"/>
+		</p:menuitem>
+	</p:menubar>
+	<div class="container">
+		<p:fieldset legend="Etape 1/2 : Saisissez les critères de sélection des Tiers et de transformation des Documents" id="idCriteresFiltresGenDoc" toggleable="true" toggleSpeed="50" >
+
+		<div class="ui-g">
+		
+			<div class="ui-g-12 ui-lg-6">
+				<div class="card">
+						<p:panel header="Période"  style="width:100%;text-align: center;">
+						<p:panelGrid columns="2" columnClasses="ui-grid-col-4 right,ui-grid-col-8" styleClass="ui-panelgrid-blank" layout="grid" >
+							<i class="fa fa-calendar fa-3x" aria-hidden="true"></i>
+								<p:panelGrid columns="2" cellpadding="0">
+									<p:outputLabel value="Du" />
+									<p:calendar value="#{generationLigneALigneMultipleController.dateDeb}" showOn="button" navigator="true" pattern="#{msg.date_pattern}"
+										mask="true" locale="fr" timeZone="#{msg.time_zone}">
+										<p:ajax event="dateSelect" update="@this" />
+										<p:ajax event="change" update="@this" />
+									</p:calendar>
+
+									<p:outputLabel value="au" />
+									<p:calendar value="#{generationLigneALigneMultipleController.dateFin}" showOn="button" navigator="true" pattern="#{msg.date_pattern}"
+										mask="true" locale="fr" timeZone="#{msg.time_zone}">
+										<p:ajax event="dateSelect" update="@this" />
+										<p:ajax event="change" update="@this" />
+									</p:calendar>
+								</p:panelGrid>
+							
+
+						</p:panelGrid>
+						</p:panel>
+					</div>
+				<!--Fin div card-->
+				<div class="card">
+					<p:panel header="Choix du fournisseur" id="idPanelParamFiltreTierGenDoc">
+						<p:panelGrid columns="2" columnClasses="ui-grid-col-3,ui-grid-col-3,ui-grid-col-3,ui-grid-col-3" styleClass="ui-panelgrid-blank" layout="grid" >
+							<p:outputLabel value="Code tiers : " />
+							<p:autoComplete value="#{generationLigneALigneMultipleController.selectedCritere}"
+							       id="idtiersAcompte" converter="entityConverter"
+								completeMethod="#{generationLigneALigneMultipleController.tiersAutoCompleteDTOLight}"
+								required="true" requiredMessage="#{msg_diag.alert_champs_obligatoir}"
+								var="tiers"
+								itemLabel="#{tiers.codeTiers}" itemValue="#{tiers}"
+								forceSelection="true" dropdown="true" placeholder="Tiers" >
+								<p:column>
+									<h:outputText value="#{tiers.codeTiers}" required="true" requiredMessage="#{msg_diag.alert_champs_obligatoir}"/>
+								</p:column>
+								
+								<p:column>
+									<h:outputText value="#{tiers.nomTiers}" />
+								</p:column>
+				
+
+								<p:column>
+									<h:outputText value="#{tiers.prenomTiers}" />
+								</p:column>
+
+								<p:column>
+									<h:outputText value="#{tiers.nomEntreprise}" />
+								</p:column>
+
+							</p:autoComplete>
+
+						</p:panelGrid>	
+					</p:panel>
+				
+				</div>
+
+
+
+
+
+								
+				</div>
+
+				<div class="ui-g-12 ui-lg-6">
+					<div class="card">
+					<p:panel header="Documents à transformer" >
+						<p:panelGrid columns="2" cellspacing="20" layout="grid" style="text-align:center;">
+							<p:outputLabel value="Documents d'origine" />
+							<p:outputLabel value="Documents destination" />
+							<p:selectOneMenu value="#{generationLigneALigneMultipleController.selectedTypeSelection}" var="t" id="idSelectionDocSelection"
+								converter="entityConverter">
+								<f:selectItems value="#{generationLigneALigneMultipleController.listeTypeDocSelection}" var="theme" itemLabel="#{theme.name}"
+									itemValue="#{theme}" />
+								<p:column style="width:10%">
+									<h:graphicImage name="#{t.displayName}" library="images" height="30px" style="margin-top:1px;" />
+								</p:column>
+
+								<p:column>
+									<h:outputText value="#{t.name}" />
+								</p:column>
+								<p:ajax
+									update="idPanelListeDoc,:form:messages,idSelectionDocCreation,idImageDocSelection,idImageDocCreation"
+									listener="#{generationLigneALigneMultipleController.actChangeDocSelection()}" />
+							</p:selectOneMenu>
+
+							<p:selectOneMenu value="#{generationLigneALigneMultipleController.selectedTypeCreation}" var="t" id="idSelectionDocCreation"
+								converter="entityConverter">
+								<f:selectItems value="#{generationLigneALigneMultipleController.listeTypeDocCreation}" var="theme" itemLabel="#{theme.name}" itemValue="#{theme}" />
+								<p:column style="width:10%">
+									<h:graphicImage name="#{t.displayName}" library="images" height="30px" style="margin-top:1px;" />
+								</p:column>
+								<p:column>
+									<h:outputText value="#{t.name}" />
+								</p:column>
+								<p:ajax update="idPanelListeDoc,:form:messages,idImageDocCreation"
+									listener="#{generationLigneALigneMultipleController.actSelectionDocCreation}" />
+							</p:selectOneMenu>
+
+							<h:graphicImage name="#{generationLigneALigneMultipleController.pathImageSelectionDocSelection}" library="images" height="45px"
+								style="margin-top:1px;" id="idImageDocSelection" />
+							<h:graphicImage name="#{generationLigneALigneMultipleController.pathImageSelectionDocCreation}" library="images" height="45px"
+								style="margin-top:1px;" id="idImageDocCreation"
+								rendered="#{generationLigneALigneMultipleController.ImageEstPasVide(generationLigneALigneMultipleController.pathImageSelectionDocCreation)}" />
+
+						</p:panelGrid>
+					</p:panel>
+				</div>
+
+				
+
+				
+			</div>
+		</div>
+						<div class="card" style="text-align:center;">
+					<p:commandButton value="Valider les critères" actionListener="#{generationLigneALigneMultipleController.actRefresh}"
+		    				 update=",idPanelListeDoc"  style="width:20%; height:45px;" icon="fa fa-check"/>
+				</div>
+		
+	 	 </p:fieldset>
+	</div>
+		
+			
+	<div class="container">
+
+		<p:panel widgetVar="wvLigneLaLMessages">
+			<p:messages id="idLigneLaLMessages" showDetail="true" closable="true" autoUpdate="false"/>
+		</p:panel>
+		
+		<p:fieldset legend="Etape 2/2 : Liste des lignes d'achats à recevoir" id="idListesDocGenDoc"  toggleable="true" toggleSpeed="50">
+			<p:panel header="Sélectionner les lignes d'achats à recevoir" id="idPanelListeDoc">
+			<div class="ui-g">
+	    		<div class="ui-g-12" >
+		    				<p:dataTable id="dataTableListeDoc" var="ligne"
+				widgetVar="wvDataTableListeDoc" 
+				styleClass="datatable mt10"
+				value="#{generationLigneALigneMultipleController.listeLigneALigneDTO}" 
+				rowKey="#{ligne.dto.idLDocument}"
+				selection="#{generationLigneALigneMultipleController.selectedLigneALigneDTOs}"
+				dblClickSelect="true"
+				editable="true"
+
+				resizableColumns="true"
+				paginator="true" 
+				rows="#{msg.modele_datatable_ligne_par_page_debut}"
+				paginatorTemplate="#{msg.modele_datatable_paginator}"
+				rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+				emptyMessage="#{msg.message_datatable_vide}"
+				currentPageReportTemplate="#{msg.modele_datatable_page_courante}">
+
+					<p:ajax event="rowEdit" listener="#{generationLigneALigneMultipleController.onRowEdit}" update="idNumLot,@widgetVar(wvLigneLaLMessages)" /> 
+<!-- 					oncomplete="if(!handleCompleteValidationError(xhr, status, args)) {increment();};autreLigneModifiable('myclass');" /> -->
+<!-- 					<p:ajax event="rowEditCancel" listener="#{generationLigneALigneMultipleController.onRowCancel}" update="@widgetVar(widgetVarBtnSupprimer)" oncomplete="autreLigneModifiable('myclass');"/> -->
+<!-- 					<p:ajax event="rowSelect" listener="#{generationLigneALigneMultipleController.onRowSelectLigne}" /> -->
+<!-- 					<p:ajax event="rowEditInit" listener="#{generationLigneALigneMultipleController.onRowEditInit}" oncomplete="autreLigneNonModifiable('myclass');"/> -->
+					
+					<p:column style="width:16px" >
+						<p:rowEditor  styleClass="row-editor-debut"/>
+					</p:column>
+					
+	    					<p:column selectionMode="multiple" style="width:16px;text-align:center" />
+	    				    <p:column sortBy="#{ligne.dto.dto.codeDocument}" filterBy="#{ligne.dto.dto.codeDocument}" filterMatchMode="contains">
+								<f:facet name="header">
+									<h:outputText value="Code document" />
+								</f:facet>
+<!-- 								<h:outputText value="#{ligne.dto.codeDocument}" /> -->
+							<p:commandLink 	value="#{ligne.dto.codeDocument}"
+											style="font-weight: bold;" 
+											action="#{ouvertureDocumentBean.detailDocument(ouvertureDocumentBean.recupCodeDocument(ligne.dto.codeDocument,ouvertureDocumentBean.getTypeDocumentBoncdeAchat()))}" update=":form:tabView"
+											oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+							</p:commandLink>																
+							</p:column>
+					
+	    				    <p:column sortBy="#{ligne.dto.codeArticle}" filterBy="#{ligne.dto.codeArticle}" filterMatchMode="contains">
+								<f:facet name="header">
+									<h:outputText value="Code article" />
+								</f:facet>
+								<h:outputText value="#{ligne.dto.codeArticle}" />
+							</p:column>
+	    				    <p:column sortBy="#{ligne.dto.libelleLigne}" filterBy="#{ligne.dto.libelleLigne}" filterMatchMode="contains">
+								<f:facet name="header">
+									<h:outputText value="libellé" />
+								</f:facet>
+								<h:outputText value="#{ligne.dto.libelleLigne}" />
+							</p:column>
+	    				    <p:column sortBy="#{ligne.dto.datePrevue}" filterBy="#{ligne.dto.datePrevue}" filterMatchMode="contains"  styleClass="right">
+								<f:facet name="header">
+									<h:outputText value="Date prévue" />
+									
+								</f:facet>
+								<h:outputText value="#{ligne.dto.datePrevue}">
+									<f:convertDateTime pattern="dd/MM/yyyy" timeZone="#{msg.time_zone}"  />
+								</h:outputText>
+							</p:column>
+	    				    <p:column sortBy="#{ligne.dto.qteOrigine}" filterBy="#{ligne.dto.qteOrigine}" filterMatchMode="contains"  styleClass="right">
+								<f:facet name="header">
+									<h:outputText value="Qté commandée" />
+								</f:facet>
+								
+								<h:outputText value="#{ligne.dto.qteOrigine}" />
+							</p:column>
+
+
+	    				    <p:column sortBy="#{ligne.dto.uniteOrigine}" filterBy="#{ligne.dto.uniteOrigine}" filterMatchMode="contains" >
+								<f:facet name="header">
+									<h:outputText value="Unité" />
+								</f:facet>
+								<h:outputText value="#{ligne.dto.uniteOrigine}" />
+							</p:column>
+	    				   
+	    				   
+	    				    <p:column sortBy="#{ligne.dto.prixUnitaire}" filterBy="#{ligne.dto.prixUnitaire}" filterMatchMode="contains"  styleClass="right">
+								<f:facet name="header">
+									<h:outputText value="Prix U." />
+								</f:facet>
+								<h:outputText value="#{ligne.dto.prixUnitaire}" />
+							</p:column>
+							
+							
+							
+					<p:column styleClass="right" sortBy="#{ligne.dto.qteRestante}" filterBy="#{ligne.dto.qteRestante}" filterMatchMode="contains" >
+						<f:facet name="header">
+							<h:outputText value="Qté recue" />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.qteRestante}" />
+							</f:facet>
+							<f:facet name="input">
+								<p:inputText value="#{ligne.dto.qteRestante}"  style="width:100%"/>
+							</f:facet>							
+						</p:cellEditor>
+					</p:column>
+
+							
+					<p:column styleClass="right"  sortBy="#{ligne.dto.numLot}" filterBy="#{ligne.dto.numLot}" filterMatchMode="contains" id="idNumLot">
+						<f:facet name="header">
+							<h:outputText value="Num lot" />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.numLot}" >
+								</h:outputText>
+							</f:facet>
+							<f:facet name="input">
+								<p:inputText value="#{ligne.dto.numLot}"   style="width:100%"/>
+							</f:facet>							
+						</p:cellEditor>
+					</p:column>
+					
+							
+					<p:column style="width:26px">
+						<p:rowEditor styleClass="row-editor-fin"/>
+					</p:column>
+	    				</p:dataTable>
+	
+
+				</div>
+<!-- 	    			<div class="ui-g-12" style="text-align:center;"> -->
+<!-- 	    				<p:commandButton value="Tout cocher" actionListener="#{generationLigneALigneMultipleController.actToutcocher}"  -->
+<!-- 	    				update="idPanelListeDoc,dataTableListeDoc"/> -->
+<!-- 	    				<p:commandButton value="Tout décocher" actionListener="#{generationLigneALigneMultipleController.actToutDecocher}"  -->
+<!-- 	    				update="idPanelListeDoc,dataTableListeDoc"/> -->
+<!-- 	    				<p:commandButton value="Inverser les cochés" actionListener="#{generationLigneALigneMultipleController.actInverserLesCoches}"  rendered="false"  -->
+<!-- 	    				update="idPanelListeDoc,dataTableListeDoc"/>	    				 -->
+<!-- 	    				<p:commandButton value="Supprimer les non cochés" actionListener="#{generationLigneALigneMultipleController.actSupprimerNonCochesTiers}"  rendered="false"  -->
+<!-- 	    				update="idPanelListeDoc,dataTableListeDoc"/> -->
+	    			
+<!-- 	    			</div> -->
+		    	</div>
+		    	<div class="card" style="text-align:center;">
+				    	<p:commandButton  value="Créer le(s) document(s)" title="Créer document" process="@this"
+						actionListener="#{generationLigneALigneMultipleController.actEnregistrer}" update="idPanelListeDoc" style="width:20%; height:45px;" icon="fa fa-check">
+<!-- 					<p:ajax event="dialogReturn" listener="#{duplicationDocumentBean.handleReturnDialogGenerationDocument}" -->
+<!-- 						oncomplete="activeTabCenter('#{factureController.css}');" />						 -->
+						<p:ajax event="dialogReturn" listener="#{generationLigneALigneMultipleController.handleReturnDialogGenerationDocument}" 
+						oncomplete="activeTabCenter('#{duplicationDocumentBean.css}');" /> 
+				</p:commandButton>
+				</div>
+			</p:panel>
+		</p:fieldset>
+	</div>			
+
+
+</ui:composition>

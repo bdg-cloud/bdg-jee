@@ -1,0 +1,270 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core" 
+	xmlns:ui="http://java.sun.com/jsf/facelets" 
+	xmlns:pe="http://primefaces.org/ui/extensions" 
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/template_dialog_lgr.xhtml">
+	
+	<ui:define name="head">
+		<title>Génération de code barre</title>
+        <style type="text/css">
+            .ui-widget {
+                font-size: 90%;
+            }
+        </style>
+	</ui:define>
+
+	<ui:define name="content">
+		<h:form >
+			
+			<h:panelGroup rendered="#{generationCodeBarreController.parametrage}">
+				<div class="ui-g">
+					
+					<div class="ui-g-12 ui-md-12 ui-lg-12" style="padding: 0;">
+						<p:panelGrid columns="1" style="width:100%; height: 100%;">
+							<f:facet name="header">
+
+							</f:facet>
+							
+							<p:panelGrid columns="4" style="margin:auto; height: 100%;">
+							
+								<p:outputLabel value="" />
+								<p:outputLabel value="EAN fiche article :" />
+								<p:outputLabel value="#{generationCodeBarreController.taArticle.codeBarre}" />
+								<p:outputLabel value="" />
+
+								<p:selectBooleanCheckbox value="#{generationCodeBarreController.encodeCodeArticle}">
+									<p:ajax listener="#{generationCodeBarreController.checkboxChanged}" update="@form"/>
+								</p:selectBooleanCheckbox>
+								<p:outputLabel value="Code article :" />
+								<p:inputText value="#{generationCodeBarreController.codeArticle}" />
+								<p:outputLabel value="" />
+								
+								<p:selectBooleanCheckbox value="#{generationCodeBarreController.encodeEanArticle}">
+									<p:ajax listener="#{generationCodeBarreController.checkboxChanged}" update="@form"/>
+								</p:selectBooleanCheckbox>
+								<p:outputLabel value="EAN13 article :" />
+								<p:inputText value="#{generationCodeBarreController.eanArticle}" />
+<!-- 								<p:outputLabel value="" /> -->
+								<p:selectBooleanCheckbox value="#{generationCodeBarreController.ean13ArticleGtin14}" itemLabel="GTIN14">
+									<p:ajax listener="#{generationCodeBarreController.checkboxChanged}" update="@form"/>
+								</p:selectBooleanCheckbox>
+								
+								<p:selectBooleanCheckbox value="#{generationCodeBarreController.encodeEanSurembalage}">
+									<p:ajax listener="#{generationCodeBarreController.checkboxChanged}" update="@form"/>
+								</p:selectBooleanCheckbox>
+								<p:outputLabel value="EAN suremballage :" />
+								<p:inputText value="#{generationCodeBarreController.eanSurembalage}" />
+<!-- 								<p:outputLabel value="" /> -->
+								<h:panelGroup>
+									<p:selectBooleanCheckbox value="#{generationCodeBarreController.ean13SurembalageGtin14}" itemLabel="GTIN14">
+										<p:ajax listener="#{generationCodeBarreController.checkboxChanged}" update="@form"/>
+									</p:selectBooleanCheckbox>
+									<p:selectBooleanCheckbox value="#{generationCodeBarreController.ean13SurembalageGtin14Light}" itemLabel="GTIN14-0">
+										<p:ajax listener="#{generationCodeBarreController.checkboxChanged}" update="@form"/>
+									</p:selectBooleanCheckbox>
+								</h:panelGroup>
+								
+								<p:selectBooleanCheckbox value="#{generationCodeBarreController.encodeDDM}">
+									<p:ajax listener="#{generationCodeBarreController.checkboxChanged}" update="@form"/>
+								</p:selectBooleanCheckbox>
+								<p:outputLabel value="DDM :" />
+<!-- 								<p:inputText value="#{generationCodeBarreController.ddm}" /> -->
+								<p:calendar value="#{generationCodeBarreController.ddm}">
+									<p:ajax event="dateSelect"/>
+   									<p:ajax event="change"/>
+								</p:calendar>
+								<p:outputLabel value="" />
+								
+								<p:selectBooleanCheckbox value="#{generationCodeBarreController.encodeDLC}">
+									<p:ajax listener="#{generationCodeBarreController.checkboxChanged}" update="@form"/>
+								</p:selectBooleanCheckbox>
+								<p:outputLabel value="DLC :" />
+<!-- 								<p:inputText value="#{generationCodeBarreController.dlc}" /> -->
+								<p:calendar value="#{generationCodeBarreController.dlc}">
+									<p:ajax event="dateSelect"/>
+   									<p:ajax event="change"/>
+								</p:calendar>
+								<p:outputLabel value="" />
+								
+								<p:selectBooleanCheckbox value="#{generationCodeBarreController.encodeHauteurEnMetre}">
+									<p:ajax listener="#{generationCodeBarreController.checkboxChanged}" update="@form"/>
+								</p:selectBooleanCheckbox>
+								<p:outputLabel value="Hauteur en mètre :" />
+								<p:inputText value="#{generationCodeBarreController.hauteurEnMetre}" />
+								<p:inputText value="#{generationCodeBarreController.uniteHauteurEnMetre}" placeholder="Unité"/>
+								
+								<p:selectBooleanCheckbox value="#{generationCodeBarreController.encodeLargeurEnMetre}">
+									<p:ajax listener="#{generationCodeBarreController.checkboxChanged}" update="@form"/>
+								</p:selectBooleanCheckbox>
+								<p:outputLabel value="Largeur en mètre :" />
+								<p:inputText value="#{generationCodeBarreController.largeurEnMetre}" />
+								<p:inputText value="#{generationCodeBarreController.uniteLargeurEnMetre}" placeholder="Unité"/>
+								
+								<p:selectBooleanCheckbox value="#{generationCodeBarreController.encodeLongueurEnMetre}">
+									<p:ajax listener="#{generationCodeBarreController.checkboxChanged}" update="@form"/>
+								</p:selectBooleanCheckbox>
+								<p:outputLabel value="Longueur en mètre :" />
+								<p:inputText value="#{generationCodeBarreController.longueurEnMetre}" />
+								<p:inputText value="#{generationCodeBarreController.uniteLongueurEnMetre}" placeholder="Unité"/>
+								
+								<p:selectBooleanCheckbox value="#{generationCodeBarreController.encodePoidsEnKg}">
+									<p:ajax listener="#{generationCodeBarreController.checkboxChanged}" update="@form"/>
+								</p:selectBooleanCheckbox>
+								<p:outputLabel value="Poids en Kg :" />
+								<p:inputText value="#{generationCodeBarreController.poidsEnKg}">
+									<p:ajax event="blur"/>
+								</p:inputText>
+								<p:autoComplete value="#{generationCodeBarreController.taUnitePoidsEnKilo}" completeMethod="#{generationCodeBarreController.uniteAutoComplete}" var="unit" itemLabel="#{unit.codeUnite}"
+									itemValue="#{unit}" forceSelection="true" dropdown="true" placeholder="Unité" style="width:100%"
+									title="Ecran de correspondace entre les AI du GS1-128 avec des unités et les unités du dossier.\n
+									OU Pour les kilo, unité avec le code unité 'Kg' et au moins un coeff de conversion Kg -> Kg (1)">
+									<p:column>
+										<h:outputText value="#{unit.codeUnite}" />
+									</p:column>
+
+									<f:attribute name="nomChamp" value="#{const.C_U1_L_DOCUMENT}" />
+									<p:ajax event="itemSelect" update="@parent"/>
+								</p:autoComplete>
+								
+								<p:selectBooleanCheckbox value="#{generationCodeBarreController.encodeQuantite}">
+									<p:ajax listener="#{generationCodeBarreController.checkboxChanged}" update="@form"/>
+								</p:selectBooleanCheckbox>
+								<p:outputLabel value="Quantité :" />
+								<p:inputText value="#{generationCodeBarreController.quantite}" />
+								<p:outputLabel value="" />
+								
+								<p:selectBooleanCheckbox value="#{generationCodeBarreController.encodeQuantiteUnitaire}">
+									<p:ajax listener="#{generationCodeBarreController.checkboxChanged}" update="@form"/>
+								</p:selectBooleanCheckbox>
+								<p:outputLabel value="Quantité unitaire :" />
+								<p:inputText value="#{generationCodeBarreController.quantiteUnitaire}" />
+								<p:outputLabel value="" />
+								
+								<p:selectBooleanCheckbox value="#{generationCodeBarreController.encodeSurfaceEnMetreCarre}">
+									<p:ajax listener="#{generationCodeBarreController.checkboxChanged}" update="@form"/>
+								</p:selectBooleanCheckbox>
+								<p:outputLabel value="Surface en mètre carré :" />
+								<p:inputText value="#{generationCodeBarreController.surfaceEnMetreCarre}" />
+								<p:inputText value="#{generationCodeBarreController.uniteSurfaceEnMetreCarre}" placeholder="Unité"/>
+								
+								<p:selectBooleanCheckbox value="#{generationCodeBarreController.encodeVolumeEnLitre}">
+									<p:ajax listener="#{generationCodeBarreController.checkboxChanged}" update="@form"/>
+								</p:selectBooleanCheckbox>
+								<p:outputLabel value="Volume en litre :" />
+								<p:inputText value="#{generationCodeBarreController.volumeEnLitre}" />
+								<p:inputText value="#{generationCodeBarreController.uniteVolumeEnLitre}" placeholder="Unité"/>
+								
+								<p:selectBooleanCheckbox value="#{generationCodeBarreController.encodeLotFabrication}">
+									<p:ajax listener="#{generationCodeBarreController.checkboxChanged}" update="@form"/>
+								</p:selectBooleanCheckbox>
+								<p:outputLabel value="Lot fabrication :" />
+								<p:inputText value="#{generationCodeBarreController.lotFabrication}" >
+									<p:ajax event="blur"/>
+								</p:inputText>
+								<p:outputLabel value="" />
+								
+								<p:selectBooleanCheckbox value="#{generationCodeBarreController.afficherDetail}">
+									<p:ajax listener="#{generationCodeBarreController.checkboxChanged}" update="@form"/>
+								</p:selectBooleanCheckbox>
+								<p:outputLabel value="Debug" />
+								<p:outputLabel value="" />
+								<p:outputLabel value="" />
+								
+								<p:selectBooleanCheckbox value="#{generationCodeBarreController.modeFichierImage}">
+									<p:ajax listener="#{generationCodeBarreController.checkboxChanged}" update="@form"/>
+								</p:selectBooleanCheckbox>
+								<p:outputLabel value="Debug (fichier image dans /tmp)" />
+								<p:outputLabel value="" />
+								<p:outputLabel value="" />
+								
+								<p:outputLabel value="EAN128" />
+								<p:outputLabel value="EAN13" />
+								<p:outputLabel value="Datamatrix" />
+								<p:outputLabel value="QRCode" />
+								
+								<p:selectBooleanCheckbox value="#{generationCodeBarreController.afficherEAN128}">
+									<p:ajax listener="#{generationCodeBarreController.checkboxChanged}" update="@form"/>
+								</p:selectBooleanCheckbox>
+								<p:selectBooleanCheckbox value="#{generationCodeBarreController.afficherEAN13}">
+									<p:ajax listener="#{generationCodeBarreController.checkboxChanged}" update="@form"/>
+								</p:selectBooleanCheckbox>
+								<p:selectBooleanCheckbox value="#{generationCodeBarreController.afficherDatamatrix}">
+									<p:ajax listener="#{generationCodeBarreController.checkboxChanged}" update="@form"/>
+								</p:selectBooleanCheckbox>
+								<p:selectBooleanCheckbox value="#{generationCodeBarreController.afficherQrCode}">
+									<p:ajax listener="#{generationCodeBarreController.checkboxChanged}" update="@form"/>
+								</p:selectBooleanCheckbox>
+								
+							</p:panelGrid>
+							
+							<p:panelGrid columns="2" style="margin:auto; height: 100%;">
+								<p:barcode type="code128" value="#{generationCodeBarreController.codeBarre}" style="text-align: center" rendered="#{generationCodeBarreController.afficherEAN128}"/>
+								<p:barcode type="ean13" value="#{generationCodeBarreController.codeBarreEAN13}" style="text-align: center" rendered="#{generationCodeBarreController.afficherEAN13}"/>
+								<p:barcode type="datamatrix" value="#{generationCodeBarreController.codeBarre}" style="text-align: center" rendered="#{generationCodeBarreController.afficherDatamatrix}"/>
+								<p:barcode type="qr" value="#{generationCodeBarreController.codeBarre}" style="text-align: center" rendered="#{generationCodeBarreController.afficherQrCode}"/>
+									
+								
+<!-- 								<pe:qrCode -->
+<!-- 						           	renderMethod="canvas"    -->
+<!-- 						           	renderMode="2"    -->
+<!-- 						           	text="#{generationCodeBarreController.codeBarre}"   -->
+<!-- 						           	label="BDG"   -->
+<!-- 						           	size="100"                    -->
+<!-- 						           	fillColor="#7d767d"   -->
+<!-- 						           	fontName="Ubuntu"   -->
+<!-- 						          	fontColor="#01A9DB"   -->
+<!-- 						           	ecLevel="H"                      -->
+<!-- 						           	radius="0.5" -->
+<!-- 						           	rendered="#{generationCodeBarreController.afficherQrCode}"/>    -->
+					           	</p:panelGrid>
+							
+							<f:facet name="footer">
+								<div style="text-align: center">
+									
+									
+									<p:commandButton value="Rafraichir" actionListener="#{generationCodeBarreController.actValiderCodeBarre}" 
+										update="@form" style="margin-right:50px;"/>
+									<p:commandButton value="Imprimer" actionListener="#{generationCodeBarreController.actImprimerCode128}"
+									onsuccess="window.open('#{request.contextPath}/articles/etiquette_cb128.xhtml')"
+									disabled="#{generationCodeBarreController.codeBarre==null or generationCodeBarreController.codeBarre==''}"
+									/>
+								</div>
+							</f:facet>
+	
+						</p:panelGrid>
+					</div>
+				</div>
+			</h:panelGroup>
+			
+<!-- 			<h:panelGroup rendered="#{!generationCodeBarreController.parametrage}"> -->
+<!-- 				<div class="ui-g"> -->
+					
+<!-- 					<div class="ui-g-12 ui-md-12 ui-lg-12" style="padding: 0;"> -->
+<!-- 						<p:panelGrid columns="1" style="width:100%; height: 100%;" > -->
+<!-- 							<f:facet name="header"> -->
+<!-- 							</f:facet> -->
+							
+<!-- 							<p:barcode type="code128" value="#{generationCodeBarreController.codeBarre}"/> -->
+							
+<!-- 							<f:facet name="footer"> -->
+<!-- 								<div style="text-align: center"> -->
+<!-- 									<p:commandButton value="Annuler" actionListener="#{generationCodeBarreController.actAnnuler}" style="margin-right:50px;"/> -->
+									
+<!-- 									<p:commandButton value="Imprimer" actionListener="#{generationCodeBarreController.actImprimerCode128}" -->
+<!-- 									onsuccess="window.open('#{request.contextPath}/articles/etiquette_cb128.xhtml')"/> -->
+									
+<!-- 									<p:messages showDetail="true" autoUpdate="true"></p:messages> -->
+<!-- 								</div> -->
+<!-- 							</f:facet> -->
+	
+<!-- 						</p:panelGrid> -->
+<!-- 					</div> -->
+<!-- 				</div> -->
+<!-- 			</h:panelGroup> -->
+							
+		</h:form>
+	</ui:define>
+     
+</ui:composition>

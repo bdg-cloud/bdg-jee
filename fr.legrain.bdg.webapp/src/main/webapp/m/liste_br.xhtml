@@ -1,0 +1,150 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/template.xhtml">
+
+    <ui:define name="head">
+        <script type="text/javascript">
+            function skinChart() {
+                this.cfg.shadow = false;
+                this.cfg.title = '';
+                this.cfg.seriesColors = ['#0097A7', '#0277BD', '#E53935'];
+                this.cfg.grid = {
+                    background: '#ffffff',
+                    borderColor: '#ffffff',
+                    gridLineColor: '#F5F5F5',
+                    shadow: false
+                };
+                this.cfg.axesDefaults = {
+                    rendererOptions: {
+                        textColor: '#666F77'
+                    }
+                };
+                this.cfg.seriesDefaults = {
+                    shadow: false,
+                    lineWidth:1,
+                    markerOptions: {
+                        shadow: false,
+                        size:7,
+                        style:'circle'
+                    }
+                };
+                this.cfg.axes.yaxis.tickOptions.show = false;
+            }
+        </script>
+        <style type="text/css">
+            .jqplot-target, .jqplot-axis {
+                color: #546E7A;
+            }
+        </style>
+    </ui:define>
+    
+    <ui:define name="subheader">
+        Liste bon de réception
+    </ui:define>
+
+    <ui:define name="content">
+        
+       liste Bon de réception
+<h:form id="listebr" >
+	 	
+<!-- 	<div class="text-center"> -->
+<!-- 		 <p:commandButton value="Ajouter" title="Ajouter" update="@form"  actionListener="#{bonReceptionController.nouveau}" icon="fa fa-plus-circle"/> -->
+<!-- 		 <p:commandButton value="Détail" title="Détail" update="@form" actionListener="#{bonReceptionController.detail}" icon="fa fa-eye"/> -->
+<!-- 		 <p:commandButton value="Supprimer" title="Supprimer" update="@form" actionListener="#{bonReceptionController.supprimer}" icon="fa fa-trash"> -->
+<!-- 		 	<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer cet enregistrement ?"/> -->
+<!-- 		 </p:commandButton> -->
+<!-- 		 <p:commandButton value="Rafraîchir" title="Rafraîchir" update="@form" actionListener="#{bonReceptionController.refresh}" icon="fa fa-refresh"/> -->
+<!-- 	</div> -->
+	<p:menubar >
+		 <p:menuitem value="Ajouter" title="Ajouter" update="@form"  actionListener="#{bonReceptionController.nouveau}" icon="fa fa-plus-circle"/>
+		 <p:menuitem value="Détail" title="Détail" update="@form" actionListener="#{bonReceptionController.detail}" icon="fa fa-eye"/>
+		 <p:menuitem value="Supprimer" title="Supprimer" update="@form" actionListener="#{bonReceptionController.supprimer}" icon="fa fa-trash">
+		 	<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer cet enregistrement ?"/>
+		 </p:menuitem>
+		 <p:menuitem value="Rafraîchir" title="Rafraîchir" update="@form" actionListener="#{bonReceptionController.refresh}" icon="fa fa-refresh"/>
+	</p:menubar>
+	
+	<p:dataTable id="dataTableListeBonReception" var="bonReception"
+				widgetVar="wvDataTableListeBR"
+				value="#{bonReceptionController.values}"
+				rowKey="#{bonReception.id}"
+				selection="#{bonReceptionController.selectedTaBonReceptionDTO}"
+				selectionMode="single"
+				dblClickSelect="true"
+				styleClass="datatable mt10"
+				resizableColumns="true"
+				paginator="true" 
+				rows="#{msg.modele_datatable_ligne_par_page_debut}"
+				paginatorTemplate="#{msg.modele_datatable_paginator}"
+				rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+				emptyMessage="#{msg.message_datatable_vide}"
+				currentPageReportTemplate="#{msg.modele_datatable_page_courante}"
+				disabledSelection="#{bonReceptionController.modeEcran.dataSetEnModif()}">
+				
+				<p:ajax event="rowDblselect" listener="#{bonReceptionController.onRowSelect}" update="@form" oncomplete="activeLastTabCenter();"/> 
+				<p:ajax event="rowSelect" listener="#{bonReceptionController.onRowSelect}" disabled="#{bonReceptionController.pasDejaOuvert()}" update="@form" />
+				<!-- 
+				<f:facet name="header">  
+           			<h:outputText value="BonReception" />
+        		</f:facet>
+ -->
+  		<f:facet name="{Exporters}">
+            <h:commandLink>
+                <p:graphicImage library="images" name="excel.png" width="24"/>
+                <p:dataExporter type="xls" target="dataTableListeBonReception" fileName="liste_bon_reception" />
+            </h:commandLink>
+ 
+            <h:commandLink>
+                <p:graphicImage  library="images" name="pdf.png"  width="24"/>
+                <p:dataExporter type="pdf" target="dataTableListeBonReception" fileName="liste_bon_reception"/>
+            </h:commandLink>
+ 
+            <h:commandLink>
+                <p:graphicImage  library="images" name="csv.png"  width="24"/>
+                <p:dataExporter type="csv" target="dataTableListeBonReception" fileName="liste_bon_reception" />
+            </h:commandLink>
+ 
+            <h:commandLink>
+                <p:graphicImage  library="images" name="xml.png"  width="24"/>
+                <p:dataExporter type="xml" target="dataTableListeBonReception" fileName="liste_bon_reception" />
+            </h:commandLink>
+        </f:facet>
+        
+<!-- 				<p:column sortBy="#{bonReception.id}"> -->
+<!-- 					<f:facet name="header"> -->
+<!-- 						<h:outputText value="ID" /> -->
+<!-- 					</f:facet> -->
+<!-- 					<h:outputText value="#{bonReception.id}" /> -->
+<!-- 				</p:column> -->
+
+				<p:column sortBy="#{bonReception.codeDocument}">
+					<f:facet name="header">
+						<h:outputText value="Code" />
+					</f:facet>
+					<h:outputText value="#{bonReception.codeDocument}" />
+				</p:column>
+				
+				<p:column sortBy="#{bonReception.dateDocument}">
+					<f:facet name="header">
+						<h:outputText value="Date" />
+					</f:facet>
+					<h:outputText value="#{bonReception.dateDocument}">
+						<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+					</h:outputText>
+				</p:column>
+				
+				<p:column sortBy="#{bonReception.codeTiers}">
+					<f:facet name="header">
+						<h:outputText value="Code tiers" />
+					</f:facet>
+					<h:outputText value="#{bonReception.codeTiers}" />
+				</p:column>
+
+			</p:dataTable>	
+</h:form>        
+    </ui:define>
+
+</ui:composition>

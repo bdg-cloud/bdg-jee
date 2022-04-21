@@ -1,0 +1,247 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<p:panel id="familleFormPrincipal" widgetVar="FamilleForm">
+
+		<p:panelGrid columns="2" styleClass="grille-cartouche" rendered="#{dansDialogue == null ? true : false}">
+			<h:graphicImage library="images" name="lettrines/F-lettrine.png" styleClass="cartouche-picto" />
+			<p:panelGrid columns="1">
+				<h:panelGroup>
+					<p:outputLabel value="Paramètres - Familles des articles" styleClass="cartouche-titre"/>
+				</h:panelGroup>
+				<h:panelGroup >
+					<p:outputLabel value="Créez des familles d'articles pour regrouper vos articles en groupes homogènes lors de certains rapports et statistiques." styleClass="cartouche-detail"/>
+				</h:panelGroup>
+			</p:panelGrid>
+		</p:panelGrid>
+		
+		<p:lightBox iframe="true" widgetVar="wvAideMenuFamilleArticles" width="1200px">
+		</p:lightBox>
+		
+<!-- 	<p:overlayPanel widgetVar="wvAideMenuFamilleArticles"  -->
+								
+<!-- 								styleClass="overlay-aide-contextuelle overlay-aide-contextuelle-big">								 -->
+<!-- 	</p:overlayPanel> -->
+
+		<!-- bouton -->
+		<p:panel id="familleDataTableF" class="mt30" style="position:relative;"  styleClass="menu-ecran-param"
+			rendered="#{dansDialogue == null ? true : false}">
+			
+			<p:commandButton title="#{c_facture.titre_menu_aide}" styleClass="icon-aidecontextuelle icon" 
+				oncomplete="PF('wvAideMenuFamilleArticles').showURL({src:'#{aide_wiki.parametre_famille_articles}'})" />
+
+			<p:separator styleClass="separateur-menu-vertical separateur-vertical-menu-param "/>
+	
+			<p:commandButton id="idInsererFamilleArticle" value="Ajouter" title="Insérer" process="@this"
+				update=":form:tabView,:form:messages,:form" 
+				actionListener="#{familleArticlesController.actDialogTypes}"
+				styleClass="icon-insert icon" >
+				<p:ajax event="dialogReturn" listener="#{familleArticlesController.handleReturnDialogTypes}" 
+					update=":form"/>
+			</p:commandButton>
+			
+<!-- 			<p:commandButton id="familleInsérer" value="Insérer" process="@this" -->
+<!-- 				disabled="#{familleArticlesController.etatBouton('inserer')}" -->
+<!-- 				update="@widgetVar(varFamilleArticlesPanel), @this, @parent:familleModifier, @parent:familleSupprimer" -->
+<!-- 				actionListener="#{familleArticlesController.actInserer}" -->
+<!-- 				styleClass="btn-insert btn" /> -->
+
+			<p:commandButton id="idModifierFamilleArticle" value="Modifier" title="Modifier" process="@this"
+				update=":form:tabView,:form:messages,:form" 
+				actionListener="#{familleArticlesController.actDialogModifier}"
+				styleClass="icon-update icon" >
+				<p:ajax event="dialogReturn" listener="#{familleArticlesController.handleReturnDialogTypes}" update=":form"/>
+			</p:commandButton>
+			
+<!-- 			<p:commandButton id="familleModifier" value="Modifier" -->
+<!-- 				process="@this" styleClass="btn-update btn" -->
+<!-- 				disabled="#{familleArticlesController.etatBouton('modifier')}" -->
+<!-- 				update="@widgetVar(varFamilleArticlesPanel), @parent:familleInsérer, @this, @parent:familleSupprimer" -->
+<!-- 				actionListener="#{familleArticlesController.actModifier}" /> -->
+
+<!-- update=":form:tabView,:form:messages,:form" -->
+			<p:commandButton id="familleSupprimer" title="Supprimer" 
+			styleClass="icon-delete icon menuitem-poubelle-droite" disabled="#{familleArticlesController.etatBouton('supprimer')}"	
+			actionListener="#{familleArticlesController.actSupprimer}" 
+			update="@widgetVar(wvFamilleArticlesDataTable)" process="@this">
+
+<!-- 				type="button" onclick="PF('famillecd1').show()" -->
+				<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer cet enregistrement ?" icon="ui-icon-alert" />
+			</p:commandButton>
+
+			<p:commandButton id="familleFermer" title="Fermer"
+				styleClass="icon-close icon menuitem-fermer-droite"  
+				onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())">
+<!-- 				type="button" onclick="PF('famillecd2').show()" -->
+				<p:confirm header="Confirmation" message="#{msg_diag.alert_fermeture_onglet}" icon="ui-icon-alert" disabled="#{!familleArticlesController.modeEcran.dataSetEnModif()}"/>
+			</p:commandButton>
+				
+			<p:commandButton id="typeFamilleFermerDialogue" title="Fermer"
+				process="@this" styleClass="icon-close icon menuitem-fermer-droite"
+				actionListener="#{familleArticlesController.actFermerDialog}"
+				rendered="#{dansDialogue != null ? true : false}" />
+
+<!-- 			<p:confirmDialog -->
+<!-- 				message="#{msg_diag.alert_suppresion}" -->
+<!-- 				header="Confirmation" severity="alert" appendTo="@(body)" -->
+<!-- 				widgetVar="famillecd1"> -->
+<!-- 				<p:commandButton id="idOuiConfirmSupprFamilleArticle" value="#{msg_diag.Oui}" update="@form" -->
+<!-- 					oncomplete="PF('famillecd1').hide()"> -->
+<!-- 					<p:ajax listener="#{familleArticlesController.actSupprimer}" /> -->
+<!-- 				</p:commandButton> -->
+<!-- 				<p:commandButton id="idNonConfirmSupprFamilleArticle" value="#{msg_diag.Non}" onclick="PF('famillecd1').hide();" -->
+<!-- 					type="button" /> -->
+<!-- 			</p:confirmDialog> -->
+
+<!-- 			<p:confirmDialog -->
+<!-- 				message="#{msg_diag.alert_fermeture_onglet}" -->
+<!-- 				header="Confirmation" severity="alert" widgetVar="famillecd2" -->
+<!-- 				appendTo="@(body)"> -->
+<!-- 				<p:commandButton id="idOuiConfirmFermerFamilleArticle" value="#{msg_diag.Oui}" -->
+<!-- 					onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())" -->
+<!-- 					oncomplete="PF('famillecd2').hide()" /> -->
+<!-- 				<p:commandButton id="idNonConfirmFermerFamilleArticle" value="#{msg_diag.Non}" onclick="PF('famillecd2').hide();" -->
+<!-- 					type="button" /> -->
+<!-- 			</p:confirmDialog> -->
+		</p:panel>
+
+		<p:dataTable id="familleDataTable" widgetVar="wvFamilleArticlesDataTable" var="table"
+			rendered="#{dansDialogue == null ? true : false}"
+			value="#{familleArticlesController.values}"
+			rowKey="#{table.id}" selectionMode="single" class="datatable"
+			selection="#{familleArticlesController.selection}" paginator="false"
+			rows="#{msg.modele_datatable_ligne_par_page_debut}"
+			paginatorTemplate="#{msg.modele_datatable_paginator}"
+			rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+			emptyMessage="#{msg.message_datatable_vide}"
+			currentPageReportTemplate="#{msg.modele_datatable_page_courante}">
+
+			<p:ajax event="rowSelect"
+				listener="#{familleArticlesController.onRowSelect}" />
+
+			<f:facet name="{Exporters}">
+				<h:commandLink>
+					<p:graphicImage library="images" name="excel.png" width="24" />
+					<p:dataExporter type="xls" target="typeFamilleArticlesDataTable"
+						fileName="type_familleArticles" />
+				</h:commandLink>
+
+				<h:commandLink>
+					<p:graphicImage library="images" name="pdf.png" width="24" />
+					<p:dataExporter type="pdf" target="typeFamilleArticlesDataTable"
+						fileName="type_familleArticles" />
+				</h:commandLink>
+
+				<h:commandLink>
+					<p:graphicImage library="images" name="csv.png" width="24" />
+					<p:dataExporter type="csv" target="typeFamilleArticlesDataTable"
+						fileName="type_familleArticles" options="#{separateurCsvController.csvOptions}" />
+				</h:commandLink>
+
+				<h:commandLink>
+					<p:graphicImage library="images" name="xml.png" width="24" />
+					<p:dataExporter type="xml" target="typeFamilleArticlesDataTable"
+						fileName="type_familleArticles" />
+				</h:commandLink>
+			</f:facet>
+
+			<p:column sortBy="#{table.codeFamille}">
+				<f:facet name="header">
+					<h:outputText value="Code" />
+				</f:facet>
+				<h:outputText value="#{table.codeFamille}" />
+			</p:column>
+			<p:column sortBy="#{table.libcFamille}">
+				<f:facet name="header">
+					<h:outputText value="Libellé" />
+				</f:facet>
+				<h:outputText value="#{table.libcFamille}" />
+			</p:column>
+			<p:column sortBy="#{table.liblFamille}">
+				<f:facet name="header">
+					<h:outputText value="Description" />
+				</f:facet>
+				<h:outputText value="#{table.liblFamille}" />
+			</p:column>
+		</p:dataTable>
+	</p:panel>
+
+	<p:messages id="familleMessages" showDetail="true" autoUpdate="true"
+		closable="true" />
+
+	<p:panel id="famillePanel" visible="true" widgetVar="varFamilleArticlesPanel">
+		<p:panel resizable="false" id="famillePanelCache"
+			rendered="#{familleArticlesController.modeEcran.dataSetEnModif()}">
+<!-- 			<h:form id="familleFormCreation"> -->
+				<f:validateBean disabled="true">
+					<div class="ui-grid ui-grid-responsive" id="familleGridResp">
+						<div class="ui-grid-row">
+							<div class="ui-grid-col-4">
+								<h:outputText value="Code :"></h:outputText>
+							</div>
+							<div class="ui-grid-col-8">
+								<h:inputText id="idTxtCodeFamilleArticle"
+									value="#{familleArticlesController.nouveau.codeFamille}" styleClass="Input50"
+									required="true" requiredMessage="#{msg_diag.alert_champs_obligatoir}" validator="#{familleArticlesController.validateObject}">
+									<f:attribute name="nomChamp" value="#{const.C_CODE_FAMILLE}" />
+									<p:ajax event="blur" update="@this"/>
+								</h:inputText>
+							</div>
+						</div>
+						<div class="ui-grid-row">
+							<div class="ui-grid-col-4">
+								<h:outputText value="Libellé :"></h:outputText>
+							</div>
+							<div class="ui-grid-col-8">
+								<h:inputText id="idTxtLibcFamilleArticle"
+									value="#{familleArticlesController.nouveau.libcFamille}" styleClass="Input100"
+									required="true" requiredMessage="#{msg_diag.alert_champs_obligatoir}" validator="#{familleArticlesController.validateObject}">
+									<f:attribute name="nomChamp" value="#{const.C_LIBC_FAMILLE}" />
+									<p:ajax event="blur" update="@this"/>
+								</h:inputText>
+							</div>
+						</div>
+						<div class="ui-grid-row">
+							<div class="ui-grid-col-4">
+								<h:outputText value="Commentaire :"></h:outputText>
+							</div>
+							<div class="ui-grid-col-8">
+								<h:inputTextarea  id="idTxtCommentaireFamilleArticle"
+									value="#{familleArticlesController.nouveau.liblFamille}"
+									styleClass="large-input-100"
+									validator="#{familleArticlesController.validateObject}">
+									<f:attribute name="nomChamp" value="#{const.C_LIBL_FAMILLE}" />
+									<p:ajax event="blur" update="@this"/>
+								</h:inputTextarea>
+							</div>
+						</div>
+						<div class="ui-grid-row">
+							<div class="ui-grid-col-12 text-center">
+								<p:commandButton id="idEnregistrerFamilleArticle" value="Enregistrer" styleClass="btn-save btn"
+									disabled="#{familleArticlesController.etatBouton('enregistrer')}"
+									update="@widgetVar(FamilleForm), @widgetVar(varFamilleArticlesPanel)"
+									actionListener="#{familleArticlesController.actEnregistrer}" />
+								
+								<p:commandButton id="familleArticlesAnnuler" value="Annuler" styleClass="btn-cancel btn"
+									process="@this"
+									disabled="#{familleArticlesController.etatBouton('annuler')}"
+									update="@widgetVar(FamilleForm), @widgetVar(varFamilleArticlesPanel)"
+									actionListener="#{familleArticlesController.actAnnuler}"
+									rendered="#{dansDialogue != null ? false : true}" />
+									
+								<p:commandButton id="familleArticlesAnnulerDialogue" value="Annuler"
+									styleClass="btn-cancel btn" process="@this"
+									disabled="#{familleArticlesAnnulerController.etatBouton('annuler')}"
+									actionListener="#{familleArticlesController.actFermerDialog}"
+									rendered="#{dansDialogue != null ? true : false}" />
+							</div>
+						</div>
+					</div>
+				</f:validateBean>
+<!-- 			</h:form> -->
+		</p:panel>
+	</p:panel>
+</ui:composition>

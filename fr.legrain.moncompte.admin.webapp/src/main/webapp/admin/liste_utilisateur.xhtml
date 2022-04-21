@@ -1,0 +1,78 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<div class="text-center">
+	 	<p:commandButton value="Ajouter" title="Ajouter" update=":form:tabView,:form:messages" actionListener="#{utilisateurController.nouveau}"  icon="fa fa-plus-circle"/>
+	 	<p:commandButton value="Détail" title="Détail" update=":form:tabView,:form:messages" actionListener="#{utilisateurController.detail}" icon="fa fa-eye"/>
+	 	<p:commandButton value="Supprimer" title="Supprimer" update=":form:tabView,:form:messages" actionListener="#{utilisateurController.supprimer}" icon="fa fa-trash"/>
+	 	<p:commandButton value="Rafraîchir" title="Rafraîchir" update="@form,:form:messages" actionListener="#{utilisateurController.refresh}" icon="fa fa-refresh"/>
+	 	
+	</div>
+	
+	<p:dataTable id="dataTableListeProduits" var="taProduit"
+				styleClass="datatable mt10"
+				value="#{utilisateurController.values}"
+				rowKey="#{taProduit.id}"
+				selection="#{utilisateurController.selectedTaUtilisateurDTO}"
+				selectionMode="single"
+				dblClickSelect="true"
+				resizableColumns="true"
+				paginator="true" 
+				rows="#{msg.modele_datatable_ligne_par_page_debut}"
+				paginatorTemplate="#{msg.modele_datatable_paginator}"
+				rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+				emptyMessage="#{msg.message_datatable_vide}"
+				currentPageReportTemplate="#{msg.modele_datatable_page_courante}">
+				
+				<p:ajax event="rowDblselect" listener="#{utilisateurController.onRowSelect}" update=":form:tabView,:form:messages,@form" oncomplete="activeLastTabCenter()"/>
+				<p:ajax event="rowSelect" listener="#{utilisateurController.onRowSelect}" disabled="#{utilisateurController.pasDejaOuvert()}" update=":form:tabView,:form:messages,@form" /> 
+
+  <f:facet name="{Exporters}">
+            <h:commandLink>
+                <p:graphicImage library="images" name="excel.png" width="24"/>
+                <p:dataExporter type="xls" target="dataTableListeProduits" fileName="liste_utilisateurs" />
+            </h:commandLink>
+ 
+            <h:commandLink>
+                <p:graphicImage  library="images" name="pdf.png"  width="24"/>
+                <p:dataExporter type="pdf" target="dataTableListeProduits" fileName="liste_utilisateurs"/>
+            </h:commandLink>
+ 
+            <h:commandLink>
+                <p:graphicImage  library="images" name="csv.png"  width="24"/>
+                <p:dataExporter type="csv" target="dataTableListeProduits" fileName="liste_utilisateurs" />
+            </h:commandLink>
+ 
+            <h:commandLink>
+                <p:graphicImage  library="images" name="xml.png"  width="24"/>
+                <p:dataExporter type="xml" target="dataTableListeProduits" fileName="liste_utilisateurs" />
+            </h:commandLink>
+        </f:facet>
+
+				<p:column sortBy="#{taProduit.username}">
+					<f:facet name="header">
+						<h:outputText value="Login" />
+					</f:facet>
+					<h:outputText value="#{taProduit.username}" />
+				</p:column>
+				
+				<p:column sortBy="#{taProduit.email}">
+					<f:facet name="header">
+						<h:outputText value="EMail" />
+					</f:facet>
+					<h:outputText value="#{taProduit.email}" />
+				</p:column>
+				
+				<p:column>
+					<f:facet name="header">
+						<h:outputText value="Client" />
+					</f:facet>
+<!-- 					<h:outputText value="X" rendered="#{taProduit.}" /> -->
+				</p:column>
+				
+			</p:dataTable>
+
+</ui:composition>

@@ -1,0 +1,210 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<p:panel id="typeCodeBarreFormPrincipal" widgetVar="typeCodeBarreForm">
+
+		<p class="subtitle">
+			<p:outputLabel value="Gestion des types de code barre" rendered="#{dansDialogue == null ? true : false}" />
+		</p>
+		
+		<!-- bouton -->
+		<p:panel id="typeCodeBarreDataTableF" class="mt30" style="position:relative;"
+			rendered="#{dansDialogue == null ? true : false}">
+			
+			<p:commandButton id="idInsererTypeCodeBarre" value="Ajouter" title="Insérer" process="@this"
+				update=":form:tabView,:form:messages,:form" 
+				actionListener="#{typeCodeBarreController.actDialogTypes}"
+				styleClass="icon-insert icon" >
+				<p:ajax event="dialogReturn" listener="#{typeCodeBarreController.handleReturnDialogTypes}" 
+					update=":form"/>
+			</p:commandButton>
+			
+<!-- 			<p:commandButton id="typeCodeBarreInsérer" title="Insérer" -->
+<!-- 				process="@this" -->
+<!-- 				disabled="#{typeCodeBarreController.etatBouton('inserer')}" -->
+<!-- 				update="@widgetVar(varTypeCodeBarrePanel), @this, @parent:typeCodeBarreModifier, @parent:typeCodeBarreSupprimer" -->
+<!-- 				actionListener="#{typeCodeBarreController.actInserer}" -->
+<!-- 				class="icon-insert icon" /> -->
+
+			<p:commandButton id="idModifierTypeCodeBarre" value="Modifier" title="Modifier" process="@this"
+				update=":form:tabView,:form:messages,:form" 
+				actionListener="#{typeCodeBarreController.actDialogModifier}"
+				styleClass="icon-update icon" >
+				<p:ajax event="dialogReturn" listener="#{typeCodeBarreController.handleReturnDialogTypes}" update=":form"/>
+			</p:commandButton>
+			
+<!-- 			<p:commandButton id="typeCodeBarreModifier" title="Modifier" -->
+<!-- 				process="@this" class="icon-update icon" -->
+<!-- 				disabled="#{typeCodeBarreController.etatBouton('modifier')}" -->
+<!-- 				update="@widgetVar(varTypeCodeBarrePanel), @parent:typeCodeBarreInsérer, @this, @parent:typeCodeBarreSupprimer" -->
+<!-- 				actionListener="#{typeCodeBarreController.actModifier}" /> -->
+
+			<p:commandButton id="typeCodeBarreSupprimer" title="Supprimer"
+				styleClass="icon-delete icon menuitem-poubelle-droite"
+				disabled="#{typeCodeBarreController.etatBouton('supprimer')}"
+				actionListener="#{typeCodeBarreController.actSupprimer}"
+				update="@widgetVar(wvTypeCodeBarreDataTable)" process="@this"
+				 >
+<!-- 				type="button" onclick="PF('famillecd1').show()" -->
+				<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer cet enregistrement ?" icon="ui-icon-alert" />
+			</p:commandButton>
+
+			<p:commandButton id="typeCodeBarreFermer" title="Fermer"
+				class="icon-close icon menuitem-fermer-droite" onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())">
+<!-- 				type="button" onclick="PF('famillecd2').show()" -->
+				<p:confirm header="Confirmation" message="#{msg_diag.alert_fermeture_onglet}" icon="ui-icon-alert" disabled="#{!typeCodeBarreController.modeEcran.dataSetEnModif()}"/>
+			</p:commandButton>
+
+			<p:commandButton id="typeCodeBarreFermerDialogue" title="Fermer"
+				process="@this" class="icon-close icon menuitem-fermer-droite"
+				actionListener="#{typeCodeBarreController.actFermerDialog}"
+				rendered="#{dansDialogue != null ? true : false}" />
+
+<!-- 			<p:confirmDialog message="#{msg_diag.alert_suppresion}" -->
+<!-- 				header="Confirmation" severity="alert" appendTo="@(body)" -->
+<!-- 				widgetVar="typeCodeBarrecd1"> -->
+<!-- 				<p:commandButton value="#{msg_diag.Oui}" update="@form" -->
+<!-- 					oncomplete="PF('typeCodeBarrecd1').hide()"> -->
+<!-- 					<p:ajax listener="#{typeCodeBarreController.actSupprimer}" /> -->
+<!-- 				</p:commandButton> -->
+<!-- 				<p:commandButton value="#{msg_diag.Non}" -->
+<!-- 					onclick="PF('typeCodeBarrecd1').hide();" type="button" /> -->
+<!-- 			</p:confirmDialog> -->
+
+<!-- 			<p:confirmDialog message="#{msg_diag.alert_fermeture_onglet}" -->
+<!-- 				header="Confirmation" severity="alert" widgetVar="typeCodeBarrecd2" -->
+<!-- 				appendTo="@(body)"> -->
+<!-- 				<p:commandButton value="#{msg_diag.Oui}" -->
+<!-- 					onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())" -->
+<!-- 					oncomplete="PF('typeCodeBarrecd2').hide()" /> -->
+<!-- 				<p:commandButton value="#{msg_diag.Non}" -->
+<!-- 					onclick="PF('typeCodeBarrecd2').hide();" type="button" /> -->
+<!-- 			</p:confirmDialog> -->
+		</p:panel>
+
+		<p:dataTable id="typeCodeBarreDataTable" widgetVar="wvTypeCodeBarreDataTable" var="table"
+			rendered="#{dansDialogue == null ? true : false}"
+			value="#{typeCodeBarreController.values}" rowKey="#{table.id}"
+			selectionMode="single" class="datatable"
+			selection="#{typeCodeBarreController.selection}" paginator="false"
+			rows="#{msg.modele_datatable_ligne_par_page_debut}"
+			paginatorTemplate="#{msg.modele_datatable_paginator}"
+			rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+			emptyMessage="#{msg.message_datatable_vide}"
+			currentPageReportTemplate="#{msg.modele_datatable_page_courante}">
+
+			<p:ajax event="rowSelect"
+				listener="#{typeCodeBarreController.onRowSelect}" />
+
+			<f:facet name="{Exporters}">
+				<h:commandLink>
+					<p:graphicImage library="images" name="excel.png" width="24" />
+					<p:dataExporter type="xls" target="codeBarreDataTable"
+						fileName="type_codeBarre" />
+				</h:commandLink>
+
+				<h:commandLink>
+					<p:graphicImage library="images" name="pdf.png" width="24" />
+					<p:dataExporter type="pdf" target="codeBarreDataTable"
+						fileName="type_codeBarre" />
+				</h:commandLink>
+
+				<h:commandLink>
+					<p:graphicImage library="images" name="csv.png" width="24" />
+					<p:dataExporter type="csv" target="codeBarreDataTable"
+						fileName="type_codeBarre" options="#{separateurCsvController.csvOptions}" />
+				</h:commandLink>
+
+				<h:commandLink>
+					<p:graphicImage library="images" name="xml.png" width="24" />
+					<p:dataExporter type="xml" target="codeBarreDataTable"
+						fileName="type_codeBarre" />
+				</h:commandLink>
+
+				<!-- 				<p:commandButton value="Imprimer" styleClass="btn-print btn" onsuccess="window.open('#{request.contextPath}/output?__report=/reports/dima_tmp1.rptdesign&amp;__format=pdf')" actionListener="#{entrepotController.actImprimer}" disabled="#{entrepotController.etatBouton('imprimer')}"/> -->
+			</f:facet>
+
+			<p:column sortBy="#{table.codeTypeCodeBarre}">
+<!-- 				filterBy="#{table.codeTypeCodeBarre}" filterMatchMode="contains"> -->
+				<f:facet name="header">
+					<h:outputText value="Code" />
+				</f:facet>
+				<h:outputText value="#{table.codeTypeCodeBarre}" />
+			</p:column>
+			<p:column sortBy="#{table.libelle}">
+<!-- 			 filterBy="#{table.libelle}" filterMatchMode="contains"> -->
+				<f:facet name="header">
+					<h:outputText value="Libellé" />
+				</f:facet>
+				<h:outputText value="#{table.libelle}" />
+			</p:column>
+		</p:dataTable>
+	</p:panel>
+	<!-- 	 -->
+
+	<p:messages id="typeCodeBarreMessages" showDetail="true"
+		autoUpdate="true" closable="true" />
+
+	<p:panel id="typeCodeBarrePanel" visible="true"
+		widgetVar="varTypeCodeBarrePanel">
+		<p:panel onLoad="reset()" resizable="false"
+			id="typeCodeBarrePanelCache"
+			rendered="#{typeCodeBarreController.modeEcran.dataSetEnModif()}">
+			<!-- 			<h:form id="typeCodeBarreFormCreation"> -->
+			<f:validateBean disabled="true">
+				<div class="ui-grid ui-grid-responsive" id="typeCodeBarreGridResp">
+					<div class="ui-grid-row">
+						<div class="ui-grid-col-4">
+							<h:outputText value="Code :"></h:outputText>
+						</div>
+						<div class="ui-grid-col-8">
+							<h:inputText id="idTxtCodeTypeCodeBarre" value="#{typeCodeBarreController.nouveau.codeTypeCodeBarre}" styleClass="Input50"
+								required="true"
+								requiredMessage="#{msg_diag.alert_champs_obligatoir}" validator="#{typeCodeBarreController.validateObject}">
+									<f:attribute name="nomChamp" value="#{const.C_TYPE_CODE_BARRE_ARTICLE}" />
+									<p:ajax event="blur" update="@this"/>
+							</h:inputText>
+						</div>
+					</div>
+					<div class="ui-grid-row">
+						<div class="ui-grid-col-4">
+							<h:outputText value="Libelle :"></h:outputText>
+						</div>
+						<div class="ui-grid-col-8">
+							<h:inputText id="idTxtLibelleTypeCodeBarre" value="#{typeCodeBarreController.nouveau.libelle}" styleClass="Input100"
+								required="true"
+								requiredMessage="#{msg_diag.alert_champs_obligatoir}" validator="#{typeCodeBarreController.validateObject}">
+									<f:attribute name="nomChamp" value="#{const.C_TYPE_CODE_BARRE_LIBELLE}" />
+									<p:ajax event="blur" update="@this"/>
+							</h:inputText>
+						</div>
+					</div>
+					<div class="ui-grid-row">
+						<div class="ui-grid-col-12 text-center">
+							<p:commandButton id="idEnregistrerTypeCodeBarre" value="Enregistrer" styleClass="btn-save btn"
+								disabled="#{typeCodeBarreController.etatBouton('enregistrer')}"
+								update="@widgetVar(typeCodeBarreForm), @widgetVar(varTypeCodeBarrePanel)"
+								actionListener="#{typeCodeBarreController.actEnregistrer}" />
+							
+							<p:commandButton value="Annuler" styleClass="btn-cancel btn"
+								disabled="#{typeCodeBarreController.etatBouton('annuler')}"
+								update="@widgetVar(typeCodeBarreForm), @widgetVar(varTypeCodeBarrePanel)"
+								actionListener="#{typeCodeBarreController.actAnnuler}" 
+								rendered="#{dansDialogue != null ? false : true}" />
+
+							<p:commandButton id="typeCodeBarreAnnulerDialogue" value="Annuler"
+								styleClass="btn-cancel btn" process="@this"
+								disabled="#{typeCodeBarreController.etatBouton('annuler')}"
+								actionListener="#{typeCodeBarreController.actFermerDialog}"
+								rendered="#{dansDialogue != null ? true : false}" />
+						</div>
+					</div>
+				</div>
+			</f:validateBean>
+			<!-- 			</h:form> -->
+		</p:panel>
+	</p:panel>
+</ui:composition>

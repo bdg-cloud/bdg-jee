@@ -1,0 +1,571 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+    xmlns:pe="http://primefaces.org/ui/extensions">
+
+	<p:menubar styleClass="menu-onglet" id="idMenuBoutonGenerationDocument" widgetVar="wvMenuBoutonGenerationDocument">
+
+<!-- 		<p:menuitem title="Créer document" value="Créer document" styleClass="icon icon-save" process="@this" -->
+<!-- 			actionListener="#{generationDocumentMultipleController.actEnregistrer}"  -->
+<!-- 			update="@this"     -->
+<!-- 			disabled="#{generationDocumentMultipleController.etatBouton('enregistrer')}" > -->
+<!-- 		</p:menuitem> -->
+
+		
+			
+<!-- 		<p:separator styleClass="separateur-menu-vertical"/> -->
+
+		<p:menuitem title="Fermer l'écran" value="Fermer" styleClass="icon icon-close menuitem-fermer-droite"
+			process="@this" 
+			actionListener="#{generationDocumentMultipleController.actFermer}"
+			update=":form:messages"
+			disabled="#{generationDocumentMultipleController.etatBouton('fermer')}"
+			onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())">
+			
+			<p:confirm header="Confirmation" message="#{msg_diag.alert_fermeture_onglet}" icon="ui-icon-alert" disabled="#{!generationDocumentMultipleController.modeEcran.dataSetEnModif()}"/>
+		</p:menuitem>
+	</p:menubar>
+	<div class="container">
+		<p:fieldset legend="Etape 1/3 : Saisissez les critères de sélection des Tiers et de transformation des Documents" id="idCriteresFiltresGenDoc" toggleable="true" toggleSpeed="50" >
+
+		<div class="ui-g">
+		
+			<div class="ui-g-12 ui-lg-6">
+				<div class="card">
+						<p:panel header="Période"  style="width:100%;text-align: center;">
+						<p:panelGrid columns="2" columnClasses="ui-grid-col-4 right,ui-grid-col-8" styleClass="ui-panelgrid-blank" layout="grid" >
+							<i class="fa fa-calendar fa-3x" aria-hidden="true"></i>
+								<p:panelGrid columns="2" cellpadding="0">
+									<p:outputLabel value="Du" />
+									<p:calendar value="#{generationDocumentMultipleController.dateDeb}" showOn="button" navigator="true" pattern="#{msg.date_pattern}"
+										mask="true" locale="fr" timeZone="#{msg.time_zone}">
+										<p:ajax event="dateSelect" update="@this" />
+										<p:ajax event="change" update="@this" />
+									</p:calendar>
+
+									<p:outputLabel value="au" />
+									<p:calendar value="#{generationDocumentMultipleController.dateFin}" showOn="button" navigator="true" pattern="#{msg.date_pattern}"
+										mask="true" locale="fr" timeZone="#{msg.time_zone}">
+										<p:ajax event="dateSelect" update="@this" />
+										<p:ajax event="change" update="@this" />
+									</p:calendar>
+								</p:panelGrid>
+							
+
+						</p:panelGrid>
+						</p:panel>
+					</div>
+				<!--Fin div card-->
+				<div class="card">
+					<p:panel header="Critères de filtres des Tiers" id="idPanelParamFiltreTierGenDoc">
+						<p:panelGrid columns="4" columnClasses="ui-grid-col-3,ui-grid-col-3,ui-grid-col-3,ui-grid-col-3" styleClass="ui-panelgrid-blank" layout="grid" >
+		    				<p:selectOneMenu value="#{generationDocumentMultipleController.selectedChamps}" style="width:70%" id="idListeChamps">
+           						<f:selectItems value="#{generationDocumentMultipleController.listeChamps}" />
+           						<p:ajax listener="#{generationDocumentMultipleController.selectionChamp()}" update="idListeMots,idPanelListeTiers,idPanelListeDoc" />
+           					</p:selectOneMenu>						
+
+		    				<p:selectOneMenu value="#{generationDocumentMultipleController.selectedMots}" style="width:70%" id="idListeMots">
+           						<f:selectItems value="#{generationDocumentMultipleController.listeMots}" />
+           						<p:ajax listener="#{generationDocumentMultipleController.selectionMot()}" update="idPanelListeDoc,idPanelListeTiers" />
+		    				</p:selectOneMenu>
+
+		    				<p:inputText value="#{generationDocumentMultipleController.valeurCritere}" style="width:70%" id="idCritere"/>
+		    				<p:inputText value="#{generationDocumentMultipleController.valeurCritere2}" style="width:70%" id="idCritere2"/>
+
+						</p:panelGrid>	
+					</p:panel>
+				
+				</div>
+
+				<div class="card">
+					<p:panel header="Filtrer les Tiers en tenant compte du moyen de paiement par défaut" id="idPanelParamMoyPaieGenDoc">
+						<p:panelGrid columns="2" columnClasses="ui-grid-col-4 right,ui-grid-col-8" styleClass="ui-panelgrid-blank" layout="grid" >
+							<i class="fa fa-money fa-3x" aria-hidden="true"></i>
+								<p:panelGrid columns="1" cellpadding="0">
+									<p:outputLabel value="Type paiement du tiers"/>
+				    				<p:selectOneMenu value="#{generationDocumentMultipleController.selectedTypePaiement}" style="width:70%" id="idListeTypePaiement">
+           								<f:selectItems value="#{generationDocumentMultipleController.listeTypePaiement}" />
+           								<p:ajax listener="#{generationDocumentMultipleController.selectionChamp()}" update="idListeMots,idPanelListeDoc,idPanelListeTiers" />
+				    				</p:selectOneMenu>
+								</p:panelGrid>				
+						</p:panelGrid>				
+					</p:panel>
+				</div>
+
+
+<!-- Section mise en commentaire et à conserver -->
+<!-- Peut être utilisé pour une recherche de tiers par code document				 -->
+<!-- 				<div class="card"> -->
+<!-- 					<p:panel header="Retrouver un Tiers à partir d'un code document" id="idPanelParametres"> -->
+<!-- 						<p:panelGrid columns="2" columnClasses="ui-grid-col-4 right,ui-grid-col-8" styleClass="ui-panelgrid-blank" layout="grid" > -->
+<!-- 							<i class="fa fa-file-text-o fa-3x" aria-hidden="true"></i> -->
+<!-- 								<p:panelGrid columns="1" cellpadding="0"> -->
+<!-- 									<p:outputLabel value="Le document"/> -->
+<!-- 		    						<p:inputText value="#{generationDocumentMultipleController.codeDocument}"/> -->
+<!-- 								</p:panelGrid>				 -->
+<!-- 						</p:panelGrid>				 -->
+<!-- 					</p:panel> -->
+<!-- 				</div> -->
+								
+				</div>
+
+				<div class="ui-g-12 ui-lg-6">
+					<div class="card">
+					<p:panel header="Documents à transformer" >
+						<p:panelGrid columns="2" cellspacing="20" layout="grid" style="text-align:center;">
+							<p:outputLabel value="Documents d'origine" />
+							<p:outputLabel value="Documents destination" />
+							<p:selectOneMenu value="#{generationDocumentMultipleController.selectedTypeSelection}" var="t" id="idSelectionDocSelection"
+								converter="entityConverter">
+								<f:selectItems value="#{generationDocumentMultipleController.listeTypeDocSelection}" var="theme" itemLabel="#{theme.name}"
+									itemValue="#{theme}" />
+								<p:column style="width:10%">
+									<h:graphicImage name="#{t.displayName}" library="images" height="30px" style="margin-top:1px;" />
+								</p:column>
+
+								<p:column>
+									<h:outputText value="#{t.name}" />
+								</p:column>
+								<p:ajax
+									update="idPanelListeDoc,idPanelListeTiers,:form:messages,idSelectionDocCreation,idImageDocSelection,idImageDocCreation"
+									listener="#{generationDocumentMultipleController.actChangeDocSelection()}" />
+							</p:selectOneMenu>
+
+							<p:selectOneMenu value="#{generationDocumentMultipleController.selectedTypeCreation}" var="t" id="idSelectionDocCreation"
+								converter="entityConverter">
+								<f:selectItems value="#{generationDocumentMultipleController.listeTypeDocCreation}" var="theme" itemLabel="#{theme.name}" itemValue="#{theme}" />
+								<p:column style="width:10%">
+									<h:graphicImage name="#{t.displayName}" library="images" height="30px" style="margin-top:1px;" />
+								</p:column>
+								<p:column>
+									<h:outputText value="#{t.name}" />
+								</p:column>
+								<p:ajax update="idPanelListeDoc,idPanelListeTiers,:form:messages,idImageDocCreation"
+									listener="#{generationDocumentMultipleController.actSelectionDocCreation}" />
+							</p:selectOneMenu>
+
+							<h:graphicImage name="#{generationDocumentMultipleController.pathImageSelectionDocSelection}" library="images" height="45px"
+								style="margin-top:1px;" id="idImageDocSelection" />
+							<h:graphicImage name="#{generationDocumentMultipleController.pathImageSelectionDocCreation}" library="images" height="45px"
+								style="margin-top:1px;" id="idImageDocCreation"
+								rendered="#{generationDocumentMultipleController.ImageEstPasVide(generationDocumentMultipleController.pathImageSelectionDocCreation)}" />
+
+						</p:panelGrid>
+					</p:panel>
+				</div>
+				<!--Fin div card-->
+				<div class="card">
+				<p:panel header="Comment voulez-vous regrouper les documents à générer ?">
+		    		<p:selectOneRadio value="#{generationDocumentMultipleController.selectionParamCreeDocTiers}" layout="pageDirection" columns="1">
+						<f:selectItems value="#{generationDocumentMultipleController.listeParamCreeDocTiers}" var="p" itemLabel="#{p}" itemValue="#{p}" />
+					</p:selectOneRadio>
+					<p:inputText value="#{generationDocumentMultipleController.nbJours}" placeholder="Nb. jours"/>
+					<p:selectBooleanCheckbox value="#{generationDocumentMultipleController.appliquerATous}" itemLabel="Ignorer les paramétrages particuliers" disabled="true"/>
+		    	</p:panel>
+				</div>
+				
+
+				
+			</div>
+		</div>
+						<div class="card" style="text-align:center;">
+					<p:commandButton value="Valider les critères" actionListener="#{generationDocumentMultipleController.actRefresh}"
+		    				 update="idPanelListeTiers,idPanelListeDoc"  style="width:20%; height:45px;" icon="fa fa-check"/>
+				</div>
+		
+	 	 </p:fieldset>
+	</div>
+
+
+<!-- 	<div class="ui-g"> -->
+<!-- 		    <div class="ui-g-4"> -->
+<!-- 			<p:fieldset style="margin-bottom:20px;"> -->
+<!-- 				<p:panel header="Période" styleClass="panelgrey"> -->
+<!-- 					<div class="ui-g-12 ui-md-2"> -->
+<!-- 						<i class="fa fa-calendar fa-3x" aria-hidden="true"></i> -->
+<!-- 					</div> -->
+<!-- 					<div class="ui-g-12 ui-md-10"> -->
+<!-- 						<h:panelGrid columns="2" cellpadding="0"> -->
+<!-- 							<p:outputLabel value="Du" /> -->
+<!-- 							<p:calendar -->
+<!-- 								value="#{generationDocumentMultipleController.dateDeb}" -->
+<!-- 								showOn="button" navigator="true" pattern="#{msg.date_pattern}" -->
+<!-- 								mask="true" locale="fr" timeZone="#{msg.time_zone}"> -->
+<!-- 								<p:ajax event="dateSelect" update="@this" /> -->
+<!-- 								<f:ajax event="blur" update="@this" /> -->
+<!-- 							</p:calendar> -->
+
+<!-- 							<p:outputLabel value="au" /> -->
+<!-- 							<p:calendar -->
+<!-- 								value="#{generationDocumentMultipleController.dateFin}" -->
+<!-- 								showOn="button" navigator="true" pattern="#{msg.date_pattern}" -->
+<!-- 								mask="true" locale="fr" timeZone="#{msg.time_zone}"> -->
+<!-- 								<p:ajax event="dateSelect" update="@this" /> -->
+<!-- 								<f:ajax event="blur" update="@this" /> -->
+<!-- 							</p:calendar> -->
+<!-- 																			<f:convertDateTime pattern="#{msg.date_pattern}" -->
+<!-- 																				timeZone="#{msg.time_zone}" /> -->
+<!-- 						</h:panelGrid> -->
+<!-- 					</div> -->
+<!-- 					<p:separator /> -->
+<!-- 				</p:panel> -->
+<!-- 			</p:fieldset> -->
+
+<!-- 			<p:panel header="Critères de filtres" id="idPanelParametres"> -->
+<!-- 		    		<div class="ui-g"> -->
+<!-- 		    			<div class="ui-g-1"> -->
+<!-- 		    				<p:outputLabel value="Début"/> -->
+<!-- 		    			</div> -->
+<!-- 		    			<div class="ui-g-5"> -->
+<!-- 		    				<p:calendar value="#{generationDocumentMultipleController.dateDeb}" pattern="dd/MM/yyyy" mask="true" locale="fr" navigator="true" showOn="button"  timeZone="#{msg.time_zone}"> -->
+<!-- 								<p:ajax event="dateSelect" update="@this" /> -->
+<!-- 								<f:ajax event="blur"  update="@this"/> -->
+<!-- 							</p:calendar> -->
+<!-- 		    			</div> -->
+<!-- 		    			<div class="ui-g-1"> -->
+<!-- 		    				<p:outputLabel value="Fin"/> -->
+<!-- 		    			</div> -->
+<!-- 		    			<div class="ui-g-5"> -->
+<!-- 		    				<p:calendar value="#{generationDocumentMultipleController.dateFin}"  pattern="dd/MM/yyyy" mask="true" locale="fr" navigator="true" showOn="button"  timeZone="#{msg.time_zone}"> -->
+<!-- 								<p:ajax event="dateSelect" update="@this" /> -->
+<!-- 								<f:ajax event="blur"  update="@this"/> -->
+<!-- 							</p:calendar> -->
+<!-- 		    			</div> -->
+<!-- 		    		</div> -->
+<!-- 		    		<div class="ui-g"> -->
+<!-- 		    			<div class="ui-g-3"> -->
+<!-- 		    				<p:outputLabel value="Le document"/> -->
+<!-- 		    			</div> -->
+<!-- 		    			<div class="ui-g-9"> -->
+<!-- 		    				<p:inputText value="#{generationDocumentMultipleController.codeDocument}"/> -->
+<!-- 		    			</div> -->
+<!-- 		    		</div> -->
+<!-- 		    		<div class="ui-g"> -->
+<!-- 		    			<div class="ui-g-3"> -->
+<!-- 		    				<p:selectOneMenu value="#{generationDocumentMultipleController.selectedChamps}" style="width:70%" id="idListeChamps"> -->
+<!--            						<f:selectItems value="#{generationDocumentMultipleController.listeChamps}" /> -->
+<!--            						<p:ajax listener="#{generationDocumentMultipleController.selectionChamp()}" update="idListeMots,idPanelListeTiers,idPanelListeDoc" /> -->
+<!--            					</p:selectOneMenu> -->
+<!-- 		    			</div> -->
+<!-- 		    			<div class="ui-g-3"> -->
+<!-- 		    				<p:selectOneMenu value="#{generationDocumentMultipleController.selectedMots}" style="width:70%" id="idListeMots"> -->
+<!--            						<f:selectItems value="#{generationDocumentMultipleController.listeMots}" /> -->
+<!--            						<p:ajax listener="#{generationDocumentMultipleController.selectionMot()}" update="idPanelListeDoc,idPanelListeTiers" /> -->
+<!-- 		    				</p:selectOneMenu> -->
+<!-- 		    			</div> -->
+<!-- 		    			<div class="ui-g-3"> -->
+<!-- 		    				<p:inputText value="#{generationDocumentMultipleController.valeurCritere}" style="width:70%" id="idCritere"/> -->
+<!-- 		    			</div> -->
+<!-- 		    			<div class="ui-g-3"> -->
+<!-- 		    				<p:inputText value="#{generationDocumentMultipleController.valeurCritere2}" style="width:70%" id="idCritere2"/> -->
+<!-- 		    			</div> -->
+<!-- 		    		</div> -->
+<!-- 		    		<div class="ui-g"> -->
+<!-- 		    			<div class="ui-g-6"> -->
+<!-- 		    				<p:outputLabel value="Type paiement du tiers"/> -->
+<!-- 		    			</div> -->
+<!-- 		    			<div class="ui-g-6"> -->
+<!-- 		    				<p:selectOneMenu value="#{generationDocumentMultipleController.selectedTypePaiement}" style="width:70%" id="idListeTypePaiement"> -->
+<!--            						<f:selectItems value="#{generationDocumentMultipleController.listeTypePaiement}" /> -->
+<!--            						<p:ajax listener="#{generationDocumentMultipleController.selectionChamp()}" update="idListeMots,idPanelListeDoc,idPanelListeTiers" /> -->
+<!-- 		    				</p:selectOneMenu> -->
+<!-- 		    			</div> -->
+<!-- 		    		</div> -->
+<!-- 		    		<div class="ui-g"> -->
+<!-- 		    			<div class="ui-g-9"> -->
+<!-- 		    				<p:commandButton value="Valider la recherche" actionListener="#{generationDocumentMultipleController.actRefresh}" -->
+<!-- 		    				 update="idPanelListeTiers,idPanelListeDoc"/> -->
+<!-- 		    			</div>		    		 -->
+<!-- 		    		</div> -->
+<!-- 		    	</p:panel> -->
+<!-- 			</div> -->
+<!-- 		    <div class="ui-g-4"> -->
+<!-- 		    	<p:panel header="Comment voulez-vous regrouper les documents à générer ?"> -->
+<!-- 		    		<p:selectOneRadio value="#{generationDocumentMultipleController.selectionParamCreeDocTiers}" layout="pageDirection" columns="1"> -->
+<!-- 						<f:selectItems value="#{generationDocumentMultipleController.listeParamCreeDocTiers}" var="p" itemLabel="#{p}" itemValue="#{p}" /> -->
+<!-- 					</p:selectOneRadio> -->
+<!-- 					<p:inputText value="#{generationDocumentMultipleController.nbJours}" placeholder="Nb. jours"/> -->
+<!-- 					<p:selectBooleanCheckbox value="#{generationDocumentMultipleController.appliquerATous}" itemLabel="Ignorer les paramétrages particuliers" disabled="true"/> -->
+<!-- 		    	</p:panel> -->
+<!-- 		    </div> -->
+<!-- 		<div class="ui-g-4"> -->
+<!-- 			<p:panel header="Compléments" > -->
+<!--  			 <p:panelGrid columns="2" cellspacing="20" layout="grid" style="text-align:center;"> -->
+<!-- 				<p:outputLabel value="Documents d'origine" /> -->
+<!-- 					<p:outputLabel value="Documents destination" /> -->
+<!-- 					<p:selectOneMenu value="#{generationDocumentMultipleController.selectedTypeSelection}"  var="t" id="idSelectionDocSelection" converter="entityConverter"> -->
+<!-- 						<f:selectItems value="#{generationDocumentMultipleController.listeTypeDocSelection}" var="theme" itemLabel="#{theme.name}" itemValue="#{theme}" /> -->
+<!-- 						<p:column style="width:10%"> -->
+<!-- 							<h:graphicImage name="#{t.displayName}" library="images"  height="30px" style="margin-top:1px;" /> -->
+<!-- 						</p:column> -->
+
+<!-- 						<p:column> -->
+<!-- 							<h:outputText value="#{t.name}" /> -->
+<!-- 						</p:column> -->
+<!-- 						<p:ajax update="idPanelListeDoc,idPanelListeTiers,idPanelParametres,:form:messages,idSelectionDocCreation,idImageDocSelection,idImageDocCreation" -->
+<!-- 							listener="#{generationDocumentMultipleController.actChangeDocSelection()}" /> -->
+<!-- 					</p:selectOneMenu> -->
+
+<!-- 					<p:selectOneMenu value="#{generationDocumentMultipleController.selectedTypeCreation}" var="t" id="idSelectionDocCreation" converter="entityConverter"> -->
+<!-- 						<f:selectItems value="#{generationDocumentMultipleController.listeTypeDocCreation}"  var="theme" itemLabel="#{theme.name}" itemValue="#{theme}" /> -->
+<!-- 						<p:column style="width:10%"> -->
+<!-- 							<h:graphicImage name="#{t.displayName}" library="images" height="30px" style="margin-top:1px;"  /> -->
+<!-- 						</p:column> -->
+<!-- 						<p:column> -->
+<!-- 							<h:outputText value="#{t.name}" /> -->
+<!-- 						</p:column>						 -->
+<!-- 						<p:ajax update="idPanelListeDoc,idPanelListeTiers,idPanelParametres,:form:messages,idImageDocCreation" -->
+<!-- 							listener="#{generationDocumentMultipleController.actSelectionDocCreation}" /> -->
+<!-- 					</p:selectOneMenu> -->
+					
+<!-- 					<h:graphicImage name="#{generationDocumentMultipleController.pathImageSelectionDocSelection}" library="images" height="65px" style="margin-top:1px;" id="idImageDocSelection"/> -->
+<!-- 					<h:graphicImage name="#{generationDocumentMultipleController.pathImageSelectionDocCreation}" library="images"  height="65px" style="margin-top:1px;" id="idImageDocCreation"  -->
+<!-- 					rendered="#{generationDocumentMultipleController.ImageEstPasVide(generationDocumentMultipleController.pathImageSelectionDocCreation)}"/> -->
+
+<!-- 			</p:panelGrid> -->
+			
+<!-- V1 A garder -->
+<!--  			 <h:panelGrid columns="2" cellspacing="20" layout="grid"> -->
+<!-- 				<h:panelGrid columns="1" cellpadding="0"> -->
+<!-- 				<p:outputLabel value="Documents d'origine" /> -->
+<!-- 					<p:selectOneMenu value="#{generationDocumentMultipleController.selectedTypeSelection}"  var="t" id="idSelectionDocSelection" converter="entityConverter"> -->
+<!-- 						<f:selectItems value="#{generationDocumentMultipleController.listeTypeDocSelection}" var="theme" itemLabel="#{theme.name}" itemValue="#{theme}" /> -->
+<!-- 						<p:column style="width:10%"> -->
+<!-- 							<h:graphicImage name="#{t.displayName}" library="images"  style="margin-top:1px;" /> -->
+<!-- 						</p:column> -->
+<!-- 						<p:column> -->
+<!-- 							<h:outputText value="#{t.name}" /> -->
+<!-- 						</p:column> -->
+<!-- 						<p:ajax update="idPanelListeDoc,idPanelListeTiers,idPanelParametres,:form:messages,idSelectionDocCreation,idImageDocSelection,idImageDocCreation" -->
+<!-- 							listener="#{generationDocumentMultipleController.actChangeDocSelection()}" /> -->
+<!-- 					</p:selectOneMenu> -->
+<!-- 					<h:graphicImage name="#{generationDocumentMultipleController.pathImageSelectionDocSelection}" library="images"  style="margin-top:1px;" id="idImageDocSelection"/> -->
+<!-- 				</h:panelGrid> -->
+
+<!-- 				<h:panelGrid columns="1" cellpadding="0"> -->
+<!-- 					<p:outputLabel value="Documents destination" /> -->
+<!-- 					<p:selectOneMenu value="#{generationDocumentMultipleController.selectedTypeCreation}" var="t" id="idSelectionDocCreation" converter="entityConverter"> -->
+<!-- 						<f:selectItems value="#{generationDocumentMultipleController.listeTypeDocCreation}"  var="theme" itemLabel="#{theme.name}" itemValue="#{theme}" /> -->
+<!-- 						<p:column style="width:10%"> -->
+<!-- 							<h:graphicImage name="#{t.displayName}" library="images" height="35px" style="margin-top:1px;"  /> -->
+<!-- 						</p:column> -->
+<!-- 						<p:column> -->
+<!-- 							<h:outputText value="#{t.name}" /> -->
+<!-- 						</p:column>						 -->
+<!-- 						<p:ajax update="idPanelListeDoc,idPanelListeTiers,idPanelParametres,:form:messages,idImageDocCreation" -->
+<!-- 							listener="#{generationDocumentMultipleController.actSelectionDocCreation}" /> -->
+<!-- 					</p:selectOneMenu> -->
+<!-- 					<h:graphicImage name="#{generationDocumentMultipleController.pathImageSelectionDocCreation}" library="images"  style="margin-top:1px;" id="idImageDocCreation"  -->
+<!-- 					rendered="#{generationDocumentMultipleController.ImageEstPasVide(generationDocumentMultipleController.pathImageSelectionDocCreation)}"/> -->
+<!-- 				</h:panelGrid> -->
+<!-- 			</h:panelGrid> -->
+<!-- Fin V1 a garder -->
+
+<!-- 				<p:outputLabel value="Tranformer les : " /> -->
+<!-- 				<h:panelGrid columns="4" cellpadding="0"> -->
+<!-- 					<p:selectOneMenu value="#{generationDocumentMultipleController.selectedTypeSelection}"  var="t" id="idSelectionDocSelection" converter="entityConverter"> -->
+<!-- 						<f:selectItems value="#{generationDocumentMultipleController.listeTypeDocSelection}" var="theme" itemLabel="#{theme.name}" itemValue="#{theme}" /> -->
+<!-- 						<p:column style="width:10%"> -->
+<!-- 							<h:graphicImage name="#{t.displayName}" library="images"  style="margin-top:1px;" /> -->
+<!-- 						</p:column> -->
+<!-- 						<p:column> -->
+<!-- 							<h:outputText value="#{t.name}" /> -->
+<!-- 						</p:column> -->
+<!-- 						<p:ajax update="idPanelListeDoc,idPanelListeTiers,idPanelParametres,:form:messages,idSelectionDocCreation,idImageDocSelection,idImageDocCreation" -->
+<!-- 							listener="#{generationDocumentMultipleController.actChangeDocSelection()}" /> -->
+<!-- 					</p:selectOneMenu> -->
+<!-- 					<h:graphicImage name="#{generationDocumentMultipleController.pathImageSelectionDocSelection}" library="images"  style="margin-top:1px;" id="idImageDocSelection"/> -->
+<!-- 				</h:panelGrid> -->
+				
+<!-- 				<p:outputLabel value="en" /> -->
+<!-- 				<h:panelGrid columns="2" cellpadding="0"> -->
+<!-- 					<p:selectOneMenu value="#{generationDocumentMultipleController.selectedTypeCreation}" var="t" id="idSelectionDocCreation" converter="entityConverter"> -->
+<!-- 						<f:selectItems value="#{generationDocumentMultipleController.listeTypeDocCreation}"  var="theme" itemLabel="#{theme.name}" itemValue="#{theme}" /> -->
+<!-- 						<p:column style="width:10%"> -->
+<!-- 							<h:graphicImage name="#{t.displayName}" library="images" style="margin-top:1px;"  /> -->
+<!-- 						</p:column> -->
+<!-- 						<p:column> -->
+<!-- 							<h:outputText value="#{t.name}" /> -->
+<!-- 						</p:column>						 -->
+<!-- 						<p:ajax update="idPanelListeDoc,idPanelListeTiers,idPanelParametres,:form:messages,idImageDocCreation" -->
+<!-- 							listener="#{generationDocumentMultipleController.actSelectionDocCreation}" /> -->
+<!-- 					</p:selectOneMenu> -->
+<!-- 					<h:graphicImage name="#{generationDocumentMultipleController.pathImageSelectionDocCreation}" library="images"  style="margin-top:1px;" id="idImageDocCreation"  -->
+<!-- 					rendered="#{generationDocumentMultipleController.ImageEstPasVide(generationDocumentMultipleController.pathImageSelectionDocCreation)}"/> -->
+<!-- 				</h:panelGrid> -->
+<!-- 			</p:panel> -->
+<!-- 		</div> -->
+<!-- 	</div> -->
+	<div class="container">
+
+		<p:fieldset legend="Etape 2/3 : Validez la liste des Tiers correspondants aux critères de sélection" id="idListesTiersGenDoc"  toggleable="true" toggleSpeed="50">
+			<p:panel header="Sélectionner les tiers à prendre en compte" id="idPanelListeTiers">
+				<div class="ui-g">
+	    			<div class="ui-g-12">
+	    				<p:dataTable id="dataTableListeDoc" var="tiers"
+				widgetVar="wvDataTableListeDoc" 
+				styleClass="datatable mt10"
+				value="#{generationDocumentMultipleController.listeTiersDTO}" 
+				rowKey="#{tiers.id}"
+				selection="#{generationDocumentMultipleController.selectedTierses}"
+				dblClickSelect="true"
+				resizableColumns="true"
+				paginator="true" 
+				rows="#{msg.modele_datatable_ligne_par_page_debut}"
+				paginatorTemplate="#{msg.modele_datatable_paginator}"
+				rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+				emptyMessage="#{msg.message_datatable_vide}"
+				currentPageReportTemplate="#{msg.modele_datatable_page_courante}">
+<!-- 	    					<f:facet name="header"> -->
+<!-- 	    						<p:outputLabel value="Liste des tiers à prendre en compte dans le(s) document(s) à créer ()"/> -->
+<!-- 	    					</f:facet> -->
+	    					<p:column selectionMode="multiple" style="width:16px;text-align:center" />
+
+					
+	    				    <p:column sortBy="#{tiers.codeTiers}" filterBy="#{tiers.codeTiers}" filterMatchMode="contains">
+								<f:facet name="header">
+									<h:outputText value="Code tiers" />
+								</f:facet>
+<!-- 								<h:outputText value="#{tiers.codeTiers}" /> -->
+								<p:commandLink value="#{tiers.codeTiers}"
+									action="#{ouvertureDocumentBean.detailTiers(generationDocumentMultipleController.recupCodetiers(tiers.codeTiers))}" update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+<!-- 									<f:setPropertyActionListener value="#{generationDocumentMultipleController.recupCodetiers(tiers.codeTiers)}" target="#{generationDocumentMultipleController.detailLigneTiers}" /> -->
+								</p:commandLink>
+							</p:column>
+	    				    <p:column sortBy="#{tiers.nomTiers}" filterBy="#{tiers.nomTiers}" filterMatchMode="contains">
+								<f:facet name="header">
+									<h:outputText value="Nom" />
+								</f:facet>
+								<h:outputText value="#{tiers.nomTiers}" />
+							</p:column>
+	    				    <p:column sortBy="#{tiers.prenomTiers}" filterBy="#{tiers.prenomTiers}" filterMatchMode="contains">
+								<f:facet name="header">
+									<h:outputText value="Prénom" />
+								</f:facet>
+								<h:outputText value="#{tiers.prenomTiers}" />
+							</p:column>
+	    				    <p:column sortBy="#{tiers.nomEntreprise}" filterBy="#{tiers.nomEntreprise}" filterMatchMode="contains">
+								<f:facet name="header">
+									<h:outputText value="Nom entreprise" />
+								</f:facet>
+								<h:outputText value="#{tiers.nomEntreprise}" />
+							</p:column>
+
+	    				    <p:column sortBy="#{tiers.codepostalAdresse}" filterBy="#{tiers.codepostalAdresse}" filterMatchMode="contains">
+								<f:facet name="header">
+									<h:outputText value="Code postal" />
+								</f:facet>
+								<h:outputText value="#{tiers.codepostalAdresse}" />
+							</p:column>
+
+	    				    <p:column sortBy="#{tiers.villeAdresse}" filterBy="#{tiers.villeAdresse}" filterMatchMode="contains">
+								<f:facet name="header">
+									<h:outputText value="Ville" />
+								</f:facet>
+								<h:outputText value="#{tiers.villeAdresse}" />
+							</p:column>
+
+	    				</p:dataTable>
+	    			</div>
+	    			<div class="ui-g-12" style="text-align:center;">
+	    				<p:commandButton value="Réinitialisation" actionListener="#{generationDocumentMultipleController.actReinitialiserTiers}"
+	    				update="idPanelListeTiers"/>
+	    				<p:commandButton value="Inverser les cochés" actionListener="#{generationDocumentMultipleController.actInverserCoches}"
+	    				update="idPanelListeTiers"/>
+	    				<p:commandButton value="Tout cocher" actionListener="#{generationDocumentMultipleController.actToutCocherTiers}"
+	    				update="idPanelListeTiers"/>
+	    				<p:commandButton value="Tout décocher" actionListener="#{generationDocumentMultipleController.actToutDecocher}"
+	    				update="idPanelListeTiers"/>
+	    				<p:commandButton value="Remplacer la sélection" actionListener="#{generationDocumentMultipleController.actRemplacerSelectionTiers}"
+	    				update="idPanelListeTiers,dataTableListeDoc"/>
+	    				<p:commandButton value="Supprimer les non cochés" actionListener="#{generationDocumentMultipleController.actSupprimerNonCochesTiers}"
+	    				update="idPanelListeTiers"/>
+	    			</div>
+	    			<div class="card" style="text-align:center;">
+	    				<p:commandButton value="Valider la sélection" actionListener="#{generationDocumentMultipleController.actValiderTiers}"
+	    				update="idPanelListeTiers,dataTableListeDoc,idPanelListeDoc"  style="width:20%; height:45px;" icon="fa fa-check"/>
+	    			
+	    			</div>
+		    	</div>
+			</p:panel>
+		</p:fieldset>
+	</div>			
+			
+	<div class="container">
+
+		<p:fieldset legend="Etape 3/3 : Liste des documents prêts à être générés avec les documents sources" id="idListesDocGenDoc"  toggleable="true" toggleSpeed="50">
+			<p:panel header="Sélectionner les documents à prendre en compte dans le document à créer" id="idPanelListeDoc">
+			<div class="ui-g">
+	    		<div class="ui-g-12" >
+					<p:treeTable id="dataTableListeDoc" 
+						value="#{generationDocumentMultipleController.root}"
+						var="document"
+						selection="#{generationDocumentMultipleController.selectedNode}"
+						expandMode=""
+						selectionMode="checkbox" resizableColumns="true">
+						<p:column headerText="Document créé">
+							<h:outputText value="#{document.codeDocument}" />
+						</p:column>
+						<p:column headerText="Libelle document créé">
+							<h:outputText value="#{document.libelleDocument}" />
+						</p:column>
+						
+					<p:column headerText="Document" sortBy="#{document.codeDocument}">
+					
+					</p:column>	
+										
+						<p:column headerText="Document récupéré">
+							<p:commandLink value="#{document.codeDocumentRecup}" action="#{ouvertureDocumentBean.detailDocument(generationDocumentMultipleController.recupCodeDocument(document.codeDocumentRecup))}" update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+							</p:commandLink>
+						</p:column>
+						<p:column headerText="Libellé ligne">
+							<h:outputText value="#{document.libelleLigne}" />
+						</p:column>
+						<p:column headerText="Date document">
+							<h:outputText value="#{document.dateDocument}"
+								styleClass="center">
+								<f:convertDateTime pattern="#{msg.date_pattern}"
+									timeZone="#{msg.time_zone}" />
+							</h:outputText>
+						</p:column>
+						<p:column headerText="Net TTC">
+							<h:outputText value="#{document.netTtc}" styleClass="right" />
+						</p:column>  
+						<p:column headerText="Nb Décimales" id="idNbDecimalGeneration" width="10">
+							<h:outputText title="le document source a été créé avec #{document.nbDecimalesPrix} décimales. Dans cet écran,c'est la préférence du dossier qui est utilisée. Si vous souhaitez utiliser le nb décimales du document, ouvrez le document et générez à partir de l'écran d'origine." 
+							rendered="#{generationDocumentMultipleController.afficheMessageNbDecimale(document)}" escape="false" value="#{document.nbDecimalesPrix}" styleClass="right"   style="font-weight: bold;color:red;"/>
+						</p:column>
+					</p:treeTable>
+
+				</div>
+	    			<div class="ui-g-12" style="text-align:center;">
+	    				<p:commandButton value="Réduire l'affichage" actionListener="#{generationDocumentMultipleController.collapseAll}" icon="fa fa-minus" 
+	    				update="idPanelListeDoc,dataTableListeDoc,@this"/>
+	    				<p:commandButton value="Développer l'affichage" actionListener="#{generationDocumentMultipleController.expandAll}"  icon="fa fa-plus"
+	    				update="idPanelListeDoc,dataTableListeDoc,@this"/>
+<!-- 	    				<p:separator styleClass="separateur-menu-horizontal"/> -->
+	    				<p:commandButton value="Tout cocher" actionListener="#{generationDocumentMultipleController.actToutcocherDocuments}" 
+	    				update="idPanelListeDoc,dataTableListeDoc"/>
+	    				<p:commandButton value="Tout décocher" actionListener="#{generationDocumentMultipleController.actToutDecocherDocuments}" 
+	    				update="idPanelListeDoc,dataTableListeDoc"/>
+	    				<p:commandButton value="Inverser les cochés" actionListener="#{generationDocumentMultipleController.actInverserLesCochesDocument}"  rendered="false" 
+	    				update="idPanelListeDoc,dataTableListeDoc"/>	    				
+	    				<p:commandButton value="Supprimer les non cochés" actionListener="#{generationDocumentMultipleController.actSupprimerNonCochesDocument}"  rendered="false" 
+	    				update="idPanelListeDoc,dataTableListeDoc"/>
+	    			
+	    			</div>
+		    	</div>
+		    	<div class="card" style="text-align:center;">
+				    	<p:commandButton  value="Créer le(s) document(s)" title="Créer document"
+						actionListener="#{generationDocumentMultipleController.actEnregistrer}" update="idPanelListeDoc,idPanelListeTiers" style="width:20%; height:45px;" icon="fa fa-check">
+						<p:ajax event="dialogReturn" listener="#{generationDocumentMultipleController.handleReturnDialogGenerationDocument}" update=":form:tabView,idListesTiersGenDoc"/> 
+				</p:commandButton>
+				</div>
+			</p:panel>
+		</p:fieldset>
+	</div>			
+
+
+</ui:composition>

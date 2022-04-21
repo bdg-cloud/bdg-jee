@@ -1,0 +1,71 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+<!-- 	<p:importConstants type="fr.legrain.bdg.dossier.service.remote.ITaPreferencesServiceRemote" var="ConstPreferences" /> -->
+<!-- 	<p:importConstants type="fr.legrain.bdg.webapp.importation.MajDossierDiversesBean" var="ConstController" /> -->
+
+
+	<f:validateBean disabled="true">
+	
+		<p:menubar styleClass="menu-onglet">
+			
+			<p:menuitem title="Fermer" styleClass="icon icon-close menuitem-fermer-droite" process="@this" 
+				actionListener="#{majDossierDiversesBean.actFermer}"
+				onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())">
+<!-- 				<p:confirm header="Confirmation" message="#{msg_diag.alert_fermeture_onglet}" icon="ui-icon-alert"/> -->
+			</p:menuitem>
+
+		</p:menubar>
+
+		<p:tabView id="idTabViewMajDossierDiverses1" widgetVar="wvTabViewMajDossierDiverses1" >
+<!-- 			<p:ajax event="tabChange" listener="#{majDossierDiversesBean.onTabChange}" update="@this"/> -->
+			
+			<p:tab title="Maj de dossier diverses" >
+				<p:panelGrid columns="1" >
+<!-- 				<p:commandButton value="Mettre un état minimal sur tous les documents" actionListener="#{majDossierDiversesBean.actEtatMinimalTousDocs}"  > -->
+<!-- 				<p:confirm header="Confirmation" message="Etes-vous sur de vouloir mettre un état sur chaque document.  -->
+<!-- 													 Attention cette procédure peut être longue" icon="ui-icon-alert"/>  -->
+<!-- 				</p:commandButton> -->
+<!-- 				<p:commandButton value="Générer ligne à lignes (en java)" actionListener="#{majDossierDiversesBean.actGenereLigneALigne}"> -->
+<!-- 				<p:confirm header="Confirmation" message="Etes-vous sur de vouloir générer toutes les liaisons ligne à ligne.  -->
+<!-- 															 Attention cette procédure peut être longue" icon="ui-icon-alert"/>  -->
+<!-- 				</p:commandButton> -->
+								
+				<p:commandButton value="Générer ligne à lignes (par procédure stockée)" actionListener="#{majDossierDiversesBean.actGenereLigneALigneProcedure}">
+				<p:confirm header="Confirmation" message="Etes-vous sur de vouloir générer toutes les liaisons ligne à ligne. 
+															 Attention cette procédure peut être longue" icon="ui-icon-alert"/> 
+				</p:commandButton>
+				
+				<p:commandButton value="Mettre un état sur tous les documents (par procédure stockée)" actionListener="#{majDossierDiversesBean.actEtatTousDocs}"  >
+				<p:confirm header="Confirmation" message="Etes-vous sur de vouloir mettre un état sur chaque document. 
+													 Attention cette procédure peut être longue" icon="ui-icon-alert"/> 
+				</p:commandButton>
+				
+<!-- 				<p:commandButton value="Modification Etat des docs liés" actionListener="#{majDossierDiversesBean.actModifEtatDocsLies}"> -->
+<!-- 				<p:confirm header="Confirmation" message="Etes-vous sur de vouloir Modifier tous les états des documents liés.  -->
+<!-- 															Attention cette procédure peut être longue" icon="ui-icon-alert"/>  -->
+<!-- 				</p:commandButton> -->
+
+<!-- 				<p:commandButton value="Modification Etat des Factures réglées" actionListener="#{majDossierDiversesBean.actModifEtatFactureReglee}"> -->
+<!-- 				<p:confirm header="Confirmation" message="Etes-vous sur de vouloir Modifier les états de toutes les factures réglées.  -->
+<!-- 									 Attention cette procédure peut être longue" icon="ui-icon-alert"/>  -->
+<!-- 				</p:commandButton> -->
+				
+<!-- 				<p:commandButton value="Test divers" actionListener="#{majDossierDiversesBean.actTestDivers}" rendered="#{auth.isDevLgr()}"> -->
+<!-- 				<p:confirm header="Confirmation" message="Etes-vous sur de vouloir faire le test" icon="ui-icon-alert"/>  -->
+<!-- 				</p:commandButton> -->
+				
+				</p:panelGrid>
+			</p:tab>
+			
+
+		</p:tabView>
+
+
+
+
+	</f:validateBean>
+
+</ui:composition>

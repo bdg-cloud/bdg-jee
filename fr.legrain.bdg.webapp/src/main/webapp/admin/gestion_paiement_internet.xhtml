@@ -1,0 +1,224 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+	
+<!-- 			<f:metadata> -->
+<!-- 				<f:viewParam name="paramRefresh" value="#{gestionPaiementInternetController.paramRefresh}"/> -->
+<!-- 				<f:event type="preRenderView" listener="#{gestionPaiementInternetController.refresh}" /> -->
+<!-- 			</f:metadata> -->
+
+	<p:panel id="labelPaiementInternetFormPrincipal" widgetVar="labelPaiementInternetForm">
+
+		<p class="subtitle">
+			<p:outputLabel value="Gestion des paiements par internet"
+				rendered="#{dansDialogue == null ? true : false}" />
+		</p>
+		
+		<!-- bouton -->
+		<p:panel id="labelPaiementInternetDataTableF" class="mt30" style="position:relative;"
+			rendered="#{dansDialogue == null ? true : false}">
+			
+
+			<p:commandButton value="Rafraîchir" title="Rafraîchir" actionListener="#{gestionPaiementInternetController.refresh}" disabled="#{gestionPaiementInternetController.modeEcran.dataSetEnModif()}"
+				styleClass="icon-refresh icon" process="@this" update=":form:tabView,:form:messages,:form" >
+			</p:commandButton>			
+
+			<p:commandButton id="labelPaiementInternetFermer" title="Fermer"
+				styleClass="icon-close icon menuitem-fermer-droite" onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())">
+				 <p:confirm header="Confirmation" message="#{msg_diag.alert_fermeture_onglet}" icon="ui-icon-alert" disabled="#{!gestionPaiementInternetController.modeEcran.dataSetEnModif()}"/>
+			</p:commandButton>
+				 
+
+			<p:commandButton id="labelPaiementInternetFermerDialogue" title="Fermer"
+				process="@this" styleClass="icon-close icon menuitem-fermer-droite"
+				actionListener="#{gestionPaiementInternetController.actFermerDialog}"
+				rendered="#{dansDialogue != null ? true : false}" />
+
+
+<!-- 			<p:confirmDialog message="#{msg_diag.alert_fermeture_onglet}" -->
+<!-- 				header="Confirmation" severity="alert" widgetVar="labelPaiementInternetcd2" -->
+<!-- 				appendTo="@(body)"> -->
+<!-- 				<p:commandButton value="#{msg_diag.Oui}" -->
+<!-- 					onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())" -->
+<!-- 					oncomplete="PF('labelPaiementInternetcd2').hide()" /> -->
+<!-- 				<p:commandButton value="#{msg_diag.Non}" -->
+<!-- 					onclick="PF('labelPaiementInternetcd2').hide();" type="button" /> -->
+<!-- 			</p:confirmDialog> -->
+		</p:panel>
+		
+		<p:sticky target="labelPaiementInternetDataTableF" />
+		
+		<p:dataTable id="labelPaiementInternetDataTable" 
+			var="table"
+			rendered="#{dansDialogue == null ? true : false}"
+			value="#{gestionPaiementInternetController.values}"
+			rowKey="#{table.id}" 
+			selectionMode="single"
+			class="datatable" 
+			selection="#{gestionPaiementInternetController.selection}"
+			paginator="true" 
+			rows="#{msg.modele_datatable_ligne_par_page_debut}"
+			paginatorTemplate="#{msg.modele_datatable_paginator}"
+			rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+			emptyMessage="#{msg.message_datatable_vide}"
+			currentPageReportTemplate="#{msg.modele_datatable_page_courante}">
+
+			<p:ajax event="rowSelect"
+				listener="#{gestionPaiementInternetController.onRowSelect}" />
+
+			<f:facet name="{Exporters}">
+				<h:commandLink>
+					<p:graphicImage library="images" name="excel.png" width="24" />
+					<p:dataExporter type="xls" target="labelPaiementInternetDataTable"
+						fileName="gestion_lot" />
+				</h:commandLink>
+
+				<h:commandLink>
+					<p:graphicImage library="images" name="pdf.png" width="24" />
+					<p:dataExporter type="pdf" target="labelPaiementInternetDataTable"
+						fileName="gestion_lot" />
+				</h:commandLink>
+
+				<h:commandLink>
+					<p:graphicImage library="images" name="csv.png" width="24" />
+					<p:dataExporter type="csv" target="labelPaiementInternetDataTable"
+						fileName="gestion_lot" />
+				</h:commandLink>
+
+				<h:commandLink>
+					<p:graphicImage library="images" name="xml.png" width="24" />
+					<p:dataExporter type="xml" target="labelPaiementInternetDataTable"
+						fileName="gestion_lot" />
+				</h:commandLink>
+
+			</f:facet>
+
+			<p:column sortBy="#{table.datePaiement}"
+				filterBy="#{table.datePaiement}" filterMatchMode="contains" styleClass="center">
+				<f:facet name="header">
+					<h:outputText value="Date" />
+				</f:facet>
+				<h:outputText value="#{table.datePaiement}" >
+					<f:convertDateTime pattern="#{msg.datetime_pattern}" timeZone="#{msg.time_zone}"/>
+				</h:outputText>
+			</p:column>
+
+			<p:column sortBy="#{table.montantPaiement}" filterBy="#{table.montantPaiement}" filterMatchMode="contains" styleClass="right">
+				<f:facet name="header">
+					<h:outputText value="Montant" />
+				</f:facet>
+				<h:outputText value="#{table.montantPaiement}" disabled="true">
+					<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+				</h:outputText>
+			</p:column>
+
+			<p:column sortBy="#{table.refPaiementService}" filterBy="#{table.refPaiementService}" filterMatchMode="contains" >
+				<f:facet name="header">
+					<h:outputText value="Référence paiement" />
+				</f:facet>
+				<h:outputText value="#{table.refPaiementService}" />
+			</p:column>
+
+			<p:column sortBy="#{table.originePaiement}" filterBy="#{table.originePaiement}" filterMatchMode="contains" styleClass="center">
+				<f:facet name="header" >
+					<h:outputText value="Origine" />
+				</f:facet>
+				<h:outputText value="#{table.originePaiement}" />
+			</p:column>
+
+			<p:column sortBy="#{table.servicePaiement}" filterBy="#{table.servicePaiement}" filterMatchMode="contains" styleClass="center">
+				<f:facet name="header" >
+					<h:outputText value="Service" />
+				</f:facet>
+				<h:outputText value="#{table.servicePaiement}" />
+			</p:column>
+			
+			<p:column sortBy="#{table.codeDocument}" filterBy="#{table.codeDocument}" filterMatchMode="contains" styleClass="center">
+				<f:facet name="header" >
+					<h:outputText value="Code document" />
+				</f:facet>
+				<h:outputText value="#{table.codeDocument}" />
+			</p:column>
+			
+		</p:dataTable>
+
+		
+	</p:panel>
+
+	<p:messages id="labelPaiementInternetMessages" showDetail="true" autoUpdate="true" closable="true" />
+
+	<p:panel id="labelPaiementInternetPanel" visible="true" widgetVar="varLabelPaiementInternetPanel">
+		
+		<p:panel onLoad="reset()" resizable="false" id="labelPaiementInternetPanelCache" rendered="#{gestionPaiementInternetController.modeEcran.dataSetEnModif()}">
+
+				<div class="ui-grid ui-grid-responsive" id="labelPaiementInternetGridResp">
+					<div class="ui-grid-row">
+						<div class="ui-grid-col-4">
+							<h:outputText value="Code article : "></h:outputText>
+						</div>
+						<div class="ui-grid-col-8">
+							<h:inputText
+								value="#{gestionPaiementInternetController.nouveau.montantPaiement}" disabled="true">
+							</h:inputText>
+						</div>
+					</div>
+					<div class="ui-grid-row">
+						<div class="ui-grid-col-4">
+							<h:outputText value="Numéro lot :"></h:outputText>
+						</div>
+						<div class="ui-grid-col-8">
+							<h:inputText
+								value="#{gestionPaiementInternetController.nouveau.montantPaiement}" disabled="true">
+							</h:inputText>
+						</div>
+					</div>
+					<div class="ui-grid-row">
+						<div class="ui-grid-col-4">
+							<h:outputText value="Unité 1 :"></h:outputText>
+						</div>
+						<div class="ui-grid-col-8">
+							<h:inputText
+								value="#{gestionPaiementInternetController.nouveau.montantPaiement}" disabled="true">
+							</h:inputText>
+						</div>
+					</div>
+					<div class="ui-grid-row">
+						<div class="ui-grid-col-4">
+							<h:outputText value="Unité 2 :"></h:outputText>
+						</div>
+						<div class="ui-grid-col-8">
+							<h:inputText
+								value="#{gestionPaiementInternetController.nouveau.montantPaiement}" disabled="true">
+							</h:inputText>
+						</div>
+					</div>
+					
+					<div class="ui-grid-row">
+						<div class="ui-grid-col-12 text-center">
+							<p:commandButton value="Enregistrer" styleClass="btn-save btn"
+								disabled="#{gestionPaiementInternetController.etatBouton('enregistrer')}"
+								update="@widgetVar(labelPaiementInternetForm), @widgetVar(varLabelPaiementInternetPanel)"
+								actionListener="#{gestionPaiementInternetController.actEnregistrer}" />
+
+							<p:commandButton id="labelPaiementInternetAnnuler" value="Annuler"
+								styleClass="btn-cancel btn" process="@this"
+								disabled="#{gestionPaiementInternetController.etatBouton('annuler')}"
+								update="@widgetVar(labelPaiementInternetForm), @widgetVar(varLabelPaiementInternetPanel)"
+								actionListener="#{gestionPaiementInternetController.actAnnuler}" 
+								rendered="#{dansDialogue != null ? false : true}" />
+
+							<p:commandButton id="labelPaiementInternetAnnulerDialogue" value="Annuler"
+								styleClass="btn-cancel btn" process="@this"
+								disabled="#{gestionPaiementInternetController.etatBouton('annuler')}"
+								actionListener="#{gestionPaiementInternetController.actFermerDialog}"
+								rendered="#{dansDialogue != null ? true : false}" />
+						</div>
+					</div>
+				</div>
+<!-- 			</f:validateBean> -->
+			<!-- 			</h:form> -->
+		</p:panel>
+	</p:panel>
+</ui:composition>

@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+   <modelVersion>4.0.0</modelVersion>
+
+   <parent>
+      <artifactId>fr.legrain.espaceclient</artifactId>
+      <groupId>fr.legrain</groupId>
+      <version>0.0.1-SNAPSHOT</version>
+      <relativePath>../fr.legrain.espaceclient/pom.xml</relativePath>
+   </parent>
+
+   <artifactId>fr.legrain.espaceclient.webapp.angular</artifactId>
+   <packaging>war</packaging>
+
+   <name>fr.legrain.espaceclient.webapp.angular: Angular WAR Module</name>
+
+   <url>http://wildfly.org</url>
+   <licenses>
+      <license>
+         <name>Apache License, Version 2.0</name>
+         <distribution>repo</distribution>
+         <url>http://www.apache.org/licenses/LICENSE-2.0.html</url>
+      </license>
+   </licenses>
+
+	<properties>
+		<angular.project.location>espaceclient-app</angular.project.location>
+		<angular.project.nodeinstallation>node_installation</angular.project.nodeinstallation>
+	</properties>
+
+   <dependencies>
+
+      <!-- Dependency on the EJB module so we can use it's services if needed -->
+      <dependency>
+         <groupId>fr.legrain</groupId>
+         <artifactId>fr.legrain.espaceclient.ejb</artifactId>
+         <type>ejb</type>
+         <scope>provided</scope>
+      </dependency>
+      
+      <dependency>
+         <groupId>fr.legrain</groupId>
+         <artifactId>fr.legrain.bdg.ws</artifactId>
+         <type>jar</type>
+         <version>2.0.13-SNAPSHOT</version>
+      </dependency>
+
+      <!-- Import the JAX-RS API, we use provided scope as the API is included in JBoss WildFly -->
+      <dependency>
+         <groupId>org.jboss.resteasy</groupId>
+         <artifactId>jaxrs-api</artifactId>
+         <scope>provided</scope>
+      </dependency>
+
+      <!-- Import the CDI API, we use provided scope as the API is included in JBoss WildFly -->
+      <dependency>
+         <groupId>javax.enterprise</groupId>
+         <artifactId>cdi-api</artifactId>
+         <scope>provided</scope>
+      </dependency>
+      
+      <!-- Import the JSF API, we use provided scope as the API is included in JBoss WildFly -->
+      <dependency>
+         <groupId>org.jboss.spec.javax.faces</groupId>
+         <artifactId>jboss-jsf-api_2.2_spec</artifactId>
+         <scope>provided</scope>
+      </dependency>
+
+      <!-- Import the JPA API, we use provided scope as the API is included in JBoss WildFly -->
+      <dependency>
+         <groupId>org.hibernate.javax.persistence</groupId>
+         <artifactId>hibernate-jpa-2.1-api</artifactId>
+         <scope>provided</scope>
+      </dependency>
+
+       <!-- JSR-303 (Bean Validation) Implementation -->
+       <!-- Provides portable constraints such as @Email -->
+       <!-- Hibernate Validator is shipped in JBoss WildFly -->
+       <dependency>
+           <groupId>org.hibernate</groupId>
+           <artifactId>hibernate-validator</artifactId>
+           <scope>provided</scope>
+           <exclusions>
+               <exclusion>
+                   <groupId>org.slf4j</groupId>
+                   <artifactId>slf4j-api</artifactId>
+               </exclusion>
+           </exclusions>
+       </dependency>
+       
+       	<!-- https://mvnrepository.com/artifact/org.primefaces/primefaces -->
+		<dependency>
+			<groupId>org.primefaces</groupId>
+			<artifactId>primefaces</artifactId>
+			<version>6.0</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.jboss.spec</groupId>
+			<artifactId>jboss-javaee-7.0</artifactId>
+			<version>1.0.1.Final</version>
+			<type>pom</type>
+			<scope>provided</scope>
+		</dependency>
+
+   </dependencies>
+
+   <build>
+      <finalName>${project.artifactId}</finalName>
+      <plugins>
+         <plugin>
+            <artifactId>maven-war-plugin</artifactId>
+            <version>${version.war.plugin}</version>
+            <configuration>
+               <!-- Java EE 7 doesn't require web.xml, Maven needs to catch up! -->
+               <failOnMissingWebXml>false</failOnMissingWebXml>
+            </configuration>
+         </plugin>
+         
+         <plugin>
+            <groupId>com.github.eirslett</groupId>
+            <artifactId>frontend-maven-plugin</artifactId>
+            <version>1.8.0</version>
+            <configuration>
+                <workingDirectory>${angular.project.location}</workingDirectory>
+                <installDirectory>${angular.project.nodeinstallation}</installDirectory>
+            </configuration>
+            <executions>
+                <!-- It will install nodejs and npm -->
+                <execution>
+                    <id>install node and npm</id>
+                    <goals>
+                        <goal>install-node-and-npm</goal>
+                    </goals>
+                    <configuration>
+                        <nodeVersion>v10.17.0</nodeVersion>
+                        <npmVersion>6.11.3</npmVersion>
+                    </configuration>
+                </execution>
+
+                <!-- It will execute command "npm install" inside "/e2e-angular2" directory -->
+                <execution>
+                    <id>npm install</id>
+                    <goals>
+                        <goal>npm</goal>
+                    </goals>
+                    <configuration>
+                        <arguments>install</arguments>
+                    </configuration>
+                </execution>
+                <!-- It will execute command "npm build" inside "/e2e-angular2" directory 
+                    to clean and create "/dist" directory -->
+                <execution>
+                    <id>npm build</id>
+                    <goals>
+                        <goal>npm</goal>
+                    </goals>
+                    <configuration>
+                        <arguments>run build</arguments>
+                    </configuration>
+                </execution>
+            </executions>
+        </plugin>
+
+        <!-- Plugin to copy the content of /angular/dist/ directory to output 
+            directory (ie/ /target/transactionManager-1.0/) -->
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-resources-plugin</artifactId>
+            <version>3.1.0</version>
+            <executions>
+                <execution>
+                    <id>default-copy-resources</id>
+                    <phase>process-resources</phase>
+                    <goals>
+                        <goal>copy-resources</goal>
+                    </goals>
+                    <configuration>
+                        <overwrite>true</overwrite>
+                        <!-- This folder is the folder where your angular files 
+                        will be copied to. It must match the resulting war-file name.
+                        So if you have customized the name of war-file for ex. as "app.war"
+                        then below value should be ${project.build.directory}/app/ 
+                        Value given below is as per default war-file name -->
+                        <outputDirectory>${project.build.directory}/${project.artifactId}/</outputDirectory>
+                        <resources>
+                            <resource>
+                                <directory>${project.basedir}/${angular.project.location}/dist/${angular.project.location}</directory>
+                            </resource>
+                            <resource>
+                                <directory>${project.basedir}/WebContent</directory>
+                            </resource>
+                        </resources>
+                    </configuration>
+                </execution>
+            </executions>
+        </plugin>
+        
+        <plugin>
+		    <artifactId>maven-assembly-plugin</artifactId>
+		    <version>2.5.5</version>
+		    <executions>
+		        <execution>
+		            <phase>package</phase>
+		            <goals>
+		                <goal>single</goal>
+		            </goals>
+		            <configuration>
+		                <descriptors>
+		                    <descriptor>assembly.xml</descriptor> <!-- path to the descriptor -->
+		                </descriptors>
+		                <appendAssemblyId>false</appendAssemblyId>
+		            </configuration>
+		        </execution>
+		    </executions>
+		</plugin>
+      </plugins>
+   </build>
+
+</project>

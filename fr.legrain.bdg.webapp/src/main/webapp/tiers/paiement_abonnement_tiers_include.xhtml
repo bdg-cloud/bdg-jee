@@ -1,0 +1,191 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
+xmlns:f="http://java.sun.com/jsf/core" 
+xmlns:h="http://java.sun.com/jsf/html"
+xmlns:ui="http://java.sun.com/jsf/facelets" 
+xmlns:o="http://omnifaces.org/ui" 
+xmlns:p="http://primefaces.org/ui">
+
+
+
+	<p:panel widgetVar="paiementAbonnementTiersForm#{variableNomWvIDUnique}">
+		<p:panel widgetVar="panelMessagesLigneEcheanceAll" rendered="#{!paiementAbonnementTiersController.cronValide}">
+			<h:outputLabel value="" style="color: red; font-weight: bold;" >
+				Attention, les actions possibles sur cet écran sont bloquées car il semble que le partie du programme BDG chargée de générer automatiquement les prochaines échéances d'abonnement,
+			    de suspendre ou supprimer les échéances d'abonnement, de suspendre ou d'annuler les lignes d'abonnement associées et enfin de créer les paiements prévus ne se soit pas déclenché comme prévue.
+				Nous vous conseillons fortement de lancer manuellement ces opérations via le bouton Lancer le cron dans l'écran Gestion des abonnements. Si l'opération se passse bien, ce message disparaitra quand vous rechargerez cet écran.
+			</h:outputLabel>
+		</p:panel>
+		<p:panel widgetVar="panelActionGroupeeLigneEcheanceAll">
+	        <h:panelGrid columns="2">				        	
+	        	<p:outputLabel>#{paiementAbonnementTiersController.selectedLignesEcheances.size()} ligne(s) séléctionnée(s)</p:outputLabel>
+	        	 <p:menuButton value="Action groupée" disabled="#{paiementAbonnementTiersController.selectedLignesEcheances.isEmpty() or paiementAbonnementTiersController.cronValide == false}">
+			        <p:menuitem value="Renouveller sans facturer" action="#{paiementAbonnementTiersController.actionGroupee1}" update="@widgetVar(wvDatatableEcheanceNonEmisePaiementAbonnementPaiementAbonnement), @widgetVar(panelActionGroupeeLigneEcheanceAll)"
+			         icon="pi pi-save">
+			         	 <p:confirm header="Confirmation" message="Etes-vous sur de vouloir renouveller ces abonnements sans créer de factures et de règlements ?" icon="pi pi-exclamation-triangle" />
+			         </p:menuitem>
+			        <p:menuitem value="Facturer et Régler" action="#{paiementAbonnementTiersController.actionGroupee2}" update="@widgetVar(wvDatatableEcheanceNonEmisePaiementAbonnementPaiementAbonnement), @widgetVar(panelActionGroupeeLigneEcheanceAll)" icon="pi pi-refresh">
+			        	<p:ajax event="dialogReturn" 
+			        	listener="#{paiementAbonnementTiersController.handleReturnDialogGenerationDocument}"
+			        	update="@this,:form:tabView, @widgetVar(panelActionGroupeeLigneEcheanceAll), @widgetVar(wvDatatableEcheanceNonEmisePaiementAbonnementPaiementAbonnement)"
+			        	oncomplete="activeTabCenter('#{paiementAbonnementTiersController.css}');" /> 
+			        </p:menuitem>
+			        <p:menuitem value="Facturer" action="#{paiementAbonnementTiersController.actionGroupee3}" update="@widgetVar(wvDatatableEcheanceNonEmisePaiementAbonnementPaiementAbonnement), @widgetVar(panelActionGroupeeLigneEcheanceAll)"  icon="pi pi-times"  disabled="true"/> 
+			        <p:menuitem value="Créer un avis d'échéances " action="#{paiementAbonnementTiersController.actionGroupee3}"   update="@widgetVar(wvDatatableEcheanceNonEmisePaiementAbonnementPaiementAbonnement), @widgetVar(panelActionGroupeeLigneEcheanceAll)">
+			        	<p:ajax event="dialogReturn" listener="#{paiementAbonnementTiersController.handleReturnDialogGenerationDocument}" update="@this, @widgetVar(panelActionGroupeeLigneEcheanceAll), @widgetVar(wvDatatableEcheanceNonEmisePaiementAbonnementPaiementAbonnement)" /> 
+<!-- 			        	oncomplete="activeTabCenter('#{paiementAbonnementTiersController.css} " /> -->
+			        </p:menuitem> 
+			        <p:menuitem value="Ajouter au panier " action="#{paiementAbonnementTiersController.actionGroupee4}"   update="@widgetVar(wvDatatableEcheanceNonEmisePaiementAbonnementPaiementAbonnement), @widgetVar(panelActionGroupeeLigneEcheanceAll)">
+			        	<p:ajax event="dialogReturn" listener="#{paiementAbonnementTiersController.handleReturnDialogGenerationDocument}" update="@this, @widgetVar(panelActionGroupeeLigneEcheanceAll), @widgetVar(wvDatatableEcheanceNonEmisePaiementAbonnementPaiementAbonnement) " /> 
+			        </p:menuitem> 
+			    </p:menuButton>
+			      <!-- <p:outputLabel value="Filtrer sur code d'avis d'échéance  :  "/> 
+				 <p:selectOneMenu value="#{paiementAbonnementTiersController.selectedAvis}" widgetVar="wvSelectOneMenuTaAvisEcheanceAbonnement" converter="entityConverter" style="width:100%">
+						 <f:selectItem itemLabel="Tous" itemValue="#{null}"></f:selectItem> 
+		            <f:selectItems value="#{paiementAbonnementTiersController.listeAvis}" itemLabel="#{entry.codeDocument}" var="entry" itemValue="#{entry}"/>
+		            <p:ajax process="@this" listener="#{paiementAbonnementTiersController.initLigneEcheance}" update=" @widgetVar(wvDatatableEcheanceNonEmisePaiementAbonnementPaiementAbonnement), @this"/>
+		        </p:selectOneMenu> -->
+			   <!--  <p:outputLabel value="Choisir un type de paiement pour filtrer et pouvoir régler les échéances :  "/> 
+				<p:selectOneMenu value="#{paiementAbonnementTiersController.selectedTaTPaiement}" widgetVar="wvSelectOneMenuTaTPaiementAbonnement" converter="entityConverter" style="width:100%">
+						<f:selectItem itemLabel="Choisir un type de paiement" itemValue="#{null}"></f:selectItem>
+		            <f:selectItems value="#{paiementAbonnementTiersController.taTPaiement}" itemLabel="#{entry.liblStripeTSource} - #{entry.idExterne}" var="entry" itemValue="#{entry}"/>
+		            <p:ajax process="@this" listener="#{paiementAbonnementTiersController.refresh}" update=" @widgetVar(wvDatatableEcheanceNonEmisePaiementAbonnementPaiementAbonnement), @widgetVar(panelActionGroupeeLigneEcheanceAll)"/>
+		        </p:selectOneMenu>-->
+	        </h:panelGrid>
+        </p:panel>
+        
+        <div class="card">
+				<p:panel header="Choix pour la génération de document">
+		    		<!-- <p:selectOneRadio value="#{shippingBoController.selectionParamCreeDoc}" layout="pageDirection" columns="1">
+						<f:selectItems value="#{shippingBoController.listeParamCreeDoc}" var="p" itemLabel="#{p}" itemValue="#{p}" />
+					</p:selectOneRadio>
+					<p:selectBooleanCheckbox value="#{shippingBoController.fusionArticle}" itemLabel="Fusionner les articles">
+			        </p:selectBooleanCheckbox> -->
+			        <p:selectBooleanCheckbox value="#{paiementAbonnementTiersController.regleDoc}" itemLabel="Régler le document généré">
+			        	<p:ajax event="change" update="@this" />
+			        </p:selectBooleanCheckbox>
+			        
+			        
+		    	</p:panel>
+		</div>
+		
+		<p:dataTable id="idDatatableEcheanceNonEmisePaiementAbonnementPaiementAbonnement"
+		widgetVar="wvDatatableEcheanceNonEmisePaiementAbonnementPaiementAbonnement"
+			 value="#{paiementAbonnementTiersController.listeLEcheance}" var="p"
+			paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+			paginator="true"
+			rows="10"
+			selection="#{paiementAbonnementTiersController.selectedLignesEcheances}"
+			rowKey="#{p.idLEcheance}">
+			<!--disabledSelection="#{paiementAbonnementTiersController.selectedTaTPaiement == null}"  -->
+			
+			<f:facet name="header">
+				<p:outputLabel value="Prochaines échéances pour ce tiers"/>
+			</f:facet>
+			<f:facet name="{Exporters}">
+	            <h:commandLink>
+	                <p:graphicImage library="images" name="excel.png" width="24"/>
+	                <p:dataExporter type="xls" target="idDatatableEcheanceNonEmisePaiementAbonnement" fileName="liste_Echeance" />
+	            </h:commandLink>
+	            
+	            <h:commandLink>
+	                <p:graphicImage  library="images" name="csv.png"  width="24"/>
+	                <p:dataExporter type="csv" target="idDatatableEcheanceNonEmisePaiementAbonnement" fileName="liste_Echeance" options="#{separateurCsvController.csvOptions}" />
+	            </h:commandLink>
+	 
+	            <h:commandLink>
+	                <p:graphicImage  library="images" name="xml.png"  width="24"/>
+	                <p:dataExporter type="xml" target="idDatatableEcheanceNonEmisePaiementAbonnement" fileName="liste_Echeance" />
+	            </h:commandLink>
+			</f:facet>
+			<p:ajax event="rowSelectCheckbox" listener="#{paiementAbonnementTiersController.onRowSelectLigneEcheanceAll}" update="@widgetVar(panelActionGroupeeLigneEcheanceAll), @widgetVar(wvTotauxSelectedEcheance)"></p:ajax>
+	        <p:ajax event="rowUnselectCheckbox" listener="#{paiementAbonnementTiersController.onRowUnSelectLigneEcheanceAll}" update="@widgetVar(panelActionGroupeeLigneEcheanceAll), @widgetVar(wvTotauxSelectedEcheance)"></p:ajax>
+	        <p:ajax event="toggleSelect" listener="#{paiementAbonnementTiersController.onToggleSelectLigneEcheanceAll}" update="@widgetVar(panelActionGroupeeLigneEcheanceAll), @widgetVar(wvTotauxSelectedEcheance)"></p:ajax>
+	         
+						
+		    <p:column selectionMode="multiple" style="width:16px;text-align:center" toggleable="false"  />
+		   
+			<p:column headerText="ID" styleClass="center" filterBy="#{p.idLEcheance}" sortBy="#{p.idLEcheance}">
+				<p:outputLabel value="#{p.idLEcheance}" />
+			</p:column>
+			
+			<p:column headerText="Code abonnement" styleClass="center" sortBy="#{p.taAbonnement.codeDocument}" filterBy="#{p.taAbonnement.codeDocument}" filterMatchMode="contains">
+				<p:commandLink value="#{p.taAbonnement.codeDocument}"
+							action="#{ouvertureDocumentBean.detailAbonnement(ouvertureDocumentBean.recupCodeDocument(p.taAbonnement.codeDocument, ouvertureDocumentBean.getTypeDocumentAbonnement()))}" 
+							update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+						</p:commandLink>
+			</p:column>
+			
+			<p:column headerText="Code tiers" styleClass="center" sortBy="#{p.taAbonnement.taTiers.codeTiers}" filterBy="#{p.taAbonnement.taTiers.codeTiers}" filterMatchMode="contains">
+				<p:commandLink value="#{p.taAbonnement.taTiers.codeTiers}"
+					action="#{ouvertureDocumentBean.detailTiers(ouvertureDocumentBean.recupCodetiers(p.taAbonnement.taTiers.codeTiers))}" update=":form:tabView"
+					oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+				</p:commandLink>
+			</p:column>
+			
+			<p:column headerText="Libellé" styleClass="center" sortBy="#{p.libLDocument}" filterBy="#{p.libLDocument}" filterMatchMode="contains">
+				<p:outputLabel value="#{p.libLDocument}" />
+			</p:column>
+			
+			<p:column headerText="Début période" styleClass="center" filterBy="#{abonnementController.customFormatDate(p.debutPeriode)}" sortBy="#{p.debutPeriode}">
+				<h:outputText value="#{p.debutPeriode}">
+					<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+				</h:outputText>
+			</p:column>
+			
+			<p:column headerText="Fin période" styleClass="center" filterBy="#{abonnementController.customFormatDate(p.finPeriode)}" sortBy="#{p.finPeriode}">
+				<h:outputText value="#{p.finPeriode}">
+					<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+				</h:outputText>
+			</p:column>
+				
+			<p:column headerText="Echéance" styleClass="center" filterBy="#{abonnementController.customFormatDate(p.dateEcheance)}" sortBy="#{p.dateEcheance}">
+				<h:outputText value="#{p.dateEcheance}">
+					<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+				</h:outputText>
+			</p:column>
+			
+			<p:column headerText="Coef multiplicateur" styleClass="center" filterBy="#{p.coefMultiplicateur}" sortBy="#{p.coefMultiplicateur}" filterMatchMode="contains">
+				<h:outputText value="#{p.coefMultiplicateur}">
+				</h:outputText>
+			</p:column>
+			
+			<p:column headerText="Montant HT" styleClass="center" filterBy="#{p.mtHtLDocument}" sortBy="#{p.mtHtLDocument}" filterMatchMode="contains">
+				<h:outputText value="#{p.mtHtLDocument}">
+					<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+				</h:outputText>
+			</p:column>
+			
+			<p:column headerText="Montant TTC" styleClass="center" filterBy="#{p.mtTtcLDocument}" sortBy="#{p.mtTtcLDocument}" filterMatchMode="contains">
+				<h:outputText value="#{p.mtTtcLDocument}">
+					<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+				</h:outputText>
+			</p:column>
+			
+			<p:column headerText="Type de paiement" styleClass="center" sortBy="#{p.taLAbonnement.taDocument.taTPaiement.libTPaiement}" filterBy="#{p.taLAbonnement.taDocument.taTPaiement.libTPaiement}" filterMatchMode="contains">
+				<p:outputLabel value="#{p.taLAbonnement.taDocument.taTPaiement.libTPaiement}" />
+			</p:column>
+			
+			<p:column headerText="Etat" styleClass="center" sortBy="#{p.taREtat.taEtat.liblEtat}" filterBy="#{p.taREtat.taEtat.liblEtat}" filterMatchMode="contains">
+				<p:outputLabel value="#{p.taREtat.taEtat.liblEtat}" />
+			</p:column>
+			
+			
+		</p:dataTable>
+
+	</p:panel>
+	
+	<div class="card">
+				<p:panel header="Totaux des lignes séléctionnées" widgetVar="wvTotauxSelectedEcheance">
+		           <h:outputText value="#{paiementAbonnementTiersController.totalTTCSelectedEch}">
+	                   <f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+	                </h:outputText> TTC
+			       <h:outputText value="#{paiementAbonnementTiersController.totalHTSelectedEch}">
+	                   <f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+	                </h:outputText> HT
+			        
+			        
+		    	</p:panel>
+		</div>
+		
+		
+</ui:composition>

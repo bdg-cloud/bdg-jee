@@ -1,0 +1,232 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:p="http://primefaces.org/ui">
+	
+	<o:importConstants type="fr.legrain.bdg.webapp.app.LgrTab" />
+	
+<!-- 	<h:form> -->
+
+<!-- <p:ajax event="rowSelect" listener="#{clientController.onRowSelect}" update=":form:tabView,:form:messages" oncomplete="PF('wvOverlayListeClient').hide();"/>  -->
+
+
+<!-- 	<p:commandButton id="movieBtn" value="Dynamic" type="button" /> -->
+	<p:commandLink id="listeAvoirBtn" >
+		<i class="top-submenu-icon fa fa-fw fa-file-text-o"></i>
+<!-- 		<i class="top-bar-badge animated rubberBand"><h:outputText value="#{topBarController.nbClient}"/></i> -->
+<!-- 		<i class="fa fa-book animated swing" aria-hidden="true"></i> -->
+		<span><h:outputText value="Liste des avoirs" /></span>
+	</p:commandLink>
+	
+<!-- 	<p:overlayPanel id="moviePanel" for="movieBtn" hideEffect="fade" dynamic="true"  -->
+<!-- 		dismissable="true" appendTo="@(body)" widgetVar="wvOverlayListeProduit" showCloseIcon="true"> -->
+	
+	<p:overlayPanel id="idListeAvoirPanel" for="listeAvoirBtn" hideEffect="fade" dynamic="true" 
+		dismissable="true" appendTo="@(body)" widgetVar="wvOverlayListeAvoir" showCloseIcon="true">
+		<h:form>
+		<div class="dashboard-title" style="background:#f6f6f6;">
+              <h:panelGrid columns="3" cellpadding="5">
+            	<h:graphicImage name="dashboard/facture-avoir.svg" library="images" height="35px" style="margin-top:1px;" />
+                <p:outputLabel value="Liste des avoirs" style="font-size:20px;"/>
+              </h:panelGrid>  
+              <p:separator/>
+        </div>
+	<p:menubar styleClass="menu-onglet" widgetVar="wvMenuListeAvoir" id="idMenuListeAvoir">
+		<p:menuitem title="Créer un nouveal avoir" update=":form:tabView,:form:messages,@widgetVar(wvMenuListeAvoir),@widgetVar(wvDataTableListeAvoir)" 
+		actionListener="#{avoirController.nouveau}" styleClass="icon icon-insert" disabled="#{avoirController.etatBouton('inserer')}" oncomplete="PF('wvOverlayListeAvoir').hide();"/>
+<!-- 	 	<p:menuitem title="Détail" update=":form:tabView,:form:messages" actionListener="#{avoirController.detail}" styleClass="icon icon-detail" disabled="#{avoirController.modeEcran.dataSetEnModif()}" oncomplete="PF('wvOverlayListeAvoir').hide();"/> -->
+<!-- 	 	<p:menuitem title="Supprimer les avoirs sélectionnées" update=":form:tabView,@widgetVar(wvDataTableListeAvoir),@widgetVar(wvMenuListeAvoir),:form:messages,@form"  -->
+<!-- 	 	actionListener="#{avoirController.supprimer}" styleClass="icon icon-delete" disabled="#{avoirController.etatBouton('supprimerListe')}"> -->
+<!-- 	 		<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer les avoirs sélectionnées ?" icon="ui-icon-alert" /> -->
+<!-- 	 	</p:menuitem> -->
+	 	<p:menuitem title="Rafraîchir la liste" update="@form,@widgetVar(wvDataTableListeAvoir),@widgetVar(wvMenuListeAvoir),:form:messages" actionListener="#{avoirController.refresh}" styleClass="icon icon-refresh" disabled="#{avoirController.modeEcran.dataSetEnModif()}"/>
+	</p:menubar>
+	<p:sticky target="idMenuListeAvoir" />
+	 
+	<p:dataTable id="dataTableListeAvoir" var="avoir"
+				widgetVar="wvDataTableListeAvoir"
+				value="#{avoirController.values}"
+				rowKey="#{avoir.id}"
+				selection="#{avoirController.selectedDocumentDTOs}"
+				dblClickSelect="true"
+				styleClass="datatable mt10"
+				resizableColumns="true"
+				paginator="true" 
+				rows="#{msg.modele_datatable_ligne_par_page_debut}"
+				paginatorTemplate="#{msg.modele_datatable_paginator}"
+				rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+				emptyMessage="#{msg.message_datatable_vide}"
+				currentPageReportTemplate="#{msg.modele_datatable_page_courante}"
+				disabledSelection="#{avoirController.modeEcran.dataSetEnModif()}">
+				
+<!-- 				<p:ajax event="rowDblselect" listener="#{avoirController.onRowSelect}" update=":form:tabView,:form:messages,@form"/>  -->
+<!-- 				<p:ajax event="rowSelect" listener="#{avoirController.onRowSelect}" update=":form:tabView,:form:messages" oncomplete="PF('wvOverlayListeAvoir').hide();"/> -->
+				
+<!-- 				<p:ajax event="rowDblselect" listener="#{avoirController.onRowSelect}" update=":form:tabView,:form:messages" /> -->
+				<p:ajax event="rowSelect" delay="#{msg.datatable_rowselect_delay}" listener="#{avoirController.onRowSelect}" update=":form:tabView,:form:messages" oncomplete="activeTabCenter('#{LgrTab.CSS_CLASS_TAB_AVOIR}');PF('wvOverlayListeAvoir').hide();scrollToTop();"/>
+			
+				<f:facet name="header">  
+           			<h:outputText value="Avoir" />
+           			<span style="float:right;" class="searchbar_list">
+			            <p:outputPanel>
+				                <p:inputText id="globalFilter" onkeyup="PF('wvDataTableListeAvoir').filter()" style="width:150px" placeholder="Rechercher"/>
+				            </p:outputPanel>
+			        </span>
+        		</f:facet>
+
+  		<f:facet name="{Exporters}">
+            <h:commandLink>
+                <p:graphicImage library="images" name="excel.png" width="24"/>
+                <p:dataExporter type="xls" target="dataTableListeAvoir" fileName="liste_avoir" />
+            </h:commandLink>
+ 
+            <p:commandLink onsuccess="window.open('#{request.contextPath}/output?__report=/reports/documents/avoir/ListeDesAvoirs.rptdesign&amp;__format=pdf')"
+			actionListener="#{avoirController.actImprimerListeDesAvoirs}" process="@this">
+		                <p:graphicImage  library="images" name="pdf.png"  width="24"/>
+<!-- 		                <p:dataExporter type="pdf" target="dataTableListeTiers" fileName="liste_tiers" /> -->
+		            </p:commandLink>
+ 
+            <h:commandLink>
+                <p:graphicImage  library="images" name="csv.png"  width="24"/>
+                <p:dataExporter type="csv" target="dataTableListeAvoir" fileName="liste_avoir" options="#{separateurCsvController.csvOptions}" />
+            </h:commandLink>
+ 
+            <h:commandLink>
+                <p:graphicImage  library="images" name="xml.png"  width="24"/>
+                <p:dataExporter type="xml" target="dataTableListeAvoir" fileName="liste_avoir" />
+            </h:commandLink>
+        </f:facet>
+        
+        <p:column selectionMode="multiple" style="width:16px;text-align:center" exportable="false"/>
+			
+				<p:column style="width:16px" exportable="false">
+					<f:facet name="header">
+						<h:outputText value="" />
+					</f:facet>
+					<p:commandButton title="Détail" update=":form:tabView,:form:messages" 
+						action="#{avoirController.detail}" styleClass="icon icon-detail icon-grille" 
+						disabled="#{avoirController.modeEcran.dataSetEnModif()}" oncomplete="PF('wvOverlayListeAvoir').hide();">
+						<f:setPropertyActionListener target="#{avoirController.selectedDocumentDTO}" value="#{avoir}" />
+					</p:commandButton>
+				</p:column>
+
+				<p:column sortBy="#{avoir.codeDocument}" filterBy="#{avoir.codeDocument}" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="Code" />
+					</f:facet>
+					<h:outputText value="#{avoir.codeDocument}" />
+				</p:column>
+
+				<p:column styleClass="center" sortBy="#{avoir.dateDocument}"
+					filterBy="#{avoirController.customFormatDate(avoir.dateDocument)}" filterMatchMode="contains">
+
+					<f:facet name="header">
+						<h:outputText value="Date" />
+					</f:facet>
+					<h:outputText value="#{avoir.dateDocument}">
+						<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}" />
+					</h:outputText>
+				</p:column>
+
+				<p:column sortBy="#{avoir.codeTiers}" filterBy="#{avoir.codeTiers}" filterMatchMode="contains">
+
+					<f:facet name="header">
+						<h:outputText value="Code tiers" />
+					</f:facet>
+					<h:outputText value="#{avoir.codeTiers}" />
+				</p:column>
+
+				<p:column sortBy="#{avoir.nomTiers}" filterBy="#{avoir.nomTiers}" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="Nom" />
+					</f:facet>
+					<h:outputText value="#{avoir.nomTiers}" />
+				</p:column>
+
+				<p:column sortBy="#{avoir.prenomTiers}" filterBy="#{avoir.prenomTiers}" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="Prénom" />
+					</f:facet>
+					<h:outputText value="#{avoir.prenomTiers}" />
+				</p:column>
+
+
+				<p:column sortBy="#{avoir.nomEntreprise}" filterBy="#{avoir.nomEntreprise}" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="Entreprise" />
+					</f:facet>
+					<h:outputText value="#{avoir.nomEntreprise}" />
+				</p:column>
+
+				<p:column styleClass="right" sortBy="#{avoir.netHtCalc}" filterBy="#{avoir.netHtCalc}" filterMatchMode="contains"
+							exportFunction="#{separateurCsvController.exportNumber}">
+					<f:facet name="header">
+						<h:outputText value="HT" />
+					</f:facet>
+					<h:outputText value="#{avoir.netHtCalc}">
+						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+					</h:outputText>
+				</p:column>
+
+				<p:column styleClass="right" sortBy="#{avoir.netTvaCalc}" filterBy="#{avoir.netTvaCalc}" filterMatchMode="contains"
+							exportFunction="#{separateurCsvController.exportNumber}">
+					<f:facet name="header">
+						<h:outputText value="TVA" />
+					</f:facet>
+					<h:outputText value="#{avoir.netTvaCalc}">
+						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+					</h:outputText>
+				</p:column>
+
+				<p:column styleClass="right" sortBy="#{avoir.netTtcCalc}" filterBy="#{avoir.netTtcCalc}" filterMatchMode="contains"
+							exportFunction="#{separateurCsvController.exportNumber}">
+					<f:facet name="header">
+						<h:outputText value="TTC" />
+					</f:facet>
+					<h:outputText value="#{avoir.netTtcCalc}">
+						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+					</h:outputText>
+				</p:column>
+
+				<p:column styleClass="center" sortBy="#{avoir.dateEchDocument}"
+					filterBy="#{avoirController.customFormatDate(avoir.dateEchDocument)}" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="Echéance" />
+					</f:facet>
+					<h:outputText value="#{avoir.dateEchDocument}">
+						<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}" />
+					</h:outputText>
+				</p:column>
+
+				<p:column style="width:16px" exportable="false">
+					<f:facet name="header">
+						<h:outputText value="" />
+					</f:facet>
+<!--
+commentaire :  déclenche un bouton invisible pour mettre à jour le message personnalisé
+ -->					
+					<p:commandButton title="Supprimer" styleClass="icon-delete icon icon-grille" widgetVar="widgetVarBtnSupprimerAvoirListe"
+						action="#{avoirController.actBeforeSupprimer(avoir)}" oncomplete="$('.classHiddenCommandForSuppressionAV').click()"
+						process="@this"
+						disabled="#{avoirController.documentDTOEstVerrouille(avoir).verrouille}"
+						update="@widgetVar(widgetVarBtnSupprimerAvoirListe2)">
+						<f:setPropertyActionListener target="#{avoirController.selectedDocumentDTO}" value="#{avoir}" />
+<!-- 						<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer cet avoir ?" icon="ui-icon-alert" /> -->
+<!-- 			<p:confirm header="Confirmation de la suppression" message="#{avoirController.messageSuppression}" icon="ui-icon-alert" /> -->
+					</p:commandButton>
+				</p:column>
+				
+			</p:dataTable>
+		<p:commandButton styleClass="classHiddenCommandForSuppressionAV" widgetVar="widgetVarBtnSupprimerAvoirListe2" 
+		actionListener="#{avoirController.actSupprimer}" style="display:none" process="@this" 
+		 update="@widgetVar(wvDataTableListeAvoir)" >
+        <p:confirm header="Confirmation de la suppression" message="#{avoirController.messageSuppression}" icon="ui-icon-alert" /> 
+    </p:commandButton>	
+		</h:form>
+	</p:overlayPanel>
+	
+<!-- 	</h:form> -->
+
+</ui:composition>

@@ -1,0 +1,104 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html" 
+	xmlns:ui="http://java.sun.com/jsf/facelets" 
+	xmlns:p="http://primefaces.org/ui">
+
+
+	<p:commandLink id="listeClientBtn" title="Liste clients">
+		<i class="top-submenu-icon fa fa-fw fa-user"></i>
+		<i class="top-bar-badge animated rubberBand"><h:outputText value="#{topBarController.nbClient}" /></i>
+		<!-- <span><h:outputText value="Liste client" /></span> -->
+	</p:commandLink>
+
+	<!-- 	<p:overlayPanel id="moviePanel" for="movieBtn" hideEffect="fade" dynamic="true"  -->
+	<!-- 		dismissable="true" appendToBody="true" widgetVar="wvOverlayListeProduit" showCloseIcon="true"> -->
+
+	<p:overlayPanel id="idListeClientPanel" for="listeClientBtn" hideEffect="fade" dynamic="true" dismissable="true"
+		appendTo="@(body)" widgetVar="wvOverlayListeClient" showCloseIcon="true">
+		
+		<h:form>
+
+			<div class="text-center">
+				<p:commandButton value="Ajouter" title="Ajouter" update=":form:tabView,:form:messages" actionListener="#{clientController.nouveau}" icon="fa fa-plus-circle"
+					oncomplete="PF('wvOverlayListeClient').hide();" />
+				<p:commandButton value="Détail" title="Détail" update=":form:tabView,:form:messages" actionListener="#{clientController.detail}" icon="fa fa-eye" oncomplete="PF('wvOverlayListeClient').hide();" />
+				<p:commandButton value="Supprimer" title="Supprimer" update=":form:tabView,:form:messages" actionListener="#{clientController.supprimer}" icon="fa fa-trash" />
+				<p:commandButton value="Rafraîchir" title="Rafraîchir" update=":form:messages" actionListener="#{clientController.refresh}" icon="fa fa-refresh" />
+
+				<p:commandButton value="MAJ droits tous les clients" title="MAJ droits tous les clients" 
+					actionListener="#{clientController.actMajDroitsDossiersClientAll}" update="@form,:form:messages" icon="fa fa-bolt" />
+			</div>
+
+			<p:dataTable id="dataTableListeClients" 
+				var="taClient" 
+				widgetVar="wvDataTableListeClients"
+				styleClass="datatable mt10" 
+				value="#{clientController.values}" 
+				rowKey="#{taClient.id}"
+				selection="#{clientController.selectedTaClientDTO}" 
+				selectionMode="single" 
+				dblClickSelect="true"
+				resizableColumns="true" 
+				paginator="true" rows="#{msg.modele_datatable_ligne_par_page_debut}"
+				paginatorTemplate="#{msg.modele_datatable_paginator}" 
+				rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+				emptyMessage="#{msg.message_datatable_vide}" 
+				currentPageReportTemplate="#{msg.modele_datatable_page_courante}">
+
+				<!-- 				<p:ajax event="rowDblselect" listener="#{clientController.onRowSelect}" update=":form:tabView,:form:messages,@form" oncomplete="activeLastTabCenter()"/> -->
+				<!-- 				<p:ajax event="rowSelect" listener="#{clientController.onRowSelect}" disabled="#{clientController.pasDejaOuvert()}" update=":form:tabView,:form:messages,@form" />  -->
+
+				<p:ajax event="rowSelect" listener="#{clientController.onRowSelect}" update=":form:tabView,:form:messages"
+					oncomplete="PF('wvOverlayListeClient').hide();" />
+
+				<f:facet name="{Exporters}">
+					<h:commandLink>
+						<p:graphicImage library="images" name="excel.png" width="24" />
+						<p:dataExporter type="xls" target="dataTableListeClients" fileName="liste_clients" />
+					</h:commandLink>
+
+					<h:commandLink>
+						<p:graphicImage library="images" name="pdf.png" width="24" />
+						<p:dataExporter type="pdf" target="dataTableListeClients" fileName="liste_clients" />
+					</h:commandLink>
+
+					<h:commandLink>
+						<p:graphicImage library="images" name="csv.png" width="24" />
+						<p:dataExporter type="csv" target="dataTableListeClients" fileName="liste_clients" />
+					</h:commandLink>
+
+					<h:commandLink>
+						<p:graphicImage library="images" name="xml.png" width="24" />
+						<p:dataExporter type="xml" target="dataTableListeClients" fileName="liste_clients" />
+					</h:commandLink>
+				</f:facet>
+
+				<p:column sortBy="#{taClient.code}" filterBy="#{taClient.code}">
+					<f:facet name="header">
+						<h:outputText value="Code" />
+					</f:facet>
+					<h:outputText value="#{taClient.code}" />
+				</p:column>
+
+				<p:column sortBy="#{taClient.nom}" filterBy="#{taClient.nom}">
+					<f:facet name="header">
+						<h:outputText value="Nom" />
+					</f:facet>
+					<h:outputText value="#{taClient.nom}" />
+				</p:column>
+
+				<p:column sortBy="#{taClient.prenom}" filterBy="#{taClient.prenom}">
+					<f:facet name="header">
+						<h:outputText value="Prénom" />
+					</f:facet>
+					<h:outputText value="#{taClient.prenom}" />
+				</p:column>
+
+			</p:dataTable>
+			
+		</h:form>
+		
+	</p:overlayPanel>
+
+</ui:composition>

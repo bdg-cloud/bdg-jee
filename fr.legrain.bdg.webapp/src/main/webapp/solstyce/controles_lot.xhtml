@@ -1,0 +1,480 @@
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:lgr="http://legrain.fr/ui"
+	xmlns:p="http://primefaces.org/ui">
+	
+<!-- 	<f:metadata> -->
+<!-- 		<f:viewParam name="parameter" value="#{controleLotController.parameter}"/> -->
+<!-- 		<f:event type="preRenderView" listener="#{controleLotController.refresh}" /> -->
+<!-- 	</f:metadata> -->
+	
+		<p:menubar styleClass="menu-onglet" rendered="${!controleLotController.showCorrection and !controleLotController.showObservation}">
+			<p:menuitem title="Enregistrer tous les controles pour ce lot" styleClass="icon icon-save" update="@form"
+				actionListener="#{controleLotController.actEnregistrer}"
+				disabled="#{controleLotController.etatBouton('enregistrer')}" />
+			<p:menuitem title="Modifier" styleClass="icon icon-update" actionListener="#{controleLotController.actModifier}"
+				process="@this" update="@form" disabled="#{controleLotController.etatBouton('modifier')}" />		
+			<p:menuitem title="Annuler" styleClass="icon icon-cancel" process="@this" 
+				actionListener="#{controleLotController.actAnnuler}" disabled="#{controleLotController.etatBouton('annuler')}"/>
+			<p:menuitem title="Fermer" styleClass="icon icon-close menuitem-fermer-droite"
+				actionListener="#{controleLotController.actFermerDialog}"
+				process="@this" >
+				<p:confirm header="Confirmation" message="#{msg_diag.alert_fermeture_onglet}" icon="ui-icon-alert" disabled="#{!controleLotController.modeEcran.dataSetEnModif()}"/>
+			</p:menuitem>
+			
+			<p:menuitem title="Imprimer les résultats des controles de conformité de ce lot" 
+				styleClass="icon-print icon"
+				disabled="#{controleLotController.etatBouton('imprimer')}"
+				onsuccess="window.open('#{request.contextPath}/output?__report=/reports/solstyce/Fiche_de_non_conformite.rptdesign&amp;__format=pdf')"
+				actionListener="#{controleLotController.actImprimerControleLot}">
+			</p:menuitem>
+		</p:menubar>
+		
+		<p:menubar styleClass="menu-onglet" rendered="${controleLotController.showCorrection or controleLotController.showObservation}">
+			<p:menuitem title="Enregistrer la nouvelle valeur" styleClass="icon icon-save" update="@form" process="@this"
+				actionListener="#{controleLotController.actEnregistrerCorrection}" 
+				disabled="#{controleLotController.etatBoutonCorrection('enregistrer')}" />
+			<p:menuitem title="Annuler" styleClass="icon icon-cancel" process="@this" update="@form"
+				actionListener="#{controleLotController.actAnnulerCorrection}"  />
+		</p:menubar>	
+
+		<p:panelGrid columns="5">
+			<p:outputLabel value="Numéro de lot : #{controleLotController.taLot.numLot}"/> 
+			<p:outputLabel value="Code article : #{controleLotController.taLot.taArticle.codeArticle} - Libellé article : #{controleLotController.taLot.taArticle.libellecArticle}"/>
+			
+<!-- 			<p:graphicImage library="images" name="report.png" title="Controles" alt="Controles" height="16"/> -->
+<!-- 			<p:graphicImage library="images" name="btn/controle-valide.svg" title="Tous les contrôles obligatoire sont effectués et valide" height="16" rendered="#{controleLotController.taLot.taStatusConformite.codeStatusConformite eq  'ok'}"/> -->
+<!-- 			<p:graphicImage library="images" name="btn/controle-action-corrective-effectuee-avec-succes.svg" title="Tous les contrôles obligatoires sont effectués et valide après correction" height="16" rendered="#{controleLotController.taLot.taStatusConformite.codeStatusConformite eq 'ok_apres_correction'}"/> -->
+<!-- 			<p:graphicImage library="images" name="btn/controle-action-corrective-invalide.svg" title="Tous les contrôles obligatoire sont effectués mais certains controle non bloquant sont encore faux" height="16" rendered="#{controleLotController.taLot.taStatusConformite.codeStatusConformite eq 'invalide_meme_apres_correction'}"/> -->
+<!-- 			<p:graphicImage library="images" name="btn/controle-action-corrective-a-faire.svg" title="Au moins un controle obligatoire et bloquant est faux" height="16" rendered="#{controleLotController.taLot.taStatusConformite.codeStatusConformite eq 'invalide_a_corrige'}"/> -->
+<!-- 			<p:graphicImage library="images" name="btn/controle-action-corrective-a-faire.svg" title="Au moins un controle obligatoire n'est pas fait" height="16" rendered="#{controleLotController.taLot.taStatusConformite.codeStatusConformite eq 'non_fait'}"/> -->
+<!-- 			<p:graphicImage library="images" name="btn/controle-a-faire.svg" title="Aucun controle n'est fait" height="16" rendered="#{controleLotController.taLot.taStatusConformite == null}"/> -->
+
+			<lgr:iconStatusConformite id="dd" statusObject="#{controleLotController.taLot.taStatusConformite}"/>
+			
+			<p:ajaxStatus onstart="on_start()" oncomplete="on_complete()" onsuccess="on_complete()">
+	            <f:facet name="start">
+	            </f:facet>
+	            <f:facet name="complete">
+	            </f:facet>
+        	</p:ajaxStatus>
+		</p:panelGrid>
+		
+<!-- 		<p:panelGrid columns="7" > -->
+<!-- 			<h:outputText value="Qte en stock #{controleLotController.qteEnStock}" />  -->
+<!-- 			<h:outputText value="Lot détruit en totalité" />  -->
+<!-- 			<p:selectBooleanCheckbox value="#{controleLotController.lotDefinitivementNonConforme}" disabled="#{controleLotController.editable()}"> -->
+<!-- 				 <p:ajax update="idQteLotDetruite, idAutoComplQteLotDetruite" listener="#{controleLotController.actSelectLotDefinitivementNonConforme}" /> -->
+<!-- 			</p:selectBooleanCheckbox> -->
+	        
+<!-- 	        <h:outputText value="Quantité détruite"/> -->
+<!-- 	        <p:inputText id="idQteLotDetruite" value="#{controleLotController.qteDefinitivementNonConforme}" disabled="#{controleLotController.editable() or controleLotController.lotDefinitivementNonConforme}"> -->
+<!-- 	        	<p:ajax event="blur"/> -->
+<!-- 	        </p:inputText> -->
+<!--   			<p:autoComplete  -->
+<!--   				id="idAutoComplQteLotDetruite" -->
+<!--   				value="#{ligne.articleLotEntrepotDTO}"  -->
+<!--   				completeMethod="#{fabricationController.lotAutoComplete}"  -->
+<!-- 				disabled="#{controleLotController.editable() or controleLotController.lotDefinitivementNonConforme}"	 -->
+<!-- 				converter="#{articleLotEntrepotDTOConverter}" -->
+<!-- 				var="lot" itemLabel="#{lot.numLot}" itemValue="#{lot}" -->
+<!-- 				forceSelection="true" dropdown="true" -->
+<!-- 				placeholder="Lot"  -->
+<!-- 				style="width:100%"> -->
+<!-- 				<p:column> -->
+<!-- 					<f:facet name="header"> -->
+<!-- 						<h:outputText value="Numéro de lot" /> -->
+<!-- 					</f:facet> -->
+<!-- 					<h:outputText value="#{lot.numLot}" /> -->
+<!-- 				</p:column> -->
+<!-- 				<p:column> -->
+<!-- 					<f:facet name="header"> -->
+<!-- 						<h:outputText value="Libellé lot" /> -->
+<!-- 					</f:facet> -->
+<!-- 					<h:outputText value="#{lot.libelleLot}" /> -->
+<!-- 				</p:column> -->
+<!-- 				<p:column> -->
+<!-- 					<f:facet name="header"> -->
+<!-- 						<h:outputText value="Code entrepot" /> -->
+<!-- 					</f:facet> -->
+<!-- 					<h:outputText value="#{lot.codeEntrepot}" /> -->
+<!-- 				</p:column> -->
+<!-- 				<p:column> -->
+<!-- 					<f:facet name="header"> -->
+<!-- 						<h:outputText value="Entrepot" /> -->
+<!-- 					</f:facet> -->
+<!-- 					<h:outputText value="#{lot.libelleEntrepot}" /> -->
+<!-- 				</p:column> -->
+<!-- 				<p:column> -->
+<!-- 					<f:facet name="header"> -->
+<!-- 						<h:outputText value="Emplacement" /> -->
+<!-- 					</f:facet> -->
+<!-- 					<h:outputText value="#{lot.emplacement}" /> -->
+<!-- 				</p:column> -->
+<!-- 				<p:column> -->
+<!-- 					<f:facet name="header"> -->
+<!-- 						<h:outputText value="Qte en stock" /> -->
+<!-- 					</f:facet> -->
+<!-- 					<h:outputText value="#{lot.qte1}" /> -->
+<!-- 				</p:column> -->
+<!-- 				<p:column> -->
+<!-- 					<f:facet name="header"> -->
+<!-- 						<h:outputText value="Unité" /> -->
+<!-- 					</f:facet> -->
+<!-- 					<h:outputText value="#{lot.codeUnite}" /> -->
+<!-- 				</p:column> -->
+<!-- 				<p:column> -->
+<!-- 					<f:facet name="header"> -->
+<!-- 						<h:outputText value="Date lot" /> -->
+<!-- 					</f:facet> -->
+<!-- 					<h:outputText value="#{lot.dateLot}" /> -->
+<!-- 				</p:column>		 -->
+<!-- 				<p:column> -->
+<!-- 					<f:facet name="header"> -->
+<!-- 						<h:outputText value="Dluo" /> -->
+<!-- 					</f:facet> -->
+<!-- 					<h:outputText value="#{lot.dluo}" /> -->
+<!-- 				</p:column>												 -->
+<!-- 				<f:attribute name="nomChamp" value="#{const.C_NUM_LOT}" /> -->
+<!-- 				<p:ajax event="itemSelect" listener="#{fabricationController.autcompleteSelectionMP}"/> -->
+<!-- 			</p:autoComplete> -->
+<!-- 		</p:panelGrid> -->
+		
+		<p:separator/>
+		
+		<p:messages autoUpdate="true" showDetail="true"/>
+		
+		<p:panel id="panelGlobal" widgetVar="wvPanelGlobal">
+		
+			<p:panel id="panelCtrl" widgetVar="wvPanelCtrl"  rendered="${!controleLotController.showCorrection and !controleLotController.showObservation}">
+			
+				<ui:repeat value="${controleLotController.listeGroupe}" var="g">
+					
+					<p:panel header="#{g.libelle}" toggleable="true" >
+						<div>
+							<p:panelGrid style="width:100%">
+								<f:facet name="header">
+									<p:row>
+										<p:column style="width:35%" styleClass="left">
+											Nom du contrôle
+										</p:column>
+										<p:column style="width:35%" styleClass="left">
+											Valeur constatée
+										</p:column>
+										<p:column style="width:10%" styleClass="center">
+											Défaut
+										</p:column>
+										<p:column style="width:10%" styleClass="center">
+											Date
+										</p:column>
+										<p:column style="width:10%" styleClass="center">
+											Utilisateur
+										</p:column>
+										<p:column style="width:10%" styleClass="center">
+											Etat
+										</p:column>
+									</p:row>
+								</f:facet>
+								<ui:repeat value="${controleLotController.listeControle}" var="ca">
+									<p:row rendered="#{(ca.c.taGroupe.codeGroupe eq g.codeGroupe) or (affiche_tout eq 'true')}">
+										<ui:include src="controles_lot_include.xhtml">
+											<ui:param name="c" value="${ca}" />
+											<ui:param name="code_grp" value="${g.codeGroupe}" />
+										</ui:include>
+									</p:row>
+								</ui:repeat> 
+							</p:panelGrid>
+						</div>
+					</p:panel>
+					
+				</ui:repeat>
+				
+				<p:panel header="Autres" toggleable="true">
+					<p:panelGrid style="width:100%">
+						<f:facet name="header">
+							<p:row>
+								<p:column style="width:35%" styleClass="left">
+									Nom du contrôle
+								</p:column>
+								<p:column style="width:35%" styleClass="left">
+									Valeur constatée
+								</p:column>
+								<p:column style="width:10%" styleClass="center">
+									Défaut
+								</p:column>
+								<p:column style="width:10%" styleClass="center">
+									Date
+								</p:column>
+								<p:column style="width:10%" styleClass="center">
+									Utilisateur
+								</p:column>
+								<p:column style="width:10%" styleClass="center">
+									Etat
+								</p:column>
+							</p:row>
+						</f:facet>
+						<ui:repeat value="${controleLotController.listeControle}" var="cz">
+							<p:row rendered="#{(cz.c.taGroupe.codeGroupe eq code_grp) or (affiche_tout eq 'true')}">
+								<ui:include src="controles_lot_include.xhtml">
+									<ui:param name="c" value="${cz}" />
+								</ui:include>
+							</p:row>
+						</ui:repeat> 
+					</p:panelGrid>
+				</p:panel>
+
+			</p:panel>
+			
+			<p:panel id="panelCorrection" widgetVar="wvPanelCorrection" rendered="${controleLotController.showCorrection or controleLotController.showObservation}">
+			
+				<p:fieldset legend="Action corrective pour le contrôle : #{controleLotController.controleConformiteJSF.c.libelleConformite}" >
+					
+					<p:panelGrid columns="1" cellpadding="5" style="width:100%">
+					
+						<p:panelGrid cellpadding="5" style="width:100%">
+							<p:row>
+								<p:column style="width:20%">
+									<p:outputLabel value="Commentaire ou Action immédiate" rendered="${controleLotController.showCorrection or controleLotController.showObservation}"/>
+								</p:column>
+								<p:column>
+									<p:inputTextarea value="#{controleLotController.controleConformiteJSF.r.taResultatCorrections.get(0).actionImmediate}" style="width:100%" rendered="${controleLotController.showCorrection or controleLotController.showObservation}">
+										<p:ajax></p:ajax>
+									</p:inputTextarea>
+								</p:column>
+							</p:row>
+							
+							<p:row rendered="#{controleLotController.controleConformiteJSF.action ne 'ok'}">
+								<p:column>
+									<p:outputLabel value="Action corrective prédéfinie" rendered="${controleLotController.showCorrection}"/>
+									<p:selectBooleanCheckbox id="idCombo" itemLabel="Réalisée." value="#{controleLotController.controleConformiteJSF.r.taResultatCorrections.get(0).effectuee}" rendered="${controleLotController.showCorrection}">
+										 <p:ajax event="change" update="@widgetVar(widgetVarBtnEnregistrer)" listener="#{controleLotController.validateCorrection}"/>
+									</p:selectBooleanCheckbox>
+									<p:commandLink value="Télécharger" ajax="false" rendered="${controleLotController.baremeDefautActionAcorrective!=null and controleLotController.baremeDefautActionAcorrective.blobFichier!=null}">
+										<p:fileDownload value="#{controleLotController.fichierActionCorrective}"/>
+									</p:commandLink>
+								</p:column>
+								<p:column>
+									<p:inputTextarea value="#{controleLotController.controleConformiteJSF.r.taResultatCorrections.get(0).taBareme.actioncorrective}" disabled="true" style="width:100%" rendered="${controleLotController.showCorrection}"/>
+								</p:column>
+							</p:row>
+							
+							<p:row rendered="#{controleLotController.controleConformiteJSF.action ne 'ok'}">
+								<p:column>
+									<p:outputLabel value="Autre action corrective." rendered="${controleLotController.showCorrection}"/>
+								</p:column>
+								<p:column>
+									<p:inputTextarea id="idTxt" value="#{controleLotController.controleConformiteJSF.r.taResultatCorrections.get(0).observation}" style="width:100%" rendered="${controleLotController.showCorrection}">
+										<p:ajax event="keyup" update="@widgetVar(widgetVarBtnEnregistrer)" listener="#{controleLotController.validateCorrection}"/>
+									</p:inputTextarea>
+								</p:column>
+							</p:row>
+						</p:panelGrid>
+						
+						<p:fieldset legend="Nouveau résultat du contrôle après correction" >
+							<p:outputLabel value="(Expression à vérifier: #{controleLotController.controleConformiteJSF.r.taResultatCorrections.get(0).taBareme.expressionVerifiee} )" rendered="${controleLotController.showCorrection}"/>
+							<p:panelGrid style="width:100%">
+								<p:row>
+									<ui:include src="controles_lot_include.xhtml">
+										<ui:param name="c" value="#{controleLotController.controleApresActionCorrective}" />
+										<ui:param name="affiche_tout" value="true" />
+									</ui:include>
+								</p:row>
+							</p:panelGrid>
+						</p:fieldset>
+						
+						<p:panelGrid columns="2">
+<!-- 							<p:panel> -->
+<!-- 								<p:outputLabel value="Controleur"/> -->
+<!-- 								<br/> -->
+<!-- 								<p:calendar value="#{controleLotController.controleConformiteJSF.r.taResultatCorrections.get(0).dateCorrection}"  -->
+<!-- 									mask="true" showOn="button" placeholder="Date" pattern="#{msg.datetime_pattern}" locale="fr" -->
+<!-- 									navigator="true"> -->
+<!-- 									<p:ajax event="dateSelect"/> -->
+<!-- 									<p:ajax event="blur"/> -->
+<!-- 								</p:calendar> -->
+<!-- 								<br/> -->
+								
+<!-- 								<p:autoComplete value="#{controleLotController.controleConformiteJSF.r.taResultatCorrections.get(0).taUtilisateurControleur}" -->
+<!-- 								    converter="entityConverter" -->
+<!-- 									completeMethod="#{controleLotController.utilisateurAutoComplete}" -->
+<!-- 									disabled="#{!controleLotController.modeEcran.dataSetEnModif()}" var="utilisateur" -->
+<!-- 									itemLabel="#{utilisateur.nom}" itemValue="#{utilisateur}" -->
+<!-- 									forceSelection="true" dropdown="true" placeholder="Utilisateur" > -->
+<!-- 									<p:column> -->
+<!-- 										<h:outputText value="#{utilisateur.email}" required="true" requiredMessage="#{msg_diag.alert_champs_obligatoir}"/> -->
+<!-- 									</p:column> -->
+									
+<!-- 									<p:column> -->
+<!-- 										<h:outputText value="#{utilisateur.nom}" /> -->
+<!-- 									</p:column> -->
+									
+<!-- 									<p:column> -->
+<!-- 										<h:outputText value="#{utilisateur.prenom}" /> -->
+<!-- 									</p:column> -->
+<!-- 									<p:ajax event="itemSelect" /> -->
+<!-- 								</p:autoComplete> -->
+<!-- 							</p:panel> -->
+							
+							<p:panel>		
+								<p:outputLabel value="Visa du service qualité"/>
+								<br/>
+								<p:calendar value="#{controleLotController.controleConformiteJSF.r.taResultatCorrections.get(0).dateVisaServiceQualite}" 
+									mask="true" showOn="button" placeholder="Date" pattern="#{msg.datetime_pattern}" locale="fr"
+										navigator="true">
+									<p:ajax event="dateSelect"/>
+									<p:ajax event="blur"/>
+								</p:calendar>
+								<br/>
+								
+								<p:autoComplete value="#{controleLotController.controleConformiteJSF.r.taResultatCorrections.get(0).taUtilisateurServiceQualite}"
+								    converter="entityConverter"
+									completeMethod="#{controleLotController.utilisateurAutoComplete}"
+									disabled="#{!controleLotController.modeEcran.dataSetEnModif()}" var="utilisateur"
+									itemLabel="#{utilisateur.nom}" itemValue="#{utilisateur}"
+									forceSelection="true" dropdown="true" placeholder="Utilisateur" >
+									<p:column>
+										<h:outputText value="#{utilisateur.email}" required="true" requiredMessage="#{msg_diag.alert_champs_obligatoir}"/>
+									</p:column>
+									
+									<p:column>
+										<h:outputText value="#{utilisateur.nom}" />
+									</p:column>
+									
+									<p:column>
+										<h:outputText value="#{utilisateur.prenom}" />
+									</p:column>
+					
+<!-- 										<f:attribute name="nomChamp" value="#{const.C_CODE_TIERS}" /> -->
+									<p:ajax event="itemSelect" />
+								</p:autoComplete>
+							</p:panel>
+							
+							<p:panel>	
+								<p:outputLabel value="Visa de la Direction"/>
+								<br/>
+								<p:calendar value="#{controleLotController.controleConformiteJSF.r.taResultatCorrections.get(0).dateVisaDirection}" 
+									mask="true" showOn="button" placeholder="Date" pattern="#{msg.datetime_pattern}" locale="fr"
+									navigator="true">
+									<p:ajax event="dateSelect"/>
+									<p:ajax event="blur"/>
+								</p:calendar>									
+								<br/>
+								
+								<p:autoComplete value="#{controleLotController.controleConformiteJSF.r.taResultatCorrections.get(0).taUtilisateurDirection}"
+								    converter="entityConverter"
+									completeMethod="#{controleLotController.utilisateurAutoComplete}"
+									disabled="#{!controleLotController.modeEcran.dataSetEnModif()}" var="utilisateur"
+									itemLabel="#{utilisateur.nom}" itemValue="#{utilisateur}"
+									forceSelection="true" dropdown="true" placeholder="Utilisateur" >
+									<p:column>
+										<h:outputText value="#{utilisateur.email}" required="true" requiredMessage="#{msg_diag.alert_champs_obligatoir}"/>
+									</p:column>
+									
+									<p:column>
+										<h:outputText value="#{utilisateur.nom}" />
+									</p:column>
+									
+									<p:column>
+										<h:outputText value="#{utilisateur.prenom}" />
+									</p:column>
+					
+<!-- 										<f:attribute name="nomChamp" value="#{const.C_CODE_TIERS}" /> -->
+									<p:ajax event="itemSelect" />
+								</p:autoComplete>
+							</p:panel>
+							
+						</p:panelGrid>
+						
+						<p:panel header="Forcer la validation" toggleable="true" collapsed="true" style="padding-top:5px;" 
+							rendered="#{controleLotController.controleConformiteJSF.action ne 'ok'}">		
+							
+							<p:selectBooleanCheckbox itemLabel="Forcer " value="#{controleLotController.controleConformiteJSF.r.taResultatCorrections.get(0).validationForcee}">
+								<p:ajax event="change" update="@widgetVar(wvCalendarForceCtrl), @widgetVar(wvAutoComplNomUtilForceCtrl)" listener="#{controleLotController.forcerLeControle}"/>
+							</p:selectBooleanCheckbox>
+						
+							<p:outputLabel value="Date "/>
+							<p:calendar value="#{controleLotController.controleConformiteJSF.r.taResultatCorrections.get(0).dateForceValidation}" pattern="#{msg.datetime_pattern}" mask="true" locale="fr"
+								navigator="true" showOn="button" widgetVar="wvCalendarForceCtrl">
+								<p:ajax event="dateSelect"/>
+								<p:ajax event="blur"/>
+							</p:calendar>
+							
+							<p:outputLabel value=" Nom "/>
+							<p:autoComplete value="#{controleLotController.controleConformiteJSF.r.taResultatCorrections.get(0).taUtilisateurForceValidation}"
+								    converter="entityConverter"
+								    widgetVar="wvAutoComplNomUtilForceCtrl"
+									completeMethod="#{controleLotController.utilisateurAutoComplete}"
+									disabled="#{!controleLotController.modeEcran.dataSetEnModif()}" var="utilisateur"
+									itemLabel="#{utilisateur.nom}" itemValue="#{utilisateur}"
+									forceSelection="true" dropdown="true" placeholder="Utilisateur" >
+									<p:column>
+										<h:outputText value="#{utilisateur.email}" required="true" requiredMessage="#{msg_diag.alert_champs_obligatoir}"/>
+									</p:column>
+									
+									<p:column>
+										<h:outputText value="#{utilisateur.nom}" />
+									</p:column>
+									
+									<p:column>
+										<h:outputText value="#{utilisateur.prenom}" />
+									</p:column>
+					
+									<f:attribute name="nomChamp" value="#{const.C_CODE_TIERS}" />
+									<p:ajax event="itemSelect" />
+							</p:autoComplete>
+						</p:panel>
+						
+						<p:panel header="Historique (#{controleLotController.historique.size()})" toggleable="true" collapsed="true">
+							<p:dataTable value="#{controleLotController.historique}" var="h">
+								<p:column headerText="Date" styleClass="center">
+									<h:outputText value="#{h.dateControle}">
+										<f:convertDateTime pattern="#{msg.datetime_pattern}" timeZone="#{msg.time_zone}"  />
+									</h:outputText>
+								</p:column>
+								<p:column headerText="Valeur Constatée" styleClass="center">
+									<p:outputLabel value="#{h.valeurConstatee}"/>
+								</p:column>
+								<p:column headerText="Action Immédiate/Commentaire" styleClass="center">
+									<p:outputLabel value="#{h.taResultatCorrections[0].actionImmediate}"/>
+								</p:column>
+								<p:column headerText="Action prédéfinie effectuée" styleClass="center">
+									<p:selectBooleanCheckbox  value="#{h.taResultatCorrections[0].effectuee}" disabled="true"/>
+								</p:column>
+								<p:column headerText="Autre action" styleClass="center">
+									<p:outputLabel value="#{h.taResultatCorrections[0].observation}"/>
+								</p:column>
+								<p:column headerText="Validation forcée" styleClass="center">
+									<p:selectBooleanCheckbox  value="#{h.taResultatCorrections[0].validationForcee}" disabled="true"/>
+								</p:column>
+								<p:column headerText="Utilisateur" styleClass="center">
+									<p:outputLabel value="#{h.taUtilisateurControleur.username}"/>
+								</p:column>
+								<p:column headerText="Etat" styleClass="center">
+									<lgr:iconStatusConformite id="dd" statusObject="#{h.taStatusConformite}"/>
+								</p:column>
+							</p:dataTable>		
+						</p:panel>
+						
+					</p:panelGrid>
+					
+				</p:fieldset>
+				
+			</p:panel>
+		
+		</p:panel>
+		
+		<p:confirmDialog global="true" showEffect="fade">
+				<p:commandButton id="idConfirmDialogCtrlLotOui" value="Oui" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+				<p:commandButton id="idConfirmDialogCtrlLotNon" value="Non" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+		</p:confirmDialog>
+		
+		<style type="text/css">
+			.ui-panel .ui-panel-content {
+				padding: 0;
+			}
+		</style>
+		
+</ui:composition>

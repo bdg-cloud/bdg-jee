@@ -1,0 +1,311 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui">
+
+
+	<p:tabView id="idTabViewEditionCatalogue" orientation="left" styleClass="verticalTab" cache="false">
+
+		<p:ajax event="tabChange" update="@widgetVar(panelListeAdresseTiers)" listener="#{editionCatalogueController.onTabChange}" />
+
+		<p:tab title="Editions" titleStyleClass="tab-min tab-tiers" titletip="Editions">
+
+			<div class="dashboard-title" style="background: #f6f6f6; margin-bottom: 15px;">
+				<h:panelGrid columns="4" cellpadding="5">
+<!-- 					<h:graphicImage name="dashboard/tier.svg" library="images" height="35px" style="margin-top:1px;" /> -->
+					<p:outputLabel value="Editions du catalogue" style="font-size:20px;" />
+				</h:panelGrid>
+			</div>
+
+			<p:menubar styleClass="menu-onglet">
+				<p:menuitem title="Enregistrer les modifications en cours" styleClass="icon-save icon"
+					actionListener="#{editionCatalogueController.actEnregistrer}" process="@this"
+					update="idPanelIdentite,idPanelAdresse,:form:messages,@form,@widgetVar(wvMenuListeEditionCatalogue),@widgetVar(wvDataTableListeEditionCatalogue)"
+					disabled="#{editionCatalogueController.etatBouton('enregistrer')}" />
+				<p:menuitem title="Ajouter" styleClass="icon-insert icon" actionListener="#{editionCatalogueController.actInserer}"
+					process="@this"
+					update="idPanelIdentite,idPanelAdresse,:form:messages,@form,@widgetVar(wvMenuListeEditionCatalogue),@widgetVar(wvDataTableListeEditionCatalogue)"
+					disabled="#{editionCatalogueController.etatBouton('inserer')}" />
+				<p:menuitem title="Modifier" styleClass="icon-update icon" actionListener="#{editionCatalogueController.actModifier}"
+					process="@this"
+					update="idPanelIdentite,idPanelAdresse,:form:messages,@form,@widgetVar(wvMenuListeEditionCatalogue),@widgetVar(wvDataTableListeEditionCatalogue)"
+					disabled="#{editionCatalogueController.etatBouton('modifier')}" />
+				<p:menuitem title="Annuler les modifications en cours" styleClass="icon-cancel icon" actionListener="#{editionCatalogueController.actAnnuler}"
+					process="@this"
+					update="idPanelIdentite,idPanelAdresse,:form:messages,@form,@widgetVar(wvMenuListeEditionCatalogue),@widgetVar(wvDataTableListeEditionCatalogue)"
+					disabled="#{editionCatalogueController.etatBouton('annuler')}">
+					<p:confirm header="Confirmation" message="Etes vous sur de vouloir annuler les modifications en cours ?" icon="ui-icon-alert" />
+				</p:menuitem>
+				<p:menuitem title="Supprimer" styleClass="icon icon-delete menuitem-poubelle-droite"
+					actionListener="#{editionCatalogueController.actSupprimer}" process="@this"
+					update="idPanelIdentite,idPanelAdresse,:form:messages,@form,@widgetVar(wvDataTableListeEditionCatalogue)"
+					disabled="#{editionCatalogueController.etatBouton('supprimer')}">
+					<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer ce Tiers ?" icon="ui-icon-alert" />
+				</p:menuitem>
+				<p:menuitem title="Fermer l'onglet" styleClass="icon icon-close menuitem-fermer-droite" process="@this"
+					actionListener="#{editionCatalogueController.actFermer}" update=":form:messages,@widgetVar(wvMenuListeEditionCatalogue),@widgetVar(wvDataTableListeEditionCatalogue)"
+					disabled="#{editionCatalogueController.etatBouton('fermer')}" onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())">
+					<p:confirm header="Confirmation" message="#{msg_diag.alert_fermeture_onglet}" icon="ui-icon-alert"
+						disabled="#{!editionCatalogueController.modeEcran.dataSetEnModif()}" />
+				</p:menuitem>
+
+				<p:separator styleClass="separateur-menu-vertical" />
+
+				<p:menuitem title="Liste des éditions" styleClass="icon icon-liste" oncomplete="PF('wvOverlayListeEditionCatalogue').show();" />
+			</p:menubar>
+
+
+			<div class="ui-grid ui-grid-responsive">
+
+
+				<div class="ui-grid-row">
+
+					<div class="ui-grid-col-6">
+						<p:panel id="idPanelIdentite" header="Description" toggleable="true" widgetVar="panelIdentite">
+
+
+							<h:panelGrid columns="2" cellpadding="10">
+
+								<p:outputLabel value="Code : " styleClass="labelchob" />
+
+								<p:inputText id="idCode" value="#{editionCatalogueController.selectedTaEditionCatalogueDTO.codeEdition}"
+									validator="#{editionCatalogueController.validateTaEditionCatalogue}" disabled="#{editionCatalogueController.editable()}">
+									<f:attribute name="nomChamp" value="#{const.C_CODE_EDITION_CATALOGUE}" />
+									<p:ajax event="blur" update="@this" />
+								</p:inputText>
+
+
+								<p:outputLabel value="Type d'édition : " />
+
+								<p:autoComplete value="#{editionCatalogueController.taTEditionCatalogueDTO}"
+									completeMethod="#{editionCatalogueController.typeTaEditionCatalogueAutoCompleteLight}" 
+									disabled="#{editionCatalogueController.editable()}"
+									var="typeService" itemLabel="#{typeService.codeTEdition}" 
+									itemValue="#{typeService}" forceSelection="true" dropdown="true"
+									placeholder="Type" converter="entityConverter">
+									<p:column>
+										<f:facet name="header">
+											<!-- 									<p:commandButton value="Ajouter" title="Insérer" -->
+											<!-- 										process="@this" update="@this" -->
+											<!-- 										actionListener="#{editionCatalogueController.actDialogTypeEntite}" -->
+											<!-- 										styleClass="btn-insert btn"> -->
+											<!-- 										<p:ajax event="dialogReturn" -->
+											<!-- 											listener="#{editionCatalogueController.handleReturnDialogTypeEntite}" -->
+											<!-- 											update="@parent:@parent" /> -->
+											<!-- 									</p:commandButton> -->
+										</f:facet>
+										<h:outputText value="#{typeService.codeTEdition}" />
+									</p:column>
+									<p:column>
+										<h:outputText value="#{typeService.libelle}" />
+									</p:column>
+
+									<f:attribute name="nomChamp" value="#{const.C_CODE_T_EDITION_CATALOGUE}" />
+									<p:ajax event="itemSelect" listener="#{editionCatalogueController.autcompleteSelection}" update="@this" />
+								</p:autoComplete>
+
+								<p:outputLabel value="Libelle : " />
+								<p:inputText value="#{editionCatalogueController.selectedTaEditionCatalogueDTO.libelleEdition}"
+									validator="#{editionCatalogueController.validateTaEditionCatalogue}" disabled="#{editionCatalogueController.editable()}">
+									<f:attribute name="nomChamp" value="#{const.C_LIBELLE_EDITION_CATALOGUE}" />
+									<p:ajax event="blur" update="@this" />
+								</p:inputText>
+
+								<p:outputLabel value="Description : " styleClass="labelchob" />
+								<p:inputText value="#{editionCatalogueController.selectedTaEditionCatalogueDTO.descriptionEdition}"
+									validator="#{editionCatalogueController.validateTaEditionCatalogue}" disabled="#{editionCatalogueController.editable()}">
+									<f:attribute name="nomChamp" value="#{const.C_DESCRIPTION_EDITION_CATALOGUE}" />
+									<p:ajax event="blur" update="@this" />
+								</p:inputText>
+								
+								<p:outputLabel value="Version : " styleClass="labelchob" />
+								<p:inputText value="#{editionCatalogueController.selectedTaEditionCatalogueDTO.versionEdition}"
+									validator="#{editionCatalogueController.validateTaEditionCatalogue}" disabled="#{editionCatalogueController.editable()}">
+									<f:attribute name="nomChamp" value="#{const.C_DESCRIPTION_SERVICE_WEB_EXTERNE}" />
+									<p:ajax event="blur" update="@this" />
+								</p:inputText>
+
+								<p:outputLabel value="Systeme : " />
+								<p:selectBooleanCheckbox value="#{editionCatalogueController.selectedTaEditionCatalogueDTO.systeme}"
+									disabled="#{editionCatalogueController.editable()}">
+									<p:ajax event="change" update="@this" />
+								</p:selectBooleanCheckbox>
+								
+								<p:outputLabel value="Chemin ressources/librairies : " styleClass="labelchob" />
+								<p:inputText value="#{editionCatalogueController.selectedTaEditionCatalogueDTO.resourcesPath}"
+									validator="#{editionCatalogueController.validateTaEditionCatalogue}" disabled="#{editionCatalogueController.editable()}">
+									<f:attribute name="nomChamp" value="#{const.C_DESCRIPTION_SERVICE_WEB_EXTERNE}" />
+									<p:ajax event="blur" update="@this" />
+								</p:inputText>
+								
+								<p:outputLabel value="Theme: "  />
+								<p:inputText value="#{editionCatalogueController.selectedTaEditionCatalogueDTO.theme}"
+									validator="#{editionCatalogueController.validateTaEditionCatalogue}" disabled="#{editionCatalogueController.editable()}">
+									<f:attribute name="nomChamp" value="#{const.C_DESCRIPTION_SERVICE_WEB_EXTERNE}" />
+									<p:ajax event="blur" update="@this" />
+								</p:inputText>
+								
+								<p:outputLabel value="Librairie : "  />
+								<p:inputText value="#{editionCatalogueController.selectedTaEditionCatalogueDTO.librairie}"
+									validator="#{editionCatalogueController.validateTaEditionCatalogue}" disabled="#{editionCatalogueController.editable()}">
+									<f:attribute name="nomChamp" value="#{const.C_DESCRIPTION_SERVICE_WEB_EXTERNE}" />
+									<p:ajax event="blur" update="@this" />
+								</p:inputText>
+
+							</h:panelGrid>
+
+						</p:panel>
+
+					</div>
+
+					<div class="ui-grid-col-6">
+						<div class="ui-grid-row">
+
+							<div class="ui-grid-col-12">
+
+								<p:panel id="idPanelAdresse" header="Divers" toggleable="true" widgetVar="panelAdresse">
+
+									<h:panelGrid columns="2" cellpadding="10">
+
+										<p:outputLabel value="Chemin : " />
+										<p:inputText value="#{editionCatalogueController.selectedTaEditionCatalogueDTO.fichierChemin}"
+											validator="#{editionCatalogueController.validateTaEditionCatalogue}" disabled="#{editionCatalogueController.editable()}">
+											<f:attribute name="nomChamp" value="#{const.C_CHEMIN_EDITION_CATALOGUE}" />
+											<p:ajax event="blur" update="@this" />
+											<!-- 							<p:ajax event="keyup" listener="#{editionCatalogueController.actModifier}" update=":form:messages,@form" immediate="true" /> -->
+										</p:inputText>
+
+										<p:outputLabel value="Actif : " />
+										<p:selectBooleanCheckbox value="#{editionCatalogueController.selectedTaEditionCatalogueDTO.actif}"
+											disabled="#{editionCatalogueController.editable()}">
+											<p:ajax event="change" update="@this" />
+										</p:selectBooleanCheckbox>
+
+										<p:outputLabel value="Defaut : " />
+										<p:selectBooleanCheckbox value="#{editionCatalogueController.selectedTaEditionCatalogueDTO.defaut}"
+											disabled="#{editionCatalogueController.editable()}">
+											<p:ajax event="change" update="@this" />
+										</p:selectBooleanCheckbox>
+										
+										<p:outputLabel value="Code dossier (Edition Personalisée) : "  />
+										<p:inputText value="#{editionCatalogueController.selectedTaEditionCatalogueDTO.codeDossierEditionPersonalisee}"
+											validator="#{editionCatalogueController.validateTaEditionCatalogue}" disabled="#{editionCatalogueController.editable()}">
+											<f:attribute name="nomChamp" value="#{const.C_CODE_DOSSIER_EDITION_CATALOGUE}" />
+											<p:ajax event="blur" update="@this" />
+										</p:inputText>
+
+									</h:panelGrid>
+
+								</p:panel>
+
+							</div>
+						</div>
+
+					</div>
+
+				</div>
+
+			</div>
+
+			<div class="ui-grid-row">
+				<div class="ui-grid-col-4">
+					<p:panel id="idPanelLogo" header="Fichier d'édition" toggleable="true" widgetVar="panelLogo">
+						<h:panelGrid columns="2" cellpadding="10">
+
+							<p:fileUpload listener="#{editionCatalogueController.handleFileUpload}" mode="advanced" dragDropSupport="false" label="Choisir"
+								uploadLabel="Télécharger" cancelLabel="Annuler" auto="true" update="@widgetVar(panelLogo)" sizeLimit="#{msg.email_taille_max_piecejonte_5mo}" 
+								fileLimit="1"
+								disabled="#{editionCatalogueController.editable()}"
+								allowTypes="/(\.|\/)(rptdesign)$/" rendered="#{editionCatalogueController.taEditionCatalogue.fichierBlob==null}" />
+
+							<p:commandButton value="Supprimer" actionListener="#{editionCatalogueController.supprimerLogo}"
+								disabled="#{editionCatalogueController.editable()}"
+								rendered="#{editionCatalogueController.taEditionCatalogue.fichierBlob !=null}" update="@widgetVar(panelLogo)" />
+								
+							<p:outputLabel value="#{editionCatalogueController.taEditionCatalogue.fichierNom}" rendered="#{editionCatalogueController.taEditionCatalogue.fichierBlob !=null}"/>
+							
+							 <p:commandButton value="Télécharger" ajax="false" onclick="PrimeFaces.monitorDownload(start, stop);" icon="ui-icon-arrowthick-1-s" rendered="#{editionCatalogueController.taEditionCatalogue.fichierBlob !=null}">
+						        <p:fileDownload value="#{editionCatalogueController.logo}" />
+						    </p:commandButton>
+
+						</h:panelGrid>
+					</p:panel>
+				</div>
+				
+				<div class="ui-grid-col-4">
+					<p:panel id="idPanelExemple" header="Fichier PDF d'exemple" toggleable="true" widgetVar="panelExemple">
+						<h:panelGrid columns="2" cellpadding="10">
+
+							<p:fileUpload listener="#{editionCatalogueController.handleFileUploadExemple}" mode="advanced" dragDropSupport="false" label="Choisir"
+								uploadLabel="Télécharger" cancelLabel="Annuler" auto="true" update="@widgetVar(panelLogo)" sizeLimit="#{msg.email_taille_max_piecejonte_1mo}" 
+								fileLimit="1"
+								disabled="#{editionCatalogueController.editable()}"
+								allowTypes="/(\.|\/)(rptdesign)$/" rendered="#{editionCatalogueController.taEditionCatalogue.fichierExemple==null}" />
+
+							<p:commandButton value="Supprimer" actionListener="#{editionCatalogueController.supprimerLogo}"
+								disabled="#{editionCatalogueController.editable()}"
+								rendered="#{editionCatalogueController.taEditionCatalogue.fichierExemple !=null}" update="@widgetVar(panelExemple)" />
+															
+							 <p:commandButton value="Télécharger" ajax="false" onclick="PrimeFaces.monitorDownload(start, stop);" icon="ui-icon-arrowthick-1-s" rendered="#{editionCatalogueController.taEditionCatalogue.fichierExemple !=null}">
+						        <p:fileDownload value="#{editionCatalogueController.logo}" />
+						    </p:commandButton>
+
+						</h:panelGrid>
+					</p:panel>
+				</div>
+				
+				<div class="ui-grid-col-4">
+					<p:panel id="idPanelMiniature" header="Miniature" toggleable="true" widgetVar="panelMiniature">
+						<h:panelGrid columns="2" cellpadding="10">
+
+							<p:fileUpload listener="#{editionCatalogueController.handleFileUploadMiniature}" mode="advanced" dragDropSupport="false" label="Choisir"
+								uploadLabel="Télécharger" cancelLabel="Annuler" auto="true" update="@widgetVar(panelMiniature)" sizeLimit="#{msg.email_taille_max_piecejonte_1mo}" 
+								fileLimit="1"
+								disabled="#{editionCatalogueController.editable()}"
+								allowTypes="/(\.|\/)(rptdesign)$/" rendered="#{editionCatalogueController.taEditionCatalogue.miniature==null}" />
+
+							<p:commandButton value="Supprimer" actionListener="#{editionCatalogueController.supprimerLogo}"
+								disabled="#{editionCatalogueController.editable()}"
+								rendered="#{editionCatalogueController.taEditionCatalogue.fichierExemple !=null}" update="@widgetVar(panelMiniature)" />
+															
+							 <p:commandButton value="Télécharger" ajax="false" onclick="PrimeFaces.monitorDownload(start, stop);" icon="ui-icon-arrowthick-1-s" rendered="#{editionCatalogueController.taEditionCatalogue.miniature !=null}">
+						        <p:fileDownload value="#{editionCatalogueController.logo}" />
+						    </p:commandButton>
+
+						</h:panelGrid>
+					</p:panel>
+				</div>
+			</div>
+			
+			<div class="ui-grid-row">
+				<div class="ui-grid-col-4">
+					<p:pickList value="#{editionCatalogueController.dualListModelActionProg}" var="action" effect="bounce"
+		                itemValue="#{action}" itemLabel="#{action.idAction}" showSourceControls="true" 
+		                showTargetControls="true" showCheckbox="false" responsive="true"
+		                 disabled="#{editionCatalogueController.editable()}"
+		                showSourceFilter="true" showTargetFilter="true" filterMatchMode="contains" converter="entityConverter">
+		 
+<!-- 			        <f:facet name="sourceCaption">Available</f:facet> -->
+<!-- 			        <f:facet name="targetCaption">Starting</f:facet> -->
+			 
+			        	<p:ajax event="transfer" listener="#{editionCatalogueController.onTransfer}"  />
+<!-- 			        <p:ajax event="select" listener="#{pickListView.onSelect}" update="msg" /> -->
+<!-- 			        <p:ajax event="unselect" listener="#{pickListView.onUnselect}" update="msg" /> -->
+<!-- 			        <p:ajax event="reorder" listener="#{pickListView.onReorder}" update="msg" /> -->
+			 
+<!-- 			        <p:column style="width:10%"> -->
+<!-- 			            <h:outputText styleClass="ui-theme ui-theme-#{theme.name}" /> -->
+<!-- 			        </p:column> -->
+			 
+			        <p:column>
+			            <h:outputText value="#{action.idAction}" />
+			        </p:column>
+			    </p:pickList>
+		    </div>
+		</div>
+
+		</p:tab>
+
+
+
+	</p:tabView>
+
+</ui:composition>

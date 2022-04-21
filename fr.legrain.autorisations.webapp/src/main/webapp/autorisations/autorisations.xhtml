@@ -1,0 +1,223 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html" 
+	xmlns:ui="http://java.sun.com/jsf/facelets" 
+	xmlns:p="http://primefaces.org/ui">
+
+	<p:panel id="autorisationsFormPrincipal" widgetVar="widgetVarautorisationsForm">
+
+		<p class="subtitle">
+			<p:outputLabel value="Gestion des unités" rendered="#{dansDialogue == null ? true : false}" />
+		</p>
+
+		<p:dataTable id="autorisationsDataTable" 
+			var="table" rendered="#{dansDialogue == null ? true : false}"
+			value="#{autorisationsController.values}" 
+			rowKey="#{table.idAutorisation}" 
+			selectionMode="single"
+			styleClass="datatable" 
+			selection="#{autorisationsController.selection}" 
+			paginator="true"
+			resizableColumns="true"
+			rows="#{msg.modele_datatable_ligne_par_page_debut}" 
+			paginatorTemplate="#{msg.modele_datatable_paginator}"
+			rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}" 
+			emptyMessage="#{msg.message_datatable_vide}"
+			currentPageReportTemplate="#{msg.modele_datatable_page_courante}">
+
+			<p:ajax event="rowSelect" listener="#{autorisationsController.onRowSelect}" />
+
+			<f:facet name="{Exporters}">
+				<h:commandLink>
+					<p:graphicImage library="images" name="excel.png" width="24" />
+					<p:dataExporter type="xls" target="autorisationsDataTable" fileName="type_tiers" />
+				</h:commandLink>
+
+				<h:commandLink>
+					<p:graphicImage library="images" name="pdf.png" width="24" />
+					<p:dataExporter type="pdf" target="autorisationsDataTable" fileName="type_tiers" />
+				</h:commandLink>
+
+				<h:commandLink>
+					<p:graphicImage library="images" name="csv.png" width="24" />
+					<p:dataExporter type="csv" target="autorisationsDataTable" fileName="type_tiers" />
+				</h:commandLink>
+
+				<h:commandLink>
+					<p:graphicImage library="images" name="xml.png" width="24" />
+					<p:dataExporter type="xml" target="autorisationsDataTable" fileName="type_tiers" />
+				</h:commandLink>
+			</f:facet>
+
+			<p:column sortBy="#{table.codeDossier}" filterBy="#{table.codeDossier}" filterMatchMode="contains" style="width:150px">
+				<f:facet name="header">
+					<h:outputText value="Code dossier" />
+				</f:facet>
+				<h:outputText value="#{table.codeDossier}" />
+
+			</p:column>
+
+			<p:column sortBy="#{table.modules}" filterBy="#{table.modules}" filterMatchMode="contains">
+				<f:facet name="header">
+					<h:outputText value="Modules autorisés" />
+				</f:facet>
+				<p:outputLabel value="#{table.modulesHTML}" escape="false"/>
+<!-- 				<p:outputLabel value="#{table.modulesHTML}"/> -->
+<!-- 				<p:outputLabel value="#{table.modules}"/> -->
+
+			</p:column>
+
+			<p:column sortBy="#{table.taTypeProduit.code}" filterBy="#{table.taTypeProduit.code}" filterMatchMode="contains" style="width:100px">
+				<f:facet name="header">
+					<h:outputText value="Type de produit" />
+				</f:facet>
+				<h:outputText value="#{table.taTypeProduit.code}" />
+
+			</p:column>
+
+		</p:dataTable>
+
+		<p:panel id="autorisationsDataTableF" styleClass="text-center mt30 bg-grey" rendered="#{dansDialogue == null ? true : false}">
+		
+			<p:commandButton id="autorisationsInserer" value="Insérer" process="@this"
+				disabled="#{autorisationsController.etatBouton('inserer')}"
+				update="@widgetVar(varautorisationsPanel), @this, @parent:autorisationsModifier, @parent:autorisationsSupprimer"
+				actionListener="#{autorisationsController.actInserer}" styleClass="btn-insert btn" />
+
+			<p:commandButton id="autorisationsModifier" value="Modifier" process="@this" class="btn-update btn"
+				disabled="#{autorisationsController.etatBouton('modifier')}"
+				update="@widgetVar(varautorisationsPanel), @parent:autorisationsInserer, @this, @parent:autorisationsSupprimer"
+				actionListener="#{autorisationsController.actModifier}" />
+
+
+			<p:commandButton id="autorisationsSupprimer" value="Supprimer" styleClass="btn-delete btn"
+				disabled="#{autorisationsController.etatBouton('supprimer')}" type="button" onclick="PF('typeTierscd1').show()">
+			</p:commandButton>
+
+			<p:commandButton id="autorisationsFermer" value="Fermer" class="btn-close btn" type="button"
+				onclick="PF('typeTierscd2').show()" rendered="#{dansDialogue == null ? true : false}" />
+
+			<p:commandButton id="autorisationsFermerDialogue" value="Fermer" process="@this" class="btn-close btn"
+				actionListener="#{autorisationsController.actFermerDialog}" rendered="#{dansDialogue != null ? true : false}" />
+
+			<p:confirmDialog message="Etes-vous sûr de vouloir supprimer l'enregistrement?" header="Confirmation" 
+				severity="alert" appendTo="@(body)" widgetVar="typeTierscd1">
+				<p:commandButton value="Oui" update="@form" oncomplete="PF('typeTierscd1').hide()">
+					<p:ajax listener="#{autorisationsController.actSupprimer}" />
+				</p:commandButton>
+				<p:commandButton value="Non" onclick="PF('typeTierscd1').hide();" type="button" />
+			</p:confirmDialog>
+
+			<p:confirmDialog
+				message="Etes-vous sûr de vouloir fermer l'onglet ? (les modifications en cours ne seront pas sauvegardées) "
+				header="Confirmation" severity="alert" widgetVar="typeTierscd2" appendTo="@(body)">
+				<p:commandButton value="Oui" onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())"
+					oncomplete="PF('typeTierscd2').hide()" />
+
+				<p:commandButton value="Non" onclick="PF('typeTierscd2').hide();" type="button" />
+			</p:confirmDialog>
+		</p:panel>
+	</p:panel>
+	
+	<p:messages id="autorisationsMessages" showDetail="true" autoUpdate="true" closable="true" />
+
+	<p:panel id="autorisationsPanel" visible="true" widgetVar="varautorisationsPanel">
+
+		<p:panel resizable="false" id="autorisationsPanelCache"
+			rendered="#{autorisationsController.modeEcran.dataSetEnModif()}">
+
+			<f:validateBean disabled="true">
+
+				<div class="ui-grid ui-grid-responsive" id="typeTiersGridResp">
+					<div class="ui-grid-row">
+
+						<div class="ui-grid-col-4">
+							<h:outputText value="Code tiers :"></h:outputText>
+						</div>
+						<div class="ui-grid-col-8">
+							<h:inputText value="#{autorisationsController.nouveau.codeDossier}" required="true" requiredMessage="Champs obligatoire!" />
+						</div>
+					</div>
+
+					<div class="ui-grid-row">
+						<div class="ui-grid-col-4">
+							<h:outputText value="fichier xml :"></h:outputText>
+						</div>
+						<div class="ui-grid-col-8">
+							<p:fileUpload listener="#{autorisationsController.upload}" allowTypes="/(\.|\/)(txt|xml)$/"
+								sizeLimit="100000" description="Select fichier" update="@widgetVar(widgetVarModule)" />
+							<!-- 							 <p:commandButton id="btnEnvoyer" value="Envoyer" process="@this" actionListener="#{autorisationsController.upload}" disabled="false" /> -->
+							<!-- 							 <h:commandButton value="Envoyer" action="#{autorisationsController.upload}" styleClass="sansLabel"/> -->
+							<p:growl id="messages" showDetail="true" />
+						</div>
+					</div>
+
+					<div class="ui-grid-row">
+
+						<div class="ui-grid-col-4">
+							<h:outputText value="Modules :" />
+						</div>
+						<div class="ui-grid-col-8">
+							<p:panel widgetVar="widgetVarModule">
+								<h:inputTextarea rows="10" cols="50" autoResize="true" value="#{autorisationsController.nouveau.modules}"
+									required="true" requiredMessage="Champs obligatoire!">
+								</h:inputTextarea>
+							</p:panel>
+						</div>
+					</div>
+
+					<div class="ui-grid-row">
+
+						<div class="ui-grid-col-4">
+							<h:outputText value="Type de produit :" />
+						</div>
+						<div class="ui-grid-col-8">
+
+							<p:autoComplete value="#{autorisationsController.typeProduit}"
+								completeMethod="#{autorisationsController.typeProduitAutoComplete}"
+								disabled="#{autorisationsController.editable()}" var="familleautorisations"
+								itemLabel="#{familleautorisations.code}" itemValue="#{familleautorisations}" forceSelection="true"
+								dropdown="true" placeholder="type de produit">
+								<p:column>
+
+
+									<h:outputText value="#{familleautorisations.code}" />
+								</p:column>
+								<p:column>
+									<h:outputText value="#{familleautorisations.libelle}" />
+								</p:column>
+								<f:attribute name="nomChamp" value="code" />
+								<p:ajax event="itemSelect" listener="#{autorisationsController.autcompleteSelection}" />
+							</p:autoComplete>
+						</div>
+					</div>
+
+					<div class="ui-grid-row">
+
+						<div class="ui-grid-col-12 text-center">
+							<p:commandButton value="Enregistrer" styleClass="btn-save btn"
+								disabled="#{autorisationsController.etatBouton('enregistrer')}"
+								update="@widgetVar(widgetVarautorisationsForm), @widgetVar(varautorisationsPanel)"
+								actionListener="#{autorisationsController.actEnregistrer}" />
+							<p:commandButton id="autorisationsAnnuler" value="Annuler" styleClass="btn-cancel btn"
+								disabled="#{autorisationsController.etatBouton('annuler')}"
+								update="@widgetVar(widgetVarautorisationsForm), @widgetVar(varautorisationsPanel)"
+								actionListener="#{autorisationsController.actAnnuler}" rendered="#{dansDialogue == null ? true : false}" />
+
+							<p:commandButton id="autorisationsAnnulerDialogue" value="Annuler" styleClass="btn-cancel btn" process="@this"
+								disabled="#{autorisationsController.etatBouton('annuler')}"
+								actionListener="#{autorisationsController.actFermerDialog}" rendered="#{dansDialogue != null ? true : false}" />
+						</div>
+					</div>
+				</div>
+
+			</f:validateBean>
+
+		</p:panel>
+
+	</p:panel>
+
+
+
+
+</ui:composition>

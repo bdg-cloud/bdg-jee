@@ -1,0 +1,235 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui">
+
+
+	<p:tabView id="idTabViewEditionDossier" orientation="left" styleClass="verticalTab" cache="false">
+
+		<p:ajax event="tabChange" update="@widgetVar(panelListeAdresseTiers)" listener="#{editionDossierController.onTabChange}" />
+
+		<p:tab title="Editions" titleStyleClass="tab-min tab-tiers" titletip="Editions">
+
+			<div class="dashboard-title" style="background: #f6f6f6; margin-bottom: 15px;">
+				<h:panelGrid columns="4" cellpadding="5">
+<!-- 					<h:graphicImage name="dashboard/tier.svg" library="images" height="35px" style="margin-top:1px;" /> -->
+					<p:outputLabel value="Editions du dossier" style="font-size:20px;" />
+				</h:panelGrid>
+			</div>
+
+			<p:menubar styleClass="menu-onglet">
+				<p:menuitem title="Enregistrer les modifications en cours" styleClass="icon-save icon"
+					actionListener="#{editionDossierController.actEnregistrer}" process="@this"
+					update="idPanelIdentite,idPanelAdresse,:form:messages,@form,@widgetVar(wvMenuListeEditionDossier),@widgetVar(wvDataTableListeEditionDossier)"
+					disabled="#{editionDossierController.etatBouton('enregistrer')}" />
+				<p:menuitem title="Ajouter" styleClass="icon-insert icon" actionListener="#{editionDossierController.actInserer}"
+					process="@this"
+					update="idPanelIdentite,idPanelAdresse,:form:messages,@form,@widgetVar(wvMenuListeEditionDossier),@widgetVar(wvDataTableListeEditionDossier)"
+					disabled="#{editionDossierController.etatBouton('inserer')}" />
+				<p:menuitem title="Modifier" styleClass="icon-update icon" actionListener="#{editionDossierController.actModifier}"
+					process="@this"
+					update="idPanelIdentite,idPanelAdresse,:form:messages,@form,@widgetVar(wvMenuListeEditionDossier),@widgetVar(wvDataTableListeEditionDossier)"
+					disabled="#{editionDossierController.etatBouton('modifier')}" />
+				<p:menuitem title="Annuler les modifications en cours" styleClass="icon-cancel icon" actionListener="#{editionDossierController.actAnnuler}"
+					process="@this"
+					update="idPanelIdentite,idPanelAdresse,:form:messages,@form,@widgetVar(wvMenuListeEditionDossier),@widgetVar(wvDataTableListeEditionDossier)"
+					disabled="#{editionDossierController.etatBouton('annuler')}">
+					<p:confirm header="Confirmation" message="Etes vous sur de vouloir annuler les modifications en cours ?" icon="ui-icon-alert" />
+				</p:menuitem>
+				<p:menuitem title="Supprimer" styleClass="icon icon-delete menuitem-poubelle-droite"
+					actionListener="#{editionDossierController.actSupprimer}" process="@this"
+					update="idPanelIdentite,idPanelAdresse,:form:messages,@form,@widgetVar(wvDataTableListeEditionDossier)"
+					disabled="#{editionDossierController.etatBouton('supprimer')}">
+					<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer ce Tiers ?" icon="ui-icon-alert" />
+				</p:menuitem>
+				<p:menuitem title="Fermer l'onglet" styleClass="icon icon-close menuitem-fermer-droite" process="@this"
+					actionListener="#{editionDossierController.actFermer}" update=":form:messages,@widgetVar(wvMenuListeEditionDossier),@widgetVar(wvDataTableListeEditionDossier)"
+					disabled="#{editionDossierController.etatBouton('fermer')}" onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())">
+					<p:confirm header="Confirmation" message="#{msg_diag.alert_fermeture_onglet}" icon="ui-icon-alert"
+						disabled="#{!editionDossierController.modeEcran.dataSetEnModif()}" />
+				</p:menuitem>
+
+				<p:separator styleClass="separateur-menu-vertical" />
+
+				<p:menuitem title="Liste des éditions" styleClass="icon icon-liste" oncomplete="PF('wvOverlayListeEditionDossier').show();" />
+			</p:menubar>
+
+
+			<div class="ui-grid ui-grid-responsive">
+
+
+				<div class="ui-grid-row">
+
+					<div class="ui-grid-col-6">
+						<p:panel id="idPanelIdentite" header="Description" toggleable="true" widgetVar="panelIdentite">
+
+
+							<h:panelGrid columns="2" cellpadding="10">
+
+								<p:outputLabel value="Code : " styleClass="labelchob" />
+
+								<p:inputText id="idCode" value="#{editionDossierController.selectedTaEditionDTO.codeEdition}"
+									validator="#{editionDossierController.validateTaEdition}" disabled="#{editionDossierController.editable()}">
+									<f:attribute name="nomChamp" value="#{const.C_CODE_TIERS}" />
+									<p:ajax event="blur" update="@this" />
+								</p:inputText>
+
+
+								<p:outputLabel value="Type d'édition : " />
+
+								<p:autoComplete value="#{editionDossierController.taTEditionDTO}"
+									completeMethod="#{editionDossierController.typeTaEditionAutoCompleteLight}" 
+									disabled="#{editionDossierController.editable()}"
+									var="typeService" itemLabel="#{typeService.codeTEdition}" 
+									itemValue="#{typeService}" forceSelection="true" dropdown="true"
+									placeholder="Type" converter="entityConverter">
+									<p:column>
+										<f:facet name="header">
+											<!-- 									<p:commandButton value="Ajouter" title="Insérer" -->
+											<!-- 										process="@this" update="@this" -->
+											<!-- 										actionListener="#{editionDossierController.actDialogTypeEntite}" -->
+											<!-- 										styleClass="btn-insert btn"> -->
+											<!-- 										<p:ajax event="dialogReturn" -->
+											<!-- 											listener="#{editionDossierController.handleReturnDialogTypeEntite}" -->
+											<!-- 											update="@parent:@parent" /> -->
+											<!-- 									</p:commandButton> -->
+										</f:facet>
+										<h:outputText value="#{typeService.codeTEdition}" />
+									</p:column>
+									<p:column>
+										<h:outputText value="#{typeService.libelle}" />
+									</p:column>
+
+									<f:attribute name="nomChamp" value="#{const.C_CODE_T_SERVICE_WEB_EXTERNE}" />
+									<p:ajax event="itemSelect" listener="#{editionDossierController.autcompleteSelection}" update="@this" />
+								</p:autoComplete>
+
+								<p:outputLabel value="Libelle : " />
+								<p:inputText value="#{editionDossierController.selectedTaEditionDTO.libelleEdition}"
+									validator="#{editionDossierController.validateTaEdition}" disabled="#{editionDossierController.editable()}">
+									<f:attribute name="nomChamp" value="#{const.C_LIBELLE_SERVICE_WEB_EXTERNE}" />
+									<p:ajax event="blur" update="@this" />
+								</p:inputText>
+
+								<p:outputLabel value="Description : " styleClass="labelchob" />
+								<p:inputText value="#{editionDossierController.selectedTaEditionDTO.descriptionEdition}"
+									validator="#{editionDossierController.validateTaEdition}" disabled="#{editionDossierController.editable()}">
+									<f:attribute name="nomChamp" value="#{const.C_DESCRIPTION_SERVICE_WEB_EXTERNE}" />
+									<p:ajax event="blur" update="@this" />
+								</p:inputText>
+								
+								<p:outputLabel value="Version : " styleClass="labelchob" />
+								<p:inputText value="#{editionDossierController.selectedTaEditionDTO.versionEdition}"
+									validator="#{editionDossierController.validateTaEdition}" disabled="true">
+									<f:attribute name="nomChamp" value="#{const.C_DESCRIPTION_SERVICE_WEB_EXTERNE}" />
+									<p:ajax event="blur" update="@this" />
+								</p:inputText>
+
+								<p:outputLabel value="Systeme : " />
+								<p:selectBooleanCheckbox value="#{editionDossierController.selectedTaEditionDTO.systeme}"
+									disabled="#{editionDossierController.editable()}">
+									<p:ajax event="change" update="@this" />
+								</p:selectBooleanCheckbox>
+								
+								<p:outputLabel value="Chemin ressources/librairies : " styleClass="labelchob" />
+								<p:inputText value="#{editionDossierController.selectedTaEditionDTO.resourcesPath}"
+									validator="#{editionDossierController.validateTaEdition}" disabled="true">
+									<f:attribute name="nomChamp" value="#{const.C_DESCRIPTION_SERVICE_WEB_EXTERNE}" />
+									<p:ajax event="blur" update="@this" />
+								</p:inputText>
+								
+								<p:outputLabel value="Theme: " />
+								<p:inputText value="#{editionDossierController.selectedTaEditionDTO.theme}"
+									validator="#{editionDossierController.validateTaEdition}" disabled="true">
+									<f:attribute name="nomChamp" value="#{const.C_DESCRIPTION_SERVICE_WEB_EXTERNE}" />
+									<p:ajax event="blur" update="@this" />
+								</p:inputText>
+								
+								<p:outputLabel value="Librairie : "  />
+								<p:inputText value="#{editionDossierController.selectedTaEditionDTO.librairie}"
+									validator="#{editionDossierController.validateTaEdition}" disabled="true">
+									<f:attribute name="nomChamp" value="#{const.C_DESCRIPTION_SERVICE_WEB_EXTERNE}" />
+									<p:ajax event="blur" update="@this" />
+								</p:inputText>
+
+							</h:panelGrid>
+
+						</p:panel>
+
+					</div>
+
+					<div class="ui-grid-col-6">
+						<div class="ui-grid-row">
+
+							<div class="ui-grid-col-12">
+
+								<p:panel id="idPanelAdresse" header="Divers" toggleable="true" widgetVar="panelAdresse">
+
+									<h:panelGrid columns="2" cellpadding="10">
+
+										<p:outputLabel value="Chemin : " />
+										<p:inputText value="#{editionDossierController.selectedTaEditionDTO.fichierChemin}"
+											validator="#{editionDossierController.validateTaEdition}" disabled="#{editionDossierController.editable()}">
+											<f:attribute name="nomChamp" value="#{const.C_TYPE_API_SERVICE_WEB_EXTERNE}" />
+											<p:ajax event="blur" update="@this" />
+											<!-- 							<p:ajax event="keyup" listener="#{editionDossierController.actModifier}" update=":form:messages,@form" immediate="true" /> -->
+										</p:inputText>
+
+										<p:outputLabel value="Actif : " />
+										<p:selectBooleanCheckbox value="#{editionDossierController.selectedTaEditionDTO.actif}"
+											disabled="#{editionDossierController.editable()}">
+											<p:ajax event="change" update="@this" />
+										</p:selectBooleanCheckbox>
+
+										<p:outputLabel value="Defaut : " />
+										<p:selectBooleanCheckbox value="#{editionDossierController.selectedTaEditionDTO.defaut}"
+											disabled="#{editionDossierController.editable()}">
+											<p:ajax event="change" update="@this" />
+										</p:selectBooleanCheckbox>
+
+									</h:panelGrid>
+
+								</p:panel>
+
+							</div>
+						</div>
+
+					</div>
+
+				</div>
+
+			</div>
+
+			<div class="ui-grid-row">
+				<div class="ui-grid-col-12">
+					<p:panel id="idPanelLogo" header="Fichier d'édition" toggleable="true" widgetVar="panelLogo">
+						<h:panelGrid columns="2" cellpadding="10">
+							<p:fileUpload listener="#{editionDossierController.handleFileUpload}" mode="advanced" dragDropSupport="false" label="Choisir"
+								uploadLabel="Télécharger" cancelLabel="Annuler" auto="true" update="@widgetVar(panelLogo)" sizeLimit="#{msg.email_taille_max_piecejonte_5mo}" 
+								fileLimit="1"
+								disabled="#{editionDossierController.editable()}"
+								allowTypes="/(\.|\/)(rptdesign)$/" rendered="#{editionDossierController.taEdition.fichierBlob==null}" />
+
+							<p:commandButton value="Supprimer" actionListener="#{editionDossierController.supprimerLogo}"
+								disabled="#{editionDossierController.editable()}"
+								rendered="#{editionDossierController.taEdition.fichierBlob !=null}" update="@widgetVar(panelLogo)" />
+
+<!-- 							<p:graphicImage value="#{editionDossierController.logo}" stream="false" width="200px" -->
+<!-- 								rendered="#{editionDossierController.taEdition.fichierBlob !=null}" /> -->
+								
+							<p:outputLabel value="#{editionDossierController.taEdition.fichierNom}" rendered="#{editionDossierController.taEdition.fichierBlob !=null}"/>
+							
+							 <p:commandButton value="Télécharger" ajax="false" onclick="PrimeFaces.monitorDownload(start, stop);" icon="ui-icon-arrowthick-1-s" rendered="#{editionDossierController.taEdition.fichierBlob !=null}">
+						        <p:fileDownload value="#{editionDossierController.logo}" />
+						    </p:commandButton>
+
+						</h:panelGrid>
+					</p:panel>
+				</div>
+			</div>
+
+		</p:tab>
+
+
+
+	</p:tabView>
+
+</ui:composition>

@@ -1,0 +1,130 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html" 
+	xmlns:ui="http://java.sun.com/jsf/facelets" 
+	xmlns:p="http://primefaces.org/ui">
+
+	<p:menubar styleClass="menu-onglet">
+	
+		<p:menuitem title="Enregistrer" styleClass="icon icon-save" actionListener="#{preferencesBean.actEnregistrer}" process="@this"
+			update=":form:messages,@form">
+		</p:menuitem>
+		
+		<p:menuitem title="Annuler" styleClass="icon icon-cancel" actionListener="#{preferencesBean.actAnnuler}"
+			process="@this" update=":form:messages,@form">
+		</p:menuitem>
+
+		<p:menuitem title="Fermer" styleClass="icon icon-close menuitem-fermer-droite"
+						process="@this" 
+						onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())">
+		</p:menuitem>
+		
+	</p:menubar>
+	
+	<div class="ui-g">
+		<div class="ui-g-2">
+			<p:tree style="width: auto;"
+				filterBy="#{node}"
+				value="#{preferencesBean.root}" var="node"
+				selectionMode="single" selection="#{preferencesBean.selectedNode}" >
+				<p:ajax event="select" listener="#{preferencesBean.onNodeSelect}" update="@widgetVar(wvPanelPreference)"/>
+		        <p:treeNode >
+		            <h:outputText value="#{node}" />
+		        </p:treeNode>
+		    </p:tree>
+    	</div>
+    	<div class="ui-g-10">
+
+
+			<p:panel header="#{preferencesBean.selectedNode.data}" widgetVar="wvPanelPreference">
+					
+<!-- 					<ui:repeat value="${preferencesBean.values}"  var="p" > -->
+<!-- 						<h:panelGrid columns="2" cellpadding="10" > -->
+
+<!-- 							<h:outputText value="#{p.libelle}" /> -->
+<!-- 							<p:inputText value="#{p.valeur}" rendered="#{p.typeDonnees eq 'string'}" /> -->
+<!-- 							<p:inputTextarea value="#{p.valeur}" rendered="#{p.typeDonnees eq 'text'}" style="width:300%"/> -->
+<!-- 							<p:selectBooleanCheckbox   value="#{p.valeur}" rendered="#{p.typeDonnees eq 'boolean'}" /> -->
+<!-- 							<p:spinner value="#{p.valeur}" rendered="#{p.typeDonnees eq 'numeric'}" /> -->
+											
+<!-- 						</h:panelGrid> -->
+<!-- 					</ui:repeat> -->
+
+					<ui:repeat value="${preferencesBean.valuesPourGroupe}"  var="p" >
+						<ui:fragment rendered="#{p.taGroupePreference == null}">
+							<h:panelGrid columns="2" cellpadding="10" >
+								<h:outputText value="#{p.libelle}" />
+								
+								<p:inputText value="#{p.valeur}" rendered="#{p.typeDonnees eq 'string'}" disabled="#{p.readOnly}">
+									<p:ajax event="blur"/>
+									<p:ajax event="keyup"/>
+								</p:inputText>
+								
+								<p:inputText value="#{p.valeur}" rendered="#{p.typeDonnees eq 'password'}"  disabled="#{p.readOnly}">
+									<p:ajax event="blur"/>
+									<p:ajax event="keyup"/>
+								</p:inputText>
+								
+								<p:inputTextarea value="#{p.valeur}" rendered="#{p.typeDonnees eq 'text'}" style="width:300%"  disabled="#{p.readOnly}">
+									<p:ajax/>
+								</p:inputTextarea>
+								
+								<p:selectBooleanCheckbox   value="#{p.valeur}" rendered="#{p.typeDonnees eq 'boolean'}"  disabled="#{p.readOnly}">
+									<p:ajax/>
+								</p:selectBooleanCheckbox>
+								
+								<p:spinner value="#{p.valeur}" rendered="#{p.typeDonnees eq 'numeric'}"  disabled="#{p.readOnly}">
+									<p:ajax/>
+								</p:spinner>
+								
+							</h:panelGrid>
+						</ui:fragment>
+						<ui:fragment rendered="#{p.taGroupePreference != null}">
+							<p:fieldset legend="#{p.taGroupePreference.libelleGroupeArticle}">
+								<ui:repeat value="${preferencesBean.mapPreferenceDansGroupe.get(p.taGroupePreference)}"  var="p2" >
+									<h:panelGrid columns="2" cellpadding="10" >
+										<h:outputText value="#{p2.libelle}" />
+										
+										<p:inputText value="#{p2.valeur}" rendered="#{p2.typeDonnees eq 'string'}"  disabled="#{p.readOnly}">
+											<p:ajax event="blur"/>
+											<p:ajax event="keyup"/>
+										</p:inputText>
+										
+<!-- 										<p:password -->
+										<p:inputText value="#{p2.valeur}" rendered="#{p2.typeDonnees eq 'password'}"  disabled="#{p.readOnly}">
+											<p:ajax event="blur"/>
+											<p:ajax event="keyup"/>
+										</p:inputText>
+										
+										<p:inputTextarea value="#{p2.valeur}" rendered="#{p2.typeDonnees eq 'text'}" style="width:300%"  disabled="#{p.readOnly}">
+											<p:ajax/>
+										</p:inputTextarea>
+										
+										<p:selectBooleanCheckbox   value="#{p2.valeur}" rendered="#{p2.typeDonnees eq 'boolean'}"  disabled="#{p.readOnly}">
+											<p:ajax/>
+										</p:selectBooleanCheckbox>
+										
+										<p:spinner value="#{p2.valeur}" rendered="#{p2.typeDonnees eq 'numeric'}"  disabled="#{p.readOnly}">
+											<p:ajax/>
+										</p:spinner>
+									</h:panelGrid>
+								</ui:repeat>
+							</p:fieldset>
+						</ui:fragment>
+					</ui:repeat>
+						
+			</p:panel>
+		</div>
+	</div>
+	<!-- disabled="#{fabricationController.etatBouton('enregistrer')}" -->
+
+	<br />
+
+	<div class="text-center">
+		<p:confirmDialog global="true" showEffect="fade" hideEffect="explode">
+			<p:commandButton value="Oui" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+			<p:commandButton value="Non" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+		</p:confirmDialog>
+	</div>
+
+</ui:composition>

@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<faces-config xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-facesconfig_2_3.xsd"
+   version="2.3">
+
+
+	<application>
+		<!-- Dialogue -->
+		<action-listener>org.primefaces.application.DialogActionListener</action-listener>
+		<navigation-handler>org.primefaces.application.DialogNavigationHandler</navigation-handler>
+		<view-handler>org.primefaces.application.DialogViewHandler</view-handler>
+		
+		<locale-config>
+			<default-locale>fr</default-locale>
+			<supported-locale>fr</supported-locale>
+            <supported-locale>en_UK</supported-locale>
+		</locale-config>
+		
+		<resource-bundle>
+			<base-name>message_bundles.liens_aide_wiki</base-name>
+			<var>aide_wiki</var>
+		</resource-bundle>
+
+		<resource-bundle>
+			<base-name>message_bundles.devis</base-name>
+			<var>c_devis</var>
+		</resource-bundle>
+				
+		<resource-bundle>
+			<base-name>message_bundles.facture</base-name>
+			<var>c_facture</var>
+		</resource-bundle>
+
+		<resource-bundle>
+			<base-name>message_bundles.boncommande</base-name>
+			<var>c_boncommande</var>
+		</resource-bundle>
+		
+		<resource-bundle>
+			<base-name>message_bundles.messages</base-name>
+			<var>msg</var>
+		</resource-bundle>
+		
+		<resource-bundle>
+			<base-name>message_bundles.messages_dialogues</base-name>
+			<var>msg_diag</var>
+		</resource-bundle>
+		
+		<resource-bundle>
+			<base-name>message_bundles.const</base-name>
+			<var>const</var>
+		</resource-bundle>
+
+		<resource-bundle>
+			<base-name>message_bundles.const_vue</base-name>
+			<var>const_vue</var>
+		</resource-bundle>
+
+				
+	</application>
+	
+	<lifecycle>
+		<!-- http://stackoverflow.com/questions/6642242/how-can-i-populate-a-text-field-using-primefaces-ajax-after-validation-errors-oc/6845800#6845800 -->
+		<!-- 
+			Pour "nettoyer" les valeurs dans les composants qui ont fait planter une validation partielle 'p:resetInput' ou 'f:ajax resetValues' serait plus ciblé,
+		 	mais ne fonctionne pas pour les validations déclenchées par le changement de page dans un 'p:wizard', si on utilise nos propre CommandButton pour le wizard
+		 	on pourra changer de méthode pour réinitialiser uniquement les composant du wizard.
+		 -->
+		<phase-listener>org.omnifaces.eventlistener.ResetInputAjaxActionListener</phase-listener>
+ 	</lifecycle>
+	
+	<component>
+        <component-type>org.primefaces.component.IcarusMenu</component-type>
+        <component-class>org.primefaces.icarus.component.menu.IcarusMenu</component-class>
+    </component>
+    
+    <render-kit>
+        <renderer>
+            <component-family>org.primefaces.component</component-family>
+            <renderer-type>org.primefaces.component.IcarusMenuRenderer</renderer-type>
+            <renderer-class>org.primefaces.icarus.component.menu.IcarusMenuRenderer</renderer-class>
+        </renderer>
+    </render-kit>
+	
+	<!-- Surcharge de composant Primefaces/JSF -->
+	<!-- http://www.francescostrazzullo.info/blog/2014/08/extending-primefaces-input-components/ -->
+	<!-- http://stackoverflow.com/questions/25625845/how-to-override-primefaces-component-api-class-with-custom-class -->
+	<!-- http://www.mastertheboss.com/jboss-web/primefaces/extending-primefaces-components -->
+<!-- 	<component> -->
+<!-- 	    <component-type>org.primefaces.component.DataTable</component-type> -->
+<!-- 	    <component-class>fr.legrain.bdg.webapp.primefaces.LgrDataTable</component-class> -->
+<!-- 	</component> -->
+	
+<!-- 	<component> -->
+<!-- 	    <component-type>org.primefaces.component.TabView</component-type> -->
+<!-- 	    <component-class>fr.legrain.bdg.webapp.primefaces.LgrTabView</component-class> -->
+<!-- 	</component> -->
+	
+
+	<!-- Surcharge de render kit Primefaces/JSF -->
+<!-- 	<render-kit> -->
+<!-- 		<renderer> -->
+<!-- 			<component-family>org.primefaces.component</component-family> -->
+<!-- 			<renderer-type>org.primefaces.component.DataTableRenderer</renderer-type> -->
+<!-- 			<renderer-class>fr.legrain.bdg.webapp.primefaces.LgrDataTableRenderer</renderer-class> -->
+<!-- 		</renderer> -->
+<!-- 	</render-kit> -->
+
+    
+<!--     <component> -->
+<!--         <component-type>org.primefaces.component.VoltMenu</component-type> -->
+<!--         <component-class>org.primefaces.volt.component.menu.VoltMenu</component-class> -->
+<!--     </component> -->
+    
+<!--     <render-kit> -->
+<!--         <renderer> -->
+<!--             <component-family>org.primefaces.component</component-family> -->
+<!--             <renderer-type>org.primefaces.component.VoltMenuRenderer</renderer-type> -->
+<!--             <renderer-class>org.primefaces.volt.component.menu.VoltMenuRenderer</renderer-class> -->
+<!--         </renderer> -->
+<!--     </render-kit> -->
+    
+</faces-config>

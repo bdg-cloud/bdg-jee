@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<title>Dev - Test - Oauth</title>
+	<link rel="shortcut icon" type="image/x-icon" href="#{resource['images:favicon.ico']}" />
+
+	<f:facet name="first">
+	</f:facet>
+</h:head>
+<h:body>
+	<f:facet name="last">
+		<!-- surcharge des CSS primefaces -->
+		<h:outputStylesheet library="css" name="hacks.css" />
+		<h:outputStylesheet library="css" name="icarus-bdg.css" />
+		<h:outputStylesheet library="css" name="theme-bdg.css" />
+	</f:facet>
+
+	<p:layout fullPage="true" widgetVar="widgetLayoutPage">
+
+		<!-- 		<p:ajax event="toggle" listener="#{leftBean.handleToggle}"/> -->
+
+		<p:layoutUnit position="north" size="100" gutter="0" class="north">
+			<div class="ui-grid ui-grid-responsive">
+				<div class="ui-grid-col-2">
+					<p:link href="/index.xhtml">
+						<p:graphicImage library="images" name="solstyce_32x32.png" />
+						<h:outputText value="Solstyce" />
+					</p:link>
+				</div>
+				<div class="ui-grid-col-3">
+					<p:ajaxStatus>
+						<f:facet name="start">
+							<p:graphicImage library="images" name="ajax-loader.gif" />
+						</f:facet>
+						<f:facet name="complete">
+							<!-- 							<h:outputText value="Done!" /> -->
+						</f:facet>
+					</p:ajaxStatus>
+				</div>
+				<div class="ui-grid-col-10 text-right">
+					Mon compte -
+					<p:commandLink value="déconnexion" actionListener="#{auth.logout}" />
+				</div>
+
+
+			</div>
+			<!-- 			<ui:include src="../../menu.xhtml" /> -->
+		</p:layoutUnit>
+
+
+		<p:layoutUnit position="center" gutter="4" class="center">
+		
+			<h:form id="form">
+				<p:growl id="growl" showDetail="true" sticky="true" />
+				
+				
+				<!--
+				OAuth :
+https://console.developers.google.com/apis/credentials?project=xxxxx-xxxxxxx-000000
+Id Client : xxxxxxxxx-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.apps.googleusercontent.com
+code secret client : xxxxxxxxxxxxxxxxxxxx
+
+You register callback uri at googlele's api like "yourapp.com/auth/google_oauth2/callback"
+In your application user from his subdomain "sub.yourapp.com" clickes button <%= link_to "Sign in with Google", "https://yourapp.com/auth/google_oauth2?state=#{his subdomain}" %>
+In your routes file you define appropriate url. Now you have all you need + params[:state] with your subdomain
+
+https://stackoverflow.com/questions/22421372/how-to-integrate-google-oauth-2-0-with-a-subdomain
+RewriteEngine On
+RewriteCond %{HTTP_HOST} ^google\.
+RewriteCond %{QUERY_STRING} state=([a-z0-9]+)
+RewriteRule ^(.*)$ http://%1.example.com/$1 [L]
+
+http://www.tuckey.org/urlrewrite/
+http://www.ocpsoft.org/prettyfaces/
+
+https://stackoverflow.com/questions/28218940/rewrite-engine-for-wildfly
+https://stackoverflow.com/questions/32138669/rewrite-rule-in-widfly-8-undertow-handlers-conf
+ -->
+	<p:panel widgetVar="wvPanelGoogle">
+	
+	
+		<p:commandButton  update="@this,@widgetVar(wvPanelGoogle)"
+		styleClass="icon icon-google" title="Se connecter avec Google (OAuth)"
+		onclick="oauthWindowHandle = window.open('','_blank', 'resizable=no,toolbar=no,scrollbars=yes,height=600,width=530,top=145,left=235');" 
+		actionListener="#{googleBean.connectOAuth}" rendered="#{googleBean.showDialog()}"/>
+		
+		<p:remoteCommand name="finGoogle" actionListener="#{googleBean.updateView}" update="@widgetVar(wvPanelGoogle)"/>
+		
+		<p:panelGrid columns="1">
+			<p:outputLabel value="Email : #{googleBean.gUserEmail}"/>
+			<p:outputLabel value="Nom : #{googleBean.gUserName}"/>
+			<p:graphicImage value="#{googleBean.gUserImageUrl}" height="80px" width="80px"/>
+			<p:outputLabel value="Token : #{googleBean.gToken}"/>
+	        <p:commandButton value="revoke" update="@widgetVar(wvPanelGoogle)" process="@this" 
+	        	actionListener="#{googleBean.revokeToken}" rendered="#{googleBean.validToken()}"/>
+		</p:panelGrid>
+	</p:panel>
+	
+	<hr/>
+				
+	<p:commandButton title="Se connecter avec Microsoft (OAuth)" update="@this,@widgetVar(wvPanelMicrosoft)" styleClass="icon icon-microsoft"
+		onclick="oauthWindowHandle = window.open('','_blank', 'resizable=no,toolbar=no,scrollbars=yes,height=450,width=530,top=145,left=235');" 
+		actionListener="#{mSBean.connectOAuth}" />
+    <p:remoteCommand name="finMicrosoft" actionListener="#{mSBean.updateView}" update="@widgetVar(wvPanelMicrosoft)"/>
+    
+	<p:panel widgetVar="wvPanelMicrosoft">
+		<p:panelGrid columns="1">
+			<p:outputLabel value="displayName : #{mSBean.displayName}"/>
+			<p:outputLabel value="surname : #{mSBean.surname}"/>
+			<p:outputLabel value="userPrincipalName : #{mSBean.userPrincipalName}"/>
+	<!-- 						<p:graphicImage value="#{googleBean.gUserImageUrl}" height="80px" width="80px"/> -->
+	<!-- 						<p:outputLabel value="Token : #{googleBean.gToken}"/> -->
+	<!-- 				        <p:commandButton value="revoke" update="@widgetVar(wvPanelGoogle)" process="@this" -->
+	<!-- 					actionListener="#{googleBean.revokeToken}"/> -->
+		</p:panelGrid>
+	</p:panel>
+				
+			</h:form>
+	
+		</p:layoutUnit>
+
+	</p:layout>
+
+		<h:outputScript name="/js/functions.js"  />
+
+</h:body>
+</html>

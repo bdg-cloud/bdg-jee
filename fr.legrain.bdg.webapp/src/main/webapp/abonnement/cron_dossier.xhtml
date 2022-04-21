@@ -1,0 +1,248 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<p:panel id="cronDossierFormPrincipal" widgetVar="cronDossierForm">
+
+		<p class="subtitle">
+			<p:outputLabel value="Gestion des tâches planifiées"
+				rendered="#{dansDialogue == null ? true : false}" />
+		</p>
+		
+		<!-- bouton -->
+		<p:panel id="cronDossierDataTableF" class="mt30" style="position:relative;"
+			rendered="#{dansDialogue == null ? true : false}">
+			
+			<p:commandButton id="idInsererCronDossier" value="Ajouter" title="Insérer" process="@this"
+				update=":form:tabView,:form:messages,:form" 
+				actionListener="#{cronDossierController.actDialogTypes}"
+				styleClass="icon-insert icon" 
+				rendered="#{auth.isDevLgr()}"> <!-- Pour l'instant pas d'insertion par l'utilisateur, seulement (dés)activation de cron système -->
+				<p:ajax event="dialogReturn" listener="#{cronDossierController.handleReturnDialogTypes}" 
+					update=":form"/>
+			</p:commandButton>
+			
+			<p:commandButton  value="Vérifier" title="Vérifier" process="@this"
+				update=":form:tabView,:form:messages,:form" 
+				actionListener="#{cronDossierController.verifierTimersCronDossier}"
+				styleClass="icon-refresh icon">
+			</p:commandButton>
+
+
+			<p:commandButton id="idModifierCronDossier" value="Modifier" title="Modifier" process="@this"
+				update=":form:tabView,:form:messages,:form" 
+				actionListener="#{cronDossierController.actDialogModifier}"
+				styleClass="icon-update icon" >
+				<p:ajax event="dialogReturn" listener="#{cronDossierController.handleReturnDialogTypes}" update=":form"/>
+			</p:commandButton>
+			
+
+			<p:commandButton id="cronDossierSupprimer" value="Supprimer"
+				class="icon-delete icon menuitem-poubelle-droite"
+				disabled="#{cronDossierController.etatBouton('supprimer')}"
+				actionListener="#{cronDossierController.actSupprimer}"
+				update="@widgetVar(wvCronDossierDataTable)" process="@this">
+				<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer cet enregistrement ?" icon="ui-icon-alert" />
+			</p:commandButton>
+
+			<p:commandButton id="cronDossierFermer" title="Fermer"
+				class="icon-close icon menuitem-fermer-droite" onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())">
+				<p:confirm header="Confirmation" message="#{msg_diag.alert_fermeture_onglet}" icon="ui-icon-alert" disabled="#{!cronDossierController.modeEcran.dataSetEnModif()}"/>
+			</p:commandButton>
+
+			<p:commandButton id="cronDossierFermerDialogue" title="Fermer"
+				process="@this" class="icon-close icon menuitem-fermer-droite"
+				actionListener="#{cronDossierController.actFermerDialog}"
+				rendered="#{dansDialogue != null ? true : false}" />
+		</p:panel>
+
+		<p:dataTable id="cronDossierDataTable" widgetVar="wvCronDossierDataTable" var="table"
+			rendered="#{dansDialogue == null ? true : false}"
+			value="#{cronDossierController.values}" rowKey="#{table.id}"
+			selectionMode="single" class="datatable"
+			selection="#{cronDossierController.selection}" paginator="false"
+			rows="#{msg.modele_datatable_ligne_par_page_debut}"
+			paginatorTemplate="#{msg.modele_datatable_paginator}"
+			rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+			emptyMessage="#{msg.message_datatable_vide}"
+			currentPageReportTemplate="#{msg.modele_datatable_page_courante}">
+
+			<p:ajax event="rowSelect"
+				listener="#{cronDossierController.onRowSelect}" />
+
+			<p:column sortBy="#{table.code}">
+				<f:facet name="header">
+					<h:outputText value="Code" />
+				</f:facet>
+				<h:outputText value="#{table.code}" />
+			</p:column>
+			
+			<p:column sortBy="#{table.typeCron}" styleClass="center">
+				<f:facet name="header">
+					<h:outputText value="Type" />
+				</f:facet>
+				<h:outputText value="#{table.typeCron}" />
+			</p:column>
+			
+			<p:column sortBy="#{table.libelle}">
+				<f:facet name="header">
+					<h:outputText value="Libellé" />
+				</f:facet>
+				<h:outputText value="#{table.libelle}" />
+			</p:column>
+			
+			<p:column sortBy="#{table.description}">
+				<f:facet name="header">
+					<h:outputText value="Description" />
+				</f:facet>
+				<h:outputText value="#{table.description}" />
+			</p:column>
+
+			<p:column sortBy="#{table.second}" styleClass="center">
+				<f:facet name="header">
+					<h:outputText value="Seconde" />
+				</f:facet>
+				<h:outputText value="#{table.second}" />
+			</p:column>
+			<p:column sortBy="#{table.minute}" styleClass="center">
+				<f:facet name="header">
+					<h:outputText value="Minute" />
+				</f:facet>
+				<h:outputText value="#{table.minute}" />
+			</p:column>
+			<p:column sortBy="#{table.hour}" styleClass="center">
+				<f:facet name="header">
+					<h:outputText value="Heure" />
+				</f:facet>
+				<h:outputText value="#{table.hour}" />
+			</p:column>
+			<p:column sortBy="#{table.dayOfWeek}" styleClass="center">
+				<f:facet name="header">
+					<h:outputText value="Jour de la semaine" />
+				</f:facet>
+				<h:outputText value="#{table.dayOfWeek}" />
+			</p:column>
+			<p:column sortBy="#{table.dayOfMonth}" styleClass="center">
+				<f:facet name="header">
+					<h:outputText value="Jour du mois" />
+				</f:facet>
+				<h:outputText value="#{table.dayOfMonth}" />
+			</p:column>
+			<p:column sortBy="#{table.month}" styleClass="center">
+				<f:facet name="header">
+					<h:outputText value="Mois" />
+				</f:facet>
+				<h:outputText value="#{table.month}" />
+			</p:column>
+			<p:column sortBy="#{table.year}" styleClass="center">
+				<f:facet name="header">
+					<h:outputText value="Année" />
+				</f:facet>
+				<h:outputText value="#{table.year}" />
+			</p:column>
+			
+			<p:column sortBy="#{table.systeme}" styleClass="center">
+				<f:facet name="header">
+					<h:outputText value="Systeme" />
+				</f:facet>
+				<p:selectBooleanCheckbox value="#{table.systeme}" disabled="true"/>
+			</p:column>
+			
+			<p:column sortBy="#{table.actif}" styleClass="center">
+				<f:facet name="header">
+					<h:outputText value="Actif" />
+				</f:facet>
+				<p:selectBooleanCheckbox value="#{table.actif}" disabled="true"/>
+			</p:column>
+
+<!-- 	private boolean visible; -->
+<!-- 	private boolean estUnique; -->
+<!-- 	private String identifiantUnique; -->
+		</p:dataTable>
+	</p:panel>
+	<!-- 	 -->
+
+	<p:messages id="cronDossierMessages" showDetail="true" autoUpdate="true"
+		closable="true" />
+
+	<p:panel id="cronDossierPanel" visible="true" widgetVar="varCronDossierPanel">
+		<p:panel onLoad="reset()" resizable="false" id="cronDossierPanelCache"
+			rendered="#{cronDossierController.modeEcran.dataSetEnModif()}">
+			<f:validateBean disabled="true">
+				<div class="ui-g">
+						<div class="ui-g-2">
+							<h:outputText value="Code :"/>
+						</div>
+						<div class="ui-g-10">
+							<h:inputText value="#{cronDossierController.nouveau.code}" styleClass="Input100" 
+								disabled="true"
+								required="true"
+								requiredMessage="#{msg_diag.alert_champs_obligatoir}" validator="#{cronDossierController.validateObject}">
+									<f:attribute name="nomChamp" value="#{const.C_CODE_T_RECEPTION}" />
+									<p:ajax event="blur" update="@this"/>
+							</h:inputText>
+						</div>
+					
+
+						<div class="ui-g-2">
+							<h:outputText value="Libelle :"/>
+						</div>
+						<div class="ui-g-10">
+							<h:inputText value="#{cronDossierController.nouveau.libelle}" styleClass="Input100"
+								disabled="true"
+								required="true"
+								requiredMessage="#{msg_diag.alert_champs_obligatoir}" validator="#{cronDossierController.validateObject}">
+									<f:attribute name="nomChamp" value="#{const.C_LIBL_T_RECEPTION}" />
+									<p:ajax event="blur" update="@this"/>
+							</h:inputText>
+						</div>
+						
+						<div class="ui-g-2">
+							<h:outputText value="Description :"/>
+						</div>
+						<div class="ui-g-10">
+							<p:textEditor secure="false" value="#{cronDossierController.nouveau.description}" styleClass="Input100" 
+								readonly="true" toolbarVisible="false"
+								disabled="true"
+								 validator="#{cronDossierController.validateObject}">
+									<f:attribute name="nomChamp" value="#{const.C_LIBL_T_RECEPTION}" />
+									<p:ajax event="blur" update="@this"/>
+							</p:textEditor>
+						</div>
+						
+						<div class="ui-g-2">
+							<h:outputText value="Actif :"/>
+						</div>
+						<div class="ui-g-10">
+							<p:inputSwitch value="#{cronDossierController.nouveau.actif}" onLabel="Oui" offLabel="Non">
+								<p:ajax update="@this"/>
+							</p:inputSwitch>
+						</div>
+			
+				
+						<div class="ui-g-12 text-center">
+							<p:commandButton id="idEnregistrerCronDossier" value="Enregistrer" styleClass="btn-save btn"
+								disabled="#{cronDossierController.etatBouton('enregistrer')}"
+								update="@widgetVar(cronDossierForm), @widgetVar(varCronDossierPanel)"
+								actionListener="#{cronDossierController.actEnregistrer}" />
+							
+							<p:commandButton id="cronDossierAnnuler" value="Annuler" styleClass="btn-cancel btn"
+								disabled="#{cronDossierController.etatBouton('annuler')}"
+								update="@widgetVar(cronDossierForm), @widgetVar(varCronDossierPanel)"
+								actionListener="#{cronDossierController.actAnnuler}" 
+								rendered="#{dansDialogue != null ? false : true}" />
+
+							<p:commandButton id="cronDossierAnnulerDialogue" value="Annuler"
+								styleClass="btn-cancel btn" process="@this"
+								disabled="#{cronDossierController.etatBouton('annuler')}"
+								actionListener="#{cronDossierController.actFermerDialog}"
+								rendered="#{dansDialogue != null ? true : false}" />
+						</div>
+					
+				</div>
+			</f:validateBean>
+		</p:panel>
+	</p:panel>
+</ui:composition>

@@ -1,0 +1,76 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core" 
+	xmlns:ui="http://java.sun.com/jsf/facelets" 
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/template_dialog_lgr.xhtml">
+	
+	<ui:define name="head">
+		 <title>Catalogue d'édition</title>
+        <style type="text/css">
+/*             .ui-widget { */
+/*                 font-size: 90%; */
+/*             } */
+         </style>
+	</ui:define>
+
+	<ui:define name="content">
+		<h:form id="idDialogcatalogueEdition">
+			
+			<p:menubar styleClass="menu-onglet">
+<!-- 				<p:menuitem title="Imprimer" styleClass="icon icon-print" update="@form" -->
+<!-- 					actionListener="#{catalogueEditionController.actImprimer}" /> -->
+					<p:separator styleClass="separateur-menu-vertical" />
+				
+				<p:menuitem title="Fermer" styleClass="icon icon-close menuitem-fermer-droite"
+					actionListener="#{catalogueEditionController.actFermerDialog}"
+					process="@this" >
+					<p:confirm header="Confirmation" message="#{msg_diag.alert_fermeture_onglet}" icon="ui-icon-alert" disabled="#{!catalogueEditionController.modeEcran.dataSetEnModif()}"/>
+				</p:menuitem>
+			</p:menubar>
+			  
+		    <p:dataTable 
+		    	var="e" 
+		    	widgetVar="wvDatatableCatalogueEdition"
+		    	value="#{catalogueEditionController.listeEditionCatalogueDisponible}" 
+		    	selection="#{catalogueEditionController.selectedTaEditionCatalogueDTO}" 
+		    	sortBy="#{taEditionDossier.codeTEdition}"
+		    	expandableRowGroups="true"
+		    	resizableColumns="true"
+		    	selectionMode="single"
+		    	rowKey="#{e.id}">
+		    	
+		        <f:facet name="header">
+		            Liste des éditions
+		        </f:facet>
+		        
+<!-- 		        <p:headerRow> -->
+<!-- 		            <p:column colspan="5"> -->
+<!-- 		                <h:outputText value="#{taEditionDossier.codeTEdition}" /> -->
+<!-- 		            </p:column> -->
+<!-- 		        </p:headerRow> -->
+		        
+<!-- 		        <p:column selectionMode="single" style="width:16px;text-align:center"/> -->
+		        <p:column headerText="Id" styleClass="center">
+		            <p:outputLabel value="#{e.id}" />
+		        </p:column>
+		        <p:column headerText="Code" styleClass="center">
+		            <p:outputLabel value="#{e.codeEdition}" />
+		        </p:column>
+		        <p:column headerText="Libellé">
+		            <p:outputLabel value="#{e.libelleEdition}" />
+		        </p:column>
+		        <p:column headerText="Description">
+		            <p:outputLabel value="#{e.descriptionEdition}" />
+		        </p:column>
+		        <p:column headerText="Actions" styleClass="center">
+		            <p:commandButton value="Télécharger" actionListener="#{catalogueEditionController.actTelechargerEdition(e)}" rendered="#{e.etatTelechargement==''}" update="@widgetVar(wvDatatableCatalogueEdition)"/>
+		            <p:commandButton value="MAJ" actionListener="#{catalogueEditionController.actMajEdition(e)}" rendered="#{e.etatTelechargement=='maj'}" update="@widgetVar(wvDatatableCatalogueEdition)"/>
+		            <p:outputLabel value="-" rendered="#{e.etatTelechargement=='ok'}" />
+		        </p:column>
+	        </p:dataTable>
+			
+		</h:form>
+	</ui:define>
+     
+</ui:composition>

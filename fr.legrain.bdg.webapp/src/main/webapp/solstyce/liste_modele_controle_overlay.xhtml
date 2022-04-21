@@ -1,0 +1,148 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+	
+<!-- 	<h:form> -->
+
+<!-- <p:ajax event="rowSelect" listener="#{clientController.onRowSelect}" update=":form:tabView,:form:messages" oncomplete="PF('wvOverlayListeClient').hide();"/>  -->
+
+<!-- 	<p:commandButton id="movieBtn" value="Dynamic" type="button" /> -->
+	<p:commandLink id="listeModeleCtrlBtn" >
+		<i class="top-submenu-icon fa fa-fw fa-cogs"></i>
+<!-- 		<i class="top-bar-badge animated rubberBand"><h:outputText value="#{topBarController.nbClient}"/></i> -->
+<!-- 		<i class="fa fa-book animated swing" aria-hidden="true"></i> -->
+		<span><h:outputText value="Modèle de contrôles" /></span>
+	</p:commandLink>
+	
+<!-- 	<p:overlayPanel id="moviePanel" for="movieBtn" hideEffect="fade" dynamic="true"  -->
+<!-- 		dismissable="true" appendTo="@(body)" widgetVar="wvOverlayListeProduit" showCloseIcon="true"> -->
+	
+	<p:overlayPanel id="idListeModeleCtrlPanel" for="listeModeleCtrlBtn" hideEffect="fade" dynamic="true" 
+		dismissable="true" appendTo="@(body)" widgetVar="wvOverlayListeModeleCtrl" showCloseIcon="true">
+		<h:form>
+
+	<p:menubar styleClass="menu-onglet" widgetVar="wvMenuListeModeleControle" id="idMenuListeModeleControle">
+		<p:menuitem title="Ajouter" update=":form:tabView,:form:messages,@widgetVar(wvMenuListeModeleControle),@widgetVar(wvDataTableListeModeleControle)" 
+		actionListener="#{modeleControleController.ajouter}" styleClass="icon icon-insert" disabled="#{modeleControleController.etatBouton('inserer')}" oncomplete="PF('wvOverlayListeModeleCtrl').hide();"/>
+<!-- 		<p:menuitem title="Détail" update=":form:tabView,:form:messages" actionListener="#{modeleControleController.detail}" styleClass="icon icon-detail" disabled="#{modeleControleController.modeEcran.dataSetEnModif()}" oncomplete="PF('wvOverlayListeModeleCtrl').hide();"/> -->
+<!-- 		<p:menuitem title="Supprimer les modèles de controle sélectionnés" update=":form:tabView,@widgetVar(wvMenuListeModeleControle),@widgetVar(wvDataTableListeModeleControle),:form:messages,@form"  -->
+<!-- 		actionListener="#{modeleControleController.supprimer}" styleClass="icon icon-delete" disabled="#{modeleControleController.etatBouton('supprimerListe')}"> -->
+<!-- 	 		<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer les modèles de controle sélectionnés ?" icon="ui-icon-alert" /> -->
+<!-- 	 	</p:menuitem> -->
+		<p:menuitem title="Rafraîchir" update="@form,@widgetVar(wvMenuListeModeleControle),@widgetVar(wvDataTableListeModeleControle),:form:messages" actionListener="#{modeleControleController.refresh}" styleClass="icon icon-refresh" disabled="#{modeleControleController.modeEcran.dataSetEnModif()}"/>
+	</p:menubar>
+	<p:sticky target="idMenuListeModeleControle" />
+	 
+	<p:dataTable id="dataTableListeModeleControle" var="conformite"
+				widgetVar="wvDataTableListeModeleControle"
+				value="#{modeleControleController.values}"
+				rowKey="#{conformite.idModeleConformite}"
+				selection="#{modeleControleController.selectionS}"
+				dblClickSelect="true"
+				styleClass="datatable mt10"
+				resizableColumns="true"
+				paginator="true" 
+				rows="#{msg.modele_datatable_ligne_par_page_debut}"
+				paginatorTemplate="#{msg.modele_datatable_paginator}"
+				rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+				emptyMessage="#{msg.message_datatable_vide}"
+				currentPageReportTemplate="#{msg.modele_datatable_page_courante}"
+				disabledSelection="#{modeleControleController.modeEcran.dataSetEnModif()}">
+				
+<!-- 				<p:ajax event="rowDblselect" listener="#{modeleControleController.onRowSelect}" update=":form:tabView,:form:messages,@form" oncomplete="activeLastTabCenter()"/>  -->
+<!-- 				<p:ajax event="rowSelect" listener="#{modeleControleController.onRowSelect}" update=":form:tabView,:form:messages" oncomplete="PF('wvOverlayListeModeleCtrl').hide();"/> -->
+				
+<!-- 				<p:ajax event="rowDblselect" listener="#{modeleControleController.onRowSelect}" update=":form:tabView,:form:messages" /> -->
+				<p:ajax event="rowSelect" delay="#{msg.datatable_rowselect_delay}" listener="#{modeleControleController.onRowSelect}" update=":form:tabView,:form:messages" oncomplete="activeTabCenter('#{LgrTab.CSS_CLASS_TAB_MODELE_CONTROLE}');PF('wvOverlayListeModeleCtrl').hide();scrollToTop();"/>
+
+				<f:facet name="header">  
+           			<h:outputText value="Modele de contrôle" />
+        		</f:facet>
+ 
+		  		<f:facet name="{Exporters}">
+		            <h:commandLink>
+		                <p:graphicImage library="images" name="excel.png" width="24"/>
+		                <p:dataExporter type="xls" target="dataTableListeModeleControle" fileName="liste_modele_controles" />
+		            </h:commandLink>
+		 			
+		 			<p:commandLink onsuccess="window.open('#{request.contextPath}/output?__report=/reports/fabrication/ListeModeleDeControle.rptdesign&amp;__format=pdf')"
+			actionListener="#{modeleControleController.actImprimerListeModeleDeControle}" process="@this">
+		                <p:graphicImage  library="images" name="pdf.png"  width="24"/>
+<!-- 		                <p:dataExporter type="pdf" target="dataTableListeTiers" fileName="liste_tiers" /> -->
+		            </p:commandLink>
+		            
+<!-- 		            <h:commandLink> -->
+<!-- 		                <p:graphicImage  library="images" name="pdf.png"  width="24"/> -->
+<!-- 		                <p:dataExporter type="pdf" target="dataTableListeModeleControle" fileName="liste_modele_controles"/> -->
+<!-- 		            </h:commandLink> -->
+		 
+		            <h:commandLink>
+		                <p:graphicImage  library="images" name="csv.png"  width="24"/>
+		                <p:dataExporter type="csv" target="dataTableListeModeleControle" fileName="liste_modele_controles" options="#{separateurCsvController.csvOptions}"/>
+		            </h:commandLink>
+		 
+		            <h:commandLink>
+		                <p:graphicImage  library="images" name="xml.png"  width="24"/>
+		                <p:dataExporter type="xml" target="dataTableListeModeleControle" fileName="liste_modele_controles" />
+		            </h:commandLink>
+		        </f:facet>
+		        
+		        <p:column selectionMode="multiple" style="width:16px;text-align:center" exportable="false"/>
+			
+				<p:column style="width:16px" exportable="false">
+					<f:facet name="header">
+						<h:outputText value="" />
+					</f:facet>
+					<p:commandButton title="Détail" update=":form:tabView,:form:messages" 
+						action="#{modeleControleController.detail}" styleClass="icon icon-detail icon-grille" 
+						disabled="#{modeleControleController.modeEcran.dataSetEnModif()}" oncomplete="PF('wvOverlayListeModeleCtrl').hide();">
+						<f:setPropertyActionListener target="#{modeleControleController.selection}" value="#{conformite}" />
+					</p:commandButton>
+				</p:column>
+        
+				<p:column sortBy="#{conformite.idModeleConformite}" styleClass="center" filterBy="#{conformite.idModeleConformite}">
+					<f:facet name="header">
+						<h:outputText value="ID" />
+					</f:facet>
+					<h:outputText value="#{conformite.idModeleConformite}" />
+				</p:column>
+
+				<p:column sortBy="#{conformite.libelleConformite}" filterBy="#{conformite.libelleConformite}">
+					<f:facet name="header">
+						<h:outputText value="Libellé" />
+					</f:facet>
+					<h:outputText value="#{conformite.libelleConformite}" />
+				</p:column>
+				
+				<p:column sortBy="#{conformite.taGroupe.codeGroupe}" filterBy="#{conformite.taGroupe.codeGroupe}">
+					<f:facet name="header">
+						<h:outputText value="Groupe" />
+					</f:facet>
+					<h:outputText value="#{conformite.taGroupe.codeGroupe} - #{conformite.taGroupe.libelle}" />
+				</p:column>
+				
+				<p:column style="width:16px" exportable="false">
+					<f:facet name="header">
+						<h:outputText value="" />
+					</f:facet>
+					
+					<p:commandButton title="Supprimer" styleClass="icon-delete icon icon-grille" widgetVar="widgetVarBtnSupprimerModeleCtrlListe"
+						action="#{modeleControleController.actSupprimer}"
+						process="@this"
+						update="@widgetVar(wvDataTableListeModeleControle)">
+						<f:setPropertyActionListener target="#{modeleControleController.selection}" value="#{conformite}" />
+						<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer ce modèle de controle ?" icon="ui-icon-alert" />
+					</p:commandButton>
+						
+				</p:column>
+
+			</p:dataTable>
+	
+		</h:form>
+	</p:overlayPanel>
+	
+<!-- 	</h:form> -->
+
+</ui:composition>

@@ -1,0 +1,32 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+	<p:panel header="Aide">
+		<h3>
+			<i class="fa fa-info-circle animated swing"></i> Code Document
+		</h3>
+		<p>Le code document est généré automatiquement par le programme.</p>
+		<p>Il vous servira à retrouver ce document plus facilement.</p>
+		<p>Il est préférable de laisser le programme gérez ces codes
+			automatiquement.</p>
+		<p:panel rendered="not #{autorisationBean.taUtilisateur.adminDossier}">
+			<p>Seul les administrateurs de votre dossier sont autorisés à
+				modifier les règles de génération de codes.</p>
+		</p:panel>
+
+		<p:panel rendered="#{autorisationBean.taUtilisateur.adminDossier}">
+			<p>
+				Pour modifier les paramètres de génération des codes documents,
+				rendez-vous dans la
+				<p:commandLink id="idMenuGenerationCode2"
+					actionListener="#{menuBean.openGenCodeEx}" update=":form:tabView"
+					oncomplete="PF('wvLinkAideInfosEntrepriseCodeExo').close()"
+					rendered="#{autorisationBean.taUtilisateur.adminDossier}">
+					<h:outputText value="Gestion génération des codes" />
+				</p:commandLink>
+			</p>
+		</p:panel>
+	</p:panel>
+</ui:composition>

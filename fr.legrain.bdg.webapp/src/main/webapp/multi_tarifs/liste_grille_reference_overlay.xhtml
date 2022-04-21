@@ -1,0 +1,139 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:o="http://omnifaces.org/ui" xmlns:p="http://primefaces.org/ui">
+
+	<o:importConstants type="fr.legrain.bdg.webapp.app.LgrTab" />
+
+	<p:commandLink id="listeGrilleReferenceBtn">
+		<i class="top-submenu-icon fa fa-fw fa-user"></i>
+		<span><h:outputText value="Liste des grilles de référence" /></span>
+	</p:commandLink>
+
+	<p:overlayPanel id="idListeGrilleReferencePanel" for="listeGrilleReferenceBtn" hideEffect="fade" dynamic="true" dismissable="true" appendTo="@(body)"
+		widgetVar="wvOverlayListeGrilleReference" showCloseIcon="true" >
+		<h:form>
+			<div class="dashboard-title" style="background: #f6f6f6;" >
+			<p:panel widgetVar="wVPanelTitreGrilleReference" > 
+				<h:panelGrid columns="3" cellpadding="5" >
+					<h:graphicImage name="dashboard/tier.svg" library="images" height="35px" style="margin-top:1px;" />
+					<p:outputLabel value="#{grilleReferenceController.titreListe}"  style="font-size:20px;" />
+				</h:panelGrid>
+				<p:separator />
+				</p:panel>
+			</div>
+			<p:menubar styleClass="menu-onglet" widgetVar="wvMenuListeGrilleReference" id="idMenuListeGrilleReference">
+
+				<p:menuitem title="Rafraîchir la liste" update="@form,:form:messages" actionListener="#{grilleReferenceController.refreshListOverlay}" styleClass="icon icon-refresh"
+					disabled="#{grilleReferenceController.modeEcran.dataSetEnModif()}" />
+
+			</p:menubar>
+
+			<p:sticky target="idMenuListeGrilleReference" />
+
+
+			<!-- 	stickyHeader="true" -->
+
+			<p:dataTable 
+			id="dataTableListeGestGrilleReference2" 
+			var="ligne" 
+			widgetVar="wvDataTableListeGestGrilleReference2" 
+			class="datatable" 
+			value="#{grilleReferenceController.valuesLignesListe}"
+			rowKey="#{ligne.dto.idArticle}" 
+			selection="#{grilleReferenceController.selectionLigne}" 
+			dblClickSelect="true" 
+			resizableColumns="true" 
+			selectionMode="single"
+			paginator="true" 
+			rows="#{msg.modele_datatable_ligne_par_page_debut}" 
+			paginatorTemplate="#{msg.modele_datatable_paginator}"
+			rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}" 
+			emptyMessage="#{msg.message_datatable_vide}"
+			currentPageReportTemplate="#{msg.modele_datatable_page_courante}" 
+			disabledSelection="#{grilleReferenceController.modeEcran.dataSetEnModif()}">
+
+				<p:ajax event="rowSelect" delay="#{msg.datatable_rowselect_delay}" listener="#{grilleReferenceController.onRowSelect}"
+					update=":form:tabView,:form:messages,@widgetVar(wvBandeauActionGrilleReference),,@widgetVar(wvCriteresFiltresGrilleReference)"
+					oncomplete="activeTabCenter('#{LgrTab.CSS_CLASS_TAB_GRILLE_REFERENCE}');PF('wvOverlayListeGrilleReference').hide();scrollToTop();" />
+
+				<f:facet name="header">
+					<h:outputText value="GrilleReference" />
+
+				</f:facet>
+
+				<f:facet name="{Exporters}">
+					<h:commandLink>
+						<p:graphicImage library="images" name="excel.png" width="24" />
+						<p:dataExporter type="xls" target="dataTableListeGrilleReference" fileName="liste_tiers" />
+					</h:commandLink>
+
+					<h:commandLink>
+						<p:graphicImage library="images" name="pdf.png" width="24" />
+						<p:dataExporter type="pdf" target="dataTableListeGrilleReference" fileName="liste_tiers" />
+					</h:commandLink>
+
+					<h:commandLink>
+						<p:graphicImage library="images" name="csv.png" width="24" />
+						<p:dataExporter type="csv" target="dataTableListeGrilleReference" fileName="liste_tiers" options="#{separateurCsvController.csvOptions}" />
+					</h:commandLink>
+
+					<h:commandLink>
+						<p:graphicImage library="images" name="xml.png" width="24" />
+						<p:dataExporter type="xml" target="dataTableListeGrilleReference" fileName="liste_tiers" />
+					</h:commandLink>
+				</f:facet>
+
+<!-- 				<p:column selectionMode="multiple" style="width:16px;text-align:center" exportable="false"/> -->
+
+<!-- 				<p:column style="width:16px" exportable="false"> -->
+<!-- 					<f:facet name="header"> -->
+<!-- 						<h:outputText value="" /> -->
+<!-- 					</f:facet> -->
+<!-- 					<p:commandButton title="Détail" update=":form:tabView,:form:messages,@widgetVar(wvBandeauActionGrilleReference),@widgetVar(wvPanelRenderedGrilleReference)" -->
+<!-- 						action="#{grilleReferenceController.detail}" styleClass="icon icon-detail icon-grille" disabled="#{grilleReferenceController.modeEcran.dataSetEnModif()}" -->
+<!-- 						oncomplete="PF('wvOverlayListeGrilleReference').hide();"> -->
+<!-- 						<f:setPropertyActionListener target="#{grilleReferenceController.selectionLigne}" value="#{ligne}" /> -->
+<!-- 					</p:commandButton> -->
+<!-- 				</p:column> -->
+
+				<p:column headerText="Code famille" >
+				<h:outputText value="#{ligne.articleDTO.codeFamille}" />
+			</p:column>
+
+			<p:column headerText="Code article" >
+				<h:outputText value="#{ligne.dto.codeArticle}" />
+			</p:column>
+			
+			<p:column headerText="libellé" >
+				<h:outputText value="#{ligne.dto.libellecArticle}" />
+			</p:column>
+
+			<p:column headerText="Prix HT" >
+				<h:outputText value="#{ligne.dto.prixPrix}" />
+          </p:column>
+ 
+  			<p:column headerText="tva" >
+				<h:outputText value="#{ligne.dto.mtTva}" />
+          </p:column> 
+           
+  			<p:column headerText="Prix TTC" >
+				<h:outputText value="#{ligne.dto.prixttcPrix}" />
+          </p:column>        
+
+  			<p:column headerText="Taux tva" >
+				<h:outputText value="#{ligne.dto.tauxTva}" />
+          </p:column> 
+
+
+			<p:column style="width:26px">
+				<p:rowEditor rendered="true" styleClass="row-editor-fin"/>
+			</p:column>
+
+		</p:dataTable>
+
+
+
+
+		</h:form>
+	</p:overlayPanel>
+
+</ui:composition>

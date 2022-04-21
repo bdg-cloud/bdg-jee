@@ -1,0 +1,114 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template_dialog_lgr.xhtml">
+
+	<ui:define name="head">
+		<title>#{detailLigneAbonnement.titlePartOne} #{detailLigneAbonnement.titlePartTwo}</title>
+		<style type="text/css">
+.ui-widget {
+	font-size: 90%;
+}
+</style>
+	</ui:define>
+
+	<ui:define name="content">
+		<h:form>
+			<p:menubar styleClass="menu-onglet" rendered="#{detailLigneAbonnement.dansDialogue}">
+				<p:menuitem title="Fermer" styleClass="icon icon-close menuitem-fermer-droite" actionListener="#{detailLigneAbonnement.actFermerDialog}"
+					process="@this">
+				</p:menuitem>
+			</p:menubar>
+
+			<div class="ui-g">
+				<div class="ui-g-12">
+					<p:fieldset legend="Echéance d'abonnement">
+						<p:panel header="Infos de l'abonnement" style="width:100%;">
+							<p:panelGrid columns="3" columnClasses="ui-grid-col-4,ui-grid-col-4,ui-grid-col-4 right" styleClass="ui-panelgrid-blank" layout="grid">
+								<h:panelGroup>
+									<p:outputLabel value="Code abonnement : " style="font-weight: bold;" />
+									<p:commandLink value="#{detailLigneAbonnement.taLigneALigneEcheanceDTO.codeDocumentDest}" rendered="#{detailLigneAbonnement.dansDialogue}"
+										action="#{detailLigneAbonnement.duplicationDocumentBean.ouvertureDocumentBean.detailDocument(detailLigneAbonnement.
+								duplicationDocumentBean.ouvertureDocumentBean.recupCodeDocument(detailLigneAbonnement.taLigneALigneEcheanceDTO.codeDocumentDest,
+								detailLigneAbonnement.taLigneALigneEcheanceDTO.typeDocument))}"
+										oncomplete="activeTabCenter('#{detailLigneAbonnement.duplicationDocumentBean.ouvertureDocumentBean.event.cssLgrTab}');">
+									</p:commandLink>
+									<!-- 							<p:outputLabel value="#{detailLigneAbonnement.taLigneALigneEcheanceDTO.codeDocumentDest}" rendered="#{detailLigneAbonnement.dansDialogue}"/> -->
+									<p:commandLink value="#{taLigneALigneEcheanceDTO.codeDocumentDest}" rendered="#{!dansDialogue}"
+										action="#{detailLigneAbonnement.duplicationDocumentBean.ouvertureDocumentBean.detailDocument(detailLigneAbonnement.
+								duplicationDocumentBean.ouvertureDocumentBean.recupCodeDocument(taLigneALigneEcheanceDTO.codeDocumentDest,
+								taLigneALigneEcheanceDTO.typeDocument))}"
+										oncomplete="activeTabCenter('#{detailLigneAbonnement.duplicationDocumentBean.ouvertureDocumentBean.event.cssLgrTab}');">
+									</p:commandLink>
+									<!-- 							<p:outputLabel value="#{taLigneALigneEcheanceDTO.codeDocumentDest}" rendered="#{!dansDialogue}"/> -->
+								</h:panelGroup>
+								<h:panelGroup>
+									<p:outputLabel value="Libellé abonnement : " style="font-weight: bold;" />
+									<p:outputLabel value="#{detailLigneAbonnement.taLigneALigneEcheanceDTO.libelleLigne}" rendered="#{detailLigneAbonnement.dansDialogue}" />
+									<p:outputLabel value="#{taLigneALigneEcheanceDTO.libelleLigne}" rendered="#{!dansDialogue}" />
+								</h:panelGroup>
+
+
+							</p:panelGrid>
+
+						</p:panel>
+
+
+						<p:panel header="Détail de l'échéance">
+							<p:panelGrid columns="3" columnClasses="ui-grid-col-4,ui-grid-col-4,ui-grid-col-4 right" styleClass="ui-panelgrid-blank" layout="grid">
+								<h:panelGroup>
+									<p:outputLabel value="Début période : " style="font-weight: bold;" />
+									<p:outputLabel value="#{detailLigneAbonnement.taLigneALigneEcheanceDTO.debutPeriode}" rendered="#{detailLigneAbonnement.dansDialogue}">
+										<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}" />
+									</p:outputLabel>
+									<p:outputLabel value="#{taLigneALigneEcheanceDTO.debutPeriode}" rendered="#{!dansDialogue}">
+										<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}" />
+									</p:outputLabel>
+
+								</h:panelGroup>
+								<h:panelGroup>
+									<p:outputLabel value="Code article : " style="font-weight: bold;" />
+									<p:outputLabel value="#{detailLigneAbonnement.taLigneALigneEcheanceDTO.codeArticle}" rendered="#{detailLigneAbonnement.dansDialogue}" />
+									<p:outputLabel value="#{taLigneALigneEcheanceDTO.codeArticle}" rendered="#{!dansDialogue}" />
+								</h:panelGroup>
+								<h:panelGroup>
+									<p:outputLabel value="Complément 1 : " style="font-weight: bold;" />
+									<p:outputLabel value="#{detailLigneAbonnement.taLigneALigneEcheanceDTO.cpl1}" rendered="#{detailLigneAbonnement.dansDialogue}" />
+									<p:outputLabel value="#{taLigneALigneEcheanceDTO.cpl1}" rendered="#{!dansDialogue}" />
+								</h:panelGroup>
+								<h:panelGroup>
+									<p:outputLabel value="Fin période : " style="font-weight: bold;" />
+									<p:outputLabel value="#{detailLigneAbonnement.taLigneALigneEcheanceDTO.finPeriode}" rendered="#{detailLigneAbonnement.dansDialogue}">
+										<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}" />
+									</p:outputLabel>
+									<p:outputLabel value="#{taLigneALigneEcheanceDTO.finPeriode}" rendered="#{!dansDialogue}">
+										<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}" />
+									</p:outputLabel>
+								</h:panelGroup>
+								<h:panelGroup>
+								</h:panelGroup>
+								<h:panelGroup>
+									<p:outputLabel value="Complément 2 : " style="font-weight: bold;" />
+									<p:outputLabel value="#{detailLigneAbonnement.taLigneALigneEcheanceDTO.cpl2}" rendered="#{detailLigneAbonnement.dansDialogue}" />
+									<p:outputLabel value="#{taLigneALigneEcheanceDTO.cpl2}" rendered="#{!dansDialogue}" />
+								</h:panelGroup>
+								<h:panelGroup>
+								</h:panelGroup>
+								<h:panelGroup>
+								</h:panelGroup>
+								<h:panelGroup>
+									<p:outputLabel value="Complément 3 : " style="font-weight: bold;" />
+									<p:outputLabel value="#{detailLigneAbonnement.taLigneALigneEcheanceDTO.cpl3}" rendered="#{detailLigneAbonnement.dansDialogue}" />
+									<p:outputLabel value="#{taLigneALigneEcheanceDTO.cpl3}" rendered="#{!dansDialogue}" />
+								</h:panelGroup>
+							</p:panelGrid>
+						</p:panel>
+					</p:fieldset>
+				</div>
+			</div>
+
+			<br />
+
+
+
+		</h:form>
+	</ui:define>
+</ui:composition>

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:pe="http://primefaces.org/ui/extensions" 
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:p="http://primefaces.org/ui">
+	
+		<o:importConstants type="fr.legrain.article.service.TaParamEan128Service" />
+
+<h:head>
+	<title>Etiquette code barre 128</title>
+	<link rel="shortcut icon" type="image/x-icon" href="#{resource['images:favicon.ico']}" />
+
+	<f:facet name="first">
+	</f:facet>
+</h:head>
+
+<h:body onload="window.print();">
+	<f:facet name="last">
+		<!-- surcharge des CSS primefaces -->
+		<h:outputStylesheet library="css" name="print_etiquette_cb.css" />
+	</f:facet>
+
+	<ui:repeat value="#{etiquetteCodeBarre128Bean.listeCodebarreArticle.keySet().toArray()}" var="p">
+		<h:panelGroup rendered="#{etiquetteCodeBarre128Bean.codeBarre128PrintParam.afficherEAN128}">
+			<p:outputLabel value="Code Article : #{etiquetteCodeBarre128Bean.listeCodebarreArticle.get(p).codeArticle}"/>
+			<br/>
+			<p:outputLabel value="Libellé article : #{etiquetteCodeBarre128Bean.listeCodebarreArticle.get(p).libellecArticle}"/>
+			<br/>
+			<p:outputLabel value="EAN13 : #{etiquetteCodeBarre128Bean.listeCodebarreArticle.get(p).codeBarre}"/>
+			<br/>
+			<p:outputLabel value="EAN128 : #{p}"/>
+			<br/>
+			<p:panelGrid columns="2" rendered="#{etiquetteCodeBarre128Bean.codeBarre128PrintParam.afficherDetail}">
+				<p:outputLabel value="Code article (#{TaParamEan128Service.EAN128_AI_CODE_ARTICLE})"/>
+				<p:outputLabel value="#{etiquetteCodeBarre128Bean.codeBarre128PrintParam.codeArticle}" />
+				
+				<p:outputLabel value="DDM (#{TaParamEan128Service.EAN128_AI_DDM})" />
+				<p:outputLabel value="#{etiquetteCodeBarre128Bean.codeBarre128PrintParam.ddm}">
+					<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}" />
+				</p:outputLabel>
+				
+				<p:outputLabel value="DLC (#{TaParamEan128Service.EAN128_AI_DLC})" />
+				<p:outputLabel value="#{etiquetteCodeBarre128Bean.codeBarre128PrintParam.dlc}">
+					<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}" />
+				</p:outputLabel>
+								
+				<p:outputLabel value="EAN Article (#{TaParamEan128Service.EAN128_AI_ARTICLE})" />
+				<p:outputLabel value="#{etiquetteCodeBarre128Bean.codeBarre128PrintParam.eanArticle}" />
+				
+				<p:outputLabel value="EAN Suremballage (#{TaParamEan128Service.EAN128_AI_SUR_EMBALAGE})" />
+				<p:outputLabel value="#{etiquetteCodeBarre128Bean.codeBarre128PrintParam.eanSurembalage}" />
+				
+				<p:outputLabel value="Hauteur en mètre / Unité (#{TaParamEan128Service.EAN128_AI_HAUTEUR_EN_METRE})" />
+				<p:outputLabel value="#{etiquetteCodeBarre128Bean.codeBarre128PrintParam.hauteurEnMetre} #{etiquetteCodeBarre128Bean.codeBarre128PrintParam.uniteHauteurEnMetre}" />
+				
+				<p:outputLabel value="Largueur en mètre / Unité (#{TaParamEan128Service.EAN128_AI_LARGEUR_EN_METRE})" />
+				<p:outputLabel value="#{etiquetteCodeBarre128Bean.codeBarre128PrintParam.largeurEnMetre} #{etiquetteCodeBarre128Bean.codeBarre128PrintParam.uniteLargeurEnMetre}" />
+				
+				<p:outputLabel value="Longueur en mètre / Unité (#{TaParamEan128Service.EAN128_AI_LONGUEUR_EN_METRE})" />
+				<p:outputLabel value="#{etiquetteCodeBarre128Bean.codeBarre128PrintParam.longueurEnMetre} #{etiquetteCodeBarre128Bean.codeBarre128PrintParam.uniteLongueurEnMetre}" />
+				
+				<p:outputLabel value="Lot (#{TaParamEan128Service.EAN128_AI_LOT_FABRICATION})" />
+				<p:outputLabel value="#{etiquetteCodeBarre128Bean.codeBarre128PrintParam.lotFabrication}" />
+				
+				<p:outputLabel value="Poids en kilo / Unité (#{TaParamEan128Service.EAN128_AI_POIDS_EN_KG})" />
+				<p:outputLabel value="#{etiquetteCodeBarre128Bean.codeBarre128PrintParam.poidsEnKg} #{etiquetteCodeBarre128Bean.codeBarre128PrintParam.unitePoidsEnKg}" />
+				
+				<p:outputLabel value="Quantité (#{TaParamEan128Service.EAN128_AI_QUANTITE})" />
+				<p:outputLabel value="#{etiquetteCodeBarre128Bean.codeBarre128PrintParam.quantite}" />
+				
+				<p:outputLabel value="Quantité unitaire (#{TaParamEan128Service.EAN128_AI_QUANTITE_UNITAIRE})" />
+				<p:outputLabel value="#{etiquetteCodeBarre128Bean.codeBarre128PrintParam.quantiteUnitaire}" />
+				
+				<p:outputLabel value="Surface en mètre carré / Unité (#{TaParamEan128Service.EAN128_AI_SURFACE_EN_METRE})" />
+				<p:outputLabel value="#{etiquetteCodeBarre128Bean.codeBarre128PrintParam.surfaceEnMetreCarre} #{etiquetteCodeBarre128Bean.codeBarre128PrintParam.uniteSurfaceEnMetreCarre}" />
+				
+				<p:outputLabel value="Volume en litre / Unité (#{TaParamEan128Service.EAN128_AI_VOLUME_EN_LITRE})" />
+				<p:outputLabel value="#{etiquetteCodeBarre128Bean.codeBarre128PrintParam.volumeEnLitre} #{etiquetteCodeBarre128Bean.codeBarre128PrintParam.uniteVolumeEnLitre}" />
+				
+				<f:facet name="footer">
+					Généré par servlet barcode4J :<br/>
+			       <p:graphicImage url="#{etiquetteCodeBarre128Bean.genereUrlCodeBarre(request.contextPath,p)}" style="background-color:white"/><br/>
+			       Généré par primefaces avec ratio calculé :<br/>
+			       <p:barcode value="#{p}" type="code128" width="#{etiquetteCodeBarre128Bean.width}px" height="#{etiquetteCodeBarre128Bean.height}px"/>
+			    </f:facet>
+			</p:panelGrid>
+			<br/>
+			<p:barcode value="#{p}" type="code128"/><br/>
+		</h:panelGroup>
+			
+		<br/>
+		<p:panelGrid columns="2" style="width:100%;border:0px;">
+			<h:panelGroup rendered="#{etiquetteCodeBarre128Bean.codeBarre128PrintParam.afficherQrCode}">
+				<p:barcode type="qr" value="#{p}" style="text-align: center" />
+<!-- 			<pe:qrCode> -->
+<!-- 						           	renderMethod="canvas"    -->
+<!-- 						           	renderMode="2"    -->
+<!-- 						           	text="#{generationCodeBarreController.codeBarre}"   -->
+<!-- 						           	label="BDG"   -->
+<!-- 						           	size="100"                    -->
+<!-- 						           	fillColor="#7d767d"   -->
+<!-- 						           	fontName="Ubuntu"   -->
+<!-- 						          	fontColor="#01A9DB"   -->
+<!-- 						           	ecLevel="H"                      -->
+<!-- 						           	radius="0.5" -->
+<!-- 						           	rendered="#{generationCodeBarreController.afficherQrCode}"/>    -->
+			</h:panelGroup>
+			
+			<h:panelGroup rendered="#{etiquetteCodeBarre128Bean.codeBarre128PrintParam.afficherDatamatrix}">
+				<p:barcode type="datamatrix" value="#{p}" style="text-align: center"/>
+			</h:panelGroup>
+		
+		</p:panelGrid>
+		<br/>
+		<h:panelGroup rendered="#{etiquetteCodeBarre128Bean.codeBarre128PrintParam.afficherEAN13}">
+			<p:barcode type="ean13" value="#{etiquetteCodeBarre128Bean.listeCodebarreArticle.get(p).codeBarre}" style="text-align: center"/>
+		</h:panelGroup>
+					
+ 								
+	</ui:repeat>
+
+</h:body>
+</html>

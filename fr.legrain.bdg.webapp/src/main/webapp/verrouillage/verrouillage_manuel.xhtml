@@ -1,0 +1,120 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+	
+	
+		<p:menubar styleClass="menu-onglet">
+<!-- 			<p:menuitem value="..." actionListener="#{exportComptaBean.etatExportationDesDocument}" process="@this" /> -->
+			
+			<p:menuitem title="Fermer" styleClass="icon icon-close menuitem-fermer-droite" process="@this" 
+				actionListener="#{verrouillageDocumentBean.actFermer}"
+				onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())">
+<!-- 				<p:confirm header="Confirmation" message="#{msg_diag.alert_fermeture_onglet}" icon="ui-icon-alert"/> -->
+			</p:menuitem>
+			<p:menuitem title="Rafraîchir" update="@widgetVar(wvTabViewExportCompta1),:form:messages"  process="@this" 
+			actionListener="#{verrouillageDocumentBean.actRefresh}" styleClass="icon icon-refresh" />
+		</p:menubar>
+	<div class="ui-g">
+		<div class="ui-g-8">
+			<p:fieldset legend="Paramètres">
+				<p:panelGrid columns="4">
+					<p:outputLabel value="Début"/>
+					<p:calendar value="#{verrouillageDocumentBean.dateDebut}" showOn="button"  navigator="true">
+						<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"  />
+					</p:calendar>
+					<p:outputLabel value="Fin"/>
+					<p:calendar value="#{verrouillageDocumentBean.dateFin}" showOn="button"  navigator="true">
+						<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+					</p:calendar>
+					
+					<p:outputLabel value="Type de document" rendered="false"/>
+					<p:selectOneMenu value="#{verrouillageDocumentBean.selectedTypeDocument}" rendered="false">
+			            <f:selectItems value="#{verrouillageDocumentBean.listeTypeDocument}" />
+		        	</p:selectOneMenu>
+					<p:outputLabel value="Tiers" rendered="false"/>
+						<p:autoComplete value="#{verrouillageDocumentBean.taTiersDTO}" converter="entityConverter"
+								completeMethod="#{verrouillageDocumentBean.tiersAutoCompleteDTOLight}"
+								var="tiers"
+								itemLabel="#{tiers.codeTiers}" 
+								itemValue="#{tiers}"
+									maxResults="#{verrouillageDocumentBean.taPreferencesService.nbMaxChargeListeTiers()}"
+									moreText="Il y a #{component.maxResults} affichés sur #{component.suggestions.size()} au total, Veuillez affiner votre recherche ou cliquer ici pour en afficher plus ..."
+								forceSelection="true" dropdown="true" placeholder="Tiers"  rendered="false">
+								<p:column>
+									<h:outputText value="#{tiers.codeTiers}"/>
+								</p:column>
+								
+								<p:column>
+									<h:outputText value="#{tiers.nomTiers}" />
+								</p:column>
+								
+								<p:ajax event="moreText" listener="#{verrouillageDocumentBean.onMoreTextTiers}" />
+						</p:autoComplete>
+
+				</p:panelGrid>
+				<p:commandButton value="Valider" actionListener="#{verrouillageDocumentBean.actRecherche}" update="@widgetVar(wvDataTableDocumentExport)"/>
+			</p:fieldset>
+		</div>
+	
+		<div class="ui-g-4">
+			<p:fieldset legend="Export" rendered="false">
+				<p:selectOneRadio value="#{verrouillageDocumentBean.paramExport}" layout="grid" columns="1">
+		            <f:selectItem itemLabel="Déjà exporté" itemValue="exporte" />
+		            <f:selectItem itemLabel="Non exporté" itemValue="pas_exporte" />
+		            <f:selectItem itemLabel="Tous" itemValue="tous" />
+		        </p:selectOneRadio>
+			</p:fieldset>
+		</div>
+	</div>
+	
+	<p:panel header="Liste des documents">
+		<div class="ui-g">
+			<div class="ui-g-10">
+				<p:dataTable value="#{verrouillageDocumentBean.modelDocument}" 
+								var="doc" 
+								rowKey="#{doc.idDocument}" 
+								widgetVar="wvDataTableDocumentExport"
+								selection="#{verrouillageDocumentBean.selection}"
+								resizableColumns="true"
+								paginator="true" 
+								rows="#{msg.modele_datatable_ligne_par_page_debut}"
+								paginatorTemplate="#{msg.modele_datatable_paginator}"
+								rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+								emptyMessage="#{msg.message_datatable_vide}"
+								currentPageReportTemplate="#{msg.modele_datatable_page_courante}">
+					<p:column headerText="Verrouillé" selectionMode="multiple"  style="width:40px;text-align:center" />
+					<p:column headerText="Document" sortBy="#{doc.codeDocument}">
+				<p:commandLink value="#{doc.codeDocument}" action="#{verrouillageDocumentBean.detailDocument}" update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+				<f:setPropertyActionListener value="#{doc}" target="#{verrouillageDocumentBean.detailLigne}" />
+				</p:commandLink>					
+					</p:column>
+					<p:column headerText="Tiers" sortBy="#{doc.taTiers.codeTiers}">
+				<p:commandLink value="#{doc.taTiers.codeTiers}" action="#{verrouillageDocumentBean.detailTiers}" update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+				<f:setPropertyActionListener value="#{doc.taTiers}" target="#{verrouillageDocumentBean.detailLigneTiers}" />
+				</p:commandLink>	
+					</p:column>
+					<p:column headerText="Date" styleClass="center" sortBy="#{doc.dateDocument}">
+						<p:outputLabel value="#{doc.dateDocument}">
+							<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+						</p:outputLabel>
+					</p:column>
+					<p:column headerText="Libellé" sortBy="#{doc.libelleDocument}">
+						<p:outputLabel value="#{doc.libelleDocument}"/>
+					</p:column>
+				</p:dataTable>
+			</div>
+			<div class="ui-g-2">
+				<p:panelGrid columns="1">
+					<p:commandButton value="Annuler" actionListener="#{verrouillageDocumentBean.actAnnuler}" update="@widgetVar(wvDataTableDocumentExport)" rendered="false"/>
+					<p:commandButton value="Inverser les cochés" actionListener="#{verrouillageDocumentBean.actInverser}" update="@widgetVar(wvDataTableDocumentExport)" rendered="false"/>
+					<p:commandButton value="Tout cocher" actionListener="#{verrouillageDocumentBean.actToutCocher}" update="@widgetVar(wvDataTableDocumentExport)" rendered="false"/>
+					<p:commandButton value="Enregistrer" actionListener="#{verrouillageDocumentBean.actEnregistrer}" update="@widgetVar(wvDataTableDocumentExport)"/>
+					<p:commandButton value="Tout décocher" actionListener="#{verrouillageDocumentBean.actToutDechocher}" update="@widgetVar(wvDataTableDocumentExport)" rendered="false"/>
+				</p:panelGrid>
+			</div>
+		</div>
+	</p:panel>
+
+</ui:composition>

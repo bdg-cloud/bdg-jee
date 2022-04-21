@@ -1,0 +1,274 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<p:panel id="labelArticleFormPrincipal" widgetVar="labelArticleForm">
+
+		<p class="subtitle">
+			<p:outputLabel value="Gestion des types de certification"
+				rendered="#{dansDialogue == null ? true : false}" />
+		</p>
+		
+		<!-- bouton -->
+		<p:panel id="labelArticleDataTableF" class="mt30" style="position:relative;"
+			rendered="#{dansDialogue == null ? true : false}">
+			
+			<p:commandButton value="Ajouter" title="Insérer" process="@this"
+				update=":form:tabView,:form:messages,:form" 
+				actionListener="#{labelArticleController.actDialogTypes}"
+				styleClass="icon-insert icon" >
+				<p:ajax event="dialogReturn" listener="#{labelArticleController.handleReturnDialogTypes}" 
+					update=":form"/>
+			</p:commandButton>
+			
+<!-- 			<p:commandButton id="labelArticleInsérer" value="Insérer" -->
+<!-- 				process="@this" -->
+<!-- 				disabled="#{labelArticleController.etatBouton('inserer')}" -->
+<!-- 				update="@widgetVar(varLabelArticlePanel), @this, @parent:labelArticleModifier, @parent:labelArticleSupprimer" -->
+<!-- 				actionListener="#{labelArticleController.actInserer}" -->
+<!-- 				class="btn-insert btn" /> -->
+
+			<p:commandButton value="Modifier" title="Modifier" process="@this"
+				update=":form:tabView,:form:messages,:form" 
+				actionListener="#{labelArticleController.actDialogModifier}"
+				styleClass="icon-update icon" >
+				<p:ajax event="dialogReturn" listener="#{labelArticleController.handleReturnDialogTypes}" update=":form"/>
+			</p:commandButton>
+			
+<!-- 			<p:commandButton id="labelArticleModifier" value="Modifier" -->
+<!-- 				process="@this" class="btn-update btn" -->
+<!-- 				disabled="#{labelArticleController.etatBouton('modifier')}" -->
+<!-- 				update="@widgetVar(varLabelArticlePanel), @parent:labelArticleInsérer, @this, @parent:labelArticleSupprimer" -->
+<!-- 				actionListener="#{labelArticleController.actModifier}" /> -->
+
+			<p:commandButton id="labelArticleSupprimer" value="Supprimer"
+				styleClass="icon-delete icon menuitem-poubelle-droite"
+				disabled="#{labelArticleController.etatBouton('supprimer')}"
+				actionListener="#{labelArticleController.actSupprimer}"
+				update="@widgetVar(wvlabelArticleDataTable)" process="@this"
+				 >
+<!-- 				type="button" onclick="PF('famillecd1').show()" -->
+				<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer cet enregistrement ?" icon="ui-icon-alert" />
+			</p:commandButton>
+
+			<p:commandButton id="labelArticleFermer" title="Fermer"
+				class="icon-close icon menuitem-fermer-droite" onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())">
+<!-- 				type="button" onclick="PF('famillecd2').show()" -->
+				<p:confirm header="Confirmation" message="#{msg_diag.alert_fermeture_onglet}" icon="ui-icon-alert" disabled="#{!labelArticleController.modeEcran.dataSetEnModif()}"/>
+			</p:commandButton>
+
+			<p:commandButton id="labelArticleFermerDialogue" title="Fermer"
+				process="@this" class="icon-close icon menuitem-fermer-droite"
+				actionListener="#{labelArticleController.actFermerDialog}"
+				rendered="#{dansDialogue != null ? true : false}" />
+
+<!-- 			<p:confirmDialog message="#{msg_diag.alert_suppresion}" -->
+<!-- 				header="Confirmation" severity="alert" appendTo="@(body)" -->
+<!-- 				widgetVar="labelArticlecd1"> -->
+<!-- 				<p:commandButton value="#{msg_diag.Oui}" update="@form" -->
+<!-- 					oncomplete="PF('labelArticlecd1').hide()"> -->
+<!-- 					<p:ajax listener="#{labelArticleController.actSupprimer}" /> -->
+<!-- 				</p:commandButton> -->
+<!-- 				<p:commandButton value="#{msg_diag.Non}" -->
+<!-- 					onclick="PF('labelArticlecd1').hide();" type="button" /> -->
+<!-- 			</p:confirmDialog> -->
+
+<!-- 			<p:confirmDialog message="#{msg_diag.alert_fermeture_onglet}" -->
+<!-- 				header="Confirmation" severity="alert" widgetVar="labelArticlecd2" -->
+<!-- 				appendTo="@(body)"> -->
+<!-- 				<p:commandButton value="#{msg_diag.Oui}" -->
+<!-- 					onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())" -->
+<!-- 					oncomplete="PF('labelArticlecd2').hide()" /> -->
+<!-- 				<p:commandButton value="#{msg_diag.Non}" -->
+<!-- 					onclick="PF('labelArticlecd2').hide();" type="button" /> -->
+<!-- 			</p:confirmDialog> -->
+		</p:panel>
+		
+		<p:dataTable id="labelArticleDataTable" widgetVar="wvlabelArticleDataTable" var="table"
+			rendered="#{dansDialogue == null ? true : false}"
+			value="#{labelArticleController.values}"
+			rowKey="#{table.id}" selectionMode="single"
+			class="datatable" selection="#{labelArticleController.selection}"
+			paginator="false" rows="#{msg.modele_datatable_ligne_par_page_debut}"
+			paginatorTemplate="#{msg.modele_datatable_paginator}"
+			rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+			emptyMessage="#{msg.message_datatable_vide}"
+			currentPageReportTemplate="#{msg.modele_datatable_page_courante}">
+
+			<p:ajax event="rowSelect"
+				listener="#{labelArticleController.onRowSelect}" />
+
+			<f:facet name="{Exporters}">
+				<h:commandLink>
+					<p:graphicImage library="images" name="excel.png" width="24" />
+					<p:dataExporter type="xls" target="labelArticleDataTable"
+						fileName="type_labelArticle" />
+				</h:commandLink>
+
+				<h:commandLink>
+					<p:graphicImage library="images" name="pdf.png" width="24" />
+					<p:dataExporter type="pdf" target="labelArticleDataTable"
+						fileName="type_labelArticle" />
+				</h:commandLink>
+
+				<h:commandLink>
+					<p:graphicImage library="images" name="csv.png" width="24" />
+					<p:dataExporter type="csv" target="labelArticleDataTable"
+						fileName="type_labelArticle" options="#{separateurCsvController.csvOptions}" />
+				</h:commandLink>
+
+				<h:commandLink>
+					<p:graphicImage library="images" name="xml.png" width="24" />
+					<p:dataExporter type="xml" target="labelArticleDataTable"
+						fileName="type_labelArticle" />
+				</h:commandLink>
+
+				<p:commandButton value="Imprimer" styleClass="btn-print btn"
+					onsuccess="window.open('#{request.contextPath}/output?__report=/reports/test/label_article_test_image_report.rptdesign&amp;__format=pdf')"
+					actionListener="#{labelArticleController.actImprimer}"
+					disabled="#{labelArticleController.etatBouton('imprimer')}" />
+			</f:facet>
+
+			<p:column sortBy="#{table.codeLabelArticle}">
+				<f:facet name="header">
+					<h:outputText value="Code" />
+				</f:facet>
+				<h:outputText value="#{table.codeLabelArticle}" />
+			</p:column>
+			<p:column sortBy="#{table.libelleLabelArticle}">
+				<f:facet name="header">
+					<h:outputText value="Libellé" />
+				</f:facet>
+				<h:outputText value="#{table.libelleLabelArticle}" />
+			</p:column>
+			<p:column sortBy="#{table.desciptionLabelArticle}">
+				<f:facet name="header">
+					<h:outputText value="Description" />
+				</f:facet>
+				<h:outputText value="#{table.desciptionLabelArticle}" />
+			</p:column>
+			<p:column styleClass="center">
+				<f:facet name="header">
+					<h:outputText value="Logo" />
+				</f:facet>
+				<p:graphicImage value="/image_label_article/#{table.id}"  height="80"/>
+			</p:column>
+			
+		</p:dataTable>
+
+		
+	</p:panel>
+
+	<p:messages id="labelArticleMessages" showDetail="true" autoUpdate="true" closable="true" />
+
+	<p:panel id="labelArticlePanel" visible="true" widgetVar="varLabelArticlePanel">
+		<p:panel onLoad="reset()" resizable="false" id="labelArticlePanelCache" rendered="#{labelArticleController.modeEcran.dataSetEnModif()}">
+			
+			<f:validateBean disabled="true">
+				<div class="ui-grid ui-grid-responsive" id="labelArticleGridResp">
+					<div class="ui-grid-row">
+						<div class="ui-grid-col-4">
+							<h:outputText value="Code :"/>
+						</div>
+						<div class="ui-grid-col-8">
+							<h:inputText
+								value="#{labelArticleController.nouveau.codeLabelArticle}"
+								required="true"
+								requiredMessage="#{msg_diag.alert_champs_obligatoir}">
+							</h:inputText>
+						</div>
+					</div>
+					<div class="ui-grid-row">
+						<div class="ui-grid-col-4">
+							<h:outputText value="Libelle :"/>
+						</div>
+						<div class="ui-grid-col-8">
+							<h:inputText
+								value="#{labelArticleController.nouveau.libelleLabelArticle}"
+								required="true"
+								requiredMessage="#{msg_diag.alert_champs_obligatoir}">
+							</h:inputText>
+						</div>
+					</div>
+					<div class="ui-grid-row">
+						<div class="ui-grid-col-4">
+							<h:outputText value="Description :"/>
+						</div>
+						<div class="ui-grid-col-8">
+							<h:inputText
+								value="#{labelArticleController.nouveau.desciptionLabelArticle}"
+								required="true"
+								requiredMessage="#{msg_diag.alert_champs_obligatoir}">
+							</h:inputText>
+						</div>
+					</div>
+					<div class="ui-grid-row">
+						<div class="ui-grid-col-4">
+							<h:outputText value="Image :"/>
+						</div>
+						<div class="ui-grid-col-8">
+							<!-- 41943040 = 5M-->
+							<p:fileUpload
+								listener="#{labelArticleController.handleFileUpload}"
+								type="button" mode="advanced" update="@widgetVar(wvPanelLogoTypeCertification)" auto="true"
+								sizeLimit="41943040" allowTypes="/(\.|\/)(ico|gif|jpe?g|png|svg)$/"
+								value="#{labelArticleController.handleFileUpload()}" />
+						</div>
+					</div>
+					<div class="ui-grid-row">
+						<div class="ui-grid-col-4">
+							<h:outputText value="Nom Image :"/>
+						</div>
+						<div class="ui-grid-col-8">
+							<h:inputText
+								value="#{labelArticleController.nouveau.nomImageLabelArticle}"
+								required="false">
+							</h:inputText>
+						</div>
+					</div>
+					<div class="ui-grid-row">
+						<div class="ui-grid-col-4">
+							<h:outputText value="Aperçu :"/>
+						</div>
+						<div class="ui-grid-col-8">
+						 	<p:panel widgetVar="wvPanelLogoTypeCertification">
+								<p:graphicImage value="#{labelArticleController.logo}" stream="false" 
+									rendered="#{labelArticleController.nouveau.blobLogo !=null}">
+								</p:graphicImage>
+								
+								<!-- Arriver à passer sur omnifaces 2.xx pour avoir le o:graphicImage qui peu lire des flux de byte[] directement -->
+<!-- 								<o:graphicImage value="#{labelArticleController.taLabelArticle.blobLogo" type="svg" />  -->
+							</p:panel>
+						</div>
+					</div>
+
+					<div class="ui-grid-row">
+						<div class="ui-grid-col-12 text-center">
+							<p:commandButton value="Enregistrer" styleClass="btn-save btn"
+								disabled="#{labelArticleController.etatBouton('enregistrer')}"
+								update="@widgetVar(labelArticleForm), @widgetVar(varLabelArticlePanel)"
+								actionListener="#{labelArticleController.actEnregistrer}" />
+
+							<p:commandButton id="labelArticleAnnuler" value="Annuler"
+								styleClass="btn-cancel btn" process="@this"
+								disabled="#{labelArticleController.etatBouton('annuler')}"
+								update="@widgetVar(labelArticleForm), @widgetVar(varLabelArticlePanel)"
+								actionListener="#{labelArticleController.actAnnuler}" 
+								rendered="#{dansDialogue != null ? false : true}" />
+
+							<p:commandButton id="labelArticleAnnulerDialogue" value="Annuler"
+								styleClass="btn-cancel btn" process="@this"
+								disabled="#{labelArticleController.etatBouton('annuler')}"
+								actionListener="#{labelArticleController.actFermerDialog}"
+								rendered="#{dansDialogue != null ? true : false}" />
+						</div>
+					</div>
+				</div>
+			</f:validateBean>
+
+		</p:panel>
+	</p:panel>
+</ui:composition>

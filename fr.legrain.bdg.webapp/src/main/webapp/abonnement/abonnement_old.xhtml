@@ -1,0 +1,1798 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:pe="http://primefaces.org/ui/extensions"
+    	xmlns:o="http://omnifaces.org/ui"
+	xmlns:p="http://primefaces.org/ui">
+	
+	<o:importConstants type="fr.legrain.bdg.webapp.app.LgrTab" />
+			<div class="dashboard-title" style="background: #f0f1f2; margin-bottom: 15px;">
+						<h:panelGroup id="idPanelGroupInfosTiersEnteteAbonnement" rendered="#{!abonnementController.selectedDocumentDTO.abonnementEstVide()}">
+						<p:spacer width="30" height="5" />
+						<p:outputLabel value="Code : " />
+						<p:outputLabel value="#{abonnementController.selectedDocumentDTO.codeDocument}" style="font-weight: bold;"/>
+						<p:spacer width="30" height="5" />
+						<p:outputLabel value="Code tiers : " />
+							<p:commandLink 	value="#{abonnementController.selectedDocumentDTO.codeTiers}"
+											style="font-weight: bold;" 
+											action="#{abonnementController.ouvertureTiersBean.detailTiers(abonnementController.ouvertureTiersBean.recupCodetiers(abonnementController.selectedDocumentDTO.codeTiers))}" update=":form:tabView"
+											oncomplete="activeTabCenter('#{abonnementController.ouvertureTiersBean.event.cssLgrTab}');">
+							</p:commandLink>						
+<!-- 						<p:outputLabel value="#{abonnementController.selectedDocumentDTO.codeTiers}" style="font-weight: bold;"/> -->
+						<p:spacer width="30" height="5" />
+						<p:outputLabel value="Nom : " />
+						<p:outputLabel value="#{abonnementController.selectedDocumentDTO.nomTiers} #{abonnementController.selectedDocumentDTO.prenomTiers}" style="font-weight: bold;"/>
+						<p:spacer width="30" height="5" />
+						<p:outputLabel value="Raison sociale : " />
+						<p:outputLabel value="#{abonnementController.selectedDocumentDTO.nomEntreprise}" style="font-weight: bold;"/>
+						</h:panelGroup>
+			</div>
+
+
+
+	<p:menubar styleClass="menu-onglet" id="idMenuBoutonAbonnement" widgetVar="wvMenuBoutonAbonnement">
+	<p:menuitem title="#{const.abo_titre_menu_aide}" styleClass="icon icon-aidecontextuelle" onstart="PF('wvAideMenuAbonnement').show()" />
+	<p:separator styleClass="separateur-menu-vertical"/>		
+<!-- 			onsuccess="impressionDirect(PF('wvImpressionDirectAbonnement'),'ddd')" -->
+<!-- oncomplete="if(PF('wvImpressionDirectAbonnement').checked) {window.open('#{request.contextPath}/output?__report=/reports/Fiche_devis.rptdesign&amp;__format=pdf'}" -->
+		<p:menuitem value="Enregistrer" styleClass="icon icon-save" process="@this idtiersAbonnement idCodeAbonnement"
+			title="#{const.abo_titre_menu_enregistrer}"
+			actionListener="#{abonnementController.actEnregistrer}" 
+			oncomplete="impressionDirect(PF('wvImpressionDirectAbonnement'),'#{request.contextPath}/output?__report=/reports/documents/devis/Fiche_devis.rptdesign&amp;__format=pdf')"
+			update="idPanelEnteteAbonnement,idPanelLignesAbonnement,idTableauComplementaireAbonnement,:form:messages,@widgetVar(wvMenuListeAbonnement),@widgetVar(wvDataTableListeAbonnement),@widgetVar(#{abonnementController.wvEcran})"
+			disabled="#{abonnementController.etatBouton('enregistrer') or abonnementController.stepEnCours('idEnteteAbonnement') or abonnementController.stepEnCours('idLignesAbonnement')}" />
+			
+		<p:menuitem value="Insérer" styleClass="icon icon-insert"
+			title="#{const['abo_titre_menu_inserer']}"
+			actionListener="#{abonnementController.actInserer}" process="@this"
+			oncomplete="if(PF('widgetVarLigneAbonnement').getStepIndex()!=-1) {PF('widgetVarLigneAbonnement').loadStep('idEnteteAbonnement', false)}"
+			update="idPanelEnteteAbonnement,idPanelLignesAbonnement,idTableauComplementaireAbonnement,:form:messages,@widgetVar(wvMenuListeAbonnement),@widgetVar(wvDataTableListeAbonnement),@widgetVar(#{abonnementController.wvEcran})"
+			disabled="#{abonnementController.etatBouton('inserer') or abonnementController.stepEnCours('idLignesAbonnement')}" />
+			
+		<p:menuitem value="Modifier" styleClass="icon icon-update"
+			title="#{const.abo_titre_menu_modifier}"
+			actionListener="#{abonnementController.actModifier}"
+			process="@this"
+			update="idPanelEnteteAbonnement,idPanelLignesAbonnement,idTableauComplementaireAbonnement,:form:messages,@widgetVar(#{abonnementController.wvEcran}),@widgetVar(wvMenuListeAbonnement),@widgetVar(wvDataTableListeAbonnement)"
+			disabled="#{abonnementController.etatBouton('modifier') or abonnementController.selectedDocumentDTO.dateAnnulation != null}" >
+			<p:confirm header="#{abonnementController.titreModification}" message="#{abonnementController.messageModification}" icon="ui-icon-alert" />
+		</p:menuitem>
+			
+			
+		<p:menuitem value="Annuler" styleClass="icon icon-cancel"
+			title="#{const.abo_titre_menu_annuler}"
+			actionListener="#{abonnementController.actAnnuler}" process="@this"
+			update="idPanelEnteteAbonnement,idPanelLignesAbonnement,idTableauComplementaireAbonnement,:form:messages,@widgetVar(#{abonnementController.wvEcran}),@widgetVar(wvMenuListeAbonnement),@widgetVar(wvDataTableListeAbonnement)"
+			disabled="#{abonnementController.etatBouton('annuler') }" >
+		<p:confirm header="Confirmation" message="#{msg_diag.alert_annulation}"  icon="ui-icon-alert" />
+		</p:menuitem>
+
+<!-- 		<p:menuitem title="Ajouter" update=":form:tabView,:form:messages,@widgetVar(wvMenuListeArticle),@widgetVar(wvDataTableListeArticle)"  -->
+<!-- 			actionListener="#{articleController.nouveau}" styleClass="icon icon-insert" disabled="#{articleController.etatBouton('inserer')}" oncomplete="PF('wvOverlayListeArticle').hide();"/> -->
+		
+		<p:menuitem value="Supprimer" styleClass="icon icon-delete menuitem-poubelle-droite"
+			title="#{const.abo_titre_menu_supprimer}" 
+			actionListener="#{abonnementController.actSupprimer}" 
+			process="@this"
+			update="idPanelEnteteAbonnement,idPanelLignesAbonnement,idTableauComplementaireAbonnement,:form:messages,@widgetVar(wvDataTableListeAbonnement),@widgetVar(wvMenuListeAbonnement),@widgetVar(#{abonnementController.wvEcran})"
+			disabled="#{abonnementController.etatBouton('supprimer') or abonnementController.stepEnCours('idLignesAbonnement')}" >
+<!-- 			<p:confirm header="Confirmation" message="#{msg_diag.alert_suppresion}" icon="ui-icon-alert" /> -->
+			<p:confirm header="Confirmation de la suppression" message="#{abonnementController.messageSuppression}" icon="ui-icon-alert" />
+		</p:menuitem>			
+			
+		<p:menuitem value="Fermer abonnement" styleClass="icon icon-close menuitem-fermer-droite"
+			title="#{const.abo_titre_menu_fermer}"
+			process="@this" 
+			actionListener="#{abonnementController.actFermer}"
+			update=":form:messages,@widgetVar(wvMenuListeAbonnement),idTableauComplementaireAbonnement,@widgetVar(wvDataTableListeAbonnement)"
+			disabled="#{abonnementController.etatBouton('fermer') }" 
+			onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())">
+			
+			<p:confirm header="Confirmation" message="#{msg_diag.alert_fermeture_onglet}" icon="ui-icon-alert" disabled="#{!abonnementController.modeEcran.dataSetEnModif()}"/>
+		</p:menuitem>
+		
+		<p:menuitem title="Créer un évènement" styleClass="icon-agenda icon" 
+			
+			oncomplete="$('.classHiddenCommandForDialogAgendaReturnAbonnement').click()"
+			process="@this" 
+			update="@this" 
+			disabled="#{abonnementController.etatBouton('modifier')}"/>
+
+		<p:separator styleClass="separateur-menu-vertical"/>
+
+<!-- 		<p:menuitem value="Imprimer" styleClass="icon icon-print" -->
+<!-- 			title="#{const.abo_titre_menu_imprimer}" -->
+<!-- 			onsuccess="window.open('#{request.contextPath}/output?__report=/reports/abonnement/Fiche_devis.rptdesign&amp;__format=pdf')" -->
+<!-- 			actionListener="#{abonnementController.actImprimer}" -->
+<!-- 			disabled="#{abonnementController.etatBouton('imprimer') or abonnementController.stepEnCours('idLignesAbonnement')}" /> -->
+			
+		<p:menuitem value="Imprimer étiquette code barre" styleClass="icon icon-barcode"
+						onsuccess="window.open('#{request.contextPath}/articles/etiquette_cb.xhtml')"
+						actionListener="#{abonnementController.actImprimerEtiquetteCB}"/>	
+						
+<!-- 		<p:menuitem title="Envoyer par email" styleClass="icon icon-envoi-mail" -->
+<!-- 			oncomplete="$('.classHiddenCommandForDialogEmailReturnAbonnement').click()" -->
+<!-- 			process="@this"  -->
+<!-- 			update=":form:messages"  -->
+<!-- 			disabled="#{abonnementController.etatBouton('modifier')}"/> -->
+
+<!-- 		<p:separator styleClass="separateur-menu-vertical" /> -->
+
+		<p:menuitem title="#{const.abo_titre_menu_afficher_liste}" styleClass="icon icon-liste" oncomplete="PF('wvOverlayListeAbonnement').show();"/>		
+	</p:menubar>
+	
+	<p:commandButton styleClass="classHiddenCommandForDialogAgendaReturnAbonnement" actionListener="#{abonnementController.actDialogEvenement}" style="display:none" process="@this"  >
+        <p:ajax event="dialogReturn" update="@widgetVar(wvAgenda)"  />  
+    </p:commandButton>
+	<p:commandButton styleClass="classHiddenCommandForDialogEmailReturnAbonnement" actionListener="#{abonnementController.actDialogEmail}" style="display:none" process="@this"  >
+        <p:ajax event="dialogReturn" listener="#{abonnementController.handleReturnDialogEmail}" update=":form:messages"  />  
+    </p:commandButton>
+    
+	<p:overlayPanel widgetVar="wvAideMenuAbonnement" hideEffect="fade"
+								dynamic="true" showCloseIcon="true"
+								styleClass="overlay-aide-contextuelle overlay-aide-contextuelle-big">
+								<ui:include src="/aide_contextuelle/devis_general.xhtml" />
+	</p:overlayPanel>
+	
+	<p:fieldset style="margin-bottom:20px;" id="idTableauComplementaireAbonnement" widgetVar="wvTableauComplementaireAbonnement">
+		<h:panelGrid columns="2" cellpadding="15">
+		<p:panel styleClass="panel-aide-contextuelle" rendered="#{abonnementController.selectedDocumentDTO.dateAnnulation == null}">
+			<p:commandButton process="@this" title="suspendre abonnement" label="Suspendre"  value="Suspendre l'abonnement"   action="#{abonnementController.actSuspendreAbonnement}"
+			 update="@this, @widgetVar(wvTableauComplementaireAbonnement)" rendered="#{!abonnementController.selectedDocumentDTO.suspension and abonnementController.selectedDocumentDTO.dateAnnulation == null}">
+			</p:commandButton>
+			<p:outputLabel value="L'abonnement est actif" rendered="#{!abonnementController.selectedDocumentDTO.suspension and abonnementController.selectedDocumentDTO.dateAnnulation == null }"></p:outputLabel>
+			<p:commandButton process="@this" title="ré-activer abonnement" label="Re-activer" value="Ré-activer l'abonnement"   action="#{abonnementController.actActiverAbonnement}"
+			 update="@this, @widgetVar(wvTableauComplementaireAbonnement)" rendered="#{abonnementController.selectedDocumentDTO.suspension and abonnementController.selectedDocumentDTO.dateAnnulation == null}">
+			</p:commandButton>
+			<p:outputLabel value="L'abonnement est suspendu " rendered="#{abonnementController.selectedDocumentDTO.suspension and abonnementController.selectedDocumentDTO.dateAnnulation == null}"></p:outputLabel>
+		</p:panel>
+		<p:panel></p:panel>
+		<!-- <p:separator styleClass="separateur-menu-vertical"/> -->
+		<p:panel styleClass="panel-aide-contextuelle">
+			<p:commandButton  title="Annuler l'abonnement" type="button" label="Annuler l'abonnement"  value="Annuler l'abonnement"
+			   onclick="PF('wvDialogAnnulationAbonnement').show();"
+			  rendered="#{abonnementController.selectedDocumentDTO.dateAnnulation != null ? false : true}">
+			 <!--  update="@this, @widgetVar(wvTableauComplementaireAbonnement)" -->
+			<!--   actionListener="#{abonnementController.actDialogAnnulerAbonnement}" -->
+			 <p:confirm header="Confirmation" message="Etes-vous sûr de vouloir annuler cet abonnement ? Cette action est définitive." icon="ui-icon-alert"/>
+			</p:commandButton>
+		</p:panel>
+		<p:panel styleClass="panel-aide-contextuelle" rendered="#{abonnementController.selectedDocumentDTO.dateAnnulation != null ? true : false}">
+			<h:panelGrid columns="2" cellpadding="15">
+				<p:outputLabel value="Cet abonnement est annulé depuis le " style="font-weight:600; color: red; font-size: 17px;"></p:outputLabel>
+				<p:outputLabel value="#{abonnementController.selectedDocumentDTO.dateAnnulation}"
+				 rendered="#{abonnementController.selectedDocumentDTO.dateAnnulation != null ? true : false}" style="font-weight:600; color: red; font-size: 17px;">
+				 	<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+				 </p:outputLabel>
+				 
+				 <p:outputLabel value="Commentaire annulation : "></p:outputLabel>
+				<p:outputLabel value="#{abonnementController.selectedDocumentDTO.commentaireAnnulation}"
+				 rendered="#{abonnementController.selectedDocumentDTO.dateAnnulation != null ? true : false}" >
+				</p:outputLabel>
+			</h:panelGrid>
+		</p:panel>
+		
+		
+
+		
+		
+		
+		
+		
+		
+		
+<!-- 			<p:panel styleClass="panel-aide-contextuelle"> -->
+<!-- 				<p:commandButton process="@this" title="#{const_vue.btn_generation_modele}"  -->
+<!-- 								 label="#{const_vue.btn_generation_modele}" -->
+<!-- 								 value="#{const_vue.btn_generation_modele}" -->
+<!-- 				icon="ui-icon-copy" -->
+<!-- 					action="#{duplicationDocumentBean.actDialogGenerationModeleDocument}" disabled="#{abonnementController.modeEcran.dataSetEnModif()}"> -->
+<!-- 						<f:setPropertyActionListener target="#{duplicationDocumentBean.doc}" value="#{abonnementController.masterEntity}"/> -->
+<!-- 					<p:ajax event="dialogReturn" -->
+<!-- 						listener="#{duplicationDocumentBean.handleReturnDialogGenerationDocument}" -->
+<!-- 						update=":form:tabView,@widgetVar(wvMenuListeAbonnement),@widgetVar(wvDataTableListeAbonnement)" -->
+<!-- 						oncomplete="activeTabCenter('#{duplicationDocumentBean.css}');" /> -->
+<!-- 				</p:commandButton> -->
+<!-- 				<p:commandLink id="idLinkAideGenerationModeleDocumentAbonnement" -->
+<!-- 					styleClass="lien-aide-contextuelle"> -->
+<!-- 					<i class="fa fa-info-circle animated"></i> -->
+<!-- 				</p:commandLink> -->
+
+<!-- 				<p:overlayPanel for="idLinkAideGenerationModeleDocumentAbonnement" -->
+<!-- 					hideEffect="fade" dynamic="true" showCloseIcon="true" -->
+<!-- 					styleClass="overlay-aide-contextuelle"> -->
+<!-- 					<ui:include -->
+<!-- 						src="/aide_contextuelle/document_generation_modele_document.xhtml" /> -->
+<!-- 				</p:overlayPanel> -->
+<!-- 			</p:panel> -->
+
+<!-- 			<p:panel styleClass="panel-aide-contextuelle"> -->
+<!-- 				<p:commandButton process="@this" alt="#{const_vue.btn_generation_document}"  -->
+<!-- 								 label="#{const_vue.btn_generation_document}"  -->
+<!-- 								 value="#{const_vue.btn_generation_document}" -->
+<!-- 				icon="ui-icon-link" -->
+<!-- 					action="#{duplicationDocumentBean.actDialogGenerationDocument}" disabled="#{abonnementController.modeEcran.dataSetEnModif()}"> -->
+<!-- 					<f:setPropertyActionListener target="#{duplicationDocumentBean.doc}" value="#{abonnementController.masterEntity}"/>	 -->
+<!-- 					<p:ajax event="dialogReturn" -->
+<!-- 						listener="#{duplicationDocumentBean.handleReturnDialogGenerationDocument}" -->
+<!-- 						update=":form:tabView,@widgetVar(wvMenuListeAbonnement),@widgetVar(wvDataTableListeAbonnement)" -->
+<!-- 						oncomplete="activeTabCenter('#{duplicationDocumentBean.css}');" /> -->
+<!-- 				</p:commandButton> -->
+<!-- 				<p:commandLink id="idLinkAideGenerationDocumentAbonnement" -->
+<!-- 					styleClass="lien-aide-contextuelle"> -->
+<!-- 					<i class="fa fa-info-circle animated"></i> -->
+<!-- 				</p:commandLink> -->
+
+<!-- 				<p:overlayPanel for="idLinkAideGenerationDocumentAbonnement" hideEffect="fade" -->
+<!-- 					dynamic="true" showCloseIcon="true" -->
+<!-- 					styleClass="overlay-aide-contextuelle"> -->
+<!-- 					<ui:include -->
+<!-- 						src="/aide_contextuelle/document_generation_document.xhtml" /> -->
+<!-- 				</p:overlayPanel> -->
+<!-- 			</p:panel> -->
+			<!-- 							<p:separator styleClass="separateur-menu-vertical"/> -->
+			<!-- 							<p:panel> -->
+			<!-- 							<p:outputLabel value="CA HT : " /> -->
+			<!-- 							</p:panel> -->
+			<!-- 							<p:panel> -->
+			<!-- 							<p:outputLabel value="150 €" /> -->
+			<!-- 							</p:panel> -->
+			<!-- 							<p:separator styleClass="separateur-menu-vertical"/> -->
+			<!-- 							<p:panel> -->
+			<!-- 							<p:outputLabel value="CA HT : " /> -->
+			<!-- 							</p:panel> -->
+			<!-- 							<p:panel> -->
+			<!-- 							<p:outputLabel value="150 €" /> -->
+			<!-- 							</p:panel> -->
+		
+<!-- 			<p:panel styleClass="panel-aide-contextuelle"> -->
+<!-- 					<p:outputLabel value="Etat du document  "/> -->
+<!-- 							<p:selectOneMenu value="#{abonnementController.selectedEtatDocument}" var="t" id="idSelectionEtat" -->
+<!-- 								converter="entityConverter"> -->
+<!-- 								<f:selectItems value="#{abonnementController.listeEtatDocument}" var="tEtat" itemLabel="#{tEtat.codeEtat}" -->
+<!-- 									itemValue="#{tEtat}" /> -->
+<!-- 								<p:column> -->
+<!-- 									<h:outputText name="#{t.codeEtat}" /> -->
+<!-- 								</p:column> -->
+<!-- 								<p:column> -->
+<!-- 									<h:outputText value="#{t.liblEtat}" /> -->
+<!-- 								</p:column> -->
+<!-- 								<p:ajax update="idPanelEnteteAbonnement,idPanelLignesAbonnement,:form:messages,@widgetVar(#{abonnementController.wvEcran}),@widgetVar(wvMenuListeAbonnement),@widgetVar(wvDataTableListeAbonnement)" listener="#{abonnementController.actModifier}" /> -->
+<!-- 							</p:selectOneMenu>		        	 -->
+<!-- 			</p:panel>		 -->
+
+<!-- 					<p:outputLabel value="Etat du document  " rendered="#{auth.isDevLgr()}"/> -->
+<!-- 						<p:panel styleClass="panel-aide-contextuelle"> -->
+<!-- 							<p:autoComplete value="#{abonnementController.selectedEtatDocument}" rendered="#{auth.isDevLgr()}" -->
+<!-- 								converter="entityConverter" -->
+<!-- 								completeMethod="#{abonnementController.etatAutoComplete}" -->
+<!-- 								disabled="#{abonnementController.editable()}" var="etat" -->
+<!-- 								itemLabel="#{etat.codeEtat}" itemValue="#{etat}" -->
+<!-- 								forceSelection="true" dropdown="true" placeholder="Etat du document"> -->
+<!-- 								<p:column> -->
+<!-- 									<h:outputText value="#{etat.codeEtat}" /> -->
+<!-- 								</p:column> -->
+
+<!-- 								<p:column> -->
+<!-- 									<h:outputText value="#{etat.liblEtat}" /> -->
+<!-- 								</p:column> -->
+
+<!-- 								<f:attribute name="nomChamp" value="#{const.C_CODE_ETAT}" /> -->
+<!-- 								  <p:ajax event="clear" listener="#{abonnementController.onClearEtat}" update="idPanelEnteteAbonnement,idPanelLignesAbonnement,:form:messages,@widgetVar(#{abonnementController.wvEcran}),@widgetVar(wvMenuListeAbonnement),@widgetVar(wvDataTableListeAbonnement)"/> -->
+<!-- 								<p:ajax event="itemSelect" -->
+<!-- 									listener="#{abonnementController.autcompleteSelection}" -->
+<!-- 									update="idPanelEnteteAbonnement,idPanelLignesAbonnement,:form:messages,@widgetVar(#{abonnementController.wvEcran}),@widgetVar(wvMenuListeAbonnement),@widgetVar(wvDataTableListeAbonnement)"/> -->
+<!-- 							</p:autoComplete> -->
+<!-- 						</p:panel> -->
+		</h:panelGrid>
+
+
+		
+	</p:fieldset>
+	
+			<!-- TEST DIALOG ANNULATION ABONNEMENT-->
+		<p:dialog header="Annulation abonnement" widgetVar="wvDialogAnnulationAbonnement" modal="true"   width="720" height="400">
+		<!-- contentHeight ="100%" contentWidth="100%" -->
+			<p:menubar styleClass="menu-onglet">
+			<!-- styleClass="icon icon-envoi-mail -->
+				<p:menuitem title="Enregistrer l'annulation" styleClass="icon icon-save"  value="Enregistrer l'annulation" update="@form"
+					actionListener="#{abonnementController.actAnnulerAbonnement}" />
+				
+				<p:menuitem title="Fermer" styleClass="icon icon-close menuitem-fermer-droite"
+					actionListener="#{abonnementController.actFermerDialog}"
+					process="@this" >
+					<p:confirm header="Confirmation" message="#{msg_diag.alert_fermeture_onglet}" icon="ui-icon-alert" disabled="#{!abonnementController.modeEcran.dataSetEnModif()}"/>
+				</p:menuitem>
+			</p:menubar>
+
+		
+		
+			<p:separator/>
+			
+			<p:messages autoUpdate="true" showDetail="true"/>
+			
+			<p:panel id="idPanelGlobalAnnulerAbonnement" widgetVar="wvPanelGlobalAnnulerAbonnement">
+				<div class="ui-g ui-g-nopad">
+	
+					<p:outputLabel>Commentaire annulation : </p:outputLabel>
+					<div class="ui-g-12">
+						<!-- <p:textEditor value="#{abonnementController.selectedDocumentDTO.commentaireAnnulation}" style="width:100%; height:200px;" >
+							<f:facet name="toolbar">
+						        <span class="ql-formats">
+									Commentaire annulation
+						        </span>
+	    					</f:facet>
+						</p:textEditor> -->
+						<p:inputTextarea rows="10" cols="86" value="#{abonnementController.selectedDocumentDTO.commentaireAnnulation}"/>
+					</div>
+					
+				</div>
+	
+			</p:panel>
+		
+			<p:confirmDialog global="true" showEffect="fade">
+					<p:commandButton id="idConfirmDialogCtrlLotOui" value="Oui" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+					<p:commandButton id="idConfirmDialogCtrlLotNon" value="Non" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+			</p:confirmDialog>
+			
+			<style type="text/css">
+				.ui-panel .ui-panel-content {
+					padding: 0;
+				}
+			</style>
+			
+		</p:dialog>
+		<!-- FIN TEST DIALO ABONNEMENT -->
+
+	<!-- 	<p:sticky target="idMenuBoutonAbonnement" /> -->
+
+	<!-- 	<div class="ui-grid ui-grid-responsive"> -->
+	<!-- 		<div class="ui-grid-row"> -->
+	<!-- 			<div class="ui-grid-col-12"> -->
+<!-- 	flowListener="#{abonnementController.onFlowProcess}" -->
+
+
+
+
+	<p:wizard nextLabel="#{const_vue.btn_suivant}" backLabel="#{const_vue.btn_precedent}" binding="#{abonnementController.wizardDocument}" step="#{abonnementController.stepCourant()}"
+	showStepStatus="false" widgetVar="widgetVarLigneAbonnement" flowListener="#{abonnementController.handleFlow}"  showNavBar="false">
+	<p:tab id="idSyntheseAbonnement" title="Synthèse de l'abonnement">
+			<div class="card">
+				<p:panel header="Synthèse de l'abonnement" style="width:100%;" rendered="#{!abonnementController.selectedDocumentDTO.abonnementEstVide()}">
+					<p:panelGrid columns="3" id="idInfosAbonnement" columnClasses="ui-grid-col-4,ui-grid-col-4,ui-grid-col-4" styleClass="ui-panelgrid-blank" layout="grid">
+						<h:panelGroup>
+						<p:outputLabel value="Code abonnement : " style="font-weight: bold;"/>
+						<p:outputLabel value="#{abonnementController.selectedDocumentDTO.codeDocument}" />
+						</h:panelGroup>
+						<h:panelGroup>
+						<p:outputLabel value="Code tiers : " style="font-weight: bold;"/>
+							<p:commandLink 	value="#{abonnementController.selectedDocumentDTO.codeTiers}"
+											style="font-weight: bold;" 
+											action="#{abonnementController.ouvertureTiersBean.detailTiers(abonnementController.ouvertureTiersBean.recupCodetiers(abonnementController.selectedDocumentDTO.codeTiers))}" update=":form:tabView"
+											oncomplete="activeTabCenter('#{abonnementController.ouvertureTiersBean.event.cssLgrTab}');">
+							</p:commandLink>						
+<!-- 						<p:outputLabel value="#{abonnementController.selectedDocumentDTO.codeTiers}"/> -->
+						</h:panelGroup>
+						<!-- <h:panelGroup>
+						<p:outputLabel value="Adresse facturation : " style="font-weight: bold;"/>
+
+						</h:panelGroup> -->
+						<h:panelGroup>
+						<p:outputLabel value="Fréquence : " style="font-weight: bold;"/>
+						<p:outputLabel value="#{abonnementController.selectedDocumentDTO.liblFrequence}"/>
+						</h:panelGroup>
+						
+<!-- 						<h:panelGroup> -->
+<!-- 						<p:outputLabel value="Libellé : "/> -->
+<!-- 						<p:outputLabel value="#{abonnementController.selectedDocumentDTO.libelleDocument}" /> -->
+<!-- 						</h:panelGroup> -->
+						<h:panelGroup>
+						<p:outputLabel value="Entreprise : " style="font-weight: bold;"/>
+						<p:outputLabel value="#{abonnementController.selectedDocumentDTO.nomEntreprise}"/>
+						<br />
+						<p:outputLabel value="#{abonnementController.selectedDocumentDTO.nomTiers} - #{abonnementController.selectedDocumentDTO.prenomTiers}"/>
+<!-- 						<hr/> -->
+<!-- 						<h:panelGroup> -->
+<!-- 						<p:outputLabel value="Coordonnées : " style="font-weight: bold;"/> -->
+<!-- 						<p:outputLabel value="#{abonnementController.selectedInfosTiers.adresseEmail} - #{abonnementController.selectedInfosTiers.numeroTelephone}"/> -->
+<!-- 						</h:panelGroup> -->
+						</h:panelGroup>
+<!-- 						<h:panelGroup> -->
+<!-- 						<p:outputLabel value="" style="font-weight:bold;"/> -->
+<!-- 						<p:outputLabel value="#{abonnementController.taAdresseFact.adresse1Adresse}" > -->
+<!-- 						</p:outputLabel> -->
+<!-- 						<br/> -->
+<!-- 						<p:outputLabel value="#{abonnementController.taAdresseFact.adresse2Adresse}" > -->
+<!-- 						</p:outputLabel> -->
+<!-- 						</h:panelGroup> -->
+
+						<h:panelGroup>
+						<p:outputLabel value="Date début abonnement : " style="font-weight: bold;"/>
+						<p:outputLabel value="#{abonnementController.selectedDocumentDTO.dateDebut}" >
+							<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+						</p:outputLabel>
+						</h:panelGroup>
+						<h:panelGroup>
+						<p:outputLabel value="Tèl : " style="font-weight: bold;"/>
+						<p:outputLabel value="#{abonnementController.taTiersDTO.numeroTelephone}"/>
+						</h:panelGroup>
+<!-- 						<h:panelGroup> -->
+<!-- 						<p:outputLabel value="" style="font-weight: bold;"/> -->
+<!-- 						<p:outputLabel value="#{abonnementController.taAdresseFact.adresse3Adresse}" > -->
+<!-- 						</p:outputLabel> -->
+<!-- 						</h:panelGroup> -->
+
+						<h:panelGroup>
+							<p:outputLabel value="Email : " style="font-weight: bold;"/>
+							<p:commandLink id="idCommandLinkAfficheEmail" update=":form:messages" actionListener="#{abonnementController.actDialogEmail}">
+	        						<h:outputText value="#{abonnementController.taTiersDTO.adresseEmail}" />
+	    						</p:commandLink>
+							</h:panelGroup>
+						
+						
+						<!-- <h:panelGroup>
+						<p:outputLabel value="Date échéance : " style="font-weight:bold;"/>
+						<p:outputLabel value="#{abonnementController.selectedDocumentDTO.dateDebut}" >
+							<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+						</p:outputLabel>
+						</h:panelGroup>
+						<h:panelGroup> -->
+						<h:panelGroup>
+							<p:outputLabel value="Date fin abonnement : " style="font-weight: bold;"/>
+							<p:outputLabel value="#{abonnementController.selectedDocumentDTO.dateFin}" >
+								<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+							</p:outputLabel>
+						</h:panelGroup>
+						<h:panelGroup>
+						<p:outputLabel value="Type de paiement : " style="font-weight: bold;"/>
+							<p:outputLabel value="#{abonnementController.selectedDocumentDTO.liblTPaiement }" >
+							</p:outputLabel>
+						</h:panelGroup>
+<!-- 						<h:panelGroup> -->
+<!-- 						<p:outputLabel value="Ville : " style="font-weight: bold;"/> -->
+<!-- 						<p:outputLabel value="#{abonnementController.taAdresseFact.codepostalAdresse} #{abonnementController.taAdresseFact.villeAdresse}" > -->
+<!-- 						</p:outputLabel> -->
+<!-- 						</h:panelGroup> -->
+																		
+ 						<h:panelGroup> 
+						<div class="card" style="background:#ebebeb;text-align:center;center;padding: 5px;margin-top: 15px;">
+						<p:outputLabel value="Net TTC" style="font-weight: bold;"/>
+						<p:separator style="color:#9a9a9a"/>
+ 						<p:outputLabel value="#{abonnementController.selectedDocumentDTO.netTtcCalc}"> 
+						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+						</p:outputLabel> 
+						</div>
+						</h:panelGroup>
+
+						
+						
+						<h:panelGroup>
+						<div class="card" style="background:#ebebeb;text-align:center;center;padding: 5px;margin-top: 15px;">
+<!-- 						<p:outputLabel value="Déjà réglé : " style="font-weight: bold;"/> -->
+<!-- 						<p:separator style="color:#9a9a9a"/> -->
+<!-- 						<p:outputLabel value="#{abonnementController.selectedDocumentDTO.regleDocument}"> -->
+<!-- 						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" /> -->
+<!-- 						</p:outputLabel> -->
+						</div>
+						</h:panelGroup>
+<!-- 						</h:panelGroup> -->
+<!--border-style: solid;border-width: thin;padding: 7px; -->
+						<h:panelGroup>
+						<div class="card" style="background: #ebf9cc;text-align: center;padding: 5px;margin-top: 15px;">
+<!-- 						<p:outputLabel value="Reste à régler" style="font-weight: bold;"/> -->
+<!-- 						<p:separator style="color:#9a9a9a"/> -->
+<!-- 						<p:outputLabel value="#{abonnementController.selectedDocumentDTO.resteAReglerComplet}" style="font-weight: bold;" > -->
+<!-- 						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" /> -->
+<!-- 						</p:outputLabel> -->
+<!-- 						<hr /> -->
+						</div>
+						</h:panelGroup>
+					</p:panelGrid>
+<!-- Début détail ligne synthèse					 -->
+					<p:dataTable id="iddataTableLigneAbonnementSynthese" 
+					var="ligne"
+					scrollable="true"
+					scrollHeight="250"					
+					widgetVar="widgetVarDataTableLigneAbonnementSynthese"
+					
+					value="#{abonnementController.valuesLigne}"
+					rowKey="#{ligne.dto.numLigneLDocument}"
+					styleClass="datatable mt10 myclassAbonnement">
+					
+					<p:column style="width:10%">
+						<f:facet name="header">
+							<h:outputText value="Code article" />
+						</f:facet>
+<!-- 								<h:outputText value="#{ligne.taArticle.codeArticle}"/> -->
+								<p:commandLink 	value="#{ligne.taArticle.codeArticle}"
+											action="#{abonnementController.ouvertureArticleBean.detailArticle(abonnementController.ouvertureArticleBean.recupCodeArticle(ligne.taArticle.codeArticle))}" update=":form:tabView"
+											oncomplete="activeTabCenter('#{abonnementController.ouvertureArticleBean.event.cssLgrTab}');">
+							</p:commandLink>	
+					</p:column >
+					
+					<p:column style="width:24%">
+						<f:facet name="header">
+							<h:outputText value="Libellé article" />
+						</f:facet>
+								<h:outputText value="#{ligne.taArticle.libellecArticle}" /> 
+					</p:column>
+					<p:column style="width:24%">
+						<f:facet name="header">
+							<h:outputText value="Libellé plan" />
+						</f:facet>
+								<h:outputText value="#{ligne.taStripePlan.nickname}" /> 
+					</p:column>
+
+					<p:column  style="width:8%" styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Qté 1" />
+						</f:facet>
+							<h:outputText value="#{ligne.dto.qteLDocument}" /> 
+					</p:column>
+
+					<p:column style="width:5%" styleClass="center">
+						<f:facet name="header">
+							<h:outputText value="U1" />
+						</f:facet>
+
+						<h:outputText value="#{ligne.dto.u1LDocument}" /> 
+					</p:column>
+
+					<p:column  style="width:8%" styleClass="right" rendered="false">
+						<f:facet name="header">
+							<h:outputText value="Qté 2" />
+						</f:facet>
+						<h:outputText value="#{ligne.dto.qte2LDocument}" /> 		
+					</p:column>
+
+					<p:column style="width:5%" styleClass="center" rendered="false">
+						<f:facet name="header">
+							<h:outputText value="U2" />
+						</f:facet>
+						<h:outputText value="#{ligne.dto.u2LDocument}" />
+					</p:column>
+					
+					<p:column style="width:8%" styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Prix unitaire" />
+						</f:facet>
+ 								<h:outputText value="#{ligne.dto.prixULDocument}"> 
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" /> 
+ 								</h:outputText> 
+					</p:column>
+					
+					<p:column style="width:5%" styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Remise %" />
+						</f:facet>
+							<h:outputText value="#{ligne.dto.remTxLDocument}" /> 
+					</p:column>
+					
+					<p:column style="width:20%" styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Montant HT" />
+						</f:facet>
+ 								<h:outputText value="#{ligne.dto.mtHtLDocument}" disabled="true"> 
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" /> 
+								</h:outputText> 
+					</p:column>
+					
+					<p:column style="width:5%" styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="TVA"/>
+						</f:facet>
+ 								<h:outputText value="#{ligne.dto.codeTvaLDocument}" disabled="true"> 
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" /> 
+								</h:outputText> 
+					</p:column>
+					
+					<p:column style="width:20%" styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Montant TTC" />
+						</f:facet>
+ 								<h:outputText value="#{ligne.dto.mtTtcLDocument}" disabled="true"> 
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText> 
+					</p:column>
+					<p:column style="width:25%" styleClass="center" rendered="true">
+						<f:facet name="header">
+							<h:outputText value="Compléments" />
+						</f:facet>
+							<h:outputText value="#{ligne.dto.complement1}" disabled="true"> 
+							</h:outputText> 
+							<br/>
+							<h:outputText value="#{ligne.dto.complement2}" disabled="true"> 
+							</h:outputText> 
+							<br/>
+							<h:outputText value="#{ligne.dto.complement3}" disabled="true"> 
+							</h:outputText> 
+					</p:column>
+					
+					<p:column style="width:5%" styleClass="right" rendered="false">
+						<f:facet name="header">
+							<h:outputText value="Remise globale" />
+						</f:facet>
+<!-- 								<h:outputText value="#{ligne.dto.txRemHtDocument}" disabled="true"/> -->
+					</p:column>
+					
+
+				</p:dataTable>
+<!-- Fin détail ligne synthèse					 -->
+					<p:panelGrid columns="1" id="idInfosCommentaireAbonnement" columnClasses="ui-grid-col-4" styleClass="ui-panelgrid-blank" layout="grid">
+						<h:panelGroup>
+						<p:outputLabel value="Commentaires" style="font-weight: bold;"/>
+						<br/>
+<!-- 						<p:outputLabel value="#{abonnementController.selectedDocumentDTO.commentaire}" /> -->
+						</h:panelGroup>
+					</p:panelGrid>
+				</p:panel>
+			</div>
+		</p:tab>
+		<p:tab id="idEnteteAbonnement" title="Entête de l'abonnement" >
+
+			<p:panel id="idPanelEnteteAbonnement" header="#{const_vue.titre_panel_entete}" toggleable="true"
+				widgetVar="panelEnteteAbonnement">
+				<f:facet name="actions">
+				<p:commandLink id="idLinkAideEnteteAbonnement"
+						styleClass="lien-aide-contextuelle">
+						<i class="fa fa-info-circle animated"></i>
+					</p:commandLink>
+
+					<p:overlayPanel for="idLinkAideEnteteAbonnement" hideEffect="fade"
+						dynamic="true" showCloseIcon="true"
+						styleClass="overlay-aide-contextuelle">
+						<ui:include src="/aide_contextuelle/document_entete_document.xhtml" />
+					</p:overlayPanel>
+        		</f:facet>
+				<h:panelGrid columns="2" cellpadding="10">
+
+					<p:outputLabel value="Code abonnement : " styleClass="labelchob" />
+					<p:panel styleClass="panel-aide-contextuelle">
+						<p:inputText id="idCodeAbonnement" styleClass=""
+							value="#{abonnementController.selectedDocumentDTO.codeDocument}"
+							validator="#{abonnementController.validateDocument}"
+							disabled="#{abonnementController.editableEnInsertionUniquement()}">
+							<f:attribute name="nomChamp" value="#{const.C_CODE_DOCUMENT}" />
+							<p:ajax event="blur" update="@this" />
+						</p:inputText>
+						<p:commandLink id="idLinkAideCodeAbonnement"
+							styleClass="lien-aide-contextuelle">
+							<i class="fa fa-info-circle animated swing"></i>
+						</p:commandLink>
+						<p:overlayPanel for="idLinkAideCodeAbonnement" hideEffect="fade"
+							dynamic="true" showCloseIcon="true"
+							styleClass="overlay-aide-contextuelle">
+							<ui:include src="/aide_contextuelle/document_code_document.xhtml" />
+						</p:overlayPanel>
+					</p:panel>
+
+					<p:outputLabel value="Code tiers : " styleClass="labelchob" />
+
+					<p:focus>
+
+						<p:panel styleClass="panel-aide-contextuelle">
+							<p:autoComplete value="#{abonnementController.taTiersDTO}"
+								id="idtiersAbonnement" converter="entityConverter"
+								completeMethod="#{abonnementController.tiersAutoCompleteDTOLight}"
+								required="true"
+								requiredMessage="#{msg_diag.alert_champs_obligatoir}"
+								disabled="#{abonnementController.editableEnInsertionUniquement()}" var="tiers"
+								itemLabel="#{tiers.codeTiers}" itemValue="#{tiers}"
+								forceSelection="true" dropdown="true" placeholder="Tiers">
+								<p:column>
+									<h:outputText value="#{tiers.codeTiers}" required="true"	requiredMessage="#{msg_diag.alert_champs_obligatoir}" />
+								</p:column>
+
+								<p:column>
+									<h:outputText value="#{tiers.nomTiers}" />
+								</p:column>
+
+								<p:column>
+									<h:outputText value="#{tiers.prenomTiers}" />
+								</p:column>
+
+								<p:column>
+									<h:outputText value="#{tiers.nomEntreprise}" />
+								</p:column>
+
+								<f:attribute name="nomChamp" value="#{const.C_CODE_TIERS}" />
+								<p:ajax event="itemSelect"
+									listener="#{abonnementController.autcompleteSelection}"
+									update="idNomTiersAbonnement,idLibellePieceAbonnement,@this,@widgetVar(panelAdresseFacturationAbonnement),@widgetVar(panelAdresseLivraisonAbonnement),
+								@widgetVar(panelConditionPaiementAbonnement),idPanelGroupInfosTiersEnteteAbonnement, @widgetVar(wvAutoCompleteMoyenPaiement)" />
+							</p:autoComplete>
+
+							<p:commandLink id="idLinkAideCodeTiersAbonnement"
+								styleClass="lien-aide-contextuelle">
+								<i class="fa fa-info-circle animated swing"></i>
+							</p:commandLink>
+
+							<p:overlayPanel for="idLinkAideCodeTiersAbonnement" hideEffect="fade"
+								dynamic="true" showCloseIcon="true"
+								styleClass="overlay-aide-contextuelle">
+								<ui:include src="/aide_contextuelle/document_code_tiers.xhtml" />
+							</p:overlayPanel>
+						</p:panel>
+
+					</p:focus>
+
+					<p:outputLabel value="Nom Tiers : " styleClass="labelchob" />
+					<p:panel styleClass="panel-aide-contextuelle">
+						<p:inputText
+							value="#{abonnementController.selectedDocumentDTO.nomTiers}"
+							id="idNomTiersAbonnement"
+							validator="#{abonnementController.validateDocument}"
+							disabled="#{abonnementController.editableEnInsertionUniquement()}">
+							<f:attribute name="nomChamp" value="#{const.C_NOM_TIERS}" />
+							<p:ajax event="blur" update="@this" />
+						</p:inputText>
+
+						<p:commandLink id="idLinkAideNomTiersAbonnement"
+							styleClass="lien-aide-contextuelle">
+							<i class="fa fa-info-circle animated swing"></i>
+						</p:commandLink>
+
+						<p:overlayPanel for="idLinkAideNomTiersAbonnement" hideEffect="fade"
+							dynamic="true" showCloseIcon="true"
+							styleClass="overlay-aide-contextuelle">
+							<ui:include src="/aide_contextuelle/document_nom_tiers.xhtml" />
+						</p:overlayPanel>
+					</p:panel>
+					
+					<p:outputLabel value="Moyen de paiement" styleClass="labelchob"/>
+			        <p:autoComplete  value="#{abonnementController.selectedTaStripeSourceSubscriptionDTO}" widgetVar="wvAutoCompleteMoyenPaiement"
+			        	completeMethod="#{abonnementController.taStripeSourceAutoCompleteLight}" dropdown="true"  required="true" requiredMessage="#{msg_diag.alert_champs_obligatoir}"
+                        var="p" itemLabel="#{p.liblStripeTSource} - #{p.idExterne}" itemValue="#{p}" converter="entityConverter" forceSelection="true"
+                        disabled="#{!abonnementController.modeEcran.dataSetEnModif()}">
+                        
+                        <p:column>
+						 	<h:outputText value="#{p.idExterne}" />
+					     </p:column>
+
+                        <p:column>
+							<p:outputLabel value="#{p.taCompteBanqueDTO.country} **** #{p.taCompteBanqueDTO.last4}" rendered="#{p.taCompteBanqueDTO!=null and p.taCompteBanqueDTO.last4 != null}"/>
+							<p:outputLabel value="#{p.taCarteBancaireDTO.type} • **** #{p.taCarteBancaireDTO.last4} • #{p.taCarteBancaireDTO.moisExpiration}/#{p.taCarteBancaireDTO.anneeExpiration}" rendered="#{p.taCarteBancaireDTO!=null and p.taCarteBancaireDTO.last4 != null}"/>
+							<p:outputLabel value="#{p.liblStripeTSource} " rendered="#{!p.automatique}"/>
+<!-- 							<p:outputLabel value="#{p.idExterne}" rendered="#{p.idExterne eq 'Chèque' or p.idExterne eq 'Virement'}"/> -->
+						</p:column>
+						
+						<p:column>
+							<p:outputLabel value="X" rendered="#{abonnementController.taStripeCustomer.taSourceDefault !=null and p.idExterne eq abonnementController.taStripeCustomer.taSourceDefault.idExterne}" />
+						</p:column>
+						
+
+
+						<f:attribute name="nomChamp" value="MOYEN_PAIEMENT" />
+						<p:ajax event="itemSelect" listener="#{abonnementController.autcompleteSelection}" update="@this, @widgetVar(wvAutoCompleteMoyenPaiement)" />
+                   	</p:autoComplete>
+                   	
+                   	<p:outputLabel value="Fréquence : *" />
+                   <!-- 	disabled="#{!abonnementController.modeEcran.dataSetEnModif()}" -->
+					<p:selectOneMenu value="#{abonnementController.selectedTaFrequenceDTO}" widgetVar="wvSelectOneMenuTaFrequencePlanAbonnement" converter="entityConverter" style="width:125px" disabled="#{abonnementController.editableEnInsertionUniquement()}">
+			            <f:selectItems value="#{abonnementController.listeFrequenceDTO}" itemLabel="#{frequence.liblFrequence}" var="frequence" itemValue="#{frequence}"/>
+			            <p:ajax event="itemSelect" update="@this, @widgetVar(wvAutoCompleteMoyenPaiement), idPanelGroupDateFin" listener="#{abonnementController.calculeDateFinAbo}" process="@this"/>
+			        </p:selectOneMenu>
+                   	
+                   	
+                   	
+                   	
+					
+					<p:outputLabel value="Date de début prévu : " styleClass="labelchob"/>
+					<p:calendar value="#{abonnementController.selectedDocumentDTO.dateDebut}" pattern="#{msg.date_pattern}" mask="true" locale="fr" navigator="true"
+						showOn="button" timeZone="#{msg.time_zone}" disabled="#{abonnementController.editableEnInsertionUniquement()}">
+						 <!-- 	disabled="#{!abonnementController.modeEcran.dataSetEnModif()}" -->
+
+						<f:attribute name="nomChamp" value="#{const.C_DATE_LIV_DOCUMENT}" />
+						<p:ajax event="dateSelect" update="@this,idPanelGroupDateFin" listener="#{abonnementController.calculeDateFinAbo}" process="@this" />
+						<p:ajax event="change" update="@this,idPanelGroupDateFin" listener="#{abonnementController.calculeDateFinAbo}" process="@this"/>
+					</p:calendar>
+					
+					<!-- <p:outputLabel value="Date de fin prévu : " />
+					<p:calendar value="#{abonnementController.selectedDocumentDTO.dateFin}" pattern="#{msg.date_pattern}" mask="true" locale="fr" navigator="true"
+						showOn="button" timeZone="#{msg.time_zone}" disabled="#{!abonnementController.modeEcran.dataSetEnModif()}">
+
+						<f:attribute name="nomChamp" value="#{const.C_DATE_LIV_DOCUMENT}" />
+						<p:ajax event="dateSelect" update="@this" />
+						<p:ajax event="change" update="@this" />
+					</p:calendar> -->
+					<p:outputLabel value="Fin dans  (optionnel) :   " />
+					<h:panelGroup id="idPanelGroupDateFin">
+						<p:spinner min="0" decimalPlaces="0" style="margin-right : 20px;" value="#{abonnementController.nbFrequence}" disabled="#{abonnementController.editable()}">
+							<p:ajax update="@this,idPanelGroupDateFin" listener="#{abonnementController.calculeDateFinAbo}" process="@this" />
+						</p:spinner>
+						 <p:outputLabel  value="#{abonnementController.selectedTaFrequenceDTO.liblFrequence}(s)" style="margin-right : 20px; font-weight: bold;"></p:outputLabel>
+						 <h:outputText value="soit le " rendered="#{abonnementController.nbFrequence > 0}"/>
+						  <h:outputText value="soit pas de date de fin " rendered="#{abonnementController.nbFrequence == 0}"/>
+						 <p:outputLabel value="#{abonnementController.selectedDocumentDTO.dateFin}" rendered="#{abonnementController.nbFrequence > 0}" style="font-weight: bold;" >
+							<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+						</p:outputLabel>
+						<h:outputText value=" à 23h59 " rendered="#{abonnementController.nbFrequence > 0}"/>
+					</h:panelGroup>
+					
+					<p:panel styleClass="panel-aide-contextuelle">
+					<p:outputLabel value="Libellé : " />
+					<p:commandLink id="idLinkAideLibelleAbonnement"
+						styleClass="lien-aide-contextuelle">
+						<i class="fa fa-info-circle animated"></i>
+					</p:commandLink>
+
+					<p:overlayPanel for="idLinkAideLibelleAbonnement" hideEffect="fade"
+						dynamic="true" showCloseIcon="true"
+						styleClass="overlay-aide-contextuelle">
+						<ui:include src="/aide_contextuelle/document_libelle_document.xhtml" />
+					</p:overlayPanel>
+					</p:panel>
+					<p:inputText
+						 id="idLibellePieceAbonnement" value="#{abonnementController.selectedDocumentDTO.libelleDocument}"
+						validator="#{abonnementController.validateDocument}" style="width:300%"
+						disabled="#{abonnementController.editable()}">
+						<f:attribute name="nomChamp" value="#{const.C_LIBELLE_DOCUMENT}" />
+						<p:ajax event="blur" update="@this" />
+					</p:inputText>
+					
+					<p:outputLabel value="OU -- Nombre d'échéance prévu" disabled="true"/>
+					<p:spinner min="0" decimalPlaces="0" disabled="true"/>
+					
+					<p:outputLabel value="Période d'essai (nb jour)" disabled="true"/>
+					<p:spinner min="0" decimalPlaces="0" disabled="true"/>
+					
+					Type paiement pour compte compta <br/>à utiliser dans la génération <br/>du règlement pour CB ou PREL)"
+
+<!-- 					<p:outputLabel value="Date début abonnement : " styleClass="labelchob"/> -->
+<!-- 					<p:panel styleClass="panel-aide-contextuelle"> -->
+<!-- 					<p:calendar -->
+<!-- 						value="#{abonnementController.selectedDocumentDTO.dateDebut}" widgetVar="wvdate" -->
+<!-- 						pattern="dd/MM/yyyy" mask="true" locale="fr" navigator="true" -->
+<!-- 						showOn="button" timeZone="#{msg.time_zone}"  -->
+
+<!-- 						disabled="#{abonnementController.editable()}"> -->
+
+<!-- 						<f:attribute name="nomChamp" value="#{const.C_DATE_DOCUMENT}" /> -->
+<!-- 						<p:ajax event="dateSelect" listener="#{abonnementController.controleDate}" update="@this" /> -->
+<!-- 						<p:ajax event="change" listener="#{abonnementController.controleDate}"  update="@this" /> -->
+						
+<!-- 					</p:calendar> -->
+
+<!-- 					<p:commandLink id="idLinkAideDateAbonnement" -->
+<!-- 						styleClass="lien-aide-contextuelle"> -->
+<!-- 						<i class="fa fa-info-circle animated swing"></i> -->
+<!-- 					</p:commandLink> -->
+
+<!-- 					<p:overlayPanel for="idLinkAideDateAbonnement" hideEffect="fade" -->
+<!-- 						dynamic="true" showCloseIcon="true" -->
+<!-- 						styleClass="overlay-aide-contextuelle"> -->
+<!-- 						<ui:include src="/aide_contextuelle/document_date_document.xhtml" /> -->
+<!-- 					</p:overlayPanel> -->
+<!-- 					</p:panel> -->
+
+
+					
+<!-- 					<p:outputLabel value="Saisie TTC : " /> -->
+<!-- 					<p:panel styleClass="panel-aide-contextuelle"> -->
+<!-- 					<p:selectBooleanCheckbox -->
+<!-- 						value="#{abonnementController.selectedDocumentDTO.ttc}" id="idTTCAbonnement"  -->
+<!-- 						disabled="#{abonnementController.disableTtc() or abonnementController.disableTtcSiDocSansTVA()}"> -->
+<!-- 						<f:attribute name="nomChamp" value="#{const.C_TTC}" /> -->
+<!-- 						<p:ajax event="change" update="@this" /> -->
+<!-- 					</p:selectBooleanCheckbox> -->
+<!-- 					<p:commandLink id="idLinkAideSaisieTtcAbonnement" -->
+<!-- 						styleClass="lien-aide-contextuelle"> -->
+<!-- 						<i class="fa fa-info-circle animated"></i> -->
+<!-- 					</p:commandLink> -->
+
+<!-- 					<p:overlayPanel for="idLinkAideSaisieTtcAbonnement" hideEffect="fade" -->
+<!-- 						dynamic="true" showCloseIcon="true" -->
+<!-- 						styleClass="overlay-aide-contextuelle"> -->
+<!-- 						<ui:include src="/aide_contextuelle/document_saisiettc_document.xhtml" /> -->
+<!-- 					</p:overlayPanel> -->
+<!-- 					</p:panel> -->
+					
+<!-- 					<p:outputLabel value="Valable jusqu'au : " /> -->
+<!-- 					<p:panel styleClass="panel-aide-contextuelle"> -->
+<!-- 					<p:calendar -->
+<!-- 						value="#{abonnementController.selectedDocumentDTO.dateDebut}" id="idDateEchAbonnement" -->
+<!-- 						pattern="dd/MM/yyyy" mask="true" locale="fr" navigator="true"  showOn="button" timeZone="#{msg.time_zone}"  -->
+<!-- 						disabled="#{abonnementController.editable()}"> -->
+						
+<!-- 						<f:attribute name="nomChamp" value="#{const.C_DATE_ECH_DOCUMENT}" /> -->
+<!-- 						<p:ajax event="dateSelect" listener="#{abonnementController.controleDate}" update="@this" /> -->
+<!-- 						<p:ajax event="change" listener="#{abonnementController.controleDate}"  update="@this" /> -->
+<!-- 					</p:calendar> -->
+<!-- 					<p:commandLink id="idLinkAideDateEcheanceAbonnement" -->
+<!-- 						styleClass="lien-aide-contextuelle"> -->
+<!-- 						<i class="fa fa-info-circle animated"></i> -->
+<!-- 					</p:commandLink> -->
+
+<!-- 					<p:overlayPanel for="idLinkAideDateEcheanceAbonnement" hideEffect="fade" -->
+<!-- 						dynamic="true" showCloseIcon="true" -->
+<!-- 						styleClass="overlay-aide-contextuelle"> -->
+<!-- 						<ui:include src="/aide_contextuelle/document_date_validite_document.xhtml" /> -->
+<!-- 					</p:overlayPanel> -->
+<!-- 					</p:panel> -->
+			        
+<!-- 			        <p:outputLabel value="Localisation TVA : " /> -->
+<!-- 					<p:panel styleClass="panel-aide-contextuelle"> -->
+<!-- 						<p:autoComplete value="#{abonnementController.taTTvaDoc}" id="idLocalisationTvaDocAbonnement" -->
+<!-- 							converter="entityConverter" disabled="#{abonnementController.editable() or abonnementController.disableTtc()}" -->
+<!-- 							completeMethod="#{abonnementController.typeTvaDocAutoComplete}" -->
+<!-- 							var="tp" itemLabel="#{tp.codeTTvaDoc}" itemValue="#{tp}" -->
+<!-- 							forceSelection="true" dropdown="true" -->
+<!-- 							placeholder="Localisation TVA" > -->
+<!-- 							<p:column> -->
+<!-- 								<h:outputText value="#{tp.codeTTvaDoc}" /> -->
+<!-- 							</p:column> -->
+<!-- 							<p:column> -->
+<!-- 								<h:outputText value="#{tp.libelleTTvaDoc}" /> -->
+<!-- 							</p:column> -->
+<!-- 							<f:attribute name="nomChamp" value="#{const.C_CODE_T_TVA_DOC}" /> -->
+<!-- 							<p:ajax event="itemSelect" listener="#{abonnementController.autcompleteSelection}" update="idTTCAbonnement"/> -->
+<!-- 						</p:autoComplete> -->
+
+<!-- 					<p:commandLink id="idLinkAideLocalidationTvaAbonnement" -->
+<!-- 						styleClass="lien-aide-contextuelle"> -->
+<!-- 						<i class="fa fa-info-circle animated"></i> -->
+<!-- 					</p:commandLink> -->
+
+<!-- 					<p:overlayPanel for="idLinkAideLocalidationTvaAbonnement" hideEffect="fade" -->
+<!-- 						dynamic="true" showCloseIcon="true" -->
+<!-- 						styleClass="overlay-aide-contextuelle"> -->
+<!-- 						<ui:include src="/aide_contextuelle/document_localisationtva_document.xhtml" /> -->
+<!-- 					</p:overlayPanel> -->
+<!-- 					</p:panel> -->
+<!-- 					<p:outputLabel value="Observation : " /> -->
+<!-- 					<p:inputTextarea -->
+<!-- 						value="#{abonnementController.selectedDocumentDTO.commentaire}" -->
+<!-- 						validator="#{abonnementController.validateDocument}" style="width:300%" -->
+<!-- 						disabled="#{abonnementController.editable()}"> -->
+<!-- 						<f:attribute name="nomChamp" value="#{const.C_COMMENTAIRE}" /> -->
+<!-- 						<p:ajax event="blur" update="@this" /> -->
+<!-- 					</p:inputTextarea> -->
+
+
+				
+					<!-- Invisible, relier au meme champ que la checkbox du dernier step du wizard, reprise de cette valeur dans le 1er step car le oncomplete du actEnregistrer se declanche apres le retour au 1er, la valeur doit donc etre disponible ici pour le javascript -->
+<!-- 					<p:selectBooleanCheckbox value="#{abonnementController.impressionDirect}" styleClass="invisible" disabled="#{abonnementController.editable()}" widgetVar="wvImpressionDirectAbonnement"/> -->
+
+				</h:panelGrid>
+				
+<!-- 				<p:panel id="idAdresseFacturationAbonnement" header="#{const_vue.titre_panel_adresse_facturation}" toggleable="true" widgetVar="panelAdresseFacturationAbonnement" collapsed="false"> -->
+
+<!-- 				<f:facet name="actions"> -->
+<!-- 				<p:commandLink id="idLinkAideAdresseFactAbonnement" -->
+<!-- 						styleClass="lien-aide-contextuelle"> -->
+<!-- 						<i class="fa fa-info-circle animated"></i> -->
+<!-- 					</p:commandLink> -->
+
+<!-- 					<p:overlayPanel for="idLinkAideAdresseFactAbonnement" hideEffect="fade" -->
+<!-- 						dynamic="true" showCloseIcon="true" -->
+<!-- 						styleClass="overlay-aide-contextuelle"> -->
+<!-- 						<ui:include src="/aide_contextuelle/document_adresse_fact_document.xhtml" /> -->
+<!-- 					</p:overlayPanel> -->
+<!--         		</f:facet> -->
+<!--         		<p:commandButton id="idLinkAideAdresseFactDocument" value="Aide" title="Aide" process="@this" -->
+<!-- 					styleClass="icon-aidecontextuelle icon" > -->
+<!-- 				</p:commandButton> -->
+
+<!-- 			<p:overlayPanel for="idLinkAideAdresseFactDocument" hideEffect="fade" dynamic="true" showCloseIcon="true" styleClass="overlay-aide-contextuelle overlay-aide-contextuelle-center"> -->
+<!-- 				<ui:include src="/aide_contextuelle/gencodextended_general.xhtml" /> -->
+<!-- 			</p:overlayPanel> -->
+		
+<!-- 					<h:panelGrid columns="2" cellpadding="10" id="idPanelAdresseFacAbonnement"> -->
+						
+<!-- 						<p:outputLabel value="Adresse 1 : " /> -->
+<!-- 						<p:panel styleClass="panel-autocomplete panel-aide-contextuelle"> -->
+<!-- 							<p:inputText value="#{abonnementController.selectedAdresseFact.adresse1Adresse}" disabled="#{abonnementController.editable()}"> -->
+<!-- 								<p:ajax event="blur" update="@this" /> -->
+<!-- 							</p:inputText> -->
+<!-- 								<p:commandButton value="Rafraîchir" -->
+<!-- 									styleClass="icon-refresh btn" -->
+<!-- 									disabled="#{abonnementController.editable()}" -->
+<!-- 									actionListener="#{abonnementController.actReinitAdrFact}" -->
+<!-- 									process="@this" -->
+<!-- 									update="idPanelAdresseFacAbonnement,idMenuBoutonAbonnement" /> -->
+<!-- 								<p:commandLink id="idLinkAideRafraichirAdr1Abonnement" -->
+<!-- 									styleClass="lien-aide-contextuelle"> -->
+<!-- 									<i class="fa fa-info-circle animated"></i> -->
+<!-- 								</p:commandLink> -->
+
+<!-- 								<p:overlayPanel for="idLinkAideRafraichirAdr1Abonnement" -->
+<!-- 									hideEffect="fade" dynamic="true" showCloseIcon="true" -->
+<!-- 									styleClass="overlay-aide-contextuelle"> -->
+<!-- 									<ui:include -->
+<!-- 										src="/aide_contextuelle/document_rafraichir_adresse_document.xhtml" /> -->
+<!-- 								</p:overlayPanel> -->
+<!-- 						</p:panel> -->
+
+<!-- 						<p:outputLabel value="Adresse 2 : " /> -->
+<!-- 						<p:inputText value="#{abonnementController.selectedAdresseFact.adresse2Adresse}" disabled="#{abonnementController.editable()}"> -->
+<!-- 						<p:ajax event="blur" update="@this" /> -->
+<!-- 						</p:inputText> -->
+<!-- 						<p:outputLabel value="Adresse 3 : " /> -->
+<!-- 						<p:inputText value="#{abonnementController.selectedAdresseFact.adresse3Adresse}" disabled="#{abonnementController.editable()}"> -->
+<!-- 						<p:ajax event="blur" update="@this" /> -->
+<!-- 						</p:inputText> -->
+<!-- 						<p:outputLabel value="Code postal : " /> -->
+<!-- 						<p:inputText value="#{abonnementController.selectedAdresseFact.codepostalAdresse}" disabled="#{abonnementController.editable()}"> -->
+<!-- 						<p:ajax event="blur" update="@this" /> -->
+<!-- 						</p:inputText> -->
+<!-- 						<p:outputLabel value="Ville : " /> -->
+<!-- 						<p:inputText value="#{abonnementController.selectedAdresseFact.villeAdresse}" disabled="#{abonnementController.editable()}"> -->
+<!-- 						<p:ajax event="blur" update="@this" /> -->
+<!-- 						</p:inputText> -->
+<!-- 						<p:outputLabel value="Pays : " /> -->
+<!-- 						<p:inputText value="#{abonnementController.selectedAdresseFact.paysAdresse}" disabled="#{abonnementController.editable()}"> -->
+<!-- 						<p:ajax event="blur" update="@this" /> -->
+<!-- 						</p:inputText> -->
+<!-- 					</h:panelGrid> -->
+<!-- 				</p:panel> -->
+				
+<!-- 				<p:panel id="idAdresseLivraisonAbonnement" header="Adresse de livraison" toggleable="true" widgetVar="panelAdresseLivraisonAbonnement" collapsed="true"> -->
+<!-- 				<f:facet name="actions"> -->
+<!-- 				<p:commandLink id="idLinkAideAdresseLivraisonAbonnement" -->
+<!-- 						styleClass="lien-aide-contextuelle"> -->
+<!-- 						<i class="fa fa-info-circle animated"></i> -->
+<!-- 					</p:commandLink> -->
+
+<!-- 					<p:overlayPanel for="idLinkAideAdresseLivraisonAbonnement" hideEffect="fade" -->
+<!-- 						dynamic="true" showCloseIcon="true" -->
+<!-- 						styleClass="overlay-aide-contextuelle"> -->
+<!-- 						<ui:include src="/aide_contextuelle/document_adresse_livraison_document.xhtml" /> -->
+<!-- 					</p:overlayPanel> -->
+<!--         		</f:facet> -->
+
+<!-- 					<h:panelGrid columns="2" cellpadding="10" id="idPanelAdresseLivAbonnement"> -->
+<!-- 						<p:outputLabel value="Adresse 1 : " /> -->
+<!-- 						<p:panel styleClass="panel-autocomplete panel-aide-contextuelle"> -->
+<!-- 							<p:inputText value="#{abonnementController.selectedAdresseLiv.adresse1AdresseLiv}" disabled="#{abonnementController.editable()}"> -->
+<!-- 								<p:ajax event="blur" update="@this" /> -->
+<!-- 							</p:inputText> -->
+<!-- 							<p:commandButton value="Raffraîchir" styleClass="icon-refresh btn" disabled="#{abonnementController.editable()}" -->
+<!-- 								actionListener="#{abonnementController.actReinitAdrLiv}" process="@this" update="idPanelAdresseLivAbonnement,idMenuBoutonAbonnement" />						 -->
+<!-- 						<p:commandLink id="idLinkAideRafraichirAdr2Abonnement" -->
+<!-- 									styleClass="lien-aide-contextuelle"> -->
+<!-- 									<i class="fa fa-info-circle animated"></i> -->
+<!-- 								</p:commandLink> -->
+
+<!-- 								<p:overlayPanel for="idLinkAideRafraichirAdr2Abonnement" -->
+<!-- 									hideEffect="fade" dynamic="true" showCloseIcon="true" -->
+<!-- 									styleClass="overlay-aide-contextuelle"> -->
+<!-- 									<ui:include -->
+<!-- 										src="/aide_contextuelle/document_rafraichir_adresse_document.xhtml" /> -->
+<!-- 								</p:overlayPanel> -->
+<!-- 						</p:panel> -->
+<!-- 						<p:outputLabel value="Adresse 2 : " /> -->
+<!-- 						<p:inputText value="#{abonnementController.selectedAdresseLiv.adresse2AdresseLiv}" disabled="#{abonnementController.editable()}"> -->
+<!-- 						<p:ajax event="blur" update="@this" /> -->
+<!-- 						</p:inputText> -->
+<!-- 						<p:outputLabel value="Adresse 3 : " /> -->
+<!-- 						<p:inputText value="#{abonnementController.selectedAdresseLiv.adresse3AdresseLiv}" disabled="#{abonnementController.editable()}"> -->
+<!-- 						<p:ajax event="blur" update="@this" /> -->
+<!-- 						</p:inputText> -->
+<!-- 						<p:outputLabel value="Code postal : " /> -->
+<!-- 						<p:inputText value="#{abonnementController.selectedAdresseLiv.codepostalAdresseLiv}" disabled="#{abonnementController.editable()}"> -->
+<!-- 						<p:ajax event="blur" update="@this" /> -->
+<!-- 						</p:inputText> -->
+<!-- 						<p:outputLabel value="Ville : " /> -->
+<!-- 						<p:inputText value="#{abonnementController.selectedAdresseLiv.villeAdresseLiv}" disabled="#{abonnementController.editable()}"> -->
+<!-- 						<p:ajax event="blur" update="@this" /> -->
+<!-- 						</p:inputText> -->
+<!-- 						<p:outputLabel value="Pays : " /> -->
+<!-- 						<p:inputText value="#{abonnementController.selectedAdresseLiv.paysAdresseLiv}" disabled="#{abonnementController.editable()}"> -->
+<!-- 						<p:ajax event="blur" update="@this" /> -->
+<!-- 						</p:inputText> -->
+<!-- 					</h:panelGrid> -->
+
+<!-- 				</p:panel> -->
+				
+<!-- 				<p:panel id="idConditionPaiementAbonnement" header="Condition de durée de validité" toggleable="true" widgetVar="panelConditionPaiementAbonnement" collapsed="true"> -->
+<!-- 				<f:facet name="actions"> -->
+<!-- 				<p:commandLink id="idLinkAideConditionPaiementAbonnement" -->
+<!-- 						styleClass="lien-aide-contextuelle"> -->
+<!-- 						<i class="fa fa-info-circle animated"></i> -->
+<!-- 					</p:commandLink> -->
+
+<!-- 					<p:overlayPanel for="idLinkAideConditionPaiementAbonnement" hideEffect="fade" -->
+<!-- 						dynamic="true" showCloseIcon="true" -->
+<!-- 						styleClass="overlay-aide-contextuelle"> -->
+<!-- 						<ui:include src="/aide_contextuelle/devis_condition_duree_validite_devis.xhtml" /> -->
+<!-- 					</p:overlayPanel> -->
+<!--         		</f:facet> -->
+<!--         		<h:panelGrid columns="2" cellpadding="10" id="idPanelConditionPaiementAbonnement" > -->
+					
+<!-- 						<p:outputLabel value="Code échéance : " /> -->
+<!-- 						<h:panelGrid columns="3" cellpadding="10" > -->
+<!-- 								<p:autoComplete value="#{abonnementController.taCPaiementDoc}" converter="entityConverter" id="idCodeCPaiementAbonnement" -->
+<!-- 								completeMethod="#{abonnementController.typeCPaiementAutoComplete}" var="tp" itemLabel="#{tp.codeCPaiement}" -->
+<!-- 								itemValue="#{tp}" forceSelection="true" dropdown="true" disabled="#{abonnementController.editable()}" -->
+<!-- 								placeholder="Condition d'échéance" style="width:100%"> -->
+<!-- 								<p:column> -->
+<!-- 									<h:outputText value="#{tp.codeCPaiement}" /> -->
+<!-- 								</p:column> -->
+<!-- 								<p:column> -->
+<!-- 									<h:outputText value="#{tp.libCPaiement}" /> -->
+<!-- 								</p:column> -->
+<!-- 								<f:attribute name="nomChamp" value="#{const.C_CODE_C_PAIEMENT}" /> -->
+<!-- 								<p:ajax event="itemSelect" listener="#{abonnementController.autcompleteSelection}"  -->
+<!-- 								update="idLibelleCPaimentAbonnement,idReportAbonnement,idFinMoisAbonnement,idDateEchAbonnement,idMenuBoutonAbonnement" />	 -->
+<!-- 							</p:autoComplete> -->
+						
+
+<!-- 							<p:commandButton value="Appliquer" styleClass="icon-refresh btn" disabled="#{abonnementController.editable()}" -->
+<!-- 								actionListener="#{abonnementController.actAppliquerCPaiement}" process="@this" update="idCodeCPaiementAbonnement,idLibelleCPaimentAbonnement,idReportAbonnement,idFinMoisAbonnement,idDateEchAbonnement,idMenuBoutonAbonnement" />						 -->
+<!-- 						</h:panelGrid> -->
+
+<!-- 						<p:outputLabel value="Libellé : " /> -->
+<!-- 						<p:inputText value="#{abonnementController.selectedCPaiement.libCPaiement}" disabled="#{abonnementController.editable()}" id="idLibelleCPaimentAbonnement"> -->
+<!-- 						<p:ajax event="blur" update="@this" /> -->
+<!-- 						</p:inputText> -->
+<!-- 						<p:outputLabel value="Report : " /> -->
+<!-- 						<p:inputText value="#{abonnementController.selectedCPaiement.reportCPaiement}" disabled="#{abonnementController.editable()}" id="idReportAbonnement"> -->
+<!-- 						<p:ajax event="blur" update="@this" /> -->
+<!-- 						</p:inputText> -->
+<!-- 						<p:outputLabel value="Fin de mois : " /> -->
+<!-- 						<p:inputText value="#{abonnementController.selectedCPaiement.finMoisCPaiement}" disabled="#{abonnementController.editable()}" id="idFinMoisAbonnement"> -->
+<!-- 						<p:ajax event="blur" update="@this" /> -->
+<!-- 						</p:inputText> -->
+<!-- 					</h:panelGrid> -->
+<!-- 				</p:panel> -->
+
+			</p:panel>
+
+			<!-- 			</div> -->
+			<!-- 		</div> -->
+			
+		</p:tab>
+
+		<!-- 		<div class="ui-grid-row"> -->
+		<!-- 			<div class="ui-grid-col-12"> -->
+
+		<p:tab id="idLignesAbonnement" title="Ligne">
+		<p:panel widgetVar="wvLigneAbonnementMesssages">
+			<p:messages id="idLigneAbonnementMessages" showizard-devisetail="true" closable="true" autoUpdate="false"/>
+		</p:panel>
+			<p:panel id="idPanelLignesAbonnement" header="Lignes" toggleable="true" widgetVar="panelLignesAbonnement">
+
+<!-- 				<div class="text-center"> -->
+<!--  					<p:commandButton value="Annuler" styleClass="btn-cancel btn"  -->
+<!--  						actionListener="#{abonnementController.actAnnulerLigne}"  -->
+<!--  						process="@this"  -->
+<!--  						update="@widgetVar(panelLignesAbonnement),:form:messages,@form"  -->
+<!-- 						disabled="#{abonnementController.etatBoutonLigne('annuler')}" />  -->
+						
+<!--  					<p:commandButton value="Enregistrer" styleClass="btn-save btn"  -->
+<!--  						actionListener="#{abonnementController.actEnregistrerLigne}"  -->
+<!--  						update="@widgetVar(panelLignesAbonnement),:form:messages,@form"  -->
+<!-- 						disabled="#{abonnementController.etatBoutonLigne('enregistrer')}" />  -->
+
+<!-- 					<p:commandButton value="Insérer" styleClass="btn-insert btn" -->
+<!-- 						actionListener="#{abonnementController.actInsererLigne}" -->
+<!-- 						process="@this" -->
+<!-- 						update="@this,@widgetVar(widgetVarDataTableLigneAbonnement),:form:messages" -->
+<!-- 						disabled="#{!abonnementController.modeEcran.dataSetEnModif() or abonnementController.etatBoutonLigne('inserer')}" -->
+<!-- 						oncomplete="jQuery('.myclassAbonnement .ui-datatable-data tr').last().find('span.ui-icon-pencil').each(function(){jQuery(this).click()});" /> -->
+
+<!--  					<p:commandButton value="Modifier" styleClass="btn-update btn"  -->
+<!-- 						actionListener="#{abonnementController.actModifierLigne}"  -->
+<!--  						process="@this"  -->
+<!--  						update="@widgetVar(panelLignesAbonnement),:form:messages,@form"  -->
+<!--  						disabled="#{!abonnementController.modeEcran.dataSetEnModif() or abonnementController.etatBoutonLigne('modifier')}" />  -->
+
+<!-- 					<p:commandButton value="Supprimer" styleClass="btn-delete btn" widgetVar="widgetVarBtnSupprimer" -->
+<!-- 						actionListener="#{abonnementController.actSupprimerLigne}" -->
+<!-- 						process="@this" -->
+<!-- 						update="@widgetVar(panelLignesAbonnement),:form:messages,@form" -->
+<!-- 						disabled="#{!abonnementController.modeEcran.dataSetEnModif() or abonnementController.etatBoutonLigne('supprimer')}" /> -->
+<!-- 				</div> -->
+				
+				<p:menubar styleClass="menu-onglet">
+				
+					<p:menuitem title="Insérer" styleClass="icon-insert icon"
+						actionListener="#{abonnementController.actInsererLigne}"
+						process="@this"
+						update="@this,@widgetVar(widgetVarDataTableLigneAbonnement),:form:messages"
+						disabled="#{!abonnementController.modeEcran.dataSetEnModif() or abonnementController.etatBoutonLigne('inserer')}"
+						oncomplete="editionDerniereLigne('myclassAbonnement');" />
+						
+					<p:menuitem title="Supprimer" styleClass="icon-delete icon" widgetVar="widgetVarBtnSupprimer"
+						actionListener="#{abonnementController.actSupprimerLigne}"
+						process="@this"
+						update="@widgetVar(panelLignesAbonnement),:form:messages,@widgetVar(#{abonnementController.wvEcran})"
+						disabled="#{!abonnementController.modeEcran.dataSetEnModif() or abonnementController.etatBoutonLigne('supprimer')}" />
+				</p:menubar>
+				
+				
+								
+<!-- 				rowKey="#{ligne.dto.numLigneLDocument}" -->
+				<p:dataTable id="iddataTableLigneAbonnement" 
+					var="ligne"
+					widgetVar="widgetVarDataTableLigneAbonnement"
+					value="#{abonnementController.valuesLigne}"
+					rowKey="#{ligne.dto.numLigneLDocument}"
+					selection="#{abonnementController.selectedLigneJSF}"
+					selectionMode="single" 
+					editable="true" 
+					dblClickSelect="true"
+					styleClass="datatable mt10 myclassAbonnement" 
+					resizableColumns="true" 
+					draggableRows="true"
+					emptyMessage="#{msg.message_datatable_vide}">
+        			
+<!-- 					paginator="true" -->
+<!-- 					rows="#{msg.modele_datatable_ligne_par_page_debut}" -->
+<!-- 					paginatorTemplate="#{msg.modele_datatable_paginator_sans_exporter}" -->
+<!-- 					rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}" -->
+<!-- 					emptyMessage="#{msg.message_datatable_vide}" -->
+<!-- 					currentPageReportTemplate="#{msg.modele_datatable_page_courante}"> -->
+<!-- onsuccess="increment();"  -->
+
+					<p:ajax event="rowReorder" listener="#{abonnementController.onRowReorder}" update="@this,@widgetVar(wvMenuBoutonAbonnement)" />
+					<p:ajax event="rowEdit" listener="#{abonnementController.onRowEdit}" update="@widgetVar(wvLigneAbonnementMesssages),@parent:idTotauxLAbonnement" 
+					oncomplete="if(!handleCompleteValidationError(xhr, status, args)) {increment();};autreLigneModifiable('myclassAbonnement');" />
+					<p:ajax event="rowEditCancel" listener="#{abonnementController.onRowCancel}" update="@widgetVar(widgetVarBtnSupprimer)" oncomplete="autreLigneModifiable('myclassAbonnement');"/>
+					<p:ajax event="rowSelect" listener="#{abonnementController.onRowSelectLigne}" />
+					<p:ajax event="rowEditInit" listener="#{abonnementController.onRowEditInit}" oncomplete="autreLigneNonModifiable('myclassAbonnement');"/>
+					
+					<p:column style="width:16px" >
+						<p:rowEditor rendered="#{abonnementController.etatBoutonLigne('rowEditor')}" styleClass="row-editor-debut"/>
+					</p:column>
+					
+					<p:column style="width:5px">
+						<f:facet name="header">
+							<h:outputText value="N°" />
+						</f:facet>
+<!-- 						<h:outputText value="#{ligne.dto.numLigneLDocument}" /> -->
+					</p:column>
+					
+					<p:column style="width:6%">
+						<f:facet name="header">
+							<h:outputText value="Code article" />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{ligne.taArticleDTO.codeArticle}"/>
+							</f:facet>
+							<f:facet name="input">
+							<p:focus>
+							<!-- <p:autoComplete  value="#{ligne.taStripeProductDTO}" 
+				        	completeMethod="#{abonnementController.taStripeProductAutoCompleteLight}"
+	                        var="mp" itemLabel="#{mp.codeArticle}" itemValue="#{mp}" converter="entityConverter" forceSelection="true" 
+	                        scrollHeight="250" dropdown="true" placeholder="produit"> -->
+	                        <p:autoComplete  value="#{ligne.taArticleDTO}" 
+				        	completeMethod="#{abonnementController.taArticleAutoCompleteLight}"
+	                        var="mp" itemLabel="#{mp.codeArticle}" itemValue="#{mp}" converter="entityConverter" forceSelection="true" 
+	                        scrollHeight="250" dropdown="true" placeholder="article">
+	                        
+	                        
+							
+							 <p:column>
+							 	<h:outputText value="#{mp.codeArticle}" />
+						     </p:column>
+						     
+						     <p:column>
+								<h:outputText value="#{mp.libellecArticle}" />
+							</p:column>
+	
+<!-- 							<p:ajax event="itemSelect" listener="#{tiersController.autcompleteSelection}" update="@this" /> -->
+							<f:attribute name="nomChamp" value="#{const.C_CODE_ARTICLE}" />
+									<p:ajax event="clear" listener="#{abonnementController.onClearArticle}" 
+									update="@parent:idlibLAbonnement,idQte1LAbonnement,idpuLAbonnement,idhtLAbonnement,idttcLAbonnement,idtvaLAbonnement,idIntervallePlan,idPlan, idU1LAbonnement"/>
+									<p:ajax event="itemSelect" listener="#{abonnementController.autcompleteSelection}" 
+									update="@parent:idlibLAbonnement,idQte1LAbonnement,idpuLAbonnement,idhtLAbonnement,idttcLAbonnement,idtvaLAbonnement,idIntervallePlan,idPlan, idU1LAbonnement"/>
+									
+<!-- 									<p:ajax event="clear" listener="#{abonnementController.onClearArticle}"  -->
+<!-- 									update="@parent:idlibLAbonnement,idQte1LAbonnement,idu1LAbonnement,idu2LAbonnement,idpuLAbonnement,idhtLAbonnement,idttcLAbonnement,idtvaLAbonnement"/> -->
+<!-- 									<p:ajax event="itemSelect" listener="#{abonnementController.autcompleteSelection}"  -->
+<!-- 									update="@parent:idlibLAbonnement,idQte1LAbonnement,idu1LAbonnement,idu2LAbonnement,idpuLAbonnement,idhtLAbonnement,idttcLAbonnement,idtvaLAbonnement"/> -->
+	                   	</p:autoComplete>
+
+							</p:focus>
+							</f:facet>
+						</p:cellEditor >
+					</p:column >
+					
+					<p:column  style="width:14%" styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="Plan" />
+						</f:facet>
+						<p:cellEditor >
+							<f:facet name="output">
+								<h:outputText value="#{ligne.taStripePlan.nickname}"/>	
+							</f:facet>
+							<f:facet name="input" >
+								<p:autoComplete  value="#{ligne.taStripePlanDTO}" id="idPlan"
+						        	completeMethod="#{abonnementController.taStripePlanAutoCompleteLight}"
+			                        var="mp" itemLabel="#{mp.nickname}" itemValue="#{mp}" converter="entityConverter" forceSelection="true"
+			                         scrollHeight="250" dropdown="true" placeholder="plan" required="true"
+								requiredMessage="#{msg_diag.alert_champs_obligatoir}" > 
+			                        
+			                        <p:column>
+										<h:outputText value="#{mp.nickname}" />
+									</p:column>
+									
+									 <p:column>
+									 	<h:outputText value="#{mp.amount}" />
+								     </p:column>
+								     
+								     <p:column>
+									 	<h:outputText value="#{mp.interval}" />
+								     </p:column>
+			
+									<f:attribute name="nomChamp" value="#{const.C_NICKNAME_PLAN}" />
+									<p:ajax event="itemSelect" listener="#{abonnementController.autcompleteSelection}" 
+									update="@parent:idlibLAbonnement,idQte1LAbonnement,idpuLAbonnement,idhtLAbonnement,idttcLAbonnement,idtvaLAbonnement,idIntervallePlan" />
+			                   	</p:autoComplete>
+							</f:facet >
+						</p:cellEditor>
+
+						
+	                   	
+					</p:column>
+					
+
+					<p:column style="width:28%" styleClass="center">
+						<f:facet name="header">
+							<h:outputText value="Libellé plan/article" />
+						</f:facet>
+						 <p:cellEditor> 
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.libLDocument}" id="idListeSaisieLibelleAbonnement" disabled="true"/>
+								<p:tooltip id="toolTipListeSaisieLibelleAbonnement" value="#{ligne.dto.libLDocument}" shared="true" for="idListeSaisieLibelleAbonnement" showEffect="clip" position="top"/>
+							</f:facet>
+							<f:facet name="input">
+								<!-- <p:inputText value="#{ligne.dto.libLDocument}" id="idlibLAbonnement"
+								validator="#{abonnementController.validateLignesDocument}" disabled="true">
+								<f:attribute name="nomChamp" value="#{const.C_LIB_L_DOCUMENT}" />
+								<p:ajax event="blur" />
+								</p:inputText> -->
+								<h:outputText value="#{ligne.dto.libLDocument}" id="idlibLAbonnement"
+								validator="#{abonnementController.validateLignesDocument}" disabled="true">
+								</h:outputText>
+							</f:facet> 
+						 </p:cellEditor> 
+					</p:column>
+					
+					<p:column style="width:18%">
+						<f:facet name="header">
+							<h:outputText value="Compléments" />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.complement1}" /><br/>
+								<h:outputText value="#{ligne.dto.complement2}" /><br/>
+								<h:outputText value="#{ligne.dto.complement3}" />
+<!-- 								<p:tooltip  value="#{ligne.dto.libLDocument}" shared="true"  showEffect="clip" position="top"/> -->
+							</f:facet>
+							<f:facet name="input">
+								<p:inputText value="#{ligne.dto.complement1}" 
+								validator="#{abonnementController.validateLignesDocument}">
+								<f:attribute name="nomChamp" value="#{const.C_LIB_L_DOCUMENT}" />
+								<p:ajax event="blur" />
+								</p:inputText><br/>
+								<p:inputText value="#{ligne.dto.complement2}" 
+								validator="#{abonnementController.validateLignesDocument}">
+								<f:attribute name="nomChamp" value="#{const.C_LIB_L_DOCUMENT}" />
+								<p:ajax event="blur" />
+								</p:inputText><br/>
+								<p:inputText value="#{ligne.dto.complement3}" 
+								validator="#{abonnementController.validateLignesDocument}">
+								<f:attribute name="nomChamp" value="#{const.C_LIB_L_DOCUMENT}" />
+								<p:ajax event="blur" />
+								</p:inputText>
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+					
+					<p:column  style="width:4%" styleClass="center">
+						<f:facet name="header">
+							<h:outputText value="Intervalle" />
+						</f:facet>
+						 <p:cellEditor > 
+							<f:facet name="output">
+								<h:outputText value="#{ligne.taStripePlanDTO.interval}" disabled="true"/>	
+							</f:facet>
+							<f:facet name="input" >
+								<!-- <p:selectOneMenu value="#{ligne.taStripePlanDTO.interval}" style="width:125px" id="idIntervallePlan" disabled="true">
+						            <f:selectItem itemLabel="Choisir" itemValue="" />
+						            <f:selectItem itemLabel="jour" itemValue="day" />
+						            <f:selectItem itemLabel="semaine" itemValue="week" />
+						            <f:selectItem itemLabel="mois" itemValue="month" />
+						            <f:selectItem itemLabel="année" itemValue="year" />
+						            <p:ajax event="blur"/>
+						        </p:selectOneMenu> -->
+						        <h:outputText value="#{ligne.taStripePlanDTO.interval}" style="width:125px" id="idIntervallePlan" disabled="true">
+						        </h:outputText>
+<!-- 				//day, week, month or year -->
+							</f:facet >
+						 </p:cellEditor> 
+					</p:column>
+					
+
+					<p:column  style="width:4%" styleClass="center">
+						<f:facet name="header">
+							<h:outputText value="Qté" />
+						</f:facet>
+						<p:cellEditor >
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.qteLDocument}"/>	
+							</f:facet>
+							<f:facet name="input" >
+								<p:inputText id="idQte1LAbonnement"  value="#{ligne.dto.qteLDocument}"  style="width:100%" 
+										validator="#{abonnementController.validateLignesDocument}">
+									<f:attribute name="nomChamp" value="#{const.C_QTE_L_DOCUMENT}" /> 
+									<p:ajax event="blur" update="idhtLAbonnement,idttcLAbonnement,idtvaLAbonnement"/>
+								</p:inputText>
+							</f:facet >
+						</p:cellEditor>
+					</p:column>
+
+<!-- 					<p:column style="width:5%"  styleClass="center"> -->
+<!-- 						<f:facet name="header"> -->
+<!-- 							<h:outputText value="Unité 1" /> -->
+<!-- 						</f:facet> -->
+<!-- 						<p:cellEditor > -->
+<!-- 							<f:facet name="output"> -->
+<!-- 								<h:outputText value="#{ligne.taUnite1.codeUnite}" /> -->
+<!-- 							</f:facet> -->
+<!-- 							<f:facet name="input"> -->
+<!-- 								<p:autoComplete value="#{ligne.taUnite1}" -->
+<!-- 									completeMethod="#{abonnementController.uniteAutoComplete}" -->
+<!-- 									var="unit" itemLabel="#{unit.codeUnite}" itemValue="#{unit}" -->
+<!-- 									forceSelection="true" dropdown="true" -->
+<!-- 									placeholder="U1" style="width:100%" id="idu1LAbonnement"> -->
+<!-- 									<p:column> -->
+<!-- 										<h:outputText value="#{unit.codeUnite}" /> -->
+<!-- 									</p:column> -->
+									
+<!-- 									<f:attribute name="nomChamp" value="#{const.C_U1_L_DOCUMENT}" /> -->
+<!-- 									<p:ajax event="itemSelect" listener="#{abonnementController.autcompleteSelection}" update="@parent:idqte2LAbonnement"/> -->
+<!-- 								</p:autoComplete> -->
+<!-- 							</f:facet> -->
+<!-- 						</p:cellEditor> -->
+<!-- 					</p:column> -->
+
+<!-- 					<p:column  style="width:4%" styleClass="right"> -->
+<!-- 						<f:facet name="header"> -->
+<!-- 							<h:outputText value="Qté 2" /> -->
+<!-- 						</f:facet> -->
+<!-- 							<h:outputText value="#{ligne.dto.qte2LDocument}" id="idqte2LAbonnement"/> -->
+<!-- 					</p:column> -->
+
+<!-- 					<p:column style="width:5%" styleClass="center"> -->
+<!-- 						<f:facet name="header"> -->
+<!-- 							<h:outputText value="Unité 2" /> -->
+<!-- 						</f:facet> -->
+<!-- 						<p:cellEditor> -->
+<!-- 							<f:facet name="output"> -->
+<!-- 								<h:outputText value="#{ligne.taUnite2.codeUnite}"/> -->
+<!-- 							</f:facet> -->
+<!-- 							<f:facet name="input"> -->
+<!-- 								<p:autoComplete value="#{ligne.taUnite2}" -->
+<!-- 									completeMethod="#{abonnementController.uniteAutoComplete}" -->
+<!-- 									var="unit" itemLabel="#{unit.codeUnite}" itemValue="#{unit}" -->
+<!-- 									forceSelection="true" dropdown="true" -->
+<!-- 									placeholder="U2" style="width:100%" id="idu2LAbonnement"> -->
+<!-- 									<p:column> -->
+<!-- 										<h:outputText value="#{unit.codeUnite}" /> -->
+<!-- 									</p:column> -->
+									
+<!-- 									<f:attribute name="nomChamp" value="#{const.C_U2_L_DOCUMENT}" /> -->
+<!-- 									<p:ajax event="itemSelect" listener="#{abonnementController.autcompleteSelection}" update="@parent:idqte2LAbonnement"/> -->
+<!-- 								</p:autoComplete> -->
+<!-- 							</f:facet> -->
+<!-- 						</p:cellEditor> -->
+<!-- 					</p:column> -->
+					
+					<p:column style="width:15%" styleClass="center">
+						<f:facet name="header">
+							<h:outputText value="Prix unitaire HT plan" />
+						</f:facet>
+						 <p:cellEditor> 
+							<f:facet name="output">
+								<h:outputText value="#{ligne.taStripePlanDTO.amount}" title="#{ligne.taStripePlanDTO.amount}" disabled="true">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</f:facet>
+							<f:facet name="input">
+								<!-- <p:inputText value="#{ligne.dto.prixULDocument}" id="idpuLAbonnement" style="width:100%" disabled="true"
+										validator="#{abonnementController.validateLignesDocument}">
+									<f:attribute name="nomChamp" value="#{const.C_PRIX_U_L_DOCUMENT}" /> 
+									<p:ajax event="blur" update="@this,idhtLAbonnement,idttcLAbonnement,idtvaLAbonnement"/>
+								</p:inputText> -->	
+								<h:outputText value="#{ligne.taStripePlanDTO.amount}" id="idpuLAbonnement" style="width:100%" disabled="true">
+								</h:outputText>	
+							</f:facet>
+						 </p:cellEditor> 
+					</p:column>
+				  <p:column style="width:5%" styleClass="center" >
+						<f:facet name="header">
+							<h:outputText value="U1" />
+						</f:facet>
+
+						<h:outputText value="#{ligne.dto.u1LDocument}" id="idU1LAbonnement"/> 
+					</p:column> 
+					
+ 					<p:column style="width:5%" styleClass="right"> 
+						<f:facet name="header">
+							<h:outputText value="Remise %" />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.remTxLDocument}" />
+							</f:facet>
+							<f:facet name="input">
+								<p:inputText value="#{ligne.dto.remTxLDocument}" style="width:100%" 
+										validator="#{abonnementController.validateLignesDocument}">
+									<f:attribute name="nomChamp" value="#{const.C_REM_TX_L_DOCUMENT}" /> 
+									<p:ajax event="blur" update="@this,idhtLAbonnement,idttcLAbonnement,idtvaLAbonnement"/>
+								</p:inputText>	
+							</f:facet>
+						</p:cellEditor>
+					</p:column> 
+					
+					<p:column style="width:10%" styleClass="right" rendered="true">
+						<f:facet name="header">
+							<h:outputText value="Montant HT" />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.mtHtLDocument}" disabled="true">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</f:facet>
+							<f:facet name="input">
+								<h:outputText value="#{ligne.dto.mtHtLDocument}" id="idhtLAbonnement" style="width:100%" disabled="true"/>
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+					
+					<p:column style="width:10%" styleClass="right" rendered="false">
+						<f:facet name="header">
+							<h:outputText value="Montant TTC (Article)" />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.mtTtcLDocument}" disabled="true">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</f:facet>
+							<f:facet name="input">
+								<h:outputText value="#{ligne.dto.mtTtcLDocument}" id="idttcLAbonnement" style="width:100%"  disabled="true"/>
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+					
+					<p:column style="width:3%" styleClass="center" rendered="false">
+						<f:facet name="header">
+							<h:outputText value="TVA  (Article)" />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.codeTvaLDocument}" disabled="true">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</f:facet>
+							<f:facet name="input">
+								<h:outputText value="#{ligne.dto.codeTvaLDocument}" disabled="true" id="idtvaLAbonnement" style="width:100%"/>
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+
+					
+					<p:column style="width:16px">
+						<f:facet name="header">
+							<h:outputText value="" />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<p:commandButton title="Supprimer" styleClass="icon-delete icon icon-grille" widgetVar="widgetVarBtnSupprimer"
+									action="#{abonnementController.actSupprimerLigne}"
+									process="@this"
+									disabled="#{!abonnementController.modeEcran.dataSetEnModif() or abonnementController.etatBoutonLigne('supprimer')}"
+									update="@widgetVar(panelLignesAbonnement)">
+<!-- 									<f:attribute name="idLigne" value="#{ligne.dto.id}" /> -->
+									<f:setPropertyActionListener target="#{abonnementController.selectedLigneJSF}" value="#{ligne}" />
+								</p:commandButton>
+							</f:facet>
+							<f:facet name="input">
+								<h:outputText value="" />
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+
+					<p:column style="width:26px">
+						<p:rowEditor rendered="#{abonnementController.etatBoutonLigne('rowEditor')}" styleClass="row-editor-fin"/>
+					</p:column>
+
+				</p:dataTable>
+				<p:panel widgetVar="wvPanelTotauxNetAbonnement">
+					<p:panelGrid columns="3" styleClass="totaux-lignes-document" id="idTotauxLAbonnement" >
+						<f:facet name="header">
+								<h:outputText value="Totaux" />
+						</f:facet>
+						
+						<h:outputText value="NET HT" />
+					 
+						<h:outputText value="NET TVA" />
+				
+						<h:outputText value="NET TTC" />
+						<h:outputText value="#{abonnementController.selectedDocumentDTO.netHtCalc}" id="idNetHTAbonnement">
+							<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+						</h:outputText>
+						<h:outputText value="#{abonnementController.selectedDocumentDTO.netTvaCalc}" id="idNetTvaAbonnement">
+							<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+						</h:outputText>
+						<h:outputText value="#{abonnementController.selectedDocumentDTO.netTtcCalc}" id="idNetTTCAbonnement">
+							<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+						</h:outputText>
+						
+					</p:panelGrid>
+				</p:panel>
+				
+				
+
+
+			</p:panel>
+		</p:tab>
+		
+		
+		
+		<p:tab id="idTotauxFormAbonnement" title="Totaux">
+
+			<p:panel id="idPaneltotauxFormAbonnement" header="Totaux" toggleable="true" widgetVar="panelTotauxFormAbonnement">
+				
+				<div class="ui-grid ui-grid-responsive">
+			<div class="ui-grid-row">
+				<div class="ui-grid-col-6">
+				<h:panelGrid columns="2" cellpadding="10">
+<!-- 						<p:outputLabel value="Remise globale %" /> -->
+<!-- 						<p:inputText value="#{abonnementController.selectedDocumentDTO.txRemHtDocument}" disabled="#{abonnementController.editable()}" -->
+<!-- 							validator="#{abonnementController.validateDocument}"> -->
+<!-- 							<f:attribute name="nomChamp" value="#{const.C_TX_REM_HT_DOCUMENT}" /> -->
+<!-- 							<p:ajax event="blur" update="@this,@widgetVar(panelTotauxFormAbonnement)"/> -->
+<!-- 						</p:inputText> -->
+						
+						<p:outputLabel value="Montant HT" />
+						<p:inputText value="#{abonnementController.selectedDocumentDTO.netHtCalc}" disabled="true">
+							<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+						</p:inputText>
+						
+						<p:outputLabel value="Montant TVA" />
+						<p:inputText value="#{abonnementController.selectedDocumentDTO.netTvaCalc}" disabled="true">
+							<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+						</p:inputText>
+						
+						<p:outputLabel value="Escompte accordé %"  rendered="false"/>
+<!-- 						<p:inputText value="#{abonnementController.selectedDocumentDTO.txRemTtcDocument}" disabled="#{abonnementController.editable()} " rendered="false" -->
+<!-- 							validator="#{abonnementController.validateDocument}"> -->
+<!-- 							<f:attribute name="nomChamp" value="#{const.C_TX_REM_TTC_DOCUMENT}" /> -->
+<!-- 							<p:ajax event="blur" update="@this,@widgetVar(panelTotauxFormAbonnement)"/> -->
+<!-- 						</p:inputText> -->
+						
+						<p:outputLabel value="Montant TTC" />
+						<p:inputText value="#{abonnementController.selectedDocumentDTO.netTtcCalc}" disabled="true">
+							<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+						</p:inputText>
+						
+						<p:outputLabel value="Accompte" rendered="false"/>
+<!-- 						<p:inputText value="#{abonnementController.selectedDocumentDTO.compte}" disabled="true" rendered="false"/> -->
+						
+<!-- 						<p:outputLabel value="Imprimer" /> -->
+<!-- 						<p:selectBooleanCheckbox value="#{abonnementController.impressionDirect}"  disabled="#{abonnementController.editable()}"> -->
+<!-- 							<p:ajax event="change" update="@this" /> -->
+<!-- 						</p:selectBooleanCheckbox> -->
+						
+						<p:outputLabel value="Type paiement" rendered="false"/>
+<!-- 						<p:autoComplete value="#{abonnementController.taTPaiement}" rendered="false" -->
+<!-- 						converter="entityConverter" -->
+<!-- 							completeMethod="#{abonnementController.typePaiementAutoComplete}" -->
+<!-- 							var="tp" itemLabel="#{tp.codeTPaiement}" itemValue="#{tp}" -->
+<!-- 							forceSelection="true" dropdown="true" disabled="#{abonnementController.editable()}" -->
+<!-- 							placeholder="Type de paiement" style="width:100%" id="idtypePaiementAbonnement"> -->
+<!-- 							<p:column> -->
+<!-- 								<h:outputText value="#{tp.codeTPaiement}" /> -->
+<!-- 							</p:column> -->
+<!-- 							<p:column> -->
+<!-- 								<h:outputText value="#{tp.libTPaiement}" /> -->
+<!-- 							</p:column> -->
+<!-- 							<f:attribute name="nomChamp" value="#{const.C_CODE_T_PAIEMENT}" /> -->
+<!-- 							<p:ajax event="itemSelect" listener="#{abonnementController.autcompleteSelection}" /> -->
+<!-- 						</p:autoComplete> -->
+						
+					</h:panelGrid>
+				</div>
+				
+				<div class="ui-grid-col-6">
+<!-- 				<p:dataTable value="#{abonnementController.masterEntity.lignesTVA}" var="ltva"> -->
+<!-- 					<f:facet name="header"> -->
+<!-- 							<h:outputText value="TVA" /> -->
+<!-- 					</f:facet> -->
+<!-- 					<p:column> -->
+<!-- 						<f:facet name="header"> -->
+<!-- 							<h:outputText value="Code TVA" /> -->
+<!-- 						</f:facet> -->
+<!-- 						<h:outputText value="#{ltva.codeTva}" /> -->
+<!-- 					</p:column> -->
+					
+<!-- 					<p:column> -->
+<!-- 						<f:facet name="header"> -->
+<!-- 							<h:outputText value="Libellé" /> -->
+<!-- 						</f:facet> -->
+<!-- 						<h:outputText value="#{ltva.libelle}" /> -->
+<!-- 					</p:column> -->
+					
+<!-- 					<p:column> -->
+<!-- 						<f:facet name="header"> -->
+<!-- 							<h:outputText value="Taux" /> -->
+<!-- 						</f:facet> -->
+<!-- 						<h:outputText value="#{ltva.tauxTva}"> -->
+<!-- 						</h:outputText> -->
+<!-- 					</p:column> -->
+					
+<!-- 					<p:column styleClass="right" > -->
+<!-- 						<f:facet name="header"> -->
+<!-- 							<h:outputText value="Montant" /> -->
+<!-- 						</f:facet> -->
+<!-- 						<h:outputText value="#{ltva.mtTva}">	 -->
+<!-- 							<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" /> -->
+<!-- 						</h:outputText> -->
+<!-- 					</p:column> -->
+<!-- 				</p:dataTable> -->
+				
+				</div>
+				</div>
+				</div>
+			</p:panel>
+			<p:panel>
+		<div class="ui-grid-row">
+			<div class="ui-grid-col-12">			
+<!-- 				<p:panel id="idPanelCommentaireAbonnement" header="Commentaire" toggleable="true" widgetVar="panelCommentaire">				 -->
+<!-- 						<p:inputTextarea value="#{abonnementController.selectedDocumentDTO.commentaire}"  disabled="#{abonnementController.editable()}" style="width:100%"> -->
+<!-- 							<f:attribute name="nomChamp" value="#{const.C_LIBL_COMMENTAIRE}" /> -->
+<!-- 							<p:ajax event="blur" update="@this"/> -->
+<!-- 						</p:inputTextarea>	 -->
+<!-- 				</p:panel> -->
+				
+			</div>
+		</div>
+</p:panel>
+		</p:tab>
+		
+		
+	</p:wizard>
+	
+	<p:panel id="idPanelWizardButtonAbonnement" styleClass="wizard-devis bullseye-btn-wizard-document">
+		<div class="ui-g">
+			<div class="ui-g wizard-devis btn-wizard-document-tous">
+				<div class="ui-g-4">
+					<h:panelGroup id="idBtnWizardButtonPrecedentAbonnement" styleClass="wizard-devis btn-wizard-document-left btn-wizard-float">
+						<p:commandButton value="#{const_vue.btn_precedent}" style="float: left;" 
+							onstart="PF('widgetVarLigneAbonnement').back();" rendered="#{abonnementController.btnPrecedentVisible}"/>
+					</h:panelGroup>
+				</div>
+				<div class="ui-g-4">
+				</div>
+				<div class="ui-g-4">
+					<h:panelGroup id="idBtnWizardButtonSuivantAbonnement" styleClass="wizard-devis btn-wizard-document-right">
+						<p:commandButton value="#{const_vue.btn_suivant}" style="float: right;" 
+							onstart="PF('widgetVarLigneAbonnement').next();" rendered="#{abonnementController.btnSuivantVisible}"/>
+					</h:panelGroup>
+				</div>
+			</div>
+		</div>
+	</p:panel>
+
+	<!-- 			</div> -->
+	<!-- 		</div> -->
+	<!-- 	</div> -->
+
+	<p:remoteCommand name="increment" binding="#{abonnementController.rc}"
+		actionListener="#{abonnementController.actAutoInsererLigne}"
+		process="@this" update="@widgetVar(panelLignesAbonnement)"
+		disabled="#{abonnementController.insertAuto}"
+		 />
+<!-- oncomplete="jQuery('.myclassAbonnement .ui-datatable-data tr').last().find('span.ui-icon-pencil').each(function(){jQuery(this).click()});" -->
+	
+	<!-- </f:validateBean> -->
+
+</ui:composition>

@@ -1,0 +1,46 @@
+https://stackoverflow.com/questions/18534998/where-can-i-get-pldbgapi-sql-in-order-to-install-the-debugger-for-postgresql
+==========================================================================================================================
+Il faut etre en "root" avant de commencer a executer les commandes, un simple "sudo" ne suffit pas
+
+> sudo su
+
+Les sources de postgres doivent être installé pour pouvoir compiler => paquet sur ubuntu : postgresql-server-dev-9.5
+==========================================================================================================================
+
+This is included with EnterpriseDB distributive. You can download it on pgFoundry. here is a link
+
+Also git repo is available.
+
+git clone git://git.postgresql.org/git/pldebugger.git
+cd pldebugger
+export USE_PGXS=1
+make
+make install
+
+Edit postgresql.conf
+
+nano /etc/postgresql/9.5/main/postgresql.conf
+
+add:
+
+shared_preload_libraries = 'plugin_debugger'
+
+Restart postgres
+
+/etc/init.d/postgresql restart
+
+connect to db and call:
+
+CREATE EXTENSION pldbgapi;
+
+===============================================================================================
+Pour Windows
+La dll est déjà dans le le répertoire "lib" de PostgreSQL dans Program Files
+
+Modifier le fichier "postgresql.conf" dans le répertoire "data" de postregres.
+shared_preload_libraries = '$libdir/plugin_debugger.dll'
+
+Relancer le service Windows pour PostgreSQL
+
+Créer l'extension sur la base de données :
+CREATE EXTENSION pldbgapi;

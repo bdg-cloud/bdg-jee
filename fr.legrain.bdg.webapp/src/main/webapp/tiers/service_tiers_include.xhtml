@@ -1,0 +1,101 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
+xmlns:f="http://java.sun.com/jsf/core" 
+xmlns:h="http://java.sun.com/jsf/html"
+xmlns:ui="http://java.sun.com/jsf/facelets" 
+xmlns:o="http://omnifaces.org/ui" 
+xmlns:p="http://primefaces.org/ui">
+
+
+
+	<p:panel widgetVar="serviceTiersForm#{variableNomWvIDUnique}">
+        
+		
+		<p:dataTable id="idDatatableLigneAboServiceTier"
+		widgetVar="wvDatatableLigneAboServiceTierServiceTier"
+			 value="#{serviceTiersController.listeLAbonnement}" var="p"
+			paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+			paginator="true"
+			rows="10"
+			rowKey="#{p.id}">
+			
+			<f:facet name="header">
+				<p:outputLabel value="Tous les services pour ce tiers"/>
+			</f:facet>
+			<f:facet name="{Exporters}">
+	            <h:commandLink>
+	                <p:graphicImage library="images" name="excel.png" width="24"/>
+	                <p:dataExporter type="xls" target="idDatatableLigneAboServiceTier" fileName="ligne_abonnement" />
+	            </h:commandLink>
+	            
+	            <h:commandLink>
+	                <p:graphicImage  library="images" name="csv.png"  width="24"/>
+	                <p:dataExporter type="csv" target="idDatatableLigneAboServiceTier" fileName="ligne_abonnement" options="#{separateurCsvController.csvOptions}" />
+	            </h:commandLink>
+	 
+	            <h:commandLink>
+	                <p:graphicImage  library="images" name="xml.png"  width="24"/>
+	                <p:dataExporter type="xml" target="idDatatableLigneAboServiceTier" fileName="ligne_abonnement" />
+	            </h:commandLink>
+			</f:facet>
+			<p:ajax event="rowSelectCheckbox" listener="#{serviceTiersController.onRowSelectLigneAboAll}" update="@widgetVar(panelActionGroupeeLigneAboAll)"></p:ajax>
+	        <p:ajax event="rowUnselectCheckbox" listener="#{serviceTiersController.onRowUnSelectLigneAboAll}" update="@widgetVar(panelActionGroupeeLigneAboAll)"></p:ajax>
+	        <p:ajax event="toggleSelect" listener="#{serviceTiersController.onToggleSelectLigneAboAll}" update="@widgetVar(panelActionGroupeeLigneAboAll)"></p:ajax>
+	         
+						
+		    <p:column selectionMode="multiple" style="width:16px;text-align:center" toggleable="false"  />
+		   
+			<p:column headerText="ID" styleClass="center" filterBy="#{p.id}" sortBy="#{p.id}">
+				<p:outputLabel value="#{p.id}" />
+			</p:column>
+			
+			<p:column headerText="Code abonnement" styleClass="center" sortBy="#{p.codeDocument}" filterBy="#{p.codeDocument}" filterMatchMode="contains">
+				<p:commandLink value="#{p.codeDocument}"
+							action="#{ouvertureDocumentBean.detailAbonnement(ouvertureDocumentBean.recupCodeDocument(p.codeDocument, ouvertureDocumentBean.getTypeDocumentAbonnement()))}" 
+							update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+						</p:commandLink>
+			</p:column>
+			
+			<p:column headerText="Code article" styleClass="center" sortBy="#{p.codeArticle}" filterBy="#{p.codeArticle}" filterMatchMode="contains">
+						<p:outputLabel value="#{p.codeArticle}" />
+			</p:column>
+			
+			
+			<p:column headerText="Libellé" styleClass="center" sortBy="#{p.liblArticle}" filterBy="#{p.liblArticle}" filterMatchMode="contains">
+				<p:outputLabel value="#{p.liblArticle}" />
+			</p:column>
+			
+			<p:column headerText="Début" styleClass="center" filterBy="#{abonnementController.customFormatDate(p.dateDebut)}" sortBy="#{p.dateDebut}">
+				<h:outputText value="#{p.dateDebut}">
+					<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+				</h:outputText>
+			</p:column>
+			
+			<p:column headerText="Fin" styleClass="center" filterBy="#{abonnementController.customFormatDate(p.dateFin)}" sortBy="#{p.dateFin}">
+				<h:outputText value="#{p.dateFin}">
+					<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+				</h:outputText>
+			</p:column>
+			
+			<!-- <p:column headerText="Montant HT" styleClass="center" filterBy="#{p.mtHtLDocument}" sortBy="#{p.mtHtLDocument}" filterMatchMode="contains">
+				<h:outputText value="#{p.mtHtLDocument}">
+					<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+				</h:outputText>
+			</p:column>
+			
+			<p:column headerText="Montant TTC" styleClass="center" filterBy="#{p.mtTtcLDocument}" sortBy="#{p.mtTtcLDocument}" filterMatchMode="contains">
+				<h:outputText value="#{p.mtTtcLDocument}">
+					<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+				</h:outputText>
+			</p:column> -->
+			
+			
+<!-- 			<p:column headerText="Etat" styleClass="center" sortBy="#{p.taREtat.taEtat.liblEtat}" filterBy="#{p.taREtat.taEtat.liblEtat}" filterMatchMode="contains">
+				<p:outputLabel value="#{p.taREtat.taEtat.liblEtat}" />
+			</p:column> -->
+			
+		</p:dataTable>
+
+	</p:panel>
+		
+		
+</ui:composition>

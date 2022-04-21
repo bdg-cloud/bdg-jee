@@ -1,0 +1,359 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
+xmlns:f="http://java.sun.com/jsf/core" 
+xmlns:h="http://java.sun.com/jsf/html"
+xmlns:ui="http://java.sun.com/jsf/facelets" 
+xmlns:o="http://omnifaces.org/ui" 
+xmlns:p="http://primefaces.org/ui">
+
+
+<!-- 	<f:metadata> -->
+<!-- 		<f:viewParam name="idTiers" value="#{banqueController.paramId}" /> -->
+<!-- 		<f:event type="preRenderView" listener="#{banqueController.refresh}" /> -->
+<!-- 	</f:metadata> -->
+
+	<p:panel id="banqueFormPrincipal" widgetVar="banqueForm#{variableNomWvIDUnique}">
+
+		<p:menubar styleClass="menu-onglet" widgetVar="wvMenuCompteBanqueTiers#{variableNomWvIDUnique}">
+			<p:menuitem title="Enregistrer les modifications en cours" styleClass="icon-save icon" actionListener="#{banqueController.actEnregistrer}"
+				process="@this" update="@widgetVar(panelListeCompteTiers#{variableNomWvIDUnique}),@widgetVar(wvMenuCompteBanqueTiers#{variableNomWvIDUnique}),@widgetVar(wvDetailCompteBanque#{variableNomWvIDUnique}),@widgetVar(wvBanqueDataTable#{variableNomWvIDUnique})" disabled="#{banqueController.etatBouton('enregistrer')}" />
+
+			<p:menuitem title="Ajouter un nouveau compte bancaire" styleClass="icon-insert icon" actionListener="#{banqueController.actInserer}"
+				process="@this" update="@widgetVar(panelListeCompteTiers#{variableNomWvIDUnique}),@widgetVar(wvMenuCompteBanqueTiers#{variableNomWvIDUnique}),@widgetVar(wvDetailCompteBanque#{variableNomWvIDUnique}),@widgetVar(wvBanqueDataTable#{variableNomWvIDUnique})" disabled="#{banqueController.etatBouton('inserer')}" />
+
+			<p:menuitem title="Modifier le compte courant" styleClass="icon-update icon" actionListener="#{banqueController.actModifier}" process="@this"
+				update="@widgetVar(panelListeCompteTiers#{variableNomWvIDUnique}),@widgetVar(wvMenuCompteBanqueTiers#{variableNomWvIDUnique}),@widgetVar(wvDetailCompteBanque#{variableNomWvIDUnique}),@widgetVar(wvBanqueDataTable#{variableNomWvIDUnique})" disabled="#{banqueController.etatBouton('modifier')}" />
+
+			<p:menuitem title="Annuler les modifications en cours" styleClass="icon-cancel icon" actionListener="#{banqueController.actAnnuler}"
+				process="@this" update="@widgetVar(panelListeCompteTiers#{variableNomWvIDUnique}),@widgetVar(wvMenuCompteBanqueTiers#{variableNomWvIDUnique}),@widgetVar(wvDetailCompteBanque#{variableNomWvIDUnique}),@widgetVar(wvBanqueDataTable#{variableNomWvIDUnique})" disabled="#{banqueController.etatBouton('annuler')}" />
+				
+<!-- 			<p:menuitem value="Créer le compte dans Stripe" actionListener="#{banqueController.actCreerCompteDansStripe}" -->
+<!-- 				process="@this" update="@widgetVar(panelListeCompteTiers#{variableNomWvIDUnique}),@widgetVar(wvMenuCompteBanqueTiers#{variableNomWvIDUnique}),@widgetVar(wvDetailCompteBanque#{variableNomWvIDUnique}),@widgetVar(wvBanqueDataTable#{variableNomWvIDUnique})"  -->
+<!-- 				disabled="#{banqueController.etatBouton('modifier') or banqueController.compteExisteDansStripe()}" -->
+<!-- 				rendered="#{auth.isDevLgr()}" /> -->
+
+			<p:menuitem title="Supprimer le compte courant" styleClass="icon icon-delete menuitem-poubelle-droite"
+				actionListener="#{banqueController.actSupprimer}" process="@this" update="@widgetVar(panelListeCompteTiers#{variableNomWvIDUnique}),@widgetVar(wvMenuCompteBanqueTiers#{variableNomWvIDUnique}),@widgetVar(wvDetailCompteBanque#{variableNomWvIDUnique}),@widgetVar(wvBanqueDataTable#{variableNomWvIDUnique})" 
+				disabled="#{banqueController.etatBouton('supprimer')}">
+				<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer ce compte bancaire ?" icon="ui-icon-alert" />
+			</p:menuitem>
+		</p:menubar>
+
+		<p:panel header="Liste des comptes bancaires du tiers" widgetVar="panelListeCompteTiers#{variableNomWvIDUnique}">
+			<p:dataTable id="idBanqueDataTable" widgetVar="wvBanqueDataTable#{variableNomWvIDUnique}" var="table" value="#{banqueController.values}" rowKey="#{table.id}" selectionMode="single" 
+				selection="#{banqueController.selectedTaCompteBanqueDTO}"
+				scrollable="true" scrollHeight="100"
+				 rows="#{msg.modele_datatable_ligne_par_page_debut}"
+				paginatorTemplate="#{msg.modele_datatable_paginator}" rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+				emptyMessage="#{msg.message_datatable_vide}" currentPageReportTemplate="#{msg.modele_datatable_page_courante}">
+
+				<p:ajax event="rowSelect" listener="#{banqueController.onRowSelect}" update="@widgetVar(wvDetailCompteBanque#{variableNomWvIDUnique}),@widgetVar(wvMenuCompteBanqueTiers#{variableNomWvIDUnique})" />
+
+				<f:facet name="{Exporters}">
+					<h:commandLink>
+						<p:graphicImage library="images" name="excel.png" width="24" />
+						<p:dataExporter type="xls" target="banqueDataTable" fileName="compte bancaire" />
+					</h:commandLink>
+
+					<h:commandLink>
+						<p:graphicImage library="images" name="pdf.png" width="24" />
+						<p:dataExporter type="pdf" target="banqueDataTable" fileName="compte bancaire" />
+					</h:commandLink>
+
+					<h:commandLink>
+						<p:graphicImage library="images" name="csv.png" width="24" />
+						<p:dataExporter type="csv" target="banqueDataTable" fileName="compte bancaire" />
+					</h:commandLink>
+
+					<h:commandLink>
+						<p:graphicImage library="images" name="xml.png" width="24" />
+						<p:dataExporter type="xml" target="banqueDataTable" fileName="compte bancaire" />
+					</h:commandLink>
+
+				</f:facet>
+
+				<f:facet name="header">
+					<h:outputText value="#{banqueController.values.size()} compte(s) bancaire(s)" />
+				</f:facet>
+
+				<p:column sortBy="#{table.nomBanque}" filterBy="#{table.nomBanque}" filterMatchMode="contains" styleClass="center">
+					<f:facet name="header">
+						<h:outputText value="Nom banque" />
+					</f:facet>
+					<h:outputText value="#{table.nomBanque}">
+					</h:outputText>
+				</p:column>
+
+				<p:column sortBy="#{table.codeBanque}" filterBy="#{table.codeBanque}" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="Code banque" />
+					</f:facet>
+					<h:outputText value="#{table.codeBanque}" />
+				</p:column>
+
+				<p:column sortBy="#{table.compte}" filterBy="#{table.compte}" filterMatchMode="contains" styleClass="center">
+					<f:facet name="header">
+						<h:outputText value="Compte" />
+					</f:facet>
+					<h:outputText value="#{table.compte}" />
+				</p:column>
+
+				<p:column sortBy="#{table.codeGuichet}" filterBy="#{table.codeGuichet}" filterMatchMode="contains" styleClass="center">
+					<f:facet name="header">
+						<h:outputText value="Guichet" />
+					</f:facet>
+					<h:outputText value="#{table.codeGuichet}" />
+				</p:column>
+
+				<p:column sortBy="#{table.cleRib}" filterBy="#{table.cleRib}" filterMatchMode="contains" styleClass="center">
+					<f:facet name="header">
+						<h:outputText value="Clé" />
+					</f:facet>
+					<h:outputText value="#{table.cleRib}" />
+				</p:column>
+
+
+				<p:column sortBy="#{table.iban}" filterBy="#{table.iban}" filterMatchMode="contains" styleClass="center">
+					<f:facet name="header">
+						<h:outputText value="IBAN" />
+					</f:facet>
+					<h:outputText value="#{table.iban}" />
+				</p:column>
+
+
+				<p:column sortBy="#{table.codeBIC}" filterBy="#{table.codeBIC}" filterMatchMode="contains" styleClass="center">
+					<f:facet name="header">
+						<h:outputText value="BIC/SWIFT" />
+					</f:facet>
+					<h:outputText value="#{table.codeBIC}" />
+				</p:column>
+
+
+				<p:column sortBy="#{table.titulaire}" filterBy="#{table.titulaire}" filterMatchMode="contains" styleClass="center">
+					<f:facet name="header">
+						<h:outputText value="Titulaire" />
+					</f:facet>
+					<h:outputText value="#{table.titulaire}" />
+				</p:column>
+
+
+				<p:column sortBy="#{table.codeTBanque}" filterBy="#{table.codeTBanque}" filterMatchMode="contains" styleClass="center">
+					<f:facet name="header">
+						<h:outputText value="Type Action" />
+					</f:facet>
+					<h:outputText value="#{table.codeTBanque}" />
+				</p:column>
+
+
+				<p:column sortBy="#{table.cptcomptable}" filterBy="#{table.cptcomptable}" filterMatchMode="contains" styleClass="center">
+					<f:facet name="header">
+						<h:outputText value="Compte comptable" />
+					</f:facet>
+					<h:outputText value="#{table.cptcomptable}" />
+				</p:column>
+			</p:dataTable>
+
+
+			<p:panel id="idDetailCompteBanque" header="Détail" widgetVar="wvDetailCompteBanque#{variableNomWvIDUnique}">
+				<div class="ui-grid ui-grid-responsive">
+					<div class="ui-grid-row">
+						<div class="ui-grid-col-6">
+							<p:panel id="idPanelDiversBanque" header="Infos Générales" toggleable="true" widgetVar="panelDiversBanque">
+								<h:panelGrid columns="2" cellpadding="10">
+									<p:outputLabel value="Titulaire du compte" />
+									<p:inputText value="#{banqueController.selectedTaCompteBanqueDTO.titulaire}" validator="#{banqueController.validateCompteBanque}"
+										disabled="#{banqueController.editable()}">
+										<f:attribute name="nomChamp" value="#{const.C_TITULAIRE_BANQUE}" />
+										<p:ajax event="blur" update="@this" />
+									</p:inputText>
+
+
+									<p:outputLabel value="Type de compte : " />
+									<p:autoComplete value="#{banqueController.taTBanqueDTO}" required="true"
+										completeMethod="#{banqueController.typeCompteBanqueAutoCompleteLight}" disabled="#{banqueController.editable()}" var="type"
+										itemLabel="#{type.codeTBanque}" itemValue="#{type}" forceSelection="true" dropdown="true" placeholder="Type de compte"
+										converter="entityConverter">
+										<p:column>
+											<h:outputText value="#{type.codeTBanque}" />
+										</p:column>
+										<p:column>
+											<h:outputText value="#{type.liblTBanque}" />
+										</p:column>
+										<p:column>
+											<f:facet name="header">
+												<p:commandButton value="Ajouter" title="Insérer" process="@this" update="@this"
+													actionListener="#{banqueController.actDialogTypeCompteBanque}" styleClass="btn-insert btn">
+													<p:ajax event="dialogReturn" listener="#{banqueController.handleReturnDialogTypeCompteBanque}" update="@parent:@parent" />
+												</p:commandButton>
+											</f:facet>
+											<h:outputText value="#{type.codeTBanque}" />
+										</p:column>
+
+										<f:attribute name="nomChamp" value="#{const.C_CODE_T_BANQUE}" />
+										<p:ajax event="itemSelect" listener="#{banqueController.autcompleteSelection}" update="@this" />
+									</p:autoComplete>
+
+
+									<p:outputLabel value="Compte comptable" />
+									<p:inputText value="#{banqueController.selectedTaCompteBanqueDTO.cptcomptable}" validator="#{banqueController.validateCompteBanque}"
+										disabled="#{banqueController.editable()}">
+										<f:attribute name="nomChamp" value="#{const.C_COMPTE_BANQUE}" />
+										<p:ajax event="blur" update="@this" />
+									</p:inputText>
+								</h:panelGrid>
+							</p:panel>
+						</div>
+					<div class="ui-grid-col-6">
+						<div class="ui-grid-row">
+
+							<div class="ui-grid-col-12">
+								<p:panel id="idPanelRibBanque" header="Divers" toggleable="true" widgetVar="panelRibBanque">
+									<h:panelGrid columns="2" cellpadding="10">
+										<p:outputLabel value="Code banque" />
+										<p:inputText value="#{banqueController.selectedTaCompteBanqueDTO.codeBanque}" validator="#{banqueController.validateCompteBanque}"
+											disabled="#{banqueController.editable()}">
+											<f:attribute name="nomChamp" value="#{const.C_CODE_BANQUE}" />
+											<p:ajax event="blur" update="@this" />
+										</p:inputText>
+
+
+										<p:outputLabel value="Guichet" />
+										<p:inputText value="#{banqueController.selectedTaCompteBanqueDTO.codeGuichet}" validator="#{banqueController.validateCompteBanque}"
+											disabled="#{banqueController.editable()}">
+											<f:attribute name="nomChamp" value="#{const.C_CODE_GUICHET_BANQUE}" />
+											<p:ajax event="blur" update="@this" />
+										</p:inputText>
+
+
+										<p:outputLabel value="N° compte" />
+										<p:inputText value="#{banqueController.selectedTaCompteBanqueDTO.compte}" validator="#{banqueController.validateCompteBanque}"
+											disabled="#{banqueController.editable()}">
+											<f:attribute name="nomChamp" value="#{const.C_COMPTE_BANQUE}" />
+											<p:ajax event="blur" update="@this" />
+										</p:inputText>
+
+
+										<p:outputLabel value="Clé RIB" />
+										<p:inputText value="#{banqueController.selectedTaCompteBanqueDTO.cleRib}" validator="#{banqueController.validateCompteBanque}"
+											disabled="#{banqueController.editable()}">
+											<f:attribute name="nomChamp" value="#{const.C_CLE_RIB_BANQUE}" />
+											<p:ajax event="blur" update="@this" />
+										</p:inputText>
+									</h:panelGrid>
+								</p:panel>
+							</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="ui-grid-row">
+
+						<div class="ui-grid-col-6">
+							<p:panel id="idPanelDomiciliationBanque" header="Domiciliation" toggleable="true" widgetVar="panelDomiciliationBanque">
+								<h:panelGrid columns="2" cellpadding="10">
+									<p:outputLabel value="Etablissement" />
+									<p:inputText value="#{banqueController.selectedTaCompteBanqueDTO.nomBanque}" validator="#{banqueController.validateCompteBanque}"
+										disabled="#{banqueController.editable()}">
+										<f:attribute name="nomChamp" value="#{const.C_NOM_BANQUE}" />
+										<p:ajax event="blur" update="@this" />
+									</p:inputText>
+
+
+									<p:outputLabel value="Adresse (1)" />
+									<p:inputText value="#{banqueController.selectedTaCompteBanqueDTO.adresse1Banque}" validator="#{banqueController.validateCompteBanque}"
+										disabled="#{banqueController.editable()}">
+										<f:attribute name="nomChamp" value="#{const.C_ADRESSE1_BANQUE}" />
+										<p:ajax event="blur" update="@this" />
+									</p:inputText>
+
+
+									<p:outputLabel value="Adresse (2)" />
+									<p:inputText value="#{banqueController.selectedTaCompteBanqueDTO.adresse2Banque}" validator="#{banqueController.validateCompteBanque}"
+										disabled="#{banqueController.editable()}">
+										<f:attribute name="nomChamp" value="#{const.C_ADRESSE2_BANQUE}" />
+										<p:ajax event="blur" update="@this" />
+									</p:inputText>
+
+
+									<p:outputLabel value="Code postal" />
+									<p:inputText value="#{banqueController.selectedTaCompteBanqueDTO.cpBanque}" validator="#{banqueController.validateCompteBanque}"
+										disabled="#{banqueController.editable()}">
+										<f:attribute name="nomChamp" value="#{const.C_CP_BANQUE}" />
+										<p:ajax event="blur" update="@this" />
+									</p:inputText>
+
+
+									<p:outputLabel value="Ville" />
+									<p:inputText value="#{banqueController.selectedTaCompteBanqueDTO.villeBanque}" validator="#{banqueController.validateCompteBanque}"
+										disabled="#{banqueController.editable()}">
+										<f:attribute name="nomChamp" value="#{const.C_VILLE_BANQUE}" />
+										<p:ajax event="blur" update="@this" />
+									</p:inputText>
+								</h:panelGrid>
+							</p:panel>
+						</div>
+						<div class="ui-grid-col-6">
+							<p:panel id="idPanelAutres" header="Autres identifiants" toggleable="true" widgetVar="panelParamAutres">
+								<h:panelGrid columns="2" cellpadding="10">
+
+									<p:outputLabel value="IBAN" />
+									<p:inputText value="#{banqueController.selectedTaCompteBanqueDTO.iban}" validator="#{banqueController.validateCompteBanque}"
+										disabled="#{banqueController.editable()}">
+										<f:attribute name="nomChamp" value="#{const.C_IBAN_BANQUE}" />
+										<p:ajax event="blur" update="@this" />
+									</p:inputText>
+
+
+									<p:outputLabel value="BIC/SWIFT" />
+									<p:inputText value="#{banqueController.selectedTaCompteBanqueDTO.codeBIC}" validator="#{banqueController.validateCompteBanque}"
+										disabled="#{banqueController.editable()}">
+										<f:attribute name="nomChamp" value="#{const.C_CODE_B_I_C_BANQUE}" />
+										<p:ajax event="blur" update="@this" />
+									</p:inputText>
+
+
+									<p:outputLabel value="Nom du compte" />
+									<p:inputText value="#{banqueController.selectedTaCompteBanqueDTO.nomCompte}" validator="#{banqueController.validateCompteBanque}"
+										disabled="#{banqueController.editable()}">
+										<f:attribute name="nomChamp" value="#{const.C_NOM_COMPTE}" />
+										<p:ajax event="blur" update="@this" />
+									</p:inputText>
+								</h:panelGrid>
+							</p:panel>
+						</div>
+						<div class="ui-grid-col-6">
+							<p:panel header="Informations service bancaire (Stripe)" toggleable="true" widgetVar="panelCptBanqueServiceBancaire"
+								rendered="#{auth.isDevLgr()}">
+								
+								<p:commandButton value="Créer le compte dans Stripe" actionListener="#{banqueController.actCreerCompteDansStripe}"
+								process="@this" update="@widgetVar(panelListeCompteTiers#{variableNomWvIDUnique}),@widgetVar(wvMenuCompteBanqueTiers#{variableNomWvIDUnique}),@widgetVar(wvDetailCompteBanque#{variableNomWvIDUnique}),@widgetVar(wvBanqueDataTable#{variableNomWvIDUnique})" 
+								disabled="#{banqueController.etatBouton('modifier') or banqueController.compteExisteDansStripe()}"/>
+								
+								<h:panelGrid columns="2" cellpadding="10">
+								
+									<p:outputLabel value="Code banque" />
+									<p:inputText value="#{banqueController.selectedTaCompteBanqueDTO.bankCode}" disabled="true"/>
+
+									<p:outputLabel value="Code branche" />
+									<p:inputText value="#{banqueController.selectedTaCompteBanqueDTO.branchCode}" disabled="true"/>
+
+									<p:outputLabel value="Pays" />
+									<p:inputText value="#{banqueController.selectedTaCompteBanqueDTO.country}" disabled="true"/>
+									
+									<p:outputLabel value="4 derniers numéros" />
+									<p:inputText value="#{banqueController.selectedTaCompteBanqueDTO.last4}" disabled="true"/>
+									
+<!-- 									<p:link value="#{abonnementArticleController.selectedTaStripeProductDTO.idExterne}" -->
+<!-- 										onclick="window.open('https://dashboard.stripe.com/test/sources/products/#{abonnementArticleController.selectedTaStripeProductDTO.idExterne}')" > -->
+<!-- 									</p:link> -->
+								</h:panelGrid>
+							</p:panel>
+						</div>
+					</div>
+				</div>
+			</p:panel>
+
+
+		</p:panel>
+	</p:panel>
+
+</ui:composition>

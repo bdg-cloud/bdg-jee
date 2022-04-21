@@ -1,0 +1,142 @@
+<ui:composition 
+	xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:h="http://java.sun.com/jsf/html" 
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets" 
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+
+	<ui:define name="content">
+
+		<f:facet name="last">
+			<!-- surcharge des CSS primefaces -->
+			<h:outputStylesheet library="css" name="icarus-bdg.css" />
+			<h:outputStylesheet library="css" name="theme-compteclient.css" />
+		</f:facet>
+
+		<h:form id="form">
+
+			<div class="ui-g  ui-fluid">
+
+				<div class="ui-g-12">
+<!-- 					<p:outputLabel class="affiche-utilisateur" -->
+<!-- 						value="#{c_langue.formule_politesse} #{indexCompteController.utilisateur.prenom} #{indexCompteController.utilisateur.nom}" /> -->
+					<h:outputFormat class="affiche-utilisateur" value="#{c_langue.formule_politesse}">
+			            <f:param value="#{auth.user.prenom}" />
+			            <f:param value="#{auth.user.nom}" />
+			        </h:outputFormat>
+					<br />
+				</div>
+
+				<div class="container_onglet_menu_fournisseurs" onclick="window.location.href='/ajout-fournisseur.xhtml'">
+					<h:graphicImage class="picto-fournisseurs" library="images" name="picto-fournisseurs.png" width="20%" height="80%" />
+					<div class="ui-g-8">
+						<p:outputLabel styleClass="titre-picto" value="#{c_langue.panel_bleu_titre_Fournisseurs}" />
+						<p:outputLabel styleClass="texte-picto" value="#{c_langue.panel_bleu_sous_titre_Fournisseurs}" />
+					</div>
+				</div>
+				<div class="container_onglet_menu_documents" onclick="window.location.href='/page-mes-fournisseurs.xhtml'">
+					<h:graphicImage class="picto-documents" library="images" name="picto-documents.png" width="20%" height="80%" />
+					<div class="ui-g-8">
+						<p:outputLabel styleClass="titre-picto" value="#{c_langue.panel_jaune_titre_Documents}" />
+						<p:outputLabel styleClass="texte-picto" value="#{c_langue.panel_jaune_sous_titre_Documents}" />
+					</div>
+				</div>
+				
+				<div class="container_onglet_menu_informations">
+					<h:graphicImage class="picto-informations" library="images" name="picto-information.png" width="20%" height="80%" />
+					<div class="ui-g-8">
+						<p:outputLabel styleClass="titre-picto" value="#{c_langue.panel_rouge_titre_Informations}" />
+						<p:outputLabel styleClass="texte-picto" value="#{c_langue.panel_rouge_sous_titre_Informations}" />
+					</div>
+				</div>
+
+				<div class="ui-g-12">
+					<p:outputLabel styleClass="info-page" value="#{c_langue.panel_bleu_titre_Fournisseurs}" />
+					<p:outputLabel styleClass="info-texte" value="#{c_langue.panel_bleu_sous_titre_Fournisseurs}" />
+				</div>
+
+				<!-- Coté gauche -->
+				<div class="ui-g-12 ui-lg-12">
+
+					<div id="j_idt30_content" class="ui-panelgrid-content ui-widget-content ui-grid ui-grid-responsive">
+					
+						<div class="ui-g-12" align="center">
+						
+							<p:commandButton value="#{c_langue.ajout_fournisseur_barre_rafraichir}" actionListener="#{fournisseurController.rafraichir}"
+								icon="fa fa-user-plus" update="@form(wvmesFournisseursSupp)" />
+
+							<p:dataTable 
+								var="f" 
+								widgetVar="wvdatatablefournisseurselect" 
+								value="#{fournisseurController.listeDesFournisseurs}"
+								selection="#{fournisseurController.lesFournisseurs}" 
+								rowKey="#{f.idFournisseur}" 
+								rowStyleClass="#{f.affiche ? 'affiche-frs-activer' : null}"
+								reflow="true" 
+								rows="20" 
+								paginator="true" 
+								emptyMessage="Aucun enregistrement trouvé">
+
+								<p:column headerText="#{c_langue.datatable_col_visuel}" class="visuel">
+									<p:graphicImage library="images" name="logo.jpeg" class="logo" rendered="#{f.blobLogo == null}" />
+<!-- 									<p:graphicImage value="#{infoFournisseurController.logo}" stream="false" rendered="#{f.blobLogo !=null}" /> -->
+									<p:graphicImage value="/image_log_frs_cpt_client/#{f.idFournisseur}"  height="10"/>
+								</p:column>
+								
+								<p:column filterBy="#{f.raisonSocialeFournisseur}" headerText="#{c_langue.datatable_col_fournisseur}">
+									<h:outputText value="#{f.raisonSocialeFournisseur}" />
+								</p:column>
+								
+								<p:column filterBy="#{f.siretFournisseur}" headerText="#{c_langue.datatable_col_siret}" class="siret">
+									<h:outputText value="#{f.siretFournisseur}" />
+								</p:column>
+								
+								<p:column filterBy="#{f.adresse1Fournisseur}" headerText="#{c_langue.datatable_col_adresse}">
+									<h:outputText value="#{f.adresse1Fournisseur} #{f.adresse2Fournisseur} #{f.adresse3Fournisseur}" />
+								</p:column>
+								
+								<p:column filterBy="#{f.codePostalFournisseur}" headerText="#{c_langue.datatable_col_cp}" class="cp">
+									<h:outputText value="#{f.codePostalFournisseur}" />
+								</p:column>
+								
+								<p:column filterBy="#{f.villeFournisseur}" headerText="#{c_langue.datatable_col_ville}" class="ville">
+									<h:outputText value="#{f.villeFournisseur}" />
+								</p:column>
+								
+								<p:column filterBy="#{f.paysFournisseur}" headerText="#{c_langue.datatable_col_pays}" class="pays">
+									<h:outputText value="#{f.paysFournisseur}" />
+								</p:column>
+								
+								<p:column class="liaison">
+									<p:commandButton rendered="#{!f.affiche}" title="Lié ce fournisseur" icon="ui-icon-plus"
+										actionListener="#{fournisseurController.infoFournisseur}">
+										<f:attribute name="idFrs" value="#{f.idFournisseur}" />
+										<!-- Permet un rafraichissement de la forme au retour sur la page -->
+										<p:ajax event="dialogReturn" update="@form" listener="#{fournisseurController.dialogReturn}" />
+									</p:commandButton>
+
+									<p:graphicImage rendered="#{f.affiche}" title="Fournisseur déja activer" library="images" name="valider.png"
+										style="width: 20px; height: 20px" />
+								</p:column>
+								
+							</p:dataTable>
+
+						</div>
+
+					</div>
+				</div>
+
+
+			</div>
+		</h:form>
+
+		<h:outputStylesheet name="css/animate.css" library="icarus-layout" />
+		<h:outputStylesheet name="css/nanoscroller.css" library="icarus-layout" />
+		<h:outputStylesheet name="css/layout-#{auth.themeCouleur}.css" library="icarus-layout" />
+
+		<h:outputScript name="/js/functions.js" />
+		<h:outputScript name="/js/locale_fr.js" />
+	</ui:define>
+
+</ui:composition>

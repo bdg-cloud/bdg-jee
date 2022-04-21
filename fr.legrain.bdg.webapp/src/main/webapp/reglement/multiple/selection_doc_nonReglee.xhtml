@@ -1,0 +1,229 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+    xmlns:pe="http://primefaces.org/ui/extensions">
+
+	<p:menubar styleClass="menu-onglet" id="idMenuBoutonGestRegl" widgetVar="wvMenuBoutonGestRegl">
+
+		<p:menuitem title="Fermer l'écran" value="Fermer" styleClass="icon icon-close menuitem-fermer-droite"
+			process="@this" 
+			actionListener="#{selectionDocNonRegleTotController.actFermer}"
+			update=":form:messages"
+			disabled="#{selectionDocNonRegleTotController.etatBouton('fermer')}"
+			onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())">
+			
+			<p:confirm header="Confirmation" message="#{msg_diag.alert_fermeture_onglet}" icon="ui-icon-alert" disabled="#{!selectionDocNonRegleTotController.modeEcran.dataSetEnModif()}"/>
+		</p:menuitem>
+	</p:menubar>
+	<div class="container">
+		<p:fieldset legend="Etape 1/2 : Saisissez les critères de sélection des Tiers et/ou de la facture" id="idCriteresFiltresGestRegl" toggleable="true" toggleSpeed="50" >
+
+		<div class="ui-g">
+		
+			<div class="ui-g-12 ui-lg-4">
+				<div class="card">
+						<p:panel header="Période"  style="width:100%;text-align: center;">
+						<p:panelGrid columns="2" columnClasses="ui-grid-col-4 right,ui-grid-col-8" styleClass="ui-panelgrid-blank" layout="grid" >
+							<i class="fa fa-calendar fa-3x" aria-hidden="true"></i>
+								<p:panelGrid columns="2" cellpadding="0">
+									<p:outputLabel value="Du" />
+									<p:calendar value="#{selectionDocNonRegleTotController.dateDeb}" showOn="button" navigator="true" pattern="#{msg.date_pattern}"
+										mask="true" locale="fr" timeZone="#{msg.time_zone}">
+										<p:ajax event="dateSelect" update="@this" />
+										<p:ajax event="change" update="@this" />
+									</p:calendar>
+
+									<p:outputLabel value="au" />
+									<p:calendar value="#{selectionDocNonRegleTotController.dateFin}" showOn="button" navigator="true" pattern="#{msg.date_pattern}"
+										mask="true" locale="fr" timeZone="#{msg.time_zone}">
+										<p:ajax event="dateSelect" update="@this" />
+										<p:ajax event="change" update="@this" />
+									</p:calendar>
+								</p:panelGrid>
+							
+
+						</p:panelGrid>
+						</p:panel>
+					</div>
+				<!--Fin div card-->
+				</div>
+				<div class="ui-g-12 ui-lg-8">
+				<div class="ui-g-12 ui-lg-6">
+				<div class="card">
+					<p:panel header="Retrouver une facture à partir d'un code tiers" id="idPanelParamFiltreTierGestRegl">
+						<p:panelGrid columns="2" columnClasses="ui-grid-col-3,ui-grid-col-3,ui-grid-col-3,ui-grid-col-3" styleClass="ui-panelgrid-blank" layout="grid" >
+						<p:outputLabel value="Le tiers"/>
+						<p:autoComplete value="#{selectionDocNonRegleTotController.taTiersDTO}" id="idtiersselectionDocNonRegle" converter="entityConverter"
+							completeMethod="#{selectionDocNonRegleTotController.tiersAutoCompleteDTOLight}" 
+							 var="tiers" itemLabel="#{tiers.codeTiers}" itemValue="#{tiers}" forceSelection="true"
+									maxResults="#{selectionDocNonRegleTotController.taPreferencesService.nbMaxChargeListeTiers()}"
+									moreText="Il y a #{component.maxResults} affichés sur #{component.suggestions.size()} au total, Veuillez affiner votre recherche ou cliquer ici pour en afficher plus ..."
+							dropdown="true" placeholder="Tiers">
+							<p:column>
+								<h:outputText value="#{tiers.codeTiers}" />
+							</p:column>
+
+							<p:column>
+								<h:outputText value="#{tiers.nomTiers}" />
+							</p:column>
+
+							<f:attribute name="nomChamp" value="#{const.C_CODE_TIERS}" />
+							<p:ajax event="itemSelect" listener="#{selectionDocNonRegleTotController.autcompleteSelection}"
+								update="@widgetVar(wvFactureDTO)"/>
+								 <p:ajax event="clear" listener="#{selectionDocNonRegleTotController.onClearTiers}" update="@widgetVar(wvFactureDTO)"/>
+								 <p:ajax event="moreText" listener="#{selectionDocNonRegleTotController.onMoreTextTiers}" />
+						</p:autoComplete>		    				
+
+						</p:panelGrid>	
+					</p:panel>
+				</div>
+				</div>
+		<div class="ui-g-12 ui-lg-6">
+				<div class="card">
+					<p:panel header="Retrouver une facture à partir d'un code facture" id="idPanelParametresGestRegl">
+						<p:panelGrid columns="2" columnClasses="ui-grid-col-4 right,ui-grid-col-8" styleClass="ui-panelgrid-blank" layout="grid" >
+							<i class="fa fa-file-text-o fa-3x" aria-hidden="true"></i>
+								<p:panelGrid columns="1" cellpadding="0">
+									<p:outputLabel value="La facture"/>
+						<p:autoComplete value="#{selectionDocNonRegleTotController.taFactureDTO}" id="idFacture" converter="entityConverter"
+							completeMethod="#{selectionDocNonRegleTotController.factureAutoCompleteDTOLight}" widgetVar="wvFactureDTO"
+							 var="doc" itemLabel="#{doc.codeDocument}" itemValue="#{doc}" forceSelection="true"
+							dropdown="true" placeholder="Facture">
+							<p:column>
+								<h:outputText value="#{doc.codeDocument}" />
+							</p:column>
+
+							<p:column>
+								<h:outputText value="#{doc.libelleDocument}" />
+							</p:column>
+
+							<p:column>
+								<h:outputText value="#{doc.codeTiers}" />
+							</p:column>
+							
+							<f:attribute name="nomChamp" value="#{const.C_CODE_DOCUMENT}" />
+							<p:ajax event="itemSelect" listener="#{selectionDocNonRegleTotController.autcompleteSelection}"
+								update="" />
+								 <p:ajax event="clear" listener="#{selectionDocNonRegleTotController.onClearDocument}" update=""/>
+						</p:autoComplete>
+								</p:panelGrid>				
+						</p:panelGrid>				
+					</p:panel>
+				</div>
+					</div>			
+				</div>				
+			</div>
+
+			<div class="card" style="text-align: center;">
+				<p:commandButton value="Valider les critères" actionListener="#{selectionDocNonRegleTotController.actRefresh}" update="idPanelListeTiersGestRegl"
+					style="width:20%; height:45px;" icon="fa fa-check" />
+			</div>
+
+		</p:fieldset>
+	</div>
+	<div class="container">
+
+		<p:fieldset legend="Etape 2/2 : Sélectionnez une facture à régler dans la liste" id="idListesDocGestRegl"  toggleable="true" toggleSpeed="50">
+			<p:panel header="Sélectionner une facture" id="idPanelListeTiersGestRegl">
+				<div class="ui-g">
+	    			<div class="ui-g-12">
+	    				<p:dataTable id="dataTableListeGestRegl" 
+	    				var="doc"
+						widgetVar="wvDataTableListeGestRegl" 
+						class="datatable" 
+						value="#{selectionDocNonRegleTotController.listeDocumentDTO}" 
+						selectionMode="single"
+						rowKey="#{doc.id}"
+						selection="#{selectionDocNonRegleTotController.selectedDocument}"
+						dblClickSelect="true"
+						resizableColumns="true"
+						paginator="true" 
+						rows="#{msg.modele_datatable_ligne_par_page_debut}"
+						paginatorTemplate="#{msg.modele_datatable_paginator}"
+						rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+						emptyMessage="#{msg.message_datatable_vide}"
+						currentPageReportTemplate="#{msg.modele_datatable_page_courante}">
+<!-- 	    					<f:facet name="header"> -->
+<!-- 	    						<p:outputLabel value="Liste des tiers à prendre en compte dans le(s) document(s) à créer ()"/> -->
+<!-- 	    					</f:facet> -->
+
+	    				    
+	    				    <p:column sortBy="#{doc.codeDocument}" filterBy="#{doc.codeDocument}" filterMatchMode="contains">
+								<f:facet name="header">
+									<h:outputText value="Code facture" />
+								</f:facet>
+<!-- 								<h:outputText value="#{doc.codeTiers}" /> -->
+								<p:commandLink value="#{doc.codeDocument}"
+									action="#{ouvertureDocumentBean.detailDocument(ouvertureDocumentBean.recupCodeDocument(doc.codeDocument,ouvertureDocumentBean.getTypeDocumentFacture()))}" update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+								</p:commandLink>
+							</p:column>
+
+	    				    <p:column sortBy="#{doc.libelleDocument}" filterBy="#{doc.libelleDocument}" filterMatchMode="contains">
+								<f:facet name="header">
+									<h:outputText value="Libellé" />
+								</f:facet>
+								<h:outputText value="#{doc.libelleDocument}" />
+							</p:column>
+	    				    <p:column sortBy="#{doc.dateDocument}" filterBy="#{doc.dateDocument}" filterMatchMode="contains">
+								<f:facet name="header">
+									<h:outputText value="Date facture" />
+								</f:facet>
+								<h:outputText value="#{doc.dateDocument}" >
+									<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+								</h:outputText>									
+							</p:column>
+	    				    <p:column sortBy="#{doc.dateEchDocument}" filterBy="#{doc.dateEchDocument}" filterMatchMode="contains">
+								<f:facet name="header">
+									<h:outputText value="Date échéance" />
+								</f:facet>
+								<h:outputText value="#{doc.dateEchDocument}" >
+									<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+								</h:outputText>									
+							</p:column>
+												
+	    				    <p:column sortBy="#{doc.codeTiers}" filterBy="#{doc.codeTiers}" filterMatchMode="contains">
+								<f:facet name="header">
+									<h:outputText value="Code tiers" />
+								</f:facet>
+								<p:commandLink value="#{doc.codeTiers}"
+									action="#{ouvertureDocumentBean.detailTiers(selectionDocNonRegleTotController.recupCodetiers(doc.codeTiers))}" update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+								</p:commandLink>
+							</p:column>
+	    				    <p:column sortBy="#{doc.netTtcCalc}" filterBy="#{doc.netTtcCalc}" filterMatchMode="contains">
+								<f:facet name="header">
+									<h:outputText value="Net TTC" />
+								</f:facet>
+								<h:outputText value="#{doc.netTtcCalc}" />
+							</p:column>
+
+	    				    <p:column sortBy="#{doc.regleCompletDocument}" filterBy="#{doc.regleCompletDocument}" filterMatchMode="contains">
+								<f:facet name="header">
+									<h:outputText value="Déjà réglé" />
+								</f:facet>
+								<h:outputText value="#{doc.regleCompletDocument}" />
+							</p:column>
+
+	    				    <p:column sortBy="#{doc.resteAReglerComplet}" filterBy="#{doc.resteAReglerComplet}" filterMatchMode="contains">
+								<f:facet name="header">
+									<h:outputText value="Reste à régler" />
+								</f:facet>
+								<h:outputText value="#{doc.resteAReglerComplet}" />
+							</p:column>
+	    				</p:dataTable>
+	    			</div>
+					<div class="card" style="text-align: center;">
+						<p:commandButton value="Régler la facture" actionListener="#{selectionDocNonRegleTotController.actDialogGenerationReglement}"
+							 style="width:20%; height:45px;" icon="fa fa-check">
+							<p:ajax event="dialogReturn" listener="#{selectionDocNonRegleTotController.handleReturnDialogGestionReglement}"
+							update="idPanelListeTiersGestRegl,idListesDocGestRegl,dataTableListeGestRegl" />
+						</p:commandButton>
+
+					</div>
+				</div>
+			</p:panel>
+		</p:fieldset>
+	</div>	
+
+</ui:composition>

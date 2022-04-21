@@ -1,0 +1,50 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:p="http://primefaces.org/ui">
+
+	<h:form id="form" prependId="true">
+		<!-- false pour le selector du CSS -->
+
+		<p:growl id="messages" showDetail="true"/>
+		<p:messages id="messagess" showDetail="true" autoUpdate="true" closable="true" />
+		
+<!-- 		<p:tabView id="tabView" scrollable="true" binding="#{centerBean.tabs.tabview}" widgetVar="widgetVarTabView"> -->
+			<p:tabView id="tabView" scrollable="true" binding="#{tabViewsBean.tabviewCenter}" widgetVar="widgetVarTabView"  styleClass="Container">
+<!-- 		<p:tabView id="tabView" scrollable="true" widgetVar="widgetVarTabView"> -->
+
+			<p:ajax event="tabChange" listener="#{centerBean.onTabChange}" update=":form:messages,@this" />
+			<p:ajax event="tabClose" listener="#{centerBean.onTabClose}" update=":form:messages,@this" />
+
+			<c:forEach items="#{centerBean.tabs.onglets}" var="onglet" varStatus="loop">
+				<p:tab title="#{onglet.titre}" closable="true" titletip="#{onglet.toolTipTitre}" titleStyleClass="#{onglet.style}">
+					<f:subview id="tab_#{loop.index}">
+<!-- 						<p:graphicImage library="images" name="solstyce.ico" /> -->
+<!-- 						<h:outputText value="#{onglet.typeOnglet}" /> -->
+<!-- 						<br /> -->
+						<p:panel styleClass="#{onglet.style}" id="#{onglet.idTab eq null ? 'tab_'.concat(loop.index) : onglet.idTab }">
+							<ui:include src="#{onglet.template}">
+								<ui:param name="paramId" value="#{onglet.paramId}" />
+							</ui:include>
+						</p:panel>
+					</f:subview>
+				</p:tab>
+			</c:forEach>
+
+<!-- 								<p:tab title="Onglet - #{onglet.titre}" closable="true" titleStyleClass="#{onglet.style}"> -->
+<!-- 									<p:graphicImage library="images" name="solstyce.ico" /> -->
+<!-- 									<h:outputText value="#{onglet.typeOnglet}" /> -->
+<!-- 									<ui:include src="#{onglet.template}" /> -->
+<!-- 								</p:tab> -->
+
+		</p:tabView>
+		
+		<p:confirmDialog global="true" showEffect="fade" hideEffect="explode">
+				<p:commandButton value="Oui" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+				<p:commandButton value="Non" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+		</p:confirmDialog>
+	</h:form>
+
+</ui:composition>

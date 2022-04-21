@@ -1,0 +1,60 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core" 
+	xmlns:ui="http://java.sun.com/jsf/facelets" 
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/template_dialog_lgr.xhtml">
+	
+	<ui:define name="head">
+		 <title>Pièces jointes email</title>
+        <style type="text/css">
+/*             .ui-widget { */
+/*                 font-size: 90%; */
+/*             } */
+         </style>
+	</ui:define>
+
+	<ui:define name="content">
+		<h:form id="idDialogPieceJointeEmail">
+		
+		<p:menubar styleClass="menu-onglet">
+			
+			<p:menuitem title="Fermer" styleClass="icon icon-close menuitem-fermer-droite"
+				actionListener="#{pieceJointeEmailController.actFermerDialog}"
+				process="@this" >
+			</p:menuitem>
+		</p:menubar>
+		
+			<p:panel id="idPanelPieceJointe" header="Pièces jointes" toggleable="true" widgetVar="wvPanelPieceJointe">
+				<h:panelGrid columns="2" cellpadding="10">
+
+					<p:fileUpload listener="#{pieceJointeEmailController.handleFileUpload}" mode="advanced" dragDropSupport="false" label="Choisir"
+						uploadLabel="Télécharger" cancelLabel="Annuler" auto="true" update="@widgetVar(wvDataTablePieceJointe)" sizeLimit="#{msg.email_taille_max_piecejonte_1mo}" fileLimit="10"/>
+<!-- 						allowTypes="/(\.|\/)(gif|jpe?g|png|svg)$/" -->
+
+<!-- 					<p:commandButton value="Supprimer" actionListener="#{serviceWebExterneController.supprimerLogo}" -->
+<!-- 						disabled="#{serviceWebExterneController.editable()}" -->
+<!-- 						rendered="#{serviceWebExterneController.taServiceWebExterne.logo !=null}" update="@widgetVar(panelLogo)" /> -->
+
+<!-- 					<p:graphicImage value="#{serviceWebExterneController.logo}" stream="false" width="200px" -->
+<!-- 						rendered="#{serviceWebExterneController.taServiceWebExterne.logo !=null}" /> -->
+
+				</h:panelGrid>
+			</p:panel>
+			
+			<p:dataTable value="#{pieceJointeEmailController.listeFichier}" var="pj" emptyMessage="Pas de pièce jointes" widgetVar="wvDataTablePieceJointe">
+					<p:column headerText="Fichier">
+						<p:outputLabel value="#{pj.name}"/>
+					</p:column>
+					<p:column headerText="Taille" styleClass="center">
+						<p:outputLabel value="#{pj.length()/1024}"/>
+					</p:column>
+<!-- 					<p:column headerText="Actions" styleClass="center"> -->
+<!-- 						<p:commandLink value="Supprimer" action="#{emailController.actSupprimerPieceJointe(pj)}" update="@widgetVar(wvPanelPJEmail)"/> -->
+<!-- 					</p:column> -->
+				</p:dataTable>
+
+		</h:form>
+	</ui:define>
+     
+</ui:composition>

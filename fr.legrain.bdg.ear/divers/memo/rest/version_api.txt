@@ -1,0 +1,42 @@
+
+Création et utilisation d'une nouvelle version de l'API Rest dans  BDG
+
+Angular
+**********************************************************************************
+env.ts
+public BASE_API_ENDPOINT='/v1'; ...
+
+Hébergement angular => proxy / reverse proxy
+**********************************************************************************
+Webpack
+*********
+proxy.conf.json
+"/v1": { ... }
+
+Apache
+*********
+Fichier de conf du domaine dans /etc/apache2/sites-available
+ProxyPass "/v1" "https://demo.pprodbdg.work/v1"
+ProxyPassReverse "/v1" "https://demo.pprodbdg.work/v1"
+
+Java
+*********************************************************************************
+MyApplication.java
+@ApplicationPath("/v1") ...
+
+AuthFilter.java
+if (reqURI.indexOf("rest/")>=0) ...
+if (reqURI.indexOf("v1/")>=0) ...
+
+
+Android/Retrofit 
+**********************************************************************************
+package fr.legrain.bdg.api.client.dao.rest.retrofit.interfaces.*;
+(Toute les interfaces)
+@GET("v1/utilisateur/") ...
+
+Webhooks
+**********************************************************************************
+Penser à changer les webhooks des différents services concernés
+- Stripe
+

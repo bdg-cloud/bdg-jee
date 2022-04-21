@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+      
+<!-- 	<f:view locale="#{languageBean.localeCode}"/> -->
+
+    <h:head>
+        <f:facet name="first">
+            <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+            <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+            <meta name="apple-mobile-web-app-capable" content="yes" />
+        </f:facet>
+        
+        <title>Espace client - Bureau de Gestion</title>
+        <link rel="shortcut icon" type="image/x-icon" href="#{resource['images:favicon.ico']}" />
+        
+        <h:outputScript name="js/nanoscroller.js" library="icarus-layout" />
+        <h:outputScript name="js/layout.js" library="icarus-layout" />
+        <link href="https://fonts.googleapis.com/css?family=PT+Sans" rel="stylesheet"/> 
+
+        <ui:insert name="head"/>
+    </h:head>
+
+    <h:body style="background: #e0e5e8">
+   
+    <p:growl id="msg_alerte" showDetail="false" sticky="true" />
+ 
+    <p:idleMonitor timeout="900000">
+        <p:ajax event="idle" listener="#{indexCompteController.onIdle}" update="msg_alerte" />
+        <p:ajax event="active" listener="#{indexCompteController.onActive}" update="msg_alerte" />
+    </p:idleMonitor>
+    
+	    <f:facet name="last">
+			<!-- surcharge des CSS primefaces -->
+			<h:outputStylesheet library="css" name="icarus-bdg.css" />
+			<h:outputStylesheet library="css" name="theme-compteclient.css" />
+<!-- 			<h:outputStylesheet library="css" name="jquery.splitter.css" /> -->
+		</f:facet>
+<!-- 		<h:form> -->
+        <div class="wrapper">
+             
+            <div id="sidebar-wrapper">
+                <ui:include src="sidebarheader.xhtml" />
+                           
+                <div class="sidebar-nav nano">
+                    <div class="nano-content sidebar-scroll-content">
+<!--                     <p:selectOneMenu class="combo_langue" value="#{languageBean.localeCode}" > -->
+<!-- 		<f:selectItems value="#{languageBean.countriesInMap}" /> -->
+<!-- 		<p:ajax listener="#{languageBean.countryLocaleCodeChanged}" update="@form"/> -->
+<!-- 				</p:selectOneMenu> -->
+                        <ui:include src="layoutmenu.xhtml" />
+                                            </div>
+                </div>
+                
+            </div>   
+            
+            <ui:include src="topbar.xhtml" />         
+            
+            <div id="main-wrapper">
+                <div class="main-content">
+                    <ui:insert name="content"></ui:insert>
+                </div>
+                
+                <ui:include src="footer.xhtml" />
+                	
+            </div>
+        </div>
+<!--         </h:form> -->
+<!--         <p:ajaxStatus style="width:32px;height:32px;margin:auto;z-index:1000000000"> -->
+<!--         <p:ajaxStatus style="width:76px;height:76px;position:fixed;left:50%;top:50%;z-index:100000"> -->
+			 <p:ajaxStatus style="width:50px; height:50px; position: fixed;left:4%;top:10%; margin-left: 5px;z-index:100000">
+<!--          <p:ajaxStatus style="width:32px;height:32px;position:fixed;right:7px;bottom:7px"> -->
+            <f:facet name="start">
+<!--             http://loading.io/ -->
+<!--                 <p:graphicImage name="images/preloader.gif" library="icarus-layout" style="width: 64px;"/> -->
+                <p:graphicImage name="images/ajax.gif" library="icarus-layout" style="width: 76px;"/>
+            </f:facet>
+
+            <f:facet name="complete">
+                <h:outputText value="" />
+            </f:facet>
+        </p:ajaxStatus>
+        
+        <h:outputStylesheet name="css/animate.css" library="icarus-layout" />
+        <h:outputStylesheet name="css/nanoscroller.css" library="icarus-layout" />
+        <h:outputStylesheet name="css/layout-#{auth.themeCouleur}.css" library="icarus-layout" />
+        
+        <h:outputScript name="/js/functions.js"  />
+		<h:outputScript name="/js/locale_fr.js"  />
+		
+    </h:body>
+
+</html>

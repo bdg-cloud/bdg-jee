@@ -1,0 +1,554 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+	<p:importConstants type="fr.legrain.bdg.dossier.service.remote.ITaPreferencesServiceRemote" var="ConstPreferences" />
+	<p:importConstants type="fr.legrain.bdg.webapp.export.ExportComptaBean" var="ConstController" />
+
+
+	<f:validateBean disabled="true">
+	
+		<p:menubar styleClass="menu-onglet">
+<!-- 			<p:menuitem value="..." actionListener="#{exportComptaBean.etatExportationDesDocument}" process="@this" /> -->
+			
+			<p:menuitem title="Fermer" styleClass="icon icon-close menuitem-fermer-droite" process="@this" 
+				actionListener="#{exportComptaBean.actFermer}"
+				onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())">
+<!-- 				<p:confirm header="Confirmation" message="#{msg_diag.alert_fermeture_onglet}" icon="ui-icon-alert"/> -->
+			</p:menuitem>
+			<p:menuitem title="Rafraîchir" update="@widgetVar(wvTabViewExportCompta1),@widgetVar(wvDateEtatExportation),:form:messages"  process="@this" 
+			actionListener="#{exportComptaBean.actRefresh}" styleClass="icon icon-refresh"  />
+		</p:menubar>
+
+
+		<p:tabView id="idTabViewExportCompta1" widgetVar="wvTabViewExportCompta1" >
+			<p:ajax event="tabChange" listener="#{exportComptaBean.onTabChange}" update="@this"/>
+			<p:tab title="Exportation automatique ISAGRI 2" id="#{ConstController.ID_TAB_TOUS}">
+				<p:panel  header="Options d'écriture">
+					<p:panelGrid columns="8" header="Options d'écriture" id="idPanelOptionEcritureExportTous">
+						<p:selectBooleanCheckbox value="#{exportComptaBean.ecraserFichier}" id="idEcraseFichierTous"  >
+						<f:ajax event="change"  update="idEcraseFichierTous,idEcraseFichierRef,idEcraseFichierDate"/>
+						</p:selectBooleanCheckbox>
+						 <p:outputLabel value=" Effacer le fichier"/>					
+	
+					</p:panelGrid>
+				</p:panel>
+				<p:panel  header="Options Générale">
+				
+					<p:panelGrid columns="8" id="idPanelOptionGeneraleTous">
+						<p:selectBooleanCheckbox value="#{exportComptaBean.exporterReglementLies}"  >
+							<p:ajax listener="#{exportComptaBean.enregistreOption(exportComptaBean.libReglementsLies,exportComptaBean.exporterReglementLies)}"
+								update="@this,idPanelOptionGeneraleTous,idPanelOptionExportTous,idPanelOptionGeneraleParReference,idPanelOptionExportParReference,idPanelOptionGeneraleParDate,idPanelOptionExportParDate" />
+						</p:selectBooleanCheckbox>
+						 <p:outputLabel value="Exporter avec les règlements"/>
+						 
+<!-- 						<p:selectBooleanCheckbox  value="#{exportComptaBean.exporterAvecPointage}"> -->
+<!-- 						 <p:ajax listener="#{exportComptaBean.enregistreOption(exportComptaBean.libPointages,exportComptaBean.exporterAvecPointage)}"  -->
+<!-- 						update="@this,idPanelOptionGeneraleTous,idPanelOptionExportTous,idPanelOptionGeneraleParReference,idPanelOptionExportParReference,idPanelOptionGeneraleParDate,idPanelOptionExportParDate" /> -->
+<!-- 						</p:selectBooleanCheckbox> -->
+<!-- 						<p:outputLabel value="Exporter avec les pointages"/> -->
+						
+						<p:selectBooleanCheckbox  value="#{exportComptaBean.centraliserEcriture}">
+						 <p:ajax listener="#{exportComptaBean.enregistreOption(exportComptaBean.libCentraliserEcritures,exportComptaBean.centraliserEcriture)}" 
+						 update="@this,idPanelOptionGeneraleTous,idPanelOptionExportTous,idPanelOptionGeneraleParReference,idPanelOptionExportParReference,idPanelOptionGeneraleParDate,idPanelOptionExportParDate" />
+						</p:selectBooleanCheckbox>
+						<p:outputLabel value="Centraliser les écritrues"/>
+						
+						<p:selectBooleanCheckbox  value="#{exportComptaBean.exporterApporteur}">
+						 <p:ajax listener="#{exportComptaBean.enregistreOption(exportComptaBean.libApporteur,exportComptaBean.exporterApporteur)}" 
+						update="@this,idPanelOptionGeneraleTous,idPanelOptionExportTous,idPanelOptionGeneraleParReference,idPanelOptionExportParReference,idPanelOptionGeneraleParDate,idPanelOptionExportParDate" />
+						</p:selectBooleanCheckbox>
+						<p:outputLabel value="Exporter les apporteurs"/>
+						
+					</p:panelGrid>
+				</p:panel>
+				<p:panel header="Options d'exportation" id="idPanelOptionExportTous">
+					<p:fieldset legend="Transférer les règlements">
+<!-- 						*Tous les types de règlements -->
+<!-- 						**Acomptes -->
+<!-- 						**Règlement simple -->
+<!-- 						**Remise -->
+						<p:selectBooleanCheckbox id="idOptionTousReglement" style="padding-left: 4px; padding-right: 4px;"  disabled="#{!exportComptaBean.exporterReglementLies}" value="#{exportComptaBean.exporterTousLesRegelements}">
+							 <p:ajax listener="#{exportComptaBean.optionTousReglement}" update="idPanelOptionExportParDate,idPanelOptionExportTous,idPanelOptionExportParReference"/>
+						</p:selectBooleanCheckbox>
+						<p:outputLabel value="  Tous les types de règlements"/>
+						<p:selectManyCheckbox id="idOptionReglement" disabled="#{!exportComptaBean.exporterReglementLies}" value="#{exportComptaBean.selectedReglement}" layout="pageDirection" columns="1">
+					        <f:selectItems value="#{exportComptaBean.reglements}" var="rg" itemLabel="#{rg}" itemValue="#{rg}" />
+					        <p:ajax listener="#{exportComptaBean.optionReglement}" update="idPanelOptionExportParDate,idPanelOptionExportTous,idPanelOptionExportParReference"/>
+					    </p:selectManyCheckbox>
+					</p:fieldset>
+				</p:panel>
+				
+				<p:commandButton value="Tout exporter" actionListener="#{exportComptaBean.actToutExporter('ISAGRI2')}" 
+					oncomplete="if(afficheListeDocsManquantExport(xhr, status, args)){PF('wvDialogListeDocsManquants').show()}
+					else{PF('wvDialogExportationTermineeIsagri2').show()}"  delay="#{msg.datatable_rowselect_delay}" 
+					update="idBtnLoadTout,idBtnEmailTout,@widgetVar(wvDialogListeDocsManquants)" >
+					</p:commandButton>
+					
+					<p:commandButton id="idBtnLoadTout" value="Télécharger le fichier"  ajax="false"  process="@this"  disabled="#{!exportComptaBean.initFichierATelechargerSiExiste()}">
+					<p:fileDownload value="#{exportComptaBean.file}" />
+					</p:commandButton>
+					
+				<p:commandButton id="idBtnEmailTout" title="Envoyer par email au comptable" value="Envoyer par email au comptable"  styleClass="icon icon-envoi-mail" 
+				actionListener="#{exportComptaBean.actDialogEmailComptable}" disabled="#{!exportComptaBean.initFichierATelechargerSiExiste()}"
+				process="@this">
+				<p:ajax event="dialogReturn" listener="#{exportComptaBean.handleReturnDialogEmailComptable}" update=":form:messages" />
+				</p:commandButton>
+			
+<!-- 				<p:menuitem title="Envoyer par email au comptable" styleClass="icon icon-envoi-mail" -->
+<!-- 					oncomplete="$('.classHiddenCommandForDialogEmailReturnComptable').click()" process="@this" update=":form:messages" -->
+<!-- 					disabled="#{tiersController.etatBouton('modifier')}" />	 -->
+
+				
+					
+
+			</p:tab>
+			
+			<p:tab title="Exportation par référence ISAGRI 2" id="#{ConstController.ID_TAB_PAR_REF}" >
+				<p:panel header="Options d'écriture" >
+					<p:selectBooleanCheckbox value="#{exportComptaBean.ecraserFichier}" id="idEcraseFichierRef" >
+						<f:ajax event="change"  update="idEcraseFichierTous,idEcraseFichierRef,idEcraseFichierDate"/>
+					</p:selectBooleanCheckbox>
+					 <p:outputLabel value="Effacer le fichier"/>					
+
+				</p:panel>			
+				<p:fieldset legend="Exportation des ventes">
+					<p:panelGrid columns="7" id="idPanelExportVenteParReference" >
+						<p:selectBooleanCheckbox value="#{exportComptaBean.rempliVentes}">
+						<p:ajax listener="#{exportComptaBean.initBornesFacture}" update="idPanelExportVenteParReference"/>
+						</p:selectBooleanCheckbox> 
+						<p:outputLabel value="De la vente"/>
+						<p:inputText value="#{exportComptaBean.debFacture}">
+							<p:ajax event="blur" update="@this"/>
+						</p:inputText>
+						<p:outputLabel value="à la vente"/>
+						<p:inputText value="#{exportComptaBean.finFacture}">
+							<p:ajax event="blur" update="@this"/>
+						</p:inputText>
+						<p:selectBooleanCheckbox value="#{exportComptaBean.reexporterFacture}" >
+							<p:ajax listener="#{exportComptaBean.initProposalAdapterFacture}" update="idPanelExportVenteParReference,idPanelExportVentesParDate"/>
+						</p:selectBooleanCheckbox> 
+						<p:outputLabel value="Ré-exporter"/>
+						
+						<p:selectBooleanCheckbox value="#{exportComptaBean.rempliAvoirs}">
+						<p:ajax listener="#{exportComptaBean.initBornesAvoir}" update="idPanelExportVenteParReference"/>
+						</p:selectBooleanCheckbox>  
+						<p:outputLabel value="De l'avoir"/>
+						<p:inputText value="#{exportComptaBean.debAvoir}">
+							<p:ajax event="blur" update="@this"/>
+						</p:inputText>
+						<p:outputLabel value="à l'avoir"/>
+						<p:inputText value="#{exportComptaBean.finAvoir}">
+							<p:ajax event="blur" update="@this"/>
+						</p:inputText>
+						<p:selectBooleanCheckbox value="#{exportComptaBean.reexporterFactureAvoir}">
+							<p:ajax listener="#{exportComptaBean.initProposalAdapterAvoir}" update="idPanelExportVenteParReference,idPanelExportVentesParDate"/>
+						</p:selectBooleanCheckbox> 
+						<p:outputLabel value="Ré-exporter"/>
+						
+						<p:selectBooleanCheckbox value="#{exportComptaBean.rempliApporteur}">
+						<p:ajax listener="#{exportComptaBean.initBornesApporteur}" update="idPanelExportVenteParReference"/>
+						</p:selectBooleanCheckbox>  
+						<p:outputLabel value="De la facture apporteur"/>
+						<p:inputText value="#{exportComptaBean.debApporteur}">
+							<p:ajax event="blur" update="@this"/>
+						</p:inputText>
+						<p:outputLabel value="à la facture apporteur"/>
+						<p:inputText value="#{exportComptaBean.finApporteur}">
+							<p:ajax event="blur" update="@this"/>
+						</p:inputText>
+						<p:selectBooleanCheckbox value="#{exportComptaBean.reexporterFactureApporteur}">
+							<p:ajax listener="#{exportComptaBean.initProposalAdapterApporteur}" update="idPanelExportVenteParReference,idPanelExportVentesParDate"/>
+						</p:selectBooleanCheckbox>  
+						<p:outputLabel value="Ré-exporter"/>
+						
+
+					</p:panelGrid>
+					
+					<p:panelGrid columns="6" id="idPanelOptionGeneraleParReference">
+						<p:selectBooleanCheckbox value="#{exportComptaBean.exporterReglementLies}">
+						<p:ajax listener="#{exportComptaBean.enregistreOption(exportComptaBean.libReglementsLies,exportComptaBean.exporterReglementLies)}"
+							update="@this,idPanelOptionGeneraleTous,idPanelOptionExportTous,idPanelOptionGeneraleParReference,idPanelOptionExportParReference,idPanelOptionGeneraleParDate,idPanelOptionExportParDate" />
+						</p:selectBooleanCheckbox>						 
+						<p:outputLabel value="Exporter les règlements liés aux documents"/>
+						
+<!-- 						<p:selectBooleanCheckbox value="#{exportComptaBean.exporterAvecPointage}"> -->
+<!-- 						 <p:ajax listener="#{exportComptaBean.enregistreOption(exportComptaBean.libPointages,exportComptaBean.exporterAvecPointage)}"  -->
+<!-- 						update="@this,idPanelOptionGeneraleTous,idPanelOptionExportTous,idPanelOptionGeneraleParReference,idPanelOptionExportParReference,idPanelOptionGeneraleParDate,idPanelOptionExportParDate" /> -->
+<!-- 						</p:selectBooleanCheckbox>						  -->
+<!-- 						<p:outputLabel value="Exporter les pointages"/> -->
+						
+						<p:selectBooleanCheckbox value="#{exportComptaBean.centraliserEcriture}">
+						<p:ajax listener="#{exportComptaBean.enregistreOption(exportComptaBean.libCentraliserEcritures,exportComptaBean.centraliserEcriture)}" 
+					 	update="@this,idPanelOptionGeneraleTous,idPanelOptionExportTous,idPanelOptionGeneraleParReference,idPanelOptionExportParReference,idPanelOptionGeneraleParDate,idPanelOptionExportParDate" />
+					 	</p:selectBooleanCheckbox> 
+						<p:outputLabel value="Centraliser les écritures"/>
+					</p:panelGrid>
+					
+					<p:panel header="Options d'exportation" id="idPanelOptionExportParReference">
+						<p:fieldset legend="Transférer les règlements">
+							<p:selectBooleanCheckbox id="idOptionTousReglementRef"   disabled="#{!exportComptaBean.exporterReglementLies}" value="#{exportComptaBean.exporterTousLesRegelements}">
+								 <p:ajax listener="#{exportComptaBean.optionTousReglement}" update="idPanelOptionExportParDate,idPanelOptionExportTous,idPanelOptionExportParReference"/>
+							</p:selectBooleanCheckbox>
+							<p:outputLabel value="Tous les types de règlements"/>
+							<p:selectManyCheckbox id="idOptionReglementRef"   disabled="#{!exportComptaBean.exporterReglementLies}"  value="#{exportComptaBean.selectedReglement}" layout="pageDirection" columns="1">
+						        <f:selectItems value="#{exportComptaBean.reglements}" var="rg" itemLabel="#{rg}" itemValue="#{rg}" />
+						        <p:ajax listener="#{exportComptaBean.optionReglement}" update="idPanelOptionExportParDate,idPanelOptionExportTous,idPanelOptionExportParReference"/>
+						    </p:selectManyCheckbox>
+						</p:fieldset>
+					</p:panel>
+				
+					<p:commandButton value="Exporter les ventes" actionListener="#{exportComptaBean.actExporterVenteRef('ISAGRI2')}" 
+					oncomplete="if(afficheListeDocsManquantExport(xhr, status, args)){PF('wvDialogListeDocsManquants').show()}
+					else{PF('wvDialogExportationTermineeIsagri2').show()}"  delay="#{msg.datatable_rowselect_delay}" 
+					update="idBtnLoadVenteRef,idBtnEmailVenteRef,@widgetVar(wvDialogListeDocsManquants)" process="@this">
+					</p:commandButton>
+					
+					<p:commandButton id="idBtnLoadVenteRef" value="Télécharger le fichier"  ajax="false"   process="@this" disabled="#{!exportComptaBean.initFichierATelechargerSiExiste()}">
+					<p:fileDownload value="#{exportComptaBean.file}" />
+					</p:commandButton>
+
+					<p:commandButton id="idBtnEmailVenteRef" title="Envoyer par email au comptable" value="Envoyer par email au comptable" styleClass="icon icon-envoi-mail" disabled="#{!exportComptaBean.initFichierATelechargerSiExiste()}"
+						actionListener="#{exportComptaBean.actDialogEmailComptable}" process="@this">
+						<p:ajax event="dialogReturn" listener="#{exportComptaBean.handleReturnDialogEmailComptable}" update=":form:messages" />
+					</p:commandButton>
+
+				
+					
+				</p:fieldset>
+				
+				<p:fieldset legend="Exportation des règlements">
+					<p:panelGrid columns="7" id="idPanelExportReglementParReference">
+<!-- 						<p:selectBooleanCheckbox value="#{exportComptaBean.rempliAcomptes}"> -->
+<!-- 						<p:ajax listener="#{exportComptaBean.initBornesAcompte}" update="idPanelExportReglementParReference"/> -->
+<!-- 						</p:selectBooleanCheckbox>   -->
+<!-- 						<p:outputLabel value="De l'acompte"/> -->
+<!-- 						<p:inputText value="#{exportComptaBean.debAcompte}"> -->
+<!-- 							<p:ajax event="blur" update="@this"/> -->
+<!-- 						</p:inputText> -->
+<!-- 						<p:outputLabel value="à l'acompte"/> -->
+<!-- 						<p:inputText value="#{exportComptaBean.finAcompte}"> -->
+<!-- 							<p:ajax event="blur" update="@this"/> -->
+<!-- 						</p:inputText> -->
+<!-- 						<p:selectBooleanCheckbox value="#{exportComptaBean.reexporterAcompte}"> -->
+<!-- 							<p:ajax listener="#{exportComptaBean.initProposalAdapterAcompte}" update="idPanelExportReglementParReference,idPanelExportReglementParDate"/> -->
+<!-- 						</p:selectBooleanCheckbox>   -->
+<!-- 						<p:outputLabel value="Ré-exporter"/> -->
+						
+						<p:selectBooleanCheckbox value="#{exportComptaBean.rempliReglement}">
+						<p:ajax listener="#{exportComptaBean.initBornesReglement}" update="idPanelExportReglementParReference"/>
+						</p:selectBooleanCheckbox>   
+						<p:outputLabel value="Du règlement"/>
+						<p:inputText value="#{exportComptaBean.debReglement}">
+							<p:ajax event="blur" update="@this"/>
+						</p:inputText>
+						<p:outputLabel value="au règlement"/>
+						<p:inputText value="#{exportComptaBean.finReglement}">
+							<p:ajax event="blur" update="@this"/>
+						</p:inputText>
+						<p:selectBooleanCheckbox value="#{exportComptaBean.reexporterReglement}">
+							<p:ajax listener="#{exportComptaBean.initProposalAdapterReglement}" update="idPanelExportReglementParReference,idPanelExportReglementParDate"/>
+						</p:selectBooleanCheckbox>   
+						<p:outputLabel value="Ré-exporter"/>
+						
+						<p:selectBooleanCheckbox value="#{exportComptaBean.rempliRemise}">
+						<p:ajax listener="#{exportComptaBean.initBornesRemise}" update="idPanelExportReglementParReference"/>
+						</p:selectBooleanCheckbox>   
+						<p:outputLabel value="De la remise"/>
+						<p:inputText value="#{exportComptaBean.debRemise}">
+							<p:ajax event="blur" update="@this"/>
+						</p:inputText>
+						<p:outputLabel value="à la remise"/>
+						<p:inputText value="#{exportComptaBean.finRemise}">
+							<p:ajax event="blur" update="@this"/>
+						</p:inputText>
+						<p:selectBooleanCheckbox value="#{exportComptaBean.reexporterRemise}">
+							<p:ajax listener="#{exportComptaBean.initProposalAdapterRemises}" update="idPanelExportReglementParReference,idPanelExportReglementParDate"/>
+						</p:selectBooleanCheckbox>   
+						<p:outputLabel value="Ré-exporter"/>
+					</p:panelGrid>
+					
+					<p:selectBooleanCheckbox value="#{exportComptaBean.exporterDocumentLies}"/> 
+					<p:outputLabel value="Exporter les documents liés aux réglements"/>
+<!-- 					<br/> -->
+<!-- 					<p:selectBooleanCheckbox value="#{exportComptaBean.exporterAvecPointage}"/>  -->
+<!-- 					<p:outputLabel value="Exporter les pointages"/> -->
+					<br/>
+					<p:commandButton value="Exporter les règlements" actionListener="#{exportComptaBean.actExporterReglementRef('ISAGRI2')}" 
+						oncomplete="if(afficheListeDocsManquantExport(xhr, status, args)){PF('wvDialogListeDocsManquants').show()}
+					else{PF('wvDialogExportationTermineeIsagri2').show()}"  delay="#{msg.datatable_rowselect_delay}"  
+						update="idBtnLoadReglementRef,idBtnEmailReglementRef" process="@this">
+					</p:commandButton>
+					
+					<p:commandButton id="idBtnLoadReglementRef" value="Télécharger le fichier"  ajax="false"  process="@this" disabled="#{!exportComptaBean.initFichierATelechargerSiExiste()}">
+					<p:fileDownload value="#{exportComptaBean.file}" />
+					</p:commandButton>
+
+					<p:commandButton id="idBtnEmailReglementRef"  title="Envoyer par email au comptable"  value="Envoyer par email au comptable" styleClass="icon icon-envoi-mail" disabled="#{!exportComptaBean.initFichierATelechargerSiExiste()}"
+						actionListener="#{exportComptaBean.actDialogEmailComptable}" process="@this">
+						<p:ajax event="dialogReturn" listener="#{exportComptaBean.handleReturnDialogEmailComptable}" update=":form:messages" />
+					</p:commandButton>
+
+				</p:fieldset>
+				
+				<p:selectBooleanCheckbox value="#{exportComptaBean.toutReexporter}">
+						<p:ajax listener="#{exportComptaBean.cocheTousLesCheck}" update="idPanelExportReglementParReference,idPanelExportVenteParReference,idPanelExportVentesParDate,,idPanelExportReglementParDate"/>
+				</p:selectBooleanCheckbox>       
+				<p:outputLabel value="Tout ré-exporter"/>
+			</p:tab>
+			
+			<p:tab title="Exportation par date ISAGRI 2"  id="#{ConstController.ID_TAB_PAR_DATE}">
+				<p:panel header="Options d'écriture" >
+					<p:selectBooleanCheckbox value="#{exportComptaBean.ecraserFichier}" id="idEcraseFichierDate"  >
+						<f:ajax event="change"  update="idEcraseFichierTous,idEcraseFichierRef,idEcraseFichierDate"/>
+					</p:selectBooleanCheckbox>
+					 <p:outputLabel value="Effacer le fichier"/>					
+
+				</p:panel>
+				<p:fieldset legend="Exportation des ventes">
+					<p:panelGrid columns="4" id="idPanelExportVentesParDate">
+						<p:outputLabel value="Date début"/>
+						<p:calendar value="#{exportComptaBean.debDateVente}"
+						pattern="dd/MM/yyyy" mask="true" locale="fr" navigator="true" showOn="button"  timeZone="#{msg.time_zone}">
+							<p:ajax event="dateSelect" update="@this" />
+							<p:ajax event="change"  update="@this"/>
+						</p:calendar>
+						<p:outputLabel value="Date fin"/>
+						<p:calendar value="#{exportComptaBean.finDateVente}"
+						pattern="dd/MM/yyyy" mask="true" locale="fr" navigator="true" showOn="button"  timeZone="#{msg.time_zone}">
+							<p:ajax event="dateSelect" update="@this" />
+							<p:ajax event="change"  update="@this"/>
+						</p:calendar>
+						
+						<p:selectBooleanCheckbox value="#{exportComptaBean.rempliVentes}">
+						<p:ajax listener="#{exportComptaBean.initBornesFacture}" update="idPanelExportVentesParDate"/>
+						</p:selectBooleanCheckbox>    
+						<p:outputLabel value="Facture de ventes"/>
+						<p:selectBooleanCheckbox value="#{exportComptaBean.reexporterFacture}">
+							<p:ajax listener="#{exportComptaBean.initProposalAdapterFacture}" update="idPanelExportVenteParReference,idPanelExportVentesParDate"/>
+						</p:selectBooleanCheckbox>  
+						<p:outputLabel value="Re-éexporter"/>
+						
+						<p:selectBooleanCheckbox value="#{exportComptaBean.rempliAvoirs}">
+						<p:ajax listener="#{exportComptaBean.initBornesAvoir}" update="idPanelExportVentesParDate"/>
+						</p:selectBooleanCheckbox>     
+						<p:outputLabel value="Facture d'avoir"/>
+						<p:selectBooleanCheckbox value="#{exportComptaBean.reexporterFactureAvoir}">
+							<p:ajax listener="#{exportComptaBean.initProposalAdapterAvoir}" update="idPanelExportVenteParReference,idPanelExportVentesParDate"/>
+						</p:selectBooleanCheckbox>   
+						<p:outputLabel value="Re-éexporter"/>
+						
+						<p:selectBooleanCheckbox value="#{exportComptaBean.rempliApporteur}">
+						<p:ajax listener="#{exportComptaBean.initBornesApporteur}" update="idPanelExportVentesParDate"/>
+						</p:selectBooleanCheckbox>     
+						<p:outputLabel value="Facture apporteurs"/>
+						<p:selectBooleanCheckbox value="#{exportComptaBean.reexporterFactureApporteur}">
+							<p:ajax listener="#{exportComptaBean.initProposalAdapterApporteur}" update="idPanelExportVenteParReference,idPanelExportVentesParDate"/>
+						</p:selectBooleanCheckbox>   
+						<p:outputLabel value="Re-éexporter"/>
+					</p:panelGrid>
+					
+					<p:panelGrid columns="6" id="idPanelOptionGeneraleParDate">
+						<p:selectBooleanCheckbox value="#{exportComptaBean.exporterReglementLies}" >
+						<p:ajax listener="#{exportComptaBean.enregistreOption(exportComptaBean.libReglementsLies,exportComptaBean.exporterReglementLies)}"
+							update="@this,idPanelOptionGeneraleTous,idPanelOptionExportTous,idPanelOptionGeneraleParReference,idPanelOptionExportParReference,idPanelOptionGeneraleParDate,idPanelOptionExportParDate" />
+					</p:selectBooleanCheckbox>
+						<p:outputLabel value="Exporter les règlements liés aux documents"/>
+						
+<!-- 						<p:selectBooleanCheckbox value="#{exportComptaBean.exporterAvecPointage}" > -->
+<!-- 						<p:ajax listener="#{exportComptaBean.enregistreOption(exportComptaBean.libPointages,exportComptaBean.exporterAvecPointage)}" -->
+<!-- 							update="@this,idPanelOptionGeneraleTous,idPanelOptionExportTous,idPanelOptionGeneraleParReference,idPanelOptionExportParReference,idPanelOptionGeneraleParDate,idPanelOptionExportParDate" /> -->
+<!-- 					</p:selectBooleanCheckbox>  -->
+<!-- 						<p:outputLabel value="Exporter les pointages"/> -->
+						
+						<p:selectBooleanCheckbox value="#{exportComptaBean.centraliserEcriture}" >
+						<p:ajax listener="#{exportComptaBean.enregistreOption(exportComptaBean.libCentraliserEcritures,exportComptaBean.centraliserEcriture)}"
+							update="@this,idPanelOptionGeneraleTous,idPanelOptionExportTous,idPanelOptionGeneraleParReference,idPanelOptionExportParReference,idPanelOptionGeneraleParDate,idPanelOptionExportParDate" />
+					</p:selectBooleanCheckbox>
+						<p:outputLabel value="Centraliser les écritures"/>
+					</p:panelGrid>
+					
+					<p:panel header="Options d'exportation" id="idPanelOptionExportParDate">
+						<p:fieldset legend="Transférer les règlements">
+							<p:selectBooleanCheckbox id="idOptionTousReglementDate"   disabled="#{!exportComptaBean.exporterReglementLies}" value="#{exportComptaBean.exporterTousLesRegelements}">
+								 <p:ajax listener="#{exportComptaBean.optionTousReglement}" update="idPanelOptionExportParDate,idPanelOptionExportTous,idPanelOptionExportParReference"/>
+							</p:selectBooleanCheckbox>
+							<p:outputLabel value="Tous les types de règlements"/>
+							<p:selectManyCheckbox id="idOptionReglementDate"   disabled="#{!exportComptaBean.exporterReglementLies}" value="#{exportComptaBean.selectedReglement}" layout="pageDirection" columns="1">
+						        <f:selectItems value="#{exportComptaBean.reglements}" var="rg" itemLabel="#{rg}" itemValue="#{rg}" />
+						        <p:ajax listener="#{exportComptaBean.optionReglement}" update="idPanelOptionExportParDate,idPanelOptionExportTous,idPanelOptionExportParReference"/>
+						    </p:selectManyCheckbox>
+						</p:fieldset>
+					</p:panel>
+				
+					<p:commandButton value="Exporter les ventes" actionListener="#{exportComptaBean.actExporterVenteDate('ISAGRI2')}"  
+						oncomplete="if(afficheListeDocsManquantExport(xhr, status, args)){PF('wvDialogListeDocsManquants').show()}
+					else{PF('wvDialogExportationTermineeIsagri2').show()}" delay="#{msg.datatable_rowselect_delay}" 
+						update="idBtnLoadVenteDate,idBtnEmailVenteDate" process="@this">
+					</p:commandButton>
+					
+					<p:commandButton id="idBtnLoadVenteDate" value="Télécharger le fichier"  ajax="false"   process="@this" disabled="#{!exportComptaBean.initFichierATelechargerSiExiste()}">
+					<p:fileDownload value="#{exportComptaBean.file}" />
+					</p:commandButton>
+					
+				<p:commandButton id="idBtnEmailVenteDate"  title="Envoyer par email au comptable" value="Envoyer par email au comptable"  styleClass="icon icon-envoi-mail"  disabled="#{!exportComptaBean.initFichierATelechargerSiExiste()}"
+				actionListener="#{exportComptaBean.actDialogEmailComptable}" 
+				process="@this">
+				<p:ajax event="dialogReturn" listener="#{exportComptaBean.handleReturnDialogEmailComptable}" update=":form:messages" />
+				</p:commandButton>
+			
+					
+				</p:fieldset>
+				
+				<p:fieldset legend="Exportation des règlements">
+					<p:panelGrid columns="4" id="idPanelExportReglementParDate">
+						<p:outputLabel value="Date début"/>
+						<p:calendar value="#{exportComptaBean.debDateReglement}"
+						pattern="dd/MM/yyyy" mask="true" locale="fr" navigator="true" showOn="button"  timeZone="#{msg.time_zone}">
+							<p:ajax event="dateSelect" update="@this" />
+							<p:ajax event="change"  update="@this"/>
+						</p:calendar>    
+						<p:outputLabel value="Date fin"/>
+						<p:calendar value="#{exportComptaBean.finDateReglement}"
+						pattern="dd/MM/yyyy" mask="true" locale="fr" navigator="true" showOn="button"  timeZone="#{msg.time_zone}">
+							<p:ajax event="dateSelect" update="@this" />
+							<p:ajax event="change"  update="@this"/>
+						</p:calendar>
+						
+<!-- 						<p:selectBooleanCheckbox value="#{exportComptaBean.rempliAcomptes}"> -->
+<!-- 						<p:ajax listener="#{exportComptaBean.initBornesAcompte}" update="idPanelExportReglementParDate"/> -->
+<!-- 						</p:selectBooleanCheckbox>       -->
+<!-- 						<p:outputLabel value="Acomptes"/> -->
+<!-- 						<p:selectBooleanCheckbox value="#{exportComptaBean.reexporterAcompte}"> -->
+<!-- 							<p:ajax listener="#{exportComptaBean.initProposalAdapterAcompte}" update="idPanelExportReglementParReference,idPanelExportReglementParDate"/> -->
+<!-- 						</p:selectBooleanCheckbox>    -->
+<!-- 						<p:outputLabel value="Re-éexporter"/> -->
+						
+						<p:selectBooleanCheckbox value="#{exportComptaBean.rempliReglement}">
+						<p:ajax listener="#{exportComptaBean.initBornesReglement}" update="idPanelExportReglementParDate"/>
+						</p:selectBooleanCheckbox>      
+						<p:outputLabel value="Règlements (autre que remises)"/>
+						<p:selectBooleanCheckbox value="#{exportComptaBean.reexporterReglement}">
+							<p:ajax listener="#{exportComptaBean.initProposalAdapterReglement}" update="idPanelExportReglementParReference,idPanelExportReglementParDate"/>
+						</p:selectBooleanCheckbox>    
+						<p:outputLabel value="Re-éexporter"/>
+						
+						<p:selectBooleanCheckbox value="#{exportComptaBean.rempliRemise}">
+						<p:ajax listener="#{exportComptaBean.initBornesRemise}" update="idPanelExportReglementParDate"/>
+						</p:selectBooleanCheckbox>      
+						<p:outputLabel value="Remises"/>
+						<p:selectBooleanCheckbox value="#{exportComptaBean.reexporterRemise}">
+							<p:ajax listener="#{exportComptaBean.initProposalAdapterRemises}" update="idPanelExportReglementParReference,idPanelExportReglementParDate"/>
+						</p:selectBooleanCheckbox>    
+						<p:outputLabel value="Re-éexporter"/>
+					</p:panelGrid>
+					<p:panelGrid columns="2" id="idPanelExportAutresParDate">
+					<p:selectBooleanCheckbox value="#{exportComptaBean.exporterDocumentLies}"/> 
+					<p:outputLabel value="Exporter les documents liés aux règlements"/>
+<!-- 					<p:selectBooleanCheckbox value="#{exportComptaBean.exporterAvecPointage}"/>  -->
+<!-- 					<p:outputLabel value="Exporter les pointages"/> -->
+					</p:panelGrid>
+					<p:commandButton value="Exporter les règlements" actionListener="#{exportComptaBean.actExporterReglementDate('ISAGRI2')}"  
+						oncomplete="if(afficheListeDocsManquantExport(xhr, status, args)){PF('wvDialogListeDocsManquants').show()}
+					else{PF('wvDialogExportationTermineeIsagri2').show()}" delay="#{msg.datatable_rowselect_delay}" 
+						update="idBtnLoadVReglementDate,idBtnEmailReglementDate" process="@this">
+					</p:commandButton>
+					
+					<p:commandButton id="idBtnLoadVReglementDate" value="Télécharger le fichier"  ajax="false"  process="@this" disabled="#{!exportComptaBean.initFichierATelechargerSiExiste()}">
+					<p:fileDownload value="#{exportComptaBean.file}" />
+					</p:commandButton>
+					
+				<p:commandButton id="idBtnEmailReglementDate"  title="Envoyer par email au comptable" value="Envoyer par email au comptable"  styleClass="icon icon-envoi-mail"  disabled="#{!exportComptaBean.initFichierATelechargerSiExiste()}"
+				actionListener="#{exportComptaBean.actDialogEmailComptable}" 
+				process="@this">
+				<p:ajax event="dialogReturn" listener="#{exportComptaBean.handleReturnDialogEmailComptable}" update=":form:messages" />
+				</p:commandButton>
+			
+					
+				</p:fieldset>
+				
+				<p:selectBooleanCheckbox value="#{exportComptaBean.toutReexporter}">
+						<p:ajax listener="#{exportComptaBean.cocheTousLesCheck}" update="idPanelExportReglementParReference,idPanelExportVenteParReference,idPanelExportVentesParDate,,idPanelExportReglementParDate"/>
+				</p:selectBooleanCheckbox>       
+				<p:outputLabel value="Tout ré-exporter"/>
+			</p:tab>
+			
+			<p:tab title="Etat d'exportation des documents"  id="#{ConstController.ID_TAB_LISTE}" >
+				<ui:include src="/export/etat_exportation_documents.xhtml" />
+			</p:tab>
+
+		</p:tabView>
+
+<p:dialog header="Exportation terminée" widgetVar="wvDialogExportationTermineeIsagri2" minHeight="40" width="1200" >
+	<p:panel header="Téléchargement du fichier">
+		<div class="ui-g">
+			<div class="ui-g-4">
+				<p:panelGrid columns="2">
+					<p:commandButton  value="Télécharger le fichier"  ajax="false"   process="@this" >
+					<p:fileDownload value="#{exportComptaBean.file}" oncomplete="PF('wvDialogExportationTermineeIsagri2').hide()"/>
+					</p:commandButton>				
+				<p:commandButton  title="Envoyer par email au comptable" value="Envoyer par email au comptable"  styleClass="icon icon-envoi-mail" 
+				actionListener="#{exportComptaBean.actDialogEmailComptable}" 
+				process="@this">
+				<p:ajax event="dialogReturn" listener="#{exportComptaBean.handleReturnDialogEmailComptable}" update=":form:messages" />
+				</p:commandButton>
+					<p:commandButton value="Fermer"  process="@this"  onstart="PF('wvDialogExportationTermineeIsagri2').hide()"/>
+				</p:panelGrid>
+			</div>
+		</div>
+	</p:panel>				
+</p:dialog>
+			
+<p:dialog header="Liste des documents manquants" widgetVar="wvDialogListeDocsManquants" minHeight="40" width="1200" >
+	<p:panel header="Liste des documents">
+		<div class="ui-g">
+			<div class="ui-g-10">
+				<p:dataTable value="#{exportComptaBean.listeDocumentsManquantsLocal}" 
+								var="doc" 
+								rowKey="#{doc.idDocument}" 
+								widgetVar="wvDataTableDocumentManquant"
+								selection="#{exportComptaBean.selection2}"
+								resizableColumns="true"
+								paginator="true" 
+								rows="#{msg.modele_datatable_ligne_par_page_debut}"
+								paginatorTemplate="#{msg.modele_datatable_paginator}"
+								rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+								emptyMessage="#{msg.message_datatable_vide}"
+								currentPageReportTemplate="#{msg.modele_datatable_page_courante}">
+					
+					<p:column headerText="Exporter" selectionMode="multiple" style="width:50px;text-align:center" />
+					<p:column headerText="Document" sortBy="#{doc.codeDocument}" style="width:200px">
+						<p:outputLabel value="#{doc.codeDocument}"/>
+					</p:column>
+					<p:column headerText="Tiers" sortBy="#{doc.taTiers.codeTiers}" style="width:200px" >
+						<p:outputLabel value="#{doc.taTiers.codeTiers}"/>
+					</p:column>
+					<p:column headerText="Date" styleClass="center" sortBy="#{doc.dateDocument}" style="width:200px">
+						<p:outputLabel value="#{doc.dateDocument}">
+							<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+						</p:outputLabel>
+					</p:column>
+					<p:column headerText="Libellé" sortBy="#{doc.libelleDocument}" style="width:400px">
+						<p:outputLabel value="#{doc.libelleDocument}"/>
+					</p:column>
+				</p:dataTable>
+			</div>
+			<div class="ui-g-2">
+				<p:panelGrid columns="1">
+					<p:commandButton value="Exporter" process="@this,@widgetVar(wvDialogListeDocsManquants)" actionListener="#{exportComptaBean.actExporterLesDocsManquants('ISAGRI2')}" 
+					oncomplete="PF('wvDialogListeDocsManquants').hide()"/>
+					<p:commandButton value="Fermer"  process="@this"  onstart="PF('wvDialogListeDocsManquants').hide()"/>
+				</p:panelGrid>
+			</div>
+		</div>
+	</p:panel>				
+</p:dialog>
+
+
+
+	</f:validateBean>
+
+<!-- 	<p:remoteCommand name="aaa" actionListener="#{exportComptaBean.contientDesDocumentsManquants()}"  -->
+<!-- 	oncomplete="afficheListeDocsManquantExport(xhr, status, args)" process="@this"/> -->
+</ui:composition>

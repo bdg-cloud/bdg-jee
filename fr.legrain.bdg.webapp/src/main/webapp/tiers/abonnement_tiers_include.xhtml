@@ -1,0 +1,957 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
+xmlns:f="http://java.sun.com/jsf/core" 
+xmlns:h="http://java.sun.com/jsf/html"
+xmlns:ui="http://java.sun.com/jsf/facelets" 
+xmlns:o="http://omnifaces.org/ui" 
+xmlns:p="http://primefaces.org/ui">
+
+
+
+	<p:panel widgetVar="abonnementTiersForm#{variableNomWvIDUnique}">
+	
+		<p:panel header="Information du tiers dans le service bancaire (stripe)" widgetVar="panelListeAbonnementTiers#{variableNomWvIDUnique}">
+			<p:panelGrid columns="2">
+				<p:panelGrid columns="2">
+					
+					<p:outputLabel value="Gestion des abonnements par stripe : " />
+					<p:inputSwitch value="#{abonnementTiersController.creerAbonnementSurStripe}" onLabel="Oui" offLabel="Non">
+						<p:ajax update="@widgetVar(abonnementTiersForm#{variableNomWvIDUnique})" />
+					</p:inputSwitch>
+					<p:outputLabel value="ID (externe)" />
+					<p:commandLink value="#{abonnementTiersController.selectedTaStripeCustomerDTO.idExterne}" 
+						onclick="window.open('#{abonnementTiersController.genereUrlDashboardStripe('customers',abonnementTiersController.selectedTaStripeCustomerDTO.idExterne,true)}')" >
+					</p:commandLink>
+					
+					<p:outputLabel value="Date création" />
+					<p:outputLabel value="" />
+					
+					<p:outputLabel value="Email" />
+					<p:outputLabel value="#{abonnementTiersController.selectedTaStripeCustomerDTO.email}" />
+					
+					<p:outputLabel value="Description" />
+					<p:outputLabel value="#{abonnementTiersController.selectedTaStripeCustomerDTO.description}" />
+					
+				</p:panelGrid>
+				
+				<p:panel header="Moyen de paiement par défaut" widgetVar="panelListeSourceAbonnementTiers#{variableNomWvIDUnique}" toggleable="true">
+					Vous pouvez ajouter une source de paiement utilisable pour les abonnements en la créant dans le "service bancaire" à partir de l'onglet "moyen de paiement"
+					<p:dataTable value="#{abonnementTiersController.listeSource}" var="p"
+						rowKey="#{p.id}" selection="#{abonnementTiersController.selectedTaStripeSourceDefautDTO}">
+		
+<!-- 						<p:column selectionMode="single" headerText="Défaut" style="width:32px;text-align:center"/> -->
+						
+						<p:column headerText="ID (externe)"> 
+							<p:commandLink value="#{p.idExterne}" 
+								onclick="window.open('#{abonnementTiersController.genereUrlDashboardStripe('sources',p.idExterne,true)}')" >
+							</p:commandLink>
+						</p:column>
+						<p:column headerText="Compte Prélèvement SEPA" styleClass="center"> 
+							<p:outputLabel value="#{p.taCompteBanqueDTO.country} **** #{p.taCompteBanqueDTO.last4}" rendered="#{p.taCompteBanqueDTO.last4 != null}"/>
+						</p:column>
+						<p:column headerText="Carte Bancaire" styleClass="center"> 
+							<p:outputLabel value="#{p.taCarteBancaireDTO.type} • **** #{p.taCarteBancaireDTO.last4} • #{p.taCarteBancaireDTO.moisExpiration}/#{p.taCarteBancaireDTO.anneeExpiration}" rendered="#{p.taCarteBancaireDTO.last4 != null}"/>
+						</p:column>
+						<p:column headerText="Défaut" styleClass="center"> 
+							<p:outputLabel value="X" rendered="#{abonnementTiersController.taStripeCustomer.taSourceDefault !=null and p.idExterne eq abonnementTiersController.taStripeCustomer.taSourceDefault.idExterne}" />
+							<p:commandButton value="Définir par défaut" actionListener="#{abonnementTiersController.actChangerSourceParDefautTiers}" update="@parent:@parent" rendered="#{abonnementTiersController.taStripeCustomer.taSourceDefault ==null or p.idExterne ne abonnementTiersController.taStripeCustomer.taSourceDefault.idExterne}">
+								<f:attribute name="idNouvelleSourceDefaut" value="#{p.id}" />
+							</p:commandButton>
+						</p:column>
+					</p:dataTable>
+				</p:panel>
+			        
+				<p:commandButton value="Créer / Mettre à jour (tiers)" actionListener="#{abonnementTiersController.actEnregistrer}" update="@parent" process="@this"/>
+			</p:panelGrid>
+		</p:panel>
+		
+		<p:tabView>
+			<p:tab title="Gestion des abonnements #{abonnementTiersController.creerAbonnementSurStripe?'Stripe':''}">
+			<p:panel widgetVar="panelListeAbonnementTiers#{variableNomWvIDUnique}" toggleable="true" collapsed="false">
+				<p:panel header="Liste des abonnements" toggleable="true" >
+					
+					<p:commandButton value="Insérer abonnement" actionListener="#{abonnementTiersController.actInsererAbonnement}" 
+						update="@widgetVar(wvDetailAbonnement),@widgetVar(panelListeAbonnementTiers#{variableNomWvIDUnique})" 
+						process="@this" disabled="#{abonnementTiersController.modeEcranSubscription.dataSetEnModif()}" rendered="false"/>
+					
+					<p:commandButton value="Modifier abonnement" actionListener="#{abonnementTiersController.actModifierAbonnement}" rendered="false"
+						update="@widgetVar(wvDetailAbonnement),@widgetVar(panelListeAbonnementTiers#{variableNomWvIDUnique})" 
+						process="@this" disabled="#{abonnementTiersController.modeEcranSubscription.dataSetEnModif()}"/>
+						
+					<p:dataTable value="#{abonnementTiersController.listeSubscription}" var="p"
+						disabled="#{abonnementTiersController.modeEcranSubscription.dataSetEnModif()}"
+						disabledSelection="#{abonnementTiersController.modeEcranSubscription.dataSetEnModif()}"
+						rowKey="#{p.id}" selectionMode="single" selection="#{abonnementTiersController.selectedTaStripeSubscriptionDTO}"
+						 widgetVar="wvDatatableListeAbonnementTiers">
+						<!--  rendered="#{abonnementTiersController.creerAbonnementSurStripe}" -->
+						  <f:facet name="header"> Liste des abonnements de ce tiers</f:facet>
+						
+						<p:ajax event="rowSelect" delay="#{msg.datatable_rowselect_delay}"
+						 listener="#{abonnementTiersController.onRowSelectAbonnement}"
+						  update="@widgetVar(wvDetailAbonnement),@widgetVar(wvPanelAvisEchDeLAbonnement)"/>
+						   
+						<p:column headerText="ID "> 
+							<p:outputLabel value="#{p.id}" />
+						</p:column>
+						<p:column headerText="Code document" styleClass="center" sortBy="#{p.codeDocument}" filterBy="#{p.codeDocument}"> 
+							<p:commandLink value="#{p.codeDocument}"
+									action="#{ouvertureDocumentBean.detailDocument(ouvertureDocumentBean.recupCodeDocument(p.codeDocument,ouvertureDocumentBean.getTypeDocumentAbonnement()))}" 
+									update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+								</p:commandLink>  
+						</p:column>	
+						<p:column headerText="Status" styleClass="center">
+							<p:outputLabel value="#{p.status}" />
+						</p:column>
+						<p:column headerText="Facturation (auto/manuel)">
+							<p:outputLabel value="#{p.billing}" />
+						</p:column>
+						<p:column headerText="Début" styleClass="center" sortBy="#{p.dateDebut}" filterBy="#{abonnementTiersController.customFormatDate(p.dateDebut)}">
+							<h:outputText value="#{p.dateDebut}">
+								<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+							</h:outputText>
+						</p:column>
+						<p:column headerText="Fin" styleClass="center" sortBy="#{p.dateFin}" filterBy="#{abonnementTiersController.customFormatDate(p.dateFin)}">
+							<h:outputText value="#{p.dateFin}">
+								<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+							</h:outputText>
+						</p:column>
+						<p:column headerText="Date annulation" styleClass="center" sortBy="#{p.dateAnnulation}" filterBy="#{abonnementTiersController.customFormatDate(p.dateAnnulation)}">
+							<h:outputText value="#{p.dateAnnulation}">
+								<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+							</h:outputText>
+						</p:column>
+						
+					</p:dataTable>
+					
+					
+					<!-- Liste pour test tous abonnement sauf annulé pour un tiers  -->
+					
+					
+					
+					
+					
+					
+					
+					
+					<p:dataTable value="#{abonnementTiersController.listeSubscriptionNonStripe}" var="p"
+						disabled="#{abonnementTiersController.modeEcranSubscription.dataSetEnModif()}"
+						disabledSelection="#{abonnementTiersController.modeEcranSubscription.dataSetEnModif()}"
+						rowKey="#{p.id}" selectionMode="single" selection="#{abonnementTiersController.selectedTaStripeSubscriptionDTO}" rendered="false"
+						>
+						<!-- rendered="#{!abonnementTiersController.creerAbonnementSurStripe}" -->
+						<p:ajax event="rowSelect" delay="#{msg.datatable_rowselect_delay}"
+						 listener="#{abonnementTiersController.onRowSelectAbonnement}"
+						  update="@widgetVar(wvDetailAbonnement)"/>
+						  
+						  <f:facet name="header"> Liste des abonnements non stripe</f:facet>
+						   
+						<p:column headerText="ID" styleClass="center" sortBy="#{p.id}" filterBy="#{p.id}"> 
+							<p:outputLabel value="#{p.id}" />
+						</p:column>
+						<p:column headerText="Code document" styleClass="center" sortBy="#{p.codeDocument}" filterBy="#{p.codeDocument}"> 
+							<p:outputLabel value="#{p.codeDocument}" />
+						</p:column>					
+	<!-- 					<p:column headerText="Produit"/> -->
+						<p:column headerText="Status" styleClass="center" sortBy="#{p.status}" filterBy="#{p.status}">
+							<p:outputLabel value="#{p.status}" />
+						</p:column>
+					
+						<p:column headerText="Début" styleClass="center" sortBy="#{p.dateDebut}" filterBy="#{p.dateDebut}">
+							<h:outputText value="#{p.dateDebut}">
+								<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+							</h:outputText>
+						</p:column>
+						
+						<p:column headerText="Fin" styleClass="center" sortBy="#{p.dateFin}" filterBy="#{p.dateFin}">
+							<h:outputText value="#{p.dateFin}">
+								<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+							</h:outputText>
+						</p:column>
+						
+						<p:column headerText="Annulation" styleClass="center" sortBy="#{p.dateAnnulation}" filterBy="#{p.dateAnnulation}">
+							<h:outputText value="#{p.dateAnnulation}">
+								<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+							</h:outputText>
+						</p:column>
+						
+	<!-- 					 <p:column headerText="Moyen de paiement"> -->
+	<!-- 						<p:outputLabel value="#{p.taCompteBanqueDTO.country} **** #{p.taCompteBanqueDTO.last4}" rendered="#{p.taCompteBanqueDTO.last4 != null}"/> -->
+	<!-- 						<p:outputLabel value="#{p.taCarteBancaireDTO.type} • **** #{p.taCarteBancaireDTO.last4} • #{p.taCarteBancaireDTO.moisExpiration}/#{p.taCarteBancaireDTO.anneeExpiration}" rendered="#{p.taCarteBancaireDTO.last4 != null}"/> -->
+	<!-- 						<p:outputLabel value="#{p.idExterneSource}"/> -->
+	<!-- 						<p:outputLabel value="#{p.idExterneSource}" rendered="#{p.idExterne eq 'Chèque' or p.idExterne eq 'Virement'}"/> -->
+	<!-- 						<p:outputLabel value="#{p.idExterneSource}" rendered="#{p.idExterne eq 'Chèque' or p.idExterne eq 'Virement'}"/> -->
+	<!-- 					</p:column> -->
+						
+						<p:column headerText="Actions" styleClass="center">
+							<p:commandButton process="@this" value="Annuler / Résilier abo" actionListener="#{abonnementTiersController.actPrepareSupprimerAbonnementNonStripe}" 
+		                   		disabled="#{abonnementTiersController.modeEcranSubscription.dataSetEnModif()}"
+		                   		update="@parent,@widgetVar(wvPanelDialogLigneAbonnement)" oncomplete="PF('wvDialogSuspendreAbonnement').show()">
+	<!-- 							<p:confirm header="Confirmation" message="Etes vous sur de vouloir suspendre cet abonnement" icon="ui-icon-alert" /> -->
+								<f:attribute name="idStripeSubscription" value="#{p.idExterne}"/>
+							</p:commandButton>
+						</p:column>
+					</p:dataTable>
+				</p:panel>
+				<p:panel header="Détail de l'abonnement sélectionné" widgetVar="wvDetailAbonnement" toggleable="true">
+					<p:panelGrid columns="2" rendered="#{abonnementTiersController.newTaStripeSubscriptionDTO != null}">
+						<p:outputLabel value="ID (externe)" />
+						<p:commandLink value="#{abonnementTiersController.selectedTaStripeSubscriptionDTO.idExterne}" 
+							onclick="window.open('https://dashboard.stripe.com/test/subscriptions/#{abonnementTiersController.selectedTaStripeSubscriptionDTO.idExterne}')" >
+						</p:commandLink>
+						
+						<p:outputLabel value="Date création" />
+						<p:outputLabel value="" />		
+			
+						<p:outputLabel value="Moyen de paiement" />
+				        <p:autoComplete  value="#{abonnementTiersController.selectedTaStripeSourceSubscriptionDTO}" 
+				        	completeMethod="#{abonnementTiersController.taStripeSourceAutoCompleteLight}" dropdown="true"
+	                        var="p" itemLabel="#{p.idExterne}" itemValue="#{p}" converter="entityConverter" forceSelection="true"
+	                        disabled="#{!abonnementTiersController.modeEcranSubscription.dataSetEnModif()}">
+	                        
+	                        <p:column>
+							 	<h:outputText value="#{p.idExterne}" />
+						     </p:column>
+	
+	                        <p:column>
+								<p:outputLabel value="#{p.taCompteBanqueDTO.country} **** #{p.taCompteBanqueDTO.last4}" rendered="#{p.taCompteBanqueDTO!=null and p.taCompteBanqueDTO.last4 != null}"/>
+								<p:outputLabel value="#{p.taCarteBancaireDTO.type} • **** #{p.taCarteBancaireDTO.last4} • #{p.taCarteBancaireDTO.moisExpiration}/#{p.taCarteBancaireDTO.anneeExpiration}" rendered="#{p.taCarteBancaireDTO!=null and p.taCarteBancaireDTO.last4 != null}"/>
+								<p:outputLabel value="#{p.idExterne}" rendered="#{p.idExterne eq 'Chèque' or p.idExterne eq 'Virement'}"/>
+							</p:column>
+							
+							<p:column>
+								<p:outputLabel value="X" rendered="#{abonnementTiersController.taStripeCustomer.taSourceDefault !=null and p.idExterne eq abonnementTiersController.taStripeCustomer.taSourceDefault.idExterne}" />
+							</p:column>
+							
+	
+	
+							<f:attribute name="nomChamp" value="#{const.C_CODE_FAMILLE_TIERS}" />
+							<p:ajax event="itemSelect" listener="#{tiersController.autcompleteSelection}" update="@this" />
+	                   	</p:autoComplete>
+	                   	
+		               </p:panelGrid>
+		                   	<p:commandButton value="Insérer produit/plan" actionListener="#{abonnementTiersController.actInsererLigneAbonnement}" 
+		                   		disabled="#{!abonnementTiersController.modeEcranSubscription.dataSetEnModif()}"
+		                   		update="@parent,@widgetVar(wvPanelDialogLigneAbonnement)" process="@this" oncomplete="PF('wvDialogLigneAbonnement').show()"
+		                   		/>
+		                   	<p:dataTable value="#{abonnementTiersController.listeSubscriptionItem}" var="p" widgetVar="wvDataTableLigneSubscriptionItem"
+								rowKey="#{p.id}" selectionMode="single" selection="#{abonnementTiersController.selectedTaStripeSubscriptionItemDTO}">
+								   
+	<!-- 							<p:column headerText="ID (externe)">  -->
+	<!-- 								<p:outputLabel value="#{p.idExterne}" /> -->
+	<!-- 							</p:column> -->
+								<p:column headerText="Plan tarifaire" styleClass="center">
+									<p:commandLink value="#{p.codeArticle}"
+											action="#{ouvertureDocumentBean.detailArticle(ouvertureDocumentBean.recupCodeArticle(p.codeArticle))}" 
+											update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');" process="@this">
+										</p:commandLink> • <h:outputText value=" #{p.nickname}" />
+										<br/>
+									<h:outputText value="#{p.amount}">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+									</h:outputText> / <h:outputText value="#{p.interval}" />
+								</p:column>
+								<p:column headerText="Quantité" styleClass="center">
+									<h:outputText value="#{p.quantity}" />
+								</p:column>
+								<p:column headerText="Compléments" styleClass="center">
+									<h:outputText value="#{p.complement1}" /><br/>
+									<h:outputText value="#{p.complement2}" /><br/>
+									<h:outputText value="#{p.complement3}" />
+								</p:column>
+								<p:column headerText="Actions" styleClass="center">
+									<p:commandButton value="Supprimer" action="#{abonnementTiersController.actSupprimerLigneAbonnement}" 
+										disabled="#{!abonnementTiersController.modeEcranSubscription.dataSetEnModif()}"
+										update="@widgetVar(wvDataTableLigneSubscriptionItem)" process="@this">
+<!-- 										<f:attribute name="idStripeSubscription" value="#{p.idExterne}"/> -->
+										<f:setPropertyActionListener value="#{p}" target="#{abonnementTiersController.selectedTaStripeSubscriptionItemDTO}"/>
+									</p:commandButton>
+								</p:column>
+							</p:dataTable>
+							<p:outputLabel value="" /><!-- pour les 2 colonnes -->
+						<p:panelGrid columns="2" rendered="#{abonnementTiersController.newTaStripeSubscriptionDTO != null}">
+							
+							<p:outputLabel value="Coupon/réduction" />
+					        <p:autoComplete  value="#{abonnementTiersController.selectedTaStripeCouponDTO}" 
+					        	completeMethod="#{abonnementTiersController.taStripeCouponAutoCompleteLight}"
+					        	disabled="true"
+		                        var="mp" itemLabel="#{mp.name}" itemValue="#{mp}" converter="entityConverter" forceSelection="true" dropdown="true">
+		<!--                           groupBy="#{autoCompleteView.getThemeGroup(theme)}" -->
+	<!-- 	disabled="#{!abonnementTiersController.modeEcranSubscription.dataSetEnModif()}" -->
+		                        
+		                        <p:column>
+									<h:outputText value="#{mp.name}" />
+								</p:column>
+								
+	<!-- 							 <p:column> -->
+	<!-- 							 	<h:outputText value="#{mp.iban}" /> -->
+	<!-- 						     </p:column> -->
+		
+								<f:attribute name="nomChamp" value="#{const.C_CODE_FAMILLE_TIERS}" />
+								<p:ajax event="itemSelect" update="@this" />
+		                   	</p:autoComplete>
+		                   	
+	<!-- 	                   	<p:outputLabel value="Taxe (%)" /> -->
+	<!-- 						<p:inputText /> -->
+		<!-- 				<p:inputText value="#{abonnementTiersController.newTaStripeSubscriptionDTO.nickname}"> -->
+		<!-- 					<p:ajax event="blur"/> -->
+		<!-- 				</p:inputText> -->
+		
+							<p:outputLabel value="Période d'essai (nb jour)" />
+							<p:spinner min="0" decimalPlaces="0" disabled="true"/>
+							
+							<p:outputLabel value="Date de début prévu : " />
+							<p:calendar value="#{abonnementTiersController.selectedTaStripeSubscriptionDTO.dateDebut}" pattern="#{msg.date_pattern}" mask="true" locale="fr" navigator="true"
+								showOn="button" timeZone="#{msg.time_zone}" disabled="#{!abonnementTiersController.modeEcranSubscription.dataSetEnModif()}" >
+		
+								<f:attribute name="nomChamp" value="#{const.C_DATE_LIV_DOCUMENT}" />
+								<p:ajax event="dateSelect" update="@this" />
+								<p:ajax event="change" update="@this" />
+							</p:calendar>
+							
+							<p:outputLabel value="Date de fin prévu : " />
+							<p:calendar value="#{abonnementTiersController.selectedTaStripeSubscriptionDTO.dateFin}" pattern="#{msg.date_pattern}" mask="true" locale="fr" navigator="true"
+								showOn="button" timeZone="#{msg.time_zone}" disabled="#{!abonnementTiersController.modeEcranSubscription.dataSetEnModif()}">
+		
+								<f:attribute name="nomChamp" value="#{const.C_DATE_LIV_DOCUMENT}" />
+								<p:ajax event="dateSelect" update="@this" />
+								<p:ajax event="change" update="@this" />
+							</p:calendar>
+							
+							<p:outputLabel value="OU -- Nombre d'échéance prévu" />
+							<p:spinner min="0" decimalPlaces="0" disabled="true"/>
+							
+						<p:commandButton value="Créer / Mettre à jour abonnement" actionListener="#{abonnementTiersController.actEnregistrerAbonnement}"
+							disabled="#{!abonnementTiersController.modeEcranSubscription.dataSetEnModif()}"
+							 process="@this" update="@widgetVar(panelListeAbonnementTiers#{variableNomWvIDUnique})"/>
+						<p:commandButton value="Annuler saisie" actionListener="#{abonnementTiersController.actAnnulerAbonnement}" 
+							disabled="#{!abonnementTiersController.modeEcranSubscription.dataSetEnModif()}"
+							process="@this" update="@widgetVar(panelListeAbonnementTiers#{variableNomWvIDUnique})">
+							<p:confirm header="Confirmation" message="Etes vous sur de vouloir annuler ?" icon="ui-icon-alert" />
+						</p:commandButton>
+					</p:panelGrid>
+					
+					<p:panel header="Avis d'échéance #{abonnementTiersController.creerAbonnementSurStripe?'(ou invoices stripe)':''}  de l'abonnement" toggleable="true" widgetVar="wvPanelAvisEchDeLAbonnement">
+						<p:dataTable value="#{abonnementTiersController.listeInvoice}" var="p"
+								rowKey="#{p.id}" selectionMode="single" selection="#{abonnementTiersController.selectedTaStripeInvoiceDTO}"
+								rendered="#{abonnementTiersController.creerAbonnementSurStripe}">
+							<p:column headerText="ID (externe)">
+								<p:outputLabel value="" />
+								<p:commandLink value="#{p.idExterne}" 
+									onclick="window.open('https://dashboard.stripe.com/test/invoices/#{p.idExterne}')" >
+								</p:commandLink>
+							</p:column>
+							
+							<p:column headerText="Code document" styleClass="center">
+								<p:outputLabel value="#{p.number}" />
+							</p:column>
+								
+							<p:column headerText="Date" styleClass="center">
+								<h:outputText value="#{p.created}">
+									<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+								</h:outputText>
+							</p:column>
+							
+							<p:column headerText="Montant" styleClass="center">
+								<h:outputText value="#{p.amountDue}">	
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+							
+							<p:column headerText="Payé" styleClass="center">
+								<p:selectBooleanCheckbox value="#{p.paid}" disabled="true"/>
+							</p:column>
+						</p:dataTable>
+						
+						<p:dataTable value="#{abonnementTiersController.listeAvisEcheanceAbonnement}" var="p" 
+								 rendered="#{!abonnementTiersController.creerAbonnementSurStripe}">
+								
+							 <p:column style="width:16px">
+					            <p:rowToggler />
+					        </p:column>
+	        
+							<p:column headerText="ID" styleClass="center">
+								<p:outputLabel value="#{p.idDocument}" />
+							</p:column>
+							
+							<p:column headerText="Code document" styleClass="center">
+								<p:commandLink value="#{p.codeDocument}"
+									action="#{abonnementTiersController.ouvertureDocumentBean.detailDocument(abonnementTiersController.ouvertureDocumentBean.recupCodeDocument(p.codeDocument,abonnementTiersController.ouvertureDocumentBean.getTypeDocumentAvisEcheance()))}" 
+									update=":form:tabView" oncomplete="activeTabCenter('#{abonnementTiersController.ouvertureDocumentBean.event.cssLgrTab}');" process="@this">
+								</p:commandLink>	
+							</p:column>
+								
+	<!-- 						<p:column headerText="Date" styleClass="center"> -->
+	<!-- 							<h:outputText value="#{p.created}"> -->
+	<!-- 								<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/> -->
+	<!-- 							</h:outputText> -->
+	<!-- 						</p:column> -->
+							
+							<p:column headerText="Montant HT" styleClass="center">
+								<h:outputText value="#{p.netHtCalc}">	
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+							
+							<p:column headerText="Montant TTC" styleClass="center">
+								<h:outputText value="#{p.netTtcCalc}">	
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+							
+	<!-- 						<p:column headerText="Payé" styleClass="center"> -->
+	<!-- 							<p:selectBooleanCheckbox value="#{p.paid}" disabled="true"/> -->
+	<!-- 						</p:column> -->
+	
+							<p:rowExpansion>
+							
+								<p:dataTable value="#{p.lignes}" var="l" rowKey="#{l.idLDocument}">
+									<p:column headerText="idLDocument">
+										<p:outputLabel value="#{l.idLDocument}" />
+									</p:column>
+									<p:column headerText="taLEcheance">
+										<p:outputLabel value="#{l.taLEcheance.dateEcheance}" />
+									</p:column>
+								</p:dataTable>
+							</p:rowExpansion>
+						</p:dataTable>
+						
+						<p:dataTable value="#{abonnementTiersController.listeEcheanceNonEmiseAbonnement}" var="p"
+								rowKey="#{p.idDocument}" rendered="#{!abonnementTiersController.creerAbonnementSurStripe}">
+								<f:facet name="header">
+									<p:outputLabel value="Prochaines échéances de l'abonnement (non émise)"/>
+								</f:facet>
+							<p:column headerText="ID" styleClass="center">
+								<p:outputLabel value="#{p.idLEcheance}" />
+							</p:column>
+							
+							<p:column headerText="Libellé" styleClass="center">
+								<p:outputLabel value="#{p.libLDocument}" />
+							</p:column>
+							
+							<p:column headerText="Début période" styleClass="center">
+								<h:outputText value="#{p.debutPeriode}">
+									<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+								</h:outputText>
+							</p:column>
+							
+							<p:column headerText="Fin période" styleClass="center">
+								<h:outputText value="#{p.finPeriode}">
+									<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+								</h:outputText>
+							</p:column>
+			
+							<p:column headerText="Echéance" styleClass="center">
+								<h:outputText value="#{p.dateEcheance}">
+									<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+								</h:outputText>
+							</p:column>
+	
+							<p:column headerText="Montant HT" styleClass="center">
+								<h:outputText value="#{p.mtHtLDocument}">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+							
+							<p:column headerText="Montant TTC" styleClass="center">
+								<h:outputText value="#{p.mtTtcLDocument}">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+							
+							<p:column headerText="Actions" styleClass="center">
+								<p:commandButton process="@this" value="Annuler / Résilier abo">
+									<p:confirm header="Confirmation" message="TODO" icon="ui-icon-alert" />
+									<f:attribute name="idStripeInvoice" value="#{p.idExterne}"/>
+								</p:commandButton>
+								
+								<p:commandButton process="@this" value="Modifier">
+									<p:confirm header="Confirmation" message="TODO" icon="ui-icon-alert" />
+									<f:attribute name="idStripeInvoice" value="#{p.idExterne}"/>
+								</p:commandButton>
+							</p:column>
+						</p:dataTable>
+					</p:panel>
+						
+					
+				</p:panel>
+			</p:panel>
+			</p:tab>
+			
+			<p:tab title="Gestion des échéances / avis d'échéances du tiers">
+				<p:panel header="Gestion des échéances Stripe (Invoices)" widgetVar="panelListeEcheancesStripeTiers#{variableNomWvIDUnique}" toggleable="true" collapsed="false"
+					rendered="#{abonnementTiersController.creerAbonnementSurStripe}">	
+					<p:panel header="Avis d'échéance (ou invoices stripe) du tiers" toggleable="true">
+						<p:dataTable value="#{abonnementTiersController.listeInvoiceCustomer}" var="p"
+									rowKey="#{p.id}" selectionMode="single" selection="#{abonnementTiersController.selectedTaStripeInvoiceCustomerDTO}">
+								<p:column headerText="ID (externe)">
+									<p:outputLabel value="" />
+									<p:commandLink value="#{p.idExterne}" 
+										onclick="window.open('https://dashboard.stripe.com/test/invoices/#{p.idExterne}')" >
+									</p:commandLink>
+								</p:column>
+								
+								<p:column headerText="Code document" styleClass="center">
+									<p:outputLabel value="#{p.number}" />
+								</p:column>
+									
+								<p:column headerText="Date" styleClass="center">
+									<h:outputText value="#{p.created}">
+										<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+									</h:outputText>
+								</p:column>
+								
+								<p:column headerText="Montant" styleClass="center">
+									<h:outputText value="#{p.amountDue}">	
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+									</h:outputText>
+								</p:column>
+								
+								<p:column headerText="Payé" styleClass="center">
+									<p:selectBooleanCheckbox value="#{p.paid}" disabled="true" rendered="#{p.paid or p.billing ne 'send_invoice'}"/>
+									<p:commandButton process="@this" value="Paiement reçu" rendered="#{!p.paid and (p.billing eq 'send_invoice')}"
+										actionListener="#{abonnementTiersController.actPayerInvoiceManuellement}">
+										<p:confirm header="Confirmation" message="Etes vous sur de vouloir marquer ce paiement comme reçu ?" icon="ui-icon-alert" />
+										<f:attribute name="idStripeInvoice" value="#{p.idExterne}"/>
+									</p:commandButton>
+								</p:column>
+								
+								<p:column headerText="Avis d'échéance BDG" styleClass="center">
+		<!-- 							<p:selectBooleanCheckbox value="#{p.paid}" disabled="true" rendered="#{p.paid or p.billing ne 'send_invoice'}"/> -->
+		<!-- <h:outputText value=" AE : #{p.codeAvisEcheance}"/> -->
+		<!-- <h:outputText value=" R : #{p.codeReglement}"/>		 -->
+									<p:commandButton process="@this" value="Créer l'avis d'échéance" 
+										actionListener="#{abonnementTiersController.creerAvisEcheance}">
+										<p:confirm header="Confirmation" message="Etes vous sur de vouloir créer cet avis d'échéance ?" icon="ui-icon-alert" />
+										<f:attribute name="idStripeInvoice" value="#{p.idExterne}"/>
+									</p:commandButton>
+								</p:column>
+							</p:dataTable>
+					</p:panel>
+				</p:panel>
+				
+				<p:panel widgetVar="panelListeEcheancesTiers#{variableNomWvIDUnique}" toggleable="true" collapsed="false">	
+					<p:dataTable value="#{abonnementTiersController.listeAvisEcheance}" var="p"
+								rowKey="#{p.idDocument}">
+								<f:facet name="header">
+									<p:outputLabel value="Avis d'échéances émis"/>
+								</f:facet>
+							<p:column headerText="ID" styleClass="center">
+								<p:outputLabel value="#{p.idDocument}" />
+							</p:column>
+							
+							<p:column headerText="Code document" styleClass="center" sortBy="#{p.codeDocument}">
+								<p:commandLink value="#{p.codeDocument}"
+									action="#{abonnementTiersController.ouvertureDocumentBean.detailDocument(abonnementTiersController.ouvertureDocumentBean.recupCodeDocument(p.codeDocument,abonnementTiersController.ouvertureDocumentBean.getTypeDocumentAvisEcheance()))}" 
+									update=":form:tabView" oncomplete="activeTabCenter('#{abonnementTiersController.ouvertureDocumentBean.event.cssLgrTab}');" process="@this">
+								</p:commandLink>	
+							</p:column>
+								
+							<p:column headerText="Date" styleClass="center" sortBy="#{p.dateDocument}">
+								<h:outputText value="#{p.dateDocument}">
+									<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+								</h:outputText>
+							</p:column>
+							
+							<p:column headerText="Montant HT" styleClass="center">
+								<h:outputText value="#{p.netHtCalc}">	
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+							
+							<p:column headerText="Montant TTC" styleClass="center">
+								<h:outputText value="#{p.netTtcCalc}">	
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+							
+	<!-- 						<p:column headerText="Montant" styleClass="center"> -->
+	<!-- 							<h:outputText value="#{p.amountDue}">	 -->
+	<!-- 								<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" /> -->
+	<!-- 							</h:outputText> -->
+	<!-- 						</p:column> -->
+							
+	<!-- 						<p:column headerText="Payé" styleClass="center"> -->
+	<!-- 							<p:selectBooleanCheckbox value="#{p.paid}" disabled="true" rendered="#{p.paid or p.billing ne 'send_invoice'}"/> -->
+	<!-- 							<p:commandButton process="@this" value="Paiement reçu" rendered="#{!p.paid and (p.billing eq 'send_invoice')}" -->
+	<!-- 								actionListener="#{abonnementTiersController.actPayerInvoiceManuellement}"> -->
+	<!-- 								<p:confirm header="Confirmation" message="Etes vous sur de vouloir marquer ce paiement comme reçu ?" icon="ui-icon-alert" /> -->
+	<!-- 								<f:attribute name="idStripeInvoice" value="#{p.idExterne}"/> -->
+	<!-- 							</p:commandButton> -->
+	<!-- 						</p:column> -->
+							
+							<p:column headerText="Actions" styleClass="center">
+								<p:commandButton process="@this" value="Régler / Associer à règlement">
+									<p:confirm header="Confirmation" message="TODO" icon="ui-icon-alert" />
+									<f:attribute name="idStripeInvoice" value="#{p.idExterne}"/>
+								</p:commandButton>
+								
+								<p:commandButton process="@this" value="Annuler / Résilier abo">
+									<p:confirm header="Confirmation" message="TODO" icon="ui-icon-alert" />
+									<f:attribute name="idStripeInvoice" value="#{p.idExterne}"/>
+								</p:commandButton>
+								
+							</p:column>
+						</p:dataTable>
+						
+					<p:dataTable value="#{abonnementTiersController.listeLEcheance}" var="p"
+								rowKey="#{p.idDocument}">
+								<f:facet name="header">
+									<p:outputLabel value="Prochaines échéances (non émise)"/>
+								</f:facet>
+							<p:column headerText="ID" styleClass="center">
+								<p:outputLabel value="#{p.idLEcheance}" />
+							</p:column>
+							
+							<p:column headerText="Libellé" styleClass="center" sortBy="#{p.libLDocument}" filterBy="#{p.libLDocument}">
+								<p:outputLabel value="#{p.libLDocument}" />
+							</p:column>
+								
+							<p:column headerText="Echéance" styleClass="center" sortBy="#{p.dateEcheance}">
+								<h:outputText value="#{p.dateEcheance}">
+									<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+								</h:outputText>
+							</p:column>
+							
+							<p:column headerText="Montant HT" styleClass="center">
+								<h:outputText value="#{p.mtHtLDocument}">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+							
+							<p:column headerText="Montant TTC" styleClass="center">
+								<h:outputText value="#{p.mtTtcLDocument}">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+							
+							<p:column headerText="Actions" styleClass="center">
+								<p:commandButton process="@this" value="Annuler / Résilier abo">
+									<p:confirm header="Confirmation" message="TODO" icon="ui-icon-alert" />
+									<f:attribute name="idStripeInvoice" value="#{p.idExterne}"/>
+								</p:commandButton>
+								
+								<p:commandButton process="@this" value="Modifier">
+									<p:confirm header="Confirmation" message="TODO" icon="ui-icon-alert" />
+									<f:attribute name="idStripeInvoice" value="#{p.idExterne}"/>
+								</p:commandButton>
+							</p:column>
+						</p:dataTable>
+				</p:panel>
+			</p:tab>
+			
+			<p:tab title="Gestion des paiements du tiers">
+				<p:panel  widgetVar="panelListePaiementTiers#{variableNomWvIDUnique}" toggleable="true" collapsed="false">		
+					<p:panel header="Paiement (stripe)" widgetVar="panelListeAbonnementActifTiers#{variableNomWvIDUnique}" toggleable="true">
+					
+						<p:dataTable value="#{abonnementTiersController.listeChargeCustomer}" var="p"
+									rowKey="#{p.id}" selectionMode="single" selection="#{abonnementTiersController.selectedTaStripeChargeCustomerDTO}"
+									paginator="true" 
+									rows="#{msg.modele_datatable_ligne_par_page_debut_10}"
+									paginatorTemplate="#{msg.modele_datatable_paginator}"
+									rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+									emptyMessage="#{msg.message_datatable_vide}"
+									currentPageReportTemplate="#{msg.modele_datatable_page_courante}"
+									>
+								<p:column headerText="ID (externe)" sortBy="#{p.idExterne}" filterBy="#{p.idExterne}">
+									<p:outputLabel value="" />
+									<p:commandLink value="#{p.idExterne}" 
+										onclick="window.open('#{abonnementTiersController.genereUrlDashboardStripe('charges',p.idExterne,true)}')" >
+									</p:commandLink>
+								</p:column>
+								
+		<!-- 						<p:column headerText="Code document" styleClass="center"> -->
+		<!-- 							<p:outputLabel value="#{p.number}" /> -->
+		<!-- 						</p:column> -->
+									
+								<p:column headerText="Date charge" styleClass="center" sortBy="#{p.dateCharge}" filterBy="#{p.dateCharge}">
+									<h:outputText value="#{p.dateCharge}">
+										<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+									</h:outputText>
+								</p:column>
+								
+								<p:column headerText="Abonnement" styleClass="center" sortBy="#{p.idExterneSubscription}" filterBy="#{p.idExterneSubscription}">
+		<!-- 							<h:outputText value="#{p.idSubscription} / #{p.idExterneSubscription}"/> -->
+								</p:column>
+								
+								<p:column headerText="Règlement" styleClass="center" sortBy="#{p.codeDocument}" filterBy="#{p.codeDocument}">
+									<p:commandLink value="#{p.codeDocument}"
+									action="#{abonnementTiersController.ouvertureDocumentBean.detailDocument(abonnementTiersController.ouvertureDocumentBean.recupCodeDocument(p.codeDocument,abonnementTiersController.ouvertureDocumentBean.getTypeDocumentReglement()))}" 
+									update=":form:tabView" oncomplete="activeTabCenter('#{abonnementTiersController.ouvertureDocumentBean.event.cssLgrTab}');" process="@this">
+								</p:commandLink>
+								</p:column>
+								
+								<p:column headerText="Date règlement" styleClass="center" sortBy="#{p.dateReglement}" filterBy="#{p.dateReglement}">
+									<h:outputText value="#{p.dateReglement}">
+										<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+									</h:outputText>
+								</p:column>
+								
+								<p:column headerText="Montant" styleClass="center" sortBy="#{p.amount}" filterBy="#{p.amount}">
+									<h:outputText value="#{p.amount}">	
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+									</h:outputText>
+								</p:column>
+								
+								<p:column headerText="Payé" styleClass="center">
+									<p:selectBooleanCheckbox value="#{p.paid}" disabled="true"/>
+								</p:column>
+							</p:dataTable>
+					</p:panel>
+					
+					<p:panel header="Programmation de paiement unique du tiers" widgetVar="panelListePaiementPrevuTiers#{variableNomWvIDUnique}" toggleable="true">
+							<p:commandButton value="Insérer paiement" actionListener="#{abonnementTiersController.actInsererPaiementPrevu}" 
+			                   		disabled="#{abonnementTiersController.modeEcranPaiementPrevu.dataSetEnModif()}"
+			                   		update="@parent" process="@this"
+			                   		/>
+		            		<p:commandButton value="Modifier paiement" actionListener="#{abonnementTiersController.actModifierPaiementPrevu}" 
+			               		disabled="#{abonnementTiersController.modeEcranPaiementPrevu.dataSetEnModif()}"
+			               		update="@parent" process="@this"
+			               		/>
+		<!-- 	                   		update="@parent,@widgetVar(wvPanelDialogLigneAbonnement)" process="@this" oncomplete="PF('wvDialogLigneAbonnement').show()" -->
+			                   		
+						<p:dataTable value="#{abonnementTiersController.listePaiementPrevu}" var="p"
+							widgetVar="wvDataTablePaiementPrevu"
+							rowKey="#{p.id}" selectionMode="single" selection="#{abonnementTiersController.selectedTaStripePaiementPrevuDTO}">
+							
+							<p:ajax event="rowSelect" delay="#{msg.datatable_rowselect_delay}"
+							 listener="#{abonnementTiersController.onRowSelectPaiementPrevu}"
+							  update="@widgetVar(panelListePaiementPrevuTiers#{variableNomWvIDUnique})"/>
+											
+							<p:column headerText="Montant" styleClass="center" sortBy="#{p.montant}" filterBy="#{p.montant}">
+								<h:outputText value="#{p.montant}">	
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+							
+							<p:column headerText="Date déclenchement prévue" styleClass="center" sortBy="#{p.dateDeclenchement}" filterBy="#{p.dateDeclenchement}">
+								<h:outputText value="#{p.dateDeclenchement}">
+									<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+								</h:outputText>
+							</p:column>
+							
+							<p:column headerText="Avis d'échéance" styleClass="center" sortBy="#{p.codeAvisEcheance}" filterBy="#{p.codeAvisEcheance}">
+								<p:commandLink value="#{p.codeAvisEcheance}"
+										action="#{abonnementTiersController.ouvertureDocumentBean.detailDocument(abonnementTiersController.ouvertureDocumentBean.recupCodeDocument(p.codeAvisEcheance,abonnementTiersController.ouvertureDocumentBean.getTypeDocumentAvisEcheance()))}" 
+										update=":form:tabView" oncomplete="activeTabCenter('#{abonnementTiersController.ouvertureDocumentBean.event.cssLgrTab}');" process="@this">
+									</p:commandLink>
+							</p:column>
+							
+							<p:column headerText="Règlement" styleClass="center" sortBy="#{p.codeReglement}" filterBy="#{p.codeReglement}">
+								<p:commandLink value="#{p.codeReglement}"
+									action="#{abonnementTiersController.ouvertureDocumentBean.detailDocument(abonnementTiersController.ouvertureDocumentBean.recupCodeDocument(p.codeReglement,abonnementTiersController.ouvertureDocumentBean.getTypeDocumentReglement()))}" 
+									update=":form:tabView" oncomplete="activeTabCenter('#{abonnementTiersController.ouvertureDocumentBean.event.cssLgrTab}');" process="@this">
+								</p:commandLink>	
+							</p:column>
+							
+							<p:column headerText="Charge" styleClass="center" sortBy="#{p.idExterneCharge}" filterBy="#{p.idExterneCharge}">
+								<p:commandLink value="#{p.idExterneCharge}" 
+										onclick="window.open('#{abonnementTiersController.genereUrlDashboardStripe('charges',p.idExterneCharge,true)}')" >
+									</p:commandLink>
+							</p:column>
+							
+							<p:column headerText="Etat" styleClass="center" sortBy="#{p.status}" filterBy="#{p.status}">
+								<h:outputText value="#{p.status}"/>
+							</p:column>
+							
+							<p:column headerText="Actions" styleClass="center">
+								<p:commandButton value="Annuler" actionListener="#{abonnementTiersController.actPrepareSupprimerPaiementPrevu}" 
+									oncomplete="PF('wvDialogAnnulerPaiementPrevu').show()"
+									update="@widgetVar(wvDataTablePaiementPrevu)" process="@this" rendered="#{p.idExterneCharge == null}">
+									<p:confirm header="Confirmation" message="Etes vous sur de vouloir annuler ce paiement ?" icon="ui-icon-alert" />
+										<f:attribute name="idPaiementPrevu" value="#{p.id}"/>
+									</p:commandButton>
+								<p:commandButton value="Déclencher" actionListener="#{abonnementTiersController.actDeclencherPaiementPrevuMaintenant}" 
+									update="@widgetVar(wvDataTablePaiementPrevu)" process="@this" rendered="#{p.idExterneCharge == null}">
+									<p:confirm header="Confirmation" message="Etes vous sur de vouloir déclencher ce paiement ?" icon="ui-icon-alert" />
+										<f:attribute name="idPaiementPrevu" value="#{p.id}"/>
+									</p:commandButton>
+							</p:column>
+						</p:dataTable>
+						
+						<p:panelGrid columns="2" >			
+							<p:outputLabel value="Date déclenchement prévue" />
+							<p:calendar value="#{abonnementTiersController.selectedTaStripePaiementPrevuDTO.dateDeclenchement}" pattern="#{msg.date_pattern}" mask="true" locale="fr" navigator="true"
+								showOn="button" timeZone="#{msg.time_zone}" disabled="#{!abonnementTiersController.modeEcranPaiementPrevu.dataSetEnModif()}">
+			
+								<p:ajax event="dateSelect" update="@this" />
+								<p:ajax event="change" update="@this" />
+							</p:calendar>
+			
+							<p:outputLabel value="Montant" />
+							<p:inputText value="#{abonnementTiersController.selectedTaStripePaiementPrevuDTO.montant}" disabled="#{!abonnementTiersController.modeEcranPaiementPrevu.dataSetEnModif()}">
+								<p:ajax event="blur" update="@this" />
+							</p:inputText>
+							
+							<p:outputLabel value="Moyen de paiement" />
+					        <p:autoComplete  value="#{abonnementTiersController.selectedTaStripeSourceSubscriptionDTO}" 
+					        	completeMethod="#{abonnementTiersController.taStripeSourceAutoCompleteLight}" dropdown="true"
+			                    var="source" itemLabel="#{source.idExterne}" itemValue="#{source}" converter="entityConverter" forceSelection="true"
+			                    disabled="#{!abonnementTiersController.modeEcranPaiementPrevu.dataSetEnModif()}">
+			                       
+			                    <p:column>
+								 	<h:outputText value="#{source.idExterne}" />
+							     </p:column>
+			
+			                     <p:column>
+									<p:outputLabel value="#{source.taCompteBanqueDTO.country} **** #{source.taCompteBanqueDTO.last4}" rendered="#{source.taCompteBanqueDTO.last4 != null}"/>
+									<p:outputLabel value="#{source.taCarteBancaireDTO.type} • **** #{source.taCarteBancaireDTO.last4} • #{source.taCarteBancaireDTO.moisExpiration}/#{source.taCarteBancaireDTO.anneeExpiration}" rendered="#{source.taCarteBancaireDTO.last4 != null}"/>
+									<p:outputLabel value="#{source.idExterne}" rendered="#{source.idExterne eq 'Chèque' or source.idExterne eq 'Virement'}"/>
+								</p:column>
+								
+								<p:column>
+									<p:outputLabel value="X" rendered="#{abonnementTiersController.taStripeCustomer.taSourceDefault !=null and p.idExterne eq abonnementTiersController.taStripeCustomer.taSourceDefault.idExterne}" />
+								</p:column>
+								
+								<f:attribute name="nomChamp" value="#{const.C_CODE_FAMILLE_TIERS}" />
+								<p:ajax event="itemSelect" listener="#{tiersController.autcompleteSelection}" update="@this" />
+			                </p:autoComplete>
+							
+							<p:outputLabel value="Raison" />
+							<p:inputText value="#{abonnementTiersController.selectedTaStripePaiementPrevuDTO.raisonPaiement}" disabled="#{!abonnementTiersController.modeEcranPaiementPrevu.dataSetEnModif()}">
+								<p:ajax event="blur" update="@this" />
+							</p:inputText>
+							
+							<p:outputLabel value="Commentaire" />
+							<p:inputText value="#{abonnementTiersController.selectedTaStripePaiementPrevuDTO.commentaire}" disabled="#{!abonnementTiersController.modeEcranPaiementPrevu.dataSetEnModif()}">
+								<p:ajax event="blur" update="@this" />
+							</p:inputText>
+								
+							<p:commandButton value="Créer / Mettre à jour paiement" actionListener="#{abonnementTiersController.actEnregistrerPaiementPrevu}" process="@this" update="@widgetVar(panelListePaiementPrevuTiers#{variableNomWvIDUnique})"/>
+							<p:commandButton value="Annuler saisie" actionListener="#{abonnementTiersController.actAnnulerPaiementPrevu}" process="@this" update="@widgetVar(panelListePaiementPrevuTiers#{variableNomWvIDUnique})"/>
+						</p:panelGrid>
+					</p:panel>
+				</p:panel>
+			</p:tab>
+		</p:tabView>
+
+	</p:panel>
+
+		<p:dialog header="Ligne d'abonnement" widgetVar="wvDialogLigneAbonnement" resizable="false" modal="true" appendTo="@(body)">
+			<h:form id="idAbonnementTiersForm">
+				<p:panel widgetVar="wvPanelDialogLigneAbonnement">
+				<p:panelGrid id="display" columns="2" cellpadding="4" style="margin:0 auto;" rendered="#{abonnementTiersController.selectedTaStripeSubscriptionItemDTO!=null}">
+
+						<p:outputLabel value="Article / produit" />
+						<p:autoComplete  value="#{abonnementTiersController.selectedTaStripeProductDTO}" 
+				        	completeMethod="#{abonnementTiersController.taStripeProductAutoCompleteLight}"
+	                        var="mp" itemLabel="#{mp.name}" itemValue="#{mp}" converter="entityConverter" forceSelection="true" 
+	                        scrollHeight="250" dropdown="true" placeholder="produit">
+	<!--                           groupBy="#{autoCompleteView.getThemeGroup(theme)}" -->
+	                        
+	                        <p:column>
+								<h:outputText value="#{mp.name}" />
+							</p:column>
+							
+							 <p:column>
+							 	<h:outputText value="#{mp.codeArticle}" />
+						     </p:column>
+	
+							<p:ajax event="itemSelect" listener="#{tiersController.autcompleteSelection}" update="@this" />
+	                   	</p:autoComplete>
+						
+						<p:outputLabel value="Plan tarifaire" />
+						<p:autoComplete  value="#{abonnementTiersController.selectedTaStripePlanDTO}" 
+				        	completeMethod="#{abonnementTiersController.taStripePlanAutoCompleteLight}"
+	                        var="mp" itemLabel="#{mp.nickname}" itemValue="#{mp}" converter="entityConverter" forceSelection="true"
+	                         scrollHeight="250" dropdown="true" placeholder="plan">
+	<!--                           groupBy="#{autoCompleteView.getThemeGroup(theme)}" -->
+	                        
+	                        <p:column>
+								<h:outputText value="#{mp.nickname}" />
+							</p:column>
+							
+							 <p:column>
+							 	<h:outputText value="#{mp.amount}" />
+						     </p:column>
+						     
+						     <p:column>
+							 	<h:outputText value="#{mp.interval}" />
+						     </p:column>
+	
+							<p:ajax event="itemSelect" listener="#{tiersController.autcompleteSelection}" update="@this" />
+	                   	</p:autoComplete>
+														
+						<p:outputLabel value="Quantité" />
+						<p:inputText value="#{abonnementTiersController.selectedTaStripeSubscriptionItemDTO.quantity}">
+							<p:ajax event="blur" update="@this" />
+						</p:inputText>	
+						
+						<p:outputLabel value="Complément 1" />
+						<p:inputText value="#{abonnementTiersController.selectedTaStripeSubscriptionItemDTO.complement1}">
+							<p:ajax event="blur" update="@this" />
+						</p:inputText>	
+						
+						<p:outputLabel value="Complément 2" />
+						<p:inputText value="#{abonnementTiersController.selectedTaStripeSubscriptionItemDTO.complement2}">
+							<p:ajax event="blur" update="@this" />
+						</p:inputText>	
+						
+						<p:outputLabel value="Complément 3" />
+						<p:inputText value="#{abonnementTiersController.selectedTaStripeSubscriptionItemDTO.complement3}">
+							<p:ajax event="blur" update="@this" />
+						</p:inputText>	
+
+					<f:facet name="footer">
+						<p:commandButton value="Enregistrer" styleClass="icon-save icon" actionListener="#{abonnementTiersController.actEnregistrerLigneAbonnement}"
+							process="@this" update="@this,@widgetVar(wvDetailAbonnement)" oncomplete="PF('wvDialogLigneAbonnement').hide()" />
+<!-- 							 oncomplete="handleSubmitRequest(xhr, status, args, 'controleDlg','newControleForm'); " -->
+						<p:commandButton value="Annuler" styleClass="icon-cancel icon" process="@this" update="@this,@widgetVar(wvDetailAbonnement)" 
+							oncomplete="PF('wvDialogLigneAbonnement').hide()" />
+					</f:facet>
+				</p:panelGrid>
+				</p:panel>
+			</h:form>
+		</p:dialog>
+		
+		<p:dialog header="Suspendre l'abonnement" widgetVar="wvDialogSuspendreAbonnement" resizable="false" modal="true" appendTo="@(body)">
+			<h:form>
+				<p:panel widgetVar="wvPanelDialogSuspendreAbonnement">
+				
+				<p:panelGrid columns="2" cellpadding="4" style="margin:0 auto;">
+					<f:facet name="header">
+						<p:outputLabel value="Etes vous sur de vouloir suspendre cet abonnement ?" />	
+					</f:facet>
+					
+						<p:outputLabel value="Commentaire" />
+						<p:textEditor secure="false" value="#{abonnementTiersController.selectedTaStripeSubscriptionItemDTO.quantity}">
+							<p:ajax event="blur" update="@this" />
+						</p:textEditor>
+							
+					<f:facet name="footer">
+						<p:commandButton value="Suspendre" styleClass="icon-delete icon" actionListener="#{abonnementTiersController.actSupprimerAbonnementNonStripe}"
+							process="@this" update="@this,@widgetVar(wvDetailAbonnement),@widgetVar(panelListeAbonnementTiers#{variableNomWvIDUnique})" oncomplete="PF('wvDialogSuspendreAbonnement').hide()" />
+<!-- 							 oncomplete="handleSubmitRequest(xhr, status, args, 'controleDlg','newControleForm'); " -->
+						<p:commandButton value="Annuler" styleClass="icon-cancel icon" 
+							process="@this" update="@this,@widgetVar(wvDetailAbonnement)" oncomplete="PF('wvDialogSuspendreAbonnement').hide()" />
+					</f:facet>
+				</p:panelGrid>
+				</p:panel>
+			</h:form>
+		</p:dialog>
+		
+		<p:dialog header="Annuler le paiement prévu" widgetVar="wvDialogAnnulerPaiementPrevu" resizable="false" modal="true" appendTo="@(body)">
+			<h:form>
+				<p:panel widgetVar="wvPanelDialogAnnulerPaiementPrevu">
+				
+				<p:panelGrid columns="2" cellpadding="4" style="margin:0 auto;">
+					<f:facet name="header">
+						<p:outputLabel value="Etes vous sur de vouloir annuler ce paiement ?" />	
+					</f:facet>
+					
+						<p:outputLabel value="Commentaire" />
+						<p:textEditor secure="false" value="#{abonnementTiersController.selectedTaStripeSubscriptionItemDTO.quantity}">
+							<p:ajax event="blur" update="@this" />
+						</p:textEditor>
+							
+
+					<f:facet name="footer">
+						<p:commandButton value="Annuler paiement" styleClass="icon-delete icon" actionListener="#{abonnementTiersController.actSupprimerPaiementPrevu}"
+							process="@this" update="@this,@widgetVar(wvDetailAbonnement)" oncomplete="PF('wvDialogAnnulerPaiementPrevu').hide()" />
+<!-- 							 oncomplete="handleSubmitRequest(xhr, status, args, 'controleDlg','newControleForm'); " -->
+						<p:commandButton value="Annuler" styleClass="icon-cancel icon" 
+							process="@this" update="@this,@widgetVar(wvDetailAbonnement)" oncomplete="PF('wvDialogAnnulerPaiementPrevu').hide()" />
+					</f:facet>
+				</p:panelGrid>
+				</p:panel>
+			</h:form>
+		</p:dialog>
+		
+</ui:composition>

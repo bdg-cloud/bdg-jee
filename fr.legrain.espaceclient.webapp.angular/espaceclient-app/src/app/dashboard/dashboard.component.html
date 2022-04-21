@@ -1,0 +1,69 @@
+<style>
+<!--
+/* :host >>> .ui-carousel::ng-deep { */
+/* 	width: 1318px !important; */
+/* } */
+
+-->
+</style>
+
+<div style="margin: auto; text-align: center;">
+	<div style="padding-bottom: 30px;">
+		<h1 class="titre">Bienvenue dans votre espace client</h1>
+	</div>
+
+	<a routerLink='/catalogue' routerLinkActive="active" *ngIf="afficheCatalogue && afficheBoutique">
+		<img src="../assets/images/picto-boutique-2.jpg"/>
+		<div style="font-size: 22px;color: #0098f0;" *ngIf="afficheBoutiquePanier">BOUTIQUE</div>
+		<div style="font-size: 22px;color: #0098f0;" *ngIf="!afficheBoutiquePanier">CATALOGUE</div>
+	</a>
+	<hr style="border:0;
+    width:100%;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    height: 1px;
+    background:#0098f0;" *ngIf="afficheCatalogue && afficheBoutique" />
+	
+	<a class="rond" routerLink='/mes-devis' routerLinkActive="active" *ngIf="afficheDevis"><img src="../assets/images/mes-devis.png"/>
+<!-- 	<span class="lgr-dasboard-badge">6</span> -->
+	</a>
+	<a class="rond" routerLink='/mes-factures' routerLinkActive="active" *ngIf="afficheFactures"><img src="../assets/images/mes-factures.png"/>
+<!-- 	<span class="lgr-dasboard-badge">4</span> -->
+	</a>
+	<a class="rond" routerLink='/mes-commandes' routerLinkActive="active" *ngIf="afficheCommandes"><img src="../assets/images/mes-commandes.png"/></a>
+	<a class="rond" routerLink='/mes-livraisons' routerLinkActive="active" *ngIf="afficheLivraisons"><img src="../assets/images/mes-livraisons.png"/></a>
+	<a class="rond" routerLink='/mes-abonnements' routerLinkActive="active" *ngIf="afficheAvisEcheance"><img src="../assets/images/mes-echeances.png"/></a>
+	<a class="rond" routerLink='/telechargement' routerLinkActive="active" *ngIf="affichePublicite"><img src="../assets/images/mes-services.png"/></a>
+
+	
+		<p-carousel [value]="publicites" styleClass="custom-carousel" 
+		[numVisible]="1" [numScroll]="1" [circular]="true" 
+		 [autoplayInterval]="15000" [responsiveOptions]="responsiveOptions"
+		 *ngIf="affichePublicite">
+		<!--     <p-header> -->
+		<!--         <h3>Circular, AutoPlay, 3 Items per Page and Scroll by 1</h3> -->
+		<!--     </p-header> -->
+		    <ng-template let-pub pTemplate="item">
+		        <div class="car-details" style="background-color: silver; padding: 10px;">
+		            <div class="p-grid p-nogutter">
+		                <div class="p-col-12">
+		                    <a (click)="mailPublicite(pub)"><img src="{{pub.urlImage}}" /></a>
+		                </div>
+		                <div class="p-col-12 car-data">
+		                <p-button label="Je souhaite avoir plus d'informations" (onClick)="mailPublicite(pub)"></p-button>
+	<!-- 	                	<div class="car-title">{{pub.titre}}</div> -->
+		<!--                     <div class="car-title">{{car.brand}}</div> -->
+		<!--                     <div class="car-subtitle">{{car.year}} | {{car.color}}</div> -->
+		
+		<!--                     <div class="car-buttons"> -->
+		<!--                         <button pButton type="button" class="ui-button-secondary" icon="pi pi-search"></button> -->
+		<!--                         <button pButton type="button" class="ui-button-secondary" icon="pi pi-star"></button> -->
+		<!--                         <button pButton type="button" class="ui-button-secondary" icon="pi pi-cog"></button> -->
+		<!--                     </div> -->
+		                </div>
+		            </div>
+		        </div>
+		    </ng-template>
+		</p-carousel>
+
+</div>

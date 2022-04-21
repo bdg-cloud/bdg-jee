@@ -1,0 +1,220 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+		<p class="subtitle">
+			<p:outputLabel value="Gestion des logs" />
+		</p>
+
+		<p:panel>
+
+			<p:commandButton value="Rafraichir" title="Rafraichir"
+				process="@this" update="@widgetVar(wvDatatableLogDossier), @widgetVar(wvDetailLog)"
+				actionListener="#{logDossierController.refresh}"
+				styleClass="icon-refresh icon">
+			</p:commandButton>
+
+			<p:commandButton title="Fermer" class="icon-close icon menuitem-fermer-droite"
+				onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())">
+				<p:confirm header="Confirmation" message="#{msg_diag.alert_fermeture_onglet}" icon="ui-icon-alert"
+					disabled="#{!logDossierController.modeEcran.dataSetEnModif()}" />
+			</p:commandButton>
+		</p:panel>
+
+		<div class="ui-g">
+			<div class="ui-g-8">
+				<p:dataTable 
+					id="idDatatableLogDossier"
+					widgetVar="wvDatatableLogDossier"
+					var="log"
+					value="#{logDossierController.values}" 
+					rowKey="#{log.id}"
+					selectionMode="single" 
+					class="datatable"
+					selection="#{logDossierController.selection}" 
+					paginator="false"
+					rows="#{msg.modele_datatable_ligne_par_page_debut}"
+					paginatorTemplate="#{msg.modele_datatable_paginator}"
+					rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+					emptyMessage="#{msg.message_datatable_vide}"
+					currentPageReportTemplate="#{msg.modele_datatable_page_courante}">
+		
+					<p:ajax event="rowSelect" listener="#{logDossierController.onRowSelect}" update="@widgetVar(wvDetailLog)" />
+		
+					<f:facet name="{Exporters}">
+						<h:commandLink>
+							<p:graphicImage library="images" name="excel.png" width="24" />
+							<p:dataExporter type="xls" target="idDatatableLogDossier"
+								fileName="util" />
+						</h:commandLink>
+		
+						<h:commandLink>
+							<p:graphicImage library="images" name="pdf.png" width="24" />
+							<p:dataExporter type="pdf" target="idDatatableLogDossier"
+								fileName="util" />
+						</h:commandLink>
+		
+						<h:commandLink>
+							<p:graphicImage library="images" name="csv.png" width="24" />
+							<p:dataExporter type="csv" target="idDatatableLogDossier"
+								fileName="util" />
+						</h:commandLink>
+		
+						<h:commandLink>
+							<p:graphicImage library="images" name="xml.png" width="24" />
+							<p:dataExporter type="xml" target="utilisateurDataTable"
+								fileName="util" />
+						</h:commandLink>
+		
+					</f:facet>
+		
+		
+					<p:column styleClass="center" sortBy="#{log.quand}" filterMatchMode="contains" width="70">
+						<f:facet name="header">
+							<h:outputText value="Date" />
+						</f:facet>
+						<h:outputText value="#{log.quand}">
+							<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}" />
+						</h:outputText>
+					</p:column>
+		
+					<p:column sortBy="#{log.quand}" styleClass="center" width="70">
+						<f:facet name="header">
+							<h:outputText value="Heure" />
+						</f:facet>
+						<h:outputText value="#{log.quand}">
+		<!-- 				dd/MM/yyyy-HH:mm:ss -->
+							<f:convertDateTime pattern="HH:mm:ss" timeZone="#{msg.time_zone}" />
+						</h:outputText>
+					</p:column>
+			
+					<p:column styleClass="center" sortBy="#{log.utilisateur}" filterBy="#{log.utilisateur}" filterMatchMode="contains">
+						<f:facet name="header">
+							<h:outputText value="Login" />
+						</f:facet>
+		
+						<h:outputText value="#{log.utilisateur}" />
+					</p:column>
+		
+
+					
+					<p:column styleClass="center" sortBy="#{log.methodeHttpApi}"
+						filterBy="#{log.methodeHttpApi}" filterMatchMode="contains" width="70">
+						<f:facet name="header">
+							<h:outputText value="Méthode HTTP" />
+						</f:facet>
+		
+						<h:outputText value="#{log.methodeHttpApi}" />
+					</p:column>
+					
+					<p:column sortBy="#{log.urlApi}"
+						filterBy="#{log.urlApi}" filterMatchMode="contains">
+						<f:facet name="header">
+							<h:outputText value="URL API" />
+						</f:facet>
+		
+						<h:outputText value="#{log.urlApi}" />
+					</p:column>
+					
+<!-- 					<p:column sortBy="#{log.appelDistant}" -->
+<!-- 						filterBy="#{log.appelDistant}" filterMatchMode="contains" -->
+<!-- 						styleClass="center"> -->
+<!-- 						<f:facet name="header"> -->
+<!-- 							<h:outputText value="API" /> -->
+<!-- 						</f:facet> -->
+		
+<!-- 						<p:selectBooleanCheckbox value="#{log.appelDistant}" disabled="true" /> -->
+<!-- 					</p:column> -->
+		
+				</p:dataTable>
+			</div>
+			
+			<div class="ui-g-4">
+	
+				<p:panel widgetVar="wvDetailLog">
+					<p:panelGrid columns="2">
+						<h:outputText value="Date" />
+						<h:outputText value="#{logDossierController.selection.quand}">
+							<f:convertDateTime pattern="dd/MM/yyyy-HH:mm:ss" timeZone="#{msg.time_zone}" />
+						</h:outputText>
+		
+						<h:outputText value="Utilisateur" />
+						<h:outputText value="#{logDossierController.selection.utilisateur}" />
+						
+						<h:outputText value="Message" />
+						<h:outputText value="#{logDossierController.selection.message}" />
+						
+						<h:outputText value="Méthode HTTP API" />
+						<h:outputText value="#{logDossierController.selection.methodeHttpApi}" />
+						
+						<h:outputText value="URL API" />
+						<h:outputText value="#{logDossierController.selection.urlApi}" />
+						
+						<h:outputText value="Etat" />
+						<h:outputText value="#{logDossierController.selection.etat}" />
+						
+						<h:outputText value="Version API" />
+						<h:outputText value="#{logDossierController.selection.versionApi}" />
+						
+						<h:outputText value="Appel distant (API)" />
+						<p:selectBooleanCheckbox value="#{logDossierController.selection.appelDistant}" disabled="true" />
+						
+						<h:outputText value="IP distante" />
+						<h:outputText value="#{logDossierController.selection.ipDistante}" />
+						
+						<h:outputText value="Corps réponse API" />
+						<h:outputText value="#{logDossierController.selection.corpsReponseApi}" />
+						
+						<h:outputText value="Corps requete API" />
+						<h:outputText value="#{logDossierController.selection.corpsRequeteApi}" />
+						
+						<h:outputText value="ID" />
+						<h:outputText value="#{logDossierController.selection.id}" />
+						
+						<h:outputText value="Cron dossier" />
+						<p:selectBooleanCheckbox value="#{logDossierController.selection.cronDossier}" disabled="true" />
+						
+						<h:outputText value="Cron système" />
+						<p:selectBooleanCheckbox value="#{logDossierController.selection.cronSysteme}" disabled="true" />
+						
+						<h:outputText value="Dossier" />
+						<h:outputText value="#{logDossierController.selection.dossier}" />
+						
+						<h:outputText value="ParametreEnteteApi" />
+						<h:outputText value="#{logDossierController.selection.parametreEnteteApi}" />
+						
+						<h:outputText value="Paramètre requete API" />
+						<h:outputText value="#{logDossierController.selection.parametreRequeteApi}" />
+						
+						<h:outputText value="Code Entite" />
+						<h:outputText value="#{logDossierController.selection.codeEntite}" />
+						
+						<h:outputText value="Entité" />
+						<h:outputText value="#{logDossierController.selection.entite}" />
+						
+						<h:outputText value="ID entité" />
+						<h:outputText value="#{logDossierController.selection.idEntite}" />
+						
+						<h:outputText value="Niveau Log" />
+						<h:outputText value="#{logDossierController.selection.niveauLog}" />
+						
+						<h:outputText value="Origine" />
+						<h:outputText value="#{logDossierController.selection.origine}" />
+						
+						<h:outputText value="Source" />
+						<h:outputText value="#{logDossierController.selection.source}" />
+						
+						<h:outputText value="Trace" />
+						<h:outputText value="#{logDossierController.selection.trace}" />
+						
+						
+
+					</p:panelGrid>
+				</p:panel>
+			</div>
+		</div>
+
+
+</ui:composition>

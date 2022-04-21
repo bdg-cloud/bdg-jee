@@ -1,0 +1,285 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<p:menubar styleClass="menu-onglet">
+<!-- 		<p:menuitem title="Annuler" styleClass="icon icon-cancel" actionListener="#{preferencesBean.actAnnuler}"  -->
+<!-- 		process="@this"	update=":form:messages,@form"> -->
+<!-- 		</p:menuitem> -->
+			
+<!-- 		<p:menuitem title="Enregistrer" styleClass="icon icon-save" -->
+<!-- 			actionListener="#{preferencesBean.actEnregistrer}" -->
+<!-- 			update=":form:messages,:formLeft:tabViewLeft,@form" > -->
+<!-- 		</p:menuitem> -->
+
+
+		<p:menuitem title="Fermer" styleClass="icon icon-close menuitem-fermer-droite"
+			actionListener="#{monCompteBean.actFermer}"
+			process="@this" update=":form:messages,@form" 
+			onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())">
+
+		</p:menuitem>	
+	</p:menubar>
+
+
+	<p:outputLabel value="Utilisateur (login) : #{auth.username}" />
+	<br />
+	<h:outputText value="Nom : #{auth.user.prenom} #{auth.user.nom}" />
+	<br />
+	<h:outputText value="Entreprise : #{auth.user.taEntreprise.nom}" />
+	<br />
+	<h:outputText value="Role : " />
+	<ui:repeat value="${auth.user.roles}" var="item">
+		<h:outputText value="#{item.taRole.role}, " />
+	</ui:repeat>
+	<br />
+
+	<p:separator />
+
+	<h:outputText value="Mot de passe actuel " />
+	<br />
+	<p:password value="#{monCompteBean.motDePasseActuel}" />
+	<br />
+
+	<h:outputText value="Nouveau mot de passe" />
+	<br />
+	<p:password id="pwd1" value="#{monCompteBean.nouveauMotDePasse}"
+		feedback="true" weakLabel="Sécurité faible"
+		promptLabel="Veuillez saisir votre nouveau mot de passe"
+		goodLabel="Sécurité correcte" strongLabel="Sécurité forte"
+		match="pwd2" />
+	<br />
+
+	<h:outputText value="Confirmation du nouveau mot de passe" />
+	<br />
+	<p:password id="pwd2" value="#{monCompteBean.confirmationMotDePasse}" />
+	<br />
+
+	<p:commandButton value="Mettre à jour mon mot de passe"
+		actionListener="#{monCompteBean.changeMotDePasse}"
+		update=":form:messages">
+		<p:confirm header="Confirmation"
+			message="Etes vous sur de vouloir modifier votre mot de passe ? Si vous continuez vous serez déconnecté. Vous devrez vous reconnecté avec votre nouveau mot de passe"
+			icon="ui-icon-alert" />
+	</p:commandButton>
+	<br />
+
+	<p:confirmDialog global="true" showEffect="fade" hideEffect="explode">
+		<p:commandButton value="Oui" type="button"
+			styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+		<p:commandButton value="Non" type="button"
+			styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+	</p:confirmDialog>	
+	
+	<p:selectOneMenu value="#{languageBean.localeCode}">
+		<f:selectItems value="#{languageBean.countriesInMap}" />
+		<p:ajax listener="#{languageBean.countryLocaleCodeChanged}" update="@form"/>
+	</p:selectOneMenu>
+	
+	
+	<p:panel header="Gestion du dossier" rendered="#{monCompteBean.u.adminDossier}">
+	
+<!-- 	<p:link value="Renouvellement rapide" ajax="false" href="#{request.contextPath}/admin/renouvellement.xhtml?dossier=#{monCompteBean.tenantInfo.tenantId}"/> -->
+	
+						<p:commandLink 
+									onstart="window.open('#{request.contextPath}/admin/renouvellement.xhtml?dossier=#{monCompteBean.tenantInfo.tenantId}')">
+								<i class="fa fa-shopping-cart"></i>
+					        	<span><h:outputText value="Panier (Acheter/Renouveller des modules)" /></span>
+							</p:commandLink>
+	<br/>
+	<p:link value="Mon compte 'legrain.fr'" ajax="false" disabled="true" />
+	<br/>
+	<p:link value="Nouveau dossier" ajax="false" disabled="true"/>
+	<br/>
+	
+<!-- 	selection="#{articleController.selectedTaArticleDTO}" -->
+	
+	<p:dataTable var="taArticle"
+				widgetVar="wvDataTableListeArticle"
+				styleClass="datatable mt10"
+				value="#{monCompteBean.listeAutorisationDossier}"
+				rowKey="#{taArticle.idAutorisation}"
+				
+				selectionMode="single"
+				dblClickSelect="true"
+				resizableColumns="true"
+				paginator="true" 
+				rows="#{msg.modele_datatable_ligne_par_page_debut}"
+				paginatorTemplate="#{msg.modele_datatable_paginator}"
+				rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+				emptyMessage="#{msg.message_datatable_vide}"
+				currentPageReportTemplate="#{msg.modele_datatable_page_courante}"
+				disabledSelection="#{articleController.modeEcran.dataSetEnModif()}">
+				
+				<f:facet name="header">
+					<h:outputText value="Mes modules" />
+				</f:facet>
+        
+				<p:column sortBy="#{taArticle.taProduit.code}">
+					<f:facet name="header">
+						<h:outputText value="Code module" />
+					</f:facet>
+					<h:outputText value="#{taArticle.taProduit.code}" />
+				</p:column>
+				
+				<p:column sortBy="#{taArticle.taProduit.libelle}">
+					<f:facet name="header">
+						<h:outputText value="Module" />
+					</f:facet>
+					<h:outputText value="#{taArticle.taProduit.libelle}" />
+				</p:column>
+				
+				<p:column sortBy="#{taArticle.dateAchat}" styleClass="center">
+					<f:facet name="header">
+						<h:outputText value="Debut" />
+					</f:facet>
+					<h:outputText value="#{taArticle.dateAchat.toGregorianCalendar().time}">
+						<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+					</h:outputText>
+				</p:column>
+				
+				<p:column sortBy="#{taArticle.dateFin}" styleClass="center">
+					<f:facet name="header">
+						<h:outputText value="Fin" />
+					</f:facet>
+					<h:outputText value="#{taArticle.dateFin.toGregorianCalendar().time}">
+						<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+					</h:outputText>
+				</p:column>
+				
+			</p:dataTable>
+			
+			<br/>
+			
+			<p:dataTable var="taArticle"
+				widgetVar="wvDataTableListeArticle"
+				styleClass="datatable mt10"
+				value="#{monCompteBean.listeTousProduit}"
+				rowKey="#{taArticle.idProduit}"
+				
+				selectionMode="single"
+				dblClickSelect="true"
+				resizableColumns="true"
+				paginator="true" 
+				rows="#{msg.modele_datatable_ligne_par_page_debut}"
+				paginatorTemplate="#{msg.modele_datatable_paginator}"
+				rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+				emptyMessage="#{msg.message_datatable_vide}"
+				currentPageReportTemplate="#{msg.modele_datatable_page_courante}"
+				disabledSelection="#{articleController.modeEcran.dataSetEnModif()}">
+				
+				<f:facet name="header">
+					<h:outputText value="Modules disponibles" />
+				</f:facet>
+        
+				<p:column sortBy="#{taArticle.code}">
+					<f:facet name="header">
+						<h:outputText value="Code module" />
+					</f:facet>
+					<h:outputText value="#{taArticle.code}" />
+				</p:column>
+				
+				<p:column sortBy="#{taArticle.libelle}">
+					<f:facet name="header">
+						<h:outputText value="Module" />
+					</f:facet>
+					<h:outputText value="#{taArticle.libelle}" />
+				</p:column>
+				
+				<p:column sortBy="#{taArticle.prixHT}" styleClass="right">
+					<f:facet name="header">
+						<h:outputText value="Prix HT" />
+					</f:facet>
+					<h:outputText value="#{taArticle.prixHT}" >	
+						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+					</h:outputText>
+				</p:column>
+				
+			</p:dataTable>
+			
+						<br/>
+			
+			<p:dataTable var="taDossier"
+				widgetVar="wvDataTableListeDossier"
+				styleClass="datatable mt10"
+				value="#{monCompteBean.listeDossier}"
+				rowKey="#{taDossier.id}"
+				
+				selectionMode="single"
+				dblClickSelect="true"
+				resizableColumns="true"
+				paginator="true" 
+				rows="#{msg.modele_datatable_ligne_par_page_debut}"
+				paginatorTemplate="#{msg.modele_datatable_paginator}"
+				rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+				emptyMessage="#{msg.message_datatable_vide}"
+				currentPageReportTemplate="#{msg.modele_datatable_page_courante}"
+				disabledSelection="#{articleController.modeEcran.dataSetEnModif()}">
+				
+				<f:facet name="header">
+					<h:outputText value="Mes dossiers" />
+				</f:facet>
+        
+				<p:column sortBy="#{taDossier.code}">
+					<f:facet name="header">
+						<h:outputText value="Code" />
+					</f:facet>
+					<h:outputText value="#{taDossier.code}" />
+				</p:column>
+				
+				<p:column sortBy="#{taDossier.actif}" styleClass="center">
+					<f:facet name="header">
+						<h:outputText value="Actif" />
+					</f:facet>
+					<p:selectBooleanCheckbox value="#{taDossier.actif}" disabled="true"/>
+				</p:column>
+				
+				<p:column sortBy="#{taDossier.quandCree}" styleClass="center">
+					<f:facet name="header">
+						<h:outputText value="Création" />
+					</f:facet>
+					<h:outputText value="#{taDossier.quandCree.toGregorianCalendar().time}">
+						<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+					</h:outputText>
+				</p:column>
+				
+			</p:dataTable>
+			
+			<p:panelGrid columns="2">
+				<f:facet name="header">
+					<h:outputText value="Nouveau dossier" />
+				</f:facet>
+				<h:outputText value="Code dossier" />
+				<p:inputText id="idNomDossier" value="#{monCompteBean.nomNouveauDossier}" required="true"
+					requiredMessage="Veuillez saisir un nom de dossier" >
+<!-- 					<f:ajax event="blur" render="idMessagesNouveauDossier" /> -->
+				</p:inputText>
+				
+				<p:outputLabel value="Email/login : " />
+				<p:inputText value="#{monCompteBean.loginNouveauDossier}" required="true"
+					requiredMessage="Veuillez saisir une adresse email" />
+
+				<p:outputLabel value="Mot de passe : " />
+				<p:password id="pwd1" value="#{monCompteBean.motDePasseNouveauDossier}" feedback="true" required="true" inline="true"
+					requiredMessage="Veuillez saisir un mot de passe" weakLabel="Sécurité faible"
+					promptLabel="Veuillez saisir votre nouveau mot de passe" goodLabel="Sécurité correcte"
+					strongLabel="Sécurité forte" />
+
+				<p:outputLabel value="Confirmation du mot de passe : " />
+				<p:password id="pwd2" value="#{monCompteBean.confirmationMotDePasseNouveauDossier}" required="true"
+					requiredMessage="Veuillez saisir la confirmation de votre mot de passe" />
+			
+				<p:commandButton value="Créer ce dossier" widgetVar="wvBtnCreerDossier" onclick="PF('wvBtnCreerDossier').disable()"
+						oncomplete="PF('wvBtnCreerDossier').enable()"
+					actionListener="#{monCompteBean.actCreerDossier}"
+					update="@widgetVar(wvDataTableListeDossier),:form:messages">
+				</p:commandButton>
+			</p:panelGrid>
+	</p:panel>
+	
+	
+
+
+</ui:composition>

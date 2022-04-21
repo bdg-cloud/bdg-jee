@@ -1,0 +1,206 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<p:panel id="typeTarifFormPrincipal" widgetVar="typeTarifForm">
+
+		<p class="subtitle">
+			<p:outputLabel value="Gestion des Grilles tarifaires"
+				rendered="#{dansDialogue == null ? true : false}" />
+		</p>
+		
+		<!-- bouton -->
+		<p:panel id="typeTarifDataTableF" class="mt30" style="position:relative;"
+			rendered="#{dansDialogue == null ? true : false}">
+			
+			<p:commandButton value="Ajouter" title="Insérer" process="@this"
+				update=":form:tabView,:form:messages,:form" 
+				actionListener="#{typeTarifController.actDialogTypes}"
+				styleClass="icon-insert icon" >
+				<p:ajax event="dialogReturn" listener="#{typeTarifController.handleReturnDialogTypes}" 
+					update=":form"/>
+			</p:commandButton>
+			
+<!-- 			<p:commandButton id="typeTarifInsérer" value="Insérer" -->
+<!-- 				process="@this" -->
+<!-- 				disabled="#{typeTarifController.etatBouton('inserer')}" -->
+<!-- 				update="@widgetVar(varTypeTarifPanel), @this, @parent:typeTarifModifier, @parent:typeTarifSupprimer" -->
+<!-- 				actionListener="#{typeTarifController.actInserer}" -->
+<!-- 				class="btn-insert btn" /> -->
+
+			<p:commandButton value="Modifier" title="Modifier" process="@this"
+				update=":form:tabView,:form:messages,:form" 
+				actionListener="#{typeTarifController.actDialogModifier}"
+				styleClass="icon-update icon" >
+				<p:ajax event="dialogReturn" listener="#{typeTarifController.handleReturnDialogTypes}" update=":form"/>
+			</p:commandButton>
+			
+<!-- 			<p:commandButton id="typeTarifModifier" value="Modifier" -->
+<!-- 				process="@this" class="btn-update btn" -->
+<!-- 				disabled="#{typeTarifController.etatBouton('modifier')}" -->
+<!-- 				update="@widgetVar(varTypeTarifPanel), @parent:typeTarifInsérer, @this, @parent:typeTarifSupprimer" -->
+<!-- 				actionListener="#{typeTarifController.actModifier}" /> -->
+
+			<p:commandButton id="typeTarifSupprimer" value="Supprimer"
+				class="icon-delete icon menuitem-poubelle-droite"
+				disabled="#{typeTarifController.etatBouton('supprimer')}"
+				actionListener="#{typeTarifController.actSupprimer}"
+				update="@widgetVar(wvTypeTarifDataTable)" process="@this"
+				 >
+<!-- 				type="button" onclick="PF('famillecd1').show()" -->
+				<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer cet enregistrement ?" icon="ui-icon-alert" />
+			</p:commandButton>
+
+			<p:commandButton id="typeTarifFermer" title="Fermer"
+				class="icon-close icon menuitem-fermer-droite" 
+				rendered="#{dansDialogue != null ? false : true}" onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())">
+<!-- 				type="button" onclick="PF('famillecd2').show()" -->
+				<p:confirm header="Confirmation" message="#{msg_diag.alert_fermeture_onglet}" icon="ui-icon-alert" disabled="#{!typeTarifController.modeEcran.dataSetEnModif()}"/>
+			</p:commandButton>
+
+			<p:commandButton id="typeTarifFermerDialogue" title="Fermer"
+				process="@this" class="icon-close icon menuitem-fermer-droite"
+				actionListener="#{typeTarifController.actFermerDialog}"
+				rendered="#{dansDialogue != null ? true : false}" />
+
+		</p:panel>
+
+		<p:dataTable id="typeTarifDataTable" widgetVar="wvTypeTarifDataTable" var="table"
+			rendered="#{dansDialogue == null ? true : false}"
+			value="#{typeTarifController.values}" rowKey="#{table.id}"
+			selectionMode="single" class="datatable"
+			selection="#{typeTarifController.selection}" paginator="false"
+			rows="#{msg.modele_datatable_ligne_par_page_debut}"
+			paginatorTemplate="#{msg.modele_datatable_paginator}"
+			rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+			emptyMessage="#{msg.message_datatable_vide}"
+			currentPageReportTemplate="#{msg.modele_datatable_page_courante}">
+
+			<p:ajax event="rowSelect"
+				listener="#{typeTarifController.onRowSelect}" />
+
+			<f:facet name="{Exporters}">
+				<h:commandLink>
+					<p:graphicImage library="images" name="excel.png" width="24" />
+					<p:dataExporter type="xls" target="typeTarifDataTable"
+						fileName="type_tarif" />
+				</h:commandLink>
+
+				<h:commandLink>
+					<p:graphicImage library="images" name="pdf.png" width="24" />
+					<p:dataExporter type="pdf" target="typeTarifDataTable"
+						fileName="type_tarif" />
+				</h:commandLink>
+
+				<h:commandLink>
+					<p:graphicImage library="images" name="csv.png" width="24" />
+					<p:dataExporter type="csv" target="typeTarifDataTable"
+						fileName="type_tarif" />
+				</h:commandLink>
+
+				<h:commandLink>
+					<p:graphicImage library="images" name="xml.png" width="24" />
+					<p:dataExporter type="xml" target="typeTarifDataTable"
+						fileName="type_tarif" />
+				</h:commandLink>
+			</f:facet>
+
+			<p:column sortBy="#{table.codeTTarif}">
+<!-- 			 filterBy="#{table.codeTTarif}" filterMatchMode="contains"> -->
+				<f:facet name="header">
+					<h:outputText value="Code" />
+				</f:facet>
+				<h:outputText value="#{table.codeTTarif}" />
+			</p:column>
+			<p:column sortBy="#{table.liblTTarif}">
+<!-- 			 filterBy="#{table.liblTTarif}" filterMatchMode="contains"> -->
+				<f:facet name="header">
+					<h:outputText value="Libellé" />
+				</f:facet>
+				<h:outputText value="#{table.liblTTarif}" />
+			</p:column>
+			<p:column sortBy="#{table.valeur}">
+				<f:facet name="header">
+					<h:outputText value="Coefficient" />
+				</f:facet>
+				<h:outputText value="#{table.valeur}" />
+			</p:column>			
+		</p:dataTable>
+	</p:panel>
+
+	<p:messages id="typeTarifMessages" showDetail="true" autoUpdate="true"
+		closable="true" />
+
+	<p:panel id="typeTarifPanel" visible="true" widgetVar="varTypeTarifPanel">
+		<p:panel resizable="false" id="typeTarifPanelCache"
+			rendered="#{typeTarifController.modeEcran.dataSetEnModif()}">
+			<!-- 			<h:form id="typeTarifFormCreation"> -->
+			<f:validateBean disabled="true">
+				<div class="ui-grid ui-grid-responsive" id="typeTarifGridResp">
+					<div class="ui-grid-row">
+						<div class="ui-grid-col-4">
+							<h:outputText value="Code :"></h:outputText>
+						</div>
+						<div class="ui-grid-col-8">
+							<h:inputText value="#{typeTarifController.nouveau.codeTTarif}" styleClass="Input50"
+								required="true"
+								requiredMessage="#{msg_diag.alert_champs_obligatoir}" validator="#{typeTarifController.validateObject}">
+									<f:attribute name="nomChamp" value="#{const.C_CODE_T_TARIF}" />
+									<p:ajax event="blur" update="@this"/>
+							</h:inputText>
+						</div>
+					</div>
+					<div class="ui-grid-row">
+
+						<div class="ui-grid-col-4">
+							<h:outputText value="Libellé :"></h:outputText>
+						</div>
+						<div class="ui-grid-col-8">
+							<h:inputText value="#{typeTarifController.nouveau.liblTTarif}" styleClass="Input100"
+								required="true"
+								requiredMessage="#{msg_diag.alert_champs_obligatoir}" validator="#{typeTarifController.validateObject}">
+									<f:attribute name="nomChamp" value="#{const.C_LIBL_T_TARIF}" />
+									<p:ajax event="blur" update="@this"/>
+							</h:inputText>
+						</div>
+					</div>
+					<div class="ui-grid-row">
+
+						<div class="ui-grid-col-4">
+							<h:outputText value="Coefficient :"></h:outputText>
+						</div>
+						<div class="ui-grid-col-8">
+							<h:inputText value="#{typeTarifController.nouveau.valeur}" styleClass="Input100" >
+									<f:attribute name="nomChamp" value="#{const.C_VALEUR_T_TARIF}" />
+									<p:ajax event="blur" update="@this"/>
+							</h:inputText>
+						</div>
+					</div>					
+					<div class="ui-grid-row">
+						<div class="ui-grid-col-12 text-center">
+							<p:commandButton value="Enregistrer" styleClass="btn-save btn"
+								disabled="#{typeTarifController.etatBouton('enregistrer')}"
+								update="@widgetVar(typeTarifForm), @widgetVar(varTypeTarifPanel)"
+								actionListener="#{typeTarifController.actEnregistrer}" />
+							
+							<p:commandButton id="typeTarifAnnuler" value="Annuler" styleClass="btn-cancel btn"
+								disabled="#{typeTarifController.etatBouton('annuler')}"
+								update="@widgetVar(typeTarifForm), @widgetVar(varTypeTarifPanel)"
+								actionListener="#{typeTarifController.actAnnuler}" 
+								rendered="#{dansDialogue != null ? false : true}" />
+								
+							<p:commandButton id="typeTarifAnnulerDialogue" value="Annuler"
+								styleClass="btn-cancel btn" process="@this"
+								disabled="#{typeTarifController.etatBouton('annuler')}"
+								actionListener="#{typeTarifController.actFermerDialog}"
+								rendered="#{dansDialogue != null ? true : false}" />
+						</div>
+					</div>
+				</div>
+			</f:validateBean>
+		</p:panel>
+	</p:panel>
+<!-- 	</p:panel> -->
+</ui:composition>

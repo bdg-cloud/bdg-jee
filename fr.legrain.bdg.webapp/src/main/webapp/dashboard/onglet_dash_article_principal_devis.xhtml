@@ -1,0 +1,123 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+<div class="ui-g-12 ui-md-12" style="background:#ebebeb;">
+									<div class="ui-g-12 ui-md-6 ui-lg-3">
+										<p:panel header="Article sur la période" style="background:#ebebeb;" widgetVar="wvCountNbArticleTransforme" rendered="false">
+											<div class="box #{dashBoardArticleController.cSbNbDocumentSurPeriode}" >
+				<!-- 								<div class= "box greenback"> -->
+				<!-- 							<h:graphicImage name="dashboard/devis.svg" id="imagedashboard" library="images" height="40px"/> -->
+											<i class="fa fa-cube"></i>
+											<h2>#{dashBoardArticleController.nombreArticlesDoc.count} articles</h2>
+											<h3>Total HT : <p:outputLabel value="#{dashBoardArticleController.caTotalArticlesDocMoinsAvoir.mtHtCalc}">
+												 <f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" /> 	
+											</p:outputLabel>
+											</h3>
+											<p:outputLabel value="Facturé : "/>
+											<p:outputLabel value="#{dashBoardArticleController.caTotalArticlesDoc.mtHtCalc}">
+												 <f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" /> 	
+											</p:outputLabel><br/>
+											
+											<p:outputLabel value="Avoirs : "/>
+											<p:outputLabel value="#{dashBoardArticleController.caTotalArticlesDocAvoir.mtHtCalc}">
+												 <f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" /> 	
+											</p:outputLabel>
+											
+											
+				<!-- 							<h3>Total HT : #{dashBoardArticleController.totauxCaPeriodeDevis.mtHtCalc} € </h3> -->
+											<p>Du 
+											<p:outputLabel value="#{dashBoardArticleController.dateDebut}">
+												<f:convertDateTime pattern="#{msg.date_pattern}"
+														               timeZone="#{msg.time_zone}" type="localDate"/>		
+											</p:outputLabel>
+											  au 
+											<p:outputLabel value="#{dashBoardArticleController.dateFin}">
+												<f:convertDateTime pattern="#{msg.date_pattern}"
+														               timeZone="#{msg.time_zone}" type="localDate"/>		
+											</p:outputLabel>
+											
+											
+											</p>
+				
+				
+				
+										<p:selectBooleanButton style="width:50%;" id="articleDevistous" 
+																value="true" onLabel="Sélection active"
+																widgetVar="wvArticleTous" 
+																offLabel="Afficher" onIcon="ui-icon-check" offIcon="ui-icon-close">
+												<p:ajax oncomplete="PF('wvListeArticle').filter()"
+														event="change" 
+														update="@this"		
+														listener="#{dashBoardArticleController.refreshDashBoard('tous')}"/>	 
+				        					</p:selectBooleanButton>
+											</div> 
+										</p:panel>
+									</div>
+									
+									
+									<div class="ui-g-12 ui-md-6 ui-lg-3">
+										<p:panel header="Famille d'article sur la période" style="background:#ebebeb;" widgetVar="wvCountNbFamilleArticleTransforme" rendered="false">
+											<div class="box #{dashBoardArticleController.cSbNbDocumentNonTransformeSurPeriode}" >
+				<!-- 								<div class= "box greenback"> -->
+				<!-- 							<h:graphicImage name="dashboard/devis.svg" id="imagedashboard" library="images" height="40px"/> -->
+											<i class="fa fa-cube"></i>
+											<h2>#{dashBoardArticleController.nombreFamillesDoc.count} familles d'articles</h2>
+											<h3>Total HT : <p:outputLabel value="#{dashBoardArticleController.caTotalArticlesDocMoinsAvoir.mtHtCalc}">
+												 <f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" /> 	
+											</p:outputLabel>
+											</h3>
+											<p:outputLabel value="Facturé : "/>
+											<p:outputLabel value="#{dashBoardArticleController.caTotalArticlesDoc.mtHtCalc}">
+												 <f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" /> 	
+											</p:outputLabel><br/>
+											
+											<p:outputLabel value="Avoirs : "/>
+											<p:outputLabel value="#{dashBoardArticleController.caTotalArticlesDocAvoir.mtHtCalc}">
+												 <f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" /> 	
+											</p:outputLabel>
+				<!-- 							<h3>Total HT : #{dashBoardArticleController.totauxCaPeriodeDevis.mtHtCalc} € </h3> -->
+											<p>Du 
+											<p:outputLabel value="#{dashBoardArticleController.dateDebut}">
+												<f:convertDateTime pattern="#{msg.date_pattern}"
+														               timeZone="#{msg.time_zone}" type="localDate"/>		
+											</p:outputLabel>
+											  au 
+											<p:outputLabel value="#{dashBoardArticleController.dateFin}">
+												<f:convertDateTime pattern="#{msg.date_pattern}"
+														               timeZone="#{msg.time_zone}" type="localDate"/>		
+											</p:outputLabel>
+											
+											
+											</p>
+				
+				
+				
+										<p:selectBooleanButton style="width:50%;" id="FamilleArticleDevistous" 
+																value="false" onLabel="Sélection active"
+																widgetVar="wvFamilleArticleTous" 
+																offLabel="Afficher" onIcon="ui-icon-check" offIcon="ui-icon-close">
+												<p:ajax oncomplete="PF('wvListeArticle').filter()"
+														event="change" 
+														update="@this"			
+														listener="#{dashBoardArticleController.refreshDashBoard('famille')}"/>	 
+				        					</p:selectBooleanButton>
+											</div> 
+										</p:panel>
+									</div>
+									
+									
+								</div>
+								 <div class="ui-g-12 ui-md-12" >
+											<p:panel header="Liste des articles facturés et facturés en avoir sur la période" widgetVar="wvDashArticlePanelArticleDevisTous" rendered="false">
+												
+												<p:tabView id="idTabViewListesArticlesDashArticleDevisTous" widgetVar="wvTabViewListesArticlesDashArticleDevisTous" styleClass="tab-verte-border-color-verte ">
+											         <p:tab title="Groupé par article" rendered="#{dashBoardArticleController.afficheTabGroupeArticle}"> 
+											        
+											        </p:tab>
+											     </p:tabView>
+										   </p:panel>
+								</div>
+</ui:composition>					         

@@ -1,0 +1,64 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:p="http://primefaces.org/ui">
+
+	<h:form id="form" prependId="true">
+		<!-- false pour le selector du CSS -->
+<!-- 		<ui:include src="/editionjar/aa.xhtml"/> -->
+		
+		 <p:remoteCommand name="notificationAgenda" actionListener="#{agendaBean.remoteCommandNotificationAgenda}" process="@this" update="idLinkAgendaAccueil,@widgetVar(wvPanelNotificationAgenda)" />
+
+		<p:growl id="messages" showDetail="true" severity="error" widgetVar="growl"/>
+		<p:messages id="messagess" showDetail="true" closable="true">
+			 <p:autoUpdate />
+		</p:messages>
+		
+<!-- 		<p:tabView id="tabView" scrollable="true" binding="#{centerBean.tabs.tabview}" widgetVar="widgetVarTabView"> -->
+			<p:tabView id="tabView" scrollable="true" binding="#{tabViewsBean.tabviewCenter}" widgetVar="widgetVarTabView" styleClass="tabs-principaux-bdg">
+<!-- 		<p:tabView id="tabView" scrollable="true" widgetVar="widgetVarTabView"> -->
+
+			<p:ajax event="tabChange" listener="#{centerBean.onTabChange}"
+				update=":form:messages" />
+			<p:ajax event="tabClose" listener="#{centerBean.onTabClose}" 
+				update=":form:messages,@this" />
+
+
+			<c:forEach items="#{centerBean.tabs.onglets}" var="onglet" varStatus="loop">
+				<p:tab title="#{onglet.titre}" closable="false" titletip="#{onglet.toolTipTitre}" titleStyleClass="#{onglet.style}" styleClass="tabs-principaux-bdg">
+				
+<!-- 					<f:subview id="#{onglet.idTab eq null ? 'tab_'.concat(loop.index) : onglet.idTab }"> -->
+<!-- 					<f:subview id="tab_#{loop.index}"> -->
+<!-- 						<p:graphicImage library="images" name="solstyce.ico" /> -->
+<!-- 						<h:outputText value="#{onglet.typeOnglet}" /> -->
+<!-- 						<br /> -->
+						<p:panel styleClass="#{onglet.style}" id="#{onglet.idTab eq null ? 'tab_'.concat(loop.index) : onglet.idTab }" widgetVar="wv#{onglet.idTab}">
+							<ui:include src="#{onglet.template}">
+								<ui:param name="paramId" value="#{onglet.paramId}" />
+							</ui:include>
+						</p:panel>
+<!-- 					</f:subview> -->
+				</p:tab>
+			</c:forEach>
+
+<!-- 								<p:tab title="Onglet - #{onglet.titre}" closable="true" titleStyleClass="#{onglet.style}"> -->
+<!-- 									<p:graphicImage library="images" name="solstyce.ico" /> -->
+<!-- 									<h:outputText value="#{onglet.typeOnglet}" /> -->
+<!-- 									<ui:include src="#{onglet.template}" /> -->
+<!-- 								</p:tab> -->
+
+		</p:tabView>
+		
+		<p:confirmDialog global="true" showEffect="fade">
+<!-- 		<p:confirmDialog global="true" showEffect="fade" hideEffect="explode"> -->
+				<p:commandButton id="idConfirmDialogCenterOui" value="Oui" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+				<p:commandButton id="idConfirmDialogCenterNon" value="Non" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+		</p:confirmDialog>
+		
+		<p:commandButton value="" id="idBtnActionDefautVide" actionListener="#{tabViewsBean.actBtnActionDefautVide}" process="@this" styleClass="btn-action-defaut-vide"/>
+		<p:defaultCommand target="idBtnActionDefautVide" />
+	</h:form>
+
+</ui:composition>

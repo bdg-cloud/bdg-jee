@@ -1,0 +1,9104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- <!DOCTYPE mappings PUBLIC "-//DOZER//DTD MAPPINGS//EN" "http://dozer.sourceforge.net/dtd/dozerbeanmapping.dtd"> -->
+<!-- Site en maintenance dozer.sourceforge.net donc autre adresse ou pouvoir vérifier la DTD en local -->
+
+<!-- <!DOCTYPE mappings PUBLIC "-//DOZER//DTD MAPPINGS//EN" "http://localhost/beanmapping.dtd"> -->
+<!-- <!DOCTYPE mappings PUBLIC "-//DOZER//DTD MAPPINGS//EN" "/WEB-INF/lib/beanmapping.dtd"> -->
+
+<mappings xmlns="http://dozer.sourceforge.net"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://dozer.sourceforge.net
+          http://dozer.sourceforge.net/schema/beanmapping.xsd">
+
+<!-- <mappings> -->
+	<configuration>
+		<stop-on-errors>true</stop-on-errors>
+		<date-format>MM/dd/yyyy HH:mm</date-format>
+		<wildcard>true</wildcard>
+	</configuration>
+
+<mapping  map-null="false">
+		<class-a>fr.legrain.document.model.TaTPaiement</class-a>
+		<class-b>fr.legrain.document.dto.TaTPaiementDTO</class-b>
+		<field>
+			<a>idTPaiement</a>
+			<b>id</b>
+		</field>
+		<field>
+			<a>codeTPaiement</a>
+			<b>codeTPaiement</b>
+		</field>
+		<field>
+			<a>libTPaiement</a>
+			<b>libTPaiement</b>
+		</field>
+		<field>
+			<a>compte</a>
+			<b>compte</b>
+		</field>
+		<field>
+			<a>reportTPaiement</a>
+			<b>reportTPaiement</b>
+		</field>
+		
+		<field>
+			<a>finMoisTPaiement</a>
+			<b>finMoisTPaiement</b>
+		</field>		
+	</mapping>
+	<mapping  map-null="false">
+		<class-a>fr.legrain.article.model.TaUnite</class-a>
+		<class-b>fr.legrain.article.dto.TaUniteDTO</class-b>
+		<field>
+			<a>idUnite</a>
+			<b>id</b>
+		</field>
+		<field>
+			<a>codeUnite</a>
+			<b>codeUnite</b>
+		</field>
+		<field>
+			<a>liblUnite</a>
+			<b>liblUnite</b>
+		</field>
+		<field type="one-way">
+			<a>taFamilleUnite.codeFamille</a>
+			<b>codeFamille</b>
+		</field>
+	</mapping>
+
+<!-- 	<mapping map-null="false" map-empty-string="false"> commentaire pour le bug 553 -->
+	<mapping map-null="false">
+		<class-a>fr.legrain.article.model.TaArticle</class-a>
+		<class-b>fr.legrain.article.dto.TaArticleDTO</class-b>
+		<field-exclude> 
+		  <a>nomenclature</a> 
+		  <b>nomenclature</b> 
+		</field-exclude> 
+		<field>
+			<a>idArticle</a>
+			<b>id</b>
+		</field>
+				
+		
+		<field>
+			<a>codeArticle</a>
+			<b>codeArticle</b>
+		</field>
+		<field>
+			<a>actif</a>
+			<b>actif</b>
+		</field>
+		<field>
+			<a>libellecArticle</a>
+			<b>libellecArticle</b>
+		</field>
+		<field>
+			<a>libellelArticle</a>
+			<b>libellelArticle</b>
+		</field>
+		<field>
+			<a>numcptArticle</a>
+			<b>numcptArticle</b>
+		</field>
+		<field>
+			<a>diversArticle</a>
+			<b>diversArticle</b>
+		</field>
+		<field>
+			<a>produitFini</a>
+			<b>produitFini</b>
+		</field>
+		<field>
+			<a>matierePremiere</a>
+			<b>matierePremiere</b>
+		</field>		
+		<field>
+			<a>stockMinArticle</a>
+			<b>stockMinArticle</b>
+		</field>
+		<field>
+			<a>utiliseDlc</a>
+			<b>utiliseDlc</b>
+		</field>
+		<field type="one-way">
+			<a>taFamille.idFamille</a>
+			<b>idFamille</b>
+		</field>
+		<field type="one-way">
+			<a>taFamille.codeFamille</a>
+			<b>codeFamille</b>
+		</field>
+		<field type="one-way">
+			<a>taFamille.libcFamille</a>
+			<b>libcFamille</b>
+		</field>		
+		<field type="one-way">
+			<a>taTva.numcptTva</a>
+			<b>numcptTva</b>
+		</field>
+		<field type="one-way">
+			<a>taTva.codeTva</a>
+			<b>codeTva</b>
+		</field>
+		<field type="one-way">
+			<a>taTva.idTva</a>
+			<b>idTva</b>
+		</field>
+		<field type="one-way">
+			<a>taTva.tauxTva</a>
+			<b>tauxTva</b>
+		</field>
+		<field type="one-way">
+			<a>taTTva.idTTva</a>
+			<b>idTTva</b>
+		</field>
+		<field type="one-way">
+			<a>taTTva.codeTTva</a>
+			<b>codeTTva</b>
+		</field>
+		<field type="one-way">
+			<a>taTTva.libTTva</a>
+			<b>libTTva</b>
+		</field>
+		<field type="one-way">
+			<a>taMarqueArticle.codeMarqueArticle</a>
+			<b>codeMarqueArticle</b>
+		</field>
+		<field type="one-way">
+			<a>taMarqueArticle.idMarqueArticle</a>
+			<b>idMarqueArticle</b>
+		</field>		
+		<field>
+			<a>taPrix.prixPrix</a>
+			<b>prixPrix</b>
+		</field>
+		<field>
+			<a>taPrix.prixttcPrix</a>
+			<b>prixttcPrix</b>
+		</field>
+		<field >
+			<a>taUnite1.codeUnite</a>
+			<b>codeUnite</b>
+		</field>
+		<field >
+			<a>taRapportUnite.taUnite2.codeUnite</a>
+			<b>codeUnite2</b>
+		</field>
+		<field >
+			<a>taUniteReference.codeUnite</a>
+			<b>codeUniteReference</b>
+		</field>	
+		<field >
+			<a>taRapportUnite.rapport</a>
+			<b>rapport</b>
+		</field>		
+		<field >
+			<a>taRapportUnite.nbDecimal</a>
+			<b>nbDecimal</b>
+		</field>
+		<field >
+			<a>taRapportUnite.sens</a>
+			<b>sens</b>
+		</field>
+		<field type="one-way">
+			<a>taRTaTitreTransport.taTitreTransport.codeTitreTransport</a>
+			<b>codeTitreTransport</b>
+		</field>
+		<field type="one-way">
+			<a>taRTaTitreTransport.qteTitreTransport</a>
+			<b>qteTitreTransport</b>
+		</field>
+		<field type="one-way">
+			<a>taUniteStock.idUnite</a>
+			<b>idUniteStock</b>
+		</field>
+		<field type="one-way">
+			<a>taUniteStock.codeUnite</a>
+			<b>codeUniteStock</b>
+		</field>
+		<field type="one-way">
+			<a>taUniteSaisie.idUnite</a>
+			<b>idUniteSaisie</b>
+		</field>
+		<field type="one-way">
+			<a>taUniteSaisie.codeUnite</a>
+			<b>codeUniteSaisie</b>
+		</field>		
+		
+	</mapping>
+
+	<mapping>
+		<class-a>fr.legrain.article.model.TaArticle</class-a>
+		<class-b>fr.legrain.article.dto.TaCommentairesArticleDTO</class-b>
+		<field>
+			<a>commentaireArticle</a>
+			<b>commentaireArticle</b>
+		</field>
+	</mapping>
+
+	<mapping>
+		<class-a>fr.legrain.article.model.TaFamille</class-a>
+		<class-b>fr.legrain.article.dto.TaFamilleDTO</class-b>
+		<field>
+			<a>idFamille</a>
+			<b>id</b>
+		</field>
+		<field>
+			<a>codeFamille</a>
+			<b>codeFamille</b>
+		</field>
+		<field>
+			<a>libcFamille</a>
+			<b>libcFamille</b>
+		</field>
+		<field>
+			<a>liblFamille</a>
+			<b>liblFamille</b>
+		</field>
+	</mapping>
+	
+	
+	
+	<mapping>
+		<class-a>fr.legrain.article.model.TaCatalogueWeb</class-a>
+		<class-b>fr.legrain.article.dto.TaCatalogueWebDTO</class-b>
+		<field>
+			<a>idCatalogueWeb</a>
+			<b>id</b>
+		</field>
+		<field type="one-way">
+			<a>taPrixCatalogueDefaut.idPrix</a>
+			<b>idPrix</b>
+		</field>
+		<field>
+			<a>taPrixCatalogueDefaut.prixPrix</a>
+			<b>prixPrix</b>
+		</field>
+		<field>
+			<a>taPrixCatalogueDefaut.prixttcPrix</a>
+			<b>prixttcPrix</b>
+		</field>
+	</mapping>
+	
+		<mapping>
+		<class-a>fr.legrain.article.model.TaRefArticleFournisseur</class-a>
+		<class-b>fr.legrain.article.dto.TaRefArticleFournisseurDTO</class-b>
+		<field>
+			<a>idRefArticleFournisseur</a>
+			<b>id</b>
+		</field>
+		<field>
+			<a>codeBarreFournisseur</a>
+			<b>codeBarreFournisseur</b>
+		</field>
+		<field>
+			<a>codeArticleFournisseur</a>
+			<b>codeArticleFournisseur</b>
+		</field>
+		<field>
+			<a>descriptif</a>
+			<b>descriptif</b>
+		</field>
+		<field type="one-way">
+			<a>taFournisseur.idTiers</a>
+			<b>idFournisseur</b>
+		</field>
+		<field type="one-way">
+			<a>taFournisseur.codeTiers</a>
+			<b>codeFournisseur</b>
+		</field>
+		<field type="one-way">
+			<a>taArticle.idArticle</a>
+			<b>idArticle</b>
+		</field>
+		<field type="one-way">
+			<a>taArticle.codeArticle</a>
+			<b>codeArticle</b>
+		</field>											
+	</mapping>
+	
+	
+	
+	<mapping>
+		<class-a>fr.legrain.article.model.TaFamilleUnite</class-a>
+		<class-b>fr.legrain.article.dto.TaFamilleDTO</class-b>
+		<field>
+			<a>idFamille</a>
+			<b>id</b>
+		</field>
+		<field>
+			<a>codeFamille</a>
+			<b>codeFamille</b>
+		</field>
+		<field>
+			<a>libcFamille</a>
+			<b>libcFamille</b>
+		</field>
+		<field>
+			<a>liblFamille</a>
+			<b>liblFamille</b>
+		</field>
+	</mapping>	
+
+	<mapping>
+		<class-a>fr.legrain.article.model.TaPrix</class-a>
+		<class-b>fr.legrain.article.dto.TaPrixDTO</class-b>
+		<field>
+			<a>idPrix</a>
+			<b>id</b>
+		</field>
+<!-- 		<field type="one-way"> -->
+<!-- 			<a>taUnite.codeUnite</a> -->
+<!-- 			<b>codeUnite</b> -->
+<!-- 		</field> -->
+		<field type="one-way">
+			<a>taArticle.codeArticle</a>
+			<b>codeArticle</b>
+		</field>
+	</mapping>
+	
+	<mapping>
+		<class-a>fr.legrain.article.model.TaRapportUnite</class-a>
+		<class-b>fr.legrain.article.dto.TaRapportUniteDTO</class-b>
+		<field type="one-way">
+			<a>taUnite1.codeUnite</a>
+			<b>codeUnite1</b>
+		</field>
+		<field type="one-way">
+			<a>taUnite2.codeUnite</a>
+			<b>codeUnite2</b>
+		</field>
+		<field >
+			<a>rapport</a>
+			<b>rapport</b>
+		</field>
+		<field >
+			<a>nbDecimal</a>
+			<b>nbDecimal</b>
+		</field>		
+		<field type="one-way">
+			<a>taArticle.codeArticle</a>
+			<b>codeArticle</b>
+		</field>
+	</mapping>
+
+	<mapping>
+		<class-a>fr.legrain.article.model.TaRefPrix</class-a>
+		<class-b>fr.legrain.article.dto.TaRefPrixDTO</class-b>
+	</mapping>
+
+	<mapping>
+		<class-a>fr.legrain.article.model.TaTTva</class-a>
+		<class-b>fr.legrain.article.dto.TaTTvaDTO</class-b>
+	</mapping>
+
+	<mapping>
+		<class-a>fr.legrain.article.model.TaTva</class-a>
+		<class-b>fr.legrain.article.dto.TaTvaDTO</class-b>
+
+		<field>
+			<a>idTva</a>
+			<b>id</b>
+		</field>
+		<field>
+			<a>codeTva</a>
+			<b>codeTva</b>
+		</field>
+		<field>
+			<a>libelleTva</a>
+			<b>libelleTva</b>
+		</field>
+		<field>
+			<a>tauxTva</a>
+			<b>tauxTva</b>
+		</field>
+		<field>
+			<a>numcptTva</a>
+			<b>numcptTva</b>
+		</field>
+	</mapping>
+	
+	 <mapping>
+		 <class-a>fr.legrain.tiers.model.TaFamilleTiers</class-a>
+		<class-b>fr.legrain.tiers.dto.TaFamilleTiersDTO</class-b>
+		<field>
+			<a>idFamille</a>
+			<b>id</b>
+		</field>
+		<field>
+			<a>codeFamille</a>
+			<b>codeFamille</b>
+		</field>
+		<field>
+			<a>libcFamille</a>
+			<b>libcFamille</b>
+		</field>
+		<field>
+			<a>liblFamille</a>
+			<b>liblFamille</b>
+		</field>
+	</mapping>
+	
+		<!--<mapping>
+		<class-a>fr.legrain.tiers.model.TaFamilleTiers</class-a>
+		<class-b>fr.legrain.tiers.dto.SWTFamilleTiers</class-b>
+		<field>
+			<a>idFamille</a>
+			<b>idFamille</b>
+		</field>
+		<field>
+			<a>codeFamille</a>
+			<b>codeFamille</b>
+		</field>
+		<field>
+			<a>libcFamille</a>
+			<b>libcFamille</b>
+		</field>
+	</mapping>-->
+	
+	<mapping map-null="false">
+		<class-a>fr.legrain.tiers.model.TaTAdr</class-a>
+		<class-b>fr.legrain.tiers.dto.TaTAdrDTO</class-b>
+		<field>
+			<a>idTAdr</a>
+			<b>id</b>
+		</field>
+		<field>
+			<a>codeTAdr</a>
+			<b>codeTAdr</b>
+		</field>
+		<field>
+			<a>liblTAdr</a>
+			<b>liblTAdr</b>
+		</field>
+	</mapping>
+
+	<mapping>
+		<class-a>fr.legrain.tiers.model.TaTTel</class-a>
+		<class-b>fr.legrain.tiers.dto.TaTTelDTO</class-b>
+		<field>
+			<a>idTTel</a>
+			<b>id</b>
+		</field>
+		<field>
+			<a>codeTTel</a>
+			<b>codeTTel</b>
+		</field>
+		<field>
+			<a>liblTTel</a>
+			<b>liblTTel</b>
+		</field>
+	</mapping>
+
+	<mapping>
+		<class-a>fr.legrain.tiers.model.TaTCivilite</class-a>
+		<class-b>fr.legrain.tiers.dto.TaTCiviliteDTO</class-b>
+		<field>
+			<a>idTCivilite</a>
+			<b>id</b>
+		</field>
+		<field>
+			<a>codeTCivilite</a>
+			<b>codeTCivilite</b>
+		</field>
+	</mapping>
+
+	<mapping>
+		<class-a>fr.legrain.tiers.model.TaTEntite</class-a>
+		<class-b>fr.legrain.tiers.dto.TaTEntiteDTO</class-b>
+		<field>
+			<a>idTEntite</a>
+			<b>id</b>
+		</field>
+		<field>
+			<a>codeTEntite</a>
+			<b>codeTEntite</b>
+		</field>
+		<field>
+			<a>liblTEntite</a>
+			<b>liblTEntite</b>
+		</field>
+	</mapping>
+	
+	<mapping>
+		<class-a>fr.legrain.tiers.model.TaTTiers</class-a>
+		<class-b>fr.legrain.tiers.dto.TaTTiersDTO</class-b>
+		<field>
+			<a>idTTiers</a>
+			<b>id</b>
+		</field>
+		<field>
+			<a>compteTTiers</a>
+			<b>compteTTiers</b>
+		</field>
+		<field>
+			<a>codeTTiers</a>
+			<b>codeTTiers</b>
+		</field>
+		<field>
+			<a>libelleTTiers</a>
+			<b>libelleTTiers</b>
+		</field>
+	</mapping>
+	
+	<!--
+	*
+	*
+	*
+	*
+	* 
+	 -->
+	<mapping map-null="false">
+		<class-a >fr.legrain.tiers.model.TaAdresse</class-a>
+		<class-b >fr.legrain.tiers.dto.TaAdresseDTO</class-b>
+		<field>
+			<a>idAdresse</a>
+			<b>id</b>
+		</field>
+		
+		<field>
+			<a>adresse1Adresse</a>
+			<b>adresse1Adresse</b>
+		</field>
+		
+		<field>
+			<a>adresse2Adresse</a>
+			<b>adresse2Adresse</b>
+		</field>
+		<field>
+			<a>adresse3Adresse</a>
+			<b>adresse3Adresse</b>
+		</field>
+		
+		<field>
+			<a>codepostalAdresse</a>
+			<b>codepostalAdresse</b>
+		</field>
+		
+		<field>
+			<a>villeAdresse</a>
+			<b>villeAdresse</b>
+		</field>
+		
+		<field>
+			<a>paysAdresse</a>
+			<b>paysAdresse</b>
+		</field>
+		<field>
+			<a>ordre</a>
+			<b>ordre</b>
+		</field>		
+		<field type="one-way">
+			<a>taTAdr.codeTAdr</a>
+			<b>codeTAdr</b>
+		</field>
+		
+		<field type="one-way">
+			<a>taTAdr.idTAdr</a>
+			<b>idTAdr</b>
+		</field>
+		
+		<field type="one-way">
+			<a>taTiers.idTiers</a>
+			<b>idTiers</b>
+		</field>
+	</mapping>
+	
+	<mapping>
+		<class-a>fr.legrain.tiers.model.TaCommentaire</class-a>
+		<class-b>fr.legrain.tiers.dto.TaCommentaireDTO</class-b>
+		<field>
+			<a>commentaire</a>
+			<b>commentaire</b>
+		</field>
+	</mapping>
+	
+	<mapping>
+		<class-a>fr.legrain.tiers.model.TaCompl</class-a>
+		<class-b>fr.legrain.tiers.dto.TaComplDTO</class-b>
+		
+		<field>
+			<a>idCompl</a>
+			<b>id</b>
+		</field>
+		
+		<field>
+			<a>tvaIComCompl</a>
+			<b>tvaIComCompl</b>
+		</field>
+		
+		<field>
+			<a>siretCompl</a>
+			<b>siretCompl</b>
+		</field>
+		
+		<field>
+			<a>accise</a>
+			<b>accise</b>
+		</field>
+	</mapping>
+		
+	<mapping map-null="false">
+		<class-a>fr.legrain.tiers.model.TaCPaiement</class-a>
+		<class-b>fr.legrain.tiers.dto.TaCPaiementDTO</class-b>
+		
+		<field>
+			<a>idCPaiement</a>
+			<b>id</b>
+		</field>
+		
+		<field>
+			<a>codeCPaiement</a>
+			<b>codeCPaiement</b>
+		</field>
+		
+		<field>
+			<a>libCPaiement</a>
+			<b>libCPaiement</b>
+		</field>
+		<!-- 
+		<field>
+			<a>idTiers</a>
+			<b>idTiers</b>
+		</field>
+		 -->
+		<field>
+			<a>reportCPaiement</a>
+			<b>reportCPaiement</b>
+		</field>
+		
+		<field>
+			<a>finMoisCPaiement</a>
+			<b>finMoisCPaiement</b>
+		</field>
+		<field type="one-way">
+			<a>taTCPaiement.codeTCPaiement</a>
+			<b>codeTCPaiement</b>
+		</field>
+		<field type="one-way">
+			<a>taTCPaiement.liblTCPaiement</a>
+			<b>liblTCPaiement</b>
+		</field>
+	</mapping>
+	
+	<mapping>
+		<class-a>fr.legrain.tiers.model.TaEmail</class-a>
+		<class-b>fr.legrain.tiers.dto.TaEmailDTO</class-b>
+		
+		<field>
+			<a>idEmail</a>
+			<b>id</b>
+		</field>
+		
+		<field>
+			<a>adresseEmail</a>
+			<b>adresseEmail</b>
+		</field>
+		
+		<field type="one-way">
+			<a>taTiers.codeTiers</a>
+			<b>codeTiers</b>
+		</field>
+		
+		<field type="one-way">
+			<a>taTEmail.codeTEmail</a>
+			<b>codeTEmail</b>
+		</field>
+		
+		<field type="one-way">
+			<a>taTEmail.liblTEmail</a>
+			<b>liblTEmail</b>
+		</field>
+		<!--  
+		<field>
+			<a>idTiers</a>
+			<b>idTiers</b>
+		</field>
+		-->
+	</mapping>
+	
+	<mapping>
+		<class-a>fr.legrain.tiers.model.TaEntreprise</class-a>
+		<class-b>fr.legrain.tiers.dto.TaEntrepriseDTO</class-b>
+		<field>
+			<a>idEntreprise</a>
+			<b>id</b>
+		</field>
+		<field>
+			<a>nomEntreprise</a>
+			<b>nomEntreprise</b>
+		</field>
+		<field>
+			<a>contact</a>
+			<b>contact</b>
+		</field>						
+	</mapping>
+	
+	<mapping>
+		<class-a>fr.legrain.tiers.model.TaTBanque</class-a>
+		<class-b>fr.legrain.tiers.dto.TaTBanqueDTO</class-b>
+		
+		<field>
+			<a>idTBanque</a>
+			<b>id</b>
+		</field>
+		
+		<field>
+			<a>codeTBanque</a>
+			<b>codeTBanque</b>
+		</field>
+		
+		<field>
+			<a>liblTBanque</a>
+			<b>liblTBanque</b>
+		</field>
+		
+	</mapping>
+	
+	<mapping>
+		<class-a>fr.legrain.tiers.model.TaTelephone</class-a>
+		<class-b>fr.legrain.tiers.dto.TaTelephoneDTO</class-b>
+		
+		<field>
+			<a>idTelephone</a>
+			<b>id</b>
+		</field>
+		
+		<field>
+			<a>numeroTelephone</a>
+			<b>numeroTelephone</b>
+		</field>
+		
+		<field>
+			<a>posteTelephone</a>
+			<b>posteTelephone</b>
+		</field>
+		
+		<field>
+			<a>contact</a>
+			<b>contact</b>
+		</field>
+		
+		<field type="one-way">
+			<a>taTiers.codeTiers</a>
+			<b>codeTiers</b>
+		</field>
+		
+		<field type="one-way">
+			<a>taTiers.nomTiers</a>
+			<b>nomTiers</b>
+		</field>
+		
+		<field type="one-way">
+			<a>taTiers.prenomTiers</a>
+			<b>prenomTiers</b>
+		</field>
+		
+		<field type="one-way">
+			<a>taTTel.codeTTel</a>
+			<b>codeTTel</b>
+		</field>
+		
+		<field type="one-way">
+			<a>taTTel.liblTTel</a>
+			<b>liblTTel</b>
+		</field>
+		
+		<field type="one-way">
+			<a>taTTel.idTTel</a>
+			<b>idTTel</b>
+		</field>
+		
+		<field type="one-way">
+			<a>taTiers.idTiers</a>
+			<b>idTiers</b>
+		</field>
+	</mapping>
+	
+	<mapping>
+		<class-a>fr.legrain.tiers.model.TaTEmail</class-a>
+		<class-b>fr.legrain.tiers.dto.TaTEmailDTO</class-b>
+		
+		<field>
+			<a>idTEmail</a>
+			<b>id</b>
+		</field>
+		
+		<field>
+			<a>codeTEmail</a>
+			<b>codeTEmail</b>
+		</field>
+		
+		<field>
+			<a>liblTEmail</a>
+			<b>liblTEmail</b>
+		</field>
+
+	</mapping>
+	
+	<mapping>
+		<class-a>fr.legrain.tiers.model.TaLiens</class-a>
+		<class-b>fr.legrain.tiers.dto.TaLiensDTO</class-b>
+		
+		<field>
+			<a>idLiens</a>
+			<b>id</b>
+		</field>
+		
+		<field type="one-way">
+			<a>taTLiens.codeTLiens</a>
+			<b>codeTLiens</b>
+		</field>
+		
+		<field type="one-way">
+			<a>taTiers.codeTiers</a>
+			<b>codeTiers</b>
+		</field>
+		
+		<field>
+			<a>adresseLiens</a>
+			<b>adresseLiens</b>
+		</field>
+	</mapping>
+	
+	<mapping>
+		<class-a>fr.legrain.tiers.model.TaTLiens</class-a>
+		<class-b>fr.legrain.tiers.dto.TaTLiensDTO</class-b>
+		
+		<field>
+			<a>idTLiens</a>
+			<b>id</b>
+		</field>
+		
+		<field>
+			<a>codeTLiens</a>
+			<b>codeTLiens</b>
+		</field>
+		
+		<field>
+			<a>liblTLiens</a>
+			<b>liblTLiens</b>
+		</field>
+	</mapping>
+	
+	<mapping>
+		<class-a>fr.legrain.tiers.model.TaTTarif</class-a>
+		<class-b>fr.legrain.tiers.dto.TaTTarifDTO</class-b>
+		
+		<field>
+			<a>idTTarif</a>
+			<b>id</b>
+		</field>
+		
+		<field>
+			<a>codeTTarif</a>
+			<b>codeTTarif</b>
+		</field>
+		
+		<field>
+			<a>liblTTarif</a>
+			<b>liblTTarif</b>
+		</field>
+	</mapping>
+	
+	<mapping>
+		<class-a>fr.legrain.tiers.model.TaTWeb</class-a>
+		<class-b>fr.legrain.tiers.dto.TaTWebDTO</class-b>
+		
+		<field>
+			<a>idTWeb</a>
+			<b>id</b>
+		</field>
+		
+		<field>
+			<a>codeTWeb</a>
+			<b>codeTWeb</b>
+		</field>
+		
+		<field>
+			<a>liblTWeb</a>
+			<b>liblTWeb</b>
+		</field>
+	</mapping>
+
+
+	<mapping>
+		<class-a>fr.legrain.tiers.model.TaWeb</class-a>
+		<class-b>fr.legrain.tiers.dto.TaWebDTO</class-b>
+		
+		<field>
+			<a>idWeb</a>
+			<b>id</b>
+		</field>
+		
+		<field>
+			<a>adresseWeb</a>
+			<b>adresseWeb</b>
+		</field>
+		
+		<field type="one-way">
+			<a>taTiers.codeTiers</a>
+			<b>codeTiers</b>
+		</field>
+		
+		<field type="one-way">
+			<a>taTiers.idTiers</a>
+			<b>idTiers</b>
+		</field>
+		
+		<field type="one-way">
+			<a>taTWeb.codeTWeb</a>
+			<b>codeTWeb</b>
+		</field>
+	</mapping>
+	
+	<mapping>
+		<class-a>fr.legrain.tiers.model.TaTNoteTiers</class-a>
+		<class-b>fr.legrain.tiers.dto.TaTNoteTiersDTO</class-b>
+		
+		<field>
+			<a>idTNoteTiers</a>
+			<b>id</b>
+		</field>
+		
+		<field>
+			<a>codeTNoteTiers</a>
+			<b>codeTNoteTiers</b>
+		</field>
+		
+		<field>
+			<a>liblTNoteTiers</a>
+			<b>liblTNoteTiers</b>
+		</field>
+	</mapping>
+
+
+	<mapping>
+		<class-a>fr.legrain.tiers.model.TaNoteTiers</class-a>
+		<class-b>fr.legrain.tiers.dto.TaNoteTiersDTO</class-b>
+		
+		<field>
+			<a>idNoteTiers</a>
+			<b>id</b>
+		</field>
+		
+		<field>
+			<a>noteTiers</a>
+			<b>noteTiers</b>
+		</field>
+		
+		<field>
+			<a>dateNoteTiers</a>
+			<b>dateNoteTiers</b>
+		</field>
+		
+		<field type="one-way">
+			<a>taTiers.codeTiers</a>
+			<b>codeTiers</b>
+		</field>
+		
+		<field type="one-way">
+			<a>taTiers.idTiers</a>
+			<b>idTiers</b>
+		</field>
+		
+		<field type="one-way">
+			<a>taTNoteTiers.codeTNoteTiers</a>
+			<b>codeTNoteTiers</b>
+		</field>
+	</mapping>
+	
+	<mapping>
+		<class-a>fr.legrain.article.model.TaTNoteArticle</class-a>
+		<class-b>fr.legrain.article.dto.TaTNoteArticleDTO</class-b>
+		
+		<field>
+			<a>idTNoteArticle</a>
+			<b>id</b>
+		</field>
+		
+		<field>
+			<a>codeTNoteArticle</a>
+			<b>codeTNoteArticle</b>
+		</field>
+		
+		<field>
+			<a>liblTNoteArticle</a>
+			<b>liblTNoteArticle</b>
+		</field>
+	</mapping>
+
+
+	<mapping>
+		<class-a>fr.legrain.article.model.TaNoteArticle</class-a>
+		<class-b>fr.legrain.article.dto.TaNoteArticleDTO</class-b>
+		
+		<field>
+			<a>idNoteArticle</a>
+			<b>id</b>
+		</field>
+		
+		<field>
+			<a>noteArticle</a>
+			<b>noteArticle</b>
+		</field>
+		
+		<field>
+			<a>dateNoteArticle</a>
+			<b>dateNoteArticle</b>
+		</field>
+		
+		<field type="one-way">
+			<a>taArticle.codeArticle</a>
+			<b>codeArticle</b>
+		</field>
+		
+		<field type="one-way">
+			<a>taArticle.idArticle</a>
+			<b>idArticle</b>
+		</field>
+		
+		<field type="one-way">
+			<a>taTNoteArticle.codeTNoteArticle</a>
+			<b>codeTNoteArticle</b>
+		</field>
+	</mapping>		
+	
+<!-- 	<mapping map-null="false" map-empty-string="false"> commentaire pour bug #555 -->
+	<mapping map-null="false">
+		<class-a>fr.legrain.tiers.model.TaTiers</class-a>
+		<class-b>fr.legrain.tiers.dto.TaTiersDTO</class-b>
+		
+		<field>
+			<a>idTiers</a>
+			<b>id</b>
+		</field>
+		
+		<field >
+			<a>codeTiers</a>
+			<b>codeTiers</b>
+		</field>
+		
+		<field>
+			<a>codeCompta</a>
+			<b>codeCompta</b>
+		</field>
+		
+		<field>
+			<a>compte</a>
+			<b>compte</b>
+		</field>
+	
+		<field >
+			<a>nomTiers</a>
+			<b>nomTiers</b>
+		</field>
+		
+		<field>
+			<a>prenomTiers</a>
+			<b>prenomTiers</b>
+		</field>
+		
+		<field>
+			<a>surnomTiers</a>
+			<b>surnomTiers</b>
+		</field>
+		
+		<field>
+			<a>actifTiers</a>
+			<b>actifTiers</b>
+		</field>
+		
+		<field>
+			<a>ttcTiers</a>
+			<b>ttcTiers</b>
+		</field>
+		
+		<field type="one-way">
+			<a>taTCivilite.idTCivilite</a>
+			<b>idTCivilite</b>
+		</field>
+		
+		<field type="one-way">
+			<a>taTCivilite.codeTCivilite</a>
+			<b>codeTCivilite</b>
+		</field>
+		
+		<field type="one-way">
+			<a>taFamilleTiers.idFamille</a>
+			<b>idFamilleTiers</b>
+		</field>
+		
+		<field type="one-way">
+			<a>taFamilleTiers.codeFamille</a>
+			<b>codeFamilleTiers</b>
+		</field>
+		
+		<field type="one-way">
+			<a>taCPaiement.codeCPaiement</a>
+			<b>codeCPaiement</b>
+		</field>
+		<field type="one-way">
+			<a>taTPaiement.codeTPaiement</a>
+			<b>codeTPaiement</b>
+		</field>
+		<field type="one-way">
+			<a>taTTarif.codeTTarif</a>
+			<b>codeTTarif</b>
+		</field>
+		
+		<field type="one-way">
+			<a>taEntreprise.nomEntreprise</a>
+			<b>nomEntreprise</b>
+		</field>
+				
+		<field type="one-way">
+			<a>taTTiers.idTTiers</a>
+			<b>idTTiers</b>
+		</field>
+		<field type="one-way">
+			<a>taTTiers.codeTTiers</a>
+			<b>codeTTiers</b>
+		</field>				
+		<field type="one-way">
+			<a>taTTiers.libelleTTiers</a>
+			<b>libelleTTiers</b>
+		</field>
+		<field type="one-way">
+			<a>taTTvaDoc.idTTvaDoc</a>
+			<b>idTTvaDoc</b>
+		</field>
+		<field type="one-way">
+			<a>taTTvaDoc.codeTTvaDoc</a>
+			<b>codeTTvaDoc</b>
+		</field>				
+<!--		<field type="one-way">-->
+<!--			<a>taTTvaDoc.libelleTTvaDoc</a>-->
+<!--			<b>libelleTTvaDoc</b>-->
+<!--		</field>-->
+<!--		<field type="one-way">-->
+<!--			<a>taTTvaDoc.journalTTvaDoc</a>-->
+<!--			<b>journalTTvaDoc</b>-->
+<!--		</field>				-->
+		<field type="one-way">
+			<a>taCommentaire.idCommentaire</a>
+			<b>idCommentaire</b>
+		</field>
+		
+		<field>
+			<a>taCommentaire.commentaire</a>
+			<b>commentaire</b>
+		</field>
+		
+		<field type="one-way">
+			<a>taTEntite.idTEntite</a>
+			<b>idTEntite</b>
+		</field>
+		
+		<field type="one-way">
+			<a>taTEntite.codeTEntite</a>
+			<b>codeTEntite</b>
+		</field>
+		
+		<field type="one-way">
+			<a>taCompl.tvaIComCompl</a>
+			<b>tvaIComCompl</b>
+		</field>
+		
+		<field type="one-way">
+			<a>taCompl.siretCompl</a>
+			<b>siretCompl</b>
+		</field>
+		
+		<field type="one-way">
+			<a>taCompl.accise</a>
+			<b>accise</b>
+		</field>
+		
+		<field type="one-way">
+			<a>taCompl.numAgrementSanitaire</a>
+			<b>numAgrementSanitaire</b>
+		</field>
+		
+		<field type="one-way">
+			<a>taCompl.ics</a>
+			<b>ics</b>
+		</field>
+		
+		<field>
+			<a>taAdresse.adresse1Adresse</a>
+			<b>adresse1Adresse</b>
+		</field>
+		
+		<field>
+			<a>taAdresse.adresse2Adresse</a>
+			<b>adresse2Adresse</b>
+		</field>
+		
+		<field>
+			<a>taAdresse.adresse3Adresse</a>
+			<b>adresse3Adresse</b>
+		</field>
+		
+		<field>
+			<a>taAdresse.codepostalAdresse</a>
+			<b>codepostalAdresse</b>
+		</field>
+		
+		<field>
+			<a>taAdresse.villeAdresse</a>
+			<b>villeAdresse</b>
+		</field>
+		
+		<field>
+			<a>taAdresse.paysAdresse</a>
+			<b>paysAdresse</b>
+		</field>
+		
+		<field>
+			<a>taEmail.adresseEmail</a>
+			<b>adresseEmail</b>
+		</field>
+		
+		<field>
+			<a>taWeb.adresseWeb</a>
+			<b>adresseWeb</b>
+		</field>
+				  
+		<field>
+			<a>taTelephone.numeroTelephone</a>
+			<b>numeroTelephone</b>
+		</field>
+		
+	</mapping>
+	
+	<mapping map-null="false" map-empty-string="false">
+		<class-a>fr.legrain.tiers.model.TaTiers</class-a>
+		<class-b>fr.legrain.tiers.dto.IdentiteTiersDTO</class-b>		
+		<field>
+			<a>codeCompta</a>
+			<b>codeCompta</b>
+		</field>		
+		<field>
+			<a>compte</a>
+			<b>compte</b>
+		</field>		
+<!--		<field>-->
+<!--			<a>nomTiers</a>-->
+<!--			<b>nomTiers</b>-->
+<!--		</field>		-->
+		<field>
+			<a>prenomTiers</a>
+			<b>prenomTiers</b>
+		</field>
+		<field type="one-way">
+			<a>taTCivilite.codeTCivilite</a>
+			<b>codeTCivilite</b>
+		</field>
+		<field type="one-way">
+			<a>taEntreprise.nomEntreprise</a>
+			<b>nomEntreprise</b>
+		</field>
+		<field type="one-way">
+			<a>taTEntite.codeTEntite</a>
+			<b>codeTEntite</b>
+		</field>		
+		<field type="one-way">
+			<a>taCompl.tvaIComCompl</a>
+			<b>tvaIComCompl</b>
+		</field>
+		<field>
+			<a>taEmail.adresseEmail</a>
+			<b>adresseEmail</b>
+		</field>
+		<field>
+			<a>taTelephone.numeroTelephone</a>
+			<b>numeroTelephone</b>
+		</field>
+		<field type="one-way">
+			<a>taCommentaire.commentaire</a>
+			<b>commentaire</b>
+		</field>
+		<field type="one-way">
+			<a>taCompl.siretCompl</a>
+			<b>siretCompl</b>
+		</field>
+		<field>
+			<a>taWeb.adresseWeb</a>
+			<b>adresseWeb</b>
+		</field>		
+		<field type="one-way">
+			<a>taTTvaDoc.codeTTvaDoc</a>
+			<b>codeTTvaDoc</b>
+		</field>		
+	</mapping>	
+	<mapping>
+		<class-a>fr.legrain.tiers.model.TaCompteBanque</class-a>
+		<class-b>fr.legrain.tiers.dto.TaCompteBanqueDTO</class-b>
+		
+		<field>
+			<a>idCompteBanque</a>
+			<b>id</b>
+		</field>
+		<field type="one-way">
+			<a>taTiers.idTiers</a>
+			<b>idTiers</b>
+		</field>
+		<field>
+			<a>nomBanque</a>
+			<b>nomBanque</b>
+		</field>
+		<field>
+			<a>compte</a>
+			<b>compte</b>
+		</field>
+		<field>
+			<a>codeBanque</a>
+			<b>codeBanque</b>
+		</field>
+		<field>
+			<a>codeGuichet</a>
+			<b>codeGuichet</b>
+		</field>
+		<field>
+			<a>cleRib</a>
+			<b>cleRib</b>
+		</field>
+		<field>
+			<a>adresse1Banque</a>
+			<b>adresse1Banque</b>
+		</field>
+		<field>
+			<a>adresse2Banque</a>
+			<b>adresse2Banque</b>
+		</field>
+		<field>
+			<a>cpBanque</a>
+			<b>cpBanque</b>
+		</field>
+		<field>
+			<a>villeBanque</a>
+			<b>villeBanque</b>
+		</field>
+		<field>
+			<a>iban</a>
+			<b>iban</b>
+		</field>
+		<field>
+			<a>codeBIC</a>
+			<b>codeBIC</b>
+		</field>
+		<field>
+			<a>titulaire</a>
+			<b>titulaire</b>
+		</field>
+		<field type="one-way">
+			<a>taTBanque.codeTBanque</a>
+			<b>codeTBanque</b>
+		</field>
+	</mapping>
+	
+	<mapping>
+		<class-a>fr.legrain.tiers.model.TaCarteBancaire</class-a>
+		<class-b>fr.legrain.tiers.dto.TaCarteBancaireDTO</class-b>
+		
+		<field>
+			<a>idCarteBancaire</a>
+			<b>id</b>
+		</field>
+	</mapping>
+	
+	<mapping>
+		<class-a>fr.legrain.tiers.model.TaInfoJuridique</class-a>
+		<class-b>fr.legrain.tiers.dto.TaInfoJuridiqueDTO</class-b>
+		
+		<field>
+			<a>idInfoJuridique</a>
+			<b>id</b>
+		</field>
+		
+		<field>
+			<a>rcsInfoJuridique</a>
+			<b>rcsInfoJuridique</b>
+		</field>
+		
+		<field>
+			<a>siretInfoJuridique</a>
+			<b>siretInfoJuridique</b>
+		</field>
+		
+		<field>
+			<a>capitalInfoJuridique</a>
+			<b>capitalInfoJuridique</b>
+		</field>
+		
+		<field>
+			<a>apeInfoJuridique</a>
+			<b>apeInfoJuridique</b>
+		</field>
+	</mapping>
+
+	<!-- ************************* FACTURE ******************************** -->
+
+	<mapping map-null="false">
+		<class-a>fr.legrain.document.model.TaFacture</class-a>
+		<class-b>fr.legrain.document.dto.TaFactureDTO</class-b>
+		<field type="one-way">
+			<a>idDocument</a>
+			<b>id</b>
+		</field>
+		<field type="one-way">
+			<a>taTPaiement.codeTPaiement</a>
+			<b>codeTPaiement</b>
+		</field>	
+<!-- 		<field type="one-way"> -->
+<!-- 			<a>taReglement.netTtcCalc</a> -->
+<!-- 			<b>montantReglement</b> -->
+<!-- 		</field> -->
+<!-- 		<field type="one-way"> -->
+<!-- 			<a>taReglement.libelleDocument</a> -->
+<!-- 			<b>libelleReglement</b> -->
+<!-- 		</field>				 -->
+				
+		<field>
+			<a>codeDocument</a>
+			<b>codeDocument</b>
+		</field>
+		<field>
+			<a>dateDocument</a>
+			<b> dateDocument</b>
+		</field>
+<!--		<field>-->
+<!--			<a>dateEchDocument</a>-->
+<!--			<b> dateEchDocument</b>-->
+<!--		</field>-->
+		<field>
+			<a>dateLivDocument</a>
+			<b> dateLivDocument</b>
+		</field>		
+		<field>
+			<a>libelleDocument</a>
+			<b>libelleDocument</b>
+		</field>
+		<field type="one-way">
+			<a>taTiers.codeTiers</a>
+			<b>codeTiers</b>
+		</field>
+		<field >
+			<a>taInfosDocument.nomTiers</a>
+			<b>nomTiers</b>
+		</field>
+<!--		<field>-->
+<!--			<a>regleDocument</a>-->
+<!--			<b>regleDocument</b>-->
+<!--		</field>-->
+		<field>
+			<a>remHtDocument</a>
+			<b>remHtDocument</b>
+		</field>
+		<field>
+			<a>txRemHtDocument</a>
+			<b>txRemHtDocument</b>
+		</field>
+		<field>
+			<a>remTtcDocument</a>
+			<b>remTtcDocument</b>
+		</field>
+		<field>
+			<a>txRemTtcDocument</a>
+			<b>txRemTtcDocument</b>
+		</field>
+		<field>
+			<a>nbEDocument</a>
+			<b>nbEDocument</b>
+		</field>
+		<field>
+			<a>mtTtcCalc</a>
+			<b>mtTtcCalc</b>
+		</field>
+		<field>
+			<a>mtHtCalc</a>
+			<b>mtHtCalc</b>
+		</field>
+		<field>
+			<a>mtTvaCalc</a>
+			<b>mtTvaCalc</b>
+		</field>
+		<field>
+			<a>netTtcCalc</a>
+			<b>netTtcCalc</b>
+		</field>
+		<field>
+			<a>netHtCalc</a>
+			<b>netHtCalc</b>
+		</field>
+		<field>
+			<a>netTvaCalc</a>
+			<b>netTvaCalc</b>
+		</field>
+		<field>
+			<a>ttc</a>
+			<b>ttc</b>
+		</field>
+		<field>
+			<a>dateExport</a>
+			<b>dateExport</b>
+		</field>
+		<field>
+			<a>commentaire</a>
+			<b>commentaire</b>
+		</field>
+		<field>
+			<a>mtTtcAvantRemiseGlobaleCalc</a>
+			<b>mtTtcAvantRemiseGlobaleCalc</b>
+		</field>
+		<field>
+			<a>netAPayer</a>
+			<b>netAPayer</b>
+		</field>
+		<field>
+			<a>resteARegler</a>
+			<b>resteARegler</b>
+		</field>
+		<field>
+			<a>acomptes</a>
+			<b>acomptes</b>
+		</field>
+				<field>
+			<a>avoirs</a>
+			<b>avoirs</b>
+		</field>
+
+				
+<!--		<field>-->
+<!--			<a>libellePaiement</a>-->
+<!--			<b>libellePaiement</b>-->
+<!--		</field>-->
+	</mapping>
+	
+	<mapping>
+		<class-a>fr.legrain.document.model.TaFacture</class-a>
+		<class-b>fr.legrain.document.dto.TotauxDocumentDTO</class-b>
+		<field type="one-way">
+			<a>idDocument</a>
+			<b>id</b>
+		</field>
+<!--		<field type="one-way">-->
+<!--			<a>taTPaiement.idTPaiement</a>-->
+<!--			<b>idTPaiement</b>-->
+<!--		</field>-->
+<!--		<field type="one-way">-->
+<!--			<a>taTPaiement.codeTPaiement</a>-->
+<!--			<b>codeTPaiement</b>-->
+<!--		</field>-->
+<!--		field type="one-way">-->
+<!--			<a>taCPaiement.idCPaiement</a>-->
+<!--			<b>idCPaiement</b>-->
+<!--		</field-->
+		<field type="one-way">
+			<a>taRReglement.taReglement.taTPaiement.idTPaiement</a>
+			<b>idTPaiement</b>
+		</field>
+		<field type="one-way">
+			<a>taRReglement.taReglement.taTPaiement.codeTPaiement</a>
+			<b>codeTPaiement</b>
+		</field>
+		<field>
+			<a>taRReglement.affectation</a>
+			<b>regleDocument</b>
+		</field>
+		<field>
+			<a>dateEchDocument</a>
+			<b>dateEchDocument</b>
+		</field>
+<!--		<field>-->
+<!--			<a>regleDocument</a>-->
+<!--			<b>regleDocument</b>-->
+<!--		</field>-->
+		<field>
+			<a>remHtDocument</a>
+			<b>remHtDocument</b>
+		</field>
+		<field>
+			<a>txRemHtDocument</a>
+			<b>txRemHtDocument</b>
+		</field>
+		<field>
+			<a>remTtcDocument</a>
+			<b>remTtcDocument</b>
+		</field>
+		<field>
+			<a>txRemTtcDocument</a>
+			<b>txRemTtcDocument</b>
+		</field>
+		<field>
+			<a>mtTtcCalc</a>
+			<b>mtTtcCalc</b>
+		</field>
+		<field>
+			<a>mtHtCalc</a>
+			<b>mtHtCalc</b>
+		</field>
+		<field>
+			<a>mtTvaCalc</a>
+			<b>mtTvaCalc</b>
+		</field>
+		<field>
+			<a>netTtcCalc</a>
+			<b>netTtcCalc</b>
+		</field>
+		<field>
+			<a>netHtCalc</a>
+			<b>netHtCalc</b>
+		</field>
+		<field>
+			<a>netTvaCalc</a>
+			<b>netTvaCalc</b>
+		</field>
+		<field>
+			<a>commentaire</a>
+			<b>commentaire</b>
+		</field>
+		
+		<field>
+			<a>mtTtcAvantRemiseGlobaleCalc</a>
+			<b>mtTtcAvantRemiseGlobaleCalc</b>
+		</field>
+		<field>
+			<a>netAPayer</a>
+			<b>netAPayer</b>
+		</field>
+<!--		<field>-->
+<!--			<a>resteARegler</a>-->
+<!--			<b>resteARegler</b>-->
+<!--		</field>-->
+		<field>
+			<a>acomptes</a>
+			<b>acomptes</b>
+		</field>
+		<field>
+			<a>avoirs</a>
+			<b>avoirs</b>
+		</field>		
+		<field>
+			<a>taRReglement.taReglement.libelleDocument</a>
+			<b>libellePaiement</b>
+		</field>
+		
+<!--		<field>-->
+<!--			<a>libellePaiement</a>-->
+<!--			<b>libellePaiement</b>-->
+<!--		</field>-->
+	</mapping>
+	
+	<mapping>
+		<class-a>fr.legrain.document.model.TaFacture</class-a>
+		<class-b>fr.legrain.document.dto.TotauxLignesDocumentDTO</class-b>
+		<field type="one-way">
+			<a>idDocument</a>
+			<b>id</b>
+		</field>
+		<field>
+			<!--<a>netTtcCalc</a>changement après modif écran le 23/04/2010	isa d-->
+			<a>mtTtcCalc</a> 
+			<b>netTtcCalc</b>
+		</field>
+		<field>
+			<a>netHtCalc</a>
+			<b>netHtCalc</b>
+		</field>
+		<field>
+			<a>netTvaCalc</a>
+			<b>netTvaCalc</b>
+		</field>		
+		<field>
+			<a>mtTtcAvantRemiseGlobaleCalc</a>
+			<b>mtTtcAvantRemiseGlobaleCalc</b>
+		</field>
+		<field>
+			<a>mtHtCalc</a>
+			<b>mtHtCalc</b>
+		</field>		
+	</mapping>
+	
+	<mapping>
+		<class-a>fr.legrain.document.model.TaLFacture</class-a>
+		<class-b>fr.legrain.document.dto.TaLFactureDTO</class-b>
+        <!-- Ajourt pour JEE mode web JSF -->
+		<field>
+			<a>idLDocument</a>
+			<b>idLDocument</b>
+		</field>
+		<!-- Fin Ajour pour JEE mode web JSF -->
+		<field type="one-way">
+			<a>idLDocument</a>
+			<b>id</b>
+		</field>
+		<field type="one-way">
+			<a>taDocument.idDocument</a>
+			<b>idDocument</b>
+		</field>
+		<field type="one-way">
+			<a>taTLigne.codeTLigne</a>
+			<b>codeTLigne</b>
+		</field>
+		<field type="one-way">
+			<a>taArticle.idArticle</a>
+			<b>idArticle</b>
+		</field>
+		<field type="one-way">
+			<a>taArticle.codeArticle</a>
+			<b>codeArticle</b>
+		</field>
+		<field>
+			<a>numLigneLDocument</a>
+			<b>numLigneLDocument</b>
+		</field>
+		<field>
+			<a>libLDocument</a>
+			<b>libLDocument</b>
+		</field>
+		<field>
+			<a>qteLDocument</a>
+			<b>qteLDocument</b>
+		</field>		
+		<field>
+			<a>qte2LDocument</a>
+			<b>qte2LDocument</b>
+		</field>
+		<field>
+			<a>prixULDocument</a>
+			<b>prixULDocument</b>
+		</field>
+		<field>
+			<a>tauxTvaLDocument</a>
+			<b>tauxTvaLDocument</b>
+		</field>
+		<field>
+			<a>codeTvaLDocument</a>
+			<b>codeTvaLDocument</b>
+		</field>
+		<field>
+			<a>codeTTvaLDocument</a>
+			<b>codeTTvaLDocument</b>
+		</field>
+		<field>
+			<a>mtHtLDocument</a>
+			<b>mtHtLDocument</b>
+		</field>
+		<!--field>
+			<a>mtHtLApresRemiseGlobaleDocument</a>
+			<b>mtHtLApresRemiseGlobaleDocument</b>
+		</field-->		
+		<field>
+			<a>mtTtcLDocument</a>
+			<b>mtTtcLDocument</b>
+		</field>
+		<field>
+			<a>emplacementLDocument</a>
+			<b>emplacement</b>
+		</field>		 
+		<field>
+			<a>remTxLDocument</a>
+			<b>remTxLDocument</b>
+		</field>
+		<field>
+			<a>remHtLDocument</a>
+			<b>remHtLDocument</b>
+		</field>
+		<field>
+			<a>u1LDocument</a>
+			<b>u1LDocument</b>
+		</field>
+		<field>
+			<a>u2LDocument</a>
+			<b>u2LDocument</b>
+		</field>
+		<field>
+			<a>txRemHtDocument</a>
+			<b>txRemHtDocument</b>
+		</field>		
+	</mapping>
+	
+	<mapping>
+		<class-a>fr.legrain.tiers.model.TaAdresse</class-a>
+		<class-b>fr.legrain.tiers.dto.AdresseInfosFacturationDTO</class-b>
+		<field>
+			<a>adresse1Adresse</a>
+			<b>adresse1Adresse</b>
+		</field>
+		<field>
+			<a>adresse2Adresse</a>
+			<b>adresse2Adresse</b>
+		</field>
+		<field>
+			<a>adresse3Adresse</a>
+			<b>adresse3Adresse</b>
+		</field>
+		<field>
+			<a>codepostalAdresse</a>
+			<b>codepostalAdresse</b>
+		</field>
+		<field>
+			<a>villeAdresse</a>
+			<b>villeAdresse</b>
+		</field>
+		<field>
+			<a>paysAdresse</a>
+			<b>paysAdresse</b>
+		</field>
+<!-- 		<field> -->
+<!-- 			<a>ordre</a> -->
+<!-- 			<b>ordre</b> -->
+<!-- 		</field>		 -->
+		<field type="one-way">
+			<a>taTAdr.codeTAdr</a>
+			<b>codeTAdr</b>
+		</field>		
+	</mapping>	
+	
+	<mapping>
+		<class-a>fr.legrain.tiers.model.TaAdresse</class-a>
+		<class-b>fr.legrain.tiers.dto.AdresseInfosLivraisonDTO</class-b>
+		<field>
+			<a>adresse1Adresse</a>
+			<b>adresse1AdresseLiv</b>
+		</field>
+		<field>
+			<a>adresse2Adresse</a>
+			<b>adresse2AdresseLiv</b>
+		</field>
+		<field>
+			<a>adresse3Adresse</a>
+			<b>adresse3AdresseLiv</b>
+		</field>
+		<field>
+			<a>codepostalAdresse</a>
+			<b>codepostalAdresseLiv</b>
+		</field>
+		<field>
+			<a>villeAdresse</a>
+			<b>villeAdresseLiv</b>
+		</field>
+		<field>
+			<a>paysAdresse</a>
+			<b>paysAdresseLiv</b>
+		</field>
+		<field>
+			<a>livraison</a>
+			<b>livraison</b>
+		</field>
+		<field>
+			<a>latitudeDec</a>
+			<b>latitudeDec</b>
+		</field>
+		<field>
+			<a>longitudeDec</a>
+			<b>longitudeDec</b>
+		</field>		
+		<field type="one-way">
+			<a>taTAdr.codeTAdr</a>
+			<b>codeTAdr</b>
+		</field>		
+	</mapping>
+	
+	<mapping>
+		<class-a>fr.legrain.tiers.model.TaCPaiement</class-a>
+		<class-b>fr.legrain.tiers.dto.InfosCPaiementDTO</class-b>
+		<field>
+			<a>codeCPaiement</a>
+			<b>codeCPaiement</b>
+		</field>
+		<field>
+			<a>libCPaiement</a>
+			<b>libCPaiement</b>
+		</field>
+		<field>
+			<a>reportCPaiement</a>
+			<b>reportCPaiement</b>
+		</field>
+		<field>
+			<a>finMoisCPaiement</a>
+			<b>finMoisCPaiement</b>
+		</field>
+	</mapping>
+	
+	<mapping>
+		<class-a>fr.legrain.document.model.TaInfosFacture</class-a>
+		<class-b>fr.legrain.tiers.dto.InfosCPaiementDTO</class-b>
+		<field>
+			<a>codeCPaiement</a>
+			<b>codeCPaiement</b>
+		</field>
+		<field>
+			<a>libCPaiement</a>
+			<b>libCPaiement</b>
+		</field>
+		<field>
+			<a>reportCPaiement</a>
+			<b>reportCPaiement</b>
+		</field>
+		<field>
+			<a>finMoisCPaiement</a>
+			<b>finMoisCPaiement</b>
+		</field>
+	</mapping>
+	
+	<mapping>
+		<class-a>fr.legrain.document.model.TaInfosTicketDeCaisse</class-a>
+		<class-b>fr.legrain.tiers.dto.InfosCPaiementDTO</class-b>
+		<field>
+			<a>codeCPaiement</a>
+			<b>codeCPaiement</b>
+		</field>
+		<field>
+			<a>libCPaiement</a>
+			<b>libCPaiement</b>
+		</field>
+		<field>
+			<a>reportCPaiement</a>
+			<b>reportCPaiement</b>
+		</field>
+		<field>
+			<a>finMoisCPaiement</a>
+			<b>finMoisCPaiement</b>
+		</field>
+	</mapping>
+	
+	<mapping>
+		<class-a>fr.legrain.document.model.TaInfosFacture</class-a>
+		<class-b>fr.legrain.tiers.dto.AdresseInfosFacturationDTO</class-b>
+		<field>
+			<a>adresse1</a>
+			<b>adresse1Adresse</b>
+		</field>
+		<field>
+			<a>adresse2</a>
+			<b>adresse2Adresse</b>
+		</field>
+		<field>
+			<a>adresse3</a>
+			<b>adresse3Adresse</b>
+		</field>
+		<field>
+			<a>codepostal</a>
+			<b>codepostalAdresse</b>
+		</field>
+		<field>
+			<a>ville</a>
+			<b>villeAdresse</b>
+		</field>
+		<field>
+			<a>pays</a>
+			<b>paysAdresse</b>
+		</field>
+	</mapping>
+	
+	<mapping>
+		<class-a>fr.legrain.document.model.TaInfosFacture</class-a>
+		<class-b>fr.legrain.tiers.dto.AdresseInfosLivraisonDTO</class-b>
+		<field>
+			<a>adresse1Liv</a>
+			<b>adresse1AdresseLiv</b>
+		</field>
+		<field>
+			<a>adresse2Liv</a>
+			<b>adresse2AdresseLiv</b>
+		</field>
+		<field>
+			<a>adresse3Liv</a>
+			<b>adresse3AdresseLiv</b>
+		</field>
+		<field>
+			<a>codepostalLiv</a>
+			<b>codepostalAdresseLiv</b>
+		</field>
+		<field>
+			<a>villeLiv</a>
+			<b>villeAdresseLiv</b>
+		</field>
+		<field>
+			<a>paysLiv</a>
+			<b>paysAdresseLiv</b>
+		</field>
+	</mapping>
+	
+	<mapping map-null="false">
+		<class-a>fr.legrain.document.model.TaTicketDeCaisse</class-a>
+		<class-b>fr.legrain.document.model.TaInfosTicketDeCaisse</class-b>
+		<field>
+			<a>taTiers.codeCompta</a>
+			<b>codeCompta</b>
+		</field>
+		<field>
+			<a>taTiers.compte</a>
+			<b>compte</b>
+		</field>
+<!--		<field>-->
+<!--			<a>taTiers.nomTiers</a>-->
+<!--			<b>nomTiers</b>-->
+<!--		</field>-->
+		<field>
+			<a>taTiers.prenomTiers</a>
+			<b>prenomTiers</b>
+		</field>
+		<field>
+			<a>taTiers.surnomTiers</a>
+			<b>surnomTiers</b>
+		</field>
+		<field>
+			<a>taTiers.taTCivilite.codeTCivilite</a>
+			<b>codeTCivilite</b>
+		</field>
+		<field>
+			<a>taTiers.taEntreprise.nomEntreprise</a>
+			<b>nomEntreprise</b>
+		</field>
+		<field>
+			<a>taTiers.taTEntite.codeTEntite</a>
+			<b>codeTEntite</b>
+		</field>
+		<field>
+			<a>taTiers.taCompl.tvaIComCompl</a>
+			<b>tvaIComCompl</b>
+		</field>
+		<field-exclude> 
+  		  <a>versionObj</a> 
+  		  <b>versionObj</b> 
+		</field-exclude>			
+<!--		<field>-->
+<!--			<a>taTiers.taCPaiement.codeCPaiement</a>-->
+<!--			<b>codeCPaiement</b>-->
+<!--		</field>-->
+<!--		<field>-->
+<!--			<a>taTiers.taCPaiement.libCPaiement</a>-->
+<!--			<b>libCPaiement</b>-->
+<!--		</field>-->
+<!--		<field>-->
+<!--			<a>taTiers.taCPaiement.reportCPaiement</a>-->
+<!--			<b>reportCPaiement</b>-->
+<!--		</field>-->
+<!--		<field>-->
+<!--			<a>taTiers.taCPaiement.finMoisCPaiement</a>-->
+<!--			<b>finMoisCPaiement</b>-->
+<!--		</field>-->
+	</mapping>
+	
+	<mapping map-null="false">
+		<class-a>fr.legrain.document.model.TaFacture</class-a>
+		<class-b>fr.legrain.document.model.TaInfosFacture</class-b>
+		<field>
+			<a>taTiers.codeCompta</a>
+			<b>codeCompta</b>
+		</field>
+		<field>
+			<a>taTiers.compte</a>
+			<b>compte</b>
+		</field>
+<!--		<field>-->
+<!--			<a>taTiers.nomTiers</a>-->
+<!--			<b>nomTiers</b>-->
+<!--		</field>-->
+		<field>
+			<a>taTiers.prenomTiers</a>
+			<b>prenomTiers</b>
+		</field>
+		<field>
+			<a>taTiers.surnomTiers</a>
+			<b>surnomTiers</b>
+		</field>
+		<field>
+			<a>taTiers.taTCivilite.codeTCivilite</a>
+			<b>codeTCivilite</b>
+		</field>
+		<field>
+			<a>taTiers.taEntreprise.nomEntreprise</a>
+			<b>nomEntreprise</b>
+		</field>
+		<field>
+			<a>taTiers.taTEntite.codeTEntite</a>
+			<b>codeTEntite</b>
+		</field>
+		<field>
+			<a>taTiers.taCompl.tvaIComCompl</a>
+			<b>tvaIComCompl</b>
+		</field>
+		<field-exclude> 
+  		  <a>versionObj</a> 
+  		  <b>versionObj</b> 
+		</field-exclude>			
+<!--		<field>-->
+<!--			<a>taTiers.taCPaiement.codeCPaiement</a>-->
+<!--			<b>codeCPaiement</b>-->
+<!--		</field>-->
+<!--		<field>-->
+<!--			<a>taTiers.taCPaiement.libCPaiement</a>-->
+<!--			<b>libCPaiement</b>-->
+<!--		</field>-->
+<!--		<field>-->
+<!--			<a>taTiers.taCPaiement.reportCPaiement</a>-->
+<!--			<b>reportCPaiement</b>-->
+<!--		</field>-->
+<!--		<field>-->
+<!--			<a>taTiers.taCPaiement.finMoisCPaiement</a>-->
+<!--			<b>finMoisCPaiement</b>-->
+<!--		</field>-->
+	</mapping>
+	
+	<mapping map-null="false">
+		<class-a>fr.legrain.document.model.TaFacture</class-a>
+		<class-b>fr.legrain.document.dto.AideFactureDTO</class-b>
+		<field>
+			<a>idDocument</a>
+			<b>id</b>
+		</field>
+		<field>
+			<a>codeDocument</a>
+			<b>codeDocument</b>
+		</field>
+		<field>
+			<a>dateDocument</a>
+			<b>dateDocument</b>
+		</field>
+		<field>
+			<a>dateEchDocument</a>
+			<b>dateEchDocument</b>
+		</field>
+		<field>
+			<a>dateLivDocument</a>
+			<b>dateLivDocument</b>
+		</field>
+		<field>
+			<a>libelleDocument</a>
+			<b>libelleDocument</b>
+		</field>
+	    <field>
+			<a>taTiers.codeTiers</a>
+			<b>codeTiers</b>
+		</field>
+	    <field>
+			<a>taInfosDocument.nomTiers</a>
+			<b>nomTiers</b>
+		</field>
+		<field>
+			<a>taInfosDocument.codeCompta</a>
+			<b>codeCompta</b>
+		</field>
+		<field>
+			<a>taInfosDocument.compte</a>
+			<b>compte</b>
+		</field>
+		<field>
+			<a>regleDocument</a>
+			<b>regleDocument</b>
+		</field>
+		<field>
+			<a>commentaire</a>
+			<b>commentaire</b>
+		</field>
+		<field>
+			<a>netTtcCalc</a>
+			<b>netTtcCalc</b>
+		</field>
+		<field>
+			<a>netHtCalc</a>
+			<b>netHtCalc</b>
+		</field>
+	</mapping>
+	<mapping map-null="false">
+		<class-a>fr.legrain.document.model.TaDevis</class-a>
+		<class-b>fr.legrain.document.dto.AideFactureDTO</class-b>
+		<field>
+			<a>idDocument</a>
+			<b>id</b>
+		</field>
+		<field>
+			<a>codeDocument</a>
+			<b>codeDocument</b>
+		</field>
+		<field>
+			<a>dateDocument</a>
+			<b>dateDocument</b>
+		</field>
+		<field>
+			<a>dateEchDocument</a>
+			<b>dateEchDocument</b>
+		</field>
+		<field>
+			<a>dateLivDocument</a>
+			<b>dateLivDocument</b>
+		</field>
+		<field>
+			<a>libelleDocument</a>
+			<b>libelleDocument</b>
+		</field>
+	    <field>
+			<a>taTiers.codeTiers</a>
+			<b>codeTiers</b>
+		</field>
+	    <field>
+			<a>taInfosDocument.nomTiers</a>
+			<b>nomTiers</b>
+		</field>
+		<field>
+			<a>taInfosDocument.codeCompta</a>
+			<b>codeCompta</b>
+		</field>
+		<field>
+			<a>taInfosDocument.compte</a>
+			<b>compte</b>
+		</field>
+		<field>
+			<a>regleDocument</a>
+			<b>regleDocument</b>
+		</field>
+		<field>
+			<a>commentaire</a>
+			<b>commentaire</b>
+		</field>
+		<field>
+			<a>netTtcCalc</a>
+			<b>netTtcCalc</b>
+		</field>
+		<field>
+			<a>netHtCalc</a>
+			<b>netHtCalc</b>
+		</field>
+	</mapping>
+	
+	<mapping>
+		<class-a>fr.legrain.dossier.model.TaInfoEntreprise</class-a>
+		<class-b>fr.legrain.dossier.dto.TaInfoEntrepriseDTO</class-b>
+		<field>
+			<a>idInfoEntreprise</a>
+			<b>id</b>
+		</field>
+		<field>
+			<a>nomInfoEntreprise</a>
+			<b>nomInfoEntreprise</b>
+		</field>
+		<field>
+			<a>adresse1InfoEntreprise</a>
+			<b>adresse1InfoEntreprise</b>
+		</field>
+		<field>
+			<a>adresse2InfoEntreprise</a>
+			<b>adresse2InfoEntreprise</b>
+		</field>
+		<field>
+			<a>adresse3InfoEntreprise</a>
+			<b>adresse3InfoEntreprise</b>
+		</field>
+		<field>
+			<a>codepostalInfoEntreprise</a>
+			<b>codepostalInfoEntreprise</b>
+		</field>
+		<field>
+			<a>villeInfoEntreprise</a>
+			<b>villeInfoEntreprise</b>
+		</field>
+		<field>
+			<a>paysInfoEntreprise</a>
+			<b>paysInfoEntreprise</b>
+		</field>
+		<field>
+			<a>siretInfoEntreprise</a>
+			<b>siretInfoEntreprise</b>
+		</field>
+		<field>
+			<a>capitalInfoEntreprise</a>
+			<b>capitalInfoEntreprise</b>
+		</field>
+		<field>
+			<a>apeInfoEntreprise</a>
+			<b>apeInfoEntreprise</b>
+		</field>
+		<field>
+			<a>tvaIntraInfoEntreprise</a>
+			<b>tvaIntraInfoEntreprise</b>
+		</field>
+		<field>
+			<a>telInfoEntreprise</a>
+			<b>telInfoEntreprise</b>
+		</field>
+		<field>
+			<a>faxInfoEntreprise</a>
+			<b>faxInfoEntreprise</b>
+		</field>
+		<field>
+			<a>emailInfoEntreprise</a>
+			<b>emailInfoEntreprise</b>
+		</field>
+		<field>
+			<a>webInfoEntreprise</a>
+			<b>webInfoEntreprise</b>
+		</field>
+		<field>
+			<a>rcsInfoEntreprise</a>
+			<b>rcsInfoEntreprise</b>
+		</field>
+		<field>
+			<a>datedebInfoEntreprise</a>
+			<b>datedebInfoEntreprise</b>
+		</field>
+		<field>
+			<a>datefinInfoEntreprise</a>
+			<b>datefinInfoEntreprise</b>
+		</field>
+		<field>
+			<a>datedebRegInfoEntreprise</a>
+			<b>datedebRegInfoEntreprise</b>
+		</field>
+		<field>
+			<a>datedebRelInfoEntreprise</a>
+			<b>datedebRelInfoEntreprise</b>
+		</field>
+		<field>
+			<a>codexoInfoEntreprise</a>
+			<b>codexoInfoEntreprise</b>
+		</field>
+	</mapping>
+	
+<!-- 	<mapping> -->
+<!-- 		<class-a>fr.legrain.updater.dao.TaMailMaj</class-a> -->
+<!-- 		<class-b>fr.legrain.gestCom.Module_Updater.SWTMailMaj</class-b> -->
+<!-- 		<field> -->
+<!-- 			<a>idMailMaj</a> -->
+<!-- 			<b>idMailMaj</b> -->
+<!-- 		</field> -->
+<!-- 		<field> -->
+<!-- 			<a>sujetMailMaj</a> -->
+<!-- 			<b>sujetMailMaj</b> -->
+<!-- 		</field> -->
+<!-- 		<field> -->
+<!-- 			<a>nomSiteMailMaj</a> -->
+<!-- 			<b>nomSiteMailMaj</b> -->
+<!-- 		</field> -->
+<!-- 		<field> -->
+<!-- 			<a>urlMailMaj</a> -->
+<!-- 			<b>urlMailMaj</b> -->
+<!-- 		</field> -->
+<!-- 		<field> -->
+<!-- 			<a>faitMailMaj</a> -->
+<!-- 			<b>faitMailMaj</b> -->
+<!-- 		</field> -->
+<!-- 		<field> -->
+<!-- 			<a>AFaireMailMaj</a> -->
+<!-- 			<b>AFaireMailMaj</b> -->
+<!-- 		</field> -->
+<!-- 		<field> -->
+<!-- 			<a>fromMailMaj</a> -->
+<!-- 			<b>fromMailMaj</b> -->
+<!-- 		</field> -->
+<!-- 		<field> -->
+<!-- 			<a>dateMailMaj</a> -->
+<!-- 			<b>dateMailMaj</b> -->
+<!-- 		</field> -->
+<!-- 	</mapping> -->
+
+
+	<!-- ************************** DEVIS ******************************* -->
+
+	<mapping>
+		<class-a>fr.legrain.document.model.TaDevis</class-a>
+		<class-b>fr.legrain.document.dto.TaDevisDTO</class-b>
+		<field type="one-way">
+			<a>idDocument</a>
+			<b>id</b>
+		</field>
+		<field type="one-way">
+			<a>taTiers.codeTiers</a>
+			<b>codeTiers</b>
+		</field>
+		<field type="one-way">
+			<a>taTPaiement.codeTPaiement</a>
+			<b>codeTPaiement</b>
+		</field>
+	</mapping>
+	
+	<mapping>
+		<class-a>fr.legrain.document.model.TaDevis</class-a>
+		<class-b>fr.legrain.document.dto.TotauxDevisDTO</class-b>
+		<field type="one-way">
+			<a>idDocument</a>
+			<b>id</b>
+		</field>
+		<field type="one-way">
+			<a>taTPaiement.idTPaiement</a>
+			<b>idTPaiement</b>
+		</field>
+		<field type="one-way">
+			<a>taTPaiement.codeTPaiement</a>
+			<b>codeTPaiement</b>
+		</field>
+		<!-- >field type="one-way">
+			<a>taCPaiement.idCPaiement</a>
+			<b>idCPaiement</b>
+		</field-->
+		<field>
+			<a>remHtDocument</a>
+			<b>remHtDocument</b>
+		</field>
+		<field>
+			<a>regleDocument</a>
+			<b>regleDocument</b>
+		</field>		
+		<field>
+			<a>txRemHtDocument</a>
+			<b>txRemHtDocument</b>
+		</field>
+		<field>
+			<a>remTtcDocument</a>
+			<b>remTtcDocument</b>
+		</field>
+		<field>
+			<a>txRemTtcDocument</a>
+			<b>txRemTtcDocument</b>
+		</field>
+		<field>
+			<a>mtTtcCalc</a>
+			<b>mtTtcCalc</b>
+		</field>
+		<field>
+			<a>mtHtCalc</a>
+			<b>mtHtCalc</b>
+		</field>
+		<field>
+			<a>mtTvaCalc</a>
+			<b>mtTvaCalc</b>
+		</field>
+		<field>
+			<a>netTtcCalc</a>
+			<b>netTtcCalc</b>
+		</field>
+		<field>
+			<a>netHtCalc</a>
+			<b>netHtCalc</b>
+		</field>
+		<field>
+			<a>netTvaCalc</a>
+			<b>netTvaCalc</b>
+		</field>
+		<field>
+			<a>commentaire</a>
+			<b>commentaire</b>
+		</field>
+	</mapping>
+	
+	<mapping>
+		<class-a>fr.legrain.document.model.TaDevis</class-a>
+		<class-b>fr.legrain.document.dto.TotauxLignesDocumentDTO</class-b>
+		<field type="one-way">
+			<a>idDocument</a>
+			<b>id</b>
+		</field>
+		<field>
+			<a>netTtcCalc</a>
+			<b>netTtcCalc</b>
+		</field>
+		<field>
+			<a>netHtCalc</a>
+			<b>netHtCalc</b>
+		</field>
+		<field>
+			<a>netTvaCalc</a>
+			<b>netTvaCalc</b>
+		</field>		
+		<field>
+			<a>mtTtcAvantRemiseGlobaleCalc</a>
+			<b>mtTtcAvantRemiseGlobaleCalc</b>
+		</field>
+		<field>
+			<a>mtHtCalc</a>
+			<b>mtHtCalc</b>
+		</field>		
+	</mapping>
+	
+	<mapping>
+		<class-a>fr.legrain.document.model.TaLDevis</class-a>
+		<class-b>fr.legrain.document.dto.TaLDevisDTO</class-b>
+		
+		<!-- Ajourt pour JEE mode web JSF -->
+		<field>
+			<a>idLDocument</a>
+			<b>idLDocument</b>
+		</field>
+		<!-- Fin Ajour pour JEE mode web JSF -->
+		
+		<field type="one-way">
+			<a>idLDocument</a>
+			<b>id</b>
+		</field>
+		<field type="one-way">
+			<a>taDocument.idDocument</a>
+			<b>idDocument</b>
+		</field>
+		<field type="one-way">
+			<a>taTLigne.codeTLigne</a>
+			<b>codeTLigne</b>
+		</field>
+		<field type="one-way">
+			<a>taArticle.idArticle</a>
+			<b>idArticle</b>
+		</field>
+		<field type="one-way">
+			<a>taArticle.codeArticle</a>
+			<b>codeArticle</b>
+		</field>
+		<field>
+			<a>numLigneLDocument</a>
+			<b>numLigneLDocument</b>
+		</field>		
+		<field>
+			<a>libLDocument</a>
+			<b>libLDocument</b>
+		</field>
+		<field>
+			<a>qteLDocument</a>
+			<b>qteLDocument</b>
+		</field>
+		<field>
+			<a>prixULDocument</a>
+			<b>prixULDocument</b>
+		</field>
+		<field>
+			<a>tauxTvaLDocument</a>
+			<b>tauxTvaLDocument</b>
+		</field>
+		<field>
+			<a>codeTvaLDocument</a>
+			<b>codeTvaLDocument</b>
+		</field>
+		<field>
+			<a>codeTTvaLDocument</a>
+			<b>codeTTvaLDocument</b>
+		</field>
+		<field>
+			<a>mtHtLDocument</a>
+			<b>mtHtLDocument</b>
+		</field>
+		<field>
+			<a>mtTtcLDocument</a>
+			<b>mtTtcLDocument</b>
+		</field>
+		<field>
+			<a>remTxLDocument</a>
+			<b>remTxLDocument</b>
+		</field>
+		<field>
+			<a>remHtLDocument</a>
+			<b>remHtLDocument</b>
+		</field>
+		<field>
+			<a>u1LDocument</a>
+			<b>u1LDocument</b>
+		</field>
+		<field>
+			<a>u2LDocument</a>
+			<b>u2LDocument</b>
+		</field>
+		<field>
+			<a>txRemHtDocument</a>
+			<b>txRemHtDocument</b>
+		</field>		
+	</mapping>
+	
+	<mapping>
+		<class-a>fr.legrain.document.model.TaInfosDevis</class-a>
+		<class-b>fr.legrain.tiers.dto.TaCPaiementDTO</class-b>
+		<field>
+			<a>codeCPaiement</a>
+			<b>codeCPaiement</b>
+		</field>
+		<field>
+			<a>libCPaiement</a>
+			<b>libCPaiement</b>
+		</field>
+		<field>
+			<a>reportCPaiement</a>
+			<b>reportCPaiement</b>
+		</field>
+		<field >
+			<a>finMoisCPaiement</a>
+			<b>finMoisCPaiement</b>
+		</field>
+		<field-exclude> 
+  		<a>versionObj</a> 
+  		<b>versionObj</b> 
+		</field-exclude>
+	</mapping>
+	<mapping>
+		<class-a>fr.legrain.document.model.TaInfosFacture</class-a>
+		<class-b>fr.legrain.tiers.dto.TaCPaiementDTO</class-b>
+		<field>
+			<a>codeCPaiement</a>
+			<b>codeCPaiement</b>
+		</field>
+		<field>
+			<a>libCPaiement</a>
+			<b>libCPaiement</b>
+		</field>
+		<field>
+			<a>reportCPaiement</a>
+			<b>reportCPaiement</b>
+		</field>
+		<field >
+			<a>finMoisCPaiement</a>
+			<b>finMoisCPaiement</b>
+		</field>
+		<field-exclude> 
+  		<a>versionObj</a> 
+  		<b>versionObj</b> 
+		</field-exclude>
+	</mapping>
+		<mapping>
+		<class-a>fr.legrain.document.model.TaInfosAbonnement</class-a>
+		<class-b>fr.legrain.tiers.dto.TaCPaiementDTO</class-b>
+		<field>
+			<a>codeCPaiement</a>
+			<b>codeCPaiement</b>
+		</field>
+		<field>
+			<a>libCPaiement</a>
+			<b>libCPaiement</b>
+		</field>
+		<field>
+			<a>reportCPaiement</a>
+			<b>reportCPaiement</b>
+		</field>
+		<field >
+			<a>finMoisCPaiement</a>
+			<b>finMoisCPaiement</b>
+		</field>
+		<field-exclude> 
+  		<a>versionObj</a> 
+  		<b>versionObj</b> 
+		</field-exclude>
+	</mapping>
+	<mapping>
+		<class-a>fr.legrain.document.model.TaInfosTicketDeCaisse</class-a>
+		<class-b>fr.legrain.tiers.dto.TaCPaiementDTO</class-b>
+		<field>
+			<a>codeCPaiement</a>
+			<b>codeCPaiement</b>
+		</field>
+		<field>
+			<a>libCPaiement</a>
+			<b>libCPaiement</b>
+		</field>
+		<field>
+			<a>reportCPaiement</a>
+			<b>reportCPaiement</b>
+		</field>
+		<field >
+			<a>finMoisCPaiement</a>
+			<b>finMoisCPaiement</b>
+		</field>
+		<field-exclude> 
+  		<a>versionObj</a> 
+  		<b>versionObj</b> 
+		</field-exclude>
+	</mapping>		
+	<mapping>
+		<class-a>fr.legrain.document.model.TaInfosAvoir</class-a>
+		<class-b>fr.legrain.tiers.dto.TaCPaiementDTO</class-b>
+		<field>
+			<a>codeCPaiement</a>
+			<b>codeCPaiement</b>
+		</field>
+		<field>
+			<a>libCPaiement</a>
+			<b>libCPaiement</b>
+		</field>
+		<field>
+			<a>reportCPaiement</a>
+			<b>reportCPaiement</b>
+		</field>
+		<field >
+			<a>finMoisCPaiement</a>
+			<b>finMoisCPaiement</b>
+		</field>
+		<field-exclude> 
+  		<a>versionObj</a> 
+  		<b>versionObj</b> 
+		</field-exclude>
+	</mapping>
+	<mapping>
+		<class-a>fr.legrain.document.model.TaInfosAcompte</class-a>
+		<class-b>fr.legrain.tiers.dto.TaCPaiementDTO</class-b>
+		<field>
+			<a>codeCPaiement</a>
+			<b>codeCPaiement</b>
+		</field>
+		<field>
+			<a>libCPaiement</a>
+			<b>libCPaiement</b>
+		</field>
+		<field>
+			<a>reportCPaiement</a>
+			<b>reportCPaiement</b>
+		</field>
+		<field >
+			<a>finMoisCPaiement</a>
+			<b>finMoisCPaiement</b>
+		</field>
+		<field-exclude> 
+  		<a>versionObj</a> 
+  		<b>versionObj</b> 
+		</field-exclude>
+	</mapping>
+	<mapping>
+		<class-a>fr.legrain.document.model.TaInfosProforma</class-a>
+		<class-b>fr.legrain.tiers.dto.TaCPaiementDTO</class-b>
+		<field>
+			<a>codeCPaiement</a>
+			<b>codeCPaiement</b>
+		</field>
+		<field>
+			<a>libCPaiement</a>
+			<b>libCPaiement</b>
+		</field>
+		<field>
+			<a>reportCPaiement</a>
+			<b>reportCPaiement</b>
+		</field>
+		<field >
+			<a>finMoisCPaiement</a>
+			<b>finMoisCPaiement</b>
+		</field>
+		<field-exclude> 
+  		<a>versionObj</a> 
+  		<b>versionObj</b> 
+		</field-exclude>
+	</mapping>
+<mapping>
+		<class-a>fr.legrain.document.model.TaInfosBoncdeAchat</class-a>
+		<class-b>fr.legrain.tiers.dto.TaCPaiementDTO</class-b>
+		<field>
+			<a>codeCPaiement</a>
+			<b>codeCPaiement</b>
+		</field>
+		<field>
+			<a>libCPaiement</a>
+			<b>libCPaiement</b>
+		</field>
+		<field>
+			<a>reportCPaiement</a>
+			<b>reportCPaiement</b>
+		</field>
+		<field >
+			<a>finMoisCPaiement</a>
+			<b>finMoisCPaiement</b>
+		</field>
+		<field-exclude> 
+  		<a>versionObj</a> 
+  		<b>versionObj</b> 
+		</field-exclude>
+	</mapping>
+			
+	<mapping>
+		<class-a>fr.legrain.document.model.TaInfosBoncde</class-a>
+		<class-b>fr.legrain.tiers.dto.TaCPaiementDTO</class-b>
+		<field>
+			<a>codeCPaiement</a>
+			<b>codeCPaiement</b>
+		</field>
+		<field>
+			<a>libCPaiement</a>
+			<b>libCPaiement</b>
+		</field>
+		<field>
+			<a>reportCPaiement</a>
+			<b>reportCPaiement</b>
+		</field>
+		<field >
+			<a>finMoisCPaiement</a>
+			<b>finMoisCPaiement</b>
+		</field>
+		<field-exclude> 
+  		<a>versionObj</a> 
+  		<b>versionObj</b> 
+		</field-exclude>
+	</mapping>	
+	<mapping>
+		<class-a>fr.legrain.document.model.TaInfosApporteur</class-a>
+		<class-b>fr.legrain.tiers.dto.TaCPaiementDTO</class-b>
+		<field>
+			<a>codeCPaiement</a>
+			<b>codeCPaiement</b>
+		</field>
+		<field>
+			<a>libCPaiement</a>
+			<b>libCPaiement</b>
+		</field>
+		<field>
+			<a>reportCPaiement</a>
+			<b>reportCPaiement</b>
+		</field>
+		<field >
+			<a>finMoisCPaiement</a>
+			<b>finMoisCPaiement</b>
+		</field>
+		<field-exclude> 
+  		<a>versionObj</a> 
+  		<b>versionObj</b> 
+		</field-exclude>
+	</mapping>		
+	<mapping>
+		<class-a>fr.legrain.document.model.TaInfosPrelevement</class-a>
+		<class-b>fr.legrain.tiers.dto.TaCPaiementDTO</class-b>
+		<field>
+			<a>codeCPaiement</a>
+			<b>codeCPaiement</b>
+		</field>
+		<field>
+			<a>libCPaiement</a>
+			<b>libCPaiement</b>
+		</field>
+		<field>
+			<a>reportCPaiement</a>
+			<b>reportCPaiement</b>
+		</field>
+		<field >
+			<a>finMoisCPaiement</a>
+			<b>finMoisCPaiement</b>
+		</field>
+		<field-exclude> 
+  		<a>versionObj</a> 
+  		<b>versionObj</b> 
+		</field-exclude>
+	</mapping>							
+	<mapping>
+		<class-a>fr.legrain.document.model.TaInfosDevis</class-a>
+		<class-b>fr.legrain.tiers.dto.AdresseInfosFacturationDTO</class-b>
+		<field>
+			<a>adresse1</a>
+			<b>adresse1Adresse</b>
+		</field>
+		<field>
+			<a>adresse2</a>
+			<b>adresse2Adresse</b>
+		</field>
+		<field>
+			<a>adresse3</a>
+			<b>adresse3Adresse</b>
+		</field>
+		<field>
+			<a>codepostal</a>
+			<b>codepostalAdresse</b>
+		</field>
+		<field>
+			<a>ville</a>
+			<b>villeAdresse</b>
+		</field>
+		<field>
+			<a>pays</a>
+			<b>paysAdresse</b>
+		</field>
+	</mapping>
+	
+	<mapping>
+		<class-a>fr.legrain.document.model.TaInfosDevis</class-a>
+		<class-b>fr.legrain.tiers.dto.AdresseInfosLivraisonDTO</class-b>
+		<field>
+			<a>adresse1Liv</a>
+			<b>adresse1AdresseLiv</b>
+		</field>
+		<field>
+			<a>adresse2Liv</a>
+			<b>adresse2AdresseLiv</b>
+		</field>
+		<field>
+			<a>adresse3Liv</a>
+			<b>adresse3AdresseLiv</b>
+		</field>
+		<field>
+			<a>codepostalLiv</a>
+			<b>codepostalAdresseLiv</b>
+		</field>
+		<field>
+			<a>villeLiv</a>
+			<b>villeAdresseLiv</b>
+		</field>
+		<field>
+			<a>paysLiv</a>
+			<b>paysAdresseLiv</b>
+		</field>
+	</mapping>
+	
+	<mapping map-null="false">
+		<class-a>fr.legrain.document.model.TaDevis</class-a>
+		<class-b>fr.legrain.document.model.TaInfosDevis</class-b>
+		<field>
+			<a>taTiers.codeCompta</a>
+			<b>codeCompta</b>
+		</field>
+		<field>
+			<a>taTiers.compte</a>
+			<b>compte</b>
+		</field>
+		<field>
+			<a>taTiers.nomTiers</a>
+			<b>nomTiers</b>
+		</field>
+		<field>
+			<a>taTiers.prenomTiers</a>
+			<b>prenomTiers</b>
+		</field>
+		<field>
+			<a>taTiers.surnomTiers</a>
+			<b>surnomTiers</b>
+		</field>
+		<field>
+			<a>taTiers.taTCivilite.codeTCivilite</a>
+			<b>codeTCivilite</b>
+		</field>
+		<field>
+			<a>taTiers.taTEntite.codeTEntite</a>
+			<b>codeTEntite</b>
+		</field>
+		<field>
+			<a>taTiers.taEntreprise.nomEntreprise</a>
+			<b>nomEntreprise</b>
+		</field>
+		<field>
+			<a>taTiers.taCompl.tvaIComCompl</a>
+			<b>tvaIComCompl</b>
+		</field>
+		<field>
+			<a>taTiers.taCPaiement.codeCPaiement</a>
+			<b>codeCPaiement</b>
+		</field>
+		<field>
+			<a>taTiers.taCPaiement.libCPaiement</a>
+			<b>libCPaiement</b>
+		</field>
+		<field>
+			<a>taTiers.taCPaiement.reportCPaiement</a>
+			<b>reportCPaiement</b>
+		</field>
+		<field>
+			<a>taTiers.taCPaiement.finMoisCPaiement</a>
+			<b>finMoisCPaiement</b>
+		</field>
+				<field-exclude> 
+  		<a>versionObj</a> 
+  		<b>versionObj</b> 
+		</field-exclude>		
+	</mapping>
+	
+	<mapping map-null="false">
+		<class-a>fr.legrain.document.model.TaAbonnement</class-a>
+		<class-b>fr.legrain.document.model.TaInfosAbonnement</class-b>
+		<field>
+			<a>taTiers.codeCompta</a>
+			<b>codeCompta</b>
+		</field>
+		<field>
+			<a>taTiers.compte</a>
+			<b>compte</b>
+		</field>
+		<field>
+			<a>taTiers.nomTiers</a>
+			<b>nomTiers</b>
+		</field>
+		<field>
+			<a>taTiers.prenomTiers</a>
+			<b>prenomTiers</b>
+		</field>
+		<field>
+			<a>taTiers.surnomTiers</a>
+			<b>surnomTiers</b>
+		</field>
+		<field>
+			<a>taTiers.taTCivilite.codeTCivilite</a>
+			<b>codeTCivilite</b>
+		</field>
+		<field>
+			<a>taTiers.taTEntite.codeTEntite</a>
+			<b>codeTEntite</b>
+		</field>
+		<field>
+			<a>taTiers.taEntreprise.nomEntreprise</a>
+			<b>nomEntreprise</b>
+		</field>
+		<field>
+			<a>taTiers.taCompl.tvaIComCompl</a>
+			<b>tvaIComCompl</b>
+		</field>
+		<field>
+			<a>taTiers.taCPaiement.codeCPaiement</a>
+			<b>codeCPaiement</b>
+		</field>
+		<field>
+			<a>taTiers.taCPaiement.libCPaiement</a>
+			<b>libCPaiement</b>
+		</field>
+		<field>
+			<a>taTiers.taCPaiement.reportCPaiement</a>
+			<b>reportCPaiement</b>
+		</field>
+		<field>
+			<a>taTiers.taCPaiement.finMoisCPaiement</a>
+			<b>finMoisCPaiement</b>
+		</field>
+				<field-exclude> 
+  		<a>versionObj</a> 
+  		<b>versionObj</b> 
+		</field-exclude>		
+	</mapping>
+	
+	<mapping map-null="false">
+		<class-a>fr.legrain.document.model.TaAbonnement</class-a>
+		<class-b>fr.legrain.document.dto.TaAbonnementDTO</class-b>
+		<field type="one-way">
+			<a>idDocument</a>
+			<b>id</b>
+		</field>
+		<field type="one-way">
+			<a>taTiers.codeTiers</a>
+			<b>codeTiers</b>
+		</field>
+		<field type="one-way">
+			<a>taTPaiement.codeTPaiement</a>
+			<b>codeTPaiement</b>
+		</field>
+		<field type="one-way">
+			<a>taInfosDocument.prenomTiers</a>
+			<b>prenomTiers</b>
+		</field>
+		<field type="one-way">
+			<a>taInfosDocument.nomEntreprise</a>
+			<b>nomEntreprise</b>
+		</field>
+<!-- 		<field type="one-way">
+			<a>taFrequence.codeFrequence</a>
+			<b>codeFrequence</b>
+		</field>
+		<field type="one-way">
+			<a>taFrequence.idFrequence</a>
+			<b>idFrequence</b>
+		</field>
+		<field type="one-way">
+			<a>taFrequence.liblFrequence</a>
+			<b>liblFrequence</b>
+		</field> -->		
+<!-- 		<field>
+			<a>taStripeSubscription.dateDebut</a>
+			<b>dateDebut</b>
+		</field> -->
+		<field-exclude> 
+	  		<a>versionObj</a> 
+	  		<b>versionObj</b> 
+		</field-exclude>
+	</mapping>
+	
+	<mapping map-null="false">
+		<class-a>fr.legrain.abonnement.model.TaJourRelance</class-a>
+		<class-b>fr.legrain.abonnement.dto.TaJourRelanceDTO</class-b>
+		<field type="one-way">
+			<a>taArticle.codeArticle</a>
+			<b>codeArticle</b>
+		</field>
+		<field type="one-way">
+			<a>taArticle.libellecArticle</a>
+			<b>libellecArticle</b>
+		</field>
+		<field type="one-way">
+			<a>taArticle.idArticle</a>
+			<b>idArticle</b>
+		</field>
+	</mapping>
+	
+	<mapping map-null="false">
+		<class-a>fr.legrain.document.model.TaLAbonnement</class-a>
+		<class-b>fr.legrain.document.dto.TaLAbonnementDTO</class-b>
+	    <field type="one-way">
+			<a>taREtatLigneDocument.taEtat.codeEtat</a>
+			<b>codeEtat</b>
+		</field>
+		<field type="one-way">
+			<a>taREtatLigneDocument.taEtat.liblEtat</a>
+			<b>liblEtat</b>
+		</field> 
+<!-- 		<field type="one-way">
+			<a>taPlan.nickname</a>
+			<b>nickname</b>
+		</field> 
+		<field type="one-way">
+		    <a>taPlan.idStripePlan</a>
+			<b>idStripePlan</b>
+		</field> 
+		<field type="one-way">
+		    <a>taPlan.idExterne</a>
+			<b>idExterne</b>
+		</field>  -->
+		<field type="one-way">
+		    <a>taArticle.idArticle</a>
+			<b>idArticle</b>
+		</field> 
+	</mapping>
+	
+	<mapping map-null="false">
+		<class-a>fr.legrain.abonnement.stripe.model.TaStripePlan</class-a>
+		<class-b>fr.legrain.abonnement.stripe.dto.TaStripePlanDTO</class-b>
+		<field type="one-way">
+			<a>taFrequence.codeFrequence</a>
+			<b>codeFrequence</b>
+		</field>
+		<field type="one-way">
+			<a>taFrequence.idFrequence</a>
+			<b>idFrequence</b>
+		</field>
+		<field type="one-way">
+			<a>taFrequence.liblFrequence</a>
+			<b>liblFrequence</b>
+		</field>
+		<field type="one-way">
+			<a>taFrequence.liblFrequence</a>
+			<b>interval</b>
+		</field>
+	</mapping>
+	
+<!-- 	<mapping map-null="false"> -->
+<!-- 		<class-a>fr.legrain.document.model.TaAbonnement</class-a> -->
+<!-- 		<class-b>fr.legrain.abonnement.stripe.model.TaStripeSubscription</class-b> -->
+<!-- 		<field> -->
+<!-- 			<a>taTiers.codeCompta</a> -->
+<!-- 			<b>codeCompta</b> -->
+<!-- 		</field> -->
+<!-- 	</mapping> -->
+	<mapping map-null="false">
+		<class-a>fr.legrain.document.model.TaAvisEcheance</class-a>
+		<class-b>fr.legrain.document.dto.TaAvisEcheanceDTO</class-b>
+		<field type="one-way">
+			<a>idDocument</a>
+			<b>id</b>
+		</field>
+	</mapping>
+	
+		<mapping map-null="false">
+		<class-a>fr.legrain.document.model.TaAvisEcheance</class-a>
+		<class-b>fr.legrain.document.dto.AideAvisEcheanceDTO</class-b>
+		<field>
+			<a>idDocument</a>
+			<b>id</b>
+		</field>
+		<field>
+			<a>codeDocument</a>
+			<b>codeDocument</b>
+		</field>
+		<field>
+			<a>dateDocument</a>
+			<b>dateDocument</b>
+		</field>
+		<field>
+			<a>dateEchDocument</a>
+			<b>dateEchDocument</b>
+		</field>
+		<field>
+			<a>dateLivDocument</a>
+			<b>dateLivDocument</b>
+		</field>
+		<field>
+			<a>libelleDocument</a>
+			<b>libelleDocument</b>
+		</field>
+	    <field>
+			<a>taTiers.codeTiers</a>
+			<b>codeTiers</b>
+		</field>
+	    <field>
+			<a>taInfosDocument.nomTiers</a>
+			<b>nomTiers</b>
+		</field>
+		<field>
+			<a>taInfosDocument.codeCompta</a>
+			<b>codeCompta</b>
+		</field>
+		<field>
+			<a>taInfosDocument.compte</a>
+			<b>compte</b>
+		</field>
+		<field>
+			<a>commentaire</a>
+			<b>commentaire</b>
+		</field>		
+	</mapping>
+	
+	<mapping map-null="false">
+		<class-a>fr.legrain.document.model.TaDevis</class-a>
+		<class-b>fr.legrain.document.dto.AideDevisDTO</class-b>
+		<field>
+			<a>idDocument</a>
+			<b>id</b>
+		</field>
+		<field>
+			<a>codeDocument</a>
+			<b>codeDocument</b>
+		</field>
+		<field>
+			<a>dateDocument</a>
+			<b>dateDocument</b>
+		</field>
+		<field>
+			<a>dateEchDocument</a>
+			<b>dateEchDocument</b>
+		</field>
+		<field>
+			<a>dateLivDocument</a>
+			<b>dateLivDocument</b>
+		</field>
+		<field>
+			<a>libelleDocument</a>
+			<b>libelleDocument</b>
+		</field>
+	    <field>
+			<a>taTiers.codeTiers</a>
+			<b>codeTiers</b>
+		</field>
+	    <field>
+			<a>taInfosDocument.nomTiers</a>
+			<b>nomTiers</b>
+		</field>
+		<field>
+			<a>taInfosDocument.codeCompta</a>
+			<b>codeCompta</b>
+		</field>
+		<field>
+			<a>taInfosDocument.compte</a>
+			<b>compte</b>
+		</field>
+		<field>
+			<a>commentaire</a>
+			<b>commentaire</b>
+		</field>
+	</mapping>
+	
+	<!-- ************************** PROFORMA ******************************* -->
+	<mapping>
+		<class-a>fr.legrain.document.model.TaProforma</class-a>
+		<class-b>fr.legrain.document.dto.TaProformaDTO</class-b>
+		<field type="one-way">
+			<a>idDocument</a>
+			<b>id</b>
+		</field>
+		<field type="one-way">
+			<a>taTiers.codeTiers</a>
+			<b>codeTiers</b>
+		</field>
+		<field type="one-way">
+			<a>taTPaiement.codeTPaiement</a>
+			<b>codeTPaiement</b>
+		</field>
+		<field type="one-way">
+			<a>taInfosDocument.prenomTiers</a>
+			<b>prenomTiers</b>
+		</field>
+		<field type="one-way">
+			<a>taInfosDocument.nomEntreprise</a>
+			<b>nomEntreprise</b>
+		</field>		
+		</mapping>
+	<mapping>
+		<class-a>fr.legrain.document.model.TaProforma</class-a>
+		<class-b>fr.legrain.document.dto.EnteteProformaDTO</class-b>
+		<field type="one-way">
+			<a>idDocument</a>
+			<b>id</b>
+		</field>
+		<field>
+			<a>codeDocument</a>
+			<b>codeDocument</b>
+		</field>
+		<field>
+			<a>dateDocument</a>
+			<b>dateDocument</b>
+		</field>
+		<field>
+			<a>dateEchDocument</a>
+			<b>dateEchDocument</b>
+		</field>
+		<field>
+			<a>libelleDocument</a>
+			<b>libelleDocument</b>
+		</field>
+		<field type="one-way">
+			<a>taTiers.codeTiers</a>
+			<b>codeTiers</b>
+		</field>
+
+		<field>
+			<a>regleDocument</a>
+			<b>regleDocument</b>
+		</field>
+		<field>
+			<a>remHtDocument</a>
+			<b>remHtDocument</b>
+		</field>
+		<field>
+			<a>txRemHtDocument</a>
+			<b>txRemHtDocument</b>
+		</field>
+		<field>
+			<a>remTtcDocument</a>
+			<b>remTtcDocument</b>
+		</field>
+		<field>
+			<a>txRemTtcDocument</a>
+			<b>txRemTtcDocument</b>
+		</field>
+		<field>
+			<a>nbEDocument</a>
+			<b>nbEDocument</b>
+		</field>
+		<field>
+			<a>mtTtcCalc</a>
+			<b>mtTtcCalc</b>
+		</field>
+		<field>
+			<a>mtHtCalc</a>
+			<b>mtHtCalc</b>
+		</field>
+		<field>
+			<a>mtTvaCalc</a>
+			<b>mtTvaCalc</b>
+		</field>
+		<field>
+			<a>netTtcCalc</a>
+			<b>netTtcCalc</b>
+		</field>
+		<field>
+			<a>netHtCalc</a>
+			<b>netHtCalc</b>
+		</field>
+		<field>
+			<a>netTvaCalc</a>
+			<b>netTvaCalc</b>
+		</field>
+		<field>
+			<a>ttc</a>
+			<b>ttc</b>
+		</field>
+		<field>
+			<a>commentaire</a>
+			<b>commentaire</b>
+		</field>
+	</mapping>
+	
+	<mapping>
+		<class-a>fr.legrain.document.model.TaProforma</class-a>
+		<class-b>fr.legrain.document.dto.TotauxProformaDTO</class-b>
+		<field type="one-way">
+			<a>idDocument</a>
+			<b>id</b>
+		</field>
+		<field type="one-way">
+			<a>taTPaiement.idTPaiement</a>
+			<b>idTPaiement</b>
+		</field>
+		<field type="one-way">
+			<a>taTPaiement.codeTPaiement</a>
+			<b>codeTPaiement</b>
+		</field>
+		<field>
+			<a>regleDocument</a>
+			<b>regleDocument</b>
+		</field>
+		<field>
+			<a>remHtDocument</a>
+			<b>remHtDocument</b>
+		</field>
+		<field>
+			<a>txRemHtDocument</a>
+			<b>txRemHtDocument</b>
+		</field>
+		<field>
+			<a>remTtcDocument</a>
+			<b>remTtcDocument</b>
+		</field>
+		<field>
+			<a>txRemTtcDocument</a>
+			<b>txRemTtcDocument</b>
+		</field>
+		<field>
+			<a>mtTtcCalc</a>
+			<b>mtTtcCalc</b>
+		</field>
+		<field>
+			<a>mtHtCalc</a>
+			<b>mtHtCalc</b>
+		</field>
+		<field>
+			<a>mtTvaCalc</a>
+			<b>mtTvaCalc</b>
+		</field>
+		<field>
+			<a>netTtcCalc</a>
+			<b>netTtcCalc</b>
+		</field>
+		<field>
+			<a>netHtCalc</a>
+			<b>netHtCalc</b>
+		</field>
+		<field>
+			<a>netTvaCalc</a>
+			<b>netTvaCalc</b>
+		</field>
+		<field>
+			<a>commentaire</a>
+			<b>commentaire</b>
+		</field>
+	</mapping>
+	
+	<mapping>
+		<class-a>fr.legrain.document.model.TaProforma</class-a>
+		<class-b>fr.legrain.document.dto.TotauxLignesDocumentDTO</class-b>
+		<field type="one-way">
+			<a>idDocument</a>
+			<b>id</b>
+		</field>
+		<field>
+			<a>netTtcCalc</a>
+			<b>netTtcCalc</b>
+		</field>
+		<field>
+			<a>netHtCalc</a>
+			<b>netHtCalc</b>
+		</field>
+		<field>
+			<a>netTvaCalc</a>
+			<b>netTvaCalc</b>
+		</field>		
+		<field>
+			<a>mtTtcAvantRemiseGlobaleCalc</a>
+			<b>mtTtcAvantRemiseGlobaleCalc</b>
+		</field>
+		<field>
+			<a>mtHtCalc</a>
+			<b>mtHtCalc</b>
+		</field>		
+	</mapping>
+	
+	<mapping>
+		<class-a>fr.legrain.document.model.TaLProforma</class-a>
+		<class-b>fr.legrain.document.dto.TaLProformaDTO</class-b>
+        <!-- Ajourt pour JEE mode web JSF -->
+		<field>
+			<a>idLDocument</a>
+			<b>idLDocument</b>
+		</field>
+		<!-- Fin Ajour pour JEE mode web JSF -->
+
+		<field type="one-way">
+			<a>idLDocument</a>
+			<b>id</b>
+		</field>
+		<field type="one-way">
+			<a>taDocument.idDocument</a>
+			<b>idDocument</b>
+		</field>
+		<field type="one-way">
+			<a>taTLigne.codeTLigne</a>
+			<b>codeTLigne</b>
+		</field>
+		<field type="one-way">
+			<a>taArticle.idArticle</a>
+			<b>idArticle</b>
+		</field>
+		<field type="one-way">
+			<a>taArticle.codeArticle</a>
+			<b>codeArticle</b>
+		</field>
+		<field>
+			<a>numLigneLDocument</a>
+			<b>numLigneLDocument</b>
+		</field>
+		<field>
+			<a>libLDocument</a>
+			<b>libLDocument</b>
+		</field>
+		<field>
+			<a>qteLDocument</a>
+			<b>qteLDocument</b>
+		</field>
+		<field>
+			<a>prixULDocument</a>
+			<b>prixULDocument</b>
+		</field>
+		<field>
+			<a>tauxTvaLDocument</a>
+			<b>tauxTvaLDocument</b>
+		</field>
+		<field>
+			<a>codeTvaLDocument</a>
+			<b>codeTvaLDocument</b>
+		</field>
+		<field>
+			<a>codeTTvaLDocument</a>
+			<b>codeTTvaLDocument</b>
+		</field>
+		<field>
+			<a>mtHtLDocument</a>
+			<b>mtHtLDocument</b>
+		</field>
+		<field>
+			<a>mtTtcLDocument</a>
+			<b>mtTtcLDocument</b>
+		</field>
+		<field>
+			<a>remTxLDocument</a>
+			<b>remTxLDocument</b>
+		</field>
+		<field>
+			<a>remHtLDocument</a>
+			<b>remHtLDocument</b>
+		</field>
+		<field>
+			<a>u1LDocument</a>
+			<b>u1LDocument</b>
+		</field>
+		<field>
+			<a>u2LDocument</a>
+			<b>u2LDocument</b>
+		</field>
+		<field>
+			<a>txRemHtDocument</a>
+			<b>txRemHtDocument</b>
+		</field>		
+	</mapping>
+	
+	<mapping>
+		<class-a>fr.legrain.document.model.TaInfosProforma</class-a>
+		<class-b>fr.legrain.tiers.dto.InfosCPaiementDTO</class-b>
+		<field>
+			<a>codeCPaiement</a>
+			<b>codeCPaiement</b>
+		</field>
+		<field>
+			<a>libCPaiement</a>
+			<b>libCPaiement</b>
+		</field>
+		<field>
+			<a>reportCPaiement</a>
+			<b>reportCPaiement</b>
+		</field>
+		<field>
+			<a>finMoisCPaiement</a>
+			<b>finMoisCPaiement</b>
+		</field>
+	</mapping>
+	
+	<mapping>
+		<class-a>fr.legrain.document.model.TaInfosProforma</class-a>
+		<class-b>fr.legrain.tiers.dto.AdresseInfosFacturationDTO</class-b>
+		<field>
+			<a>adresse1</a>
+			<b>adresse1Adresse</b>
+		</field>
+		<field>
+			<a>adresse2</a>
+			<b>adresse2Adresse</b>
+		</field>
+		<field>
+			<a>adresse3</a>
+			<b>adresse3Adresse</b>
+		</field>
+		<field>
+			<a>codepostal</a>
+			<b>codepostalAdresse</b>
+		</field>
+		<field>
+			<a>ville</a>
+			<b>villeAdresse</b>
+		</field>
+		<field>
+			<a>pays</a>
+			<b>paysAdresse</b>
+		</field>
+	</mapping>
+	
+	<mapping>
+		<class-a>fr.legrain.document.model.TaInfosProforma</class-a>
+		<class-b>fr.legrain.tiers.dto.AdresseInfosLivraisonDTO</class-b>
+		<field>
+			<a>adresse1Liv</a>
+			<b>adresse1AdresseLiv</b>
+		</field>
+		<field>
+			<a>adresse2Liv</a>
+			<b>adresse2AdresseLiv</b>
+		</field>
+		<field>
+			<a>adresse3Liv</a>
+			<b>adresse3AdresseLiv</b>
+		</field>
+		<field>
+			<a>codepostalLiv</a>
+			<b>codepostalAdresseLiv</b>
+		</field>
+		<field>
+			<a>villeLiv</a>
+			<b>villeAdresseLiv</b>
+		</field>
+		<field>
+			<a>paysLiv</a>
+			<b>paysAdresseLiv</b>
+		</field>
+	</mapping>
+	
+	<mapping map-null="false">
+		<class-a>fr.legrain.document.model.TaProforma</class-a>
+		<class-b>fr.legrain.document.model.TaInfosProforma</class-b>
+		<field>
+			<a>taTiers.codeCompta</a>
+			<b>codeCompta</b>
+		</field>
+		<field>
+			<a>taTiers.compte</a>
+			<b>compte</b>
+		</field>
+		<field>
+			<a>taTiers.nomTiers</a>
+			<b>nomTiers</b>
+		</field>
+		<field>
+			<a>taTiers.prenomTiers</a>
+			<b>prenomTiers</b>
+		</field>
+		<field>
+			<a>taTiers.surnomTiers</a>
+			<b>surnomTiers</b>
+		</field>
+		<field>
+			<a>taTiers.taTCivilite.codeTCivilite</a>
+			<b>codeTCivilite</b>
+		</field>
+		<field>
+			<a>taTiers.taTEntite.codeTEntite</a>
+			<b>codeTEntite</b>
+		</field>
+		<field>
+			<a>taTiers.taEntreprise.nomEntreprise</a>
+			<b>nomEntreprise</b>
+		</field>
+		<field>
+			<a>taTiers.taCompl.tvaIComCompl</a>
+			<b>tvaIComCompl</b>
+		</field>
+		<field>
+			<a>taTiers.taCPaiement.codeCPaiement</a>
+			<b>codeCPaiement</b>
+		</field>
+		<field>
+			<a>taTiers.taCPaiement.libCPaiement</a>
+			<b>libCPaiement</b>
+		</field>
+		<field>
+			<a>taTiers.taCPaiement.reportCPaiement</a>
+			<b>reportCPaiement</b>
+		</field>
+		<field>
+			<a>taTiers.taCPaiement.finMoisCPaiement</a>
+			<b>finMoisCPaiement</b>
+		</field>
+		<field-exclude> 
+  		<a>versionObj</a> 
+  		<b>versionObj</b> 
+		</field-exclude>		
+	</mapping>
+	
+	<mapping map-null="false">
+		<class-a>fr.legrain.document.model.TaProforma</class-a>
+		<class-b>fr.legrain.document.dto.AideProformaDTO</class-b>
+		<field>
+			<a>idDocument</a>
+			<b>id</b>
+		</field>
+		<field>
+			<a>codeDocument</a>
+			<b>codeDocument</b>
+		</field>
+		<field>
+			<a>dateDocument</a>
+			<b>dateDocument</b>
+		</field>
+		<field>
+			<a>dateEchDocument</a>
+			<b>dateEchDocument</b>
+		</field>
+		<field>
+			<a>dateLivDocument</a>
+			<b>dateLivDocument</b>
+		</field>
+		<field>
+			<a>libelleDocument</a>
+			<b>libelleDocument</b>
+		</field>
+	    <field>
+			<a>taTiers.codeTiers</a>
+			<b>codeTiers</b>
+		</field>
+	    <field>
+			<a>taInfosDocument.nomTiers</a>
+			<b>nomTiers</b>
+		</field>
+		<field>
+			<a>taInfosDocument.codeCompta</a>
+			<b>codeCompta</b>
+		</field>
+		<field>
+			<a>taInfosDocument.compte</a>
+			<b>compte</b>
+		</field>
+		<field>
+			<a>commentaire</a>
+			<b>commentaire</b>
+		</field>
+	</mapping>
+	
+	<!-- ************************** BONCDE ******************************* -->
+	<mapping>
+		<class-a>fr.legrain.document.model.TaBoncde</class-a>
+		<class-b>fr.legrain.document.dto.TaBoncdeDTO</class-b>
+		<field type="one-way">
+			<a>idDocument</a>
+			<b>id</b>
+		</field>
+		<field type="one-way">
+			<a>taTiers.codeTiers</a>
+			<b>codeTiers</b>
+		</field>
+		<field type="one-way">
+			<a>taTPaiement.codeTPaiement</a>
+			<b>codeTPaiement</b>
+		</field>
+		<field type="one-way">
+			<a>taTransporteur.codeTransporteur</a>
+			<b>codeTransporteur</b>
+		</field>
+	</mapping>
+	<mapping>
+		<class-a>fr.legrain.document.model.TaBoncde</class-a>
+		<class-b>fr.legrain.document.dto.EnteteBoncdeDTO</class-b>
+		<field type="one-way">
+			<a>idDocument</a>
+			<b>id</b>
+		</field>
+		<field>
+			<a>codeDocument</a>
+			<b>codeDocument</b>
+		</field>
+		<field>
+			<a>dateDocument</a>
+			<b>dateDocument</b>
+		</field>
+		<field>
+			<a>dateEchDocument</a>
+			<b>dateEchDocument</b>
+		</field>
+		<field>
+			<a>libelleDocument</a>
+			<b>libelleDocument</b>
+		</field>
+		<field type="one-way">
+			<a>taTiers.codeTiers</a>
+			<b>codeTiers</b>
+		</field>
+		<field>
+			<a>regleDocument</a>
+			<b>regleDocument</b>
+		</field>
+		<field>
+			<a>remHtDocument</a>
+			<b>remHtDocument</b>
+		</field>
+		<field>
+			<a>txRemHtDocument</a>
+			<b>txRemHtDocument</b>
+		</field>
+		<field>
+			<a>remTtcDocument</a>
+			<b>remTtcDocument</b>
+		</field>
+		<field>
+			<a>txRemTtcDocument</a>
+			<b>txRemTtcDocument</b>
+		</field>
+		<field>
+			<a>nbEDocument</a>
+			<b>nbEDocument</b>
+		</field>
+		<field>
+			<a>mtTtcCalc</a>
+			<b>mtTtcCalc</b>
+		</field>
+		<field>
+			<a>mtHtCalc</a>
+			<b>mtHtCalc</b>
+		</field>
+		<field>
+			<a>mtTvaCalc</a>
+			<b>mtTvaCalc</b>
+		</field>
+		<field>
+			<a>netTtcCalc</a>
+			<b>netTtcCalc</b>
+		</field>
+		<field>
+			<a>netHtCalc</a>
+			<b>netHtCalc</b>
+		</field>
+		<field>
+			<a>netTvaCalc</a>
+			<b>netTvaCalc</b>
+		</field>
+		<field>
+			<a>ttc</a>
+			<b>ttc</b>
+		</field>
+		<field>
+			<a>commentaire</a>
+			<b>commentaire</b>
+		</field>
+	</mapping>
+	
+	<mapping>
+		<class-a>fr.legrain.document.model.TaBoncde</class-a>
+		<class-b>fr.legrain.document.dto.TotauxBoncdeDTO</class-b>
+		<field type="one-way">
+			<a>idDocument</a>
+			<b>id</b>
+		</field>
+		<field type="one-way">
+			<a>taTPaiement.idTPaiement</a>
+			<b>idTPaiement</b>
+		</field>
+		<field type="one-way">
+			<a>taTPaiement.codeTPaiement</a>
+			<b>codeTPaiement</b>
+		</field>
+		<field>
+			<a>regleDocument</a>
+			<b>regleDocument</b>
+		</field>
+		<field>
+			<a>remHtDocument</a>
+			<b>remHtDocument</b>
+		</field>
+		<field>
+			<a>txRemHtDocument</a>
+			<b>txRemHtDocument</b>
+		</field>
+		<field>
+			<a>remTtcDocument</a>
+			<b>remTtcDocument</b>
+		</field>
+		<field>
+			<a>txRemTtcDocument</a>
+			<b>txRemTtcDocument</b>
+		</field>
+		<field>
+			<a>mtTtcCalc</a>
+			<b>mtTtcCalc</b>
+		</field>
+		<field>
+			<a>mtHtCalc</a>
+			<b>mtHtCalc</b>
+		</field>
+		<field>
+			<a>mtTvaCalc</a>
+			<b>mtTvaCalc</b>
+		</field>
+		<field>
+			<a>netTtcCalc</a>
+			<b>netTtcCalc</b>
+		</field>
+		<field>
+			<a>netHtCalc</a>
+			<b>netHtCalc</b>
+		</field>
+		<field>
+			<a>netTvaCalc</a>
+			<b>netTvaCalc</b>
+		</field>
+		<field>
+			<a>commentaire</a>
+			<b>commentaire</b>
+		</field>
+	</mapping>
+	
+	<mapping>
+		<class-a>fr.legrain.document.model.TaBoncde</class-a>
+		<class-b>fr.legrain.document.dto.TotauxLignesDocumentDTO</class-b>
+		<field type="one-way">
+			<a>idDocument</a>
+			<b>id</b>
+		</field>
+		<field>
+			<a>netTtcCalc</a>
+			<b>netTtcCalc</b>
+		</field>
+		<field>
+			<a>netHtCalc</a>
+			<b>netHtCalc</b>
+		</field>
+		<field>
+			<a>netTvaCalc</a>
+			<b>netTvaCalc</b>
+		</field>		
+		<field>
+			<a>mtTtcAvantRemiseGlobaleCalc</a>
+			<b>mtTtcAvantRemiseGlobaleCalc</b>
+		</field>
+		<field>
+			<a>mtHtCalc</a>
+			<b>mtHtCalc</b>
+		</field>		
+	</mapping>
+	
+	<mapping>
+		<class-a>fr.legrain.document.model.TaLBoncde</class-a>
+		<class-b>fr.legrain.document.dto.TaLBoncdeDTO</class-b>
+        <!-- Ajourt pour JEE mode web JSF -->
+		<field>
+			<a>idLDocument</a>
+			<b>idLDocument</b>
+		</field>
+		<!-- Fin Ajour pour JEE mode web JSF -->
+
+		<field type="one-way">
+			<a>idLDocument</a>
+			<b>id</b>
+		</field>
+		<field type="one-way">
+			<a>taDocument.idDocument</a>
+			<b>idDocument</b>
+		</field>
+		<field type="one-way">
+			<a>taTLigne.codeTLigne</a>
+			<b>codeTLigne</b>
+		</field>
+		<field type="one-way">
+			<a>taArticle.idArticle</a>
+			<b>idArticle</b>
+		</field>
+		<field type="one-way">
+			<a>taArticle.codeArticle</a>
+			<b>codeArticle</b>
+		</field>
+		<field>
+			<a>numLigneLDocument</a>
+			<b>numLigneLDocument</b>
+		</field>
+		<field>
+			<a>libLDocument</a>
+			<b>libLDocument</b>
+		</field>
+		<field>
+			<a>qteLDocument</a>
+			<b>qteLDocument</b>
+		</field>
+		<field>
+			<a>prixULDocument</a>
+			<b>prixULDocument</b>
+		</field>
+		<field>
+			<a>tauxTvaLDocument</a>
+			<b>tauxTvaLDocument</b>
+		</field>
+		<field>
+			<a>codeTvaLDocument</a>
+			<b>codeTvaLDocument</b>
+		</field>
+		<field>
+			<a>codeTTvaLDocument</a>
+			<b>codeTTvaLDocument</b>
+		</field>
+		<field>
+			<a>mtHtLDocument</a>
+			<b>mtHtLDocument</b>
+		</field>
+		<field>
+			<a>mtTtcLDocument</a>
+			<b>mtTtcLDocument</b>
+		</field>
+		<field>
+			<a>remTxLDocument</a>
+			<b>remTxLDocument</b>
+		</field>
+		<field>
+			<a>remHtLDocument</a>
+			<b>remHtLDocument</b>
+		</field>
+		<field>
+			<a>u1LDocument</a>
+			<b>u1LDocument</b>
+		</field>
+		<field>
+			<a>u2LDocument</a>
+			<b>u2LDocument</b>
+		</field>
+		<field>
+			<a>txRemHtDocument</a>
+			<b>txRemHtDocument</b>
+		</field>		
+	</mapping>
+	
+		
+	<mapping>
+		<class-a>fr.legrain.document.model.TaInfosBoncde</class-a>
+		<class-b>fr.legrain.tiers.dto.InfosCPaiementDTO</class-b>
+		<field>
+			<a>codeCPaiement</a>
+			<b>codeCPaiement</b>
+		</field>
+		<field>
+			<a>libCPaiement</a>
+			<b>libCPaiement</b>
+		</field>
+		<field>
+			<a>reportCPaiement</a>
+			<b>reportCPaiement</b>
+		</field>
+		<field>
+			<a>finMoisCPaiement</a>
+			<b>finMoisCPaiement</b>
+		</field>
+	</mapping>
+	
+	<mapping>
+		<class-a>fr.legrain.document.model.TaInfosBoncde</class-a>
+		<class-b>fr.legrain.tiers.dto.AdresseInfosFacturationDTO</class-b>
+		<field>
+			<a>adresse1</a>
+			<b>adresse1Adresse</b>
+		</field>
+		<field>
+			<a>adresse2</a>
+			<b>adresse2Adresse</b>
+		</field>
+		<field>
+			<a>adresse3</a>
+			<b>adresse3Adresse</b>
+		</field>
+		<field>
+			<a>codepostal</a>
+			<b>codepostalAdresse</b>
+		</field>
+		<field>
+			<a>ville</a>
+			<b>villeAdresse</b>
+		</field>
+		<field>
+			<a>pays</a>
+			<b>paysAdresse</b>
+		</field>
+	</mapping>
+
+	
+	<mapping>
+		<class-a>fr.legrain.document.model.TaInfosBoncde</class-a>
+		<class-b>fr.legrain.tiers.dto.AdresseInfosLivraisonDTO</class-b>
+		<field>
+			<a>adresse1Liv</a>
+			<b>adresse1AdresseLiv</b>
+		</field>
+		<field>
+			<a>adresse2Liv</a>
+			<b>adresse2AdresseLiv</b>
+		</field>
+		<field>
+			<a>adresse3Liv</a>
+			<b>adresse3AdresseLiv</b>
+		</field>
+		<field>
+			<a>codepostalLiv</a>
+			<b>codepostalAdresseLiv</b>
+		</field>
+		<field>
+			<a>villeLiv</a>
+			<b>villeAdresseLiv</b>
+		</field>
+		<field>
+			<a>paysLiv</a>
+			<b>paysAdresseLiv</b>
+		</field>
+		<field>
+			<a>livraison</a>
+			<b>livraison</b>
+		</field>
+		<field>
+			<a>latitudeDec</a>
+			<b>latitudeDec</b>
+		</field>
+		<field>
+			<a>longitudeDec</a>
+			<b>longitudeDec</b>
+		</field>		
+	</mapping>
+	
+	<mapping map-null="false">
+		<class-a>fr.legrain.document.model.TaBoncde</class-a>
+		<class-b>fr.legrain.document.model.TaInfosBoncde</class-b>
+		<field>
+			<a>taTiers.codeCompta</a>
+			<b>codeCompta</b>
+		</field>
+		<field>
+			<a>taTiers.compte</a>
+			<b>compte</b>
+		</field>
+		<field>
+			<a>taTiers.nomTiers</a>
+			<b>nomTiers</b>
+		</field>
+		<field>
+			<a>taTiers.prenomTiers</a>
+			<b>prenomTiers</b>
+		</field>
+		<field>
+			<a>taTiers.surnomTiers</a>
+			<b>surnomTiers</b>
+		</field>
+		<field>
+			<a>taTiers.taTCivilite.codeTCivilite</a>
+			<b>codeTCivilite</b>
+		</field>
+		<field>
+			<a>taTiers.taTEntite.codeTEntite</a>
+			<b>codeTEntite</b>
+		</field>
+		<field>
+			<a>taTiers.taEntreprise.nomEntreprise</a>
+			<b>nomEntreprise</b>
+		</field>
+		<field>
+			<a>taTiers.taCompl.tvaIComCompl</a>
+			<b>tvaIComCompl</b>
+		</field>
+		<field>
+			<a>taTiers.taCPaiement.codeCPaiement</a>
+			<b>codeCPaiement</b>
+		</field>
+		<field>
+			<a>taTiers.taCPaiement.libCPaiement</a>
+			<b>libCPaiement</b>
+		</field>
+		<field>
+			<a>taTiers.taCPaiement.reportCPaiement</a>
+			<b>reportCPaiement</b>
+		</field>
+		<field>
+			<a>taTiers.taCPaiement.finMoisCPaiement</a>
+			<b>finMoisCPaiement</b>
+		</field>
+		<field-exclude> 
+  			<a>versionObj</a> 
+  			<b>versionObj</b> 
+		</field-exclude>		
+	</mapping>
+	
+	
+	<mapping map-null="false">
+		<class-a>fr.legrain.document.model.TaBoncde</class-a>
+		<class-b>fr.legrain.document.dto.AideBoncdeDTO</class-b>
+		<field>
+			<a>idDocument</a>
+			<b>id</b>
+		</field>
+		<field>
+			<a>codeDocument</a>
+			<b>codeDocument</b>
+		</field>
+		<field>
+			<a>dateDocument</a>
+			<b>dateDocument</b>
+		</field>
+		<field>
+			<a>dateEchDocument</a>
+			<b>dateEchDocument</b>
+		</field>
+		<field>
+			<a>dateLivDocument</a>
+			<b>dateLivDocument</b>
+		</field>
+		<field>
+			<a>libelleDocument</a>
+			<b>libelleDocument</b>
+		</field>
+	    <field>
+			<a>taTiers.codeTiers</a>
+			<b>codeTiers</b>
+		</field>
+	    <field>
+			<a>taInfosDocument.nomTiers</a>
+			<b>nomTiers</b>
+		</field>
+		<field>
+			<a>taInfosDocument.codeCompta</a>
+			<b>codeCompta</b>
+		</field>
+		<field>
+			<a>taInfosDocument.compte</a>
+			<b>compte</b>
+		</field>
+		<field>
+			<a>commentaire</a>
+			<b>commentaire</b>
+		</field>
+	</mapping>
+	
+
+
+	<!-- ************************** BONCDE ******************************* -->
+	<mapping>
+		<class-a>fr.legrain.document.model.TaBoncdeAchat</class-a>
+		<class-b>fr.legrain.document.dto.TaBoncdeAchatDTO</class-b>
+		<field type="one-way">
+			<a>idDocument</a>
+			<b>id</b>
+		</field>
+		<field type="one-way">
+			<a>taTiers.codeTiers</a>
+			<b>codeTiers</b>
+		</field>
+		<field type="one-way">
+			<a>taTPaiement.codeTPaiement</a>
+			<b>codeTPaiement</b>
+		</field>
+	</mapping>
+	
+	<mapping>
+		<class-a>fr.legrain.document.model.TaBoncdeAchat</class-a>
+		<class-b>fr.legrain.document.dto.TotauxLignesDocumentDTO</class-b>
+		<field type="one-way">
+			<a>idDocument</a>
+			<b>id</b>
+		</field>
+		<field>
+			<a>netTtcCalc</a>
+			<b>netTtcCalc</b>
+		</field>
+		<field>
+			<a>netHtCalc</a>
+			<b>netHtCalc</b>
+		</field>
+		<field>
+			<a>netTvaCalc</a>
+			<b>netTvaCalc</b>
+		</field>		
+		<field>
+			<a>mtTtcAvantRemiseGlobaleCalc</a>
+			<b>mtTtcAvantRemiseGlobaleCalc</b>
+		</field>
+		<field>
+			<a>mtHtCalc</a>
+			<b>mtHtCalc</b>
+		</field>		
+	</mapping>
+	
+	<mapping>
+		<class-a>fr.legrain.document.model.TaLBoncdeAchat</class-a>
+		<class-b>fr.legrain.document.dto.TaLBoncdeAchatDTO</class-b>
+        <!-- Ajourt pour JEE mode web JSF -->
+		<field>
+			<a>idLDocument</a>
+			<b>idLDocument</b>
+		</field>
+		<!-- Fin Ajour pour JEE mode web JSF -->
+
+		<field type="one-way">
+			<a>idLDocument</a>
+			<b>id</b>
+		</field>
+		<field type="one-way">
+			<a>taDocument.idDocument</a>
+			<b>idDocument</b>
+		</field>
+		<field type="one-way">
+			<a>taTLigne.codeTLigne</a>
+			<b>codeTLigne</b>
+		</field>
+		<field type="one-way">
+			<a>taArticle.idArticle</a>
+			<b>idArticle</b>
+		</field>
+		<field type="one-way">
+			<a>taArticle.codeArticle</a>
+			<b>codeArticle</b>
+		</field>
+		<field>
+			<a>numLigneLDocument</a>
+			<b>numLigneLDocument</b>
+		</field>
+		<field>
+			<a>libLDocument</a>
+			<b>libLDocument</b>
+		</field>
+		<field>
+			<a>qteLDocument</a>
+			<b>qteLDocument</b>
+		</field>
+		<field>
+			<a>prixULDocument</a>
+			<b>prixULDocument</b>
+		</field>
+		<field>
+			<a>tauxTvaLDocument</a>
+			<b>tauxTvaLDocument</b>
+		</field>
+		<field>
+			<a>codeTvaLDocument</a>
+			<b>codeTvaLDocument</b>
+		</field>
+		<field>
+			<a>codeTTvaLDocument</a>
+			<b>codeTTvaLDocument</b>
+		</field>
+		<field>
+			<a>mtHtLDocument</a>
+			<b>mtHtLDocument</b>
+		</field>
+		<field>
+			<a>mtTtcLDocument</a>
+			<b>mtTtcLDocument</b>
+		</field>
+		<field>
+			<a>remTxLDocument</a>
+			<b>remTxLDocument</b>
+		</field>
+		<field>
+			<a>remHtLDocument</a>
+			<b>remHtLDocument</b>
+		</field>
+		<field>
+			<a>u1LDocument</a>
+			<b>u1LDocument</b>
+		</field>
+		<field>
+			<a>u2LDocument</a>
+			<b>u2LDocument</b>
+		</field>
+		<field>
+			<a>txRemHtDocument</a>
+			<b>txRemHtDocument</b>
+		</field>		
+	</mapping>
+
+		<mapping map-null="false">
+		<class-a>fr.legrain.document.model.TaBoncdeAchat</class-a>
+		<class-b>fr.legrain.document.model.TaInfosBoncdeAchat</class-b>
+		<field>
+			<a>taTiers.codeCompta</a>
+			<b>codeCompta</b>
+		</field>
+		<field>
+			<a>taTiers.compte</a>
+			<b>compte</b>
+		</field>
+		<field>
+			<a>taTiers.nomTiers</a>
+			<b>nomTiers</b>
+		</field>
+		<field>
+			<a>taTiers.prenomTiers</a>
+			<b>prenomTiers</b>
+		</field>
+		<field>
+			<a>taTiers.surnomTiers</a>
+			<b>surnomTiers</b>
+		</field>
+		<field>
+			<a>taTiers.taTCivilite.codeTCivilite</a>
+			<b>codeTCivilite</b>
+		</field>
+		<field>
+			<a>taTiers.taTEntite.codeTEntite</a>
+			<b>codeTEntite</b>
+		</field>
+		<field>
+			<a>taTiers.taEntreprise.nomEntreprise</a>
+			<b>nomEntreprise</b>
+		</field>
+		<field>
+			<a>taTiers.taCompl.tvaIComCompl</a>
+			<b>tvaIComCompl</b>
+		</field>
+		<field>
+			<a>taTiers.taCPaiement.codeCPaiement</a>
+			<b>codeCPaiement</b>
+		</field>
+		<field>
+			<a>taTiers.taCPaiement.libCPaiement</a>
+			<b>libCPaiement</b>
+		</field>
+		<field>
+			<a>taTiers.taCPaiement.reportCPaiement</a>
+			<b>reportCPaiement</b>
+		</field>
+		<field>
+			<a>taTiers.taCPaiement.finMoisCPaiement</a>
+			<b>finMoisCPaiement</b>
+		</field>
+		<field-exclude> 
+  			<a>versionObj</a> 
+  			<b>versionObj</b> 
+		</field-exclude>		
+	</mapping>
+	<mapping>
+		<class-a>fr.legrain.document.model.TaInfosBoncdeAchat</class-a>
+		<class-b>fr.legrain.tiers.dto.InfosCPaiementDTO</class-b>
+		<field>
+			<a>codeCPaiement</a>
+			<b>codeCPaiement</b>
+		</field>
+		<field>
+			<a>libCPaiement</a>
+			<b>libCPaiement</b>
+		</field>
+		<field>
+			<a>reportCPaiement</a>
+			<b>reportCPaiement</b>
+		</field>
+		<field>
+			<a>finMoisCPaiement</a>
+			<b>finMoisCPaiement</b>
+		</field>
+	</mapping>
+	
+	<mapping>
+		<class-a>fr.legrain.document.model.TaInfosBoncdeAchat</class-a>
+		<class-b>fr.legrain.tiers.dto.AdresseInfosFacturationDTO</class-b>
+		<field>
+			<a>adresse1</a>
+			<b>adresse1Adresse</b>
+		</field>
+		<field>
+			<a>adresse2</a>
+			<b>adresse2Adresse</b>
+		</field>
+		<field>
+			<a>adresse3</a>
+			<b>adresse3Adresse</b>
+		</field>
+		<field>
+			<a>codepostal</a>
+			<b>codepostalAdresse</b>
+		</field>
+		<field>
+			<a>ville</a>
+			<b>villeAdresse</b>
+		</field>
+		<field>
+			<a>pays</a>
+			<b>paysAdresse</b>
+		</field>
+	</mapping>	
+	
+<!-- *********************** preparation ******************************	 -->
+<mapping>
+		<class-a>fr.legrain.document.model.TaInfosPreparation</class-a>
+		<class-b>fr.legrain.tiers.dto.TaCPaiementDTO</class-b>
+		<field>
+			<a>codeCPaiement</a>
+			<b>codeCPaiement</b>
+		</field>
+		<field>
+			<a>libCPaiement</a>
+			<b>libCPaiement</b>
+		</field>
+		<field>
+			<a>reportCPaiement</a>
+			<b>reportCPaiement</b>
+		</field>
+		<field >
+			<a>finMoisCPaiement</a>
+			<b>finMoisCPaiement</b>
+		</field>
+		<field-exclude> 
+  		<a>versionObj</a> 
+  		<b>versionObj</b> 
+		</field-exclude>
+	</mapping>		
+	<mapping map-null="false">
+		<class-a>fr.legrain.document.model.TaPreparation</class-a>
+		<class-b>fr.legrain.document.model.TaInfosPreparation</class-b>
+		<field>
+			<a>taTiers.codeCompta</a>
+			<b>codeCompta</b>
+		</field>
+		<field>
+			<a>taTiers.compte</a>
+			<b>compte</b>
+		</field>
+		<field>
+			<a>taTiers.nomTiers</a>
+			<b>nomTiers</b>
+		</field>
+		<field>
+			<a>taTiers.prenomTiers</a>
+			<b>prenomTiers</b>
+		</field>
+		<field>
+			<a>taTiers.surnomTiers</a>
+			<b>surnomTiers</b>
+		</field>
+		<field>
+			<a>taTiers.taTCivilite.codeTCivilite</a>
+			<b>codeTCivilite</b>
+		</field>
+		<field>
+			<a>taTiers.taTEntite.codeTEntite</a>
+			<b>codeTEntite</b>
+		</field>
+		<field>
+			<a>taTiers.taEntreprise.nomEntreprise</a>
+			<b>nomEntreprise</b>
+		</field>
+		<field>
+			<a>taTiers.taCompl.tvaIComCompl</a>
+			<b>tvaIComCompl</b>
+		</field>
+		<field>
+			<a>taTiers.taCPaiement.codeCPaiement</a>
+			<b>codeCPaiement</b>
+		</field>
+		<field>
+			<a>taTiers.taCPaiement.libCPaiement</a>
+			<b>libCPaiement</b>
+		</field>
+		<field>
+			<a>taTiers.taCPaiement.reportCPaiement</a>
+			<b>reportCPaiement</b>
+		</field>
+		<field>
+			<a>taTiers.taCPaiement.finMoisCPaiement</a>
+			<b>finMoisCPaiement</b>
+		</field>
+		<field-exclude> 
+  			<a>versionObj</a> 
+  			<b>versionObj</b> 
+		</field-exclude>		
+	</mapping>
+	<mapping>
+		<class-a>fr.legrain.document.model.TaInfosPreparation</class-a>
+		<class-b>fr.legrain.tiers.dto.InfosCPaiementDTO</class-b>
+		<field>
+			<a>codeCPaiement</a>
+			<b>codeCPaiement</b>
+		</field>
+		<field>
+			<a>libCPaiement</a>
+			<b>libCPaiement</b>
+		</field>
+		<field>
+			<a>reportCPaiement</a>
+			<b>reportCPaiement</b>
+		</field>
+		<field>
+			<a>finMoisCPaiement</a>
+			<b>finMoisCPaiement</b>
+		</field>
+	</mapping>
+	
+	<mapping>
+		<class-a>fr.legrain.document.model.TaInfosPreparation</class-a>
+		<class-b>fr.legrain.tiers.dto.AdresseInfosFacturationDTO</class-b>
+		<field>
+			<a>adresse1</a>
+			<b>adresse1Adresse</b>
+		</field>
+		<field>
+			<a>adresse2</a>
+			<b>adresse2Adresse</b>
+		</field>
+		<field>
+			<a>adresse3</a>
+			<b>adresse3Adresse</b>
+		</field>
+		<field>
+			<a>codepostal</a>
+			<b>codepostalAdresse</b>
+		</field>
+		<field>
+			<a>ville</a>
+			<b>villeAdresse</b>
+		</field>
+		<field>
+			<a>pays</a>
+			<b>paysAdresse</b>
+		</field>
+	</mapping>	
+	
+	
+	<!-- *********************** preparation ******************************	 -->
+<mapping>
+		<class-a>fr.legrain.document.model.TaInfosPanier</class-a>
+		<class-b>fr.legrain.tiers.dto.TaCPaiementDTO</class-b>
+		<field>
+			<a>codeCPaiement</a>
+			<b>codeCPaiement</b>
+		</field>
+		<field>
+			<a>libCPaiement</a>
+			<b>libCPaiement</b>
+		</field>
+		<field>
+			<a>reportCPaiement</a>
+			<b>reportCPaiement</b>
+		</field>
+		<field >
+			<a>finMoisCPaiement</a>
+			<b>finMoisCPaiement</b>
+		</field>
+		<field-exclude> 
+  		<a>versionObj</a> 
+  		<b>versionObj</b> 
+		</field-exclude>
+	</mapping>		
+	<mapping map-null="false">
+		<class-a>fr.legrain.document.model.TaPanier</class-a>
+		<class-b>fr.legrain.document.model.TaInfosPanier</class-b>
+		<field>
+			<a>taTiers.codeCompta</a>
+			<b>codeCompta</b>
+		</field>
+		<field>
+			<a>taTiers.compte</a>
+			<b>compte</b>
+		</field>
+		<field>
+			<a>taTiers.nomTiers</a>
+			<b>nomTiers</b>
+		</field>
+		<field>
+			<a>taTiers.prenomTiers</a>
+			<b>prenomTiers</b>
+		</field>
+		<field>
+			<a>taTiers.surnomTiers</a>
+			<b>surnomTiers</b>
+		</field>
+		<field>
+			<a>taTiers.taTCivilite.codeTCivilite</a>
+			<b>codeTCivilite</b>
+		</field>
+		<field>
+			<a>taTiers.taTEntite.codeTEntite</a>
+			<b>codeTEntite</b>
+		</field>
+		<field>
+			<a>taTiers.taEntreprise.nomEntreprise</a>
+			<b>nomEntreprise</b>
+		</field>
+		<field>
+			<a>taTiers.taCompl.tvaIComCompl</a>
+			<b>tvaIComCompl</b>
+		</field>
+		<field>
+			<a>taTiers.taCPaiement.codeCPaiement</a>
+			<b>codeCPaiement</b>
+		</field>
+		<field>
+			<a>taTiers.taCPaiement.libCPaiement</a>
+			<b>libCPaiement</b>
+		</field>
+		<field>
+			<a>taTiers.taCPaiement.reportCPaiement</a>
+			<b>reportCPaiement</b>
+		</field>
+		<field>
+			<a>taTiers.taCPaiement.finMoisCPaiement</a>
+			<b>finMoisCPaiement</b>
+		</field>
+		<field-exclude> 
+  			<a>versionObj</a> 
+  			<b>versionObj</b> 
+		</field-exclude>		
+	</mapping>
+	<mapping>
+		<class-a>fr.legrain.document.model.TaInfosPanier</class-a>
+		<class-b>fr.legrain.tiers.dto.InfosCPaiementDTO</class-b>
+		<field>
+			<a>codeCPaiement</a>
+			<b>codeCPaiement</b>
+		</field>
+		<field>
+			<a>libCPaiement</a>
+			<b>libCPaiement</b>
+		</field>
+		<field>
+			<a>reportCPaiement</a>
+			<b>reportCPaiement</b>
+		</field>
+		<field>
+			<a>finMoisCPaiement</a>
+			<b>finMoisCPaiement</b>
+		</field>
+	</mapping>
+	
+	<mapping>
+		<class-a>fr.legrain.document.model.TaInfosPanier</class-a>
+		<class-b>fr.legrain.tiers.dto.AdresseInfosFacturationDTO</class-b>
+		<field>
+			<a>adresse1</a>
+			<b>adresse1Adresse</b>
+		</field>
+		<field>
+			<a>adresse2</a>
+			<b>adresse2Adresse</b>
+		</field>
+		<field>
+			<a>adresse3</a>
+			<b>adresse3Adresse</b>
+		</field>
+		<field>
+			<a>codepostal</a>
+			<b>codepostalAdresse</b>
+		</field>
+		<field>
+			<a>ville</a>
+			<b>villeAdresse</b>
+		</field>
+		<field>
+			<a>pays</a>
+			<b>paysAdresse</b>
+		</field>
+	</mapping>	
+	
+	
+		<!-- ************************* APPORTEUR ******************************** -->
+	<mapping>
+		<class-a>fr.legrain.document.model.TaApporteur</class-a>
+		<class-b>fr.legrain.document.dto.TaApporteurDTO</class-b>
+		<field type="one-way">
+			<a>idDocument</a>
+			<b>id</b>
+		</field>
+		<field type="one-way">
+			<a>taTiers.codeTiers</a>
+			<b>codeTiers</b>
+		</field>
+		<field type="one-way">
+			<a>taTPaiement.codeTPaiement</a>
+			<b>codeTPaiement</b>
+		</field>
+	</mapping>
+	<mapping>
+		<class-a>fr.legrain.document.model.TaApporteur</class-a>
+		<class-b>fr.legrain.document.dto.EnteteApporteurDTO</class-b>
+		<field type="one-way">
+			<a>idDocument</a>
+			<b>id</b>
+		</field>
+		<field>
+			<a>codeDocument</a>
+			<b>codeDocument</b>
+		</field>
+		<field>
+			<a>dateDocument</a>
+			<b>dateDocument</b>
+		</field>
+		<field>
+			<a>dateEchDocument</a>
+			<b>dateEchDocument</b>
+		</field>
+		<field>
+			<a>libelleDocument</a>
+			<b>libelleDocument</b>
+		</field>
+		<field type="one-way">
+			<a>taTiers.codeTiers</a>
+			<b>codeTiers</b>
+		</field>
+		<!--field type="one-way">
+			<a>taCPaiement.idCPaiement</a>
+			<b>idCPaiement</b>
+		</field-->
+		<field>
+			<a>regleDocument</a>
+			<b>regleDocument</b>
+		</field>
+		<field>
+			<a>remHtDocument</a>
+			<b>remHtDocument</b>
+		</field>
+		<field>
+			<a>txRemHtDocument</a>
+			<b>txRemHtDocument</b>
+		</field>
+		<field>
+			<a>remTtcDocument</a>
+			<b>remTtcDocument</b>
+		</field>
+		<field>
+			<a>txRemTtcDocument</a>
+			<b>txRemTtcDocument</b>
+		</field>
+		<field>
+			<a>nbEDocument</a>
+			<b>nbEDocument</b>
+		</field>
+		<field>
+			<a>mtTtcCalc</a>
+			<b>mtTtcCalc</b>
+		</field>
+		<field>
+			<a>mtHtCalc</a>
+			<b>mtHtCalc</b>
+		</field>
+		<field>
+			<a>mtTvaCalc</a>
+			<b>mtTvaCalc</b>
+		</field>
+		<field>
+			<a>netTtcCalc</a>
+			<b>netTtcCalc</b>
+		</field>
+		<field>
+			<a>netHtCalc</a>
+			<b>netHtCalc</b>
+		</field>
+		<field>
+			<a>netTvaCalc</a>
+			<b>netTvaCalc</b>
+		</field>
+		<field>
+			<a>ttc</a>
+			<b>ttc</b>
+		</field>
+		<field>
+			<a>commentaire</a>
+			<b>commentaire</b>
+		</field>
+	</mapping>	
+	<mapping>
+		<class-a>fr.legrain.document.model.TaApporteur</class-a>
+		<class-b>fr.legrain.document.dto.TotauxApporteurDTO</class-b>
+		<field type="one-way">
+			<a>idDocument</a>
+			<b>id</b>
+		</field>
+		<field type="one-way">
+			<a>taTPaiement.idTPaiement</a>
+			<b>idTPaiement</b>
+		</field>
+		<field type="one-way">
+			<a>taTPaiement.codeTPaiement</a>
+			<b>codeTPaiement</b>
+		</field>
+		<!--field type="one-way">
+			<a>taCPaiement.idCPaiement</a>
+			<b>idCPaiement</b>
+		</field-->
+		<field>
+			<a>regleDocument</a>
+			<b>regleDocument</b>
+		</field>
+		<field>
+			<a>remHtDocument</a>
+			<b>remHtDocument</b>
+		</field>
+		<field>
+			<a>txRemHtDocument</a>
+			<b>txRemHtDocument</b>
+		</field>
+		<field>
+			<a>remTtcDocument</a>
+			<b>remTtcDocument</b>
+		</field>
+		<field>
+			<a>txRemTtcDocument</a>
+			<b>txRemTtcDocument</b>
+		</field>
+		<field>
+			<a>mtTtcCalc</a>
+			<b>mtTtcCalc</b>
+		</field>
+		<field>
+			<a>mtHtCalc</a>
+			<b>mtHtCalc</b>
+		</field>
+		<field>
+			<a>mtTvaCalc</a>
+			<b>mtTvaCalc</b>
+		</field>
+		<field>
+			<a>netTtcCalc</a>
+			<b>netTtcCalc</b>
+		</field>
+		<field>
+			<a>netHtCalc</a>
+			<b>netHtCalc</b>
+		</field>
+		<field>
+			<a>netTvaCalc</a>
+			<b>netTvaCalc</b>
+		</field>
+		<field>
+			<a>commentaire</a>
+			<b>commentaire</b>
+		</field>
+	</mapping>
+	
+	<mapping>
+		<class-a>fr.legrain.document.model.TaApporteur</class-a>
+		<class-b>fr.legrain.document.dto.TotauxLignesDocumentDTO</class-b>
+		<field type="one-way">
+			<a>idDocument</a>
+			<b>id</b>
+		</field>
+		<field>
+			<a>netTtcCalc</a>
+			<b>netTtcCalc</b>
+		</field>
+		<field>
+			<a>netHtCalc</a>
+			<b>netHtCalc</b>
+		</field>
+		<field>
+			<a>netTvaCalc</a>
+			<b>netTvaCalc</b>
+		</field>		
+		<field>
+			<a>mtTtcAvantRemiseGlobaleCalc</a>
+			<b>mtTtcAvantRemiseGlobaleCalc</b>
+		</field>
+		<field>
+			<a>mtHtCalc</a>
+			<b>mtHtCalc</b>
+		</field>		
+	</mapping>	
+	<mapping>
+		<class-a>fr.legrain.document.model.TaLApporteur</class-a>
+		<class-b>fr.legrain.document.dto.TaLApporteurDTO</class-b>
+        <!-- Ajourt pour JEE mode web JSF -->
+		<field>
+			<a>idLDocument</a>
+			<b>idLDocument</b>
+		</field>
+		<!-- Fin Ajour pour JEE mode web JSF -->
+
+		<field type="one-way">
+			<a>idLDocument</a>
+			<b>id</b>
+		</field>
+		<field type="one-way">
+			<a>taDocument.idDocument</a>
+			<b>idDocument</b>
+		</field>
+		<field type="one-way">
+			<a>taTLigne.codeTLigne</a>
+			<b>codeTLigne</b>
+		</field>
+		<field type="one-way">
+			<a>taArticle.idArticle</a>
+			<b>idArticle</b>
+		</field>
+		<field type="one-way">
+			<a>taArticle.codeArticle</a>
+			<b>codeArticle</b>
+		</field>
+		<field>
+			<a>numLigneLDocument</a>
+			<b>numLigneLDocument</b>
+		</field>
+		<field>
+			<a>libLDocument</a>
+			<b>libLDocument</b>
+		</field>
+		<field>
+			<a>qteLDocument</a>
+			<b>qteLDocument</b>
+		</field>
+		<field>
+			<a>prixULDocument</a>
+			<b>prixULDocument</b>
+		</field>
+		<field>
+			<a>tauxTvaLDocument</a>
+			<b>tauxTvaLDocument</b>
+		</field>
+		<field>
+			<a>codeTvaLDocument</a>
+			<b>codeTvaLDocument</b>
+		</field>
+		<field>
+			<a>codeTTvaLDocument</a>
+			<b>codeTTvaLDocument</b>
+		</field>
+		<field>
+			<a>mtHtLDocument</a>
+			<b>mtHtLDocument</b>
+		</field>
+		<field>
+			<a>mtTtcLDocument</a>
+			<b>mtTtcLDocument</b>
+		</field>
+		<field>
+			<a>remTxLDocument</a>
+			<b>remTxLDocument</b>
+		</field>
+		<field>
+			<a>remHtLDocument</a>
+			<b>remHtLDocument</b>
+		</field>
+		<field>
+			<a>u1LDocument</a>
+			<b>u1LDocument</b>
+		</field>
+		<field>
+			<a>u2LDocument</a>
+			<b>u2LDocument</b>
+		</field>
+		<field>
+			<a>txRemHtDocument</a>
+			<b>txRemHtDocument</b>
+		</field>
+<!-- 		<field> -->
+<!-- 			<a>emplacementLDocument</a> -->
+<!-- 			<b>emplacement</b> -->
+<!-- 		</field>								 -->
+	</mapping>	
+	<mapping>
+		<class-a>fr.legrain.document.model.TaInfosApporteur</class-a>
+		<class-b>fr.legrain.tiers.dto.InfosCPaiementDTO</class-b>
+		<field>
+			<a>codeCPaiement</a>
+			<b>codeCPaiement</b>
+		</field>
+		<field>
+			<a>libCPaiement</a>
+			<b>libCPaiement</b>
+		</field>
+		<field>
+			<a>reportCPaiement</a>
+			<b>reportCPaiement</b>
+		</field>
+		<field>
+			<a>finMoisCPaiement</a>
+			<b>finMoisCPaiement</b>
+		</field>
+	</mapping>	
+	<mapping>
+		<class-a>fr.legrain.document.model.TaInfosApporteur</class-a>
+		<class-b>fr.legrain.tiers.dto.AdresseInfosFacturationDTO</class-b>
+		<field>
+			<a>adresse1</a>
+			<b>adresse1Adresse</b>
+		</field>
+		<field>
+			<a>adresse2</a>
+			<b>adresse2Adresse</b>
+		</field>
+		<field>
+			<a>adresse3</a>
+			<b>adresse3Adresse</b>
+		</field>
+		<field>
+			<a>codepostal</a>
+			<b>codepostalAdresse</b>
+		</field>
+		<field>
+			<a>ville</a>
+			<b>villeAdresse</b>
+		</field>
+		<field>
+			<a>pays</a>
+			<b>paysAdresse</b>
+		</field>
+	</mapping>	
+	<mapping>
+		<class-a>fr.legrain.document.model.TaInfosApporteur</class-a>
+		<class-b>fr.legrain.tiers.dto.AdresseInfosLivraisonDTO</class-b>
+		<field>
+			<a>adresse1Liv</a>
+			<b>adresse1AdresseLiv</b>
+		</field>
+		<field>
+			<a>adresse2Liv</a>
+			<b>adresse2AdresseLiv</b>
+		</field>
+		<field>
+			<a>adresse3Liv</a>
+			<b>adresse3AdresseLiv</b>
+		</field>
+		<field>
+			<a>codepostalLiv</a>
+			<b>codepostalAdresseLiv</b>
+		</field>
+		<field>
+			<a>villeLiv</a>
+			<b>villeAdresseLiv</b>
+		</field>
+		<field>
+			<a>paysLiv</a>
+			<b>paysAdresseLiv</b>
+		</field>
+	</mapping>	
+	<mapping map-null="false">
+		<class-a>fr.legrain.document.model.TaApporteur</class-a>
+		<class-b>fr.legrain.document.model.TaInfosApporteur</class-b>
+		<field>
+			<a>taTiers.codeCompta</a>
+			<b>codeCompta</b>
+		</field>
+		<field>
+			<a>taTiers.compte</a>
+			<b>compte</b>
+		</field>
+		<field>
+			<a>taTiers.nomTiers</a>
+			<b>nomTiers</b>
+		</field>
+		<field>
+			<a>taTiers.prenomTiers</a>
+			<b>prenomTiers</b>
+		</field>
+		<field>
+			<a>taTiers.surnomTiers</a>
+			<b>surnomTiers</b>
+		</field>
+		<field>
+			<a>taTiers.taTCivilite.codeTCivilite</a>
+			<b>codeTCivilite</b>
+		</field>
+		<field>
+			<a>taTiers.taTEntite.codeTEntite</a>
+			<b>codeTEntite</b>
+		</field>
+		<field>
+			<a>taTiers.taEntreprise.nomEntreprise</a>
+			<b>nomEntreprise</b>
+		</field>
+		<field>
+			<a>taTiers.taCompl.tvaIComCompl</a>
+			<b>tvaIComCompl</b>
+		</field>
+		<field>
+			<a>taTiers.taCPaiement.codeCPaiement</a>
+			<b>codeCPaiement</b>
+		</field>
+		<field>
+			<a>taTiers.taCPaiement.libCPaiement</a>
+			<b>libCPaiement</b>
+		</field>
+		<field>
+			<a>taTiers.taCPaiement.reportCPaiement</a>
+			<b>reportCPaiement</b>
+		</field>
+		<field>
+			<a>taTiers.taCPaiement.finMoisCPaiement</a>
+			<b>finMoisCPaiement</b>
+		</field>
+		<field-exclude> 
+  		  <a>versionObj</a> 
+  		  <b>versionObj</b> 
+		</field-exclude>
+	</mapping>	
+	<mapping map-null="false">
+		<class-a>fr.legrain.document.model.TaApporteur</class-a>
+		<class-b>fr.legrain.document.dto.AideApporteurDTO</class-b>
+		<field>
+			<a>idDocument</a>
+			<b>id</b>
+		</field>
+		<field>
+			<a>codeDocument</a>
+			<b>codeDocument</b>
+		</field>
+		<field>
+			<a>dateDocument</a>
+			<b>dateDocument</b>
+		</field>
+		<field>
+			<a>dateEchDocument</a>
+			<b>dateEchDocument</b>
+		</field>
+		<field>
+			<a>dateLivDocument</a>
+			<b>dateLivDocument</b>
+		</field>
+		<field>
+			<a>libelleDocument</a>
+			<b>libelleDocument</b>
+		</field>
+	    <field>
+			<a>taTiers.codeTiers</a>
+			<b>codeTiers</b>
+		</field>
+	    <field>
+			<a>taInfosDocument.nomTiers</a>
+			<b>nomTiers</b>
+		</field>
+		<field>
+			<a>taInfosDocument.codeCompta</a>
+			<b>codeCompta</b>
+		</field>
+		<field>
+			<a>taInfosDocument.compte</a>
+			<b>compte</b>
+		</field>
+		<field>
+			<a>regleDocument</a>
+			<b>regleDocument</b>
+		</field>
+		<field>
+			<a>commentaire</a>
+			<b>commentaire</b>
+		</field>
+	</mapping>	
+		<!-- ************************* AVOIR ******************************** -->
+	<mapping map-null="false">
+		<class-a>fr.legrain.document.model.TaAvoir</class-a>
+		<class-b>fr.legrain.document.dto.TaAvoirDTO</class-b>
+		<field type="one-way">
+			<a>idDocument</a>
+			<b>id</b>
+		</field>
+		<field type="one-way">
+			<a>taTPaiement.codeTPaiement</a>
+			<b>codeTPaiement</b>
+		</field>					
+				
+		<field>
+			<a>codeDocument</a>
+			<b>codeDocument</b>
+		</field>
+		<field>
+			<a>dateDocument</a>
+			<b> dateDocument</b>
+		</field>
+<!--		<field>-->
+<!--			<a>dateEchDocument</a>-->
+<!--			<b> dateEchDocument</b>-->
+<!--		</field>-->
+		<field>
+			<a>dateLivDocument</a>
+			<b> dateLivDocument</b>
+		</field>		
+		<field>
+			<a>libelleDocument</a>
+			<b>libelleDocument</b>
+		</field>
+		<field type="one-way">
+			<a>taTiers.codeTiers</a>
+			<b>codeTiers</b>
+		</field>
+		<field >
+			<a>taInfosDocument.nomTiers</a>
+			<b>nomTiers</b>
+		</field>
+		<field type="one-way">
+			<a>taInfosDocument.prenomTiers</a>
+			<b>prenomTiers</b>
+		</field>
+		<field type="one-way">
+			<a>taInfosDocument.nomEntreprise</a>
+			<b>nomEntreprise</b>
+		</field>
+		<!--		<field>-->
+<!--			<a>regleDocument</a>-->
+<!--			<b>regleDocument</b>-->
+<!--		</field>-->
+		<field>
+			<a>remHtDocument</a>
+			<b>remHtDocument</b>
+		</field>
+		<field>
+			<a>txRemHtDocument</a>
+			<b>txRemHtDocument</b>
+		</field>
+		<field>
+			<a>remTtcDocument</a>
+			<b>remTtcDocument</b>
+		</field>
+		<field>
+			<a>txRemTtcDocument</a>
+			<b>txRemTtcDocument</b>
+		</field>
+		<field>
+			<a>nbEDocument</a>
+			<b>nbEDocument</b>
+		</field>
+		<field>
+			<a>mtTtcCalc</a>
+			<b>mtTtcCalc</b>
+		</field>
+		<field>
+			<a>mtHtCalc</a>
+			<b>mtHtCalc</b>
+		</field>
+		<field>
+			<a>mtTvaCalc</a>
+			<b>mtTvaCalc</b>
+		</field>
+		<field>
+			<a>netTtcCalc</a>
+			<b>netTtcCalc</b>
+		</field>
+		<field>
+			<a>netHtCalc</a>
+			<b>netHtCalc</b>
+		</field>
+		<field>
+			<a>netTvaCalc</a>
+			<b>netTvaCalc</b>
+		</field>
+		<field>
+			<a>ttc</a>
+			<b>ttc</b>
+		</field>
+		<field>
+			<a>dateExport</a>
+			<b>dateExport</b>
+		</field>
+		<field>
+			<a>commentaire</a>
+			<b>commentaire</b>
+		</field>
+		<field>
+			<a>mtTtcAvantRemiseGlobaleCalc</a>
+			<b>mtTtcAvantRemiseGlobaleCalc</b>
+		</field>
+	</mapping>
+	<mapping>
+		<class-a>fr.legrain.document.model.TaAvoir</class-a>
+		<class-b>fr.legrain.document.dto.EnteteAvoirDTO</class-b>
+		<field type="one-way">
+			<a>idDocument</a>
+			<b>id</b>
+		</field>
+		<field>
+			<a>codeDocument</a>
+			<b>codeDocument</b>
+		</field>
+		<field>
+			<a>dateDocument</a>
+			<b>dateDocument</b>
+		</field>
+		<field>
+			<a>dateEchDocument</a>
+			<b>dateEchDocument</b>
+		</field>
+		<field>
+			<a>libelleDocument</a>
+			<b>libelleDocument</b>
+		</field>
+		<field type="one-way">
+			<a>taTiers.codeTiers</a>
+			<b>codeTiers</b>
+		</field>
+		<!--field type="one-way">
+			<a>taCPaiement.idCPaiement</a>
+			<b>idCPaiement</b>
+		</field-->
+		<field>
+			<a>regleDocument</a>
+			<b>regleDocument</b>
+		</field>
+		<field>
+			<a>remHtDocument</a>
+			<b>remHtDocument</b>
+		</field>
+		<field>
+			<a>txRemHtDocument</a>
+			<b>txRemHtDocument</b>
+		</field>
+		<field>
+			<a>remTtcDocument</a>
+			<b>remTtcDocument</b>
+		</field>
+		<field>
+			<a>txRemTtcDocument</a>
+			<b>txRemTtcDocument</b>
+		</field>
+		<field>
+			<a>nbEDocument</a>
+			<b>nbEDocument</b>
+		</field>
+		<field>
+			<a>mtTtcCalc</a>
+			<b>mtTtcCalc</b>
+		</field>
+		<field>
+			<a>mtHtCalc</a>
+			<b>mtHtCalc</b>
+		</field>
+		<field>
+			<a>mtTvaCalc</a>
+			<b>mtTvaCalc</b>
+		</field>
+		<field>
+			<a>netTtcCalc</a>
+			<b>netTtcCalc</b>
+		</field>
+		<field>
+			<a>netHtCalc</a>
+			<b>netHtCalc</b>
+		</field>
+		<field>
+			<a>netTvaCalc</a>
+			<b>netTvaCalc</b>
+		</field>
+		<field>
+			<a>ttc</a>
+			<b>ttc</b>
+		</field>
+		<field>
+			<a>commentaire</a>
+			<b>commentaire</b>
+		</field>
+	</mapping>	
+	<mapping>
+		<class-a>fr.legrain.document.model.TaAvoir</class-a>
+		<class-b>fr.legrain.document.dto.TotauxAvoirDTO</class-b>
+		<field type="one-way">
+			<a>idDocument</a>
+			<b>id</b>
+		</field>
+		<field type="one-way">
+			<a>taTPaiement.idTPaiement</a>
+			<b>idTPaiement</b>
+		</field>
+		<field type="one-way">
+			<a>taTPaiement.codeTPaiement</a>
+			<b>codeTPaiement</b>
+		</field>
+		<!--field type="one-way">
+			<a>taCPaiement.idCPaiement</a>
+			<b>idCPaiement</b>
+		</field-->
+		<field>
+			<a>regleDocument</a>
+			<b>regleDocument</b>
+		</field>
+		<field>
+			<a>remHtDocument</a>
+			<b>remHtDocument</b>
+		</field>
+		<field>
+			<a>txRemHtDocument</a>
+			<b>txRemHtDocument</b>
+		</field>
+		<field>
+			<a>remTtcDocument</a>
+			<b>remTtcDocument</b>
+		</field>
+		<field>
+			<a>txRemTtcDocument</a>
+			<b>txRemTtcDocument</b>
+		</field>
+		<field>
+			<a>mtTtcCalc</a>
+			<b>mtTtcCalc</b>
+		</field>
+		<field>
+			<a>mtHtCalc</a>
+			<b>mtHtCalc</b>
+		</field>
+		<field>
+			<a>mtTvaCalc</a>
+			<b>mtTvaCalc</b>
+		</field>
+		<field>
+			<a>netTtcCalc</a>
+			<b>netTtcCalc</b>
+		</field>
+		<field>
+			<a>netHtCalc</a>
+			<b>netHtCalc</b>
+		</field>
+		<field>
+			<a>netTvaCalc</a>
+			<b>netTvaCalc</b>
+		</field>
+		<field>
+			<a>commentaire</a>
+			<b>commentaire</b>
+		</field>
+	</mapping>
+	
+	<mapping>
+		<class-a>fr.legrain.document.model.TaAvoir</class-a>
+		<class-b>fr.legrain.document.dto.TotauxLignesDocumentDTO</class-b>
+		<field type="one-way">
+			<a>idDocument</a>
+			<b>id</b>
+		</field>
+		<field>
+			<a>netTtcCalc</a>
+			<b>netTtcCalc</b>
+		</field>
+		<field>
+			<a>netHtCalc</a>
+			<b>netHtCalc</b>
+		</field>
+		<field>
+			<a>netTvaCalc</a>
+			<b>netTvaCalc</b>
+		</field>		
+		<field>
+			<a>mtTtcAvantRemiseGlobaleCalc</a>
+			<b>mtTtcAvantRemiseGlobaleCalc</b>
+		</field>
+		<field>
+			<a>mtHtCalc</a>
+			<b>mtHtCalc</b>
+		</field>		
+	</mapping>	
+	<mapping>
+		<class-a>fr.legrain.document.model.TaLAvoir</class-a>
+		<class-b>fr.legrain.document.dto.TaLAvoirDTO</class-b>
+        <!-- Ajourt pour JEE mode web JSF -->
+		<field>
+			<a>idLDocument</a>
+			<b>idLDocument</b>
+		</field>
+		<!-- Fin Ajour pour JEE mode web JSF -->
+
+		<field type="one-way">
+			<a>idLDocument</a>
+			<b>id</b>
+		</field>
+		<field type="one-way">
+			<a>taDocument.idDocument</a>
+			<b>idDocument</b>
+		</field>
+		<field type="one-way">
+			<a>taTLigne.codeTLigne</a>
+			<b>codeTLigne</b>
+		</field>
+		<field type="one-way">
+			<a>taArticle.idArticle</a>
+			<b>idArticle</b>
+		</field>
+		<field type="one-way">
+			<a>taArticle.codeArticle</a>
+			<b>codeArticle</b>
+		</field>
+		<field>
+			<a>numLigneLDocument</a>
+			<b>numLigneLDocument</b>
+		</field>
+		<field>
+			<a>libLDocument</a>
+			<b>libLDocument</b>
+		</field>
+		<field>
+			<a>qteLDocument</a>
+			<b>qteLDocument</b>
+		</field>
+		<field>
+			<a>prixULDocument</a>
+			<b>prixULDocument</b>
+		</field>
+		<field>
+			<a>tauxTvaLDocument</a>
+			<b>tauxTvaLDocument</b>
+		</field>
+		<field>
+			<a>codeTvaLDocument</a>
+			<b>codeTvaLDocument</b>
+		</field>
+		<field>
+			<a>codeTTvaLDocument</a>
+			<b>codeTTvaLDocument</b>
+		</field>
+		<field>
+			<a>mtHtLDocument</a>
+			<b>mtHtLDocument</b>
+		</field>
+		<field>
+			<a>mtTtcLDocument</a>
+			<b>mtTtcLDocument</b>
+		</field>
+		<field>
+			<a>remTxLDocument</a>
+			<b>remTxLDocument</b>
+		</field>
+		<field>
+			<a>remHtLDocument</a>
+			<b>remHtLDocument</b>
+		</field>
+		<field>
+			<a>u1LDocument</a>
+			<b>u1LDocument</b>
+		</field>
+		<field>
+			<a>u2LDocument</a>
+			<b>u2LDocument</b>
+		</field>
+		<field>
+			<a>txRemHtDocument</a>
+			<b>txRemHtDocument</b>
+		</field>
+		<field>
+			<a>emplacementLDocument</a>
+			<b>emplacement</b>
+		</field>								
+	</mapping>	
+	<mapping>
+		<class-a>fr.legrain.document.model.TaInfosAvoir</class-a>
+		<class-b>fr.legrain.tiers.dto.InfosCPaiementDTO</class-b>
+		<field>
+			<a>codeCPaiement</a>
+			<b>codeCPaiement</b>
+		</field>
+		<field>
+			<a>libCPaiement</a>
+			<b>libCPaiement</b>
+		</field>
+		<field>
+			<a>reportCPaiement</a>
+			<b>reportCPaiement</b>
+		</field>
+		<field>
+			<a>finMoisCPaiement</a>
+			<b>finMoisCPaiement</b>
+		</field>
+	</mapping>	
+	<mapping>
+		<class-a>fr.legrain.document.model.TaInfosAvoir</class-a>
+		<class-b>fr.legrain.tiers.dto.AdresseInfosFacturationDTO</class-b>
+		<field>
+			<a>adresse1</a>
+			<b>adresse1Adresse</b>
+		</field>
+		<field>
+			<a>adresse2</a>
+			<b>adresse2Adresse</b>
+		</field>
+		<field>
+			<a>adresse3</a>
+			<b>adresse3Adresse</b>
+		</field>
+		<field>
+			<a>codepostal</a>
+			<b>codepostalAdresse</b>
+		</field>
+		<field>
+			<a>ville</a>
+			<b>villeAdresse</b>
+		</field>
+		<field>
+			<a>pays</a>
+			<b>paysAdresse</b>
+		</field>
+	</mapping>	
+	<mapping>
+		<class-a>fr.legrain.document.model.TaInfosAvoir</class-a>
+		<class-b>fr.legrain.tiers.dto.AdresseInfosLivraisonDTO</class-b>
+		<field>
+			<a>adresse1Liv</a>
+			<b>adresse1AdresseLiv</b>
+		</field>
+		<field>
+			<a>adresse2Liv</a>
+			<b>adresse2AdresseLiv</b>
+		</field>
+		<field>
+			<a>adresse3Liv</a>
+			<b>adresse3AdresseLiv</b>
+		</field>
+		<field>
+			<a>codepostalLiv</a>
+			<b>codepostalAdresseLiv</b>
+		</field>
+		<field>
+			<a>villeLiv</a>
+			<b>villeAdresseLiv</b>
+		</field>
+		<field>
+			<a>paysLiv</a>
+			<b>paysAdresseLiv</b>
+		</field>
+	</mapping>	
+	<mapping map-null="false">
+		<class-a>fr.legrain.document.model.TaAvoir</class-a>
+		<class-b>fr.legrain.document.model.TaInfosAvoir</class-b>
+		<field>
+			<a>taTiers.codeCompta</a>
+			<b>codeCompta</b>
+		</field>
+		<field>
+			<a>taTiers.compte</a>
+			<b>compte</b>
+		</field>
+		<field>
+			<a>taTiers.nomTiers</a>
+			<b>nomTiers</b>
+		</field>
+		<field>
+			<a>taTiers.prenomTiers</a>
+			<b>prenomTiers</b>
+		</field>
+		<field>
+			<a>taTiers.surnomTiers</a>
+			<b>surnomTiers</b>
+		</field>
+		<field>
+			<a>taTiers.taTCivilite.codeTCivilite</a>
+			<b>codeTCivilite</b>
+		</field>
+		<field>
+			<a>taTiers.taTEntite.codeTEntite</a>
+			<b>codeTEntite</b>
+		</field>
+		<field>
+			<a>taTiers.taEntreprise.nomEntreprise</a>
+			<b>nomEntreprise</b>
+		</field>
+		<field>
+			<a>taTiers.taCompl.tvaIComCompl</a>
+			<b>tvaIComCompl</b>
+		</field>
+		<field>
+			<a>taTiers.taCPaiement.codeCPaiement</a>
+			<b>codeCPaiement</b>
+		</field>
+		<field>
+			<a>taTiers.taCPaiement.libCPaiement</a>
+			<b>libCPaiement</b>
+		</field>
+		<field>
+			<a>taTiers.taCPaiement.reportCPaiement</a>
+			<b>reportCPaiement</b>
+		</field>
+		<field>
+			<a>taTiers.taCPaiement.finMoisCPaiement</a>
+			<b>finMoisCPaiement</b>
+		</field>
+		<field-exclude> 
+  		  <a>versionObj</a> 
+  		  <b>versionObj</b> 
+		</field-exclude>		
+	</mapping>	
+	<mapping map-null="false">
+		<class-a>fr.legrain.document.model.TaAvoir</class-a>
+		<class-b>fr.legrain.document.dto.AideAvoirDTO</class-b>
+		<field>
+			<a>idDocument</a>
+			<b>id</b>
+		</field>
+		<field>
+			<a>codeDocument</a>
+			<b>codeDocument</b>
+		</field>
+		<field>
+			<a>dateDocument</a>
+			<b>dateDocument</b>
+		</field>
+		<field>
+			<a>dateEchDocument</a>
+			<b>dateEchDocument</b>
+		</field>
+		<field>
+			<a>dateLivDocument</a>
+			<b>dateLivDocument</b>
+		</field>
+		<field>
+			<a>libelleDocument</a>
+			<b>libelleDocument</b>
+		</field>
+	    <field>
+			<a>taTiers.codeTiers</a>
+			<b>codeTiers</b>
+		</field>
+	    <field>
+			<a>taInfosDocument.nomTiers</a>
+			<b>nomTiers</b>
+		</field>
+		<field>
+			<a>taInfosDocument.codeCompta</a>
+			<b>codeCompta</b>
+		</field>
+		<field>
+			<a>taInfosDocument.compte</a>
+			<b>compte</b>
+		</field>
+		<field>
+			<a>regleDocument</a>
+			<b>regleDocument</b>
+		</field>
+		<field>
+			<a>commentaire</a>
+			<b>commentaire</b>
+		</field>
+	</mapping>
+	<!-- ************************** BONLIV ******************************* -->
+	<mapping>
+		<class-a>fr.legrain.document.model.TaBonliv</class-a>
+		<class-b>fr.legrain.document.dto.TaBonlivDTO</class-b>
+		<field type="one-way">
+			<a>idDocument</a>
+			<b>id</b>
+		</field>
+		<field type="one-way">
+			<a>taTiers.codeTiers</a>
+			<b>codeTiers</b>
+		</field>
+		<field type="one-way">
+			<a>taTPaiement.codeTPaiement</a>
+			<b>codeTPaiement</b>
+		</field>
+		<field type="one-way">
+			<a>taTransporteur.codeTransporteur</a>
+			<b>codeTransporteur</b>
+		</field>
+	</mapping>
+	<mapping>
+		<class-a>fr.legrain.document.model.TaBonliv</class-a>
+		<class-b>fr.legrain.document.dto.EnteteBonlivDTO</class-b>
+		<field type="one-way">
+			<a>idDocument</a>
+			<b>id</b>
+		</field>
+		<field>
+			<a>codeDocument</a>
+			<b>codeDocument</b>
+		</field>
+		<field>
+			<a>dateDocument</a>
+			<b>dateDocument</b>
+		</field>
+		<field>
+			<a>libelleDocument</a>
+			<b>libelleDocument</b>
+		</field>
+		<field type="one-way">
+			<a>taTiers.codeTiers</a>
+			<b>codeTiers</b>
+		</field>
+		<!--field type="one-way">
+			<a>taCPaiement.idCPaiement</a>
+			<b>idCPaiement</b>
+		</field-->
+		<field>
+			<a>remHtDocument</a>
+			<b>remHtDocument</b>
+		</field>
+		<field>
+			<a>txRemHtDocument</a>
+			<b>txRemHtDocument</b>
+		</field>
+		<field>
+			<a>remTtcDocument</a>
+			<b>remTtcDocument</b>
+		</field>
+		<field>
+			<a>txRemTtcDocument</a>
+			<b>txRemTtcDocument</b>
+		</field>
+		<field>
+			<a>nbEDocument</a>
+			<b>nbEDocument</b>
+		</field>
+		<field>
+			<a>mtTtcCalc</a>
+			<b>mtTtcCalc</b>
+		</field>
+		<field>
+			<a>mtHtCalc</a>
+			<b>mtHtCalc</b>
+		</field>
+		<field>
+			<a>mtTvaCalc</a>
+			<b>mtTvaCalc</b>
+		</field>
+		<field>
+			<a>netTtcCalc</a>
+			<b>netTtcCalc</b>
+		</field>
+		<field>
+			<a>netHtCalc</a>
+			<b>netHtCalc</b>
+		</field>
+		<field>
+			<a>netTvaCalc</a>
+			<b>netTvaCalc</b>
+		</field>
+		<field>
+			<a>ttc</a>
+			<b>ttc</b>
+		</field>
+		<field>
+			<a>commentaire</a>
+			<b>commentaire</b>
+		</field>
+	</mapping>
+	
+	<mapping>
+		<class-a>fr.legrain.document.model.TaBonliv</class-a>
+		<class-b>fr.legrain.document.dto.TotauxBonlivDTO</class-b>
+		<field type="one-way">
+			<a>idDocument</a>
+			<b>id</b>
+		</field>
+		<field type="one-way">
+			<a>taTPaiement.idTPaiement</a>
+			<b>idTPaiement</b>
+		</field>
+		<field type="one-way">
+			<a>taTPaiement.codeTPaiement</a>
+			<b>codeTPaiement</b>
+		</field>
+		<!--field type="one-way">
+			<a>taCPaiement.idCPaiement</a>
+			<b>idCPaiement</b>
+		</field-->
+		<field>
+			<a>remHtDocument</a>
+			<b>remHtDocument</b>
+		</field>
+		<field>
+			<a>txRemHtDocument</a>
+			<b>txRemHtDocument</b>
+		</field>
+		<field>
+			<a>remTtcDocument</a>
+			<b>remTtcDocument</b>
+		</field>
+		<field>
+			<a>txRemTtcDocument</a>
+			<b>txRemTtcDocument</b>
+		</field>
+		<field>
+			<a>mtTtcCalc</a>
+			<b>mtTtcCalc</b>
+		</field>
+		<field>
+			<a>mtHtCalc</a>
+			<b>mtHtCalc</b>
+		</field>
+		<field>
+			<a>mtTvaCalc</a>
+			<b>mtTvaCalc</b>
+		</field>
+		<field>
+			<a>netTtcCalc</a>
+			<b>netTtcCalc</b>
+		</field>
+		<field>
+			<a>netHtCalc</a>
+			<b>netHtCalc</b>
+		</field>
+		<field>
+			<a>netTvaCalc</a>
+			<b>netTvaCalc</b>
+		</field>
+		<field>
+			<a>commentaire</a>
+			<b>commentaire</b>
+		</field>
+	</mapping>
+	
+	<mapping>
+		<class-a>fr.legrain.document.model.TaBonliv</class-a>
+		<class-b>fr.legrain.document.dto.TotauxLignesDocumentDTO</class-b>
+		<field type="one-way">
+			<a>idDocument</a>
+			<b>id</b>
+		</field>
+		<field>
+			<a>netTtcCalc</a>
+			<b>netTtcCalc</b>
+		</field>
+		<field>
+			<a>netHtCalc</a>
+			<b>netHtCalc</b>
+		</field>
+		<field>
+			<a>netTvaCalc</a>
+			<b>netTvaCalc</b>
+		</field>		
+		<field>
+			<a>mtTtcAvantRemiseGlobaleCalc</a>
+			<b>mtTtcAvantRemiseGlobaleCalc</b>
+		</field>
+		<field>
+			<a>mtHtCalc</a>
+			<b>mtHtCalc</b>
+		</field>		
+	</mapping>
+	
+	<mapping>
+		<class-a>fr.legrain.document.model.TaLBonliv</class-a>
+		<class-b>fr.legrain.document.dto.TaLBonlivDTO</class-b>
+        <!-- Ajourt pour JEE mode web JSF -->
+		<field>
+			<a>idLDocument</a>
+			<b>idLDocument</b>
+		</field>
+		<!-- Fin Ajour pour JEE mode web JSF -->
+
+		<field type="one-way">
+			<a>idLDocument</a>
+			<b>id</b>
+		</field>
+		<field type="one-way">
+			<a>taDocument.idDocument</a>
+			<b>idDocument</b>
+		</field>
+		<field type="one-way">
+			<a>taTLigne.codeTLigne</a>
+			<b>codeTLigne</b>
+		</field>
+		<field type="one-way">
+			<a>taArticle.idArticle</a>
+			<b>idArticle</b>
+		</field>
+		<field type="one-way">
+			<a>taArticle.codeArticle</a>
+			<b>codeArticle</b>
+		</field>
+		<field>
+			<a>numLigneLDocument</a>
+			<b>numLigneLDocument</b>
+		</field>
+		<field>
+			<a>libLDocument</a>
+			<b>libLDocument</b>
+		</field>
+		<field>
+			<a>qteLDocument</a>
+			<b>qteLDocument</b>
+		</field>
+		<field>
+			<a>prixULDocument</a>
+			<b>prixULDocument</b>
+		</field>
+		<field>
+			<a>tauxTvaLDocument</a>
+			<b>tauxTvaLDocument</b>
+		</field>
+		<field>
+			<a>codeTvaLDocument</a>
+			<b>codeTvaLDocument</b>
+		</field>
+		<field>
+			<a>codeTTvaLDocument</a>
+			<b>codeTTvaLDocument</b>
+		</field>
+		<field>
+			<a>mtHtLDocument</a>
+			<b>mtHtLDocument</b>
+		</field>
+		<field>
+			<a>mtTtcLDocument</a>
+			<b>mtTtcLDocument</b>
+		</field>
+		<field>
+			<a>remTxLDocument</a>
+			<b>remTxLDocument</b>
+		</field>
+		<field>
+			<a>remHtLDocument</a>
+			<b>remHtLDocument</b>
+		</field>
+		<field>
+			<a>u1LDocument</a>
+			<b>u1LDocument</b>
+		</field>
+		<field>
+			<a>u2LDocument</a>
+			<b>u2LDocument</b>
+		</field>
+		<field>
+			<a>txRemHtDocument</a>
+			<b>txRemHtDocument</b>
+		</field>
+		<field>
+			<a>emplacementLDocument</a>
+			<b>emplacement</b>
+		</field>				
+	</mapping>
+	
+<mapping>
+		<class-a>fr.legrain.document.model.TaInfosBonliv</class-a>
+		<class-b>fr.legrain.tiers.dto.TaCPaiementDTO</class-b>
+		<field>
+			<a>codeCPaiement</a>
+			<b>codeCPaiement</b>
+		</field>
+		<field>
+			<a>libCPaiement</a>
+			<b>libCPaiement</b>
+		</field>
+		<field>
+			<a>reportCPaiement</a>
+			<b>reportCPaiement</b>
+		</field>
+		<field >
+			<a>finMoisCPaiement</a>
+			<b>finMoisCPaiement</b>
+		</field>
+		<field-exclude> 
+  		<a>versionObj</a> 
+  		<b>versionObj</b> 
+		</field-exclude>
+	</mapping>
+	
+	<mapping>
+		<class-a>fr.legrain.document.model.TaInfosBonliv</class-a>
+		<class-b>fr.legrain.tiers.dto.AdresseInfosFacturationDTO</class-b>
+		<field>
+			<a>adresse1</a>
+			<b>adresse1Adresse</b>
+		</field>
+		<field>
+			<a>adresse2</a>
+			<b>adresse2Adresse</b>
+		</field>
+		<field>
+			<a>adresse3</a>
+			<b>adresse3Adresse</b>
+		</field>
+		<field>
+			<a>codepostal</a>
+			<b>codepostalAdresse</b>
+		</field>
+		<field>
+			<a>ville</a>
+			<b>villeAdresse</b>
+		</field>
+		<field>
+			<a>pays</a>
+			<b>paysAdresse</b>
+		</field>
+	</mapping>
+	
+	<mapping>
+		<class-a>fr.legrain.document.model.TaInfosBonliv</class-a>
+		<class-b>fr.legrain.tiers.dto.AdresseInfosLivraisonDTO</class-b>
+		<field>
+			<a>adresse1Liv</a>
+			<b>adresse1AdresseLiv</b>
+		</field>
+		<field>
+			<a>adresse2Liv</a>
+			<b>adresse2AdresseLiv</b>
+		</field>
+		<field>
+			<a>adresse3Liv</a>
+			<b>adresse3AdresseLiv</b>
+		</field>
+		<field>
+			<a>codepostalLiv</a>
+			<b>codepostalAdresseLiv</b>
+		</field>
+		<field>
+			<a>villeLiv</a>
+			<b>villeAdresseLiv</b>
+		</field>
+		<field>
+			<a>paysLiv</a>
+			<b>paysAdresseLiv</b>
+		</field>
+		<field>
+			<a>livraison</a>
+			<b>livraison</b>
+		</field>
+		<field>
+			<a>latitudeDec</a>
+			<b>latitudeDec</b>
+		</field>
+		<field>
+			<a>longitudeDec</a>
+			<b>longitudeDec</b>
+		</field>						
+	</mapping>
+	
+	<mapping map-null="false">
+		<class-a>fr.legrain.document.model.TaBonliv</class-a>
+		<class-b>fr.legrain.document.model.TaInfosBonliv</class-b>
+		<field>
+			<a>taTiers.codeCompta</a>
+			<b>codeCompta</b>
+		</field>
+		<field>
+			<a>taTiers.compte</a>
+			<b>compte</b>
+		</field>
+		<field>
+			<a>taTiers.nomTiers</a>
+			<b>nomTiers</b>
+		</field>
+		<field>
+			<a>taTiers.prenomTiers</a>
+			<b>prenomTiers</b>
+		</field>
+		<field>
+			<a>taTiers.surnomTiers</a>
+			<b>surnomTiers</b>
+		</field>
+		<field>
+			<a>taTiers.taTCivilite.codeTCivilite</a>
+			<b>codeTCivilite</b>
+		</field>
+		<field>
+			<a>taTiers.taTEntite.codeTEntite</a>
+			<b>codeTEntite</b>
+		</field>
+		<field>
+			<a>taTiers.taEntreprise.nomEntreprise</a>
+			<b>nomEntreprise</b>
+		</field>
+		<field>
+			<a>taTiers.taCompl.tvaIComCompl</a>
+			<b>tvaIComCompl</b>
+		</field>
+		<field>
+			<a>taTiers.taCPaiement.codeCPaiement</a>
+			<b>codeCPaiement</b>
+		</field>
+		<field>
+			<a>taTiers.taCPaiement.libCPaiement</a>
+			<b>libCPaiement</b>
+		</field>
+		<field>
+			<a>taTiers.taCPaiement.reportCPaiement</a>
+			<b>reportCPaiement</b>
+		</field>
+		<field>
+			<a>taTiers.taCPaiement.finMoisCPaiement</a>
+			<b>finMoisCPaiement</b>
+		</field>
+		<field-exclude> 
+  		  <a>versionObj</a> 
+  		  <b>versionObj</b> 
+		</field-exclude>			
+	</mapping>
+	
+	<mapping map-null="false">
+		<class-a>fr.legrain.document.model.TaBonliv</class-a>
+		<class-b>fr.legrain.document.dto.AideBonlivDTO</class-b>
+		<field>
+			<a>idDocument</a>
+			<b>id</b>
+		</field>
+		<field>
+			<a>codeDocument</a>
+			<b>codeDocument</b>
+		</field>
+		<field>
+			<a>dateDocument</a>
+			<b>dateDocument</b>
+		</field>
+		<field>
+			<a>dateLivDocument</a>
+			<b>dateLivDocument</b>
+		</field>
+		<field>
+			<a>libelleDocument</a>
+			<b>libelleDocument</b>
+		</field>
+	    <field>
+			<a>taTiers.codeTiers</a>
+			<b>codeTiers</b>
+		</field>
+	    <field>
+			<a>taInfosDocument.nomTiers</a>
+			<b>nomTiers</b>
+		</field>
+		<field>
+			<a>taInfosDocument.codeCompta</a>
+			<b>codeCompta</b>
+		</field>
+		<field>
+			<a>taInfosDocument.compte</a>
+			<b>compte</b>
+		</field>
+		<field>
+			<a>commentaire</a>
+			<b>commentaire</b>
+		</field>
+	</mapping>
+		
+	
+	<!-- ************************** STOCKS ******************************* -->
+	<mapping map-null="false">
+		<class-a>fr.legrain.stock.model.TaMouvementStock</class-a>
+		<class-b>fr.legrain.stock.dto.MouvementStocksDTO</class-b>	
+		<field>
+			<a>idMouvementStock</a>
+			<b>id</b>
+		</field>
+		<field type="one-way">
+			<a>taGrMouvStock.idGrMouvStock</a>
+			<b>idGrMouvStock</b>
+		</field>
+		<field type="one-way">
+			<a>taGrMouvStock.codeGrMouvStock</a>
+			<b>codeGrMouvStock</b>
+		</field>		
+<!-- 		<field type="one-way"> -->
+<!-- 			<a>taLot.taArticle.idArticle</a> -->
+<!-- 			<b>idArticle</b> -->
+<!-- 		</field> -->
+		<field type="one-way">
+			<a>taLot.taArticle.codeArticle</a>
+			<b>codeArticle</b>
+		</field>
+		<field type="one-way">
+			<a>taLot.idLot</a>
+			<b>idLot</b>
+		</field>
+		<field type="one-way">
+			<a>taLot.numLot</a>
+			<b>numLot</b>
+		</field>
+		<field>
+			<a>taEntrepot.idEntrepot</a>
+			<b>idEntrepot</b>
+		</field>
+		<field>
+			<a>taEntrepot.codeEntrepot</a>
+			<b>codeEntrepot</b>
+		</field>
+		<field>
+			<a>emplacementDest</a>
+			<b>emplacementDest</b>
+		</field>		
+		<field>
+			<a>emplacement</a>
+			<b>emplacement</b>
+		</field>
+		<field>
+			<a>dateStock</a>
+			<b>dateStock</b>
+		</field>				
+		<field>
+			<a>libelleStock</a>
+			<b>libelleStock</b>
+		</field>				
+		<field>
+			<a>qte1Stock</a>
+			<b>qte1Stock</b>
+		</field>				
+		<field>
+			<a>un1Stock</a>
+			<b>un1Stock</b>
+		</field>				
+		<field>
+			<a>qte2Stock</a>
+			<b>qte2Stock</b>
+		</field>				
+		<field>
+			<a>un2Stock</a>
+			<b>un2Stock</b>
+		</field>
+		<field>
+			<a>qteTitreTransport</a>
+			<b>qteTitreTransport</b>
+		</field>				
+		<field>
+			<a>codeTitreTransport</a>
+			<b>codeTitreTransport</b>
+		</field>		
+	</mapping>
+	
+	<mapping map-null="false">
+		<class-a>fr.legrain.gestioncapsules.model.TaStockCapsules</class-a>
+		<class-b>fr.legrain.gestioncapsules.dto.StocksCapsulesDTO</class-b>
+		<field type="one-way">
+			<a>taTitreTransport.codeTitreTransport</a>
+			<b>codeTitreTransport</b>
+		</field>		
+		<field type="one-way">
+			<a>taTitreTransport.libelleTitreTransport</a>
+			<b>libelleArticle</b>
+		</field>
+	</mapping>	
+	
+<!-- 	<mapping map-null="false"> -->
+<!-- 		<class-a>fr.legrain.stock.model.TaEtatStock</class-a> -->
+<!-- 		<class-b>fr.legrain.stock.dto.MouvementStocksDTO</class-b> -->
+<!-- 		<field> -->
+<!-- 			<a>codeArticle</a> -->
+<!-- 			<b>codeArticle</b> -->
+<!-- 		</field>		 -->
+<!-- 		<field> -->
+<!-- 			<a>mouvStock</a> -->
+<!-- 			<b>mouvStock</b> -->
+<!-- 		</field>		 -->
+<!-- 		<field> -->
+<!-- 			<a>dateStock</a> -->
+<!-- 			<b>dateStock</b> -->
+<!-- 		</field>				 -->
+<!-- 		<field> -->
+<!-- 			<a>libelleStock</a> -->
+<!-- 			<b>libelleStock</b> -->
+<!-- 		</field>				 -->
+<!-- 		<field> -->
+<!-- 			<a>qte1Stock</a> -->
+<!-- 			<b>qte1Stock</b> -->
+<!-- 		</field>				 -->
+<!-- 		<field> -->
+<!-- 			<a>un1Stock</a> -->
+<!-- 			<b>un1Stock</b> -->
+<!-- 		</field>				 -->
+<!-- 		<field> -->
+<!-- 			<a>qte2Stock</a> -->
+<!-- 			<b>qte2Stock</b> -->
+<!-- 		</field>				 -->
+<!-- 		<field> -->
+<!-- 			<a>un2Stock</a> -->
+<!-- 			<b>un2Stock</b> -->
+<!-- 		</field> -->
+<!-- 	</mapping>		 -->
+			
+<!-- 	<mapping map-null="false"> -->
+<!-- 		<class-a>fr.legrain.document.model.TaSumMouvDocument</class-a> -->
+<!-- 		<class-b>fr.legrain.stock.dto.MouvementStocksDTO</class-b> -->
+<!-- 		<field type="one-way"> -->
+<!-- 			<a>taArticle.idArticle</a> -->
+<!-- 			<b>idArticleStock</b> -->
+<!-- 		</field> -->
+<!-- 		<field type="one-way"> -->
+<!-- 			<a>taArticle.codeArticle</a> -->
+<!-- 			<b>codeArticle</b> -->
+<!-- 		</field>		 -->
+<!-- 		<field type="one-way"> -->
+<!-- 			<a>taArticle.libellecArticle</a> -->
+<!-- 			<b>libelleArticle</b> -->
+<!-- 		</field>		 -->
+<!-- 		<field> -->
+<!-- 			<a>dateDocument</a> -->
+<!-- 			<b>dateStock</b> -->
+<!-- 		</field>								 -->
+<!-- 		<field> -->
+<!-- 			<a>qteLDocument</a> -->
+<!-- 			<b>qte1Stock</b> -->
+<!-- 		</field>				 -->
+<!-- 		<field> -->
+<!-- 			<a>u1LDocument</a> -->
+<!-- 			<b>un1Stock</b> -->
+<!-- 		</field>				 -->
+<!-- 		<field> -->
+<!-- 			<a>qte2LDocument</a> -->
+<!-- 			<b>qte2Stock</b> -->
+<!-- 		</field>				 -->
+<!-- 		<field> -->
+<!-- 			<a>u2LDocument</a> -->
+<!-- 			<b>un2Stock</b> -->
+<!-- 		</field> -->
+<!-- 	</mapping>		 -->
+			
+<!-- 	<mapping map-null="false"> -->
+<!-- 		<class-a>fr.legrain.stock.model.TaInventaire</class-a> -->
+<!-- 		<class-b>fr.legrain.stock.dto.MouvementStocksDTO</class-b> -->
+<!-- 		<field> -->
+<!-- 			<a>idReportStock</a> -->
+<!-- 			<b>id</b> -->
+<!-- 		</field> -->
+<!-- 		<field type="one-way"> -->
+<!-- 			<a>taArticle.idArticle</a> -->
+<!-- 			<b>idArticleStock</b> -->
+<!-- 		</field> -->
+<!-- 		<field type="one-way"> -->
+<!-- 			<a>taArticle.codeArticle</a> -->
+<!-- 			<b>codeArticle</b> -->
+<!-- 		</field>		 -->
+<!-- 		<field type="one-way"> -->
+<!-- 			<a>taArticle.libellecArticle</a> -->
+<!-- 			<b>libelleArticle</b> -->
+<!-- 		</field> -->
+		
+<!-- 		<field> -->
+<!-- 			<a>dateFinReportStock</a> -->
+<!-- 			<b>dateStock</b> -->
+<!-- 		</field>								 -->
+<!-- 		<field> -->
+<!-- 			<a>qte1ReportStock</a> -->
+<!-- 			<b>qte1Stock</b> -->
+<!-- 		</field>				 -->
+<!-- 		<field> -->
+<!-- 			<a>unite1ReportStock</a> -->
+<!-- 			<b>un1Stock</b> -->
+<!-- 		</field>				 -->
+<!-- 		<field> -->
+<!-- 			<a>qte2ReportStock</a> -->
+<!-- 			<b>qte2Stock</b> -->
+<!-- 		</field>				 -->
+<!-- 		<field> -->
+<!-- 			<a>unite2ReportStock</a> -->
+<!-- 			<b>un2Stock</b> -->
+<!-- 		</field> -->
+<!-- 	</mapping> -->
+	
+	<mapping map-null="false" map-empty-string="false">
+		<class-a>fr.legrain.tiers.model.TaTiers</class-a>
+		<class-b>fr.legrain.tiers.dto.TaCommercialDTO</class-b>
+		<field>
+			<a>idTiers</a>
+			<b>idTiers</b>
+		</field>
+		<field>
+			<a>codeTiers</a>
+			<b>codeTiers</b>
+		</field>
+		<field>
+			<a>nomTiers</a>
+			<b>nomTiers</b>
+		</field>
+	</mapping>
+
+	<!-- ************************* ACOMPTE ******************************** -->
+	<mapping map-null="false">
+		<class-a>fr.legrain.document.model.TaAcompte</class-a>
+		<class-b>fr.legrain.document.dto.TaAcompteDTO</class-b>
+		<field type="one-way">
+			<a>idDocument</a>
+			<b>id</b>
+		</field>
+		<field type="one-way">
+			<a>taTPaiement.codeTPaiement</a>
+			<b>codeTPaiement</b>
+		</field>	
+<!-- 		<field type="one-way"> -->
+<!-- 			<a>taReglement.netTtcCalc</a> -->
+<!-- 			<b>montantReglement</b> -->
+<!-- 		</field> -->
+<!-- 		<field type="one-way"> -->
+<!-- 			<a>taReglement.libelleDocument</a> -->
+<!-- 			<b>libelleReglement</b> -->
+<!-- 		</field>				 -->
+				
+		<field>
+			<a>codeDocument</a>
+			<b>codeDocument</b>
+		</field>
+		<field>
+			<a>dateDocument</a>
+			<b> dateDocument</b>
+		</field>
+<!--		<field>-->
+<!--			<a>dateEchDocument</a>-->
+<!--			<b> dateEchDocument</b>-->
+<!--		</field>-->
+		<field>
+			<a>dateLivDocument</a>
+			<b> dateLivDocument</b>
+		</field>		
+		<field>
+			<a>libelleDocument</a>
+			<b>libelleDocument</b>
+		</field>
+		<field type="one-way">
+			<a>taTiers.codeTiers</a>
+			<b>codeTiers</b>
+		</field>
+		<field >
+			<a>taInfosDocument.nomTiers</a>
+			<b>nomTiers</b>
+		</field>
+<!--		<field>-->
+<!--			<a>regleDocument</a>-->
+<!--			<b>regleDocument</b>-->
+<!--		</field>-->
+		<field>
+			<a>remHtDocument</a>
+			<b>remHtDocument</b>
+		</field>
+		<field>
+			<a>txRemHtDocument</a>
+			<b>txRemHtDocument</b>
+		</field>
+		<field>
+			<a>remTtcDocument</a>
+			<b>remTtcDocument</b>
+		</field>
+		<field>
+			<a>txRemTtcDocument</a>
+			<b>txRemTtcDocument</b>
+		</field>
+		<field>
+			<a>nbEDocument</a>
+			<b>nbEDocument</b>
+		</field>
+		<field>
+			<a>mtTtcCalc</a>
+			<b>mtTtcCalc</b>
+		</field>
+		<field>
+			<a>mtHtCalc</a>
+			<b>mtHtCalc</b>
+		</field>
+		<field>
+			<a>mtTvaCalc</a>
+			<b>mtTvaCalc</b>
+		</field>
+		<field>
+			<a>netTtcCalc</a>
+			<b>netTtcCalc</b>
+		</field>
+		<field>
+			<a>netHtCalc</a>
+			<b>netHtCalc</b>
+		</field>
+		<field>
+			<a>netTvaCalc</a>
+			<b>netTvaCalc</b>
+		</field>
+		<field>
+			<a>ttc</a>
+			<b>ttc</b>
+		</field>
+		<field>
+			<a>dateExport</a>
+			<b>dateExport</b>
+		</field>
+		<field>
+			<a>commentaire</a>
+			<b>commentaire</b>
+		</field>
+		<field>
+			<a>netAPayer</a>
+			<b>netAPayer</b>
+		</field>
+		<field>
+			<a>resteARegler</a>
+			<b>resteARegler</b>
+		</field>
+
+
+				
+<!--		<field>-->
+<!--			<a>libellePaiement</a>-->
+<!--			<b>libellePaiement</b>-->
+<!--		</field>-->
+	</mapping>
+
+	<mapping>
+		<class-a>fr.legrain.document.model.TaAcompte</class-a>
+		<class-b>fr.legrain.document.dto.EnteteAcompteDTO</class-b>
+		<field type="one-way">
+			<a>idDocument</a>
+			<b>id</b>
+		</field>
+		<field>
+			<a>codeDocument</a>
+			<b>codeDocument</b>
+		</field>
+		<field>
+			<a>dateDocument</a>
+			<b>dateDocument</b>
+		</field>
+		<field>
+			<a>dateEchDocument</a>
+			<b>dateEchDocument</b>
+		</field>
+		<field>
+			<a>dateLivDocument</a>
+			<b>dateLivDocument</b>
+		</field>		
+		<field>
+			<a>libelleDocument</a>
+			<b>libelleDocument</b>
+		</field>
+		<field type="one-way">
+			<a>taTiers.codeTiers</a>
+			<b>codeTiers</b>
+		</field>		
+		<field>
+			<a>regleDocument</a>
+			<b>regleDocument</b>
+		</field>
+		<field>
+			<a>remHtDocument</a>
+			<b>remHtDocument</b>
+		</field>
+		<field>
+			<a>txRemHtDocument</a>
+			<b>txRemHtDocument</b>
+		</field>
+		<field>
+			<a>remTtcDocument</a>
+			<b>remTtcDocument</b>
+		</field>
+		<field>
+			<a>txRemTtcDocument</a>
+			<b>txRemTtcDocument</b>
+		</field>
+		<field>
+			<a>nbEDocument</a>
+			<b>nbEDocument</b>
+		</field>
+		<field>
+			<a>mtTtcCalc</a>
+			<b>mtTtcCalc</b>
+		</field>
+		<field>
+			<a>mtHtCalc</a>
+			<b>mtHtCalc</b>
+		</field>
+		<field>
+			<a>mtTvaCalc</a>
+			<b>mtTvaCalc</b>
+		</field>
+		<field>
+			<a>netTtcCalc</a>
+			<b>netTtcCalc</b>
+		</field>
+		<field>
+			<a>netHtCalc</a>
+			<b>netHtCalc</b>
+		</field>
+		<field>
+			<a>netTvaCalc</a>
+			<b>netTvaCalc</b>
+		</field>
+		<field>
+			<a>ttc</a>
+			<b>ttc</b>
+		</field>
+		<field>
+			<a>commentaire</a>
+			<b>commentaire</b>
+		</field>
+	</mapping>
+	
+	<mapping>
+		<class-a>fr.legrain.document.model.TaAcompte</class-a>
+		<class-b>fr.legrain.document.dto.TotauxAcompteDTO</class-b>
+		<field type="one-way">
+			<a>idDocument</a>
+			<b>id</b>
+		</field>
+		<field type="one-way">
+			<a>taTPaiement.idTPaiement</a>
+			<b>idTPaiement</b>
+		</field>
+		<field type="one-way">
+			<a>taTPaiement.codeTPaiement</a>
+			<b>codeTPaiement</b>
+		</field>
+		<field type="one-way">
+			<a>taCompteBanque.idCompteBanque</a>
+			<b>idCompteBanque</b>
+		</field>
+		<field type="one-way">
+			<a>taCompteBanque.compte</a>
+			<b>compte</b>
+		</field>		
+		<field>
+			<a>regleDocument</a>
+			<b>regleDocument</b>
+		</field>
+		<field>
+			<a>remHtDocument</a>
+			<b>remHtDocument</b>
+		</field>
+		<field>
+			<a>txRemHtDocument</a>
+			<b>txRemHtDocument</b>
+		</field>
+		<field>
+			<a>remTtcDocument</a>
+			<b>remTtcDocument</b>
+		</field>
+		<field>
+			<a>txRemTtcDocument</a>
+			<b>txRemTtcDocument</b>
+		</field>
+		<field>
+			<a>mtTtcCalc</a>
+			<b>mtTtcCalc</b>
+		</field>
+		<field>
+			<a>mtHtCalc</a>
+			<b>mtHtCalc</b>
+		</field>
+		<field>
+			<a>mtTvaCalc</a>
+			<b>mtTvaCalc</b>
+		</field>
+		<field>
+			<a>netTtcCalc</a>
+			<b>netTtcCalc</b>
+		</field>
+		<field>
+			<a>netHtCalc</a>
+			<b>netHtCalc</b>
+		</field>
+		<field>
+			<a>netTvaCalc</a>
+			<b>netTvaCalc</b>
+		</field>
+		<field>
+			<a>commentaire</a>
+			<b>commentaire</b>
+		</field>
+	</mapping>
+	
+	<mapping>
+		<class-a>fr.legrain.document.model.TaAcompte</class-a>
+		<class-b>fr.legrain.document.dto.TotauxLignesDocumentDTO</class-b>
+		<field type="one-way">
+			<a>idDocument</a>
+			<b>id</b>
+		</field>
+		<field>
+			<a>netTtcCalc</a>
+			<b>netTtcCalc</b>
+		</field>
+		<field>
+			<a>netHtCalc</a>
+			<b>netHtCalc</b>
+		</field>
+		<field>
+			<a>netTvaCalc</a>
+			<b>netTvaCalc</b>
+		</field>		
+		<field>
+			<a>mtTtcAvantRemiseGlobaleCalc</a>
+			<b>mtTtcAvantRemiseGlobaleCalc</b>
+		</field>
+		<field>
+			<a>mtHtCalc</a>
+			<b>mtHtCalc</b>
+		</field>		
+	</mapping>
+	
+	<mapping>
+		<class-a>fr.legrain.document.model.TaLAcompte</class-a>
+		<class-b>fr.legrain.document.dto.TaLAcompteDTO</class-b>
+        <!-- Ajourt pour JEE mode web JSF -->
+		<field>
+			<a>idLDocument</a>
+			<b>idLDocument</b>
+		</field>
+		<!-- Fin Ajour pour JEE mode web JSF -->
+
+		<field type="one-way">
+			<a>idLDocument</a>
+			<b>id</b>
+		</field>
+		<field type="one-way">
+			<a>taDocument.idDocument</a>
+			<b>idDocument</b>
+		</field>
+		<field type="one-way">
+			<a>taTLigne.codeTLigne</a>
+			<b>codeTLigne</b>
+		</field>
+		<field type="one-way">
+			<a>taArticle.idArticle</a>
+			<b>idArticle</b>
+		</field>
+		<field type="one-way">
+			<a>taArticle.codeArticle</a>
+			<b>codeArticle</b>
+		</field>
+		<field>
+			<a>numLigneLDocument</a>
+			<b>numLigneLDocument</b>
+		</field>
+		<field>
+			<a>libLDocument</a>
+			<b>libLDocument</b>
+		</field>
+		<field>
+			<a>qteLDocument</a>
+			<b>qteLDocument</b>
+		</field>		
+		<field>
+			<a>qte2LDocument</a>
+			<b>qte2LDocument</b>
+		</field>
+		<field>
+			<a>prixULDocument</a>
+			<b>prixULDocument</b>
+		</field>
+		<field>
+			<a>tauxTvaLDocument</a>
+			<b>tauxTvaLDocument</b>
+		</field>
+		<field>
+			<a>codeTvaLDocument</a>
+			<b>codeTvaLDocument</b>
+		</field>
+		<field>
+			<a>codeTTvaLDocument</a>
+			<b>codeTTvaLDocument</b>
+		</field>
+		<field>
+			<a>mtHtLDocument</a>
+			<b>mtHtLDocument</b>
+		</field>
+		<!--field>
+			<a>mtHtLApresRemiseGlobaleDocument</a>
+			<b>mtHtLApresRemiseGlobaleDocument</b>
+		</field-->		
+		<field>
+			<a>mtTtcLDocument</a>
+			<b>mtTtcLDocument</b>
+		</field>
+		<!--field>
+			<a>mtTtcLApresRemiseGlobaleDocument</a>
+			<b>mtTtcLApresRemiseGlobaleDocument</b>
+		</field-->		
+		<field>
+			<a>remTxLDocument</a>
+			<b>remTxLDocument</b>
+		</field>
+		<field>
+			<a>remHtLDocument</a>
+			<b>remHtLDocument</b>
+		</field>
+		<field>
+			<a>u1LDocument</a>
+			<b>u1LDocument</b>
+		</field>
+		<field>
+			<a>u2LDocument</a>
+			<b>u2LDocument</b>
+		</field>
+		<field>
+			<a>txRemHtDocument</a>
+			<b>txRemHtDocument</b>
+		</field>		
+	</mapping>
+	
+	<mapping>
+		<class-a>fr.legrain.document.model.TaInfosAcompte</class-a>
+		<class-b>fr.legrain.tiers.dto.InfosCPaiementDTO</class-b>
+		<field>
+			<a>codeCPaiement</a>
+			<b>codeCPaiement</b>
+		</field>
+		<field>
+			<a>libCPaiement</a>
+			<b>libCPaiement</b>
+		</field>
+		<field>
+			<a>reportCPaiement</a>
+			<b>reportCPaiement</b>
+		</field>
+		<field>
+			<a>finMoisCPaiement</a>
+			<b>finMoisCPaiement</b>
+		</field>
+	</mapping>
+	
+	<mapping>
+		<class-a>fr.legrain.document.model.TaInfosAcompte</class-a>
+		<class-b>fr.legrain.tiers.dto.AdresseInfosFacturationDTO</class-b>
+		<field>
+			<a>adresse1</a>
+			<b>adresse1Adresse</b>
+		</field>
+		<field>
+			<a>adresse2</a>
+			<b>adresse2Adresse</b>
+		</field>
+		<field>
+			<a>adresse3</a>
+			<b>adresse3Adresse</b>
+		</field>
+		<field>
+			<a>codepostal</a>
+			<b>codepostalAdresse</b>
+		</field>
+		<field>
+			<a>ville</a>
+			<b>villeAdresse</b>
+		</field>
+		<field>
+			<a>pays</a>
+			<b>paysAdresse</b>
+		</field>
+	</mapping>
+	
+	<mapping>
+		<class-a>fr.legrain.document.model.TaInfosAcompte</class-a>
+		<class-b>fr.legrain.tiers.dto.AdresseInfosLivraisonDTO</class-b>
+		<field>
+			<a>adresse1Liv</a>
+			<b>adresse1AdresseLiv</b>
+		</field>
+		<field>
+			<a>adresse2Liv</a>
+			<b>adresse2AdresseLiv</b>
+		</field>
+		<field>
+			<a>adresse3Liv</a>
+			<b>adresse3AdresseLiv</b>
+		</field>
+		<field>
+			<a>codepostalLiv</a>
+			<b>codepostalAdresseLiv</b>
+		</field>
+		<field>
+			<a>villeLiv</a>
+			<b>villeAdresseLiv</b>
+		</field>
+		<field>
+			<a>paysLiv</a>
+			<b>paysAdresseLiv</b>
+		</field>
+	</mapping>
+	
+	<mapping map-null="false">
+		<class-a>fr.legrain.document.model.TaAcompte</class-a>
+		<class-b>fr.legrain.document.model.TaInfosAcompte</class-b>
+		<field>
+			<a>taTiers.codeCompta</a>
+			<b>codeCompta</b>
+		</field>
+		<field>
+			<a>taTiers.compte</a>
+			<b>compte</b>
+		</field>
+		<field>
+			<a>taTiers.nomTiers</a>
+			<b>nomTiers</b>
+		</field>
+		<field>
+			<a>taTiers.prenomTiers</a>
+			<b>prenomTiers</b>
+		</field>
+		<field>
+			<a>taTiers.surnomTiers</a>
+			<b>surnomTiers</b>
+		</field>
+		<field>
+			<a>taTiers.taTCivilite.codeTCivilite</a>
+			<b>codeTCivilite</b>
+		</field>
+		<field>
+			<a>taTiers.taEntreprise.nomEntreprise</a>
+			<b>nomEntreprise</b>
+		</field>
+		<field>
+			<a>taTiers.taTEntite.codeTEntite</a>
+			<b>codeTEntite</b>
+		</field>
+		<field>
+			<a>taTiers.taCompl.tvaIComCompl</a>
+			<b>tvaIComCompl</b>
+		</field>
+		<field>
+			<a>taTiers.taCPaiement.codeCPaiement</a>
+			<b>codeCPaiement</b>
+		</field>
+		<field>
+			<a>taTiers.taCPaiement.libCPaiement</a>
+			<b>libCPaiement</b>
+		</field>
+		<field>
+			<a>taTiers.taCPaiement.reportCPaiement</a>
+			<b>reportCPaiement</b>
+		</field>
+		<field>
+			<a>taTiers.taCPaiement.finMoisCPaiement</a>
+			<b>finMoisCPaiement</b>
+		</field>
+		<field-exclude> 
+  		  <a>versionObj</a> 
+  		  <b>versionObj</b> 
+		</field-exclude>		
+	</mapping>
+	
+	<mapping map-null="false">
+		<class-a>fr.legrain.document.model.TaAcompte</class-a>
+		<class-b>fr.legrain.document.dto.AideAcompteDTO</class-b>
+		<field>
+			<a>idDocument</a>
+			<b>id</b>
+		</field>
+		<field>
+			<a>codeDocument</a>
+			<b>codeDocument</b>
+		</field>
+		<field>
+			<a>dateDocument</a>
+			<b>dateDocument</b>
+		</field>
+		<field>
+			<a>dateEchDocument</a>
+			<b>dateEchDocument</b>
+		</field>
+		<field>
+			<a>dateLivDocument</a>
+			<b>dateLivDocument</b>
+		</field>
+		<field>
+			<a>libelleDocument</a>
+			<b>libelleDocument</b>
+		</field>
+	    <field>
+			<a>taTiers.codeTiers</a>
+			<b>codeTiers</b>
+		</field>
+	    <field>
+			<a>taInfosDocument.nomTiers</a>
+			<b>nomTiers</b>
+		</field>
+		<field>
+			<a>taInfosDocument.codeCompta</a>
+			<b>codeCompta</b>
+		</field>
+		<field>
+			<a>taInfosDocument.compte</a>
+			<b>compte</b>
+		</field>
+		<field>
+			<a>regleDocument</a>
+			<b>regleDocument</b>
+		</field>
+		<field>
+			<a>commentaire</a>
+			<b>commentaire</b>
+		</field>
+		<field>
+			<a>netTtcCalc</a>
+			<b>netTtcCalc</b>
+		</field>
+	</mapping>
+		<mapping map-null="false">
+		<class-a>fr.legrain.document.model.TaRReglement</class-a>
+		<class-b>fr.legrain.document.dto.TaReglementDTO</class-b>
+		<field>
+			<a>id</a>
+			<b>id</b>
+		</field>
+		<field>
+			<a>taReglement.codeDocument</a>
+			<b>codeDocument</b>
+		</field>
+		<field>
+			<a>taFacture.idDocument</a>
+			<b>idDocument</b>
+		</field>
+		<field>
+			<a>taFacture.codeDocument</a>
+			<b>codeFacture</b>
+		</field>
+		<field>
+			<a>taReglement.dateDocument</a>
+			<b>dateDocument</b>
+		</field>
+		<field>
+			<a>taReglement.dateLivDocument</a>
+			<b>dateLivDocument</b>
+		</field>
+		<field>
+			<a>taReglement.taCompteBanque.idCompteBanque</a>
+			<b>idCompteBanque</b>
+		</field>
+		<field>
+			<a>taReglement.taCompteBanque.codeBanque</a>
+			<b>codeBanque</b>
+		</field>
+		<field>
+			<a>taReglement.taCompteBanque.compte</a>
+			<b>compte</b>
+		</field>
+		<field>
+			<a>taReglement.taCompteBanque.codeGuichet</a>
+			<b>codeGuichet</b>
+		</field>
+		<field>
+			<a>taReglement.taCompteBanque.cleRib</a>
+			<b>cleRib</b>
+		</field>
+		<field>
+			<a>taReglement.taTPaiement.idTPaiement</a>
+			<b>idTPaiement</b>
+		</field>
+		<field>
+			<a>taReglement.taTPaiement.codeTPaiement</a>
+			<b>codeTPaiement</b>
+		</field>
+		<field>
+			<a>etat</a>
+			<b>etat</b>
+		</field>
+		<field>
+			<a>taReglement.dateExport</a>
+			<b>dateExport</b>
+		</field>
+		<field>
+			<a>taReglement.libelleDocument</a>
+			<b>libelleDocument</b>
+		</field>
+		<field>
+			<a>affectation</a>
+			<b>affectation</b>
+		</field>
+		<field>
+			<a>taReglement.netTtcCalc</a>
+			<b>netTtcCalc</b>
+		</field>
+		<field>
+			<a>taReglement.resteAAffecter</a>
+			<b>resteAAffecter</b>
+		</field>
+		<field type="one-way">
+			<a>taReglement.taTiers.codeTiers</a>
+			<b>codeTiers</b>
+		</field>
+		<field type="one-way">
+			<a>taReglement.taTiers.nomTiers</a>
+			<b>nomTiers</b>
+		</field>								
+	</mapping>
+	
+	
+	<mapping map-null="false">
+		<class-a>fr.legrain.document.model.TaReglement</class-a>
+		<class-b>fr.legrain.document.dto.TaReglementDTO</class-b>
+		<field>
+			<a>idDocument</a>
+			<b>idDocument</b>
+		</field>
+		<field>
+			<a>codeDocument</a>
+			<b>codeDocument</b>
+		</field>
+		<field>
+			<a>dateDocument</a>
+			<b>dateDocument</b>
+		</field>
+		<field>
+			<a>dateLivDocument</a>
+			<b>dateLivDocument</b>
+		</field>
+		<field type="one-way">
+			<a>taCompteBanque.idCompteBanque</a>
+			<b>idCompteBanque</b>
+		</field>
+		<field type="one-way">
+			<a>taCompteBanque.codeBanque</a>
+			<b>codeBanque</b>
+		</field>
+		<field type="one-way">
+			<a>taCompteBanque.compte</a>
+			<b>compte</b>
+		</field>
+		<field type="one-way">
+			<a>taCompteBanque.codeGuichet</a>
+			<b>codeGuichet</b>
+		</field>
+		<field type="one-way">
+			<a>taCompteBanque.cleRib</a>
+			<b>cleRib</b>
+		</field>
+		<field type="one-way">
+			<a>taTPaiement.idTPaiement</a>
+			<b>idTPaiement</b>
+		</field>
+		<field type="one-way">
+			<a>taTPaiement.codeTPaiement</a>
+			<b>codeTPaiement</b>
+		</field>
+		<field>
+			<a>dateExport</a>
+			<b>dateExport</b>
+		</field>
+		<field>
+			<a>libelleDocument</a>
+			<b>libelleDocument</b>
+		</field>
+		<field>
+			<a>netTtcCalc</a>
+			<b>netTtcCalc</b>
+		</field>
+		<field>
+			<a>resteAAffecter</a>
+			<b>resteAAffecter</b>
+		</field>
+		<field type="one-way">
+			<a>taTiers.codeTiers</a>
+			<b>codeTiers</b>
+		</field>
+		<field type="one-way">
+			<a>taTiers.nomTiers</a>
+			<b>nomTiers</b>
+		</field>
+		<field-exclude> 
+  		<a>versionObj</a> 
+  		<b>versionObj</b> 
+		</field-exclude>		
+	</mapping>
+	<mapping map-null="false">
+		<class-a>fr.legrain.document.model.TaRReglement</class-a>
+		<class-b>fr.legrain.document.model.TaReglementTraca</class-b>
+<!-- 		<field> -->
+<!-- 			<a>taReglement.idDocument</a> -->
+<!-- 			<b>idReglement</b> -->
+<!-- 		</field> -->
+		<field>
+			<a>taReglement.codeDocument</a>
+			<b>codeReglement</b>
+		</field>
+		<field>
+			<a>taReglement.dateDocument</a>
+			<b>dateReglement</b>
+		</field>
+
+		<field type="one-way">
+			<a>taReglement.taTPaiement.codeTPaiement</a>
+			<b>codeTPaiement</b>
+		</field>
+		<field>
+			<a>taReglement.dateExport</a>
+			<b>dateExport</b>
+		</field>
+		<field>
+			<a>taReglement.dateExport</a>
+			<b>dateExport</b>
+		</field>		
+		<field>
+			<a>taReglement.libelleDocument</a>
+			<b>libelleReglement</b>
+		</field>
+		<field>
+			<a>affectation</a>
+			<b>affectation</b>
+		</field>		
+		<field>
+			<a>taReglement.netTtcCalc</a>
+			<b>netTtcCalc</b>
+		</field>
+		<field type="one-way">
+			<a>taFacture.codeDocument</a>
+			<b>codeFactureAffectation</b>
+		</field>
+		<field type="one-way">
+			<a>taFacture.dateDocument</a>
+			<b>dateFactureAffectation</b>
+		</field>
+		<field type="one-way">
+			<a>taFacture.netHtCalc</a>
+			<b>htFactureAffectation</b>
+		</field>
+		<field type="one-way">
+			<a>taFacture.netTvaCalc</a>
+			<b>tvaFactureAffectation</b>
+		</field>
+		<field type="one-way">
+			<a>taFacture.netTtcCalc</a>
+			<b>ttcFactureAffectation</b>
+		</field>
+		<field type="one-way">
+			<a>taFacture.taEtat.codeEtat</a>
+			<b>codeEtatAffectation</b>
+		</field>
+		<field type="one-way">
+			<a>taFacture.dateExport</a>
+			<b>dateExportAffectation</b>
+		</field>
+		<field type="one-way">
+			<a>taReglement.taAcompte.codeDocument</a>
+			<b>codeAcompte</b>
+		</field>
+		<field-exclude> 
+  		<a>versionObj</a> 
+  		<b>versionObj</b> 
+		</field-exclude>		
+	</mapping>
+	<mapping map-null="false">
+		<class-a>fr.legrain.document.model.TaLRelance</class-a>
+		<class-b>fr.legrain.document.dto.TaLRelanceDTO</class-b>
+		<field>
+			<a>idLRelance</a>
+			<b>id</b>
+		</field>
+		<field>
+			<a>taRelance.idRelance</a>
+			<b>idRelance</b>
+		</field>
+		<field>
+			<a>taRelance.codeRelance</a>
+			<b>codeRelance</b>
+		</field>
+		<field>
+			<a>taRelance.dateRelance</a>
+			<b>dateRelance</b>
+		</field>
+		<field>
+			<a>codeDocument</a>
+			<b>codeDocument</b>
+		</field>
+		<field>
+			<a>dateEcheance</a>
+			<b>dateEcheance</b>
+		</field>
+	    <field>
+			<a>codeTiers</a>
+			<b>codeTiers</b>
+		</field>
+	    <field>
+			<a>nomTiers</a>
+			<b>nomTiers</b>
+		</field>		
+	    <field>
+			<a>typeDocument</a>
+			<b>typeDocument</b>
+		</field>
+		<field>
+			<a>resteARegler</a>
+			<b>resteARegler</b>
+		</field>
+		<field>
+			<a>netTTC</a>
+			<b>netTTC</b>
+		</field>
+		<field>
+			<a>taTRelance.idTRelance</a>
+			<b>idTRelance</b>
+		</field>
+		<field>
+			<a>taTRelance.codeTRelance</a>
+			<b>codeTRelance</b>
+		</field>
+		<field>
+			<a>taTRelance.libelleTRelance</a>
+			<b>libelleTRelance</b>
+		</field>
+		<field>
+			<a>etat</a>
+			<b>etat</b>
+		</field>
+		<field>
+			<a>accepte</a>
+			<b>accepte</b>
+		</field>
+	</mapping>
+
+	<!-- ************************** PRELEVEMENT ******************************* -->
+	<mapping>
+		<class-a>fr.legrain.document.model.TaPrelevement</class-a>
+		<class-b>fr.legrain.document.dto.TaPrelevementDTO</class-b>
+		<field type="one-way">
+			<a>idDocument</a>
+			<b>id</b>
+		</field>
+		<field type="one-way">
+			<a>taTiers.codeTiers</a>
+			<b>codeTiers</b>
+		</field>
+		<field type="one-way">
+			<a>taTPaiement.codeTPaiement</a>
+			<b>codeTPaiement</b>
+		</field>
+		<field type="one-way">
+			<a>taInfosDocument.prenomTiers</a>
+			<b>prenomTiers</b>
+		</field>
+		<field type="one-way">
+			<a>taInfosDocument.nomEntreprise</a>
+			<b>nomEntreprise</b>
+		</field>
+	</mapping>
+	<mapping>
+		<class-a>fr.legrain.document.model.TaPrelevement</class-a>
+		<class-b>fr.legrain.document.dto.EntetePrelevementDTO</class-b>
+		<field type="one-way">
+			<a>idDocument</a>
+			<b>id</b>
+		</field>
+		<field>
+			<a>codeDocument</a>
+			<b>codeDocument</b>
+		</field>
+		<field>
+			<a>dateDocument</a>
+			<b>dateDocument</b>
+		</field>
+		<field>
+			<a>dateEchDocument</a>
+			<b>dateEchDocument</b>
+		</field>
+		<field>
+			<a>libelleDocument</a>
+			<b>libelleDocument</b>
+		</field>
+		<field type="one-way">
+			<a>taTiers.codeTiers</a>
+			<b>codeTiers</b>
+		</field>
+		<field>
+			<a>regleDocument</a>
+			<b>regleDocument</b>
+		</field>
+		<field>
+			<a>remHtDocument</a>
+			<b>remHtDocument</b>
+		</field>
+		<field>
+			<a>txRemHtDocument</a>
+			<b>txRemHtDocument</b>
+		</field>
+		<field>
+			<a>remTtcDocument</a>
+			<b>remTtcDocument</b>
+		</field>
+		<field>
+			<a>txRemTtcDocument</a>
+			<b>txRemTtcDocument</b>
+		</field>
+		<field>
+			<a>nbEDocument</a>
+			<b>nbEDocument</b>
+		</field>
+		<field>
+			<a>mtTtcCalc</a>
+			<b>mtTtcCalc</b>
+		</field>
+		<field>
+			<a>mtHtCalc</a>
+			<b>mtHtCalc</b>
+		</field>
+		<field>
+			<a>mtTvaCalc</a>
+			<b>mtTvaCalc</b>
+		</field>
+		<field>
+			<a>netTtcCalc</a>
+			<b>netTtcCalc</b>
+		</field>
+		<field>
+			<a>netHtCalc</a>
+			<b>netHtCalc</b>
+		</field>
+		<field>
+			<a>netTvaCalc</a>
+			<b>netTvaCalc</b>
+		</field>
+		<field>
+			<a>ttc</a>
+			<b>ttc</b>
+		</field>
+		<field>
+			<a>commentaire</a>
+			<b>commentaire</b>
+		</field>
+	</mapping>
+	
+	<mapping>
+		<class-a>fr.legrain.document.model.TaPrelevement</class-a>
+		<class-b>fr.legrain.document.dto.TotauxPrelevementDTO</class-b>
+		<field type="one-way">
+			<a>idDocument</a>
+			<b>id</b>
+		</field>
+		<field type="one-way">
+			<a>taTPaiement.idTPaiement</a>
+			<b>idTPaiement</b>
+		</field>
+		<field type="one-way">
+			<a>taTPaiement.codeTPaiement</a>
+			<b>codeTPaiement</b>
+		</field>
+		<field>
+			<a>regleDocument</a>
+			<b>regleDocument</b>
+		</field>
+		<field>
+			<a>remHtDocument</a>
+			<b>remHtDocument</b>
+		</field>
+		<field>
+			<a>txRemHtDocument</a>
+			<b>txRemHtDocument</b>
+		</field>
+		<field>
+			<a>remTtcDocument</a>
+			<b>remTtcDocument</b>
+		</field>
+		<field>
+			<a>txRemTtcDocument</a>
+			<b>txRemTtcDocument</b>
+		</field>
+		<field>
+			<a>mtTtcCalc</a>
+			<b>mtTtcCalc</b>
+		</field>
+		<field>
+			<a>mtHtCalc</a>
+			<b>mtHtCalc</b>
+		</field>
+		<field>
+			<a>mtTvaCalc</a>
+			<b>mtTvaCalc</b>
+		</field>
+		<field>
+			<a>netTtcCalc</a>
+			<b>netTtcCalc</b>
+		</field>
+		<field>
+			<a>netHtCalc</a>
+			<b>netHtCalc</b>
+		</field>
+		<field>
+			<a>netTvaCalc</a>
+			<b>netTvaCalc</b>
+		</field>
+		<field>
+			<a>commentaire</a>
+			<b>commentaire</b>
+		</field>
+	</mapping>
+	
+	<mapping>
+		<class-a>fr.legrain.document.model.TaPrelevement</class-a>
+		<class-b>fr.legrain.document.dto.TotauxLignesDocumentDTO</class-b>
+		<field type="one-way">
+			<a>idDocument</a>
+			<b>id</b>
+		</field>
+		<field>
+			<a>netTtcCalc</a>
+			<b>netTtcCalc</b>
+		</field>
+		<field>
+			<a>netHtCalc</a>
+			<b>netHtCalc</b>
+		</field>
+		<field>
+			<a>netTvaCalc</a>
+			<b>netTvaCalc</b>
+		</field>		
+		<field>
+			<a>mtTtcAvantRemiseGlobaleCalc</a>
+			<b>mtTtcAvantRemiseGlobaleCalc</b>
+		</field>
+		<field>
+			<a>mtHtCalc</a>
+			<b>mtHtCalc</b>
+		</field>		
+	</mapping>
+	
+	<mapping>
+		<class-a>fr.legrain.document.model.TaLPrelevement</class-a>
+		<class-b>fr.legrain.document.dto.TaLPrelevementDTO</class-b>
+        <!-- Ajourt pour JEE mode web JSF -->
+		<field>
+			<a>idLDocument</a>
+			<b>idLDocument</b>
+		</field>
+		<!-- Fin Ajour pour JEE mode web JSF -->
+
+		<field type="one-way">
+			<a>idLDocument</a>
+			<b>id</b>
+		</field>
+		<field type="one-way">
+			<a>taDocument.idDocument</a>
+			<b>idDocument</b>
+		</field>
+		<field type="one-way">
+			<a>taTLigne.codeTLigne</a>
+			<b>codeTLigne</b>
+		</field>
+		<field type="one-way">
+			<a>taArticle.idArticle</a>
+			<b>idArticle</b>
+		</field>
+		<field type="one-way">
+			<a>taArticle.codeArticle</a>
+			<b>codeArticle</b>
+		</field>
+		<field>
+			<a>numLigneLDocument</a>
+			<b>numLigneLDocument</b>
+		</field>
+		<field>
+			<a>libLDocument</a>
+			<b>libLDocument</b>
+		</field>
+		<field>
+			<a>qteLDocument</a>
+			<b>qteLDocument</b>
+		</field>
+		<field>
+			<a>prixULDocument</a>
+			<b>prixULDocument</b>
+		</field>
+		<field>
+			<a>tauxTvaLDocument</a>
+			<b>tauxTvaLDocument</b>
+		</field>
+		<field>
+			<a>codeTvaLDocument</a>
+			<b>codeTvaLDocument</b>
+		</field>
+		<field>
+			<a>codeTTvaLDocument</a>
+			<b>codeTTvaLDocument</b>
+		</field>
+		<field>
+			<a>mtHtLDocument</a>
+			<b>mtHtLDocument</b>
+		</field>
+		<field>
+			<a>mtTtcLDocument</a>
+			<b>mtTtcLDocument</b>
+		</field>
+		<field>
+			<a>remTxLDocument</a>
+			<b>remTxLDocument</b>
+		</field>
+		<field>
+			<a>remHtLDocument</a>
+			<b>remHtLDocument</b>
+		</field>
+		<field>
+			<a>u1LDocument</a>
+			<b>u1LDocument</b>
+		</field>
+		<field>
+			<a>u2LDocument</a>
+			<b>u2LDocument</b>
+		</field>
+		<field>
+			<a>txRemHtDocument</a>
+			<b>txRemHtDocument</b>
+		</field>		
+	</mapping>
+	
+	<mapping>
+		<class-a>fr.legrain.document.model.TaInfosPrelevement</class-a>
+		<class-b>fr.legrain.tiers.dto.InfosCPaiementDTO</class-b>
+		<field>
+			<a>codeCPaiement</a>
+			<b>codeCPaiement</b>
+		</field>
+		<field>
+			<a>libCPaiement</a>
+			<b>libCPaiement</b>
+		</field>
+		<field>
+			<a>reportCPaiement</a>
+			<b>reportCPaiement</b>
+		</field>
+		<field>
+			<a>finMoisCPaiement</a>
+			<b>finMoisCPaiement</b>
+		</field>
+	</mapping>
+	
+	<mapping>
+		<class-a>fr.legrain.document.model.TaInfosPrelevement</class-a>
+		<class-b>fr.legrain.tiers.dto.AdresseInfosFacturationDTO</class-b>
+		<field>
+			<a>adresse1</a>
+			<b>adresse1Adresse</b>
+		</field>
+		<field>
+			<a>adresse2</a>
+			<b>adresse2Adresse</b>
+		</field>
+		<field>
+			<a>adresse3</a>
+			<b>adresse3Adresse</b>
+		</field>
+		<field>
+			<a>codepostal</a>
+			<b>codepostalAdresse</b>
+		</field>
+		<field>
+			<a>ville</a>
+			<b>villeAdresse</b>
+		</field>
+		<field>
+			<a>pays</a>
+			<b>paysAdresse</b>
+		</field>
+	</mapping>
+	
+	<mapping>
+		<class-a>fr.legrain.document.model.TaInfosPrelevement</class-a>
+		<class-b>fr.legrain.tiers.dto.AdresseInfosLivraisonDTO</class-b>
+		<field>
+			<a>adresse1Liv</a>
+			<b>adresse1AdresseLiv</b>
+		</field>
+		<field>
+			<a>adresse2Liv</a>
+			<b>adresse2AdresseLiv</b>
+		</field>
+		<field>
+			<a>adresse3Liv</a>
+			<b>adresse3AdresseLiv</b>
+		</field>
+		<field>
+			<a>codepostalLiv</a>
+			<b>codepostalAdresseLiv</b>
+		</field>
+		<field>
+			<a>villeLiv</a>
+			<b>villeAdresseLiv</b>
+		</field>
+		<field>
+			<a>paysLiv</a>
+			<b>paysAdresseLiv</b>
+		</field>
+	</mapping>
+	
+	<mapping map-null="false">
+		<class-a>fr.legrain.document.model.TaPrelevement</class-a>
+		<class-b>fr.legrain.document.model.TaInfosPrelevement</class-b>
+		<field>
+			<a>taTiers.codeCompta</a>
+			<b>codeCompta</b>
+		</field>
+		<field>
+			<a>taTiers.compte</a>
+			<b>compte</b>
+		</field>
+		<field>
+			<a>taTiers.nomTiers</a>
+			<b>nomTiers</b>
+		</field>
+		<field>
+			<a>taTiers.prenomTiers</a>
+			<b>prenomTiers</b>
+		</field>
+		<field>
+			<a>taTiers.surnomTiers</a>
+			<b>surnomTiers</b>
+		</field>
+		<field>
+			<a>taTiers.taTCivilite.codeTCivilite</a>
+			<b>codeTCivilite</b>
+		</field>
+		<field>
+			<a>taTiers.taTEntite.codeTEntite</a>
+			<b>codeTEntite</b>
+		</field>
+		<field>
+			<a>taTiers.taEntreprise.nomEntreprise</a>
+			<b>nomEntreprise</b>
+		</field>
+		<field>
+			<a>taTiers.taCompl.tvaIComCompl</a>
+			<b>tvaIComCompl</b>
+		</field>
+		<field>
+			<a>taTiers.taCPaiement.codeCPaiement</a>
+			<b>codeCPaiement</b>
+		</field>
+		<field>
+			<a>taTiers.taCPaiement.libCPaiement</a>
+			<b>libCPaiement</b>
+		</field>
+		<field>
+			<a>taTiers.taCPaiement.reportCPaiement</a>
+			<b>reportCPaiement</b>
+		</field>
+		<field>
+			<a>taTiers.taCPaiement.finMoisCPaiement</a>
+			<b>finMoisCPaiement</b>
+		</field>
+		<field-exclude> 
+  		<a>versionObj</a> 
+  		<b>versionObj</b> 
+		</field-exclude>		
+	</mapping>
+	
+	<mapping map-null="false">
+		<class-a>fr.legrain.document.model.TaPrelevement</class-a>
+		<class-b>fr.legrain.document.dto.AidePrelevementDTO</class-b>
+		<field>
+			<a>idDocument</a>
+			<b>id</b>
+		</field>
+		<field>
+			<a>codeDocument</a>
+			<b>codeDocument</b>
+		</field>
+		<field>
+			<a>dateDocument</a>
+			<b>dateDocument</b>
+		</field>
+		<field>
+			<a>dateEchDocument</a>
+			<b>dateEchDocument</b>
+		</field>
+		<field>
+			<a>dateLivDocument</a>
+			<b>dateLivDocument</b>
+		</field>
+		<field>
+			<a>libelleDocument</a>
+			<b>libelleDocument</b>
+		</field>
+	    <field>
+			<a>taTiers.codeTiers</a>
+			<b>codeTiers</b>
+		</field>
+	    <field>
+			<a>taInfosDocument.nomTiers</a>
+			<b>nomTiers</b>
+		</field>
+		<field>
+			<a>taInfosDocument.codeCompta</a>
+			<b>codeCompta</b>
+		</field>
+		<field>
+			<a>taInfosDocument.compte</a>
+			<b>compte</b>
+		</field>
+		<field>
+			<a>commentaire</a>
+			<b>commentaire</b>
+		</field>
+	</mapping>
+
+	<mapping map-null="false" wildcard="false">
+		<class-a>fr.legrain.article.model.TaCategorieArticle</class-a>
+		<class-b>fr.legrain.article.dto.TaCategorieArticleDTO</class-b>
+		
+		<field type="one-way">
+			<a>idCategorieArticle</a>
+			<b>id</b>
+		</field>
+		
+		<field>
+			<a>codeCategorieArticle</a>
+			<b>codeCategorieArticle</b>
+		</field>
+		<field>
+			<a>libelleCategorieArticle</a>
+			<b>libelleCategorieArticle</b>
+		</field>
+		<field>
+			<a>desciptionCategorieArticle</a>
+			<b>desciptionCategorieArticle</b>
+		</field>
+		<field>
+			<a>urlRewritingCategorieArticle</a>
+			<b>urlRewritingCategorieArticle</b>
+		</field>
+		<field>
+			<a>cheminImageCategorieArticle</a>
+			<b>cheminImageCategorieArticle</b>
+		</field>
+		<field>
+			<a>nomImageCategorieArticle</a>
+			<b>nomImageCategorieArticle</b>
+		</field>
+
+		<field type="one-way">
+			<a>categorieMereArticle.codeCategorieArticle</a>
+			<b>categorieMereArticle</b>
+		</field>
+	</mapping>
+	
+	<mapping map-null="false">
+		<class-a>fr.legrain.document.model.TaTDoc</class-a>
+		<class-b>fr.legrain.document.dto.TDocDTO</class-b>
+	</mapping>
+	
+	<mapping map-null="false">
+		<class-a>fr.legrain.document.model.TaDocumentEditable</class-a>
+		<class-b>fr.legrain.document.dto.DocumentEditableDTO</class-b>
+	</mapping>
+
+	<mapping map-null="false">
+		<class-a>fr.legrain.tiers.model.TaParamCreeDocTiers</class-a>
+		<class-b>fr.legrain.tiers.dto.TaParamCreeDocTiersDTO</class-b>
+	</mapping>
+	
+	<mapping map-null="false">
+		<class-a>fr.legrain.document.model.TaRemise</class-a>
+		<class-b>fr.legrain.document.dto.TaRemiseDTO</class-b>
+		<field type="one-way">
+			<a>idDocument</a>
+			<b>id</b>
+		</field>
+		<field type="one-way">
+			<a>codeDocument</a>
+			<b>codeDocument</b>
+		</field>
+		<field type="one-way">
+			<a>dateDocument</a>
+			<b>dateDocument</b>
+		</field>
+		<field type="one-way">
+			<a>libelleDocument</a>
+			<b>libelleDocument</b>
+		</field>
+		<field type="one-way">
+			<a>dateExport</a>
+			<b>dateExport</b>
+		</field>
+	</mapping>
+	
+	<mapping map-null="false">
+		<class-a>fr.legrain.tiers.model.TaTiers</class-a>
+		<class-b>fr.legrain.article.dto.TaCiblePrixDTO</class-b>
+		<field type="one-way">
+			<a>idTiers</a>
+			<b>id</b>
+		</field>
+		<field>
+			<a>codeTiers</a>
+			<b>code</b>
+		</field>
+		<field>
+			<a>nomTiers</a>
+			<b>libelle</b>
+		</field>
+	</mapping>
+	
+	<mapping map-null="false">
+		<class-a>fr.legrain.tiers.model.TaTTarif</class-a>
+		<class-b>fr.legrain.article.dto.TaCiblePrixDTO</class-b>
+		<field type="one-way">
+			<a>idTTarif</a>
+			<b>id</b>
+		</field>
+		<field>
+			<a>codeTTarif</a>
+			<b>code</b>
+		</field>
+		<field>
+			<a>liblTTarif</a>
+			<b>libelle</b>
+		</field>
+	</mapping>
+	
+<mapping map-null="false">
+		<class-a>fr.legrain.article.model.TaRTSupport</class-a>
+		<class-b>fr.legrain.article.dto.TypeSupportDTO</class-b>
+		<field type="one-way">
+			<a>idRTSupport</a>
+			<b>id</b>
+		</field>
+		<field type="one-way">
+			<a>taArticle.codeArticle</a>
+			<b>codeArticle</b>
+		</field>
+		<field type="one-way">
+			<a>taTAbonnement.codeTAbonnement</a>
+			<b>codeTAbonnement</b>
+		</field>
+		<field type="one-way">
+			<a>taArticleAbonnement.codeArticle</a>
+			<b>codeArticleAbonnement</b>
+		</field>
+		<field type="one-way">
+			<a>taTSupport.codeTSupport</a>
+			<b>codeTSupport</b>
+		</field>						
+	</mapping>	
+	
+<mapping map-null="false">
+		<class-a>fr.legrain.pointLgr.model.TaComptePoint</class-a>
+		<class-b>fr.legrain.pointLgr.dto.ComptePointDTO</class-b>
+		<field type="one-way">
+			<a>idPoint</a>
+			<b>id</b>
+		</field>
+		<field>
+			<a>point</a>
+			<b>point</b>
+		</field>
+		<field>
+			<a>datePeremption</a>
+			<b>datePeremption</b>
+		</field>
+		<field>
+			<a>dateAcquisition</a>
+			<b>dateAcquisition</b>
+		</field>
+		<field>
+			<a>dateUtilisation</a>
+			<b>dateUtilisation</b>
+		</field>
+		<field type="one-way">
+			<a>taTypeMouvPoint.idTypeMouv</a>
+			<b>idTypeMouv</b>
+		</field>
+		<field type="one-way">
+			<a>taTypeMouvPoint.typeMouv</a>
+			<b>typeMouv</b>
+		</field>
+		<field type="one-way">
+			<a>taTypeMouvPoint.libelleMouv</a>
+			<b>libelleMouv</b>
+		</field>
+		<field>
+			<a>commentaire</a>
+			<b>commentaire</b>
+		</field>
+		<field type="one-way">
+			<a>taTiers.idTiers</a>
+			<b>idTiers</b>
+		</field>						
+		<field type="one-way">
+			<a>taTiers.codeTiers</a>
+			<b>codeTiers</b>
+		</field>						
+		<field type="one-way">
+			<a>taTiers.nomTiers</a>
+			<b>nomTiers</b>
+		</field>						
+		<field>
+			<a>codeDocument</a>
+			<b>codeDocument</b>
+		</field>
+		<field>
+			<a>libelleEtat</a>
+			<b>libelleEtat</b>
+		</field>								
+	</mapping>
+<mapping map-null="false">
+		<class-a>fr.legrain.pointLgr.model.TaArticlePoint</class-a>
+		<class-b>fr.legrain.pointLgr.dto.ArticlePointDTO</class-b>
+		<field type="one-way">
+			<a>idArticlePoint</a>
+			<b>id</b>
+		</field>
+		<field>
+			<a>points</a>
+			<b>points</b>
+		</field>
+		<field>
+			<a>debutPeriode</a>
+			<b>debutPeriode</b>
+		</field>
+		<field>
+			<a>finPeriode</a>
+			<b>finPeriode</b>
+		</field>
+		<field>
+			<a>prixReference</a>
+			<b>prixReference</b>
+		</field>
+		<field type="one-way">
+			<a>taTypeMouvPoint.idTypeMouv</a>
+			<b>idTypeMouv</b>
+		</field>
+		<field type="one-way">
+			<a>taTypeMouvPoint.typeMouv</a>
+			<b>typeMouv</b>
+		</field>
+		<field type="one-way">
+			<a>taTypeMouvPoint.libelleMouv</a>
+			<b>libelleMouv</b>
+		</field>
+		<field type="one-way">
+			<a>taArticle.idArticle</a>
+			<b>idArticle</b>
+		</field>						
+		<field type="one-way">
+			<a>taArticle.codeArticle</a>
+			<b>codeArticle</b>
+		</field>						
+		<field type="one-way">
+			<a>taArticle.libellecArticle</a>
+			<b>libelleArticle</b>
+		</field>						
+		<field>
+			<a>indice</a>
+			<b>indice</b>
+		</field>						
+	</mapping>	
+	
+	<mapping map-null="false" map-empty-string="false">
+		<class-a>fr.legrain.document.model.TaLEcheance</class-a>
+		<class-b>fr.legrain.document.dto.TaLEcheanceDTO</class-b>		
+		<field>
+			<a>idLEcheance</a>
+			<b>id</b>
+		</field>		
+		<field>
+			<a>libLDocument</a>
+			<b>libLDocument</b>
+		</field>		
+		<field>
+			<a>qteLDocument</a>
+			<b>qteLDocument</b>
+		</field>
+		<field>
+			<a>prixULDocument</a>
+			<b>prixULDocument</b>
+		</field>
+		<field>
+			<a>mtHtLDocument</a>
+			<b>mtHtLDocument</b>
+		</field>
+		<field>
+			<a>mtTtcLDocument</a>
+			<b>mtTtcLDocument</b>
+		</field>
+		<field>
+			<a>tauxTvaLDocument</a>
+			<b>tauxTvaLDocument</b>
+		</field>
+		<field>
+			<a>remTxLDocument</a>
+			<b>remTxLDocument</b>
+		</field>
+		<field>
+			<a>remHtLDocument</a>
+			<b>remHtLDocument</b>
+		</field>
+		<field>
+			<a>u1LDocument</a>
+			<b>u1LDocument</b>
+		</field>										
+		<field>
+			<a>debutPeriode</a>
+			<b>debutPeriode</b>
+		</field>
+		<field>
+			<a>finPeriode</a>
+			<b>finPeriode</b>
+		</field>
+		<field>
+			<a>dateFinCalcul</a>
+			<b>dateFinCalcul</b>
+		</field>
+		<field>
+			<a>debAbonnement</a>
+			<b>debAbonnement</b>
+		</field>
+		<field>
+			<a>finAbonnement</a>
+			<b>finAbonnement</b>
+		</field>
+		<field>
+			<a>pourcIndice</a>
+			<b>pourcIndice</b>
+		</field>
+		<field>
+			<a>pourcPartenaire</a>
+			<b>pourcPartenaire</b>
+		</field>
+		<field>
+			<a>accepte</a>
+			<b>accepte</b>
+		</field>
+		<field type="one-way">
+			<a>taArticle.idArticle</a>
+			<b>idArticle</b>
+		</field>		
+		<field type="one-way">
+			<a>taArticle.codeArticle</a>
+			<b>codeArticle</b>
+		</field>	
+		<!-- <field type="one-way">
+			<a>taLAvisEcheance.idLDocument</a>
+			<b>idLAvisEcheance</b>
+		</field>
+		<field type="one-way">
+			<a>taLFacture.idLDocument</a>
+			<b>idLFacture</b>
+		</field> -->	
+<!-- 		<field type="one-way"> -->
+<!-- 			<a>taAbonnement.idAbonnement</a> -->
+<!-- 			<b>idAbonnement</b> -->
+<!-- 		</field>		 -->
+<!-- 		<field type="one-way"> -->
+<!-- 			<a>taAbonnement.taTAbonnement.idTAbonnement</a> -->
+<!-- 			<b>idTAbonnement</b> -->
+<!-- 		</field>		 -->
+<!-- 		<field type="one-way"> -->
+<!-- 			<a>taAbonnement.taTAbonnement.codeTAbonnement</a> -->
+<!-- 			<b>codeTAbonnement</b> -->
+<!-- 		</field>		 -->
+<!-- 		<field type="one-way"> -->
+<!-- 			<a>taAbonnement.taTiers.idTiers</a> -->
+<!-- 			<b>idTiers</b> -->
+<!-- 		</field>		 -->
+<!-- 		<field type="one-way"> -->
+<!-- 			<a>taAbonnement.taTiers.codeTiers</a> -->
+<!-- 			<b>codeTiers</b> -->
+<!-- 		</field>		 -->
+<!-- 		<field type="one-way"> -->
+<!-- 			<a>taAbonnement.taTiers.nomTiers</a> -->
+<!-- 			<b>nomTiers</b> -->
+<!-- 		</field>		 -->
+	</mapping>	
+	
+<mapping>
+		<class-a>fr.legrain.document.model.TaAvisEcheance</class-a>
+		<class-b>fr.legrain.document.dto.EnteteAvisEcheanceDTO</class-b>	
+		<field type="one-way">
+			<a>idDocument</a>
+			<b>id</b>
+		</field>
+		<field>
+			<a>codeDocument</a>
+			<b>codeDocument</b>
+		</field>
+		<field>
+			<a>dateDocument</a>
+			<b>dateDocument</b>
+		</field>
+		<field>
+			<a>dateEchDocument</a>
+			<b>dateEchDocument</b>
+		</field>
+		<field>
+			<a>libelleDocument</a>
+			<b>libelleDocument</b>
+		</field>
+		<field type="one-way">
+			<a>taTiers.codeTiers</a>
+			<b>codeTiers</b>
+		</field>
+		<field type="one-way">
+			<a>taTiers.nomTiers</a>
+			<b>nomTiers</b>
+		</field>
+		<field>
+			<a>remHtDocument</a>
+			<b>remHtDocument</b>
+		</field>
+		<field>
+			<a>txRemHtDocument</a>
+			<b>txRemHtDocument</b>
+		</field>
+		<field>
+			<a>remTtcDocument</a>
+			<b>remTtcDocument</b>
+		</field>
+		<field>
+			<a>txRemTtcDocument</a>
+			<b>txRemTtcDocument</b>
+		</field>
+		<field>
+			<a>nbEDocument</a>
+			<b>nbEDocument</b>
+		</field>
+		<field>
+			<a>mtTtcCalc</a>
+			<b>mtTtcCalc</b>
+		</field>
+		<field>
+			<a>mtHtCalc</a>
+			<b>mtHtCalc</b>
+		</field>
+		<field>
+			<a>mtTvaCalc</a>
+			<b>mtTvaCalc</b>
+		</field>
+		<field>
+			<a>netTtcCalc</a>
+			<b>netTtcCalc</b>
+		</field>
+		<field>
+			<a>netHtCalc</a>
+			<b>netHtCalc</b>
+		</field>
+		<field>
+			<a>netTvaCalc</a>
+			<b>netTvaCalc</b>
+		</field>
+		<field>
+			<a>ttc</a>
+			<b>ttc</b>
+		</field>
+		<field>
+			<a>regleDocument</a>
+			<b>regleDocument</b>
+		</field>		
+		<field>
+			<a>commentaire</a>
+			<b>commentaire</b>
+		</field>
+		<field>
+			<a>accepte</a>
+			<b>accepte</b>
+		</field>
+	</mapping>	
+	<mapping map-null="false" map-empty-string="false">
+		<class-a>fr.legrain.document.model.TaLAvisEcheance</class-a>
+		<class-b>fr.legrain.document.dto.TaLAvisEcheanceDTO</class-b>		
+        <!-- Ajourt pour JEE mode web JSF -->
+		<field>
+			<a>idLDocument</a>
+			<b>idLDocument</b>
+		</field>
+		<!-- Fin Ajour pour JEE mode web JSF -->
+
+		<field type="one-way">
+			<a>idLDocument</a>
+			<b>id</b>
+		</field>
+		<field type="one-way">
+			<a>taDocument.idDocument</a>
+			<b>idDocument</b>
+		</field>
+		<field type="one-way">
+			<a>taTLigne.codeTLigne</a>
+			<b>codeTLigne</b>
+		</field>
+		<field type="one-way">
+			<a>taLEcheance.idLEcheance</a>
+			<b>idLEcheance</b>
+		</field>		
+		<field type="one-way">
+			<a>taArticle.idArticle</a>
+			<b>idArticle</b>
+		</field>
+		<field type="one-way">
+			<a>taArticle.codeArticle</a>
+			<b>codeArticle</b>
+		</field>
+		<field>
+			<a>numLigneLDocument</a>
+			<b>numLigneLDocument</b>
+		</field>		
+		<field>
+			<a>libLDocument</a>
+			<b>libLDocument</b>
+		</field>
+		<field>
+			<a>qteLDocument</a>
+			<b>qteLDocument</b>
+		</field>
+		<field>
+			<a>prixULDocument</a>
+			<b>prixULDocument</b>
+		</field>
+		<field>
+			<a>tauxTvaLDocument</a>
+			<b>tauxTvaLDocument</b>
+		</field>
+		<field>
+			<a>codeTvaLDocument</a>
+			<b>codeTvaLDocument</b>
+		</field>
+		<field>
+			<a>codeTTvaLDocument</a>
+			<b>codeTTvaLDocument</b>
+		</field>
+		<field>
+			<a>mtHtLDocument</a>
+			<b>mtHtLDocument</b>
+		</field>
+		<field>
+			<a>mtTtcLDocument</a>
+			<b>mtTtcLDocument</b>
+		</field>
+		<field>
+			<a>remTxLDocument</a>
+			<b>remTxLDocument</b>
+		</field>
+		<field>
+			<a>remHtLDocument</a>
+			<b>remHtLDocument</b>
+		</field>
+		<field>
+			<a>u1LDocument</a>
+			<b>u1LDocument</b>
+		</field>
+		<field>
+			<a>u2LDocument</a>
+			<b>u2LDocument</b>
+		</field>
+		<field>
+			<a>txRemHtDocument</a>
+			<b>txRemHtDocument</b>
+		</field>
+		<field>
+			<a>accepte</a>
+			<b>accepte</b>
+		</field>
+	</mapping>	
+	<mapping>
+		<class-a>fr.legrain.document.model.TaInfosAvisEcheance</class-a>
+		<class-b>fr.legrain.tiers.dto.AdresseInfosFacturationDTO</class-b>
+		<field>
+			<a>adresse1</a>
+			<b>adresse1Adresse</b>
+		</field>
+		<field>
+			<a>adresse2</a>
+			<b>adresse2Adresse</b>
+		</field>
+		<field>
+			<a>adresse3</a>
+			<b>adresse3Adresse</b>
+		</field>
+		<field>
+			<a>codepostal</a>
+			<b>codepostalAdresse</b>
+		</field>
+		<field>
+			<a>ville</a>
+			<b>villeAdresse</b>
+		</field>
+		<field>
+			<a>pays</a>
+			<b>paysAdresse</b>
+		</field>		
+	</mapping>
+	
+	<mapping>
+		<class-a>fr.legrain.document.model.TaInfosAvisEcheance</class-a>
+		<class-b>fr.legrain.tiers.dto.AdresseInfosLivraisonDTO</class-b>
+		<field>
+			<a>adresse1Liv</a>
+			<b>adresse1AdresseLiv</b>
+		</field>
+		<field>
+			<a>adresse2Liv</a>
+			<b>adresse2AdresseLiv</b>
+		</field>
+		<field>
+			<a>adresse3Liv</a>
+			<b>adresse3AdresseLiv</b>
+		</field>
+		<field>
+			<a>codepostalLiv</a>
+			<b>codepostalAdresseLiv</b>
+		</field>
+		<field>
+			<a>villeLiv</a>
+			<b>villeAdresseLiv</b>
+		</field>
+		<field>
+			<a>paysLiv</a>
+			<b>paysAdresseLiv</b>
+		</field>
+		
+	</mapping>
+	<mapping>
+		<class-a>fr.legrain.document.model.TaInfosAvisEcheance</class-a>
+		<class-b>fr.legrain.tiers.dto.TaCPaiementDTO</class-b>
+		<field>
+			<a>codeCPaiement</a>
+			<b>codeCPaiement</b>
+		</field>
+		<field>
+			<a>libCPaiement</a>
+			<b>libCPaiement</b>
+		</field>
+		<field>
+			<a>reportCPaiement</a>
+			<b>reportCPaiement</b>
+		</field>
+		<field>
+			<a>finMoisCPaiement</a>
+			<b>finMoisCPaiement</b>
+		</field>
+		<field-exclude> 
+  		<a>versionObj</a> 
+  		<b>versionObj</b> 
+		</field-exclude>					
+	</mapping>
+			
+	<mapping map-null="false">
+		<class-a>fr.legrain.document.model.TaAvisEcheance</class-a>
+		<class-b>fr.legrain.document.model.TaInfosAvisEcheance</class-b>
+		<field>
+			<a>taTiers.codeCompta</a>
+			<b>codeCompta</b>
+		</field>
+		<field>
+			<a>taTiers.compte</a>
+			<b>compte</b>
+		</field>
+		<field>
+			<a>taTiers.nomTiers</a>
+			<b>nomTiers</b>
+		</field>
+		<field>
+			<a>taTiers.prenomTiers</a>
+			<b>prenomTiers</b>
+		</field>
+		<field>
+			<a>taTiers.surnomTiers</a>
+			<b>surnomTiers</b>
+		</field>
+		<field>
+			<a>taTiers.taTCivilite.codeTCivilite</a>
+			<b>codeTCivilite</b>
+		</field>
+		<field>
+			<a>taTiers.taTEntite.codeTEntite</a>
+			<b>codeTEntite</b>
+		</field>
+		<field>
+			<a>taTiers.taEntreprise.nomEntreprise</a>
+			<b>nomEntreprise</b>
+		</field>
+		<field>
+			<a>taTiers.taCompl.tvaIComCompl</a>
+			<b>tvaIComCompl</b>
+		</field>
+		<field>
+			<a>taTiers.taCPaiement.codeCPaiement</a>
+			<b>codeCPaiement</b>
+		</field>
+		<field>
+			<a>taTiers.taCPaiement.libCPaiement</a>
+			<b>libCPaiement</b>
+		</field>
+		<field>
+			<a>taTiers.taCPaiement.reportCPaiement</a>
+			<b>reportCPaiement</b>
+		</field>
+		<field>
+			<a>taTiers.taCPaiement.finMoisCPaiement</a>
+			<b>finMoisCPaiement</b>
+		</field>
+		<field-exclude> 
+  		<a>versionObj</a> 
+  		<b>versionObj</b> 
+		</field-exclude>			
+	</mapping>
+	<mapping>
+		<class-a>fr.legrain.pointLgr.model.TaPourcGroupe</class-a>
+		<class-b>fr.legrain.pointLgr.dto.PourcGroupeDTO</class-b>
+		<field>
+			<a>idPourcGroupe</a>
+			<b>id</b>
+		</field>
+		<field>
+			<a>taTAbonnement.codeTAbonnement</a>
+			<b>codeTAbonnement</b>
+		</field>
+		<field type="one-way">
+			<a>taTAbonnement.idTAbonnement</a>
+			<b>idTAbonnement</b>
+		</field>		
+		<field>
+			<a>taFamilleTiers.codeFamille</a>
+			<b>codeFamille</b>
+		</field>
+		<field type="one-way">
+			<a>taFamilleTiers.idFamille</a>
+			<b>idFamille</b>
+		</field>		
+		<field>
+			<a>pourcentage</a>
+			<b>pourcentage</b>
+		</field>
+	</mapping>	
+	
+	<mapping map-null="false" map-empty-string="false">
+		<class-a>fr.legrain.document.model.TaBonReception</class-a>
+		<class-b>fr.legrain.document.dto.TaBonReceptionDTO</class-b>
+		
+		<field>
+			<a>idDocument</a>
+			<b>id</b>
+		</field>
+		
+		<field type="one-way">
+			<a>taTiers.idTiers</a>
+			<b>idTiers</b>
+		</field>
+		
+		<field type="one-way">
+			<a>taTiersPrestationService.codeTiers</a>
+			<b>codeTiersPrestation</b>
+		</field>
+		
+		<field>
+			<a>taTiers.codeTiers</a>
+			<b>codeTiers</b>
+		</field>
+		
+		<field type="one-way">
+			<a>taTReception.idTReception</a>
+			<b>idTReception</b>
+		</field>
+		
+		<field>
+			<a>taTReception.codeTReception</a>
+			<b>codeTReception</b>
+		</field>
+		
+		<field>
+			<a>taTReception.liblTReception</a>
+			<b>liblTReception</b>
+		</field>
+	</mapping>
+	
+	<mapping map-null="false" map-empty-string="false">
+		<class-a>fr.legrain.article.model.TaFabrication</class-a>
+		<class-b>fr.legrain.article.dto.TaFabricationDTO</class-b>
+		<field type="one-way">
+			<a>idDocument</a>
+			<b>id</b>
+		</field>
+
+		<field type="one-way">
+			<a>taTFabrication.idTFabrication</a>
+			<b>idTFabrication</b>
+		</field>
+		
+		<field type="one-way">
+			<a>taTiersPrestationService.codeTiers</a>
+			<b>codeTiersPrestation</b>
+		</field>
+		
+		<field type="one-way">
+			<a>taUtilisateurRedacteur.email</a>
+			<b>nomRedacteur</b>
+		</field>
+		
+		<field type="one-way">
+			<a>taUtilisateurControleur.email</a>
+			<b>nomControleur</b>
+		</field>
+		
+		<field>
+			<a>taTFabrication.codeTFabrication</a>
+			<b>codeTFabrication</b>
+		</field>
+		
+		<field>
+			<a>taTFabrication.liblTFabrication</a>
+			<b>liblTFabrication</b>
+		</field>
+	</mapping>
+	
+	<mapping map-null="false" map-empty-string="false">
+		<class-a>fr.legrain.article.model.TaModeleFabrication</class-a>
+		<class-b>fr.legrain.article.dto.TaModeleFabricationDTO</class-b>
+		<field type="one-way">
+			<a>idDocument</a>
+			<b>id</b>
+		</field>
+		<field type="one-way">
+			<a>taTFabrication.idTFabrication</a>
+			<b>idTFabrication</b>
+		</field>
+		
+		<field>
+			<a>taTFabrication.codeTFabrication</a>
+			<b>codeTFabrication</b>
+		</field>
+		
+		<field>
+			<a>taTFabrication.liblTFabrication</a>
+			<b>liblTFabrication</b>
+		</field>
+	</mapping>
+	
+	<mapping map-null="false" map-empty-string="false">
+		<class-a>fr.legrain.document.model.TaLBonReception</class-a>
+		<class-b>fr.legrain.document.dto.TaLBonReceptionDTO</class-b>
+        <!-- Ajourt pour JEE mode web JSF -->
+		<field>
+			<a>idLDocument</a>
+			<b>idLDocument</b>
+		</field>
+		<!-- Fin Ajour pour JEE mode web JSF -->
+		
+<!-- 		<field> -->
+<!-- 			<a>idLDocument</a> -->
+<!-- 			<b>id</b> -->
+<!-- 		</field> -->
+		
+		<field type="one-way">
+			<a>taLot.numLot</a>
+			<b>numLot</b>
+		</field>
+		
+		<field type="one-way">
+			<a>taLot.dluo</a>
+			<b>dluo</b>
+		</field>
+		
+		<field>
+			<a>libLDocument</a>
+			<b>libLDocument</b>
+		</field>
+		
+		<field type="one-way">
+			<a>taTLigne.codeTLigne</a>
+			<b>codeTLigne</b>
+		</field>
+		
+		<field type="one-way">
+			<a>taArticle.idArticle</a>
+			<b>idArticle</b>
+		</field>
+		
+		<field>
+			<a>emplacementLDocument</a>
+			<b>emplacement</b>
+		</field>
+		
+		<field>
+			<a>u1LDocument</a>
+			<b>u1LDocument</b>
+		</field>		
+		
+		<field>
+			<a>u2LDocument</a>
+			<b>u2LDocument</b>
+		</field>	
+		<field>
+			<a>codeBarre</a>
+			<b>codeBarre</b>
+		</field>			
+	</mapping>
+	<mapping map-null="false" map-empty-string="false">
+		<class-a>fr.legrain.article.model.TaLFabricationPF</class-a>
+		<class-b>fr.legrain.document.dto.TaLFabricationDTO</class-b>		
+		<field type="one-way">
+			<a>taLot.numLot</a>
+			<b>numLot</b>
+		</field>
+		
+		<field type="one-way">
+			<a>taLot.dluo</a>
+			<b>dluo</b>
+		</field>				
+	</mapping>	
+	<mapping map-null="false" map-empty-string="false">
+		<class-a>fr.legrain.stock.model.TaGrMouvStock</class-a>
+		<class-b>fr.legrain.stock.dto.GrMouvStockDTO</class-b>		
+		<field>
+			<a>idGrMouvStock</a>
+			<b>id</b>
+		</field>
+		<field>
+			<a>codeGrMouvStock</a>
+			<b>codeGrMouvStock</b>
+		</field>
+		<field>
+			<a>dateGrMouvStock</a>
+			<b>dateGrMouvStock</b>
+		</field>
+		<field>
+			<a>libelleGrMouvStock</a>
+			<b>libelleGrMouvStock</b>
+		</field>
+		<field>
+			<a>commentaire</a>
+			<b>commentaire</b>
+		</field>
+		<field type="one-way">
+			<a>taEtat.idEtat</a>
+			<b>idEtat</b>
+		</field>
+		<field type="one-way">
+			<a>taEtat.codeEtat</a>
+			<b>codeEtat</b>
+		</field>		
+		<field type="one-way">
+			<a>taTypeMouvStock.idTypeMouvement</a>
+			<b>idtypeMouvStock</b>
+		</field>
+		<field type="one-way">
+			<a>taTypeMouvStock.code</a>
+			<b>codetypeMouvStock</b>
+		</field>
+	</mapping>	
+	<mapping map-null="false" map-empty-string="false">
+		<class-a>fr.legrain.stock.model.TaInventaire</class-a>
+		<class-b>fr.legrain.stock.dto.InventaireDTO</class-b>		
+		<field>
+			<a>idInventaire</a>
+			<b>id</b>
+		</field>
+		<field>
+			<a>codeInventaire</a>
+			<b>codeInventaire</b>
+		</field>
+		<field>
+			<a>dateInventaire</a>
+			<b>dateInventaire</b>
+		</field>
+		<field>
+			<a>libelleInventaire</a>
+			<b>libelleInventaire</b>
+		</field>
+		<field>
+			<a>commentaire</a>
+			<b>commentaire</b>
+		</field>
+		<field type="one-way">
+			<a>taEtat.idEtat</a>
+			<b>idEtat</b>
+		</field>
+		<field type="one-way">
+			<a>taEtat.codeEtat</a>
+			<b>codeEtat</b>
+		</field>		
+		<field type="one-way">
+			<a>taEntrepot.idEntrepot</a>
+			<b>idEntrepot</b>
+		</field>
+		<field type="one-way">
+			<a>taEntrepot.codeEntrepot</a>
+			<b>codeEntrepot</b>
+		</field>
+	</mapping>	
+	
+	<mapping map-null="false" map-empty-string="false" >
+		<class-a>fr.legrain.article.model.TaLot</class-a>
+		<class-b>fr.legrain.article.dto.TaLotDTO</class-b>	
+		<field>
+			<a>idLot</a>
+			<b>id</b>
+		</field>
+	</mapping>	
+	
+		<mapping map-null="false" map-empty-string="false" >
+		<class-a>fr.legrain.article.model.TaCoefficientUnite</class-a>
+		<class-b>fr.legrain.article.dto.TaCoefficientUniteDTO</class-b>	
+		<field>
+			<a>uniteA.codeUnite</a>
+			<b>codeUniteA</b>
+		</field>
+		<field>
+			<a>uniteB.codeUnite</a>
+			<b>codeUniteB</b>
+		</field>
+	</mapping>	
+	
+	<mapping map-null="false" map-empty-string="false" >
+		<class-a>fr.legrain.article.model.TaLabelArticle</class-a>
+		<class-b>fr.legrain.article.dto.TaLabelArticleDTO</class-b>	
+		<field>
+			<a>idLabelArticle</a>
+			<b>id</b>
+		</field>
+	</mapping>	
+	
+	<mapping map-null="false" map-empty-string="false" >
+		<class-a>fr.legrain.servicewebexterne.model.TaTServiceWebExterne</class-a>
+		<class-b>fr.legrain.servicewebexterne.dto.TaTServiceWebExterneDTO</class-b>	
+		<field>
+			<a>idTServiceWebExterne</a>
+			<b>id</b>
+		</field>
+	</mapping>
+	
+	<mapping map-null="false" map-empty-string="false" >
+		<class-a>fr.legrain.servicewebexterne.model.TaTAuthentification</class-a>
+		<class-b>fr.legrain.servicewebexterne.dto.TaTAuthentificationDTO</class-b>	
+		<field>
+			<a>idTAuthentification</a>
+			<b>id</b>
+		</field>
+	</mapping>
+	
+	<mapping map-null="false" map-empty-string="false" >
+		<class-a>fr.legrain.servicewebexterne.model.TaServiceWebExterne</class-a>
+		<class-b>fr.legrain.servicewebexterne.dto.TaServiceWebExterneDTO</class-b>	
+		<field>
+			<a>idServiceWebExterne</a>
+			<b>id</b>
+		</field>
+		<field>
+			<a>taTAuthentification.codeTAuthentification</a>
+			<b>codeTAuthentification</b>
+		</field>
+		<field>
+			<a>taTServiceWebExterne.codeTServiceWebExterne</a>
+			<b>codeTServiceWebExterne</b>
+		</field>
+	</mapping>
+	
+	<mapping map-null="false" map-empty-string="false" >
+		<class-a>fr.legrain.servicewebexterne.model.TaCompteServiceWebExterne</class-a>
+		<class-b>fr.legrain.servicewebexterne.dto.TaCompteServiceWebExterneDTO</class-b>	
+		<field>
+			<a>idCompteServiceWebExterne</a>
+			<b>id</b>
+		</field>
+		<field>
+			<a>taTAuthentification.codeTAuthentification</a>
+			<b>codeTAuthentification</b>
+		</field>
+		<field>
+			<a>taServiceWebExterne.codeServiceWebExterne</a>
+			<b>codeServiceWebExterne</b>
+		</field>
+	</mapping>
+	
+	<mapping map-null="false" map-empty-string="false" >
+		<class-a>fr.legrain.email.model.TaMessageEmail</class-a>
+		<class-b>fr.legrain.email.dto.TaMessageEmailDTO</class-b>	
+		<field>
+			<a>idEmail</a>
+			<b>id</b>
+		</field>
+	</mapping>
+	
+	<mapping map-null="false" map-empty-string="false" >
+		<class-a>fr.legrain.email.model.TaContactMessageEmail</class-a>
+		<class-b>fr.legrain.email.dto.TaContactMessageEmailDTO</class-b>	
+		<field>
+			<a>idContactMessageEmail</a>
+			<b>id</b>
+		</field>
+		<field>
+			<a>taTiers.idTiers</a>
+			<b>idTiers</b>
+		</field>
+		<field>
+			<a>taTiers.codeTiers</a>
+			<b>codeTiers</b>
+		</field>
+	</mapping>
+	
+	<mapping map-null="false" map-empty-string="false" >
+		<class-a>fr.legrain.edition.model.TaEdition</class-a>
+		<class-b>fr.legrain.edition.dto.TaEditionDTO</class-b>	
+		<field>
+			<a>idEdition</a>
+			<b>id</b>
+		</field>
+		<field>
+			<a>taTEdition.idTEdition</a>
+			<b>idTEdition</b>
+		</field>
+		<field>
+			<a>taTEdition.codeTEdition</a>
+			<b>codeTEdition</b>
+		</field>
+	</mapping>
+	
+	<mapping map-null="false" map-empty-string="false" >
+		<class-a>fr.legrain.edition.model.TaEditionCatalogue</class-a>
+		<class-b>fr.legrain.edition.dto.TaEditionCatalogueDTO</class-b>	
+		<field>
+			<a>idEdition</a>
+			<b>id</b>
+		</field>
+		<field>
+			<a>taTEdition.idTEdition</a>
+			<b>idTEdition</b>
+		</field>
+		<field>
+			<a>taTEdition.codeTEdition</a>
+			<b>codeTEdition</b>
+		</field>
+	</mapping>
+	
+	<mapping map-null="false" map-empty-string="false" >
+		<class-a>fr.legrain.article.model.TaTransporteur</class-a>
+		<class-b>fr.legrain.article.dto.TaTransporteurDTO</class-b>	
+		<field>
+			<a>idTransporteur</a>
+			<b>id</b>
+		</field>
+		<field>
+			<a>taTTransport.idTTransport</a>
+			<b>idTTransport</b>
+		</field>
+		<field>
+			<a>taTTransport.codeTTransport</a>
+			<b>codeTTransport</b>
+		</field>
+		<field>
+			<a>taTTransport.liblTTransport</a>
+			<b>liblTTransport</b>
+		</field>
+	</mapping>
+	
+	
+		
+</mappings>

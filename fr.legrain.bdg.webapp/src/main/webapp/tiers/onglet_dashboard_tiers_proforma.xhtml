@@ -1,0 +1,302 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
+xmlns:f="http://java.sun.com/jsf/core" 
+xmlns:h="http://java.sun.com/jsf/html"
+xmlns:ui="http://java.sun.com/jsf/facelets" 
+xmlns:o="http://omnifaces.org/ui" 
+xmlns:p="http://primefaces.org/ui">
+
+<!-- 	<div class="ui-g-12 ui-md-12"> -->
+<!-- 		<h:panelGrid columns="2" cellpadding="0"> -->
+<!-- 			<p:outputLabel value="Votre dossier est très volumineux, Cliquez sur le bouton pour raffraîchir les données" style="font-weight : bold;" -->
+<!-- 				rendered="#{tiersController.dashBoardParTiersController.grosFichierTiers}"> -->
+<!-- 			</p:outputLabel> -->
+<!-- 			<p:commandButton process="@this" rendered="#{tiersController.dashBoardParTiersController.grosFichierTiers}" -->
+<!-- 							update="@this,idZoneTotauxArticle, @widgetVar(wvTiersListeArticleExhaustive),@widgetVar(wvTiersListeArticleRegroupee),@widgetVar(wvTiersListeArticleFamille), idGraphiqueParFamilleTiersArticle, idGraphiqueParArticlesTiersArticle,@widgetVar(wvRappelPeriodePanelTiersArticle)"  -->
+<!-- 							action="#{tiersController.dashBoardParTiersController.initAllValueArticle(tiersController.selectedTaTiersDTO.getCodeTiers())}"  -->
+<!-- 				value="Raffraîchir" styleClass="ui-orange" style="width:100%;" /> -->
+<!-- 		</h:panelGrid> -->
+<!-- 	</div>				 -->
+				
+				<div class="ui-g-12 ui-md-12">
+				<p:panel header="Critères et paramètres du tableau de bord" collapsed="true" toggleable="true" toggleOrientation="horizontal" >
+					<div class="ui-g-12 ui-md-4">
+					<p:fieldset style="margin-bottom:20px;">
+<!-- 						 <h:graphicImage name="dashboard/periode.png" library="images" /> -->
+		
+						<p:panel header="Période" styleClass="panelgrey">
+						<f:facet name="footer">
+<!-- 						oncomplete="PF('wvTiersListeProforma').filter()" -->
+							<p:commandButton 
+							process="@this" 
+							update="@this,idZoneTotauxProforma, @widgetVar(wvTiersListeProforma),idGraphiqueParTiersProforma,@widgetVar(wvRappelPeriodePanelTiersProforma)" 
+							action="#{tiersController.dashBoardParTiersController.initAllValueProforma(tiersController.selectedTaTiersDTO.getCodeTiers())}" value="Appliquer" styleClass="ui-orange" 
+							style="width:100%;" />
+							
+						</f:facet>
+						 <div class="ui-g-12 ui-md-2" >
+						<i class="fa fa-calendar fa-3x" aria-hidden="true"></i>
+<!-- 						 <h:graphicImage name="dashboard/periode.png" library="images" /> -->
+						 </div>
+						 <div class="ui-g-12 ui-md-10">
+			        	<h:panelGrid columns="2" cellpadding="0">
+						 <p:outputLabel value="Du"/>
+											<p:calendar value="#{tiersController.dashBoardParTiersController.dateDebutProforma}"
+												showOn="button" 
+												navigator="true" 
+												pattern="#{msg.date_pattern}" 
+												mask="true" 
+												locale="fr" 
+												timeZone="#{msg.time_zone}" >
+												<p:ajax event="dateSelect"/>
+													<p:ajax event="change"/>
+											</p:calendar>
+<!-- 												<f:convertDateTime pattern="#{msg.date_pattern}" -->
+<!-- 													timeZone="#{msg.time_zone}" /> -->
+
+						 <p:outputLabel value="au"/>
+											<p:calendar value="#{tiersController.dashBoardParTiersController.dateFinProforma}"
+												showOn="button" 
+												navigator="true" 
+												pattern="#{msg.date_pattern}" 
+												mask="true" 
+												locale="fr" 
+												timeZone="#{msg.time_zone}" >
+												<p:ajax event="dateSelect"/>
+													<p:ajax event="change"/>
+											</p:calendar>
+
+        				</h:panelGrid>
+        				</div>
+        				 <p:separator />
+
+
+								</p:panel>
+    				</p:fieldset>
+    				</div>
+
+					<div class="ui-g-12 ui-md-4">
+
+    				</div>
+					<div class="ui-g-12 ui-md-4">
+
+    				</div>
+				</p:panel>
+				<p:panel widgetVar="wvRappelPeriodePanelTiersProforma"  style="font-size : 20px;">
+				<p:outputLabel>Période du </p:outputLabel>
+				 <h:outputText value="#{tiersController.dashBoardParTiersController.dateDebutProforma}"  style="font-weight : bold;">
+				 	<f:convertDateTime type="date" pattern="dd MMMM yyyy" timeZone="#{msg.time_zone}"/>
+				 </h:outputText>
+				 <p:outputLabel> au  </p:outputLabel>
+				 <h:outputText value="#{tiersController.dashBoardParTiersController.dateFinProforma}"  style="font-weight : bold;">
+				 	<f:convertDateTime type="date" pattern="dd MMMM yyyy" timeZone="#{msg.time_zone}"/>
+				 </h:outputText>
+				 
+				</p:panel>
+				</div>
+
+				<!-- <p:outputPanel deferred="true" id="idZoneTotauxProforma"> -->
+				<div class="ui-g-12 ui-md-12 ui-lg-8">
+				<p:outputPanel id="idZoneTotauxProforma">
+				<div class="card-group">
+<!-- 				<h:panelGroup id="idZoneTotauxProforma" layout="block" > -->
+					<div class="card card-dash">
+						<h3 align="center card-title"><span style="font-size: 30px;">#{tiersController.dashBoardParTiersController.nbProforma}</span> proforma réalisés</h3><br/>
+						<div class="card-body"></div>
+						<div class="card-footer">
+							<p:outputLabel value="Total HT : "/> 
+							<p:outputLabel value="#{tiersController.dashBoardParTiersController.montantTotalHtProforma}" >
+							<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+							</p:outputLabel>
+							<br/>
+							<p:outputLabel value="Total TTC : "/> 
+							<p:outputLabel value="#{tiersController.dashBoardParTiersController.montantTotalTtcProforma}" >
+							<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+							</p:outputLabel>
+							<!-- <p:separator></p:separator>
+							<p:outputLabel value="Nombre : "/> 
+							<p:outputLabel value="#{tiersController.dashBoardParTiersController.nbProforma}"/> -->
+						
+	<!-- 				</h:panelGroup> -->
+							<p:commandButton title="Détails" style="width:100%" styleClass="btn-liste btn"
+								process="@this"
+								update="@this,@widgetVar(wvTiersListeProforma),idGraphiqueParTiersProforma"
+								actionListener="#{tiersController.dashBoardParTiersController.initValueLignesProforma(tiersController.selectedTaTiersDTO.getCodeTiers())}"
+								  >
+							</p:commandButton>
+						</div>
+					</div>
+					<div class="card card-dash">
+						<h3 align="center card-title"><span style="font-size: 30px;">#{tiersController.dashBoardParTiersController.nbProformaNonTransforme}</span> proforma non transformés</h3>
+						<div class="card-body"></div>
+						<div class="card-footer">
+							<p:outputLabel value="Total HT : "/> 
+							<p:outputLabel value="#{tiersController.dashBoardParTiersController.montantTotalHtNonTransfoProforma}">
+							<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+							</p:outputLabel>
+							<br/>
+							<p:outputLabel value="Total TTC : "/> 
+							<p:outputLabel value="#{tiersController.dashBoardParTiersController.montantTotalTtcNonTransfoProforma}">
+							<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+							</p:outputLabel>
+							<!-- <p:separator></p:separator>
+							<p:outputLabel value="Nombre : "/> 
+							<p:outputLabel value="#{tiersController.dashBoardParTiersController.nbProformaNonTransforme}"/> -->
+						
+							<p:commandButton title="Détails" style="width:100%" styleClass="btn-liste btn"
+								process="@this"
+								update="@this,@widgetVar(wvTiersListeProforma),idGraphiqueParTiersProforma"
+								actionListener="#{tiersController.dashBoardParTiersController.initValueLignesProformaNonTransforme(tiersController.selectedTaTiersDTO.getCodeTiers())}" >
+							</p:commandButton>
+						</div>
+					</div>				
+					<div class="card card-dash">
+						<h3 align="center card-title"><span style="font-size: 30px;">#{tiersController.dashBoardParTiersController.nbProformaNonTransformeARelancer}</span> proforma à relancer</h3><br/>
+						<div class="card-body"></div>
+						<div class="card-footer">
+							<p:outputLabel value="Total HT : "/> 
+							<p:outputLabel value="#{tiersController.dashBoardParTiersController.montantTotalHtNonTransfoARelancerProforma}">
+							<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+							</p:outputLabel>
+							<br/>
+							<p:outputLabel value="Total TTC : "/> 
+							<p:outputLabel value="#{tiersController.dashBoardParTiersController.montantTotalTtcNonTransfoARelancerProforma}">
+							<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+							</p:outputLabel>
+							<!-- <p:separator></p:separator>
+							<p:outputLabel value="Nombre : "/> 
+							<p:outputLabel value="#{tiersController.dashBoardParTiersController.nbProformaNonTransformeARelancer}"/> -->
+						
+							<p:commandButton title="Détails" style="width:100%" styleClass="btn-liste btn"
+								process="@this"
+								update="@this,idTiersListeProforma,idGraphiqueParTiersProforma"
+								actionListener="#{tiersController.dashBoardParTiersController.initValueLignesProformaNonTransformeARelancer(tiersController.selectedTaTiersDTO.getCodeTiers())}" >
+							</p:commandButton>	
+						</div>
+					</div>			
+					<div class="card card-dash">
+						<h3 align="center card-title"><span style="font-size: 30px;">#{tiersController.dashBoardParTiersController.nbProformaTransforme}</span> proforma tranformés</h3><br/>
+						<div class="card-body"></div>
+						<div class="card-footer">
+							<p:outputLabel value="Total HT : "/> 
+							<p:outputLabel value="#{tiersController.dashBoardParTiersController.montantTotalHtTransfoProforma}">
+							<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+							</p:outputLabel>
+							<br/>
+							<p:outputLabel value="Total TTC : "/> 
+							<p:outputLabel value="#{tiersController.dashBoardParTiersController.montantTotalTtcTransfoProforma}">
+							<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+							</p:outputLabel>
+							<!-- <p:separator></p:separator>
+							<p:outputLabel value="Nombre : "/> 
+							<p:outputLabel value="#{tiersController.dashBoardParTiersController.nbProformaTransforme}"/> -->
+						
+							<p:commandButton title="Détails" style="width:100%" styleClass="btn-liste btn"
+								process="@this"
+								update="@this,@widgetVar(wvTiersListeProforma),idGraphiqueParTiersProforma"
+								actionListener="#{tiersController.dashBoardParTiersController.initValueLignesProformaTransforme(tiersController.selectedTaTiersDTO.getCodeTiers())}" >
+							</p:commandButton>	
+						</div>	
+					</div>		
+
+				</div>
+				</p:outputPanel>
+				</div>
+
+				<div class="ui-g-12 ui-md-12">
+				
+				<div class="ui-g-12 ui-md-12 ui-lg-8">
+					<div class="card">
+						<h3 align="center">Liste des proforma pour ce tiers</h3>
+		<p:dataTable id="idTiersListeProforma"
+					 sortBy="#{listeproforma.codeDocument}" 
+					 sortOrder="descending" 
+					 var="listeproforma" 
+					 value="#{tiersController.dashBoardParTiersController.valueLignesProforma}"
+					 scrollable="true"
+					 scrollHeight="300"
+					 liveResize="true" 
+					 widgetVar="wvTiersListeProforma">
+			<p:ajax event="rowToggle" listener="#{tiersController.onRowToggle}" update=":@this"/>
+		
+        <f:facet name="header">
+        
+         <!-- <span class="boutonPrintLeft"> -->
+         <div class="list-header-button-print">
+							        <span style="float:left">
+									        <p:commandButton id="idBtnListePrintEcranDasboardListeLignesParTiersProforma"
+							 title="Imprimer la liste" 
+			onsuccess="window.open('#{request.contextPath}/output?__report=/reports/tiers/ListeDashboardListeLignesParTiersProforma.rptdesign&amp;__format=pdf')"
+			actionListener="#{dashBoardParTiersController.actImprimerListeLignesParTiers(tiersController.selectedTaTiersDTO.getNomTiers())}" styleClass="ui-priority-primary boutonPrint" style="color : white;" icon="fa fa-print"
+			process="@this" ></p:commandButton>
+									    </span>
+									    
+            Cliquez pour afficher le détail d'un document
+            </div>
+        </f:facet>
+        <p:column style="width:16px">
+            <p:rowToggler />
+        </p:column>
+        <p:column headerText="Code" sortBy="#{listeproforma.codeDocument}" filterBy="#{listeproforma.codeDocument}" filterMatchMode="contains">
+<!--             <h:outputText value="#{listeproforma.codeDocument}" /> -->
+								<p:commandLink value="#{listeproforma.codeDocument}"
+									action="#{ouvertureDocumentBean.detailDocument(ouvertureDocumentBean.recupCodeDocument(listeproforma.codeDocument,ouvertureDocumentBean.getTypeDocumentProforma()))}" 
+									update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+								</p:commandLink>            
+        </p:column>
+        <p:column headerText="Libellé" sortBy="#{listeproforma.libelleDocument}" filterBy="#{listeproforma.libelleDocument}" filterMatchMode="contains">
+            <h:outputText value="#{listeproforma.libelleDocument}" id="idListeLibelleProformaOngletTiers"/>
+			<p:tooltip id="toolTipListeLibelleProformaOngletTiers" value="#{listeproforma.libelleDocument}" shared="true" for="idListeLibelleProformaOngletTiers" showEffect="clip" position="top"/>
+        </p:column>
+        <p:column headerText="HT"  styleClass="right" sortBy="#{listeproforma.netHtCalc}" filterBy="#{listeproforma.netHtCalc}" filterMatchMode="contains">
+            <h:outputText value="#{listeproforma.netHtCalc}">
+			<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+			</h:outputText>
+        </p:column> 
+        <!-- <p:column headerText="TVA" sortBy="#{listeproforma.netTvaCalc}" filterBy="#{listeproforma.netTvaCalc}" filterMatchMode="contains">
+            <h:outputText value="#{listeproforma.netTvaCalc}" >
+			<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+			</h:outputText>
+        </p:column> -->
+        <p:column headerText="TTC"  styleClass="right" sortBy="#{listeproforma.netTtcCalc}" filterBy="#{listeproforma.netTtcCalc}" filterMatchMode="contains">
+            <h:outputText value="#{listeproforma.netTtcCalc}" >
+			<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+			</h:outputText>
+        </p:column>
+        <p:column headerText="Date" sortBy="#{listeproforma.dateDocument}" filterBy="#{listeproforma.dateDocument}" filterMatchMode="contains">
+            <h:outputText value="#{listeproforma.dateDocument}" >
+            		<f:convertDateTime pattern="#{msg.date_pattern}"
+					timeZone="#{msg.time_zone}" />
+            </h:outputText>
+        </p:column>
+        <p:column headerText="Echéance" sortBy="#{listeproforma.dateEchDocument}" filterBy="#{listeproforma.dateEchDocument}" filterMatchMode="contains">
+            <h:outputText value="#{listeproforma.dateEchDocument}" >
+            		<f:convertDateTime pattern="#{msg.date_pattern}"
+					timeZone="#{msg.time_zone}" />
+            </h:outputText>
+        </p:column>
+ 
+<!--         <p:rowExpansion> -->
+<!--         	<p:dataTable id="idTiersListeDetailProforma" var="listedetailproforma" value="#{tiersController.dashBoardParTiersController.listeFactureTiersPeriode}" widgetVar="wvTiersListeDetailProforma"> -->
+        		
+<!--         	</p:dataTable> -->
+<!--         </p:rowExpansion> -->
+    </p:dataTable>
+					</div>				
+				</div>
+				<div class="ui-g-12 ui-md-12 ui-lg-4">
+					<div class="card">
+					<p:tab title="Proforma" rendered="true">
+					
+						<h3 align="center">Graphique</h3>
+								<p:chart type="bar" model="#{tiersController.dashBoardParTiersController.barChartModelProforma}"
+								id="idGraphiqueParTiersProforma" 
+								widgetVar="wvGraphiqueParTiersProforma"
+								responsive="true" 
+								style="height:300px;">
+								</p:chart>
+					</p:tab>
+					</div>				
+				</div>
+				</div>
+				
+</ui:composition>

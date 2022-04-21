@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<title>Paiement par carte bancaire - Stripe</title>
+       <f:facet name="first">
+            <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+            <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+            <meta name="apple-mobile-web-app-capable" content="yes" />
+        </f:facet>
+        
+<!--         <title>Solstyce</title> -->
+        <link rel="shortcut icon" type="image/x-icon" href="#{resource['images:favicon.ico']}" />
+        
+        <h:outputScript name="js/nanoscroller.js" library="icarus-layout" />
+        <h:outputScript name="js/layout.js" library="icarus-layout" />
+
+
+</h:head>
+<h:body>
+	
+	<f:facet name="last">
+			<!-- surcharge des CSS primefaces -->
+			<h:outputStylesheet library="css" name="icarus-bdg.css" />
+			<h:outputStylesheet library="css" name="theme-bdg.css" />
+			<h:outputStylesheet library="css" name="stripe-elements.css" />
+		</f:facet>
+		<h:form id="payment-form">
+			<p:panel>
+			<h:panelGroup rendered="#{paiementCbController.saisirMontant}">
+				<div class="ui-g">
+					<div class="ui-g-12" style="padding: 0">
+						<div class="ui-g-12 bandeau-titre">
+							<h1>Votre règlement par carte bancaire TTC</h1>
+							<p><p:graphicImage library="images" name="paiement/cadenas.png" height="16px"> </p:graphicImage> Espace sécurisé</p>
+						</div>
+					</div>
+					<div class="ui-g-12 ui-md-12 ui-lg-12" style="padding: 0;">
+						<p:panelGrid columns="1" style="width:100%; height: 100%;" styleClass="panier widget-header-transparent">
+							<f:facet name="header">
+<!-- 								<p:outputLabel value="Montant total à payer : #{paiementCbController.totalTTC} €" /> -->
+							</f:facet>
+							
+							<p:panelGrid columns="2" style="margin:auto; height: 100%;">
+	
+								<p:outputLabel value="Montant TTC :" />
+								<p:inputText value="#{paiementCbController.totalTTC}" />
+								
+							</p:panelGrid>
+							
+							<f:facet name="footer">
+								<div  style="text-align: center">
+									<p:commandButton value="Valider le montant" actionListener="#{paiementCbController.actValiderMontant}" 
+									update="@form" style="margin-right:50px;" oncomplete="initStripe(a);" rendered="#{paiementCbController.interfaceStripeElement}"/>
+									
+									<p:commandButton value="Valider le montant" actionListener="#{paiementCbController.actValiderMontant}" 
+									update="@form" style="margin-right:50px;" rendered="#{!paiementCbController.interfaceStripeElement}"/>
+								</div>
+							</f:facet>
+	
+						</p:panelGrid>
+					</div>
+				</div>
+			</h:panelGroup>
+			
+			<h:panelGroup rendered="#{!paiementCbController.saisirMontant}">
+				<ui:fragment rendered="#{!paiementCbController.interfaceStripeElement}">
+					<div class="ui-g">
+						<div class="ui-g-12" style="padding: 0">
+							<div class="ui-g-12 bandeau-titre">
+								<h1>Votre réglement par carte bancaire TTC</h1>
+								<p><p:graphicImage library="images" name="paiement/cadenas.png" height="16px"> </p:graphicImage> Espace sécurisé</p>
+							</div>
+						</div>
+						<div class="ui-g-12 ui-md-12 ui-lg-12" style="padding: 0;">
+							<p:panelGrid columns="1" style="width:100%; height: 100%;" styleClass="panier widget-header-transparent-footer">
+								<f:facet name="header">
+									<p:outputLabel value="Montant total à payer : #{paiementCbController.totalTTC} €" />
+								</f:facet>
+								
+								<p:panelGrid columns="2" style="margin:auto; height: 100%;">
+		
+		
+									<p:outputLabel value="Nom du porteur :" />
+									<p:inputText value="#{paiementCbController.nomCarte}" />
+									
+									<p:outputLabel value="Numéro :" />
+									<p:inputText value="#{paiementCbController.numCarte}" />
+									
+									<p:outputLabel value="Mois :" />
+									<p:selectOneMenu value="#{paiementCbController.moisCarte}" style="width:150px">
+										<f:selectItems var="p" itemLabel="#{p}" itemValue="#{p}" value="#{paiementCbController.listeMoisCB}" />
+									</p:selectOneMenu>
+									
+									<p:outputLabel value="Année :" />
+									<p:selectOneMenu value="#{paiementCbController.anneeCarte}" style="width:150px">
+										<f:selectItems var="p" itemLabel="#{p}" itemValue="#{p}" value="#{paiementCbController.listeAnneeCB}" />
+									</p:selectOneMenu>
+									
+									<p:outputLabel value="Cryptogramme :" />
+									<p:inputText value="#{paiementCbController.cryptoCarte}" />
+									
+									
+								</p:panelGrid>
+								<!-- 				<p:outputLabel value="Type :" /> -->
+								<!-- 				<p:inputText value="#{paiementCbController.typeCarte}" /> -->
+								
+								<f:facet name="footer">
+									<div class="" style="text-align: center">
+										<p:commandButton value="Annuler" actionListener="#{paiementCbController.actAnnuler}" style="margin-right:50px;"/>
+										<p:commandButton value="Payer" actionListener="#{paiementCbController.actPayer}"/>
+										<p:messages showDetail="true" autoUpdate="true"></p:messages>
+									</div>
+								</f:facet>
+		
+							</p:panelGrid>
+							
+							
+							
+						</div>
+					</div>
+				</ui:fragment>
+				<ui:fragment rendered="#{paiementCbController.interfaceStripeElement}" >
+<!-- 					<form action="/charge" method="post" id="payment-form"> -->
+					  <div class="form-row">
+					  <input id="cardholder-name" type="text"/>
+					    <label for="card-element">
+<!-- 					      Credit or debit card -->
+					    </label>
+					    <div id="card-element">
+					      <!-- A Stripe Element will be inserted here. -->
+					    </div>
+					
+					    <!-- Used to display form errors. -->
+					    <div id="card-errors" role="alert"></div>
+					  </div>
+					
+					<div class="" style="text-align: center">
+						<p:commandButton value="Annuler" actionListener="#{paiementCbController.actAnnuler}" style="margin-right:50px;"/>
+						<p:commandButton value="Payer" onclick="lgrstr();"/>
+
+						<button id="card-button" data-secret="#{paiementCbController.secretClient}">
+						  Submit Payment
+						</button>
+						<p:messages showDetail="true" autoUpdate="true"></p:messages>
+					</div>
+					
+<!-- 					</form> -->
+<!-- 					<h:outputScript name="/js/stripe-elements.js"  /> -->
+				</ui:fragment>
+			</h:panelGroup>
+			</p:panel>				
+		</h:form>
+		
+		 <h:outputScript name="/js/functions.js"  />
+             <h:outputScript name="/js/locale_fr.js"  />  
+             
+             <script src="https://js.stripe.com/v3/"/>
+             <h:outputScript name="/js/stripe-elements2.js"  />
+	
+<!-- 		<h:panelGroup rendered="#{!paiementCbController.saisirMontant}"> -->
+<!-- 			<ui:fragment rendered="#{paiementCbController.interfaceStripeElement}" > -->
+				<script type="text/javascript" async="async" defer="defer">
+// 					 $( document ).ready(function() {
+						var a = '<h:outputText value="#{paiementCbController.clePubliqueStripe}"/>';
+		        		console.log( "ready !" );
+// 		        		initStripe(a);
+// 		    		});
+				</script>
+<!-- 			</ui:fragment> -->
+<!-- 		</h:panelGroup> -->
+
+     
+</h:body>
+</html>

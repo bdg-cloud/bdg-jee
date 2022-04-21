@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<report xmlns="http://www.eclipse.org/birt/2005/design" version="3.2.23" id="1">
+    <property name="createdBy">Eclipse BIRT Designer Version 4.3.2.v20140211-1400 Build &lt;4.3.2.v20140218-1056></property>
+    <property name="units">in</property>
+    <property name="iconFile">/templates/blank_report.gif</property>
+    <property name="bidiLayoutOrientation">ltr</property>
+    <property name="imageDPI">96</property>
+    <data-sources>
+        <script-data-source name="DataSourceScript" id="7"/>
+    </data-sources>
+    <data-sets>
+        <script-data-set name="LabelArticle" id="8">
+            <structure name="cachedMetaData"/>
+            <property name="dataSource">DataSourceScript</property>
+        </script-data-set>
+        <script-data-set name="FishierImage" id="9">
+            <list-property name="resultSetHints">
+                <structure>
+                    <property name="position">1</property>
+                    <property name="name">nomFichierOriginal</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">2</property>
+                    <property name="name">blobFichierOriginal</property>
+                    <property name="dataType">blob</property>
+                </structure>
+                <structure>
+                    <property name="position">3</property>
+                    <property name="name">nomFichierMiniature</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">4</property>
+                    <property name="name">blobFichierMiniature</property>
+                    <property name="dataType">blob</property>
+                </structure>
+            </list-property>
+            <list-property name="columnHints">
+                <structure>
+                    <property name="columnName">nomFichierOriginal</property>
+                </structure>
+                <structure>
+                    <property name="columnName">blobFichierOriginal</property>
+                </structure>
+                <structure>
+                    <property name="columnName">nomFichierMiniature</property>
+                </structure>
+                <structure>
+                    <property name="columnName">blobFichierMiniature</property>
+                </structure>
+            </list-property>
+            <structure name="cachedMetaData">
+                <list-property name="resultSet">
+                    <structure>
+                        <property name="position">1</property>
+                        <property name="name">nomFichierOriginal</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">2</property>
+                        <property name="name">blobFichierOriginal</property>
+                        <property name="dataType">blob</property>
+                    </structure>
+                    <structure>
+                        <property name="position">3</property>
+                        <property name="name">nomFichierMiniature</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">4</property>
+                        <property name="name">blobFichierMiniature</property>
+                        <property name="dataType">blob</property>
+                    </structure>
+                </list-property>
+            </structure>
+            <property name="dataSource">DataSourceScript</property>
+            <method name="open"><![CDATA[count=0;
+//dao = new Packages.fr.legrain.articles.dao.TaArticleDAO();
+//art = dao.findById(params["paramIdArticle"]);
+
+//imprimeObjet = new Packages.fr.legrain.edition.ImprimeObjet();
+//liste = imprimeObjet.l;
+
+Fichier = reportContext.getHttpServletRequest().getSession().getAttribute("fichier");
+liste = new Packages.java.util.ArrayList();
+liste.add(Fichier);]]></method>
+            <method name="fetch"><![CDATA[if(count< liste.size()) {
+		
+	Fichier = liste.get(count);
+	
+	if(Fichier.getNomFichierOriginal()==null){row["nomFichierOriginal"] = "";}
+	else{row["nomFichierOriginal"]=Fichier.getNomFichierOriginal();}
+	
+	if(Fichier.getBlobFichierOriginal()==null){row["blobFichierOriginal"] = "";}
+	else{row["blobFichierOriginal"]=Fichier.getBlobFichierOriginal();}
+	
+	if(Fichier.getNomFichierMiniature()==null){row["nomFichierMiniature"] = "";}
+	else{row["nomFichierMiniature"]=Fichier.getNomFichierMiniature();}
+	
+	if(Fichier.getBlobFichierMiniature()==null){row["blobFichierMiniature"] = "";}
+	else{row["blobFichierMiniature"]=Fichier.getBlobFichierMiniature();}
+		
+	count++;
+	return true;
+}
+return false;]]></method>
+        </script-data-set>
+    </data-sets>
+    <styles>
+        <style name="report" id="4">
+            <property name="fontFamily">sans-serif</property>
+            <property name="fontSize">10pt</property>
+        </style>
+        <style name="crosstab-cell" id="5">
+            <property name="borderBottomColor">#CCCCCC</property>
+            <property name="borderBottomStyle">solid</property>
+            <property name="borderBottomWidth">1pt</property>
+            <property name="borderLeftColor">#CCCCCC</property>
+            <property name="borderLeftStyle">solid</property>
+            <property name="borderLeftWidth">1pt</property>
+            <property name="borderRightColor">#CCCCCC</property>
+            <property name="borderRightStyle">solid</property>
+            <property name="borderRightWidth">1pt</property>
+            <property name="borderTopColor">#CCCCCC</property>
+            <property name="borderTopStyle">solid</property>
+            <property name="borderTopWidth">1pt</property>
+        </style>
+        <style name="crosstab" id="6">
+            <property name="borderBottomColor">#CCCCCC</property>
+            <property name="borderBottomStyle">solid</property>
+            <property name="borderBottomWidth">1pt</property>
+            <property name="borderLeftColor">#CCCCCC</property>
+            <property name="borderLeftStyle">solid</property>
+            <property name="borderLeftWidth">1pt</property>
+            <property name="borderRightColor">#CCCCCC</property>
+            <property name="borderRightStyle">solid</property>
+            <property name="borderRightWidth">1pt</property>
+            <property name="borderTopColor">#CCCCCC</property>
+            <property name="borderTopStyle">solid</property>
+            <property name="borderTopWidth">1pt</property>
+        </style>
+    </styles>
+    <page-setup>
+        <simple-master-page name="Simple MasterPage" id="2">
+            <property name="topMargin">0.25in</property>
+            <property name="headerHeight">105px</property>
+            <page-header>
+                <image id="13">
+                    <property name="display">inline</property>
+                    <property name="height">103px</property>
+                    <property name="width">631px</property>
+                    <property name="dataSet">FishierImage</property>
+                    <list-property name="boundDataColumns">
+                        <structure>
+                            <property name="name">blobFichierOriginal</property>
+                            <text-property name="displayName">blobFichierOriginal</text-property>
+                            <expression name="expression" type="javascript">dataSetRow["blobFichierOriginal"]</expression>
+                            <property name="dataType">blob</property>
+                        </structure>
+                    </list-property>
+                    <property name="source">expr</property>
+                    <expression name="valueExpr">row["blobFichierOriginal"]</expression>
+                </image>
+            </page-header>
+            <page-footer>
+                <grid id="23">
+                    <column id="24"/>
+                    <column id="25"/>
+                    <column id="26"/>
+                    <row id="27">
+                        <cell id="28">
+                            <text id="31">
+                                <property name="contentType">auto</property>
+                                <text-property name="content"><![CDATA[<value-of>new Date()</value-of>]]></text-property>
+                            </text>
+                        </cell>
+                        <cell id="29"/>
+                        <cell id="30">
+                            <text-data id="32">
+                                <property name="contentType">html</property>
+                            </text-data>
+                        </cell>
+                    </row>
+                </grid>
+            </page-footer>
+        </simple-master-page>
+    </page-setup>
+    <body>
+        <image id="17">
+            <property name="height">2.8541666666666665in</property>
+            <property name="width">4.489583333333333in</property>
+            <property name="dataSet">FishierImage</property>
+            <list-property name="boundDataColumns">
+                <structure>
+                    <property name="name">nomFichierOriginal</property>
+                    <expression name="expression" type="javascript">dataSetRow["nomFichierOriginal"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">blobFichierOriginal</property>
+                    <expression name="expression" type="javascript">dataSetRow["blobFichierOriginal"]</expression>
+                    <property name="dataType">blob</property>
+                </structure>
+                <structure>
+                    <property name="name">nomFichierMiniature</property>
+                    <expression name="expression" type="javascript">dataSetRow["nomFichierMiniature"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">blobFichierMiniature</property>
+                    <expression name="expression" type="javascript">dataSetRow["blobFichierMiniature"]</expression>
+                    <property name="dataType">blob</property>
+                </structure>
+            </list-property>
+            <property name="source">expr</property>
+            <expression name="valueExpr">row["blobFichierOriginal"]</expression>
+        </image>
+        <label id="18">
+            <text-property name="text">Nom Oreginal:</text-property>
+        </label>
+        <image id="21">
+            <property name="height">3.0416666666666665in</property>
+            <property name="width">4.552083333333333in</property>
+            <property name="dataSet">FishierImage</property>
+            <list-property name="boundDataColumns">
+                <structure>
+                    <property name="name">nomFichierOriginal</property>
+                    <expression name="expression" type="javascript">dataSetRow["nomFichierOriginal"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">blobFichierOriginal</property>
+                    <expression name="expression" type="javascript">dataSetRow["blobFichierOriginal"]</expression>
+                    <property name="dataType">blob</property>
+                </structure>
+                <structure>
+                    <property name="name">nomFichierMiniature</property>
+                    <expression name="expression" type="javascript">dataSetRow["nomFichierMiniature"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">blobFichierMiniature</property>
+                    <expression name="expression" type="javascript">dataSetRow["blobFichierMiniature"]</expression>
+                    <property name="dataType">blob</property>
+                </structure>
+            </list-property>
+            <property name="source">expr</property>
+            <expression name="valueExpr">row["blobFichierMiniature"]</expression>
+        </image>
+        <label id="22">
+            <text-property name="text">Nom Mini:</text-property>
+        </label>
+    </body>
+</report>

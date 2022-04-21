@@ -1,0 +1,146 @@
+<!-- <!DOCTYPE html> -->
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+<!-- <p:tabView id="idTabViewArticle" widgetVar="wvtabViewGandiSimpleHosting" binding="#{gandiSimpleHostingController.tabViewGandiSimpleHosting}" styleClass="verticalTab" cache="false">
+</p:tabView> -->
+<p:panel id="idGandiSimpleHostingPanel" widgetVar="wvGandiSimpleHostingPanel">
+
+
+				 <div class="ui-g-12 ui-md-6 dashboard-buttons ">
+				         <p:commandButton value="Fermer" styleClass="icon icon-close menuitem-fermer-droite boutonRond" process="@this" 
+											onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())"/>
+				  </div>
+
+                   
+		
+			<br />
+			<p:messages id="messages" showDetail="true" autoUpdate="true" closable="true" />
+			 <br />
+
+			<p:dataTable id="dataTable" var="instance"
+				value="#{gandiSimpleHostingController.values}"
+				rowKey="#{instance.id}"
+				sortBy="#{instance.name}"
+				editable="true" 
+				selection="#{gandiSimpleHostingController.selectedInfosSimpleHostingList}"
+				selectionMode="single" 
+				paginator="true" rows="20"
+				resizableColumns="true"
+				widgetVar="wvSimpleHostingDataTable"
+				paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+				 rowsPerPageTemplate="10,20,50,100">
+
+				<p:ajax event="rowEdit" listener="#{gandiSimpleHostingController.OnRowEditDomain}"  />
+
+				<f:facet name="header">  
+           			Simple Hosting (#{gandiSimpleHostingController.values.size()})
+        		</f:facet>
+
+				<p:column selectionMode="multiple" style="width:18px" />
+				<!-- ajouter sur le datatable pour une seule ligne selectionMode="single"-->
+
+				
+
+				<!-- <p:column sortBy="#{instance.id}" filterBy="#{instance.id}">
+						<f:facet name="header">
+							<h:outputText value="ID" />
+						</f:facet>
+							
+						<h:outputText value="#{instance.id}" />		
+				</p:column>	 -->
+				
+				<p:column sortBy="#{instance.name}" filterBy="#{instance.name}">
+						<f:facet name="header">
+							<h:outputText value="Nom" />
+						</f:facet>
+							
+						<h:outputText value="#{instance.name}" />		
+				</p:column>	
+				
+				
+				<p:column sortBy="#{instance.type}" filterBy="#{instance.type}">
+						<f:facet name="header">
+							<h:outputText value="Type" />
+						</f:facet>
+							
+						<h:outputText value="#{instance.type}" />		
+				</p:column>	
+				
+				<p:column sortBy="#{instance.size}" filterBy="#{instance.size}">
+						<f:facet name="header">
+							<h:outputText value="Taille" />
+						</f:facet>
+							
+						<h:outputText value="#{instance.size}" />		
+				</p:column>	
+				
+				<p:column sortBy="#{instance.data_disk_additional_size}" filterBy="#{instance.data_disk_additional_size}">
+						<f:facet name="header">
+							<h:outputText value="Espace disque additionnel" />
+						</f:facet>
+							
+						<h:outputText value="#{instance.data_disk_additional_size} Go" />		
+				</p:column>	
+				
+				<p:column sortBy="#{instance.state}" filterBy="#{instance.state}">
+						<f:facet name="header">
+							<h:outputText value="Etat" />
+						</f:facet>
+							
+						<h:outputText value="#{instance.state}" />		
+				</p:column>
+				
+				
+					
+			   <p:column sortBy="#{instance.date_end}" filterBy="#{instance.date_end}">
+						<f:facet name="header">
+							<h:outputText value="Expiration" />
+						</f:facet>
+							
+						<h:outputText value="#{instance.date_end}">
+							<f:convertDateTime pattern="dd/MM/yyyy  HH:mm:ss" timeZone="Europe/Paris"/>
+						</h:outputText>		
+				</p:column>	 
+				
+				
+				
+				
+				
+				<!-- <p:column>
+						<f:facet name="header">
+							<h:outputText value="Action"></h:outputText>
+						</f:facet>
+							
+						<p:commandButton rendered="#{instance.state == 'running'? false : true }" value="Start" id="idSartDomainButton"
+						 update="@widgetVar(wvDomainIassDataTable)"
+						  icon="fa fa-play" action="#{gandiDomainController.startDomain}" styleClass="ui-priority-primary">
+							<f:setPropertyActionListener target="#{gandiDomainController.selectedDomain}" value="#{instance}" />
+						</p:commandButton>
+						
+						<p:commandButton rendered="#{instance.state == 'running'? true : false }" value="Stop" id="idStopDomainButton"
+						 update="@widgetVar(wvDomainIassDataTable)"
+						  icon="fa fa-stop" action="#{gandiDomainController.stopDomain}" styleClass="redback">
+							<f:setPropertyActionListener target="#{gandiDomainController.selectedDomain}" value="#{instance}" />
+						</p:commandButton>
+				</p:column>
+				 -->
+				
+			</p:dataTable>
+		<!-- </h:form> -->
+
+
+		<p:growl id="growl" showDetail="true" life="5000" />
+
+	<!-- </p:layoutUnit> -->
+
+	<!-- </p:layout> -->
+
+	<!-- 	<h:outputScript name="/js/functions.js"  /> -->
+
+</p:panel>
+<!-- </html> -->
+</ui:composition>

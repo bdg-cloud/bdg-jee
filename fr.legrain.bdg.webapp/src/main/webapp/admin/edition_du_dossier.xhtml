@@ -1,0 +1,1318 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<p:panel id="editionFormPrincipal" widgetVar="editionForm">
+
+		<p class="subtitle">
+			<p:outputLabel value="Edition du dossier" rendered="#{dansDialogue == null ? true : false}" />
+		</p>
+		
+		<p:panel id="editionDataTableF" class="mt30" style="position:relative;" rendered="#{dansDialogue == null ? true : false}">
+			
+			<p:commandButton value="Catalogue d'édition" title="Catalogue d'édition" process="@this"
+				update=":form:tabView,:form:messages,:form" 
+				actionListener="#{editionDuDossierController.actDialogCatalogueEdition}"
+				styleClass="icon-liste icon" >
+				<p:ajax event="dialogReturn" listener="#{editionDuDossierController.handleReturnDialogCatalogueEdition}" update="@form"/>
+			</p:commandButton>
+
+			<p:commandButton id="editionSupprimer" value="Supprimer"
+				class="icon-delete icon menuitem-poubelle-droite"
+				disabled="#{editionDuDossierController.etatBouton('supprimer')}"
+				actionListener="#{editionDuDossierController.actSupprimer}"
+				update="@widgetVar(wvCodeEditionDataTable)" process="@this" >
+				<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer cet enregistrement ?" icon="ui-icon-alert" />
+			</p:commandButton>
+
+			<p:commandButton id="editionFermer" title="Fermer"
+				class="icon-close icon menuitem-fermer-droite" onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())">
+				<p:confirm header="Confirmation" message="#{msg_diag.alert_fermeture_onglet}" icon="ui-icon-alert" disabled="#{!editionFController.modeEcran.dataSetEnModif()}"/>
+			</p:commandButton>
+
+			<p:commandButton id="editionFFermerDialogue" title="Fermer"
+				process="@this" class="btn-close btn menuitem-fermer-droite"
+				actionListener="#{editionFController.actFermerDialog}"
+				rendered="#{dansDialogue != null ? true : false}" />
+		</p:panel>
+		
+		<!-- Debut tabView -->     
+	    <p:tabView orientation="left" widgetVar="wvTabViewEditionDossier">
+	    	<p:ajax event="tabChange" listener="#{editionDuDossierController.onTabChange}"
+				update=":form:messages,@this,@widgetVar(wvTabViewEditionDossier),
+				@widgetVar(wvEditionDefautDevisPanel) 
+				 @widgetVar(wvEditionDefautFacturePanel),
+				  @widgetVar(wvEditionDefautBonlivPanel),
+				   @widgetVar(wvEditionDefautAvoirPanel),
+				   @widgetVar(wvEditionDefautProformaPanel)
+				    @widgetVar(wvEditionDefautAvisEcheancePanel)
+				   @widgetVar(wvEditionDefautBoncdePanel)
+				   @widgetVar(wvEditionDefautAcomptePanel)
+				   @widgetVar(wvEditionDefautApporteurPanel)
+				   @widgetVar(wvEditionDefautPrelevementPanel)
+				 "/>
+				 <!-- @widgetVar(wvEditionDefautFacturePanel),
+				  @widgetVar(wvEditionDefautBonlivPanel),
+				   @widgetVar(wvEditionDefautAvoirPanel),
+				   @widgetVar(wvEditionDefautProformaPanel) -->
+				   <!-- @widgetVar(wvTabViewEditionDossier) -->
+			<p:tab title="Devis" >                    
+	           <div class="ui-g-12 ui-md-12">
+	           		<h3>Devis</h3>
+	           		<p:dataTable 
+						id="editionDataTableDevis" 
+						widgetVar="wvCodeEditionDataTableDevis" 
+						var="table"
+						rendered="#{dansDialogue == null ? true : false}"
+						value="#{editionDuDossierController.devisValues}" 
+						rowKey="#{table.id}"
+						selectionMode="single" 
+						class="datatable"
+						selection="#{editionDuDossierController.selection}" 
+						paginator="false"
+						sortBy="#{table.codeEdition}"
+						rows="#{msg.modele_datatable_ligne_par_page_debut}"
+						paginatorTemplate="#{msg.modele_datatable_paginator}"
+						rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+						emptyMessage="#{msg.message_datatable_vide}"
+						currentPageReportTemplate="#{msg.modele_datatable_page_courante}">
+			
+						<p:ajax event="rowSelect" listener="#{editionDuDossierController.onRowSelect}" />
+			
+						<f:facet name="{Exporters}">
+							<h:commandLink>
+								<p:graphicImage library="images" name="excel.png" width="24" />
+								<p:dataExporter type="xls" target="editionDataTable" fileName="type_tva" />
+							</h:commandLink>
+			
+							<h:commandLink>
+								<p:graphicImage library="images" name="pdf.png" width="24" />
+								<p:dataExporter type="pdf" target="editionDataTable" fileName="type_tva" />
+							</h:commandLink>
+			
+							<h:commandLink>
+								<p:graphicImage library="images" name="csv.png" width="24" />
+								<p:dataExporter type="csv" target="editionDataTable" fileName="type_tva" />
+							</h:commandLink>
+			
+							<h:commandLink>
+								<p:graphicImage library="images" name="xml.png" width="24" />
+								<p:dataExporter type="xml" target="editionDataTable" fileName="type_tva" />
+							</h:commandLink>
+						</f:facet>
+						
+						
+			
+						<p:column sortBy="#{table.codeEdition}">
+							<f:facet name="header">
+								<h:outputText value="Code" />
+							</f:facet>
+							<h:outputText value="#{table.codeEdition}" />
+						</p:column>
+						<p:column sortBy="#{table.libelleEdition}">
+							<f:facet name="header">
+								<h:outputText value="Libellé" />
+							</f:facet>
+							<h:outputText value="#{table.libelleEdition}" />
+						</p:column>
+						<!-- <p:column sortBy="#{table.codeTEdition}">
+							<f:facet name="header">
+								<h:outputText value="Type" />
+							</f:facet>
+							<h:outputText value="#{table.codeTEdition}" />
+						</p:column> -->
+						
+					</p:dataTable>
+					<p:panel id="editionDefautDevisTousCanaux" widgetVar="wvEditionDefautDevisTousCanaux">
+						<h:panelGrid columns="3">
+							<h:outputText style="font-weight : bold;" value="Définir l'édition par défaut pour tous les canaux :"/>
+							<p:selectOneMenu id="idSelectOneMenuChoixEditionDefautDevisTousCanaux" value="#{editionDuDossierController.selectedEditionDefautDevis}" widgetVar="wvSelectOneMenuChoixEditionDefautDevisTousCanaux" converter="entityConverter">
+						        	 <f:selectItem itemLabel="Devis modèle par défaut(V0220)" itemValue="#{null}" itemDisabled="false"/>
+						        	<f:selectItems value="#{editionDuDossierController.devisValues}" var="choix" itemLabel="#{choix.libelleEdition}" itemValue="#{choix}"/>
+						     </p:selectOneMenu>
+						    <p:commandButton value="Appliquer à tous les canaux"
+						     id="idBoutonAppliquerChoixTousCanauxDevis" 
+						     update="@this,@widgetVar(wvEditionDefautDevisPanel)"
+						     action="#{editionDuDossierController.appliquerChoixEditionTousCanaux(editionDuDossierController.typeEditionDevis)}" 
+						     styleClass="ui-priority-primary">
+						     <p:confirm header="Confirmation" message="Etes-vous sur de vouloir appliquer ce modèle pour tous les canaux facture (impression, envoi par e-mail et mise à disposition sur l'espace client) ?" icon="pi pi-exclamation-triangle" />
+						     </p:commandButton>
+						</h:panelGrid>
+					</p:panel>
+					
+					<p:panel id="editionDefautDevis" widgetVar="wvEditionDefautDevisPanel">
+						<h:panelGrid columns="2">
+							<h:outputText value="Définir l'édition par défaut pour le canal impréssion : " />
+							 <p:selectOneMenu id="idSelectOneMenuChoixEditionDefautDevisImpression" value="#{editionDuDossierController.selectedEditionDefautDevisImpression}" widgetVar="wvSelectChoixEditionDefautDevisImpression" converter="entityConverter">
+						        	 <f:selectItem itemLabel="Devis modèle par défaut(V0220)" itemValue="#{null}" itemDisabled="false"/>
+						        	<f:selectItems value="#{editionDuDossierController.devisValues}" var="choix" itemLabel="#{choix.libelleEdition}" itemValue="#{choix}"/>
+						        	<f:attribute name="typeCanal" value="#{editionDuDossierController.typeCanalImpression}"/>
+						        	<f:attribute name="typeEdition" value="#{editionDuDossierController.typeEditionDevis}"/>
+						        	<p:ajax update="@this, @widgetVar(wvEditionDefautDevisPanel)" event="change" listener="#{editionDuDossierController.changeEditionDefaut}">
+						        	</p:ajax>
+						     </p:selectOneMenu>
+						   
+
+						     <h:outputText value="Définir l'édition par défaut pour le canal envoi par mail : " />
+							 <p:selectOneMenu id="idSelectOneMenuChoixEditionDefautDevisMail" value="#{editionDuDossierController.selectedEditionDefautDevisMail}" widgetVar="wvSelectChoixEditionDefautDevisMail" converter="entityConverter">
+						        	 <f:selectItem itemLabel="Devis modèle par défaut(V0220)" itemValue="#{null}" itemDisabled="false"/>
+						        	<f:selectItems value="#{editionDuDossierController.devisValues}" var="choix" itemLabel="#{choix.libelleEdition}" itemValue="#{choix}"/>
+						        	<f:attribute name="typeCanal" value="#{editionDuDossierController.typeCanalMail}"/>
+						        	<f:attribute name="typeEdition" value="#{editionDuDossierController.typeEditionDevis}"/>
+						        	<p:ajax update="@this,@widgetVar(wvEditionDefautDevisPanel)" event="change" listener="#{editionDuDossierController.changeEditionDefaut}">
+						        	</p:ajax>
+						     </p:selectOneMenu>
+						     
+						     
+						     <h:outputText value="Définir l'édition par défaut pour le canal mise à disposition sur l'espace client : " />
+							 <p:selectOneMenu id="idSelectOneMenuChoixEditionDefautDevisEspaceClient" value="#{editionDuDossierController.selectedEditionDefautDevisDisposition}" widgetVar="wvSelectChoixEditionDefautDevisEspaceClient" converter="entityConverter">
+						        	 <f:selectItem itemLabel="Devis modèle par défaut(V0220)" itemValue="#{null}" itemDisabled="false"/>
+						        	<f:selectItems value="#{editionDuDossierController.devisValues}" var="choix" itemLabel="#{choix.libelleEdition}" itemValue="#{choix}"/>
+						        	<f:attribute name="typeCanal" value="#{editionDuDossierController.typeCanalEspacecli}"/>
+						        	<f:attribute name="typeEdition" value="#{editionDuDossierController.typeEditionDevis}"/>
+						        	<p:ajax update="@this, @widgetVar(wvEditionDefautDevisPanel)" event="change" listener="#{editionDuDossierController.changeEditionDefaut}">
+						        	</p:ajax>
+						     </p:selectOneMenu>
+						     
+						</h:panelGrid>
+					</p:panel>
+	           </div>
+	        </p:tab>
+	        <p:tab title="Facture" >                    
+	           <div class="ui-g-12 ui-md-12">
+	           		<h3>Facture</h3>
+	           		<p:dataTable 
+						id="editionDataTableFacture" 
+						widgetVar="wvCodeEditionDataTableFacture" 
+						var="table"
+						rendered="#{dansDialogue == null ? true : false}"
+						value="#{editionDuDossierController.factureValues}" 
+						rowKey="#{table.id}"
+						selectionMode="single" 
+						class="datatable"
+						selection="#{editionDuDossierController.selection}" 
+						paginator="false"
+						sortBy="#{table.codeEdition}"
+						rows="#{msg.modele_datatable_ligne_par_page_debut}"
+						paginatorTemplate="#{msg.modele_datatable_paginator}"
+						rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+						emptyMessage="#{msg.message_datatable_vide}"
+						currentPageReportTemplate="#{msg.modele_datatable_page_courante}">
+			
+						<p:ajax event="rowSelect" listener="#{editionDuDossierController.onRowSelect}" />
+			
+						<f:facet name="{Exporters}">
+							<h:commandLink>
+								<p:graphicImage library="images" name="excel.png" width="24" />
+								<p:dataExporter type="xls" target="editionDataTable" fileName="type_tva" />
+							</h:commandLink>
+			
+							<h:commandLink>
+								<p:graphicImage library="images" name="pdf.png" width="24" />
+								<p:dataExporter type="pdf" target="editionDataTable" fileName="type_tva" />
+							</h:commandLink>
+			
+							<h:commandLink>
+								<p:graphicImage library="images" name="csv.png" width="24" />
+								<p:dataExporter type="csv" target="editionDataTable" fileName="type_tva" />
+							</h:commandLink>
+			
+							<h:commandLink>
+								<p:graphicImage library="images" name="xml.png" width="24" />
+								<p:dataExporter type="xml" target="editionDataTable" fileName="type_tva" />
+							</h:commandLink>
+						</f:facet>
+						
+						
+			
+						<p:column sortBy="#{table.codeEdition}">
+							<f:facet name="header">
+								<h:outputText value="Code" />
+							</f:facet>
+							<h:outputText value="#{table.codeEdition}" />
+						</p:column>
+						<p:column sortBy="#{table.libelleEdition}">
+							<f:facet name="header">
+								<h:outputText value="Libellé" />
+							</f:facet>
+							<h:outputText value="#{table.libelleEdition}" />
+						</p:column>
+						<!-- <p:column sortBy="#{table.codeTEdition}">
+							<f:facet name="header">
+								<h:outputText value="Type" />
+							</f:facet>
+							<h:outputText value="#{table.codeTEdition}" />
+						</p:column> -->
+						
+					</p:dataTable>
+					<p:panel id="editionDefautFactureTousCanaux" widgetVar="wvEditionDefautFactureTousCanaux">
+						<h:panelGrid columns="3">
+							<h:outputText style="font-weight : bold;" value="Définir l'édition par défaut pour tous les canaux :"/>
+							<p:selectOneMenu id="idSelectOneMenuChoixEditionDefautFactureTousCanaux" value="#{editionDuDossierController.selectedEditionDefautFacture}" widgetVar="wvSelectOneMenuChoixEditionDefautFactureTousCanaux" converter="entityConverter">
+						        	 <f:selectItem itemLabel="Facture modèle par défaut(V0220)" itemValue="#{null}" itemDisabled="false"/>
+						        	<f:selectItems value="#{editionDuDossierController.factureValues}" var="choix" itemLabel="#{choix.libelleEdition}" itemValue="#{choix}"/>
+						     </p:selectOneMenu>
+						    <p:commandButton value="Appliquer à tous les canaux"
+						     id="idBoutonAppliquerChoixTousCanauxFacture" 
+						     update="@this,@widgetVar(wvEditionDefautFacturePanel)"
+						     action="#{editionDuDossierController.appliquerChoixEditionTousCanaux(editionDuDossierController.typeEditionFacture)}" 
+						     styleClass="ui-priority-primary">
+						     <p:confirm header="Confirmation" message="Etes-vous sur de vouloir appliquer ce modèle pour tous les canaux facture (impression, envoi par e-mail et mise à disposition sur l'espace client) ?" icon="pi pi-exclamation-triangle" />
+						     </p:commandButton>
+						</h:panelGrid>
+					</p:panel>
+					
+					<p:panel id="editionDefautFacture" widgetVar="wvEditionDefautFacturePanel">
+						<h:panelGrid columns="2">
+							<h:outputText value="Définir l'édition par défaut pour le canal impréssion : " />
+							 <p:selectOneMenu id="idSelectOneMenuChoixEditionDefautFactureImpression" value="#{editionDuDossierController.selectedEditionDefautFactureImpression}" widgetVar="wvSelectChoixEditionDefautFactureImpression" converter="entityConverter">
+						        	 <f:selectItem itemLabel="Facture modèle par défaut(V0220)" itemValue="#{null}" itemDisabled="false"/>
+						        	<f:selectItems value="#{editionDuDossierController.factureValues}" var="choix" itemLabel="#{choix.libelleEdition}" itemValue="#{choix}"/>
+						        	<f:attribute name="typeCanal" value="#{editionDuDossierController.typeCanalImpression}"/>
+						        	<f:attribute name="typeEdition" value="#{editionDuDossierController.typeEditionFacture}"/>
+						        	<p:ajax update="@this, @widgetVar(wvEditionDefautFacturePanel)" event="change" listener="#{editionDuDossierController.changeEditionDefaut}">
+						        	</p:ajax>
+						     </p:selectOneMenu>
+						   
+
+						     <h:outputText value="Définir l'édition par défaut pour le canal envoi par mail : " />
+							 <p:selectOneMenu id="idSelectOneMenuChoixEditionDefautFactureMail" value="#{editionDuDossierController.selectedEditionDefautFactureMail}" widgetVar="wvSelectChoixEditionDefautFactureMail" converter="entityConverter">
+						        	 <f:selectItem itemLabel="Facture modèle par défaut(V0220)" itemValue="#{null}" itemDisabled="false"/>
+						        	<f:selectItems value="#{editionDuDossierController.factureValues}" var="choix" itemLabel="#{choix.libelleEdition}" itemValue="#{choix}"/>
+						        	<f:attribute name="typeCanal" value="#{editionDuDossierController.typeCanalMail}"/>
+						        	<f:attribute name="typeEdition" value="#{editionDuDossierController.typeEditionFacture}"/>
+						        	<p:ajax update="@this,@widgetVar(wvEditionDefautFacturePanel)" event="change" listener="#{editionDuDossierController.changeEditionDefaut}">
+						        	</p:ajax>
+						     </p:selectOneMenu>
+						     
+						     
+						     <h:outputText value="Définir l'édition par défaut pour le canal mise à disposition sur l'espace client : " />
+							 <p:selectOneMenu id="idSelectOneMenuChoixEditionDefautFactureEspaceClient" value="#{editionDuDossierController.selectedEditionDefautFactureDisposition}" widgetVar="wvSelectChoixEditionDefautFactureEspaceClient" converter="entityConverter">
+						        	 <f:selectItem itemLabel="Facture modèle par défaut(V0220)" itemValue="#{null}" itemDisabled="false"/>
+						        	<f:selectItems value="#{editionDuDossierController.factureValues}" var="choix" itemLabel="#{choix.libelleEdition}" itemValue="#{choix}"/>
+						        	<f:attribute name="typeCanal" value="#{editionDuDossierController.typeCanalEspacecli}"/>
+						        	<f:attribute name="typeEdition" value="#{editionDuDossierController.typeEditionFacture}"/>
+						        	<p:ajax update="@this, @widgetVar(wvEditionDefautFacturePanel)" event="change" listener="#{editionDuDossierController.changeEditionDefaut}">
+						        	</p:ajax>
+						     </p:selectOneMenu>
+						     
+						</h:panelGrid>
+					</p:panel>
+	           </div>
+	        </p:tab>
+	        <p:tab title="Avoir">
+	         	<div class="ui-g-12 ui-md-12">
+	           		<h3>Avoir</h3>
+	           		<p:dataTable 
+						id="editionDataTableAvoir" 
+						widgetVar="wvCodeEditionDataTableAvoir" 
+						var="table"
+						rendered="#{dansDialogue == null ? true : false}"
+						value="#{editionDuDossierController.avoirValues}" 
+						rowKey="#{table.id}"
+						selectionMode="single" 
+						class="datatable"
+						selection="#{editionDuDossierController.selection}" 
+						paginator="false"
+						
+						sortBy="#{table.codeEdition}"
+						rows="#{msg.modele_datatable_ligne_par_page_debut}"
+						paginatorTemplate="#{msg.modele_datatable_paginator}"
+						rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+						emptyMessage="#{msg.message_datatable_vide}"
+						currentPageReportTemplate="#{msg.modele_datatable_page_courante}">
+			
+						<p:ajax event="rowSelect" listener="#{editionDuDossierController.onRowSelect}" />
+			
+						<f:facet name="{Exporters}">
+							<h:commandLink>
+								<p:graphicImage library="images" name="excel.png" width="24" />
+								<p:dataExporter type="xls" target="editionDataTable" fileName="type_tva" />
+							</h:commandLink>
+			
+							<h:commandLink>
+								<p:graphicImage library="images" name="pdf.png" width="24" />
+								<p:dataExporter type="pdf" target="editionDataTable" fileName="type_tva" />
+							</h:commandLink>
+			
+							<h:commandLink>
+								<p:graphicImage library="images" name="csv.png" width="24" />
+								<p:dataExporter type="csv" target="editionDataTable" fileName="type_tva" />
+							</h:commandLink>
+			
+							<h:commandLink>
+								<p:graphicImage library="images" name="xml.png" width="24" />
+								<p:dataExporter type="xml" target="editionDataTable" fileName="type_tva" />
+							</h:commandLink>
+						</f:facet>
+						
+						
+			
+						<p:column sortBy="#{table.codeEdition}">
+							<f:facet name="header">
+								<h:outputText value="Code" />
+							</f:facet>
+							<h:outputText value="#{table.codeEdition}" />
+						</p:column>
+						<p:column sortBy="#{table.libelleEdition}">
+							<f:facet name="header">
+								<h:outputText value="Libellé" />
+							</f:facet>
+							<h:outputText value="#{table.libelleEdition}" />
+						</p:column>
+						
+					</p:dataTable>
+					<p:panel id="editionDefautAvoirTousCanaux" widgetVar="wvEditionDefautAvoirTousCanaux">
+						<h:panelGrid columns="3">
+							<h:outputText style="font-weight : bold;" value="Définir l'édition par défaut pour tous les canaux :"/>
+							<p:selectOneMenu id="idSelectOneMenuChoixEditionDefautAvoirTousCanaux" value="#{editionDuDossierController.selectedEditionDefautAvoir}" widgetVar="wvSelectOneMenuChoixEditionDefautAvoirTousCanaux" converter="entityConverter">
+						        	 <f:selectItem itemLabel="Avoir modèle par défaut(V0220)" itemValue="#{null}" itemDisabled="false"/>
+						        	<f:selectItems value="#{editionDuDossierController.avoirValues}" var="choix" itemLabel="#{choix.libelleEdition}" itemValue="#{choix}"/>
+						     </p:selectOneMenu>
+						    <p:commandButton value="Appliquer à tous les canaux"
+						     id="idBoutonAppliquerChoixTousCanauxAvoir" 
+						     update="@this,@widgetVar(wvEditionDefautAvoirPanel)"
+						     action="#{editionDuDossierController.appliquerChoixEditionTousCanaux(editionDuDossierController.typeEditionAvoir)}" 
+						     styleClass="ui-priority-primary">
+						     <p:confirm header="Confirmation" message="Etes-vous sur de vouloir appliquer ce modèle pour tous les canaux avoir (impression, envoi par e-mail et mise à disposition sur l'espace client) ?" icon="pi pi-exclamation-triangle" />
+						     </p:commandButton>
+						</h:panelGrid>
+					</p:panel>
+					
+					<p:panel id="editionDefautAvoir" widgetVar="wvEditionDefautAvoirPanel">
+						<h:panelGrid columns="2">
+							<h:outputText value="Définir l'édition par défaut pour l'impréssion : " />
+							 <p:selectOneMenu id="idSelectOneMenuChoixEditionDefautAvoirImpression" value="#{editionDuDossierController.selectedEditionDefautAvoirImpression}" widgetVar="wvSelectChoixEditionDefautAvoirImpression" converter="entityConverter">
+						        	 <f:selectItem itemLabel="Avoir modèle par défaut(V0220)" itemValue="#{null}" itemDisabled="false"/>
+						        	<f:selectItems value="#{editionDuDossierController.avoirValues}" var="choix" itemLabel="#{choix.libelleEdition}" itemValue="#{choix}"/>
+						        	<f:attribute name="typeCanal" value="#{editionDuDossierController.typeCanalImpression}"/>
+						        	<f:attribute name="typeEdition" value="#{editionDuDossierController.typeEditionAvoir}"/>
+						        	<p:ajax update="@this, @widgetVar(wvEditionDefautAvoirPanel)" event="change" listener="#{editionDuDossierController.changeEditionDefaut}">
+						        	</p:ajax>
+						     </p:selectOneMenu>
+						     
+						     
+						     <h:outputText value="Définir l'édition par défaut pour l'envoi par mail : " />
+							 <p:selectOneMenu id="idSelectOneMenuChoixEditionDefautAvoirMail" value="#{editionDuDossierController.selectedEditionDefautAvoirMail}" widgetVar="wvSelectChoixEditionDefautAvoirMail" converter="entityConverter">
+						        	<f:selectItem itemLabel="Avoir modèle par défaut(V0220)" itemValue="#{null}" itemDisabled="false"/>
+						        	<f:selectItems value="#{editionDuDossierController.avoirValues}" var="choix" itemLabel="#{choix.libelleEdition}" itemValue="#{choix}"/>
+						        	<f:attribute name="typeCanal" value="#{editionDuDossierController.typeCanalMail}"/>
+						        	<f:attribute name="typeEdition" value="#{editionDuDossierController.typeEditionAvoir}"/>
+						        	<p:ajax update="@this,@widgetVar(wvEditionDefautAvoirPanel)" event="change" listener="#{editionDuDossierController.changeEditionDefaut}">
+						        	</p:ajax>
+						     </p:selectOneMenu>
+						     
+						     <h:outputText value="Définir l'édition par défaut pour la mise à disposition sur l'espace client : " />
+							 <p:selectOneMenu id="idSelectOneMenuChoixEditionDefautAvoirEspaceClient" value="#{editionDuDossierController.selectedEditionDefautAvoirDisposition}" widgetVar="wvSelectChoixEditionDefautAvoirEspaceClient" converter="entityConverter">
+						        	<f:selectItem itemLabel="Avoir modèle par défaut(V0220)" itemValue="#{null}" itemDisabled="false"/>
+						        	<f:selectItems value="#{editionDuDossierController.avoirValues}" var="choix" itemLabel="#{choix.libelleEdition}" itemValue="#{choix}"/>
+						        	<f:attribute name="typeCanal" value="#{editionDuDossierController.typeCanalEspacecli}"/>
+						        	<f:attribute name="typeEdition" value="#{editionDuDossierController.typeEditionAvoir}"/>
+						        	<p:ajax update="@this, @widgetVar(wvEditionDefautAvoirPanel)" event="change" listener="#{editionDuDossierController.changeEditionDefaut}">
+						        	</p:ajax>
+						     </p:selectOneMenu>
+						    
+						</h:panelGrid>
+					</p:panel>
+	           </div>
+	        </p:tab>
+	        <p:tab title="Bon livraison">
+	            <div class="ui-g-12 ui-md-12">
+	           		<h3>Bon de livraison</h3>
+	           		<p:dataTable 
+						id="editionDataTableBonliv" 
+						widgetVar="wvCodeEditionDataTableBonliv" 
+						var="table"
+						rendered="#{dansDialogue == null ? true : false}"
+						value="#{editionDuDossierController.bonlivValues}" 
+						rowKey="#{table.id}"
+						selectionMode="single" 
+						class="datatable"
+						selection="#{editionDuDossierController.selection}" 
+						paginator="false"
+						
+						sortBy="#{table.codeEdition}"
+						rows="#{msg.modele_datatable_ligne_par_page_debut}"
+						paginatorTemplate="#{msg.modele_datatable_paginator}"
+						rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+						emptyMessage="#{msg.message_datatable_vide}"
+						currentPageReportTemplate="#{msg.modele_datatable_page_courante}">
+			
+						<p:ajax event="rowSelect" listener="#{editionDuDossierController.onRowSelect}" />
+			
+						<f:facet name="{Exporters}">
+							<h:commandLink>
+								<p:graphicImage library="images" name="excel.png" width="24" />
+								<p:dataExporter type="xls" target="editionDataTable" fileName="type_tva" />
+							</h:commandLink>
+			
+							<h:commandLink>
+								<p:graphicImage library="images" name="pdf.png" width="24" />
+								<p:dataExporter type="pdf" target="editionDataTable" fileName="type_tva" />
+							</h:commandLink>
+			
+							<h:commandLink>
+								<p:graphicImage library="images" name="csv.png" width="24" />
+								<p:dataExporter type="csv" target="editionDataTable" fileName="type_tva" />
+							</h:commandLink>
+			
+							<h:commandLink>
+								<p:graphicImage library="images" name="xml.png" width="24" />
+								<p:dataExporter type="xml" target="editionDataTable" fileName="type_tva" />
+							</h:commandLink>
+						</f:facet>
+						
+						
+			
+						<p:column sortBy="#{table.codeEdition}">
+							<f:facet name="header">
+								<h:outputText value="Code" />
+							</f:facet>
+							<h:outputText value="#{table.codeEdition}" />
+						</p:column>
+						<p:column sortBy="#{table.libelleEdition}">
+							<f:facet name="header">
+								<h:outputText value="Libellé" />
+							</f:facet>
+							<h:outputText value="#{table.libelleEdition}" />
+						</p:column>
+						
+					</p:dataTable>
+					<p:panel id="editionDefautBonlivTousCanaux" widgetVar="wvEditionDefautBonlivTousCanaux">
+						<h:panelGrid columns="3">
+							<h:outputText style="font-weight : bold;" value="Définir l'édition par défaut pour tous les canaux :"/>
+							<p:selectOneMenu id="idSelectOneMenuChoixEditionDefautBonlivTousCanaux" value="#{editionDuDossierController.selectedEditionDefautBonliv}" widgetVar="wvSelectOneMenuChoixEditionDefautBonlivTousCanaux" converter="entityConverter">
+						        	 <f:selectItem itemLabel="Bon de livraison modèle par défaut(V0220)" itemValue="#{null}" itemDisabled="false"/>
+						        	<f:selectItems value="#{editionDuDossierController.bonlivValues}" var="choix" itemLabel="#{choix.libelleEdition}" itemValue="#{choix}"/>
+						     </p:selectOneMenu>
+						    <p:commandButton value="Appliquer à tous les canaux"
+						     id="idBoutonAppliquerChoixTousCanauxBonliv" 
+						     update="@this,@widgetVar(wvEditionDefautBonlivPanel)"
+						     action="#{editionDuDossierController.appliquerChoixEditionTousCanaux(editionDuDossierController.typeEditionBonliv)}" 
+						     styleClass="ui-priority-primary">
+						     <p:confirm header="Confirmation" message="Etes-vous sur de vouloir appliquer ce modèle pour tous les canaux bon de livraison (impression, envoi par e-mail et mise à disposition sur l'espace client) ?" icon="pi pi-exclamation-triangle" />
+						     </p:commandButton>
+						</h:panelGrid>
+					</p:panel>
+					<p:panel id="editionDefautBonliv" widgetVar="wvEditionDefautBonlivPanel">
+						<h:panelGrid columns="2">
+							<h:outputText value="Définir l'édition par défaut pour l'impréssion : " />
+							 <p:selectOneMenu id="idSelectOneMenuChoixEditionDefautBonlivImpression" value="#{editionDuDossierController.selectedEditionDefautBonlivImpression}" widgetVar="wvSelectChoixEditionDefautBonlivImpression" converter="entityConverter">
+						        	 <f:selectItem itemLabel="Bon de livraison modèle par défaut(V0220)" itemValue="#{null}" itemDisabled="false"/>
+						        	<f:selectItems value="#{editionDuDossierController.bonlivValues}" var="choix" itemLabel="#{choix.libelleEdition}" itemValue="#{choix}"/>
+						        	<f:attribute name="typeCanal" value="#{editionDuDossierController.typeCanalImpression}"/>
+						        	<f:attribute name="typeEdition" value="#{editionDuDossierController.typeEditionBonliv}"/>
+						        	<p:ajax update="@this, @widgetVar(wvEditionDefautBonlivPanel)" event="change" listener="#{editionDuDossierController.changeEditionDefaut}">
+						        	</p:ajax>
+						     </p:selectOneMenu>
+						     
+						     
+						     <h:outputText value="Définir l'édition par défaut pour l'envoi par mail : " />
+							 <p:selectOneMenu id="idSelectOneMenuChoixEditionDefautBonlivMail" value="#{editionDuDossierController.selectedEditionDefautBonlivMail}" widgetVar="wvSelectChoixEditionDefautBonlivMail" converter="entityConverter">
+						        	<f:selectItem itemLabel="Bon de livraison modèle par défaut(V0220)" itemValue="#{null}" itemDisabled="false"/>
+						        	<f:selectItems value="#{editionDuDossierController.bonlivValues}" var="choix" itemLabel="#{choix.libelleEdition}" itemValue="#{choix}"/>
+						        	<f:attribute name="typeCanal" value="#{editionDuDossierController.typeCanalMail}"/>
+						        	<f:attribute name="typeEdition" value="#{editionDuDossierController.typeEditionBonliv}"/>
+						        	<p:ajax update="@this,@widgetVar(wvEditionDefautBonlivPanel)" event="change" listener="#{editionDuDossierController.changeEditionDefaut}">
+						        	</p:ajax>
+						     </p:selectOneMenu>
+						    
+						     
+						     <h:outputText value="Définir l'édition par défaut pour la mise à disposition sur l'espace client : " />
+							 <p:selectOneMenu id="idSelectOneMenuChoixEditionDefautBonlivEspaceClient" value="#{editionDuDossierController.selectedEditionDefautBonlivDisposition}" widgetVar="wvSelectChoixEditionDefautBonlivEspaceClient" converter="entityConverter">
+						        	<f:selectItem itemLabel="Bon de livraison modèle par défaut(V0220)" itemValue="#{null}" itemDisabled="false"/>
+						        	<f:selectItems value="#{editionDuDossierController.bonlivValues}" var="choix" itemLabel="#{choix.libelleEdition}" itemValue="#{choix}"/>
+						        	<f:attribute name="typeCanal" value="#{editionDuDossierController.typeCanalEspacecli}"/>
+						        	<f:attribute name="typeEdition" value="#{editionDuDossierController.typeEditionBonliv}"/>
+						        	<p:ajax update="@this, @widgetVar(wvEditionDefautBonlivPanel)" event="change" listener="#{editionDuDossierController.changeEditionDefaut}">
+						        	</p:ajax>
+						     </p:selectOneMenu>
+						     
+						</h:panelGrid>
+					</p:panel>
+	           </div>
+	        </p:tab>
+	        <p:tab title="Proforma" >                    
+	           <div class="ui-g-12 ui-md-12">
+	           		<h3>Proforma</h3>
+	           		<p:dataTable 
+						id="editionDataTableProforma" 
+						widgetVar="wvCodeEditionDataTableProforma" 
+						var="table"
+						rendered="#{dansDialogue == null ? true : false}"
+						value="#{editionDuDossierController.proformaValues}" 
+						rowKey="#{table.id}"
+						selectionMode="single" 
+						class="datatable"
+						selection="#{editionDuDossierController.selection}" 
+						paginator="false"
+						sortBy="#{table.codeEdition}"
+						rows="#{msg.modele_datatable_ligne_par_page_debut}"
+						paginatorTemplate="#{msg.modele_datatable_paginator}"
+						rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+						emptyMessage="#{msg.message_datatable_vide}"
+						currentPageReportTemplate="#{msg.modele_datatable_page_courante}">
+			
+						<p:ajax event="rowSelect" listener="#{editionDuDossierController.onRowSelect}" />
+			
+						<f:facet name="{Exporters}">
+							<h:commandLink>
+								<p:graphicImage library="images" name="excel.png" width="24" />
+								<p:dataExporter type="xls" target="editionDataTable" fileName="type_tva" />
+							</h:commandLink>
+			
+							<h:commandLink>
+								<p:graphicImage library="images" name="pdf.png" width="24" />
+								<p:dataExporter type="pdf" target="editionDataTable" fileName="type_tva" />
+							</h:commandLink>
+			
+							<h:commandLink>
+								<p:graphicImage library="images" name="csv.png" width="24" />
+								<p:dataExporter type="csv" target="editionDataTable" fileName="type_tva" />
+							</h:commandLink>
+			
+							<h:commandLink>
+								<p:graphicImage library="images" name="xml.png" width="24" />
+								<p:dataExporter type="xml" target="editionDataTable" fileName="type_tva" />
+							</h:commandLink>
+						</f:facet>
+						
+						
+			
+						<p:column sortBy="#{table.codeEdition}">
+							<f:facet name="header">
+								<h:outputText value="Code" />
+							</f:facet>
+							<h:outputText value="#{table.codeEdition}" />
+						</p:column>
+						<p:column sortBy="#{table.libelleEdition}">
+							<f:facet name="header">
+								<h:outputText value="Libellé" />
+							</f:facet>
+							<h:outputText value="#{table.libelleEdition}" />
+						</p:column>
+						<!-- <p:column sortBy="#{table.codeTEdition}">
+							<f:facet name="header">
+								<h:outputText value="Type" />
+							</f:facet>
+							<h:outputText value="#{table.codeTEdition}" />
+						</p:column> -->
+						
+					</p:dataTable>
+					<p:panel id="editionDefautProformaTousCanaux" widgetVar="wvEditionDefautProformaTousCanaux">
+						<h:panelGrid columns="3">
+							<h:outputText style="font-weight : bold;" value="Définir l'édition par défaut pour tous les canaux :"/>
+							<p:selectOneMenu id="idSelectOneMenuChoixEditionDefautProformaTousCanaux" value="#{editionDuDossierController.selectedEditionDefautProforma}" widgetVar="wvSelectOneMenuChoixEditionDefautProformaTousCanaux" converter="entityConverter">
+						        	 <f:selectItem itemLabel="Proforma modèle par défaut(V0220)" itemValue="#{null}" itemDisabled="false"/>
+						        	<f:selectItems value="#{editionDuDossierController.proformaValues}" var="choix" itemLabel="#{choix.libelleEdition}" itemValue="#{choix}"/>
+						     </p:selectOneMenu>
+						    <p:commandButton value="Appliquer à tous les canaux"
+						     id="idBoutonAppliquerChoixTousCanauxProforma" 
+						     update="@this,@widgetVar(wvEditionDefautProformaPanel)"
+						     action="#{editionDuDossierController.appliquerChoixEditionTousCanaux(editionDuDossierController.typeEditionProforma)}" 
+						     styleClass="ui-priority-primary">
+						     <p:confirm header="Confirmation" message="Etes-vous sur de vouloir appliquer ce modèle pour tous les canaux proforma (impression, envoi par e-mail et mise à disposition sur l'espace client) ?" icon="pi pi-exclamation-triangle" />
+						     </p:commandButton>
+						</h:panelGrid>
+					</p:panel>
+					
+					<p:panel id="editionDefautProforma" widgetVar="wvEditionDefautProformaPanel">
+						<h:panelGrid columns="2">
+							<h:outputText value="Définir l'édition par défaut pour le canal impréssion : " />
+							 <p:selectOneMenu id="idSelectOneMenuChoixEditionDefautProformaImpression" value="#{editionDuDossierController.selectedEditionDefautProformaImpression}" widgetVar="wvSelectChoixEditionDefautProformaImpression" converter="entityConverter">
+						        	 <f:selectItem itemLabel="Proforma modèle par défaut(V0220)" itemValue="#{null}" itemDisabled="false"/>
+						        	<f:selectItems value="#{editionDuDossierController.proformaValues}" var="choix" itemLabel="#{choix.libelleEdition}" itemValue="#{choix}"/>
+						        	<f:attribute name="typeCanal" value="#{editionDuDossierController.typeCanalImpression}"/>
+						        	<f:attribute name="typeEdition" value="#{editionDuDossierController.typeEditionProforma}"/>
+						        	<p:ajax update="@this, @widgetVar(wvEditionDefautProformaPanel)" event="change" listener="#{editionDuDossierController.changeEditionDefaut}">
+						        	</p:ajax>
+						     </p:selectOneMenu>
+						   
+
+						     <h:outputText value="Définir l'édition par défaut pour le canal envoi par mail : " />
+							 <p:selectOneMenu id="idSelectOneMenuChoixEditionDefautProformaMail" value="#{editionDuDossierController.selectedEditionDefautProformaMail}" widgetVar="wvSelectChoixEditionDefautProformaMail" converter="entityConverter">
+						        	 <f:selectItem itemLabel="Proforma modèle par défaut(V0220)" itemValue="#{null}" itemDisabled="false"/>
+						        	<f:selectItems value="#{editionDuDossierController.proformaValues}" var="choix" itemLabel="#{choix.libelleEdition}" itemValue="#{choix}"/>
+						        	<f:attribute name="typeCanal" value="#{editionDuDossierController.typeCanalMail}"/>
+						        	<f:attribute name="typeEdition" value="#{editionDuDossierController.typeEditionProforma}"/>
+						        	<p:ajax update="@this,@widgetVar(wvEditionDefautProformaPanel)" event="change" listener="#{editionDuDossierController.changeEditionDefaut}">
+						        	</p:ajax>
+						     </p:selectOneMenu>
+						     
+						     
+						     <h:outputText value="Définir l'édition par défaut pour le canal mise à disposition sur l'espace client : " />
+							 <p:selectOneMenu id="idSelectOneMenuChoixEditionDefautProformaEspaceClient" value="#{editionDuDossierController.selectedEditionDefautProformaDisposition}" widgetVar="wvSelectChoixEditionDefautProformaEspaceClient" converter="entityConverter">
+						        	 <f:selectItem itemLabel="Proforma modèle par défaut(V0220)" itemValue="#{null}" itemDisabled="false"/>
+						        	<f:selectItems value="#{editionDuDossierController.proformaValues}" var="choix" itemLabel="#{choix.libelleEdition}" itemValue="#{choix}"/>
+						        	<f:attribute name="typeCanal" value="#{editionDuDossierController.typeCanalEspacecli}"/>
+						        	<f:attribute name="typeEdition" value="#{editionDuDossierController.typeEditionProforma}"/>
+						        	<p:ajax update="@this, @widgetVar(wvEditionDefautProformaPanel)" event="change" listener="#{editionDuDossierController.changeEditionDefaut}">
+						        	</p:ajax>
+						     </p:selectOneMenu>
+						     
+						</h:panelGrid>
+					</p:panel>
+	           </div>
+	        </p:tab>
+	        <p:tab title="Bon de commande" >                    
+	           <div class="ui-g-12 ui-md-12">
+	           		<h3>Bon de commande</h3>
+	           		<p:dataTable 
+						id="editionDataTableBoncde" 
+						widgetVar="wvCodeEditionDataTableBoncde" 
+						var="table"
+						rendered="#{dansDialogue == null ? true : false}"
+						value="#{editionDuDossierController.bonCdeValues}" 
+						rowKey="#{table.id}"
+						selectionMode="single" 
+						class="datatable"
+						selection="#{editionDuDossierController.selection}" 
+						paginator="false"
+						sortBy="#{table.codeEdition}"
+						rows="#{msg.modele_datatable_ligne_par_page_debut}"
+						paginatorTemplate="#{msg.modele_datatable_paginator}"
+						rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+						emptyMessage="#{msg.message_datatable_vide}"
+						currentPageReportTemplate="#{msg.modele_datatable_page_courante}">
+			
+						<p:ajax event="rowSelect" listener="#{editionDuDossierController.onRowSelect}" />
+			
+						<f:facet name="{Exporters}">
+							<h:commandLink>
+								<p:graphicImage library="images" name="excel.png" width="24" />
+								<p:dataExporter type="xls" target="editionDataTable" fileName="type_tva" />
+							</h:commandLink>
+			
+							<h:commandLink>
+								<p:graphicImage library="images" name="pdf.png" width="24" />
+								<p:dataExporter type="pdf" target="editionDataTable" fileName="type_tva" />
+							</h:commandLink>
+			
+							<h:commandLink>
+								<p:graphicImage library="images" name="csv.png" width="24" />
+								<p:dataExporter type="csv" target="editionDataTable" fileName="type_tva" />
+							</h:commandLink>
+			
+							<h:commandLink>
+								<p:graphicImage library="images" name="xml.png" width="24" />
+								<p:dataExporter type="xml" target="editionDataTable" fileName="type_tva" />
+							</h:commandLink>
+						</f:facet>
+						
+						
+			
+						<p:column sortBy="#{table.codeEdition}">
+							<f:facet name="header">
+								<h:outputText value="Code" />
+							</f:facet>
+							<h:outputText value="#{table.codeEdition}" />
+						</p:column>
+						<p:column sortBy="#{table.libelleEdition}">
+							<f:facet name="header">
+								<h:outputText value="Libellé" />
+							</f:facet>
+							<h:outputText value="#{table.libelleEdition}" />
+						</p:column>
+						<!-- <p:column sortBy="#{table.codeTEdition}">
+							<f:facet name="header">
+								<h:outputText value="Type" />
+							</f:facet>
+							<h:outputText value="#{table.codeTEdition}" />
+						</p:column> -->
+						
+					</p:dataTable>
+					<p:panel id="editionDefautBoncdeTousCanaux" widgetVar="wvEditionDefautBoncdeTousCanaux">
+						<h:panelGrid columns="3">
+							<h:outputText style="font-weight : bold;" value="Définir l'édition par défaut pour tous les canaux :"/>
+							<p:selectOneMenu id="idSelectOneMenuChoixEditionDefautBoncdeTousCanaux" value="#{editionDuDossierController.selectedEditionDefautBoncde}" widgetVar="wvSelectOneMenuChoixEditionDefautBoncdeTousCanaux" converter="entityConverter">
+						        	 <f:selectItem itemLabel="Bon de commande modèle par défaut(V0220)" itemValue="#{null}" itemDisabled="false"/>
+						        	<f:selectItems value="#{editionDuDossierController.bonCdeValues}" var="choix" itemLabel="#{choix.libelleEdition}" itemValue="#{choix}"/>
+						     </p:selectOneMenu>
+						    <p:commandButton value="Appliquer à tous les canaux"
+						     id="idBoutonAppliquerChoixTousCanauxBoncde" 
+						     update="@this,@widgetVar(wvEditionDefautBoncdePanel)"
+						     action="#{editionDuDossierController.appliquerChoixEditionTousCanaux(editionDuDossierController.typeEditionBoncde)}" 
+						     styleClass="ui-priority-primary">
+						     <p:confirm header="Confirmation" message="Etes-vous sur de vouloir appliquer ce modèle pour tous les canaux facture (impression, envoi par e-mail et mise à disposition sur l'espace client) ?" icon="pi pi-exclamation-triangle" />
+						     </p:commandButton>
+						</h:panelGrid>
+					</p:panel>
+					
+					<p:panel id="editionDefautBoncde" widgetVar="wvEditionDefautBoncdePanel">
+						<h:panelGrid columns="2">
+							<h:outputText value="Définir l'édition par défaut pour le canal impréssion : " />
+							 <p:selectOneMenu id="idSelectOneMenuChoixEditionDefautBoncdeImpression" value="#{editionDuDossierController.selectedEditionDefautBoncdeImpression}" widgetVar="wvSelectChoixEditionDefautBoncdeImpression" converter="entityConverter">
+						        	 <f:selectItem itemLabel="Bon de commande modèle par défaut(V0220)" itemValue="#{null}" itemDisabled="false"/>
+						        	<f:selectItems value="#{editionDuDossierController.bonCdeValues}" var="choix" itemLabel="#{choix.libelleEdition}" itemValue="#{choix}"/>
+						        	<f:attribute name="typeCanal" value="#{editionDuDossierController.typeCanalImpression}"/>
+						        	<f:attribute name="typeEdition" value="#{editionDuDossierController.typeEditionBoncde}"/>
+						        	<p:ajax update="@this, @widgetVar(wvEditionDefautBoncdePanel)" event="change" listener="#{editionDuDossierController.changeEditionDefaut}">
+						        	</p:ajax>
+						     </p:selectOneMenu>
+						   
+
+						     <h:outputText value="Définir l'édition par défaut pour le canal envoi par mail : " />
+							 <p:selectOneMenu id="idSelectOneMenuChoixEditionDefautBoncdeMail" value="#{editionDuDossierController.selectedEditionDefautBoncdeMail}" widgetVar="wvSelectChoixEditionDefautBoncdeMail" converter="entityConverter">
+						        	 <f:selectItem itemLabel="Bon de commande modèle par défaut(V0220)" itemValue="#{null}" itemDisabled="false"/>
+						        	<f:selectItems value="#{editionDuDossierController.bonCdeValues}" var="choix" itemLabel="#{choix.libelleEdition}" itemValue="#{choix}"/>
+						        	<f:attribute name="typeCanal" value="#{editionDuDossierController.typeCanalMail}"/>
+						        	<f:attribute name="typeEdition" value="#{editionDuDossierController.typeEditionBoncde}"/>
+						        	<p:ajax update="@this,@widgetVar(wvEditionDefautBoncdePanel)" event="change" listener="#{editionDuDossierController.changeEditionDefaut}">
+						        	</p:ajax>
+						     </p:selectOneMenu>
+						     
+						     
+						     <h:outputText value="Définir l'édition par défaut pour le canal mise à disposition sur l'espace client : " />
+							 <p:selectOneMenu id="idSelectOneMenuChoixEditionDefautBoncdeEspaceClient" value="#{editionDuDossierController.selectedEditionDefautBoncdeDisposition}" widgetVar="wvSelectChoixEditionDefautBoncdeEspaceClient" converter="entityConverter">
+						        	 <f:selectItem itemLabel="Bon de commande modèle par défaut(V0220)" itemValue="#{null}" itemDisabled="false"/>
+						        	<f:selectItems value="#{editionDuDossierController.bonCdeValues}" var="choix" itemLabel="#{choix.libelleEdition}" itemValue="#{choix}"/>
+						        	<f:attribute name="typeCanal" value="#{editionDuDossierController.typeCanalEspacecli}"/>
+						        	<f:attribute name="typeEdition" value="#{editionDuDossierController.typeEditionBoncde}"/>
+						        	<p:ajax update="@this, @widgetVar(wvEditionDefautBoncdePanel)" event="change" listener="#{editionDuDossierController.changeEditionDefaut}">
+						        	</p:ajax>
+						     </p:selectOneMenu>
+						     
+						</h:panelGrid>
+					</p:panel>
+	           </div>
+	        </p:tab>
+	        <p:tab title="Acompte" >                    
+	           <div class="ui-g-12 ui-md-12">
+	           		<h3>Acompte</h3>
+	           		<p:dataTable 
+						id="editionDataTableAcompte" 
+						widgetVar="wvCodeEditionDataTableAcompte" 
+						var="table"
+						rendered="#{dansDialogue == null ? true : false}"
+						value="#{editionDuDossierController.acompteValues}" 
+						rowKey="#{table.id}"
+						selectionMode="single" 
+						class="datatable"
+						selection="#{editionDuDossierController.selection}" 
+						paginator="false"
+						sortBy="#{table.codeEdition}"
+						rows="#{msg.modele_datatable_ligne_par_page_debut}"
+						paginatorTemplate="#{msg.modele_datatable_paginator}"
+						rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+						emptyMessage="#{msg.message_datatable_vide}"
+						currentPageReportTemplate="#{msg.modele_datatable_page_courante}">
+			
+						<p:ajax event="rowSelect" listener="#{editionDuDossierController.onRowSelect}" />
+			
+						<f:facet name="{Exporters}">
+							<h:commandLink>
+								<p:graphicImage library="images" name="excel.png" width="24" />
+								<p:dataExporter type="xls" target="editionDataTable" fileName="type_tva" />
+							</h:commandLink>
+			
+							<h:commandLink>
+								<p:graphicImage library="images" name="pdf.png" width="24" />
+								<p:dataExporter type="pdf" target="editionDataTable" fileName="type_tva" />
+							</h:commandLink>
+			
+							<h:commandLink>
+								<p:graphicImage library="images" name="csv.png" width="24" />
+								<p:dataExporter type="csv" target="editionDataTable" fileName="type_tva" />
+							</h:commandLink>
+			
+							<h:commandLink>
+								<p:graphicImage library="images" name="xml.png" width="24" />
+								<p:dataExporter type="xml" target="editionDataTable" fileName="type_tva" />
+							</h:commandLink>
+						</f:facet>
+						
+						
+			
+						<p:column sortBy="#{table.codeEdition}">
+							<f:facet name="header">
+								<h:outputText value="Code" />
+							</f:facet>
+							<h:outputText value="#{table.codeEdition}" />
+						</p:column>
+						<p:column sortBy="#{table.libelleEdition}">
+							<f:facet name="header">
+								<h:outputText value="Libellé" />
+							</f:facet>
+							<h:outputText value="#{table.libelleEdition}" />
+						</p:column>
+						<!-- <p:column sortBy="#{table.codeTEdition}">
+							<f:facet name="header">
+								<h:outputText value="Type" />
+							</f:facet>
+							<h:outputText value="#{table.codeTEdition}" />
+						</p:column> -->
+						
+					</p:dataTable>
+					<p:panel id="editionDefautAcompteTousCanaux" widgetVar="wvEditionDefautAcompteTousCanaux">
+						<h:panelGrid columns="3">
+							<h:outputText style="font-weight : bold;" value="Définir l'édition par défaut pour tous les canaux :"/>
+							<p:selectOneMenu id="idSelectOneMenuChoixEditionDefautAcompteTousCanaux" value="#{editionDuDossierController.selectedEditionDefautAcompte}" widgetVar="wvSelectOneMenuChoixEditionDefautAcompteTousCanaux" converter="entityConverter">
+						        	 <f:selectItem itemLabel="Acompte modèle par défaut(V0220)" itemValue="#{null}" itemDisabled="false"/>
+						        	<f:selectItems value="#{editionDuDossierController.acompteValues}" var="choix" itemLabel="#{choix.libelleEdition}" itemValue="#{choix}"/>
+						     </p:selectOneMenu>
+						    <p:commandButton value="Appliquer à tous les canaux"
+						     id="idBoutonAppliquerChoixTousCanauxAcompte" 
+						     update="@this,@widgetVar(wvEditionDefautAcomptePanel)"
+						     action="#{editionDuDossierController.appliquerChoixEditionTousCanaux(editionDuDossierController.typeEditionAcompte)}" 
+						     styleClass="ui-priority-primary">
+						     <p:confirm header="Confirmation" message="Etes-vous sur de vouloir appliquer ce modèle pour tous les canaux facture (impression, envoi par e-mail et mise à disposition sur l'espace client) ?" icon="pi pi-exclamation-triangle" />
+						     </p:commandButton>
+						</h:panelGrid>
+					</p:panel>
+					
+					<p:panel id="editionDefautAcompte" widgetVar="wvEditionDefautAcomptePanel">
+						<h:panelGrid columns="2">
+							<h:outputText value="Définir l'édition par défaut pour le canal impréssion : " />
+							 <p:selectOneMenu id="idSelectOneMenuChoixEditionDefautAcompteImpression" value="#{editionDuDossierController.selectedEditionDefautAcompteImpression}" widgetVar="wvSelectChoixEditionDefautAcompteImpression" converter="entityConverter">
+						        	 <f:selectItem itemLabel="Acompte modèle par défaut(V0220)" itemValue="#{null}" itemDisabled="false"/>
+						        	<f:selectItems value="#{editionDuDossierController.acompteValues}" var="choix" itemLabel="#{choix.libelleEdition}" itemValue="#{choix}"/>
+						        	<f:attribute name="typeCanal" value="#{editionDuDossierController.typeCanalImpression}"/>
+						        	<f:attribute name="typeEdition" value="#{editionDuDossierController.typeEditionAcompte}"/>
+						        	<p:ajax update="@this, @widgetVar(wvEditionDefautAcomptePanel)" event="change" listener="#{editionDuDossierController.changeEditionDefaut}">
+						        	</p:ajax>
+						     </p:selectOneMenu>
+						   
+
+						     <h:outputText value="Définir l'édition par défaut pour le canal envoi par mail : " />
+							 <p:selectOneMenu id="idSelectOneMenuChoixEditionDefautAcompteMail" value="#{editionDuDossierController.selectedEditionDefautAcompteMail}" widgetVar="wvSelectChoixEditionDefautAcompteMail" converter="entityConverter">
+						        	 <f:selectItem itemLabel="Acompte modèle par défaut(V0220)" itemValue="#{null}" itemDisabled="false"/>
+						        	<f:selectItems value="#{editionDuDossierController.acompteValues}" var="choix" itemLabel="#{choix.libelleEdition}" itemValue="#{choix}"/>
+						        	<f:attribute name="typeCanal" value="#{editionDuDossierController.typeCanalMail}"/>
+						        	<f:attribute name="typeEdition" value="#{editionDuDossierController.typeEditionAcompte}"/>
+						        	<p:ajax update="@this,@widgetVar(wvEditionDefautAcomptePanel)" event="change" listener="#{editionDuDossierController.changeEditionDefaut}">
+						        	</p:ajax>
+						     </p:selectOneMenu>
+						     
+						     
+						     <h:outputText value="Définir l'édition par défaut pour le canal mise à disposition sur l'espace client : " />
+							 <p:selectOneMenu id="idSelectOneMenuChoixEditionDefautAcompteEspaceClient" value="#{editionDuDossierController.selectedEditionDefautAcompteDisposition}" widgetVar="wvSelectChoixEditionDefautAcompteEspaceClient" converter="entityConverter">
+						        	 <f:selectItem itemLabel="Acompte modèle par défaut(V0220)" itemValue="#{null}" itemDisabled="false"/>
+						        	<f:selectItems value="#{editionDuDossierController.acompteValues}" var="choix" itemLabel="#{choix.libelleEdition}" itemValue="#{choix}"/>
+						        	<f:attribute name="typeCanal" value="#{editionDuDossierController.typeCanalEspacecli}"/>
+						        	<f:attribute name="typeEdition" value="#{editionDuDossierController.typeEditionAcompte}"/>
+						        	<p:ajax update="@this, @widgetVar(wvEditionDefautAcomptePanel)" event="change" listener="#{editionDuDossierController.changeEditionDefaut}">
+						        	</p:ajax>
+						     </p:selectOneMenu>
+						     
+						</h:panelGrid>
+					</p:panel>
+	           </div>
+	        </p:tab>
+	        <p:tab title="Apporteur" >                    
+	           <div class="ui-g-12 ui-md-12">
+	           		<h3>Apporteur</h3>
+	           		<p:dataTable 
+						id="editionDataTableApporteur" 
+						widgetVar="wvCodeEditionDataTableApporteur" 
+						var="table"
+						rendered="#{dansDialogue == null ? true : false}"
+						value="#{editionDuDossierController.apporteurValues}" 
+						rowKey="#{table.id}"
+						selectionMode="single" 
+						class="datatable"
+						selection="#{editionDuDossierController.selection}" 
+						paginator="false"
+						sortBy="#{table.codeEdition}"
+						rows="#{msg.modele_datatable_ligne_par_page_debut}"
+						paginatorTemplate="#{msg.modele_datatable_paginator}"
+						rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+						emptyMessage="#{msg.message_datatable_vide}"
+						currentPageReportTemplate="#{msg.modele_datatable_page_courante}">
+			
+						<p:ajax event="rowSelect" listener="#{editionDuDossierController.onRowSelect}" />
+			
+						<f:facet name="{Exporters}">
+							<h:commandLink>
+								<p:graphicImage library="images" name="excel.png" width="24" />
+								<p:dataExporter type="xls" target="editionDataTable" fileName="type_tva" />
+							</h:commandLink>
+			
+							<h:commandLink>
+								<p:graphicImage library="images" name="pdf.png" width="24" />
+								<p:dataExporter type="pdf" target="editionDataTable" fileName="type_tva" />
+							</h:commandLink>
+			
+							<h:commandLink>
+								<p:graphicImage library="images" name="csv.png" width="24" />
+								<p:dataExporter type="csv" target="editionDataTable" fileName="type_tva" />
+							</h:commandLink>
+			
+							<h:commandLink>
+								<p:graphicImage library="images" name="xml.png" width="24" />
+								<p:dataExporter type="xml" target="editionDataTable" fileName="type_tva" />
+							</h:commandLink>
+						</f:facet>
+						
+						
+			
+						<p:column sortBy="#{table.codeEdition}">
+							<f:facet name="header">
+								<h:outputText value="Code" />
+							</f:facet>
+							<h:outputText value="#{table.codeEdition}" />
+						</p:column>
+						<p:column sortBy="#{table.libelleEdition}">
+							<f:facet name="header">
+								<h:outputText value="Libellé" />
+							</f:facet>
+							<h:outputText value="#{table.libelleEdition}" />
+						</p:column>
+						<!-- <p:column sortBy="#{table.codeTEdition}">
+							<f:facet name="header">
+								<h:outputText value="Type" />
+							</f:facet>
+							<h:outputText value="#{table.codeTEdition}" />
+						</p:column> -->
+						
+					</p:dataTable>
+					<p:panel id="editionDefautApporteurTousCanaux" widgetVar="wvEditionDefautApporteurTousCanaux">
+						<h:panelGrid columns="3">
+							<h:outputText style="font-weight : bold;" value="Définir l'édition par défaut pour tous les canaux :"/>
+							<p:selectOneMenu id="idSelectOneMenuChoixEditionDefautApporteurTousCanaux" value="#{editionDuDossierController.selectedEditionDefautApporteur}" widgetVar="wvSelectOneMenuChoixEditionDefautApporteurTousCanaux" converter="entityConverter">
+						        	 <f:selectItem itemLabel="Apporteur modèle par défaut(V0220)" itemValue="#{null}" itemDisabled="false"/>
+						        	<f:selectItems value="#{editionDuDossierController.apporteurValues}" var="choix" itemLabel="#{choix.libelleEdition}" itemValue="#{choix}"/>
+						     </p:selectOneMenu>
+						    <p:commandButton value="Appliquer à tous les canaux"
+						     id="idBoutonAppliquerChoixTousCanauxApporteur" 
+						     update="@this,@widgetVar(wvEditionDefautApporteurPanel)"
+						     action="#{editionDuDossierController.appliquerChoixEditionTousCanaux(editionDuDossierController.typeEditionApporteur)}" 
+						     styleClass="ui-priority-primary">
+						     <p:confirm header="Confirmation" message="Etes-vous sur de vouloir appliquer ce modèle pour tous les canaux facture (impression, envoi par e-mail et mise à disposition sur l'espace client) ?" icon="pi pi-exclamation-triangle" />
+						     </p:commandButton>
+						</h:panelGrid>
+					</p:panel>
+					
+					<p:panel id="editionDefautApporteur" widgetVar="wvEditionDefautApporteurPanel">
+						<h:panelGrid columns="2">
+							<h:outputText value="Définir l'édition par défaut pour le canal impréssion : " />
+							 <p:selectOneMenu id="idSelectOneMenuChoixEditionDefautApporteurImpression" value="#{editionDuDossierController.selectedEditionDefautApporteurImpression}" widgetVar="wvSelectChoixEditionDefautApporteurImpression" converter="entityConverter">
+						        	 <f:selectItem itemLabel="Apporteur modèle par défaut(V0220)" itemValue="#{null}" itemDisabled="false"/>
+						        	<f:selectItems value="#{editionDuDossierController.apporteurValues}" var="choix" itemLabel="#{choix.libelleEdition}" itemValue="#{choix}"/>
+						        	<f:attribute name="typeCanal" value="#{editionDuDossierController.typeCanalImpression}"/>
+						        	<f:attribute name="typeEdition" value="#{editionDuDossierController.typeEditionApporteur}"/>
+						        	<p:ajax update="@this, @widgetVar(wvEditionDefautApporteurPanel)" event="change" listener="#{editionDuDossierController.changeEditionDefaut}">
+						        	</p:ajax>
+						     </p:selectOneMenu>
+						   
+
+						     <h:outputText value="Définir l'édition par défaut pour le canal envoi par mail : " />
+							 <p:selectOneMenu id="idSelectOneMenuChoixEditionDefautApporteurMail" value="#{editionDuDossierController.selectedEditionDefautApporteurMail}" widgetVar="wvSelectChoixEditionDefautApporteurMail" converter="entityConverter">
+						        	 <f:selectItem itemLabel="Apporteur modèle par défaut(V0220)" itemValue="#{null}" itemDisabled="false"/>
+						        	<f:selectItems value="#{editionDuDossierController.apporteurValues}" var="choix" itemLabel="#{choix.libelleEdition}" itemValue="#{choix}"/>
+						        	<f:attribute name="typeCanal" value="#{editionDuDossierController.typeCanalMail}"/>
+						        	<f:attribute name="typeEdition" value="#{editionDuDossierController.typeEditionApporteur}"/>
+						        	<p:ajax update="@this,@widgetVar(wvEditionDefautApporteurPanel)" event="change" listener="#{editionDuDossierController.changeEditionDefaut}">
+						        	</p:ajax>
+						     </p:selectOneMenu>
+						     
+						     
+						     <h:outputText value="Définir l'édition par défaut pour le canal mise à disposition sur l'espace client : " />
+							 <p:selectOneMenu id="idSelectOneMenuChoixEditionDefautApporteurEspaceClient" value="#{editionDuDossierController.selectedEditionDefautApporteurDisposition}" widgetVar="wvSelectChoixEditionDefautApporteurEspaceClient" converter="entityConverter">
+						        	 <f:selectItem itemLabel="Apporteur modèle par défaut(V0220)" itemValue="#{null}" itemDisabled="false"/>
+						        	<f:selectItems value="#{editionDuDossierController.apporteurValues}" var="choix" itemLabel="#{choix.libelleEdition}" itemValue="#{choix}"/>
+						        	<f:attribute name="typeCanal" value="#{editionDuDossierController.typeCanalEspacecli}"/>
+						        	<f:attribute name="typeEdition" value="#{editionDuDossierController.typeEditionApporteur}"/>
+						        	<p:ajax update="@this, @widgetVar(wvEditionDefautApporteurPanel)" event="change" listener="#{editionDuDossierController.changeEditionDefaut}">
+						        	</p:ajax>
+						     </p:selectOneMenu>
+						     
+						</h:panelGrid>
+					</p:panel>
+	           </div>
+	        </p:tab>
+	        <p:tab title="Prelevement" >                    
+	           <div class="ui-g-12 ui-md-12">
+	           		<h3>Prelevement</h3>
+	           		<p:dataTable 
+						id="editionDataTablePrelevement" 
+						widgetVar="wvCodeEditionDataTablePrelevement" 
+						var="table"
+						rendered="#{dansDialogue == null ? true : false}"
+						value="#{editionDuDossierController.prelevementValues}" 
+						rowKey="#{table.id}"
+						selectionMode="single" 
+						class="datatable"
+						selection="#{editionDuDossierController.selection}" 
+						paginator="false"
+						sortBy="#{table.codeEdition}"
+						rows="#{msg.modele_datatable_ligne_par_page_debut}"
+						paginatorTemplate="#{msg.modele_datatable_paginator}"
+						rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+						emptyMessage="#{msg.message_datatable_vide}"
+						currentPageReportTemplate="#{msg.modele_datatable_page_courante}">
+			
+						<p:ajax event="rowSelect" listener="#{editionDuDossierController.onRowSelect}" />
+			
+						<f:facet name="{Exporters}">
+							<h:commandLink>
+								<p:graphicImage library="images" name="excel.png" width="24" />
+								<p:dataExporter type="xls" target="editionDataTable" fileName="type_tva" />
+							</h:commandLink>
+			
+							<h:commandLink>
+								<p:graphicImage library="images" name="pdf.png" width="24" />
+								<p:dataExporter type="pdf" target="editionDataTable" fileName="type_tva" />
+							</h:commandLink>
+			
+							<h:commandLink>
+								<p:graphicImage library="images" name="csv.png" width="24" />
+								<p:dataExporter type="csv" target="editionDataTable" fileName="type_tva" />
+							</h:commandLink>
+			
+							<h:commandLink>
+								<p:graphicImage library="images" name="xml.png" width="24" />
+								<p:dataExporter type="xml" target="editionDataTable" fileName="type_tva" />
+							</h:commandLink>
+						</f:facet>
+						
+						
+			
+						<p:column sortBy="#{table.codeEdition}">
+							<f:facet name="header">
+								<h:outputText value="Code" />
+							</f:facet>
+							<h:outputText value="#{table.codeEdition}" />
+						</p:column>
+						<p:column sortBy="#{table.libelleEdition}">
+							<f:facet name="header">
+								<h:outputText value="Libellé" />
+							</f:facet>
+							<h:outputText value="#{table.libelleEdition}" />
+						</p:column>
+						<!-- <p:column sortBy="#{table.codeTEdition}">
+							<f:facet name="header">
+								<h:outputText value="Type" />
+							</f:facet>
+							<h:outputText value="#{table.codeTEdition}" />
+						</p:column> -->
+						
+					</p:dataTable>
+					<p:panel id="editionDefautPrelevementTousCanaux" widgetVar="wvEditionDefautPrelevementTousCanaux">
+						<h:panelGrid columns="3">
+							<h:outputText style="font-weight : bold;" value="Définir l'édition par défaut pour tous les canaux :"/>
+							<p:selectOneMenu id="idSelectOneMenuChoixEditionDefautPrelevementTousCanaux" value="#{editionDuDossierController.selectedEditionDefautPrelevement}" widgetVar="wvSelectOneMenuChoixEditionDefautPrelevementTousCanaux" converter="entityConverter">
+						        	 <f:selectItem itemLabel="Prèlévement modèle par défaut(V0220)" itemValue="#{null}" itemDisabled="false"/>
+						        	<f:selectItems value="#{editionDuDossierController.prelevementValues}" var="choix" itemLabel="#{choix.libelleEdition}" itemValue="#{choix}"/>
+						     </p:selectOneMenu>
+						    <p:commandButton value="Appliquer à tous les canaux"
+						     id="idBoutonAppliquerChoixTousCanauxPrelevement" 
+						     update="@this,@widgetVar(wvEditionDefautPrelevementPanel)"
+						     action="#{editionDuDossierController.appliquerChoixEditionTousCanaux(editionDuDossierController.typeEditionPrelevement)}" 
+						     styleClass="ui-priority-primary">
+						     <p:confirm header="Confirmation" message="Etes-vous sur de vouloir appliquer ce modèle pour tous les canaux prelevement (impression, envoi par e-mail et mise à disposition sur l'espace client) ?" icon="pi pi-exclamation-triangle" />
+						     </p:commandButton>
+						</h:panelGrid>
+					</p:panel>
+					
+					<p:panel id="editionDefautPrelevement" widgetVar="wvEditionDefautPrelevementPanel">
+						<h:panelGrid columns="2">
+							<h:outputText value="Définir l'édition par défaut pour le canal impréssion : " />
+							 <p:selectOneMenu id="idSelectOneMenuChoixEditionDefautPrelevementImpression" value="#{editionDuDossierController.selectedEditionDefautPrelevementImpression}" widgetVar="wvSelectChoixEditionDefautPrelevementImpression" converter="entityConverter">
+						        	 <f:selectItem itemLabel="Prèlévement modèle par défaut(V0220)" itemValue="#{null}" itemDisabled="false"/>
+						        	<f:selectItems value="#{editionDuDossierController.prelevementValues}" var="choix" itemLabel="#{choix.libelleEdition}" itemValue="#{choix}"/>
+						        	<f:attribute name="typeCanal" value="#{editionDuDossierController.typeCanalImpression}"/>
+						        	<f:attribute name="typeEdition" value="#{editionDuDossierController.typeEditionPrelevement}"/>
+						        	<p:ajax update="@this, @widgetVar(wvEditionDefautPrelevementPanel)" event="change" listener="#{editionDuDossierController.changeEditionDefaut}">
+						        	</p:ajax>
+						     </p:selectOneMenu>
+						   
+
+						     <h:outputText value="Définir l'édition par défaut pour le canal envoi par mail : " />
+							 <p:selectOneMenu id="idSelectOneMenuChoixEditionDefautPrelevementMail" value="#{editionDuDossierController.selectedEditionDefautPrelevementMail}" widgetVar="wvSelectChoixEditionDefautPrelevementMail" converter="entityConverter">
+						        	 <f:selectItem itemLabel="Prèlévement modèle par défaut(V0220)" itemValue="#{null}" itemDisabled="false"/>
+						        	<f:selectItems value="#{editionDuDossierController.prelevementValues}" var="choix" itemLabel="#{choix.libelleEdition}" itemValue="#{choix}"/>
+						        	<f:attribute name="typeCanal" value="#{editionDuDossierController.typeCanalMail}"/>
+						        	<f:attribute name="typeEdition" value="#{editionDuDossierController.typeEditionPrelevement}"/>
+						        	<p:ajax update="@this,@widgetVar(wvEditionDefautPrelevementPanel)" event="change" listener="#{editionDuDossierController.changeEditionDefaut}">
+						        	</p:ajax>
+						     </p:selectOneMenu>
+						     
+						     
+						     <h:outputText value="Définir l'édition par défaut pour le canal mise à disposition sur l'espace client : " />
+							 <p:selectOneMenu id="idSelectOneMenuChoixEditionDefautPrelevementEspaceClient" value="#{editionDuDossierController.selectedEditionDefautPrelevementDisposition}" widgetVar="wvSelectChoixEditionDefautPrelevementEspaceClient" converter="entityConverter">
+						        	 <f:selectItem itemLabel="Prèlévement modèle par défaut(V0220)" itemValue="#{null}" itemDisabled="false"/>
+						        	<f:selectItems value="#{editionDuDossierController.prelevementValues}" var="choix" itemLabel="#{choix.libelleEdition}" itemValue="#{choix}"/>
+						        	<f:attribute name="typeCanal" value="#{editionDuDossierController.typeCanalEspacecli}"/>
+						        	<f:attribute name="typeEdition" value="#{editionDuDossierController.typeEditionPrelevement}"/>
+						        	<p:ajax update="@this, @widgetVar(wvEditionDefautPrelevementPanel)" event="change" listener="#{editionDuDossierController.changeEditionDefaut}">
+						        	</p:ajax>
+						     </p:selectOneMenu>
+						     
+						</h:panelGrid>
+					</p:panel>
+	           </div>
+	        </p:tab>
+	        <p:tab title="Avis d'échéance" >                    
+	           <div class="ui-g-12 ui-md-12">
+	           		<h3>Avis d'échéance</h3>
+	           		<p:dataTable 
+						id="editionDataTableAvisEcheance" 
+						widgetVar="wvCodeEditionDataTableAvisEcheance" 
+						var="table"
+						rendered="#{dansDialogue == null ? true : false}"
+						value="#{editionDuDossierController.avisEcheanceValues}" 
+						rowKey="#{table.id}"
+						selectionMode="single" 
+						class="datatable"
+						selection="#{editionDuDossierController.selection}" 
+						paginator="false"
+						sortBy="#{table.codeEdition}"
+						rows="#{msg.modele_datatable_ligne_par_page_debut}"
+						paginatorTemplate="#{msg.modele_datatable_paginator}"
+						rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+						emptyMessage="#{msg.message_datatable_vide}"
+						currentPageReportTemplate="#{msg.modele_datatable_page_courante}">
+			
+						<p:ajax event="rowSelect" listener="#{editionDuDossierController.onRowSelect}" />
+			
+						<f:facet name="{Exporters}">
+							<h:commandLink>
+								<p:graphicImage library="images" name="excel.png" width="24" />
+								<p:dataExporter type="xls" target="editionDataTable" fileName="type_tva" />
+							</h:commandLink>
+			
+							<h:commandLink>
+								<p:graphicImage library="images" name="pdf.png" width="24" />
+								<p:dataExporter type="pdf" target="editionDataTable" fileName="type_tva" />
+							</h:commandLink>
+			
+							<h:commandLink>
+								<p:graphicImage library="images" name="csv.png" width="24" />
+								<p:dataExporter type="csv" target="editionDataTable" fileName="type_tva" />
+							</h:commandLink>
+			
+							<h:commandLink>
+								<p:graphicImage library="images" name="xml.png" width="24" />
+								<p:dataExporter type="xml" target="editionDataTable" fileName="type_tva" />
+							</h:commandLink>
+						</f:facet>
+						
+						
+			
+						<p:column sortBy="#{table.codeEdition}">
+							<f:facet name="header">
+								<h:outputText value="Code" />
+							</f:facet>
+							<h:outputText value="#{table.codeEdition}" />
+						</p:column>
+						<p:column sortBy="#{table.libelleEdition}">
+							<f:facet name="header">
+								<h:outputText value="Libellé" />
+							</f:facet>
+							<h:outputText value="#{table.libelleEdition}" />
+						</p:column>
+						<!-- <p:column sortBy="#{table.codeTEdition}">
+							<f:facet name="header">
+								<h:outputText value="Type" />
+							</f:facet>
+							<h:outputText value="#{table.codeTEdition}" />
+						</p:column> -->
+						
+					</p:dataTable>
+					<p:panel id="editionDefautAvisEcheanceTousCanaux" widgetVar="wvEditionDefautAvisEcheanceTousCanaux">
+						<h:panelGrid columns="3">
+							<h:outputText style="font-weight : bold;" value="Définir l'édition par défaut pour tous les canaux :"/>
+							<p:selectOneMenu id="idSelectOneMenuChoixEditionDefautAvisEcheanceTousCanaux" value="#{editionDuDossierController.selectedEditionDefautAvisEcheance}" widgetVar="wvSelectOneMenuChoixEditionDefautAvisEcheanceTousCanaux" converter="entityConverter">
+						        	 <f:selectItem itemLabel="Avis d'échéance modèle par défaut(V0220)" itemValue="#{null}" itemDisabled="false"/>
+						        	<f:selectItems value="#{editionDuDossierController.avisEcheanceValues}" var="choix" itemLabel="#{choix.libelleEdition}" itemValue="#{choix}"/>
+						     </p:selectOneMenu>
+						    <p:commandButton value="Appliquer à tous les canaux"
+						     id="idBoutonAppliquerChoixTousCanauxAvisEcheance" 
+						     update="@this,@widgetVar(wvEditionDefautAvisEcheancePanel)"
+						     action="#{editionDuDossierController.appliquerChoixEditionTousCanaux(editionDuDossierController.typeEditionAvisEcheance)}" 
+						     styleClass="ui-priority-primary">
+						     <p:confirm header="Confirmation" message="Etes-vous sur de vouloir appliquer ce modèle pour tous les canaux avisEcheance (impression, envoi par e-mail et mise à disposition sur l'espace client) ?" icon="pi pi-exclamation-triangle" />
+						     </p:commandButton>
+						</h:panelGrid>
+					</p:panel>
+					
+					<p:panel id="editionDefautAvisEcheance" widgetVar="wvEditionDefautAvisEcheancePanel">
+						<h:panelGrid columns="2">
+							<h:outputText value="Définir l'édition par défaut pour le canal impréssion : " />
+							 <p:selectOneMenu id="idSelectOneMenuChoixEditionDefautAvisEcheanceImpression" value="#{editionDuDossierController.selectedEditionDefautAvisEcheanceImpression}" widgetVar="wvSelectChoixEditionDefautAvisEcheanceImpression" converter="entityConverter">
+						        	 <f:selectItem itemLabel="Avis d'échéance modèle par défaut(V0220)" itemValue="#{null}" itemDisabled="false"/>
+						        	<f:selectItems value="#{editionDuDossierController.avisEcheanceValues}" var="choix" itemLabel="#{choix.libelleEdition}" itemValue="#{choix}"/>
+						        	<f:attribute name="typeCanal" value="#{editionDuDossierController.typeCanalImpression}"/>
+						        	<f:attribute name="typeEdition" value="#{editionDuDossierController.typeEditionAvisEcheance}"/>
+						        	<p:ajax update="@this, @widgetVar(wvEditionDefautAvisEcheancePanel)" event="change" listener="#{editionDuDossierController.changeEditionDefaut}">
+						        	</p:ajax>
+						     </p:selectOneMenu>
+						   
+
+						     <h:outputText value="Définir l'édition par défaut pour le canal envoi par mail : " />
+							 <p:selectOneMenu id="idSelectOneMenuChoixEditionDefautAvisEcheanceMail" value="#{editionDuDossierController.selectedEditionDefautAvisEcheanceMail}" widgetVar="wvSelectChoixEditionDefautAvisEcheanceMail" converter="entityConverter">
+						        	 <f:selectItem itemLabel="Avis d'échéance modèle par défaut(V0220)" itemValue="#{null}" itemDisabled="false"/>
+						        	<f:selectItems value="#{editionDuDossierController.avisEcheanceValues}" var="choix" itemLabel="#{choix.libelleEdition}" itemValue="#{choix}"/>
+						        	<f:attribute name="typeCanal" value="#{editionDuDossierController.typeCanalMail}"/>
+						        	<f:attribute name="typeEdition" value="#{editionDuDossierController.typeEditionAvisEcheance}"/>
+						        	<p:ajax update="@this,@widgetVar(wvEditionDefautAvisEcheancePanel)" event="change" listener="#{editionDuDossierController.changeEditionDefaut}">
+						        	</p:ajax>
+						     </p:selectOneMenu>
+						     
+						     
+						     <h:outputText value="Définir l'édition par défaut pour le canal mise à disposition sur l'espace client : " />
+							 <p:selectOneMenu id="idSelectOneMenuChoixEditionDefautAvisEcheanceEspaceClient" value="#{editionDuDossierController.selectedEditionDefautAvisEcheanceDisposition}" widgetVar="wvSelectChoixEditionDefautAvisEcheanceEspaceClient" converter="entityConverter">
+						        	 <f:selectItem itemLabel="Avis d'échéance modèle par défaut(V0220)" itemValue="#{null}" itemDisabled="false"/>
+						        	<f:selectItems value="#{editionDuDossierController.avisEcheanceValues}" var="choix" itemLabel="#{choix.libelleEdition}" itemValue="#{choix}"/>
+						        	<f:attribute name="typeCanal" value="#{editionDuDossierController.typeCanalEspacecli}"/>
+						        	<f:attribute name="typeEdition" value="#{editionDuDossierController.typeEditionAvisEcheance}"/>
+						        	<p:ajax update="@this, @widgetVar(wvEditionDefautAvisEcheancePanel)" event="change" listener="#{editionDuDossierController.changeEditionDefaut}">
+						        	</p:ajax>
+						     </p:selectOneMenu>
+						     
+						</h:panelGrid>
+					</p:panel>
+	           </div>
+	        </p:tab>
+	    </p:tabView>
+		<!-- Fin tabView -->
+		
+		
+	</p:panel>
+
+	<p:messages id="editionMessages" showDetail="true" autoUpdate="true"
+		closable="true" />
+
+	<p:panel id="editionPanel" visible="true" widgetVar="varCodeEditionPanel">
+		<p:panel onLoad="reset()" resizable="false" id="editionPanelCache"
+			rendered="#{editionDuDossierController.modeEcran.dataSetEnModif()}">
+			<!-- 			<h:form id="editionFormCreation"> -->
+			<f:validateBean disabled="true">
+				<div class="ui-grid ui-grid-responsive" id="editionGridResp">
+					<div class="ui-grid-row">
+						<div class="ui-grid-col-4">
+							<h:outputText value="Code :"></h:outputText>
+						</div>
+						<div class="ui-grid-col-8">
+<!-- 							<h:inputText value="#{editionDuDossierController.nouveau.edition}" styleClass="Input50" -->
+<!-- 								required="true" -->
+<!-- 								requiredMessage="#{msg_diag.alert_champs_obligatoir}" -->
+<!-- 								validator="#{editionDuDossierController.validateObject}"> -->
+<!-- 								<f:attribute name="nomChamp" value="#{const.C_CODE_Edition}" /> -->
+<!-- 								<p:ajax event="blur" update="@this" /> -->
+<!-- 							</h:inputText> -->
+						</div>
+					</div>
+					<div class="ui-grid-row">
+						<div class="ui-grid-col-4">
+							<h:outputText value="Libellé :"></h:outputText>
+						</div>
+						<div class="ui-grid-col-8">
+<!-- 							<h:inputText value="#{editionDuDossierController.nouveau.libelleEdition}" styleClass="Input100" -->
+<!-- 								required="true" -->
+<!-- 								requiredMessage="#{msg_diag.alert_champs_obligatoir}" -->
+<!-- 								validator="#{editionDuDossierController.validateObject}"> -->
+<!-- 								<f:attribute name="nomChamp" value="#{const.C_LIBELLE_Edition}" /> -->
+<!-- 								<p:ajax event="blur" update="@this" /> -->
+<!-- 							</h:inputText> -->
+						</div>
+					</div>
+					
+				</div>
+			</f:validateBean>
+			<!-- 			</h:form> -->
+		</p:panel>
+	</p:panel>
+</ui:composition>

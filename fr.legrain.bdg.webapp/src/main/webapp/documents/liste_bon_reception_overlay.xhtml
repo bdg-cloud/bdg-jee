@@ -1,0 +1,189 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:p="http://primefaces.org/ui">
+	
+	<o:importConstants type="fr.legrain.bdg.webapp.app.LgrTab" />
+	
+	<p:commandLink id="listeBRBtn" >
+		<i class="top-submenu-icon fa fa-fw fa-truck"></i>
+<!-- 		<i class="top-bar-badge animated rubberBand"><h:outputText value="#{topBarController.nbClient}"/></i> -->
+<!-- 		<i class="fa fa-book animated swing" aria-hidden="true"></i> -->
+		<span><h:outputText value="Liste des réceptions" /></span>
+	</p:commandLink>
+	
+	<p:overlayPanel id="idListeBRPanel" for="listeBRBtn" hideEffect="fade" dynamic="true" 
+		dismissable="true" appendTo="@(body)" widgetVar="wvOverlayListeBR" showCloseIcon="true">
+		
+	<h:form>
+		<div class="dashboard-title" style="background:#f6f6f6;">
+              <h:panelGrid columns="3" cellpadding="5">
+            	<h:graphicImage name="dashboard/reception.svg" library="images" height="35px" style="margin-top:1px;" />
+                <p:outputLabel value="Liste des bons de réception" style="font-size:20px;"/>
+              </h:panelGrid>  
+              <p:separator/>
+        </div>
+	<p:menubar styleClass="menu-onglet" widgetVar="wvMenuListeBR" id="idMenuListeBR">
+		 <p:menuitem title="Créer un bon de réception" update=":form:tabView,:form:messages,@widgetVar(wvMenuListeBR),@widgetVar(wvDataTableListeBR)"  
+		 	actionListener="#{bonReceptionController.nouveau}" styleClass="icon icon-insert" disabled="#{bonReceptionController.etatBouton('inserer')}" oncomplete="PF('wvOverlayListeBR').hide();"/>
+<!-- 		 oncomplete="rc2();" -->
+<!-- 		 <p:menuitem title="Détail" update=":form:tabView,:form:messages" actionListener="#{bonReceptionController.detail}" styleClass="icon icon-detail" disabled="#{bonReceptionController.modeEcran.dataSetEnModif()}" oncomplete="PF('wvOverlayListeBR').hide();"/> -->
+<!-- 		 <p:menuitem title="Supprimer les bons de réception sélectionnés" update=":form:tabView,@widgetVar(wvMenuListeBR),@widgetVar(wvDataTableListeBR),:form:messages,@form"  -->
+<!-- 		 actionListener="#{bonReceptionController.supprimer}" styleClass="icon icon-delete" disabled="#{bonReceptionController.etatBouton('supprimerListe')}"> -->
+<!-- 	 		<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer les bons de réception sélectionnés ?" icon="ui-icon-alert" /> -->
+<!-- 	 	</p:menuitem> -->
+		 <p:menuitem title="Rafraîchir la liste" update=":form:tabView,@form,@widgetVar(wvMenuListeBR),@widgetVar(wvDataTableListeBR),:form:messages" actionListener="#{bonReceptionController.refresh}" styleClass="icon icon-refresh" disabled="#{bonReceptionController.modeEcran.dataSetEnModif()}"/>
+	</p:menubar>
+	<p:sticky target="idMenuListeBR" />
+	 
+	<p:dataTable id="dataTableListeBonReception" var="bonReception"
+				widgetVar="wvDataTableListeBR"
+				value="#{bonReceptionController.values}"
+				rowKey="#{bonReception.id}"
+				selection="#{bonReceptionController.selectedDocumentDTOs}"
+				dblClickSelect="true"
+				styleClass="datatable mt10"
+				resizableColumns="true"
+				paginator="true" 
+				rows="#{msg.modele_datatable_ligne_par_page_debut}"
+				paginatorTemplate="#{msg.modele_datatable_paginator}"
+				rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+				emptyMessage="#{msg.message_datatable_vide}"
+				currentPageReportTemplate="#{msg.modele_datatable_page_courante}"
+				disabledSelection="#{bonReceptionController.modeEcran.dataSetEnModif()}">
+				
+<!-- 				<p:ajax event="rowDblselect" listener="#{bonReceptionController.onRowSelect}" update=":form:tabView,:form:messages,@form" oncomplete="activeLastTabCenter();"/>  -->
+<!-- 				<p:ajax event="rowSelect" listener="#{bonReceptionController.onRowSelect}" update=":form:tabView,:form:messages" oncomplete="PF('wvOverlayListeBR').hide();"/> -->
+				
+<!-- 				<p:ajax event="rowDblselect" listener="#{bonReceptionController.onRowSelect}" update=":form:tabView,:form:messages" /> -->
+				<p:ajax event="rowSelect" delay="#{msg.datatable_rowselect_delay}" listener="#{bonReceptionController.onRowSelect}" update=":form:tabView,:form:messages" oncomplete="activeTabCenter('#{LgrTab.CSS_CLASS_TAB_RECEPTION}');PF('wvOverlayListeBR').hide();scrollToTop();"/>
+				
+				<f:facet name="header">  
+           			<h:outputText value="Bon de réception" />
+           			<span style="float:right;" class="searchbar_list">
+			            <p:outputPanel>
+				                <p:inputText id="globalFilter" onkeyup="PF('wvDataTableListeBR').filter()" style="width:150px" placeholder="Rechercher"/>
+				            </p:outputPanel>
+			        </span>
+        		</f:facet>
+
+		  		<f:facet name="{Exporters}">
+		            <h:commandLink>
+		                <p:graphicImage library="images" name="excel.png" width="24"/>
+		                <p:dataExporter type="xls" target="dataTableListeBonReception" fileName="liste_bon_reception" />
+		            </h:commandLink>
+		 			
+		 			<p:commandLink onsuccess="window.open('#{request.contextPath}/output?__report=/reports/stock/ListeDesBonsDeReception.rptdesign&amp;__format=pdf')"
+			actionListener="#{bonReceptionController.actImprimerListeDesBonsDeReception}" process="@this">
+		                <p:graphicImage  library="images" name="pdf.png"  width="24"/>
+<!-- 		                <p:dataExporter type="pdf" target="dataTableListeTiers" fileName="liste_tiers" /> -->
+		            </p:commandLink>
+		            
+<!-- 		            <h:commandLink> -->
+<!-- 		                <p:graphicImage  library="images" name="pdf.png"  width="24"/> -->
+<!-- 		                <p:dataExporter type="pdf" target="dataTableListeBonReception" fileName="liste_bon_reception"/> -->
+<!-- 		            </h:commandLink> -->
+		 
+		            <h:commandLink>
+		                <p:graphicImage  library="images" name="csv.png"  width="24"/>
+		                <p:dataExporter type="csv" target="dataTableListeBonReception" fileName="liste_bon_reception" options="#{separateurCsvController.csvOptions}" />
+		            </h:commandLink>
+		 
+		            <h:commandLink>
+		                <p:graphicImage  library="images" name="xml.png"  width="24"/>
+		                <p:dataExporter type="xml" target="dataTableListeBonReception" fileName="liste_bon_reception" />
+		            </h:commandLink>
+		        </f:facet>
+		        
+		        <p:column selectionMode="multiple" style="width:16px;text-align:center" exportable="false"/>
+			
+				<p:column style="width:16px" exportable="false">
+					<f:facet name="header">
+						<h:outputText value="" />
+					</f:facet>
+					<p:commandButton title="Détail" update=":form:tabView,:form:messages" 
+						action="#{bonReceptionController.detail}" styleClass="icon icon-detail icon-grille" 
+						disabled="#{bonReceptionController.modeEcran.dataSetEnModif()}" oncomplete="PF('wvOverlayListeBR').hide();">
+						<f:setPropertyActionListener target="#{bonReceptionController.selectedDocumentDTOs}" value="#{bonReception}" />
+					</p:commandButton>
+				</p:column>
+        
+<!-- 				<p:column sortBy="#{bonReception.id}"> -->
+<!-- 					<f:facet name="header"> -->
+<!-- 						<h:outputText value="ID" /> -->
+<!-- 					</f:facet> -->
+<!-- 					<h:outputText value="#{bonReception.id}" /> -->
+<!-- 				</p:column> -->
+
+				<p:column sortBy="#{bonReception.codeDocument}" filterBy="#{bonReception.codeDocument}" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="Code" />
+					</f:facet>
+					<h:outputText value="#{bonReception.codeDocument}" />
+				</p:column>
+				
+				<p:column sortBy="#{bonReception.libelleDocument}" filterBy="#{bonReception.libelleDocument}" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="Libelle" />
+					</f:facet>
+					<h:outputText value="#{bonReception.libelleDocument}" />
+				</p:column>
+				
+				
+				
+				<p:column sortBy="#{bonReception.codeTiers}" filterBy="#{bonReception.codeTiers}" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="Code tiers" />
+					</f:facet>
+					<h:outputText value="#{bonReception.codeTiers}" />
+				</p:column>
+				
+				<p:column sortBy="#{bonReception.nomTiers}" filterBy="#{bonReception.nomTiers}" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="Nom tiers" />
+					</f:facet>
+					<h:outputText value="#{bonReception.nomTiers}" />
+				</p:column>
+				
+				<p:column sortBy="#{bonReception.dateDocument}"
+				 filterBy="#{bonReceptionController.customFormatDate(bonReception.dateDocument)}" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="Date" />
+					</f:facet>
+					<h:outputText value="#{bonReception.dateDocument}">
+						<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+					</h:outputText>
+				</p:column>
+				
+				<p:column sortBy="#{bonReception.liblTReception}" filterBy="#{bonReception.liblTReception}" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="Type reception" />
+					</f:facet>
+					<h:outputText value="#{bonReception.liblTReception}" />
+				</p:column>
+				
+				<p:column style="width:16px" exportable="false">
+					<f:facet name="header">
+						<h:outputText value="" />
+					</f:facet>
+					
+					<p:commandButton title="Supprimer" styleClass="icon-delete icon icon-grille" widgetVar="widgetVarBtnSupprimerBRListe"
+						action="#{bonReceptionController.actSupprimer}"
+						process="@this"
+						update="@widgetVar(wvDataTableListeBR)">
+						<f:setPropertyActionListener target="#{bonReceptionController.selectedDocumentDTO}" value="#{bonReception}" />
+						<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer ce bon de réception ?" icon="ui-icon-alert" />
+					</p:commandButton>
+						
+				</p:column>
+
+			</p:dataTable>
+
+		</h:form>
+	</p:overlayPanel>
+	
+<!-- 	</h:form> -->
+
+</ui:composition>

@@ -1,0 +1,961 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<report xmlns="http://www.eclipse.org/birt/2005/design" version="3.2.23" id="1">
+    <property name="createdBy">Eclipse BIRT Designer Version 4.7.0.v201706222054</property>
+    <property name="units">in</property>
+    <property name="iconFile">/templates/blank_report.gif</property>
+    <property name="bidiLayoutOrientation">ltr</property>
+    <property name="imageDPI">96</property>
+    <data-sources>
+        <script-data-source name="DataSourceScript" id="25"/>
+    </data-sources>
+    <data-sets>
+        <script-data-set name="Data Set Etat des Stocks Global" id="518">
+            <list-property name="resultSetHints">
+                <structure>
+                    <property name="position">1</property>
+                    <property name="name">codeFamilleArticle</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">2</property>
+                    <property name="name">mouvEntrepot</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">3</property>
+                    <property name="name">mouvCodeArticle</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">4</property>
+                    <property name="name">mouvNumLot</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">5</property>
+                    <property name="name">mouvLibelle</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">6</property>
+                    <property name="name">mouvQteDepart</property>
+                    <property name="dataType">decimal</property>
+                </structure>
+                <structure>
+                    <property name="position">7</property>
+                    <property name="name">mouvQteEntree</property>
+                    <property name="dataType">decimal</property>
+                </structure>
+                <structure>
+                    <property name="position">8</property>
+                    <property name="name">mouvQteSortie</property>
+                    <property name="dataType">decimal</property>
+                </structure>
+                <structure>
+                    <property name="position">9</property>
+                    <property name="name">mouvQteDisponible</property>
+                    <property name="dataType">decimal</property>
+                </structure>
+                <structure>
+                    <property name="position">10</property>
+                    <property name="name">mouveDispo</property>
+                    <property name="dataType">decimal</property>
+                </structure>
+            </list-property>
+            <list-property name="columnHints">
+                <structure>
+                    <property name="columnName">codeFamilleArticle</property>
+                </structure>
+                <structure>
+                    <property name="columnName">mouvEntrepot</property>
+                </structure>
+                <structure>
+                    <property name="columnName">mouvCodeArticle</property>
+                </structure>
+                <structure>
+                    <property name="columnName">mouvNumLot</property>
+                </structure>
+                <structure>
+                    <property name="columnName">mouvLibelle</property>
+                </structure>
+                <structure>
+                    <property name="columnName">mouvQteDepart</property>
+                </structure>
+                <structure>
+                    <property name="columnName">mouvQteEntree</property>
+                </structure>
+                <structure>
+                    <property name="columnName">mouvQteSortie</property>
+                </structure>
+                <structure>
+                    <property name="columnName">mouvQteDisponible</property>
+                </structure>
+                <structure>
+                    <property name="columnName">mouveDispo</property>
+                </structure>
+            </list-property>
+            <structure name="cachedMetaData">
+                <list-property name="resultSet">
+                    <structure>
+                        <property name="position">1</property>
+                        <property name="name">codeFamilleArticle</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">2</property>
+                        <property name="name">mouvEntrepot</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">3</property>
+                        <property name="name">mouvCodeArticle</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">4</property>
+                        <property name="name">mouvNumLot</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">5</property>
+                        <property name="name">mouvLibelle</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">6</property>
+                        <property name="name">mouvQteDepart</property>
+                        <property name="dataType">decimal</property>
+                    </structure>
+                    <structure>
+                        <property name="position">7</property>
+                        <property name="name">mouvQteEntree</property>
+                        <property name="dataType">decimal</property>
+                    </structure>
+                    <structure>
+                        <property name="position">8</property>
+                        <property name="name">mouvQteSortie</property>
+                        <property name="dataType">decimal</property>
+                    </structure>
+                    <structure>
+                        <property name="position">9</property>
+                        <property name="name">mouvQteDisponible</property>
+                        <property name="dataType">decimal</property>
+                    </structure>
+                    <structure>
+                        <property name="position">10</property>
+                        <property name="name">mouveDispo</property>
+                        <property name="dataType">decimal</property>
+                    </structure>
+                </list-property>
+            </structure>
+            <property name="dataSource">DataSourceScript</property>
+            <method name="open"><![CDATA[
+count=0;
+
+
+
+editionSD = reportContext.getHttpServletRequest().getSession().getAttribute("lEditionSD"); 
+
+	
+		
+
+
+
+
+
+]]></method>
+            <method name="fetch"><![CDATA[
+
+Packages.java.util.logging.Logger.getLogger("").info("***************************************** FETCH - BEGIN *******************************************************");
+
+if(count < editionSD.size()) {
+
+	stock = editionSD.get(count);
+	Packages.java.util.logging.Logger.getLogger("").info("stock - "+stock);
+	
+	//
+	// ------------------------ Stocks Global ----------------------
+	//
+	
+	
+	if(stock.getMouveTypeFamille()==null){row["codeFamilleArticle"] = "";}
+	else{row["codeFamilleArticle"]=stock.getMouveTypeFamille();}
+	
+	if(stock.getMouvEntrepot()==null){row["mouvEntrepot"] = "";}
+	else{row["mouvEntrepot"]=stock.getMouvEntrepot();}
+	Packages.java.util.logging.Logger.getLogger("").info("mouvEntrepot - "+row["mouvEntrepot"]);
+	//
+	if(stock.getMouvCodeArticle()==null){row["mouvCodeArticle"] = "";}
+	else{row["mouvCodeArticle"]=stock.getMouvCodeArticle();}
+	Packages.java.util.logging.Logger.getLogger("").info("mouvCodeArticle - "+row["mouvCodeArticle"]);
+	//
+	//if(stock.getMouvNumLot()==null){row["mouvNumLot"] = "";}
+	//else{row["mouvNumLot"]=stock.getMouvNumLot();}
+	//Packages.java.util.logging.Logger.getLogger("").info("mouvNumLot - "+row["mouvNumLot"]);
+	//
+	if(stock.getMouvLibelle()==null){row["mouvLibelle"] = "";}
+	else{row["mouvLibelle"]=stock.getMouvLibelle();}
+	Packages.java.util.logging.Logger.getLogger("").info("mouvLibelle - "+row["mouvLibelle"]);
+	//
+	if(stock.getMouvQteDepart()==null){row["mouvQteDepart"] = "";}
+	else{row["mouvQteDepart"]=stock.getMouvQteDepart();}
+	Packages.java.util.logging.Logger.getLogger("").info("mouvQteDepart - "+row["mouvQteDepart"]);
+	//
+	if(stock.getMouvQteEntree()==null){row["mouvQteEntree"] = "";}
+	else{row["mouvQteEntree"]=stock.getMouvQteEntree();}
+	Packages.java.util.logging.Logger.getLogger("").info("mouvQteEntree - "+row["mouvQteEntree"]);
+	//
+	if(stock.getMouvQteSortie()==null){row["mouvQteSortie"] = "";}
+	else{row["mouvQteSortie"]=stock.getMouvQteSortie();}
+	Packages.java.util.logging.Logger.getLogger("").info("mouvQteSortie - "+row["mouvQteSortie"]);
+	//
+	if(stock.getMouvQteDisponible()==null){row["mouvQteDisponible"] = "";}
+	else{row["mouvQteDisponible"]=(stock.getMouvQteDepart() + stock.getMouvQteEntree() + stock.getMouvQteSortie());}
+	Packages.java.util.logging.Logger.getLogger("").info("mouvQteDisponible - "+row["mouvQteDisponible"]);
+	//
+
+
+	//
+	a = 0;
+	if (row["mouvQteDepart"] == null){
+	  if (row["mouvQteEntree"] == null){ 
+	    if (row["mouvQteSortie"] == null){
+	  	  a = 0;
+	  	} else {
+	  	  a = row["mouvQteSortie"];
+	  	}
+	  }
+	  if (row["mouvQteEntree"] != null){ 
+	    if (row["mouvQteSortie"] == null){
+	  	  a = row["mouvQteEntree"];
+	  	} else {
+	  	  a = (row["mouvQteSortie"] + row["mouvQteEntree"]);
+	  	}
+	  }
+	} else {
+	  if (row["mouvQteEntree"] == null){ 
+	    if (row["mouvQteSortie"] == null){
+	  	  a = row["mouvQteDepart"];
+	  	} else {
+	  	  a = (row["mouvQteSortie"] + row["mouvQteDepart"]);
+	  	}
+	  }
+	  if (row["mouvQteEntree"] != null){ 
+	    if (row["mouvQteSortie"] == null){
+	  	  a = (row["mouvQteEntree"] + row["mouvQteDepart"]);
+	  	} else {
+	  	  a = (row["mouvQteSortie"] + row["mouvQteEntree"] + row["mouvQteDepart"]);
+	  	}
+	  }
+	}
+	row["mouveDispo"]=a;
+	Packages.java.util.logging.Logger.getLogger("").info("mouveDispo - "+row["mouveDispo"]);
+	//
+	
+	count++;
+
+	Packages.java.util.logging.Logger.getLogger("").info("***************************************** FETCH -  END - TRUE *************************************************");
+	return true;
+
+}
+Packages.java.util.logging.Logger.getLogger("").info("***************************************** FETCH -  END - FALSE ************************************************");
+return false;
+]]></method>
+        </script-data-set>
+        <script-data-set name="DataSetEntete" id="587">
+            <list-property name="resultSetHints">
+                <structure>
+                    <property name="position">0</property>
+                    <property name="name">dateDebut</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">1</property>
+                    <property name="name">dateFin</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">2</property>
+                    <property name="name">familleArticle</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">3</property>
+                    <property name="name">codeArticle</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">4</property>
+                    <property name="name">codeEntrepot</property>
+                    <property name="dataType">string</property>
+                </structure>
+            </list-property>
+            <list-property name="columnHints">
+                <structure>
+                    <property name="columnName">dateDebut</property>
+                </structure>
+                <structure>
+                    <property name="columnName">dateFin</property>
+                </structure>
+                <structure>
+                    <property name="columnName">familleArticle</property>
+                </structure>
+                <structure>
+                    <property name="columnName">codeArticle</property>
+                </structure>
+                <structure>
+                    <property name="columnName">codeEntrepot</property>
+                </structure>
+            </list-property>
+            <structure name="cachedMetaData">
+                <list-property name="resultSet">
+                    <structure>
+                        <property name="position">1</property>
+                        <property name="name">dateDebut</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">2</property>
+                        <property name="name">dateFin</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">3</property>
+                        <property name="name">familleArticle</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">4</property>
+                        <property name="name">codeArticle</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">5</property>
+                        <property name="name">codeEntrepot</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                </list-property>
+            </structure>
+            <property name="dataSource">DataSourceScript</property>
+            <method name="open"><![CDATA[
+count=0;
+
+Packages.java.util.logging.Logger.getLogger("").info("***************************************** OPEN Entete- BEGIN *******************************************************");
+
+
+editionSD = reportContext.getHttpServletRequest().getSession().getAttribute("lEditionSD"); 
+
+dateDebut = reportContext.getHttpServletRequest().getSession().getAttribute("dateDebut");
+dateFin = reportContext.getHttpServletRequest().getSession().getAttribute("dateFin");
+
+codeArticle=reportContext.getHttpServletRequest().getSession().getAttribute("article");		
+familleArticle=reportContext.getHttpServletRequest().getSession().getAttribute("familleArticle");		
+codeEntrepot=reportContext.getHttpServletRequest().getSession().getAttribute("entrepot");
+
+Packages.java.util.logging.Logger.getLogger("").info("***************************************** OPEN Entete- END *******************************************************");
+]]></method>
+            <method name="fetch"><![CDATA[libDate = new Packages.fr.legrain.lib.data.LibDate();
+
+Packages.java.util.logging.Logger.getLogger("").info("***************************************** FETCH Entete- BEGIN *******************************************************");
+
+if(count < editionSD.size()) {
+	row["dateDebut"] =libDate.dateToString(dateDebut); 
+	row["dateFin"] = libDate.dateToString(dateFin);
+	
+	
+	if(codeArticle == null) row["codeArticle"] = 'tous';
+	else row["codeArticle"] =codeArticle;
+		
+	if(familleArticle == null) row["familleArticle"] = 'tous';
+	else row["familleArticle"] =familleArticle;
+	 
+	if(codeEntrepot == null) row["codeEntrepot"] = 'tous';
+	else row["codeEntrepot"] =codeEntrepot;
+	
+	Packages.java.util.logging.Logger.getLogger("").info("dateDebut - "+row["dateDebut"]);
+	Packages.java.util.logging.Logger.getLogger("").info("dateFin - "+row["dateFin"]);
+	Packages.java.util.logging.Logger.getLogger("").info("codeArticle - "+row["codeArticle"]);
+	Packages.java.util.logging.Logger.getLogger("").info("familleArticle - "+row["familleArticle"]);
+	Packages.java.util.logging.Logger.getLogger("").info("codeEntrepot - "+row["codeEntrepot"]);
+	
+ 	count++;
+
+	return true;
+
+}
+Packages.java.util.logging.Logger.getLogger("").info("***************************************** FETCH - Entete END ************************************************");
+return false;]]></method>
+        </script-data-set>
+    </data-sets>
+    <styles>
+        <style name="report" id="4">
+            <property name="fontFamily">sans-serif</property>
+            <property name="fontSize">10pt</property>
+        </style>
+        <style name="crosstab-cell" id="5">
+            <property name="borderBottomColor">#CCCCCC</property>
+            <property name="borderBottomStyle">solid</property>
+            <property name="borderBottomWidth">1pt</property>
+            <property name="borderLeftColor">#CCCCCC</property>
+            <property name="borderLeftStyle">solid</property>
+            <property name="borderLeftWidth">1pt</property>
+            <property name="borderRightColor">#CCCCCC</property>
+            <property name="borderRightStyle">solid</property>
+            <property name="borderRightWidth">1pt</property>
+            <property name="borderTopColor">#CCCCCC</property>
+            <property name="borderTopStyle">solid</property>
+            <property name="borderTopWidth">1pt</property>
+        </style>
+        <style name="crosstab" id="6">
+            <property name="borderBottomColor">#CCCCCC</property>
+            <property name="borderBottomStyle">solid</property>
+            <property name="borderBottomWidth">1pt</property>
+            <property name="borderLeftColor">#CCCCCC</property>
+            <property name="borderLeftStyle">solid</property>
+            <property name="borderLeftWidth">1pt</property>
+            <property name="borderRightColor">#CCCCCC</property>
+            <property name="borderRightStyle">solid</property>
+            <property name="borderRightWidth">1pt</property>
+            <property name="borderTopColor">#CCCCCC</property>
+            <property name="borderTopStyle">solid</property>
+            <property name="borderTopWidth">1pt</property>
+        </style>
+        <style name="Table_Headers" id="571">
+            <property name="fontSize">10pt</property>
+            <property name="fontWeight">bold</property>
+            <property name="borderBottomStyle">solid</property>
+            <property name="borderBottomWidth">thin</property>
+            <property name="borderLeftStyle">solid</property>
+            <property name="borderLeftWidth">thin</property>
+            <property name="borderRightStyle">solid</property>
+            <property name="borderRightWidth">thin</property>
+            <property name="borderTopStyle">solid</property>
+            <property name="borderTopWidth">thin</property>
+            <structure name="dateTimeFormat">
+                <property name="category">Short Date</property>
+                <property name="pattern">Short Date</property>
+                <property name="locale">fr_FR</property>
+            </structure>
+        </style>
+        <style name="Titre" id="572">
+            <property name="fontSize">14pt</property>
+            <property name="fontWeight">bold</property>
+            <property name="color">#800000</property>
+            <property name="borderBottomColor">#800000</property>
+            <property name="borderBottomStyle">solid</property>
+        </style>
+    </styles>
+    <page-setup>
+        <simple-master-page name="Simple MasterPage" id="2">
+            <property name="type">a4</property>
+            <property name="orientation">landscape</property>
+            <property name="topMargin">0.25cm</property>
+            <property name="leftMargin">0.25cm</property>
+            <property name="bottomMargin">0.25cm</property>
+            <property name="rightMargin">0.25cm</property>
+            <property name="headerHeight">1in</property>
+            <property name="footerHeight">0.8cm</property>
+            <page-header>
+                <grid id="603">
+                    <property name="dataSet">DataSetEntete</property>
+                    <list-property name="boundDataColumns">
+                        <structure>
+                            <property name="name">familleArticle</property>
+                            <text-property name="displayName">familleArticle</text-property>
+                            <expression name="expression" type="javascript">dataSetRow["familleArticle"]</expression>
+                            <property name="dataType">string</property>
+                        </structure>
+                        <structure>
+                            <property name="name">Column Binding</property>
+                            <expression name="expression" type="javascript">dataSetRow["familleArticle"]</expression>
+                            <property name="dataType">string</property>
+                            <property name="allowExport">true</property>
+                        </structure>
+                    </list-property>
+                    <column id="604"/>
+                    <column id="605"/>
+                    <column id="606"/>
+                    <row id="607">
+                        <cell id="608">
+                            <property name="colSpan">3</property>
+                            <property name="rowSpan">1</property>
+                            <data id="615">
+                                <property name="style">Titre</property>
+                                <property name="fontSize">12pt</property>
+                                <property name="dataSet">DataSetEntete</property>
+                                <list-property name="boundDataColumns">
+                                    <structure>
+                                        <property name="name">Column Binding</property>
+                                        <expression name="expression" type="javascript">"Etat des Stocks du "&#13;
++dataSetRow["dateDebut"]&#13;
++" au "&#13;
++dataSetRow["dateFin"]&#13;
++" ";</expression>
+                                        <property name="dataType">string</property>
+                                        <property name="allowExport">true</property>
+                                    </structure>
+                                </list-property>
+                                <property name="resultSetColumn">Column Binding</property>
+                            </data>
+                        </cell>
+                    </row>
+                    <row id="611">
+                        <property name="fontSize">9pt</property>
+                        <cell id="612">
+                            <grid id="616">
+                                <column id="617"/>
+                                <column id="618"/>
+                                <row id="619">
+                                    <cell id="620">
+                                        <label id="622">
+                                            <property name="fontWeight">bold</property>
+                                            <property name="textUnderline">underline</property>
+                                            <property name="textAlign">right</property>
+                                            <text-property name="text">Famille d'article :</text-property>
+                                        </label>
+                                    </cell>
+                                    <cell id="621">
+                                        <data id="623">
+                                            <property name="textAlign">left</property>
+                                            <property name="resultSetColumn">Column Binding</property>
+                                        </data>
+                                    </cell>
+                                </row>
+                            </grid>
+                        </cell>
+                        <cell id="613">
+                            <grid id="624">
+                                <property name="dataSet">DataSetEntete</property>
+                                <list-property name="boundDataColumns">
+                                    <structure>
+                                        <property name="name">codeArticle</property>
+                                        <text-property name="displayName">codeArticle</text-property>
+                                        <expression name="expression" type="javascript">dataSetRow["codeArticle"]</expression>
+                                        <property name="dataType">string</property>
+                                    </structure>
+                                    <structure>
+                                        <property name="name">Column Binding</property>
+                                        <expression name="expression" type="javascript">dataSetRow["codeArticle"]</expression>
+                                        <property name="dataType">string</property>
+                                        <property name="allowExport">true</property>
+                                    </structure>
+                                </list-property>
+                                <column id="625"/>
+                                <column id="626"/>
+                                <row id="627">
+                                    <cell id="628">
+                                        <label id="629">
+                                            <property name="fontWeight">bold</property>
+                                            <property name="textUnderline">underline</property>
+                                            <property name="textAlign">right</property>
+                                            <text-property name="text">Article :</text-property>
+                                        </label>
+                                    </cell>
+                                    <cell id="630">
+                                        <data id="631">
+                                            <property name="textAlign">left</property>
+                                            <property name="resultSetColumn">Column Binding</property>
+                                        </data>
+                                    </cell>
+                                </row>
+                            </grid>
+                        </cell>
+                        <cell id="614">
+                            <grid id="632">
+                                <property name="dataSet">DataSetEntete</property>
+                                <list-property name="boundDataColumns">
+                                    <structure>
+                                        <property name="name">codeEntrepot</property>
+                                        <text-property name="displayName">codeEntrepot</text-property>
+                                        <expression name="expression" type="javascript">dataSetRow["codeEntrepot"]</expression>
+                                        <property name="dataType">string</property>
+                                    </structure>
+                                    <structure>
+                                        <property name="name">Column Binding</property>
+                                        <expression name="expression" type="javascript">dataSetRow["codeEntrepot"]</expression>
+                                        <property name="dataType">string</property>
+                                        <property name="allowExport">true</property>
+                                    </structure>
+                                </list-property>
+                                <column id="633"/>
+                                <column id="634"/>
+                                <row id="635">
+                                    <cell id="636">
+                                        <label id="637">
+                                            <property name="fontWeight">bold</property>
+                                            <property name="textUnderline">underline</property>
+                                            <property name="textAlign">right</property>
+                                            <text-property name="text">Entrepot :</text-property>
+                                        </label>
+                                    </cell>
+                                    <cell id="638">
+                                        <data id="639">
+                                            <property name="textAlign">left</property>
+                                            <property name="resultSetColumn">Column Binding</property>
+                                        </data>
+                                    </cell>
+                                </row>
+                            </grid>
+                        </cell>
+                    </row>
+                </grid>
+            </page-header>
+            <page-footer>
+                <grid id="445">
+                    <column id="446"/>
+                    <column id="447"/>
+                    <column id="448"/>
+                    <row id="449">
+                        <property name="borderTopColor">#000000</property>
+                        <property name="borderTopStyle">solid</property>
+                        <property name="borderTopWidth">medium</property>
+                        <cell id="450">
+                            <text id="16">
+                                <property name="contentType">html</property>
+                                <text-property name="content"><![CDATA[<value-of>new Date()</value-of>]]></text-property>
+                            </text>
+                        </cell>
+                        <cell id="451"/>
+                        <cell id="452">
+                            <grid id="453">
+                                <property name="width">2.5833333333333335in</property>
+                                <column id="454">
+                                    <property name="width">1.625in</property>
+                                </column>
+                                <column id="455">
+                                    <property name="width">0.10416666666666667in</property>
+                                </column>
+                                <column id="456">
+                                    <property name="width">0.8541666666666666in</property>
+                                </column>
+                                <row id="457">
+                                    <cell id="458">
+                                        <auto-text id="26">
+                                            <property name="textAlign">right</property>
+                                            <property name="type">page-number</property>
+                                        </auto-text>
+                                    </cell>
+                                    <cell id="459">
+                                        <text id="29">
+                                            <property name="contentType">auto</property>
+                                            <text-property name="content"><![CDATA[/]]></text-property>
+                                        </text>
+                                    </cell>
+                                    <cell id="460">
+                                        <auto-text id="28">
+                                            <property name="type">total-page</property>
+                                        </auto-text>
+                                    </cell>
+                                </row>
+                            </grid>
+                        </cell>
+                    </row>
+                </grid>
+            </page-footer>
+        </simple-master-page>
+    </page-setup>
+    <body>
+        <grid id="576">
+            <column id="577"/>
+            <row id="578">
+                <cell id="579">
+                    <label id="580">
+                        <property name="fontSize">12pt</property>
+                        <property name="fontWeight">bold</property>
+                        <property name="paddingBottom">10pt</property>
+                        <property name="textAlign">left</property>
+                        <text-property name="text">Entrepot : Tous</text-property>
+                    </label>
+                </cell>
+            </row>
+        </grid>
+        <table id="519">
+            <property name="fontSize">9pt</property>
+            <property name="borderBottomColor">#000000</property>
+            <property name="borderBottomStyle">solid</property>
+            <property name="borderBottomWidth">thin</property>
+            <property name="borderLeftColor">#000000</property>
+            <property name="borderLeftStyle">solid</property>
+            <property name="borderLeftWidth">thin</property>
+            <property name="borderRightColor">#000000</property>
+            <property name="borderRightStyle">solid</property>
+            <property name="borderRightWidth">thin</property>
+            <property name="borderTopColor">#000000</property>
+            <property name="borderTopStyle">solid</property>
+            <property name="borderTopWidth">thin</property>
+            <property name="width">100%</property>
+            <property name="dataSet">Data Set Etat des Stocks Global</property>
+            <list-property name="boundDataColumns">
+                <structure>
+                    <property name="name">mouvEntrepot</property>
+                    <text-property name="displayName">mouvEntrepot</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["mouvEntrepot"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">mouvCodeArticle</property>
+                    <text-property name="displayName">mouvCodeArticle</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["mouvCodeArticle"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">mouvNumLot</property>
+                    <text-property name="displayName">mouvNumLot</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["mouvNumLot"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">mouvLibelle</property>
+                    <text-property name="displayName">mouvLibelle</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["mouvLibelle"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">mouvQteDepart</property>
+                    <text-property name="displayName">mouvQteDepart</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["mouvQteDepart"]</expression>
+                    <property name="dataType">decimal</property>
+                </structure>
+                <structure>
+                    <property name="name">mouvQteEntree</property>
+                    <text-property name="displayName">mouvQteEntree</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["mouvQteEntree"]</expression>
+                    <property name="dataType">decimal</property>
+                </structure>
+                <structure>
+                    <property name="name">mouvQteSortie</property>
+                    <text-property name="displayName">mouvQteSortie</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["mouvQteSortie"]</expression>
+                    <property name="dataType">decimal</property>
+                </structure>
+                <structure>
+                    <property name="name">mouvQteDisponible</property>
+                    <text-property name="displayName">mouvQteDisponible</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["mouvQteDisponible"]</expression>
+                    <property name="dataType">decimal</property>
+                </structure>
+                <structure>
+                    <property name="name">mouveDispo</property>
+                    <text-property name="displayName">mouveDispo</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["mouveDispo"]</expression>
+                    <property name="dataType">decimal</property>
+                </structure>
+                <structure>
+                    <property name="name">codeFamilleArticle</property>
+                    <text-property name="displayName">codeFamilleArticle</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["codeFamilleArticle"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+            </list-property>
+            <column id="584">
+                <property name="width">14%</property>
+            </column>
+            <column id="563">
+                <property name="width">14%</property>
+            </column>
+            <column id="564">
+                <property name="width">24%</property>
+            </column>
+            <column id="565">
+                <property name="width">18%</property>
+            </column>
+            <column id="566">
+                <property name="width">8%</property>
+            </column>
+            <column id="567">
+                <property name="width">9%</property>
+            </column>
+            <column id="568">
+                <property name="width">9%</property>
+            </column>
+            <column id="569">
+                <property name="width">9%</property>
+            </column>
+            <column id="570">
+                <property name="width">9%</property>
+                <list-property name="highlightRules">
+                    <structure>
+                        <property name="operator">le</property>
+                        <property name="fontWeight">bold</property>
+                        <property name="color">#FF0000</property>
+                        <expression name="testExpr" type="javascript">row["mouvQteDisponible"]</expression>
+                        <simple-property-list name="value1">
+                            <value type="javascript">0</value>
+                        </simple-property-list>
+                    </structure>
+                    <structure>
+                        <property name="operator">gt</property>
+                        <property name="fontWeight">bold</property>
+                        <property name="color">#000000</property>
+                        <expression name="testExpr" type="javascript">row["mouvQteDisponible"]</expression>
+                        <simple-property-list name="value1">
+                            <value type="javascript">0</value>
+                        </simple-property-list>
+                    </structure>
+                </list-property>
+            </column>
+            <header>
+                <row id="520">
+                    <property name="style">Table_Headers</property>
+                    <property name="fontSize">9pt</property>
+                    <property name="textAlign">left</property>
+                    <cell id="581">
+                        <label id="585">
+                            <text-property name="text">code Famille</text-property>
+                        </label>
+                    </cell>
+                    <cell id="521">
+                        <label id="524">
+                            <text-property name="text">Code Article</text-property>
+                        </label>
+                    </cell>
+                    <cell id="523">
+                        <label id="528">
+                            <text-property name="text">Libellé</text-property>
+                        </label>
+                    </cell>
+                    <cell id="525">
+                        <label id="526">
+                            <text-property name="text">N° Lot</text-property>
+                        </label>
+                    </cell>
+                    <cell id="527">
+                        <label id="522">
+                            <property name="textAlign">right</property>
+                            <text-property name="text">Entrepôt</text-property>
+                        </label>
+                    </cell>
+                    <cell id="529">
+                        <label id="530">
+                            <property name="textAlign">right</property>
+                            <text-property name="text">Départ</text-property>
+                        </label>
+                    </cell>
+                    <cell id="531">
+                        <label id="532">
+                            <property name="textAlign">right</property>
+                            <text-property name="text">Entrée</text-property>
+                        </label>
+                    </cell>
+                    <cell id="533">
+                        <label id="534">
+                            <property name="textAlign">right</property>
+                            <text-property name="text">Sortie</text-property>
+                        </label>
+                    </cell>
+                    <cell id="535">
+                        <label id="536">
+                            <property name="textAlign">right</property>
+                            <text-property name="text">Dispo.</text-property>
+                        </label>
+                    </cell>
+                </row>
+            </header>
+            <detail>
+                <row id="537">
+                    <property name="fontSize">8pt</property>
+                    <cell id="582">
+                        <data id="586">
+                            <property name="resultSetColumn">codeFamilleArticle</property>
+                        </data>
+                    </cell>
+                    <cell id="538">
+                        <data id="541">
+                            <property name="textAlign">left</property>
+                            <property name="resultSetColumn">mouvCodeArticle</property>
+                        </data>
+                    </cell>
+                    <cell id="540">
+                        <data id="545">
+                            <property name="textAlign">left</property>
+                            <property name="resultSetColumn">mouvLibelle</property>
+                        </data>
+                    </cell>
+                    <cell id="542"/>
+                    <cell id="544">
+                        <data id="539">
+                            <property name="textAlign">right</property>
+                            <property name="resultSetColumn">mouvEntrepot</property>
+                        </data>
+                    </cell>
+                    <cell id="546">
+                        <data id="547">
+                            <structure name="numberFormat">
+                                <property name="category">Currency</property>
+                                <property name="pattern">###0.00{RoundingMode=HALF_UP}</property>
+                                <property name="locale">fr_FR</property>
+                            </structure>
+                            <property name="textAlign">right</property>
+                            <property name="resultSetColumn">mouvQteDepart</property>
+                        </data>
+                    </cell>
+                    <cell id="548">
+                        <data id="549">
+                            <structure name="numberFormat">
+                                <property name="category">Currency</property>
+                                <property name="pattern">###0.00{RoundingMode=HALF_UP}</property>
+                                <property name="locale">fr_FR</property>
+                            </structure>
+                            <property name="textAlign">right</property>
+                            <property name="resultSetColumn">mouvQteEntree</property>
+                        </data>
+                    </cell>
+                    <cell id="550">
+                        <data id="551">
+                            <structure name="numberFormat">
+                                <property name="category">Currency</property>
+                                <property name="pattern">###0.00{RoundingMode=HALF_UP}</property>
+                                <property name="locale">fr_FR</property>
+                            </structure>
+                            <property name="textAlign">right</property>
+                            <property name="resultSetColumn">mouvQteSortie</property>
+                        </data>
+                    </cell>
+                    <cell id="552">
+                        <data id="575">
+                            <structure name="numberFormat">
+                                <property name="category">Currency</property>
+                                <property name="pattern">###0.00{RoundingMode=HALF_UP}</property>
+                            </structure>
+                            <property name="textAlign">right</property>
+                            <list-property name="highlightRules">
+                                <structure>
+                                    <property name="operator">gt</property>
+                                    <property name="fontWeight">bold</property>
+                                    <property name="color">#000000</property>
+                                    <expression name="testExpr" type="javascript">row["mouveDispo"]</expression>
+                                    <simple-property-list name="value1">
+                                        <value type="javascript">0</value>
+                                    </simple-property-list>
+                                </structure>
+                                <structure>
+                                    <property name="operator">le</property>
+                                    <property name="fontWeight">bold</property>
+                                    <property name="color">#FF0000</property>
+                                    <expression name="testExpr" type="javascript">row["mouveDispo"]</expression>
+                                    <simple-property-list name="value1">
+                                        <value type="javascript">0</value>
+                                    </simple-property-list>
+                                </structure>
+                            </list-property>
+                            <property name="resultSetColumn">mouveDispo</property>
+                        </data>
+                    </cell>
+                </row>
+            </detail>
+            <footer>
+                <row id="554">
+                    <cell id="583"/>
+                    <cell id="555"/>
+                    <cell id="556"/>
+                    <cell id="557"/>
+                    <cell id="558"/>
+                    <cell id="559"/>
+                    <cell id="560"/>
+                    <cell id="561"/>
+                    <cell id="562"/>
+                </row>
+            </footer>
+        </table>
+    </body>
+</report>

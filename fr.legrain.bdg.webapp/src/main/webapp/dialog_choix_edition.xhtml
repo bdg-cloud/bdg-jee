@@ -1,0 +1,65 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core" 
+	xmlns:ui="http://java.sun.com/jsf/facelets" 
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/template_dialog_lgr.xhtml">
+	
+	<ui:define name="head">
+		 <title>Choix du modèle d'édition</title>
+        <style type="text/css">
+/*             .ui-widget { */
+/*                 font-size: 90%; */
+/*             } */
+         </style>
+	</ui:define>
+
+	<ui:define name="content">
+		<h:form id="idDialogChoixEdition">
+			
+			<p:menubar styleClass="menu-onglet">
+				<p:menuitem title="Imprimer" styleClass="icon icon-print" update="@form"
+					actionListener="#{choixEditionController.actImprimer}" />
+					
+<!-- 				<p:separator styleClass="separateur-menu-vertical" /> -->
+					
+<!-- 				<p:menuitem title="Catalogue" styleClass="icon icon-liste" update="@form" -->
+<!-- 					actionListener="#{choixEditionController.actDialogCatalogueEdition}" /> -->
+				
+				<p:menuitem title="Fermer" styleClass="icon icon-close menuitem-fermer-droite"
+					actionListener="#{choixEditionController.actFermerDialog}"
+					process="@this" >
+					<p:confirm header="Confirmation" message="#{msg_diag.alert_fermeture_onglet}" icon="ui-icon-alert" disabled="#{!choixEditionController.modeEcran.dataSetEnModif()}"/>
+				</p:menuitem>
+			</p:menubar>
+			  
+		    <p:dataTable 
+		    	var="e" 
+		    	value="#{choixEditionController.listeEditionDisponible}" 
+		    	selection="#{choixEditionController.taEdition}" 
+		    	selectionMode="single"
+		    	rowKey="#{e.idEdition}">
+		    	
+		        <f:facet name="header">
+		            Liste des éditions
+		        </f:facet>
+		        
+<!-- 		        <p:column selectionMode="single" style="width:16px;text-align:center"/> -->
+		        <p:column headerText="Id" styleClass="center">
+		            <p:outputLabel value="#{e.idEdition}" />
+		        </p:column>
+		        <p:column headerText="Code" styleClass="center">
+		            <p:outputLabel value="#{e.codeEdition}" />
+		        </p:column>
+		        <p:column headerText="Libellé">
+		            <p:outputLabel value="#{e.libelleEdition}" />
+		        </p:column>
+		        <p:column headerText="Description">
+		            <p:outputLabel value="#{e.descriptionEdition}" />
+		        </p:column>
+	        </p:dataTable>
+			
+		</h:form>
+	</ui:define>
+     
+</ui:composition>

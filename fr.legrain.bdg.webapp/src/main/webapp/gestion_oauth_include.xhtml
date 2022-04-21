@@ -1,0 +1,163 @@
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+	
+<!-- 	<f:metadata> -->
+<!-- 		<f:viewParam name="parameter" value="#{controleLotController.parameter}"/> -->
+<!-- 		<f:event type="preRenderView" listener="#{controleLotController.refresh}" /> -->
+<!-- 	</f:metadata> -->
+	
+		<p:menubar styleClass="menu-onglet">
+			<p:separator styleClass="separateur-menu-vertical" />
+<!-- 			<p:menuitem title="Envoyer" styleClass="icon icon-envoi-mail" update="@form" -->
+<!-- 				actionListener="#{gestionOAuthController.gestionOAuthController.actEnvoyerEmail}" /> -->
+				
+<!-- 			<p:menuitem title="Enregistrer" styleClass="icon icon-save" actionListener="#{gestionOAuthController.gestionOAuthController.actEnregistrer}" -->
+<!-- 				process="@this" update="@form" disabled="#{gestionOAuthController.gestionOAuthController.etatBouton('modifier')}" />		 -->
+			
+<!-- 			<p:menuitem title="Joindre" styleClass="icon icon-trombone" process="@this"  -->
+<!-- 				actionListener="#{gestionOAuthController.gestionOAuthController.actDialogPieceJointe}"/> -->
+				
+<!-- 			<p:menuitem title="Joindre" styleClass="icon icon-trombone" -->
+<!-- 				oncomplete="$('.classHiddenCommandForDialogPieceJointeReturnEmail').click()" -->
+<!-- 				process="@this"/> -->
+			
+			<p:menuitem title="Fermer" styleClass="icon icon-close menuitem-fermer-droite"
+				actionListener="#{gestionOAuthController.actFermerDialog}"
+				process="@this" >
+				<p:confirm header="Confirmation" message="#{msg_diag.alert_fermeture_onglet}" icon="ui-icon-alert" disabled="#{!gestionOAuthController.modeEcran.dataSetEnModif()}"/>
+			</p:menuitem>
+		</p:menubar>
+		
+<!-- 		<p:commandButton styleClass="classHiddenCommandForDialogPieceJointeReturnEmail" actionListener="#{gestionOAuthController.gestionOAuthController.actDialogPieceJointe}" style="display:none" process="@this"  > -->
+<!--         	<p:ajax event="dialogReturn" listener="#{gestionOAuthController.gestionOAuthController.handleReturnDialogPieceJointe}" update="@widgetVar(wvPanelPJEmail)"  />   -->
+<!--     	</p:commandButton> -->
+		
+		
+		<p:separator/>
+		
+		<p:messages autoUpdate="true" showDetail="true"/>
+		
+		<p:panel id="idPanelGlobalGestionOAuth" widgetVar="wvPanelGlobalGestionOAuth">
+			<!--
+			OAuth :
+			https://console.developers.google.com/apis/credentials?project=xxxxx-xxxxxxx-000000
+			Id Client : xxxxxxxxx-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.apps.googleusercontent.com
+			code secret client : xxxxxxxxxxxxxxxxxxxx
+			
+			You register callback uri at googlele's api like "yourapp.com/auth/google_oauth2/callback"
+			In your application user from his subdomain "sub.yourapp.com" clickes button <%= link_to "Sign in with Google", "https://yourapp.com/auth/google_oauth2?state=#{his subdomain}" %>
+			In your routes file you define appropriate url. Now you have all you need + params[:state] with your subdomain
+			
+			https://stackoverflow.com/questions/22421372/how-to-integrate-google-oauth-2-0-with-a-subdomain
+			RewriteEngine On
+			RewriteCond %{HTTP_HOST} ^google\.
+			RewriteCond %{QUERY_STRING} state=([a-z0-9]+)
+			RewriteRule ^(.*)$ http://%1.example.com/$1 [L]
+			
+			http://www.tuckey.org/urlrewrite/
+			http://www.ocpsoft.org/prettyfaces/
+			
+			https://stackoverflow.com/questions/28218940/rewrite-engine-for-wildfly
+			https://stackoverflow.com/questions/32138669/rewrite-rule-in-widfly-8-undertow-handlers-conf
+			 -->
+			<p:panel header="Google" widgetVar="wvPanelGoogle">
+			
+				<p:panelGrid columns="2">
+					<p:graphicImage library="images" name="google-sign-in-logo.png" height="60px"/>
+					
+					<p:panelGrid columns="2" rendered="#{gestionOAuthController.googleBean.showDialog()}">
+	<!-- 					styleClass="icon icon-google" title="Se connecter avec Google (OAuth)" -->
+						<p:commandButton  update="@this,@widgetVar(wvPanelGoogle)" process="@this"
+							value="Se connecter avec Google (OAuth)"
+							onclick="oauthWindowHandle = window.open('','_blank', 'resizable=no,toolbar=no,scrollbars=yes,height=600,width=530,top=145,left=235');" 
+							actionListener="#{gestionOAuthController.googleBean.connectOAuth}" />
+							
+						<p:selectCheckboxMenu value="#{gestionOAuthController.googleBean.listeScopeGoogleSelected}" 
+							label="Autorisations" filter="true" filterMatchMode="startsWith" panelStyle="width:250px" converter="entityConverter">
+				            <f:selectItems value="#{gestionOAuthController.googleBean.listeScopeGoogle}" var="a" itemLabel="#{a.libelle}" itemValue="#{a}" />
+				            <p:ajax/>
+				        </p:selectCheckboxMenu>
+			        </p:panelGrid>
+						
+					<p:panelGrid columns="3" rendered="#{!gestionOAuthController.googleBean.showDialog()}">
+						<p:graphicImage value="#{gestionOAuthController.googleBean.gUserImageUrl}" height="60px" width="60px"/>
+						<p:outputLabel value="Connecté en tant que : #{gestionOAuthController.googleBean.gUserName} (#{gestionOAuthController.googleBean.gUserEmail})"/>
+				        <p:commandButton value="Déconnexion" title="Revoke token" update="@widgetVar(wvPanelGoogle)" process="@this" 
+				        	actionListener="#{gestionOAuthController.googleBean.revokeToken}" rendered="#{gestionOAuthController.googleBean.validToken()}"/>
+					</p:panelGrid>
+					
+				</p:panelGrid>
+				<p:panel header="Détails techniques" rendered="#{auth.isDevLgr()}" toggleable="true" collapsed="true">
+					<p:outputLabel value="Token : #{gestionOAuthController.googleBean.gToken}"/>
+				</p:panel>
+				
+				<p:remoteCommand name="finGoogle" actionListener="#{gestionOAuthController.googleBean.updateView}" update="@widgetVar(wvPanelGoogle)"/>
+			</p:panel>
+				
+			<hr/>
+			    
+			<p:panel header="Microsoft" widgetVar="wvPanelMicrosoft">
+			
+				<p:panelGrid columns="2">
+					<p:graphicImage library="images" name="ms-sign-in-logo.png" height="60px"/>
+					
+					<p:panelGrid columns="2" rendered="#{gestionOAuthController.msBean.showDialog()}">
+	<!-- 				styleClass="icon icon-microsoft" title="Se connecter avec Microsoft (OAuth)" -->
+						<p:commandButton  update="@this,@widgetVar(wvPanelMicrosoft)" process="@this"
+							value="Se connecter avec Microsoft (OAuth)"
+							onclick="oauthWindowHandle = window.open('','_blank', 'resizable=no,toolbar=no,scrollbars=yes,height=700,width=700,top=145,left=235');" 
+							actionListener="#{gestionOAuthController.msBean.connectOAuth}"/>
+						
+						<p:selectCheckboxMenu value="#{gestionOAuthController.msBean.listeScopeMicrosoftSelected}" 
+							label="Autorisations" filter="true" filterMatchMode="startsWith" panelStyle="width:250px" converter="entityConverter">
+				            <f:selectItems value="#{gestionOAuthController.msBean.listeScopeMicrosoft}" var="a" itemLabel="#{a.libelle}" itemValue="#{a}" />
+				            <p:ajax/>
+				        </p:selectCheckboxMenu>
+					</p:panelGrid>
+			   		
+					<p:panelGrid columns="3" rendered="#{!gestionOAuthController.msBean.showDialog()}">
+						<p:outputLabel value="Connecté en tant que :  #{gestionOAuthController.msBean.displayName} (#{gestionOAuthController.msBean.userPrincipalName})"/>
+				<!-- 	<p:graphicImage value="#{gestionOAuthController.googleBean.gUserImageUrl}" height="80px" width="80px"/> -->
+				<!-- 	<p:commandButton value="revoke" update="@widgetVar(wvPanelGoogle)" process="@this" -->
+				<!-- 		actionListener="#{gestionOAuthController.googleBean.revokeToken}"/> -->
+						<p:commandButton id="revokeMsTokenBtn" value="Déconnexion" title="Revoke token" type="button" />
+					    <p:overlayPanel for="revokeMsTokenBtn" hideEffect="fade" dismissable="true">
+					        Il est possible de déconnecter votre compte Microsoft de l'application Bureau de Gestion à partir de votre compte Microsoft.
+					        <a href="https://account.live.com/consent/Manage" target="_blank">https://account.live.com/consent/Manage</a> 
+					    </p:overlayPanel>
+					</p:panelGrid>
+				</p:panelGrid>
+				<p:panel header="Détails techniques" rendered="#{auth.isDevLgr()}" toggleable="true" collapsed="true">
+					<p:outputLabel value="Token : #{gestionOAuthController.msBean.msTokenSessionBean.accessToken}"/>
+				</p:panel>
+				
+				<p:remoteCommand name="finMicrosoft" actionListener="#{gestionOAuthController.msBean.updateView}" update="@widgetVar(wvPanelMicrosoft)"/>
+				
+			</p:panel>
+			
+			<hr/>
+			
+			<ui:include src="oauth_stripe_include.xhtml">
+<!-- 				<ui:param name="dansDialogue" value="true" /> -->
+			</ui:include>
+			
+		</p:panel>
+		
+<!-- 		<p:confirmDialog global="true" showEffect="fade"> -->
+<!-- 				<p:commandButton id="idConfirmDialogCtrlLotOui" value="Oui" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" /> -->
+<!-- 				<p:commandButton id="idConfirmDialogCtrlLotNon" value="Non" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" /> -->
+<!-- 		</p:confirmDialog> -->
+		
+		<style type="text/css">
+			.ui-panel .ui-panel-content {
+				padding: 0;
+			}
+		</style>
+		
+<!-- 		<h:outputScript name="/js/functions.js"  /> -->
+		
+</ui:composition>

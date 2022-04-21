@@ -1,0 +1,1202 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<!-- 		<f:metadata> -->
+	<!-- 			<f:viewParam name="paramId" value="#{unStockBean.parameter}"/> -->
+	<!-- 			<f:event type="preRenderView" listener="#{unStockBean.refresh}" /> -->
+	<!-- 		</f:metadata> -->
+
+	<!--  h:outputText value="produit #{paramId}" /> -->
+	
+<!-- 	<f:validateBean> -->
+	<f:validateBean disabled="true">
+
+		<p:tabView id="idTabViewClient" binding="#{clientController.tabViewClient}"  >
+
+			<p:tab title="Client" titleStyleClass="tab-min tab-produit" titletip="Client">
+				<!--         <p:tab title="Client" titleStyleClass="tab-min tab-default"> -->
+
+				<div class="ui-grid ui-grid-responsive">
+					<div class="ui-grid-row">
+						<div class="ui-grid-col-12">
+
+							<div class="text-center">
+								<p:commandButton value="Annuler" icon="fa fa-undo" actionListener="#{clientController.actAnnuler}"
+									process="@this"
+									update="@widgetVar(panelClient),@widgetVar(panelFtp),:form:messages,@form"
+									disabled="#{clientController.etatBouton('annuler')}" />
+								<p:commandButton value="Enregistrer" icon="fa fa-save"
+									actionListener="#{clientController.actEnregistrer}" process="@this"
+									update="@widgetVar(panelClient),@widgetVar(panelFtp),:form:messages,@form,@widgetVar(wvDataTableListeClients)"
+									disabled="#{clientController.etatBouton('enregistrer')}" />
+								<p:commandButton value="Insérer" icon="fa fa-plus-circle" actionListener="#{clientController.actInserer}"
+									process="@this"
+									update="@widgetVar(panelClient),@widgetVar(panelFtp),:form:messages,@form"
+									disabled="#{clientController.etatBouton('inserer')}" />
+								<p:commandButton value="Modifier" icon="fa fa-pencil" actionListener="#{clientController.actModifier}"
+									process="@this"
+									update="@widgetVar(panelClient),@widgetVar(panelFtp),:form:messages,@form"
+									disabled="#{clientController.etatBouton('modifier')}" />
+								<p:commandButton value="Supprimer" icon="fa fa-trash"
+									actionListener="#{clientController.actSupprimer}" process="@this"
+									update="@widgetVar(panelClient),@widgetVar(panelFtp),:form:messages,@form,,@widgetVar(wvDataTableListeClients)"
+									disabled="#{clientController.etatBouton('supprimer')}" />
+								<p:commandButton value="Fermer" icon="fa fa-close" process="@this" update=":form:messages"
+									disabled="#{clientController.etatBouton('fermer')}"
+									onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())" />
+								<!-- 			<p:commandButton value="Imprimer" styleClass="btn-print btn" actionListener="#{clientController.actImprimer}" disabled="#{clientController.etatBouton('imprimer')}" /> -->
+
+								<p:commandButton value="Imprimer" icon="fa fa-print"
+									onsuccess="window.open('#{request.contextPath}/output?__report=/reports/FicheClient.rptdesign&amp;id_produit=#{clientController.selectedTaClientDTO.id}&amp;urlcb=#{clientController.urlPourEdition}&amp;__format=pdf')"
+									actionListener="#{clientController.actImprimer}" disabled="#{clientController.etatBouton('imprimer')}" />
+
+	 							<p:commandButton value="MAJ droits de ce client" icon="fa fa-bolt" title="MAJ droits de ce client" actionListener="#{clientController.actMajDroitsDossiersClient}" update="@form,:form:messages"/>
+							</div>
+
+						</div>
+					</div>
+
+
+					<div class="ui-grid-row">
+
+						<div class="ui-grid-col-6">
+						
+							<p:panel id="idPanelUtilisateur" header="Compte" toggleable="true" widgetVar="panelUtilisateur">
+								<h:panelGrid columns="2" cellpadding="10">
+									<p:outputLabel value="Login" />
+									<p:inputText value="#{clientController.selectedTaClientDTO.username}"
+										disabled="#{clientController.editable()}" validator="#{clientController.validateUtilisateur}">
+										<f:attribute name="nomChamp" value="#{const.C_USERNAME}" />
+										<p:ajax event="blur" update="@this" />
+									</p:inputText>
+
+<!-- 									<p:outputLabel value="Password" /> -->
+<!-- 									<p:inputText value="#{clientController.selectedTaClientDTO.passwd}" -->
+<!-- 										disabled="#{clientController.editable()}" validator="#{clientController.validateUtilisateur}"> -->
+<!-- 										<f:attribute name="nomChamp" value="#{const.C_PASSWD}" /> -->
+<!-- 										<p:ajax event="blur" update="@this" /> -->
+<!-- 									</p:inputText> -->
+
+									<p:outputLabel value="Email" />
+									<p:inputText value="#{clientController.selectedTaClientDTO.email}"
+										disabled="#{clientController.editable()}" validator="#{clientController.validateUtilisateur}">
+										<f:attribute name="nomChamp" value="#{const.C_EMAIL}" />
+										<p:ajax event="blur" update="@this" />
+									</p:inputText>
+									
+									<p:outputLabel value="Dernier accès : " />
+										<p:outputLabel value="#{clientController.selectedTaClientDTO.dernierAcces}">
+									</p:outputLabel>
+									
+									<p:outputLabel value="Actif : " />
+									<p:selectBooleanCheckbox value="#{clientController.selectedTaClientDTO.actif}" disabled="#{clientController.editable()}" >
+										<p:ajax event="change" update="@this"/>
+									</p:selectBooleanCheckbox >		
+								</h:panelGrid>
+							</p:panel>
+
+							<p:panel id="idPanelClient" header="Client" toggleable="true" widgetVar="panelClient">
+
+								<!--         <p:ajax event="toggle" listener="#{panelView.onToggle}" update="msgs" /> -->
+
+								<h:panelGrid columns="2" cellpadding="10">
+
+									<p:outputLabel value="Nom" />
+									<p:inputText value="#{clientController.selectedTaClientDTO.nom}" disabled="#{clientController.editable()}"
+										validator="#{clientController.validateClient}">
+										<f:attribute name="nomChamp" value="#{const.C_NOM}" />
+										<p:ajax event="blur" update="@this" />
+									</p:inputText>
+
+									<p:outputLabel value="Prénom" />
+									<p:inputText value="#{clientController.selectedTaClientDTO.prenom}"
+										disabled="#{clientController.editable()}" validator="#{clientController.validateClient}">
+										<f:attribute name="nomChamp" value="#{const.C_PRENOM}" />
+										<p:ajax event="blur" update="@this" />
+									</p:inputText>
+
+									
+
+									<p:outputLabel value="Code" />
+									  <p:inputText value="#{clientController.selectedTaClientDTO.code}" disabled="#{clientController.editable()}"
+										validator="#{clientController.validateClient}">
+										<f:attribute name="nomChamp" value="#{const.C_CODE}" />
+										<p:ajax event="blur" update="@this" />
+									  </p:inputText>
+
+								</h:panelGrid>
+
+							</p:panel>
+
+						</div>
+						<div class="ui-grid-col-6">
+
+							<p:panel id="idPanelFtp" header="FTP" toggleable="true" widgetVar="panelFtp">
+							<h:panelGrid columns="2" cellpadding="10">
+									<p:outputLabel value="Serveur FTP" />
+									  <p:inputText value="#{clientController.selectedTaClientDTO.serveurFtp}" disabled="#{clientController.editable()}"
+										validator="#{clientController.validateClient}">
+										<f:attribute name="nomChamp" value="#{const.C_SERVEUR_FTP}" />
+										<p:ajax event="blur" update="@this" />
+									  </p:inputText>
+
+									<p:outputLabel value="Login FTP" />
+									  <p:inputText value="#{clientController.selectedTaClientDTO.identifiantFtp}" disabled="#{clientController.editable()}"
+										validator="#{clientController.validateClient}">
+										<f:attribute name="nomChamp" value="#{const.C_IDENTIFIANT_FTP}" />
+										<p:ajax event="blur" update="@this" />
+									  </p:inputText>
+
+									<p:outputLabel value="Password FTP" />
+									  <p:inputText value="#{clientController.selectedTaClientDTO.mdpFtp}" disabled="#{clientController.editable()}"
+										validator="#{clientController.validateClient}">
+										<f:attribute name="nomChamp" value="#{const.C_PASSWD_FTP}" />
+										<p:ajax event="blur" update="@this" />
+									  </p:inputText>
+							</h:panelGrid>
+							</p:panel>
+							
+						</div>
+
+
+					</div>
+
+				</div>
+
+			</p:tab>
+			<p:tab title="Adresse 1" titleStyleClass="tab-min tab-produit" titletip="Adresse 1">
+				<!--         <p:tab title="Client" titleStyleClass="tab-min tab-default"> -->
+
+				<div class="ui-grid ui-grid-responsive">
+					<div class="ui-grid-row">
+						<div class="ui-grid-col-12">
+
+							<div class="text-center">
+								<p:commandButton value="Annuler" icon="fa fa-undo" actionListener="#{clientController.actAnnuler}"
+									process="@this"
+									update="idTabViewClient:idPanelAdresse1,idTabViewClient:idPanelTel,:form:messages,@form"
+									disabled="#{clientController.etatBouton('annuler')}" />
+								<p:commandButton value="Enregistrer" icon="fa fa-save"
+									actionListener="#{clientController.actEnregistrer}" process="@this"
+									update="idTabViewClient:idPanelAdresse1,idTabViewClient:idPanelTel,:form:messages,@form"
+									disabled="#{clientController.etatBouton('enregistrer')}" />
+
+							</div>
+
+						</div>
+					</div>
+
+
+					<div class="ui-grid-row">
+
+						<div class="ui-grid-col-6">
+
+							<p:panel id="idPanelAdresse1" header="Adresse 1" toggleable="true" widgetVar="panelAdresse1">
+
+								<!--         <p:ajax event="toggle" listener="#{panelView.onToggle}" update="msgs" /> -->
+
+								<h:panelGrid columns="2" cellpadding="10">
+									<p:outputLabel value="Entreprise : " />
+									  <p:inputText value="#{clientController.taAdresseDTO1.nomEntreprise}" disabled="#{clientController.editable()}"
+										validator="#{clientController.validateAdresse}">
+										<f:attribute name="nomChamp" value="#{const.C_NOM_ENTREPRISE}" />
+										<p:ajax event="blur" update="@this" />
+									  </p:inputText>
+								
+									<p:outputLabel value="Ligne 1 : " />
+									<p:inputText value="#{clientController.taAdresseDTO1.adresse1}" disabled="#{clientController.editable()}"
+										validator="#{clientController.validateAdresse}">
+										<f:attribute name="nomChamp" value="#{const.C_ADRESSE1}" />
+										<p:ajax event="blur" update="@this" />
+									</p:inputText>
+									<p:outputLabel value="Ligne 2 : " />
+									<p:inputText value="#{clientController.taAdresseDTO1.adresse2}" disabled="#{clientController.editable()}"
+										validator="#{clientController.validateAdresse}">
+										<f:attribute name="nomChamp" value="#{const.C_ADRESSE2}" />
+										<p:ajax event="blur" update="@this" />
+									</p:inputText>
+
+									<p:outputLabel value="Ligne 3 : " />
+									<p:inputText value="#{clientController.taAdresseDTO1.adresse3}" disabled="#{clientController.editable()}"
+										validator="#{clientController.validateAdresse}">
+										<f:attribute name="nomChamp" value="#{const.C_ADRESSE3}" />
+										<p:ajax event="blur" update="@this" />
+									</p:inputText>
+
+									<p:outputLabel value="code postal : " />
+									<p:inputText value="#{clientController.taAdresseDTO1.codePostal}" disabled="#{clientController.editable()}"
+										validator="#{clientController.validateAdresse}">
+										<f:attribute name="nomChamp" value="#{const.C_CODE_POSTAL}" />
+										<p:ajax event="blur" update="@this" />
+									</p:inputText>
+
+									<p:outputLabel value="ville : " />
+									<p:inputText value="#{clientController.taAdresseDTO1.ville}" disabled="#{clientController.editable()}"
+										validator="#{clientController.validateAdresse}">
+										<f:attribute name="nomChamp" value="#{const.C_VILLE}" />
+										<p:ajax event="blur" update="@this" />
+									</p:inputText>
+
+									<p:outputLabel value="Pays: " />
+									<p:inputText value="#{clientController.taAdresseDTO1.pays}" disabled="#{clientController.editable()}"
+										validator="#{clientController.validateAdresse}">
+										<f:attribute name="nomChamp" value="#{const.C_PAYS}" />
+										<p:ajax event="blur" update="@this" />
+									</p:inputText>
+
+
+								</h:panelGrid>
+
+							</p:panel>
+
+						</div>
+						<div class="ui-grid-col-6">
+
+							<p:panel id="idPanelTel" header="Téléphone / Email" toggleable="true" widgetVar="panelTel">
+							<h:panelGrid columns="2" cellpadding="10">
+									<p:outputLabel value="Téléphone 1 : " />
+									  <p:inputText value="#{clientController.taAdresseDTO1.numTel1}" disabled="#{clientController.editable()}"
+										validator="#{clientController.validateAdresse}">
+										<f:attribute name="nomChamp" value="#{const.C_TEL1}" />
+										<p:ajax event="blur" update="@this" />
+									  </p:inputText>
+
+									<p:outputLabel value="Téléphone 2 : " />
+									  <p:inputText value="#{clientController.taAdresseDTO1.numTel2}" disabled="#{clientController.editable()}"
+										validator="#{clientController.validateAdresse}">
+										<f:attribute name="nomChamp" value="#{const.C_TEL2}" />
+										<p:ajax event="blur" update="@this" />
+									  </p:inputText>
+
+									<p:outputLabel value="Fax : " />
+									  <p:inputText value="#{clientController.taAdresseDTO1.numFax}" disabled="#{clientController.editable()}"
+										validator="#{clientController.validateAdresse}">
+										<f:attribute name="nomChamp" value="#{const.C_FAX1}" />
+										<p:ajax event="blur" update="@this" />
+									  </p:inputText>
+									  
+									<p:outputLabel value="Portable : " />
+									  <p:inputText value="#{clientController.taAdresseDTO1.numPort}" disabled="#{clientController.editable()}"
+										validator="#{clientController.validateAdresse}">
+										<f:attribute name="nomChamp" value="#{const.C_PORTABLE}" />
+										<p:ajax event="blur" update="@this" />
+									  </p:inputText>
+
+									<p:outputLabel value="Email : " />
+									  <p:inputText value="#{clientController.taAdresseDTO1.email}" disabled="#{clientController.editable()}"
+										validator="#{clientController.validateAdresse}">
+										<f:attribute name="nomChamp" value="#{const.C_EMAIL}" />
+										<p:ajax event="blur" update="@this" />
+									  </p:inputText>
+
+									<p:outputLabel value="Site web : " />
+									  <p:inputText value="#{clientController.taAdresseDTO1.web}" disabled="#{clientController.editable()}"
+										validator="#{clientController.validateAdresse}">
+										<f:attribute name="nomChamp" value="#{const.C_WEB}" />
+										<p:ajax event="blur" update="@this" />
+									  </p:inputText>
+
+							</h:panelGrid>
+							</p:panel>
+							
+						</div>
+
+
+					</div>
+
+				</div>
+
+			</p:tab>			
+
+			<p:tab title="Adresse 2" titleStyleClass="tab-min tab-produit" titletip="Adresse 2">
+				<!--         <p:tab title="Client" titleStyleClass="tab-min tab-default"> -->
+
+				<div class="ui-grid ui-grid-responsive">
+					<div class="ui-grid-row">
+						<div class="ui-grid-col-12">
+
+							<div class="text-center">
+								<p:commandButton value="Annuler" icon="fa fa-undo" actionListener="#{clientController.actAnnuler}"
+									process="@this"
+									update="idTabViewClient:idPanelAdresse2,idTabViewClient:idPanelTel2,:form:messages,@form"
+									disabled="#{clientController.etatBouton('annuler')}" />
+								<p:commandButton value="Enregistrer" icon="fa fa-save"
+									actionListener="#{clientController.actEnregistrer}" process="@this"
+									update="idTabViewClient:idPanelAdresse2,idTabViewClient:idPanelTel2,:form:messages,@form"
+									disabled="#{clientController.etatBouton('enregistrer')}" />
+								
+							</div>
+
+						</div>
+					</div>
+
+
+					<div class="ui-grid-row">
+
+						<div class="ui-grid-col-6">
+
+							<p:panel id="idPanelAdresse2" header="Adresse 2" toggleable="true" widgetVar="panelAdresse2">
+
+								<!--         <p:ajax event="toggle" listener="#{panelView.onToggle}" update="msgs" /> -->
+
+								<h:panelGrid columns="2" cellpadding="10">
+									<p:outputLabel value="Entreprise : " />
+									  <p:inputText value="#{clientController.taAdresseDTO2.nomEntreprise}" disabled="#{clientController.editable()}"
+										validator="#{clientController.validateAdresse}">
+										<f:attribute name="nomChamp" value="#{const.C_NOM_ENTREPRISE}" />
+										<p:ajax event="blur" update="@this" />
+									  </p:inputText>
+								
+									<p:outputLabel value="Ligne 1 : " />
+									<p:inputText value="#{clientController.taAdresseDTO2.adresse1}" disabled="#{clientController.editable()}"
+										validator="#{clientController.validateAdresse}">
+										<f:attribute name="nomChamp" value="#{const.C_ADRESSE1}" />
+										<p:ajax event="blur" update="@this" />
+									</p:inputText>
+									<p:outputLabel value="Ligne 2 : " />
+									<p:inputText value="#{clientController.taAdresseDTO2.adresse2}" disabled="#{clientController.editable()}"
+										validator="#{clientController.validateAdresse}">
+										<f:attribute name="nomChamp" value="#{const.C_ADRESSE2}" />
+										<p:ajax event="blur" update="@this" />
+									</p:inputText>
+
+									<p:outputLabel value="Ligne 3 : " />
+									<p:inputText value="#{clientController.taAdresseDTO2.adresse3}" disabled="#{clientController.editable()}"
+										validator="#{clientController.validateAdresse}">
+										<f:attribute name="nomChamp" value="#{const.C_ADRESSE3}" />
+										<p:ajax event="blur" update="@this" />
+									</p:inputText>
+
+									<p:outputLabel value="code postal : " />
+									<p:inputText value="#{clientController.taAdresseDTO2.codePostal}" disabled="#{clientController.editable()}"
+										validator="#{clientController.validateAdresse}">
+										<f:attribute name="nomChamp" value="#{const.C_CODE_POSTAL}" />
+										<p:ajax event="blur" update="@this" />
+									</p:inputText>
+
+									<p:outputLabel value="ville : " />
+									<p:inputText value="#{clientController.taAdresseDTO2.ville}" disabled="#{clientController.editable()}"
+										validator="#{clientController.validateAdresse}">
+										<f:attribute name="nomChamp" value="#{const.C_VILLE}" />
+										<p:ajax event="blur" update="@this" />
+									</p:inputText>
+
+									<p:outputLabel value="Pays: " />
+									<p:inputText value="#{clientController.taAdresseDTO2.pays}" disabled="#{clientController.editable()}"
+										validator="#{clientController.validateAdresse}">
+										<f:attribute name="nomChamp" value="#{const.C_PAYS}" />
+										<p:ajax event="blur" update="@this" />
+									</p:inputText>
+
+
+								</h:panelGrid>
+
+							</p:panel>
+
+						</div>
+						<div class="ui-grid-col-6">
+
+							<p:panel id="idPanelTel2" header="Téléphone / Email" toggleable="true" widgetVar="panelTel2">
+							<h:panelGrid columns="2" cellpadding="10">
+									<p:outputLabel value="Téléphone 1 : " />
+									  <p:inputText value="#{clientController.taAdresseDTO2.numTel1}" disabled="#{clientController.editable()}"
+										validator="#{clientController.validateAdresse}">
+										<f:attribute name="nomChamp" value="#{const.C_TEL1}" />
+										<p:ajax event="blur" update="@this" />
+									  </p:inputText>
+
+									<p:outputLabel value="Téléphone 2 : " />
+									  <p:inputText value="#{clientController.taAdresseDTO2.numTel2}" disabled="#{clientController.editable()}"
+										validator="#{clientController.validateAdresse}">
+										<f:attribute name="nomChamp" value="#{const.C_TEL2}" />
+										<p:ajax event="blur" update="@this" />
+									  </p:inputText>
+
+									<p:outputLabel value="Fax : " />
+									  <p:inputText value="#{clientController.taAdresseDTO2.numFax}" disabled="#{clientController.editable()}"
+										validator="#{clientController.validateAdresse}">
+										<f:attribute name="nomChamp" value="#{const.C_FAX1}" />
+										<p:ajax event="blur" update="@this" />
+									  </p:inputText>
+									  
+									<p:outputLabel value="Portable : " />
+									  <p:inputText value="#{clientController.taAdresseDTO2.numPort}" disabled="#{clientController.editable()}"
+										validator="#{clientController.validateAdresse}">
+										<f:attribute name="nomChamp" value="#{const.C_PORTABLE}" />
+										<p:ajax event="blur" update="@this" />
+									  </p:inputText>
+
+									<p:outputLabel value="Email : " />
+									  <p:inputText value="#{clientController.taAdresseDTO2.email}" disabled="#{clientController.editable()}"
+										validator="#{clientController.validateAdresse}">
+										<f:attribute name="nomChamp" value="#{const.C_EMAIL}" />
+										<p:ajax event="blur" update="@this" />
+									  </p:inputText>
+
+									<p:outputLabel value="Site web : " />
+									  <p:inputText value="#{clientController.taAdresseDTO2.web}" disabled="#{clientController.editable()}"
+										validator="#{clientController.validateAdresse}">
+										<f:attribute name="nomChamp" value="#{const.C_WEB}" />
+										<p:ajax event="blur" update="@this" />
+									  </p:inputText>
+
+							</h:panelGrid>
+							</p:panel>
+							
+						</div>
+
+
+					</div>
+
+				</div>
+
+			</p:tab>
+			<p:tab title="Adresse 3" titleStyleClass="tab-min tab-produit" titletip="Adresse 3">
+				<!--         <p:tab title="Client" titleStyleClass="tab-min tab-default"> -->
+
+				<div class="ui-grid ui-grid-responsive">
+					<div class="ui-grid-row">
+						<div class="ui-grid-col-12">
+
+							<div class="text-center">
+								<p:commandButton value="Annuler" icon="fa fa-undo" actionListener="#{clientController.actAnnuler}"
+									process="@this"
+									update="idTabViewClient:idPanelAdresse3,idTabViewClient:idPanelTel3,:form:messages,@form"
+									disabled="#{clientController.etatBouton('annuler')}" />
+								<p:commandButton value="Enregistrer" icon="fa fa-save"
+									actionListener="#{clientController.actEnregistrer}" process="@this"
+									update="idTabViewClient:idPanelAdresse3,idTabViewClient:idPanelTel3,:form:messages,@form"
+									disabled="#{clientController.etatBouton('enregistrer')}" />
+
+							</div>
+
+						</div>
+					</div>
+
+
+					<div class="ui-grid-row">
+
+						<div class="ui-grid-col-6">
+
+							<p:panel id="idPanelAdresse3" header="Adresse 3" toggleable="true" widgetVar="panelAdresse3">
+
+								<!--         <p:ajax event="toggle" listener="#{panelView.onToggle}" update="msgs" /> -->
+
+								<h:panelGrid columns="2" cellpadding="10">
+									<p:outputLabel value="Entreprise : " />
+									  <p:inputText value="#{clientController.taAdresseDTO3.nomEntreprise}" disabled="#{clientController.editable()}"
+										validator="#{clientController.validateAdresse}">
+										<f:attribute name="nomChamp" value="#{const.C_NOM_ENTREPRISE}" />
+										<p:ajax event="blur" update="@this" />
+									  </p:inputText>
+								
+									<p:outputLabel value="Ligne 1 : " />
+									<p:inputText value="#{clientController.taAdresseDTO3.adresse1}" disabled="#{clientController.editable()}"
+										validator="#{clientController.validateAdresse}">
+										<f:attribute name="nomChamp" value="#{const.C_ADRESSE1}" />
+										<p:ajax event="blur" update="@this" />
+									</p:inputText>
+									<p:outputLabel value="Ligne 2 : " />
+									<p:inputText value="#{clientController.taAdresseDTO3.adresse2}" disabled="#{clientController.editable()}"
+										validator="#{clientController.validateAdresse}">
+										<f:attribute name="nomChamp" value="#{const.C_ADRESSE2}" />
+										<p:ajax event="blur" update="@this" />
+									</p:inputText>
+
+									<p:outputLabel value="Ligne 3 : " />
+									<p:inputText value="#{clientController.taAdresseDTO3.adresse3}" disabled="#{clientController.editable()}"
+										validator="#{clientController.validateAdresse}">
+										<f:attribute name="nomChamp" value="#{const.C_ADRESSE3}" />
+										<p:ajax event="blur" update="@this" />
+									</p:inputText>
+
+									<p:outputLabel value="code postal : " />
+									<p:inputText value="#{clientController.taAdresseDTO3.codePostal}" disabled="#{clientController.editable()}"
+										validator="#{clientController.validateAdresse}">
+										<f:attribute name="nomChamp" value="#{const.C_CODE_POSTAL}" />
+										<p:ajax event="blur" update="@this" />
+									</p:inputText>
+
+									<p:outputLabel value="ville : " />
+									<p:inputText value="#{clientController.taAdresseDTO3.ville}" disabled="#{clientController.editable()}"
+										validator="#{clientController.validateAdresse}">
+										<f:attribute name="nomChamp" value="#{const.C_VILLE}" />
+										<p:ajax event="blur" update="@this" />
+									</p:inputText>
+
+									<p:outputLabel value="Pays: " />
+									<p:inputText value="#{clientController.taAdresseDTO3.pays}" disabled="#{clientController.editable()}"
+										validator="#{clientController.validateAdresse}">
+										<f:attribute name="nomChamp" value="#{const.C_PAYS}" />
+										<p:ajax event="blur" update="@this" />
+									</p:inputText>
+
+
+								</h:panelGrid>
+
+							</p:panel>
+
+						</div>
+						<div class="ui-grid-col-6">
+
+							<p:panel id="idPanelTel3" header="Téléphone / Email" toggleable="true" widgetVar="panelTel3">
+							<h:panelGrid columns="2" cellpadding="10">
+									<p:outputLabel value="Téléphone 1 : " />
+									  <p:inputText value="#{clientController.taAdresseDTO3.numTel1}" disabled="#{clientController.editable()}"
+										validator="#{clientController.validateAdresse}">
+										<f:attribute name="nomChamp" value="#{const.C_TEL1}" />
+										<p:ajax event="blur" update="@this" />
+									  </p:inputText>
+
+									<p:outputLabel value="Téléphone 2 : " />
+									  <p:inputText value="#{clientController.taAdresseDTO3.numTel2}" disabled="#{clientController.editable()}"
+										validator="#{clientController.validateAdresse}">
+										<f:attribute name="nomChamp" value="#{const.C_TEL2}" />
+										<p:ajax event="blur" update="@this" />
+									  </p:inputText>
+
+									<p:outputLabel value="Fax : " />
+									  <p:inputText value="#{clientController.taAdresseDTO3.numFax}" disabled="#{clientController.editable()}"
+										validator="#{clientController.validateAdresse}">
+										<f:attribute name="nomChamp" value="#{const.C_FAX1}" />
+										<p:ajax event="blur" update="@this" />
+									  </p:inputText>
+									  
+									<p:outputLabel value="Portable : " />
+									  <p:inputText value="#{clientController.taAdresseDTO3.numPort}" disabled="#{clientController.editable()}"
+										validator="#{clientController.validateAdresse}">
+										<f:attribute name="nomChamp" value="#{const.C_PORTABLE}" />
+										<p:ajax event="blur" update="@this" />
+									  </p:inputText>
+
+									<p:outputLabel value="Email : " />
+									  <p:inputText value="#{clientController.taAdresseDTO3.email}" disabled="#{clientController.editable()}"
+										validator="#{clientController.validateAdresse}">
+										<f:attribute name="nomChamp" value="#{const.C_EMAIL}" />
+										<p:ajax event="blur" update="@this" />
+									  </p:inputText>
+
+									<p:outputLabel value="Site web : " />
+									  <p:inputText value="#{clientController.taAdresseDTO3.web}" disabled="#{clientController.editable()}"
+										validator="#{clientController.validateAdresse}">
+										<f:attribute name="nomChamp" value="#{const.C_WEB}" />
+										<p:ajax event="blur" update="@this" />
+									  </p:inputText>
+
+							</h:panelGrid>
+							</p:panel>
+							
+						</div>
+
+
+					</div>
+
+				</div>
+
+			</p:tab>
+
+			<p:tab id="idTabDossiers" title="Dossiers" titleStyleClass="tab-min tab-controle-conf"
+				titletip="liste des dossiers">
+					<div class="ui-grid ui-grid-responsive">
+						<p:commandButton value="Annuler" icon="fa fa-undo" actionListener="#{clientController.actAnnuler}" process="@this"
+							update="@this,@parent,:form:messages,@form" disabled="#{clientController.etatBouton('annuler')}" />
+						<p:commandButton value="Enregistrer" icon="fa fa-save" actionListener="#{clientController.actEnregistrerDossier}"
+							process="@this" update="@this,@parent,:form:messages,@form"
+							disabled="#{clientController.etatBouton('enregistrer')}" />
+						<p:commandButton value="Insérer" icon="fa fa-plus-circle"
+							actionListener="#{clientController.actInsererLigneDossier}"  process="@this"
+							update="@this,@parent,@widgetVar(widgetVarDataTableLigneDossier)"
+							disabled="#{clientController.etatBouton('inserer')}" >
+							<f:attribute name="dos" value="#{dossier}" />
+						</p:commandButton>	
+						<p:commandButton value="Modifier" icon="fa fa-pencil" actionListener="#{clientController.actModifierLigne}"
+						    process="@this"
+							update="@this,@parent"
+							disabled="#{clientController.etatBouton('modifier')}" />							
+
+						<p:commandButton value="Supprimer" icon="fa fa-trash" actionListener="#{clientController.actSupprimerLignes}"
+							process="@this" update="@this,@parent" disabled="#{clientController.etatBouton('supprimer')}" >
+							<f:attribute name="dos" value="#{dossier}" />
+						</p:commandButton>
+
+
+						<p:dataTable id="varLigneDossiers" var="dossierClient" widgetVar="widgetVarDataTableLigneDossier"
+							styleClass="datatable mt10" value="#{clientController.listeDossier}" rowKey="#{dossierClient.id}"
+							selection="#{clientController.taDossierClient}" selectionMode="single" dblClickSelect="true"
+							resizableColumns="true" paginator="true" editable="#{clientController.editableLigne()}"  rows="#{msg.modele_datatable_ligne_par_page_debut}"
+							paginatorTemplate="#{msg.modele_datatable_paginator}"
+							rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}" emptyMessage="#{msg.message_datatable_vide}"
+							currentPageReportTemplate="#{msg.modele_datatable_page_courante}" disabled="#{clientController.editable()}">
+
+							<p:ajax event="rowEditInit" listener="#{clientController.onRowEditInit}"  />
+							<p:ajax event="rowEdit" listener="#{clientController.onRowEditDossier}"  />
+							<p:ajax event="rowEditCancel" listener="#{clientController.onRowCancel}"
+								update="@widgetVar(widgetVarBtnSupprimer)" />
+
+
+							<p:column style="width:16px;text-align:center">
+								<h:outputText value="." />
+							</p:column>
+
+							<p:column sortBy="#{dossierClient.code}">
+								<f:facet name="header">
+									<h:outputText value="Code dossier" />
+								</f:facet>
+								<p:cellEditor>
+									<f:facet name="output">
+										<h:outputText value="#{dossierClient.code}" />
+									</f:facet>
+									<f:facet name="input">
+										<h:inputText value="#{dossierClient.code}" validator="#{clientController.validateDossier}">
+										<f:attribute name="nomChamp" value="#{const.C_CODE}" />
+										<p:ajax event="blur" update="@this" />
+										</h:inputText>
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+
+							<p:column sortBy="#{dossierClient.description}">
+								<f:facet name="header">
+									<h:outputText value="description" />
+								</f:facet>								
+								<p:cellEditor>
+									<f:facet name="output">
+										<h:outputText value="#{dossierClient.description}" id="idDescription" />
+									</f:facet>
+									<f:facet name="input">
+										<h:inputText value="#{dossierClient.description}" />
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+
+
+							<p:column sortBy="#{dossierClient.nbPosteInstalle}">
+								<f:facet name="header">
+									<h:outputText value="Nb poste installé" />
+								</f:facet>								
+								<p:cellEditor>
+									<f:facet name="output">
+										<h:outputText value="#{dossierClient.nbPosteInstalle}"  />
+									</f:facet>
+									<f:facet name="input">
+										<h:inputText value="#{dossierClient.nbPosteInstalle}" />
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+
+							<p:column sortBy="#{dossierClient.nbUtilisateur}">
+								<f:facet name="header">
+									<h:outputText value="Nb utilisateurs" />
+								</f:facet>								
+								<p:cellEditor>
+									<f:facet name="output">
+										<h:outputText value="#{dossierClient.nbUtilisateur}"  />
+									</f:facet>
+									<f:facet name="input">
+										<h:inputText value="#{dossierClient.nbUtilisateur}" />
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+														
+							<p:column sortBy="#{dossierClient.tauxReduction}">
+								<f:facet name="header">
+									<h:outputText value="Taux reduc" />
+								</f:facet>								
+								<p:cellEditor>
+									<f:facet name="output">
+										<h:outputText value="#{dossierClient.tauxReduction}"  />
+									</f:facet>
+									<f:facet name="input">
+										<h:inputText value="#{dossierClient.tauxReduction}" />
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+
+							<p:column sortBy="#{dossierClient.actif}">
+								<f:facet name="header">
+									<h:outputText value="Actif" />
+								</f:facet>								
+								<p:cellEditor>
+									<f:facet name="output">
+										<h:selectBooleanCheckbox value="#{dossierClient.actif}"  disabled="true"/>
+									</f:facet>
+									<f:facet name="input">
+										<h:selectBooleanCheckbox value="#{dossierClient.actif}" />
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+
+							<p:column sortBy="#{dossierClient.accesWs}">
+								<f:facet name="header">
+									<h:outputText value="Accès WS" />
+								</f:facet>								
+								<p:cellEditor>
+									<f:facet name="output">
+										<h:selectBooleanCheckbox value="#{dossierClient.accesWs}" disabled="true"/>
+									</f:facet>
+									<f:facet name="input">
+										<h:selectBooleanCheckbox value="#{dossierClient.accesWs}" />
+									</f:facet>
+								</p:cellEditor>
+							</p:column>														
+
+							<p:column style="width:32px">
+								<p:rowEditor />
+							</p:column>
+
+						</p:dataTable>
+					</div>
+			</p:tab>
+
+			
+			<p:tab id="idTabDossiersAutorisation" title="Autorisation/Dossier" titleStyleClass="tab-min tab-controle-conf"
+				titletip="Achat/autorisation/licence">
+
+				<p:tabView id="idTabViewDossier" var="dossier" value="#{clientController.listeDossier}" dynamic="true" cache="true">
+					<p:ajax event="tabChange" listener="#{clientController.onTabChange}" update="@this"/>
+					
+					<p:tab id="idTabAutorisation" title="#{dossier.code}"  titleStyleClass="tab-min tab-controle-conf" 
+						titletip="Achat/autorisation/licence">
+						<h:outputLabel value="Autorisations dossier #{dossier.code} (mode SaaS) " />
+
+						<br />
+						<p:commandButton value="Annuler" icon="fa fa-undo" actionListener="#{clientController.actAnnuler}" process="@this"
+							update="@this,@parent,:form:messages,@form" disabled="#{clientController.etatBouton('annuler')}" />
+						<p:commandButton value="Enregistrer" icon="fa fa-save" actionListener="#{clientController.actEnregistrer}"
+							process="@this" update="@this,@parent,:form:messages,@form"
+							disabled="#{clientController.etatBouton('enregistrer')}" />
+						<p:commandButton value="Insérer" icon="fa fa-plus-circle"
+							actionListener="#{clientController.actInsererLigneAutorisation}"  process="@this"
+							update="@this,@parent,@widgetVar(widgetVarDataTableLigneAutorisation)"
+							disabled="#{clientController.etatBouton('inserer')}" >
+							<f:attribute name="dos" value="#{dossier}" />
+						</p:commandButton>	
+						<p:commandButton value="Modifier" icon="fa fa-pencil" actionListener="#{clientController.actModifierLigne}"
+						    process="@this"
+							update="@this,@parent,idTabAutorisation"
+							disabled="#{clientController.etatBouton('modifier')}" />							
+
+						<p:commandButton value="Supprimer" icon="fa fa-trash" actionListener="#{clientController.actSupprimerLignes}"
+							process="@this" update="@this,@parent" disabled="#{clientController.etatBouton('supprimer')}" >
+							<f:attribute name="dos" value="#{dossier}" />
+						</p:commandButton>
+						<p:commandButton value="MAJ droits de ce dossier" icon="fa fa-bolt" title="MAJ droits de ce dossier" actionListener="#{clientController.actMajDroitsDossierCourant}" update="@form,:form:messages"/>
+						<br />
+						<br />
+						<h:outputLabel value="Nombre d'utilisateur :" /><p:spinner value="#{dossier.nbUtilisateur}" disabled="#{clientController.editable()}"/><br />
+						<h:outputLabel value="Nombre de poste installé :" /><p:spinner value="#{dossier.nbPosteInstalle}" disabled="#{clientController.editable()}"/><br />
+						<h:outputLabel value="Accès WebService :" /><p:selectBooleanCheckbox value="#{dossier.accesWs}" disabled="#{clientController.editable()}"/><br />
+
+						<p:dataTable id="varAutorisation" var="autorisation" widgetVar="widgetVarDataTableLigneAutorisation"
+							styleClass="datatable mt10" value="#{dossier.listeAutorisation}" rowKey="#{autorisation.idAutorisation}"
+							selection="#{clientController.taAutorisation}" selectionMode="single" dblClickSelect="true"
+							resizableColumns="true" paginator="true" editable="#{clientController.editableLigne()}" rows="#{msg.modele_datatable_ligne_par_page_debut}"
+							paginatorTemplate="#{msg.modele_datatable_paginator}"
+							rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}" emptyMessage="#{msg.message_datatable_vide}"
+							currentPageReportTemplate="#{msg.modele_datatable_page_courante}" disabled="#{clientController.editable()}">
+
+							<p:ajax event="rowEditInit" listener="#{clientController.onRowEditInit}"  />
+							<p:ajax event="rowEdit" listener="#{clientController.onRowEdit}"  />
+							<p:ajax event="rowEditCancel" listener="#{clientController.onRowCancel}"
+								update="@widgetVar(widgetVarBtnSupprimer)" />
+							<p:ajax event="rowSelect" listener="#{clientController.onRowSelectLigne}" />
+
+
+							<p:column style="width:16px;text-align:center">
+								<h:outputText value="." />
+							</p:column>
+
+							<p:column sortBy="#{autorisation.taProduit.code}">
+								<f:facet name="header">
+									<h:outputText value="Produit" />
+								</f:facet>
+								<p:cellEditor>
+									<f:facet name="output">
+										<h:outputText value="#{autorisation.taProduit.code}" />
+									</f:facet>
+									<f:facet name="input">
+										<p:autoComplete value="#{autorisation.taProduit}" completeMethod="#{clientController.produitAutoComplete}"
+											var="ent" itemLabel="#{ent.code}" itemValue="#{ent}" forceSelection="true" dropdown="true"
+											placeholder="Produit" style="width:100%">
+											<p:column>
+												<h:outputText value="#{ent.code}" />
+											</p:column>
+											<p:column>
+												<h:outputText value="#{ent.libelle}" />
+											</p:column>
+											<p:ajax event="itemSelect" update="idLabelProduit" />
+										</p:autoComplete>
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+
+							<p:column sortBy="#{autorisation.taProduit.libelle}">
+								<f:facet name="header">
+									<h:outputText value="Produit" />
+								</f:facet>
+								<h:outputText value="#{autorisation.taProduit.libelle}" id="idLabelProduit" />
+							</p:column>
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="Date début" />
+								</f:facet>
+								<p:cellEditor>
+									<f:facet name="output">
+										<h:outputText value="#{autorisation.dateAchat}">
+											<f:convertDateTime pattern="dd/MM/yyyy" />
+										</h:outputText>
+									</f:facet>
+									<f:facet name="input">
+										<p:calendar value="#{autorisation.dateAchat}" pattern="dd/MM/yyyy" mask="true" locale="fr" navigator="true" />
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="Date fin" />
+								</f:facet>
+								<p:cellEditor>
+									<f:facet name="output">
+										<h:outputText value="#{autorisation.dateFin}">
+											<f:convertDateTime pattern="dd/MM/yyyy" />
+										</h:outputText>
+									</f:facet>
+									<f:facet name="input">
+										<p:calendar value="#{autorisation.dateFin}" pattern="dd/MM/yyyy" mask="true" locale="fr" navigator="true" />
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="Nb Util Max" />
+								</f:facet>
+							</p:column>
+
+
+							<p:column style="width:32px">
+								<p:rowEditor />
+							</p:column>
+
+						</p:dataTable>
+					</p:tab>
+				</p:tabView>
+			</p:tab>
+
+			<p:tab id="idTabDossiersPrix" title="Prix/dossier" titleStyleClass="tab-min tab-controle-conf"
+				titletip="Achat/autorisation/licence">
+
+				<p:tabView id="idTabViewDossierPrix" var="dossier" value="#{clientController.listeDossier}" widgetVar="widgetTabViewDossierPrix" dynamic="true" cache="true">
+					<p:ajax event="tabChange" listener="#{clientController.onTabChange}" update="@this"/>
+					
+					<p:tab id="idTabPrix" title="#{dossier.code}"   titleStyleClass="tab-min tab-controle-conf" 
+						titletip="Achat/autorisation/licence">
+						<h:outputLabel value="Prix pour le dossier #{dossier.code} (mode SaaS) " />
+						<br/>
+						<p:commandButton  value="Annuler" icon="fa fa-undo" actionListener="#{clientController.actAnnuler}" process="@this"
+							update="@this,@parent,:form:messages,@form" disabled="#{clientController.etatBouton('annuler')}" widgetVar="varBtnAnnuler"/>
+						<p:commandButton  value="Enregistrer" icon="fa fa-save" actionListener="#{clientController.actEnregistrer}"
+							process="@this" update="@this,@parent,:form:messages,@form"
+							disabled="#{clientController.etatBouton('enregistrer')}" widgetVar="varBtnEnregistrer"/>
+						<p:commandButton value="Insérer" icon="fa fa-plus-circle"
+							actionListener="#{clientController.actInsererLignePrix}"  process="@this"
+							update="@this,@parent,@widgetVar(widgetVarDataTableLignePrix)"
+							disabled="#{clientController.etatBouton('inserer')}" widgetVar="varBtnInserer" >
+							<f:attribute name="dos" value="#{dossier}" />
+						</p:commandButton>
+						<p:commandButton value="Modifier" icon="fa fa-pencil" actionListener="#{clientController.actModifierLigne}"
+						    process="@this"
+							update="@this,@parent,idTabViewDossierPrix"
+							disabled="#{clientController.etatBouton('modifier')}" />													
+						<p:commandButton  value="Supprimer" icon="fa fa-trash" actionListener="#{clientController.actSupprimerLignesPrix}"
+							process="@this" update="@this,@parent" disabled="#{clientController.etatBouton('supprimer')}" widgetVar="varBtnSupprimer"> 
+							<f:attribute name="dos" value="#{dossier}" />
+						</p:commandButton>	
+
+
+						<p:dataTable id="varPrix" var="prix" widgetVar="widgetVarDataTableLignePrix"
+							styleClass="datatable mt10" value="#{dossier.listePrixPerso}" rowKey="#{prix.id}"
+							selection="#{clientController.taPrixPerso}" selectionMode="single" dblClickSelect="true"
+							resizableColumns="true" paginator="true" editable="#{clientController.editableLigne()}" rows="#{msg.modele_datatable_ligne_par_page_debut}"
+							paginatorTemplate="#{msg.modele_datatable_paginator}"
+							rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}" emptyMessage="#{msg.message_datatable_vide}"
+							currentPageReportTemplate="#{msg.modele_datatable_page_courante}" disabled="#{clientController.editable()}">
+
+							<p:ajax event="rowEditInit" listener="#{clientController.onRowEditInit}"  />
+							<p:ajax event="rowEdit" listener="#{clientController.onRowEditPrix}"  />
+							<p:ajax event="rowEditCancel" listener="#{clientController.onRowCancelPrix}"
+								update="@widgetVar(widgetVarBtnSupprimer)" />
+							<p:ajax event="rowSelect" listener="#{clientController.onRowSelectLignePrix}" />
+							
+
+							<p:column style="width:16px;text-align:center">
+								<h:outputText value="." />
+							</p:column>
+
+							<p:column sortBy="#{prix.taProduit.code}">
+								<f:facet name="header">
+									<h:outputText value="Produit" />
+								</f:facet>
+								<p:cellEditor>
+									<f:facet name="output">
+										<h:outputText value="#{prix.taProduit.code}" />
+									</f:facet>
+									<f:facet name="input">
+										<p:autoComplete value="#{prix.taProduit}" completeMethod="#{clientController.produitAutoComplete}"
+											var="ent" itemLabel="#{ent.code}" itemValue="#{ent}" forceSelection="true" dropdown="true"
+											placeholder="Produit" style="width:100%">
+											<p:column>
+												<h:outputText value="#{ent.code}" />
+											</p:column>
+											<p:column>
+												<h:outputText value="#{ent.libelle}" />
+											</p:column>
+											<p:ajax event="itemSelect" />
+<!-- 											<p:ajax event="itemSelect" update="idLabelProduitPrix" /> -->
+										</p:autoComplete>
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+
+<!-- 							<p:column sortBy="#{prix.taProduit.libelle}"> -->
+<!-- 								<f:facet name="header"> -->
+<!-- 									<h:outputText value="Produit" /> -->
+<!-- 								</f:facet> -->
+<!-- 								<h:outputText value="#{prix.taProduit.libelle}" id="idLabelProduit" /> -->
+<!-- 							</p:column> -->
+
+							<p:column sortBy="#{prix.prixHTLight}">
+								<f:facet name="header">
+									<h:outputText value="HT Basic" />
+								</f:facet>
+
+								<p:cellEditor>
+									<f:facet name="output">
+										<h:outputText value="#{prix.prixHTLight}" />
+									</f:facet>
+									<f:facet name="input">
+										<p:inputText value="#{prix.prixHTLight}" >
+										<p:ajax event="blur" update="@this" />
+										</p:inputText>
+										
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+							
+							
+							<p:column sortBy="#{prix.prixTTCLight}">
+								<f:facet name="header">
+									<h:outputText value="TTC Basic" />
+								</f:facet>
+
+								<p:cellEditor>
+									<f:facet name="output">
+										<h:outputText value="#{prix.prixTTCLight}" />
+									</f:facet>
+									<f:facet name="input">
+										<p:inputText value="#{prix.prixTTCLight}" >
+										<p:ajax event="blur" update="@this" />
+										</p:inputText>
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+							
+							<p:column sortBy="#{prix.prixHT}">
+								<f:facet name="header">
+									<h:outputText value="HT Premium" />
+								</f:facet>
+								<p:cellEditor>
+									<f:facet name="output">
+										<h:outputText value="#{prix.prixHT}" />
+									</f:facet>
+									<f:facet name="input">
+										<p:inputText value="#{prix.prixHT}" >
+										<p:ajax event="blur" update="@this" />
+										</p:inputText>
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+							
+							<p:column sortBy="#{prix.prixTTC}">
+								<f:facet name="header">
+									<h:outputText value="TTC Premium" />
+								</f:facet>
+
+								<p:cellEditor>
+									<f:facet name="output">
+										<h:outputText value="#{prix.prixTTC}" />
+									</f:facet>
+									<f:facet name="input">
+										<p:inputText value="#{prix.prixTTC}" >
+										<p:ajax event="blur" update="@this" />
+										</p:inputText>
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+							
+							<p:column sortBy="#{prix.prixHTParPosteInstalle}">
+								<f:facet name="header">
+									<h:outputText value="HT / poste" />
+								</f:facet>
+
+								<p:cellEditor>
+									<f:facet name="output">
+										<h:outputText value="#{prix.prixHTParPosteInstalle}" />
+									</f:facet>
+									<f:facet name="input">
+										<p:inputText value="#{prix.prixHTParPosteInstalle}" >
+										<p:ajax event="blur" update="@this" />
+										</p:inputText>
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+							
+							<p:column sortBy="#{prix.prixTTCParPosteInstalle}">
+								<f:facet name="header">
+									<h:outputText value="TTC / poste" />
+								</f:facet>
+
+								<p:cellEditor>
+									<f:facet name="output">
+										<h:outputText value="#{prix.prixTTCParPosteInstalle}" />
+									</f:facet>
+									<f:facet name="input">
+										<p:inputText value="#{prix.prixTTCParPosteInstalle}" >
+										<p:ajax event="blur" update="@this" />
+										</p:inputText>
+									</f:facet>
+								</p:cellEditor>
+							</p:column>	
+							
+							
+							<p:column sortBy="#{prix.prixHTWs}">
+								<f:facet name="header">
+									<h:outputText value="ht WS" />
+								</f:facet>
+
+								<p:cellEditor>
+									<f:facet name="output">
+										<h:outputText value="#{prix.prixHTWs}" />
+									</f:facet>
+									<f:facet name="input">
+										<p:inputText value="#{prix.prixHTWs}" >
+										<p:ajax event="blur" update="@this" />
+										</p:inputText>
+									</f:facet>
+								</p:cellEditor>
+							</p:column>	
+																				
+							
+							<p:column sortBy="#{prix.prixTTCWs}">
+								<f:facet name="header">
+									<h:outputText value="ttc WS" />
+								</f:facet>
+
+								<p:cellEditor>
+									<f:facet name="output">
+										<h:outputText value="#{prix.prixTTCWs}" />
+									</f:facet>
+									<f:facet name="input">
+										<p:inputText value="#{prix.prixTTCWs}" >
+										<p:ajax event="blur" update="@this" />
+										</p:inputText>
+									</f:facet>
+								</p:cellEditor>
+							</p:column>	
+
+							<p:column style="width:32px">
+								<p:rowEditor />
+							</p:column>
+
+						</p:dataTable>
+					</p:tab>
+				</p:tabView>
+			</p:tab>
+
+<!-- 			<p:tab id="idTabLicence" title="Licences" titleStyleClass="tab-min tab-controle-conf" titletip="Achat/autorisation/licence"> -->
+				
+<!-- 				<br/> -->
+<!-- 				Licence du client (logiciel installé) -->
+<!-- 				<br/> -->
+<!-- 				<p:dataTable  var="licence" -->
+<!-- 				styleClass="datatable mt10" -->
+<!-- 				value="#{clientController.values}" -->
+<!-- 				rowKey="#{licence.id}" -->
+<!-- 				selection="#{clientController.selectedTaClientDTO}" -->
+<!-- 				selectionMode="single" -->
+<!-- 				dblClickSelect="true" -->
+<!-- 				resizableColumns="true" -->
+<!-- 				paginator="true"  -->
+<!-- 				editable="true" -->
+<!-- 				rows="#{msg.modele_datatable_ligne_par_page_debut}" -->
+<!-- 				paginatorTemplate="#{msg.modele_datatable_paginator}" -->
+<!-- 				rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}" -->
+<!-- 				emptyMessage="#{msg.message_datatable_vide}" -->
+<!-- 				currentPageReportTemplate="#{msg.modele_datatable_page_courante}"> -->
+				
+
+<!-- 				<p:column sortBy="#{licence.nom}"> -->
+<!-- 					<f:facet name="header"> -->
+<!-- 						<h:outputText value="Produit" /> -->
+<!-- 					</f:facet> -->
+<!-- 					<h:outputText value="#{licence.nom}" /> -->
+<!-- 				</p:column> -->
+				
+<!-- 				<p:column sortBy="#{licence.prenom}"> -->
+<!-- 					<f:facet name="header"> -->
+<!-- 						<h:outputText value="Date début" /> -->
+<!-- 					</f:facet> -->
+<!-- 					<h:outputText value="#{licence.prenom}" /> -->
+<!-- 				</p:column> -->
+				
+<!-- 				<p:column sortBy="#{licence.prenom}"> -->
+<!-- 					<f:facet name="header"> -->
+<!-- 						<h:outputText value="Date fin" /> -->
+<!-- 					</f:facet> -->
+<!-- 					<h:outputText value="#{licence.prenom}" /> -->
+<!-- 				</p:column> -->
+				
+<!-- 				<p:column sortBy="#{licence.prenom}"> -->
+<!-- 					<f:facet name="header"> -->
+<!-- 						<h:outputText value="Nb Util Max" /> -->
+<!-- 					</f:facet> -->
+<!-- 					<h:outputText value="#{licence.prenom}" /> -->
+<!-- 				</p:column> -->
+				
+<!-- 				<p:column > -->
+<!-- 						<f:facet name="header"> -->
+<!-- 							<h:outputText value="Dernière version téléchargé" /> -->
+<!-- 						</f:facet> -->
+<!-- 					</p:column> -->
+					
+<!-- 					<p:column > -->
+<!-- 						<f:facet name="header"> -->
+<!-- 							<h:outputText value="Date dernier téléchargement" /> -->
+<!-- 						</f:facet> -->
+<!-- 					</p:column> -->
+					
+<!-- 					<p:column > -->
+<!-- 						<f:facet name="header"> -->
+<!-- 							<h:outputText value="Date dernière utilisation" /> -->
+<!-- 						</f:facet> -->
+<!-- 					</p:column> -->
+					
+<!-- 					<p:column style="width:32px"> -->
+<!-- 						<p:rowEditor /> -->
+<!-- 					</p:column> -->
+					
+<!-- 			</p:dataTable> -->
+<!-- 			</p:tab> -->
+
+
+		</p:tabView>
+
+
+	</f:validateBean>
+
+</ui:composition>

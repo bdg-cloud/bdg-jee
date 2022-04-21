@@ -1,0 +1,57 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<p:dialog header="Imprimer l'état des stocks" widgetVar="interfacePrintEtatStock" modal="true" appendTo="@(body)" showEffect="clip" hideEffect="clip" width="900" height="200">
+
+    					     	   				
+    		<p:panel widgetVar="interfaceUpdateEtatStock" style="margin-left:0%; margin-right:0%;">
+    					
+    				<div class="ui-grid-col-12" style=" margin-top:26px;">
+    				<h:graphicImage name="dashboard/tier.svg" library="images" height="26px" style="margin-left:-5px;" />
+					<p:outputLabel value="CHOIX DE L'EDITION" style="font-size: 14px;font-weight: bold; vertical-align: 2px; margin-left:3px;" />    				
+					
+    	<p:selectOneRadio id="identificationEditionEtatStock" value="#{etatChoixEditionBean.identification}" unselectable="true" style="margin-right:10px; margin-left:30px; margin-top: 10px; float:right">
+    				 				
+    		<f:selectItem itemLabel="Etat des stocks par article" itemValue="ListeEtatDesStocksParArticlePortrait" />
+    				
+    				
+            <f:selectItem itemLabel="Etat des stocks par article et entrepôt" itemValue="ListeEtatDesStocksParArticleParEntrepotPortrait" />
+            		
+            		
+            <f:selectItem itemLabel="Etat des stocks par article et lot" itemValue="ListeEtatDesStocksParArticleParLotPortrait" />
+            
+            
+            <f:selectItem itemLabel="Etat des stocks par article et par lot et par entepôt" itemValue="ListeEtatDesStocks" />
+            
+            		
+            <p:ajax update="@this,@widgetVar(interfaceUpdateEtatStock)" />           
+        </p:selectOneRadio>
+        			   									
+  				</div>	
+  	
+    				<div class="ui-grid-col-6">
+    	    				
+    					
+    					<div class="ui-grid-col-1" style="position:absolute; bottom:20px; right:30px">
+
+    	<p:commandButton value="Imprimer" id="print"
+    		onsuccess="window.open('#{request.contextPath}/output?__report=/reports/stock/#{etatChoixEditionBean.identification}.rptdesign&amp;__format=pdf')"
+			actionListener="#{etatStocksBean.actImprimerListeEtatDesStocks}" process="@this"
+			styleClass="ui-priority-primary boutonPrint" style="color:white; margin-top:10px; float:left" icon="fa fa-print"
+			update="@this,@widgetVar(interfaceUpdateEtatStock)"/>
+<!--     	<p:commandButton value="Cocher" id="cocher" action="#{etatChoixEditionBean.cocher}" style="width:96px; right:0px;margin-bottom:6px; float:left" -->
+<!--     					 icon="fa fa-check-square" process="@this" update="@this,@widgetVar(interfaceUpdateEtatStock)"/> -->
+<!--     	<p:commandButton value="Décocher" id="decocher" action="#{etatChoixEditionBean.decocher}" style="right:0px; float:left" -->
+<!--     					 icon="fa fa-check-square" process="@this" update="@this,@widgetVar(interfaceUpdateEtatStock)"/> -->
+
+					</div>
+    				 </div>
+ 			
+    			</p:panel>
+    					
+		 </p:dialog>	 
+
+</ui:composition>

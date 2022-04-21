@@ -1,0 +1,270 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>fr.legrain</groupId>
+	<artifactId>fr.legrain.bdg.ear</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>ear</packaging>
+
+	<parent>
+		<groupId>fr.legrain</groupId>
+		<artifactId>fr.legrain.bdg.parent</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+		<relativePath>../fr.legrain.bdg.parent/pom.xml</relativePath>
+	</parent>
+
+
+	<dependencies>
+	
+		<dependency>
+			<groupId>org.osgi</groupId>
+			<artifactId>org.osgi.core</artifactId>
+			<version>5.0.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>net.sf.dozer</groupId>
+			<artifactId>dozer</artifactId>
+			<version>5.5.1</version>
+		</dependency>
+		
+		<dependency>
+		    <groupId>org.eclipse.persistence</groupId>
+		    <artifactId>org.eclipse.persistence.asm</artifactId>
+		    <version>2.7.4</version>
+		</dependency>
+		
+		<dependency>
+		    <groupId>org.eclipse.persistence</groupId>
+		    <artifactId>org.eclipse.persistence.moxy</artifactId>
+		    <version>2.7.4</version>
+		</dependency>
+		
+		<dependency>
+		    <groupId>org.eclipse.persistence</groupId>
+		    <artifactId>org.eclipse.persistence.core</artifactId>
+		    <version>2.7.4</version>
+		</dependency>
+		
+		<dependency>
+            <groupId>net.bull.javamelody</groupId>
+            <artifactId>javamelody-core</artifactId>
+            <version>1.79.0</version>
+        </dependency>
+		
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<version>9.3-1101-jdbc41</version>
+		</dependency>
+		
+<!-- 		  <dependency> -->
+<!--      <groupId>com.opencsv</groupId> -->
+<!--      <artifactId>opencsv</artifactId> -->
+<!--      <version>3.9</version> -->
+<!--   </dependency> -->
+		
+<!-- 		<dependency> -->
+<!-- 			<groupId>org.jruby</groupId> -->
+<!-- 			<artifactId>jruby</artifactId> -->
+<!--  			<artifactId>jruby-complete</artifactId> avec jruby-complete qui inclue org.asm problème de compatibilié avec org.asm de apache cxf -->
+<!-- 			<version>9.0.0.0.pre2</version> -->
+<!-- 		</dependency> -->
+		<dependency>
+			<groupId>org.jruby</groupId>
+			<artifactId>jruby-noasm</artifactId>
+			<version>9.0.0.0.pre1</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.codehaus.groovy</groupId>
+			<artifactId>groovy-all</artifactId>
+			<version>2.4.3</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.python</groupId>
+			<artifactId>jython-standalone</artifactId>
+			<version>2.7.0</version>
+		</dependency>
+		
+		<dependency>
+		    <groupId>javax.mail</groupId>
+		    <artifactId>mail</artifactId>
+		    <version>1.4.7</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>3.8.1</version>
+			<scope>test</scope>
+		</dependency>
+		
+<!-- 				<dependency> -->
+<!-- 			<groupId>org.primefaces</groupId> -->
+<!-- 			<artifactId>primefaces</artifactId> -->
+<!-- 			<version>5.3</version> -->
+<!-- 		</dependency> -->
+
+
+		<!-- Dependencies on the ejb and web modules so that they can be found 
+			by the ear plugin -->
+
+		<dependency>
+			<groupId>fr.legrain</groupId>
+			<artifactId>fr.legrain.bdg.ejb</artifactId>
+			<type>ejb</type>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+
+<!-- 		<dependency> -->
+<!-- 			<groupId>fr.legrain</groupId> -->
+<!-- 			<artifactId>fr.legrain.bdg.webapp</artifactId> -->
+<!-- 			<type>war</type> -->
+<!-- 			<version>0.0.1-SNAPSHOT</version> -->
+<!-- 		</dependency> -->
+
+		<dependency>
+			<groupId>fr.legrain</groupId>
+			<artifactId>fr.legrain.bdg.webapp</artifactId>
+			<type>war</type>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		
+<!-- 		<dependency> -->
+<!-- 			<groupId>fr.legrain</groupId> -->
+<!-- 			<artifactId>fr.legrain.bdg.edition.osgi</artifactId> -->
+<!-- 			<version>2.0.13-SNAPSHOT</version> -->
+<!-- 			<type>jar</type> -->
+<!-- 			<scope>provided</scope> -->
+<!-- 		</dependency> -->
+		
+<!-- 		https://stackoverflow.com/questions/848947/how-to-make-maven-place-all-jars-common-to-wars-inside-the-same-ear-to-ear-root -->
+<!-- 		<dependency> -->
+<!-- 			<groupId>fr.legrain</groupId> -->
+<!-- 			<artifactId>fr.legrain.bdg.webapp</artifactId> -->
+<!-- 			<type>pom</type> -->
+<!-- 			<version>0.0.1-SNAPSHOT</version> -->
+<!-- 			<exclusions> -->
+<!--         		<exclusion> -->
+<!-- 	                <groupId>fr.legrain</groupId> -->
+<!-- 					<artifactId>fr.legrain.bdg.edition.osgi</artifactId> -->
+<!-- 	            </exclusion> -->
+<!--         	</exclusions> -->
+<!-- 		</dependency> -->
+		
+		<dependency>
+			<groupId>fr.legrain</groupId>
+			<artifactId>fr.legrain.bdg.welcome.webapp</artifactId>
+			<type>war</type>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		
+<!-- 		<dependency> -->
+<!-- 			<groupId>fr.legrain</groupId> -->
+<!-- 			<artifactId>fr.legrain.autorisations.webapp</artifactId> -->
+<!-- 			<type>war</type> -->
+<!-- 			<version>0.0.1-SNAPSHOT</version> -->
+<!-- 		</dependency> -->
+		
+<!-- 		<dependency> -->
+<!-- 			<groupId>fr.legrain</groupId> -->
+<!-- 			<artifactId>fr.legrain.moncompte.admin.webapp</artifactId> -->
+<!-- 			<type>war</type> -->
+<!-- 			<version>0.0.1-SNAPSHOT</version> -->
+<!-- 		</dependency> -->
+		
+<!-- 		<dependency> -->
+<!-- 			<groupId>fr.legrain</groupId> -->
+<!-- 			<artifactId>fr.legrain.moncompte.client.webapp</artifactId> -->
+<!-- 			<type>war</type> -->
+<!-- 			<version>0.0.1-SNAPSHOT</version> -->
+<!-- 		</dependency> -->
+		
+	</dependencies>
+
+
+	<build>
+		<finalName>${project.artifactId}</finalName>
+		
+		<pluginManagement>
+			<plugins>
+				<!-- <plugin> -->
+				<!-- <groupId>org.jboss.as.plugins</groupId> -->
+				<!-- <artifactId>jboss-as-maven-plugin</artifactId> -->
+				<!-- <version>7.4.Final</version> -->
+				<!-- </plugin> -->
+<!-- 				<plugin> -->
+<!-- 					<groupId>org.wildfly.plugins</groupId> -->
+<!-- 					<artifactId>wildfly-maven-plugin</artifactId> -->
+<!-- 					<version>1.0.2.Final</version> -->
+<!-- 				</plugin> -->
+				<!-- https://mvnrepository.com/artifact/org.wildfly.plugins/wildfly-maven-plugin -->
+				<plugin>
+				    <groupId>org.wildfly.plugins</groupId>
+				    <artifactId>wildfly-maven-plugin</artifactId>
+				    <version>2.0.1.Final</version>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-ear-plugin</artifactId>
+				<version>2.10.1</version>
+				<configuration>
+					<defaultLibBundleDir>/lib</defaultLibBundleDir>
+					<skinnyWars>true</skinnyWars>
+					<modules>
+						<ejbModule>
+							<groupId>fr.legrain</groupId>
+							<artifactId>fr.legrain.bdg.ejb</artifactId>
+							<bundleFileName>fr.legrain.bdg.ejb.jar</bundleFileName>
+						</ejbModule>
+						<webModule>
+							<bundleFileName>fr.legrain.bdg.webapp.war</bundleFileName>
+							<groupId>fr.legrain</groupId>
+							<artifactId>fr.legrain.bdg.webapp</artifactId>
+<!-- 							<contextRoot>solstyce</contextRoot> -->
+							<contextRoot>/</contextRoot>
+						</webModule>
+						<webModule >
+							<bundleFileName>fr.legrain.bdg.welcome.webapp.war</bundleFileName>
+							<groupId>fr.legrain</groupId>
+							<artifactId>fr.legrain.bdg.welcome.webapp</artifactId>
+							<contextRoot>/</contextRoot>
+						</webModule>
+<!-- 						<webModule> -->
+<!-- 							<groupId>fr.legrain</groupId> -->
+<!-- 							<artifactId>fr.legrain.autorisations.webapp</artifactId> -->
+<!-- 							<contextRoot>autorisations</contextRoot> -->
+<!-- 							<contextRoot>/</contextRoot> -->
+<!-- 						</webModule> -->
+<!-- 						<webModule> -->
+<!-- 							<groupId>fr.legrain</groupId> -->
+<!-- 							<artifactId>fr.legrain.moncompte.admin.webapp</artifactId> -->
+<!-- 							<contextRoot>moncompte-admin</contextRoot> -->
+<!-- 							<contextRoot>/</contextRoot> -->
+<!-- 						</webModule> -->
+
+<!-- 						<webModule> -->
+<!-- 							<groupId>fr.legrain</groupId> -->
+<!-- 							<artifactId>fr.legrain.moncompte.client.webapp</artifactId> -->
+<!-- 							<contextRoot>moncompte-client</contextRoot> -->
+<!-- 						</webModule> -->
+					</modules>
+				</configuration>
+			</plugin>
+
+			<!-- <plugin> <groupId>org.jboss.as.plugins</groupId> <artifactId>jboss-as-maven-plugin</artifactId> 
+				<version>7.4.Final</version> <!- -> <executions> <execution> <phase>install</phase> 
+				<goals> <goal>deploy</goal> </goals> </execution> </executions> <configuration> 
+				<jbossHome>${jboss.directory}</jbossHome> <serverName>dummyserver-standard</serverName> 
+				<hostName>localhost</hostName> <port>8080</port> <fileNames> <fileName>${basedir}/target/DummyDemo-ear-1.0-SNAPSHOT.ear</fileName> 
+				</fileNames> </configuration> <!- -> </plugin> -->
+		</plugins>
+	</build>
+</project>

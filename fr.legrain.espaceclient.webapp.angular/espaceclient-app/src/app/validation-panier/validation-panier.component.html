@@ -1,0 +1,504 @@
+<!--
+<a routerLink="/panier" class="button fancy-button">
+    <i class="material-icons"></i>Panier
+</a>
+-->
+
+<p-card>
+    <p-steps [model]="menuItems" [readonly]="true" [activeIndex]="activeIndex"></p-steps>
+</p-card>
+
+<div> <!--style="width: 90%;margin: auto;"-->
+
+    <div *ngIf="activeIndex===0">
+        <p-card>
+            <ng-template pTemplate="title">
+                <p>
+                    <img src="../assets/images/boutique/informations-personnalisees.svg" style="height: 38px; width: 38px; vertical-align: middle;"/>
+                    <span style="font-style: normal; font-size: xx-large; vertical-align: middle; margin-left: 10px;">Informations personnelles</span>
+                 </p>
+            </ng-template>
+            <ng-template pTemplate="subtitle">
+                <!--Adresses-->
+            </ng-template>
+            <ng-template pTemplate="content">
+                <div class="p-fluid p-formgrid p-grid">
+                    <div class="p-col-4">
+                    <p-panel header="Dénomination" *ngIf="!nouveauClient">
+                        <p *ngIf="tiers && tiers.codeTiers">Code client : {{tiers.codeTiers}}</p>
+                        <p>{{tiers?.codeTCivilite?tiers?.codeTCivilite:''}} {{tiers?.nomTiers?tiers?.nomTiers:''}} {{tiers?.prenomTiers?tiers?.prenomTiers:''}}</p>   
+                        <p> Raison sociale : {{tiers?.codeTEntite?tiers.codeTEntite:''}} {{tiers?.nomEntreprise?tiers.nomEntreprise:(tiers?.nomTiers?tiers?.nomTiers:'')}}</p>       
+
+                        <p *ngIf="tiers && tiers.numeroTelephone">Téléphone : {{tiers?.numeroTelephone}}</p> 
+                        <p *ngIf="tiers && tiers.adresseEmail">Email : {{tiers?.adresseEmail}}</p>
+                        <p *ngIf="tiers && tiers.adresseWeb">Web : {{tiers?.adresseWeb}}</p>    
+
+                        <p *ngIf="tiers && tiers.siretCompl">SIRET : {{tiers?.siretCompl}}</p>    
+                        <p *ngIf="tiers && tiers.tvaIComCompl">Num TVA : {{tiers?.tvaIComCompl}}</p> 
+                    </p-panel> 
+                    <p-panel header="Dénomination" *ngIf="nouveauClient" [formGroup]="infosClientForm">
+                        <p *ngIf="tiers && tiers.codeTiers">Code client : {{tiers.codeTiers}}</p>
+                        <!--
+                        <p>{{tiers?.codeTCivilite?tiers?.codeTCivilite:''}} {{tiers?.nomTiers?tiers?.nomTiers:''}} {{tiers?.prenomTiers?tiers?.prenomTiers:''}}</p>   
+                        <p> Raison sociale : {{tiers?.codeTEntite?tiers.codeTEntite:''}} {{tiers?.nomEntreprise?tiers.nomEntreprise:(tiers?.nomTiers?tiers?.nomTiers:'')}}</p>       
+                        -->
+                        <div class="p-inputgroup">
+                            <span class="p-inputgroup-addon">Nom</span>
+                            <input formControlName="nomTiers" type="text" pInputText [ngModel]="tiers?.nomTiers" (ngModelChange)="tiers.nomTiers = $event"/> 
+                        </div>
+                        <div class="p-inputgroup">
+                            <span class="p-inputgroup-addon">Prénom</span>
+                            <input formControlName="prenomTiers" type="text" pInputText [ngModel]="tiers?.prenomTiers" (ngModelChange)="tiers.prenomTiers = $event"/> 
+                        </div>
+                        <div class="p-inputgroup">
+                            <span class="p-inputgroup-addon">Raison sociale</span>
+                            <input formControlName="nomEntreprise" type="text" pInputText [ngModel]="tiers?.nomEntreprise" (ngModelChange)="tiers.nomEntreprise = $event"/> 
+                        </div>
+                        
+                        <br/>
+
+                        <div class="p-inputgroup">
+                            <span class="p-inputgroup-addon"><i class="pi pi-phone"></i></span>
+                            <input formControlName="numeroTelephone" type="text" pInputText [ngModel]="tiers?.numeroTelephone" (ngModelChange)="tiers.numeroTelephone = $event" placeholder="Téléphone"/> 
+                        </div>
+                        <div class="p-inputgroup">
+                            <span class="p-inputgroup-addon">@</span>
+                            <input formControlName="adresseEmail" type="text" pInputText [ngModel]="tiers?.adresseEmail" disabled="true"/> 
+                        </div>
+                        <!-- <p *ngIf="tiers && tiers.adresseEmail">Email : {{tiers?.adresseEmail}}</p> -->
+
+                        <div class="p-inputgroup">
+                            <span class="p-inputgroup-addon"><i class="pi pi-globe"></i></span>
+                            <input formControlName="adresseWeb" type="text" pInputText [ngModel]="tiers?.adresseWeb" (ngModelChange)="tiers.adresseWeb = $event" placeholder="Adresse web"/> 
+                        </div>    
+
+                        <br/>
+
+                        <div class="p-inputgroup">
+                            <span class="p-inputgroup-addon">SIRET</span>
+                            <input formControlName="siretCompl" type="text" pInputText [ngModel]="tiers?.siretCompl" (ngModelChange)="tiers.siretCompl = $event"/> 
+                        </div>
+
+                        <div class="p-inputgroup">
+                            <span class="p-inputgroup-addon">Num TVA</span>
+                            <input formControlName="tvaIComCompl" type="text" pInputText [ngModel]="tiers?.tvaIComCompl" (ngModelChange)="tiers.tvaIComCompl = $event"/>                       
+                        </div>
+
+                    </p-panel> 
+                </div>
+                <div class="p-col-4">
+                    <p-panel header="Adresse de facturation" [formGroup]="adresseFactForm">
+                        <input formControlName="adresse1" required type="text" pInputText [ngModel]="panier?.infos?.adresse1" (ngModelChange)="panier.infos.adresse1 = $event" placeholder="Adresse"/>
+                        <input formControlName="adresse2" type="text" pInputText [ngModel]="panier?.infos?.adresse2" (ngModelChange)="panier.infos.adresse2 = $event"/>
+                        <input formControlName="adresse3" type="text" pInputText [ngModel]="panier?.infos?.adresse3" (ngModelChange)="panier.infos.adresse3 = $event"/>
+                        <input formControlName="codepostal" required type="text" pInputText [ngModel]="panier?.infos?.codepostal" (ngModelChange)="panier.infos.codepostal = $event" placeholder="Code Postal"/>
+                        <input formControlName="ville" required type="text" pInputText [ngModel]="panier?.infos?.ville" (ngModelChange)="panier.infos.ville = $event" placeholder="Ville"/>
+                        <input formControlName="pays" type="text" pInputText [ngModel]="panier?.infos?.pays" (ngModelChange)="panier.infos.pays = $event" placeholder="Pays"/>
+
+                        <p-button label="Réinitialiser" (onClick)="reinitialiserAdresses()" icon="pi pi-refresh"></p-button>
+                    </p-panel>
+                     
+                </div>
+                <div class="p-col-4">
+                    <p-panel header="Adresse de livraison" [formGroup]="adresseLivForm">
+                        <input formControlName="adresse1Liv" required type="text" pInputText [ngModel]="panier?.infos?.adresse1Liv" (ngModelChange)="panier.infos.adresse1Liv = $event" placeholder="Adresse"/>
+                        <input formControlName="adresse2Liv" type="text" pInputText [ngModel]="panier?.infos?.adresse2Liv" (ngModelChange)="panier.infos.adresse2Liv = $event"/>
+                        <input formControlName="adresse3Liv" type="text" pInputText [ngModel]="panier?.infos?.adresse3Liv" (ngModelChange)="panier.infos.adresse3Liv = $event"/>
+                        <input formControlName="codepostalLiv" required type="text" pInputText [ngModel]="panier?.infos?.codepostalLiv" (ngModelChange)="panier.infos.codepostalLiv = $event" placeholder="Code Postal"/>
+                        <input formControlName="villeLiv" required type="text" pInputText [ngModel]="panier?.infos?.villeLiv" (ngModelChange)="panier.infos.villeLiv = $event" placeholder="Ville"/>
+                        <input formControlName="paysLiv" type="text" pInputText [ngModel]="panier?.infos?.paysLiv" (ngModelChange)="panier.infos.paysLiv = $event" placeholder="Pays"/>
+
+                    </p-panel>
+                    
+                </div>
+                </div>
+                <!--
+                <div class="p-fluid p-formgrid p-grid">
+                    <div class="p-col-6">
+                        <p-panel header="Communication">
+                            <p *ngIf="tiers && tiers.numeroTelephone">Téléphone : {{tiers?.numeroTelephone}}</p> 
+                            <p *ngIf="tiers && tiers.adresseEmail">Email : {{tiers?.adresseEmail}}</p>
+                            <p *ngIf="tiers && tiers.adresseWeb">Web : {{tiers?.adresseWeb}}</p>    
+                        </p-panel> 
+                    </div>
+                    <div class="p-col-6">
+                        <p-panel header="Divers">
+                            <p *ngIf="tiers && tiers.siretCompl">SIRET : {{tiers?.siretCompl}}</p>    
+                            <p *ngIf="tiers && tiers.tvaIComCompl">Num TVA : {{tiers?.tvaIComCompl}}</p>     
+                        </p-panel>
+                    </div>
+                </div>
+                -->
+            </ng-template>
+            <ng-template pTemplate="footer">
+                <div class="p-grid p-nogutter p-justify-between">
+                    <p-button label="Panier" (onClick)="retourPanier()" icon="pi pi-angle-left"></p-button>
+                    <p-button label="Suivant" (onClick)="nextPage()" icon="pi pi-angle-right" iconPos="right"
+                     [disabled]="!adresseFactForm.valid || !adresseLivForm.valid || (nouveauClient && !infosClientForm.valid)"></p-button>
+                </div>
+            </ng-template>
+        </p-card>
+    </div>
+
+    <div *ngIf="activeIndex===1">
+        <p-card>
+            <ng-template pTemplate="title">
+                <p>
+                    <img src="../assets/images/boutique/livraison.svg" style="height: 38px; width: 38px; vertical-align: middle;"/>
+                    <span style="font-style: normal; font-size: xx-large; vertical-align: middle; margin-left: 10px;">Livraison</span>
+                 </p>
+            </ng-template>
+            <ng-template pTemplate="subtitle">
+                Choix du mode de livraison
+            </ng-template>
+            <ng-template pTemplate="content">
+                <div class="p-fluid p-grid">
+                    <!--<div style="display: flex; align-items: center;"></div>-->
+                    <div class="p-col-4" style="display: flex; flex-direction: column;" *ngIf="activePointRetrait">
+                        <div style="display: flex; align-items: center; flex-direction: column;">
+                            <img src="../assets/images/boutique/click-and-collect.svg" style="height: 150px; width: 150px; vertical-align: middle;" *ngIf="selectedTypeExpedition=='1'"/>
+                            <img src="../assets/images/boutique/click-and-collect-clair.svg" style="height: 150px; width: 150px; vertical-align: middle;" *ngIf="selectedTypeExpedition=='2'"/>
+                            <p-radioButton name="groupname" value="1" label="Retrait en magasin (Click and Collect)" [(ngModel)]="selectedTypeExpedition" style="display: flex;flex-direction: column;"></p-radioButton>
+                        </div>
+                    </div>
+                    
+                    <div class="p-col-4" style="display: flex; flex-direction: column;" *ngIf="activeLivraison && fraisDePortFixe >=0">
+                        <div style="display: flex; align-items: center; flex-direction: column;">
+                            <img src="../assets/images/boutique/expedition-a-domicile.svg" style="height: 150px; width: 150px; vertical-align: middle;" *ngIf="selectedTypeExpedition=='2'"/>
+                            <img src="../assets/images/boutique/expedition-a-domicile-clair.svg" style="height: 150px; width: 150px; vertical-align: middle;" *ngIf="selectedTypeExpedition=='1'"/>
+                            <p-radioButton name="groupname" value="2" label="Expédition à domicile" [(ngModel)]="selectedTypeExpedition" *ngIf="activeLivraison && fraisDePortFixe >=0" style="display: flex;flex-direction: column;"></p-radioButton>
+                        </div>
+                    </div>
+                    <div class="p-col-4"></div>
+                    
+
+                    <div class="p-col-4" *ngIf="selectedTypeExpedition=='1' && activePointRetrait">
+                        <div class="p-fluid p-grid">
+                            <div [ngClass]="{'p-col-6' : horairesOuverturePointRetrait, 'p-col-12' : !horairesOuverturePointRetrait}">
+                                <p-panel header="Adresse de retrait">
+                                    {{adresse1PointRetrait}}<br/>
+                                    {{adresse2PointRetrait}}<br/>
+                                    {{adresse3PointRetrait}}<br/>
+                                    {{codePostalPointRetrait}}<br/>
+                                    {{villePointRetrait}}<br/>
+                                    {{paysPointRetrait}}
+                                </p-panel>
+                                <p style="color: #2196F3;"> Aucun frais de port</p>
+                            </div>
+                            <div class="p-col-6" *ngIf="horairesOuverturePointRetrait">
+                                <p-panel header="Horaires de retrait" >
+                                    <div [innerHTML]="horairesOuverturePointRetrait"></div>
+                                </p-panel>
+                            </div>
+                            <div class="p-col-12" *ngIf="activePlanningRetrait">
+                                <p-panel header="Date et heure de retrait souhaitée">
+                                    <p-calendar [(ngModel)]="dateRetrait" [showTime]="true" placeholder="Date et heure de retrait"
+                                    dateFormat="dd/mm/yy" 
+                                    [minDate]="minDateRetrait" [maxDate]="maxDateRetrait" [disabledDays]="[0,6]" [stepMinute]="15"
+                                    (onShow)="initDateRetrait()"
+                                    ></p-calendar>
+                                    La date et l'heure de retrait ne sera considérée comme valide que lors des heures d'ouverture du point retrait
+                                    et n'est indiqué qu'à titre indicatif pour l'instant. Elle n'engage en rien le vendeur.
+                                </p-panel>
+                                <!--[locale]="fr"-->
+                            </div>
+                            <!--
+                            <div class="p-col-12">
+                                <p style="color: #2196F3;"> Aucun frais de port</p>
+                            </div>
+                            -->
+                        </div>
+                    </div>
+                    <div class="p-col-4" *ngIf="selectedTypeExpedition=='2'"></div>
+                    <div class="p-col-4" *ngIf="selectedTypeExpedition=='2'">
+                        <p-panel header="Adresse de livraison">
+                            <!--<p *ngIf="tiers && tiers.siretCompl">SIRET : {{tiers?.siretCompl}}</p>    -->
+                            {{panier?.infos?.adresse1Liv}}<br/>
+                            {{panier?.infos?.adresse2Liv}}<br/>
+                            {{panier?.infos?.adresse3Liv}}<br/>
+                            {{panier?.infos?.codepostalLiv}}<br/>
+                            {{panier?.infos?.villeLiv}}<br/>
+                            {{panier?.infos?.paysLiv}}
+                        </p-panel>     
+                        <p style="color: #2196F3;">
+                            <span *ngIf="fraisDePortFixe"> Frais de port fixe : {{fraisDePortFixe}} €</span>
+                            <br/>
+                            <span *ngIf="limiteFraisDePortOffert && fraisDePortFixe >0">Frais de port offert à partir de : {{limiteFraisDePortOffert}} € d'achat</span>
+                        </p>
+                    </div>
+                
+                </div>
+            </ng-template>
+            <ng-template pTemplate="footer">
+                <div class="p-grid p-nogutter p-justify-between">
+                    <p-button label="Précédent" (onClick)="prevPage()" icon="pi pi-angle-left"></p-button>
+                    <p-button label="Suivant" (onClick)="nextPage()" icon="pi pi-angle-right" iconPos="right"></p-button>
+                </div>
+            </ng-template>
+        </p-card>
+    </div>
+
+    <div *ngIf="activeIndex===2">
+        <p-card>
+            <ng-template pTemplate="title">
+                <p>
+                    <img src="../assets/images/boutique/confirmation.svg" style="height: 38px; width: 38px; vertical-align: middle;"/>
+                    <span style="font-style: normal; font-size: xx-large; vertical-align: middle; margin-left: 10px;">Confirmation</span>
+                 </p>
+            </ng-template>
+            <ng-template pTemplate="subtitle">
+                Vérification du panier
+            </ng-template>
+            <ng-template pTemplate="content">
+
+                <div class="p-fluid p-formgrid p-grid">
+                    <div class="p-col-4">
+                        <p-panel header="Dénomination">
+                            <p *ngIf="tiers && tiers.codeTiers">Code client : {{tiers.codeTiers}}</p>
+                            <p>{{tiers?.codeTCivilite?tiers?.codeTCivilite:''}} {{tiers?.nomTiers?tiers?.nomTiers:''}} {{tiers?.prenomTiers?tiers?.prenomTiers:''}}</p>   
+                            <p> Raison sociale : {{tiers?.codeTEntite?tiers.codeTEntite:''}} {{tiers?.nomEntreprise?tiers.nomEntreprise:(tiers?.nomTiers?tiers?.nomTiers:'')}}</p>       
+
+                            <p *ngIf="tiers && tiers.numeroTelephone">Téléphone : {{tiers?.numeroTelephone}}</p> 
+                            <p *ngIf="tiers && tiers.adresseEmail">Email : {{tiers?.adresseEmail}}</p>
+
+                            <p *ngIf="tiers && tiers.siretCompl">SIRET : {{tiers?.siretCompl}}</p>    
+                            <p *ngIf="tiers && tiers.tvaIComCompl">Num TVA : {{tiers?.tvaIComCompl}}</p> 
+                        </p-panel> 
+                    </div>
+                    <div class="p-col-4">
+                        <p-panel header="Adresse de facturation">
+                            {{panier?.infos?.adresse1}}<br/>
+                            {{panier?.infos?.adresse2}}<br/>
+                            {{panier?.infos?.adresse3}}<br/>
+                            {{panier?.infos?.codepostal}}<br/>
+                            {{panier?.infos?.ville}}<br/>
+                            {{panier?.infos?.pays}}
+                        </p-panel>
+                    </div>
+                    <div class="p-col-4">
+                        <p-panel header="Retrait en magasin" *ngIf="selectedTypeExpedition=='1'">
+                            <div style="display: flex; align-items: center;">
+                                <img src="../assets/images/boutique/click-and-collect.svg" style="height: 80px; width: 80px; vertical-align: middle; margin-right: 14px;"/>
+                                <div>
+                                    {{adresse1PointRetrait}}<br/>
+                                    {{adresse2PointRetrait}}<br/>
+                                    {{adresse3PointRetrait}}<br/>
+                                    {{codePostalPointRetrait}}<br/>
+                                    {{villePointRetrait}}<br/>
+                                    {{paysPointRetrait}}
+                                </div>
+                            </div>
+                        </p-panel>
+                        <p-panel header="Adresse de livraison" *ngIf="selectedTypeExpedition=='2'">
+                            <div style="display: flex; align-items: center;">
+                                <img src="../assets/images/boutique/expedition-a-domicile.svg" style="height: 80px; width: 80px; vertical-align: middle; margin-right: 14px;"/>
+                                <div>
+                                    {{panier?.infos?.adresse1Liv}}<br/>
+                                    {{panier?.infos?.adresse2Liv}}<br/>
+                                    {{panier?.infos?.adresse3Liv}}<br/>
+                                    {{panier?.infos?.codepostalLiv}}<br/>
+                                    {{panier?.infos?.villeLiv}}<br/>
+                                    {{panier?.infos?.paysLiv}}
+                                </div>
+                            </div>
+                        </p-panel>
+                        
+                    </div>
+                </div>
+
+                <div style="margin-top: 30px;">
+                <table style="width: 80%; margin: auto; text-align: center;">
+                    <tr style="background: #2196F3; color: white; height: 40px; font-size: large;">
+                       <td>Montant HT </td>
+                       <td>Montant TVA </td>
+                       <!--
+                       <td>Montant TTC </td>
+                       <td>Frais de port</td>
+                       -->
+                       <td>Montant commande TTC</td>
+                   </tr>  
+                   <tr style="height: 40px; font-size: large">
+                       <td>{{panier.netHtCalc}} €</td>
+                       <td>{{panier.netTvaCalc}} € </td>
+                       <!--
+                       <td >{{panier.netTtcCalc}} € </td>
+                       <td>Frais de port</td>
+                       -->
+                       <td style="background: #D3EAFC; font-weight: bold;">{{panier.netTtcCalc}} € </td>
+                   </tr>    
+               </table>
+            </div>
+
+                <p style="margin-top: 30px;">
+                    <img src="../assets/images/boutique/panier.svg" style="height: 38px; width: 38px; vertical-align: middle;"/>
+                    <span style="font-style: normal; color: #2196F3; font-size: large; vertical-align: middle; margin-left: 10px;">Détail du panier</span>
+                </p>
+
+                <div class="p-fluid p-formgrid p-grid">
+                
+                    <p-table [value]="panier.lignes">
+                        <ng-template pTemplate="header">
+                            <tr>
+                                <th style="text-align: center;">Article</th>
+                                <th style="text-align: center;">Prix unitaire</th>
+                                <th style="text-align: center;">Quantité</th>
+                                <th style="text-align: center;">Montant HT</th>
+                                <th style="text-align: center;">Montant TTC</th>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-item>
+                            <tr>
+                                <td>
+                                    <div style="display: flex; align-items: center;">
+                                        <app-article-image-defaut [idArticle]='item.idArticle' hauteur="31px" largeur="44px"></app-article-image-defaut>
+                                        {{item.libLDocument}} 
+                                        <!-- <span *ngIf="item.prixVariable">*</span> -->
+                                    </div>
+                                </td>
+                                <td style="text-align: center;"><div *ngIf="item.prixULDocument">{{item.prixULDocument}} €</div></td>
+                                <td style="text-align: center;"><div *ngIf="item.qteLDocument">{{item.qteLDocument}}</div></td>
+                                <td style="text-align: center;"><div *ngIf="item.mtHtLDocument">{{item.mtHtLDocument}} €</div></td>
+                                <td style="text-align: center;"><div *ngIf="item.mtTtcLDocument">{{item.mtTtcLDocument}} €</div></td>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="summary">
+                            <div style="text-align: center; display: flex;">
+                                <table style="width: 25%; margin-left: auto;">
+                                    <tr>
+                                        <td>Montant HT </td>
+                                        <td>Montant TVA </td>
+                                        <td>Montant TTC </td>
+                                        
+                                    </tr>  
+                                    <tr>
+                                        <td>{{panier.netHtCalc}} €</td>
+                                        <td>{{panier.netTvaCalc}} € </td>
+                                        <td>{{panier.netTtcCalc}} € </td>
+                                    </tr>  
+                                    <tr>
+                                        
+                                    </tr>
+                                    <!--
+                                    <tr>
+                                        <td>Frais de port </td><td>0 €</td>
+                                    </tr> 
+                                    -->  
+                                    <!--
+                                    <tr>
+                                        <td>Montant commande TTC </td><td>{{panier.netTtcCalc}} € </td>
+                                    </tr> 
+                                    -->  
+                                </table>
+                            </div>
+                        </ng-template>
+                    </p-table>
+                </div>
+            </ng-template>
+            <ng-template pTemplate="footer">
+                <div class="p-grid p-nogutter p-justify-between">
+                    <p-button label="Précédent" (onClick)="prevPage()" icon="pi pi-angle-left"></p-button>
+                    <p-button label="Suivant" (onClick)="nextPage()" icon="pi pi-angle-right" iconPos="right" [disabled]="loadingResume"></p-button>
+                </div>
+            </ng-template>
+        </p-card>
+    </div>
+
+    <div *ngIf="activeIndex===3">
+        <p-card>
+            <ng-template pTemplate="title">
+                <p>
+                    <img src="../assets/images/boutique/paiement.svg" style="height: 38px; width: 38px; vertical-align: middle;"/>
+                    <span style="font-style: normal; font-size: xx-large; vertical-align: middle; margin-left: 10px;">Paiement</span>
+                 </p>
+            </ng-template>
+            <ng-template pTemplate="subtitle">
+                Choix du mode de paiement et validation de la commande
+            </ng-template>
+            <ng-template pTemplate="content">
+                <div class="p-fluid p-grid">
+
+                    <div class="p-col-3" style="display: flex; flex-direction: column;" *ngIf="activePaiementPanierCB && paiementPossible">
+                        <div style="display: flex; align-items: center; flex-direction: column;">
+                            <img src="../assets/images/boutique/paiement-en-ligne.svg" style="height: 150px; width: 150px; vertical-align: middle; margin-right: 5px;" *ngIf="selectedTypePaiement=='1'"/>
+                            <img src="../assets/images/boutique/paiement-en-ligne-clair.svg" style="height: 150px; width: 150px; vertical-align: middle; margin-right: 5px;" *ngIf="selectedTypePaiement!='1'"/>
+                            <p-radioButton name="groupname" value="1" label="Paiement en ligne (Carte bancaire)" [(ngModel)]="selectedTypePaiement" *ngIf="activePaiementPanierCB && paiementPossible" style="display: flex;flex-direction: column;"></p-radioButton>
+                        </div>
+                    </div>
+
+                    <div class="p-col-3" style="display: flex; flex-direction: column;" *ngIf="activePaiementPanierSurPlace && selectedTypeExpedition=='1'">
+                        <div style="display: flex; align-items: center; flex-direction: column;">
+                            <img src="../assets/images/boutique/paiement-retrait-en-magasin.svg" style="height: 150px; width: 150px; vertical-align: middle; margin-right: 5px;" *ngIf="selectedTypePaiement=='2'"/>
+                            <img src="../assets/images/boutique/paiement-retrait-en-magasin-clair.svg" style="height: 150px; width: 150px; vertical-align: middle; margin-right: 5px;" *ngIf="selectedTypePaiement!='2'"/>
+                            <p-radioButton name="groupname" value="2" label="Paiement lors du retrait en magasin" [(ngModel)]="selectedTypePaiement" *ngIf="activePaiementPanierSurPlace && selectedTypeExpedition=='1'" style="display: flex;flex-direction: column;"></p-radioButton>
+                        </div>
+                    </div>
+                    <div class="p-col-3" style="display: flex; flex-direction: column;" *ngIf="activePaiementPanierCheque">
+                        <div style="display: flex; align-items: center; flex-direction: column;">
+                            <img src="../assets/images/boutique/paiement-par-cheque.svg" style="height: 150px; width: 150px; vertical-align: middle; margin-right: 5px;" *ngIf="selectedTypePaiement=='3'"/>
+                            <img src="../assets/images/boutique/paiement-par-cheque-clair.svg" style="height: 150px; width: 150px; vertical-align: middle; margin-right: 5px;" *ngIf="selectedTypePaiement!='3'"/>
+                            <p-radioButton name="groupname" value="3" label="Paiement par chèque" [(ngModel)]="selectedTypePaiement"  style="display: flex;flex-direction: column;"></p-radioButton>
+                        </div>
+                    </div>
+                    <div class="p-col-3" style="display: flex; flex-direction: column;" *ngIf="activePaiementPanierVirement">
+                        <div style="display: flex; align-items: center; flex-direction: column;">
+                            <img src="../assets/images/boutique/Paiement-par-virement.svg" style="height: 150px; width: 150px; vertical-align: middle; margin-right: 5px;" *ngIf="selectedTypePaiement=='4'"/>
+                            <img src="../assets/images/boutique/Paiement-par-virement-clair.svg" style="height: 150px; width: 150px; vertical-align: middle; margin-right: 5px;" *ngIf="selectedTypePaiement!='4'"/>
+                            <p-radioButton name="groupname" value="4" label="Paiement par virement" [(ngModel)]="selectedTypePaiement" style="display: flex;flex-direction: column;"></p-radioButton>
+                        </div>
+                    </div>
+
+                    <div class="p-col-12" style="display: flex; align-items: center;">
+                        <p-checkbox [(ngModel)]="cgv" binary="true" inputId="binary"></p-checkbox>
+                        <label for="binary">
+                            J'ai lu et j'accepte les
+                            <p-button label="condition générale de vente" style="display: inline-flex; padding: 0px;" (onClick)="handleClickCgv($event)" styleClass="p-button-link"></p-button>
+                        </label>
+                    </div>
+                   
+                    <div class="p-col-12" *ngIf="selectedTypePaiement=='1'" style="width: 50%; margin-top: 30px;">
+                        Paiement par carte bancaire<br/>
+                        <p-button label="Payer {{panier.netTtcCalc}} €" icon="pi pi-card" [disabled]="!cgv" (onClick)="handleClickPaiementEnLigne($event, panier)" *ngIf="paiementPossible"></p-button>
+                    </div>
+                    <div class="p-col-12" *ngIf="selectedTypePaiement=='2'" style="width: 50%; margin-top: 30px;">
+                        Paiement sur place<br/>
+                        <p-button label="Confirmer la commande d'un montant total de {{panier.netTtcCalc}} €" [disabled]="!cgv" icon="pi pi-check" (onClick)="handleClickConfirmationCommandeManuel($event, panier)"></p-button>
+                    </div>
+                    <div class="p-col-12" *ngIf="selectedTypePaiement=='3'" style="width: 50%; margin-top: 30px;">
+                        Paiement par chèque<br/>
+                        <div>
+                            J'envoie un chèque à l'ordre de <b>{{appSettings?.PARAMETRES?.raisonSociale}}</b>, d'un montant de <b>{{panier.netTtcCalc}} €</b> à l'adresse suivante :
+                            <p-panel header="Adresse de paiement">
+                                {{appSettings?.PARAMETRES?.raisonSociale}}<br/>
+                                {{appSettings?.PARAMETRES?.adresse1}}<br/>
+                                {{appSettings?.PARAMETRES?.adresse2}}<br/>
+                                {{appSettings?.PARAMETRES?.adresse3}}<br/>
+                                {{appSettings?.PARAMETRES?.codePostal}}<br/>
+                                {{appSettings?.PARAMETRES?.ville}}<br/>
+                                {{appSettings?.PARAMETRES?.pays}}<br/>
+                            </p-panel>
+                        </div>
+                        <p-button label="Confirmer la commande d'un montant total de {{panier.netTtcCalc}} €" [disabled]="!cgv" icon="pi pi-check" (onClick)="handleClickConfirmationCommandeManuel($event, panier)"></p-button>
+                    </div>
+                    <div class="p-col-12" *ngIf="selectedTypePaiement=='4'" style="width: 50%; margin-top: 30px;">
+                        Paiement par virement<br/>
+                        <div>
+                            J'effectue un virement bancaire d'un montant de <b>{{panier.netTtcCalc}}</b> € sur compte suivant :
+                            <p-panel header="Compte bancaire de : {{appSettings?.PARAMETRES?.raisonSociale}}">
+                                IBAN : {{ibanPaiementVirement}}<br/>
+                                SWIFT / BIC : {{swiftPaiementVirement}}<br/>
+                            </p-panel>
+                        </div>
+                        <p-button label="Confirmer la commande d'un montant total de {{panier.netTtcCalc}} €" [disabled]="!cgv" icon="pi pi-check" (onClick)="handleClickConfirmationCommandeManuel($event, panier)"></p-button>
+                    </div>
+                </div>
+            </ng-template>
+            <ng-template pTemplate="footer">
+                <div class="p-grid p-nogutter p-justify-between">
+                    <p-button label="Précédent" (onClick)="prevPage()" icon="pi pi-angle-left"></p-button>
+                    <!--<p-button label="Suivant" (onClick)="nextPage()" icon="pi pi-angle-right" iconPos="right"></p-button>-->
+                </div>
+            </ng-template>
+        </p-card>
+    </div>
+
+</div>

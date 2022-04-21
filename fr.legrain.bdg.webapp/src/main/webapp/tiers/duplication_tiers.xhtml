@@ -1,0 +1,81 @@
+ <ui:composition xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core" 
+	xmlns:ui="http://java.sun.com/jsf/facelets" 
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/template_dialog_lgr.xhtml">
+	
+		<p:importConstants type="fr.legrain.bdg.webapp.generation.duplicationTiersController" var="ConstController" />
+		
+	<ui:define name="head">
+		<title> <h:outputText
+				value="#{duplicationTiersController.titreEcran}" />
+		</title>
+	
+		<style type="text/css">
+			.ui-widget {font-size: 90%;}
+		</style>
+	</ui:define>
+
+	<ui:define name="content">
+		<h:form id="idDialogDuplicationTiers">
+			<p:panel id="idDuplicationTiersPanel" visible="true" widgetVar="widgetVarDuplicationTiersPanel">
+	
+					<div class="ui-g">
+						<div class="ui-g-12">
+							<p:fieldset legend="Duplication du tiers : ">
+								<p:panelGrid columns="3">
+							<p:outputLabel value="#{duplicationTiersController.tiers.codeTiers}" />
+							<p:outputLabel value="#{duplicationTiersController.tiers.nomTiers}" />
+							</p:panelGrid>
+							</p:fieldset>
+						</div>
+					</div>
+
+				
+					<div class="ui-g">
+						<div class="ui-g-12">
+							<p:fieldset legend="Paramètre de la duplication">
+							<p:panelGrid columns="2">
+							<p:outputLabel value="Reprendre les adresses"/>
+							<p:selectBooleanCheckbox  value="#{duplicationTiersController.param.repriseAdresse}"  />
+							<p:outputLabel value="Reprendre les commentaires"/>
+							<p:selectBooleanCheckbox  value="#{duplicationTiersController.param.repriseCommentaire}"/>
+							<p:outputLabel value="Reprendre les informations juridiques"/>
+							<p:selectBooleanCheckbox  value="#{duplicationTiersController.param.repriseInfosJuridiques}" />
+							<p:outputLabel value="Reprendre les comptes bancaires" />
+							<p:selectBooleanCheckbox value="#{duplicationTiersController.param.repriseComptesBancaires}"  />								
+							<p:outputLabel  value="Reprendre les familles"/>
+							<p:selectBooleanCheckbox value="#{duplicationTiersController.param.repriseFamilles}"  />			
+							<p:outputLabel  value="Reprendre les contacts"/>
+							<p:selectBooleanCheckbox value="#{duplicationTiersController.param.repriseContacts}"  />					
+							<p:outputLabel  value="Reprendre les conditions de paiement"/>
+							<p:selectBooleanCheckbox value="#{duplicationTiersController.param.repriseConditionPaiement}"  />			
+							<p:outputLabel  value="Reprendre les moyens de paiements"/>
+							<p:selectBooleanCheckbox value="#{duplicationTiersController.param.repriseTypePaiement}"  />			
+							<p:outputLabel  value="Reprendre les emails"/>
+							<p:selectBooleanCheckbox value="#{duplicationTiersController.param.repriseEmails}"  />			
+							<p:outputLabel  value="Reprendre les sites internets"/>
+							<p:selectBooleanCheckbox value="#{duplicationTiersController.param.repriseSitesWeb}"  />			
+							<p:outputLabel  value="Reprendre les téléphones"/>
+							<p:selectBooleanCheckbox value="#{duplicationTiersController.param.repriseTelephones}"  />			
+							<p:outputLabel  value="Reprendre les tarifs"/>
+							<p:selectBooleanCheckbox value="#{duplicationTiersController.param.repriseTarifs}"  />			
+							</p:panelGrid>
+							<p:panelGrid columns="2">
+								<p:commandButton value="Valider" actionListener="#{duplicationTiersController.actImprimer}"/>
+								<p:commandButton value="Fermer" actionListener="#{duplicationTiersController.actFermer}" process="@this" />							
+							</p:panelGrid>
+							</p:fieldset>
+						</div>
+					
+					</div>
+			</p:panel>
+					
+		</h:form>
+	</ui:define>
+
+	
+
+
+</ui:composition>

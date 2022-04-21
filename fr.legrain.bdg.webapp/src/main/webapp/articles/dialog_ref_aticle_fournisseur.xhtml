@@ -1,0 +1,83 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core" 
+	xmlns:ui="http://java.sun.com/jsf/facelets" 
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/template_dialog_lgr.xhtml">
+	
+	<ui:define name="head">
+		<title>Nouvelle référence</title>
+        <style type="text/css">
+            .ui-widget {
+                font-size: 90%;
+            }
+        </style>
+	</ui:define>
+
+	<ui:define name="content">
+		<h:form id="idDialogRefArticleFournisseurForm">
+			<p:panelGrid columns="2" cellpadding="4" style="margin:0 auto;">
+				<f:validateBean disabled="true">
+				
+					<p:outputLabel value="Code fournisseur" />
+					<p:outputLabel value="#{refArticleFournisseurController.selectedTaRefArticleFournisseurDTO.codeFournisseur}" />
+				
+					<p:outputLabel value="Code article" />
+					<p:autoComplete value="#{refArticleFournisseurController.taArticleDTO}"
+						completeMethod="#{refArticleFournisseurController.articleAutoCompleteDTOLight}"
+						id="idarticle" converter="entityConverter"
+						var="art" itemLabel="#{art.codeArticle}" itemValue="#{art}"
+						forceSelection="true" dropdown="true" 
+						 placeholder="Article" 
+									maxResults="#{refArticleFournisseurController.taPreferencesService.nbMaxChargeListeArticle()}"
+									moreText="Il y a #{component.maxResults} affichés sur #{component.suggestions.size()} au total, Veuillez affiner votre recherche ou cliquer ici	pour en afficher plus ..."
+						style="width:100%">
+						
+						<p:column>
+							<h:outputText value="#{art.codeArticle}" />
+						</p:column>
+						
+						<p:column>
+							<h:outputText value="#{art.libellecArticle}" />
+						</p:column>
+									<p:column >
+										<h:outputText value="#{art.commentaireArticle}" rendered="#{refArticleFournisseurController.rechercheAvecCommentaire(false)}"/>
+									</p:column>
+	
+						<f:attribute name="nomChamp" value="#{const.C_CODE_ARTICLE}" />
+						<p:ajax event="itemSelect" listener="#{refArticleFournisseurController.autcompleteSelection}" update="@parent"/>
+						<p:ajax event="moreText" listener="#{refArticleFournisseurController.onMoreTextArticle}" />
+					</p:autoComplete>
+
+					<p:outputLabel value="Code article fournisseur" />
+					<p:inputText value="#{refArticleFournisseurController.selectedTaRefArticleFournisseurDTO.codeArticleFournisseur}" validator="#{refArticleFournisseurController.validateCompteBanque}"
+						disabled="#{refArticleFournisseurController.editable()}">
+						<f:attribute name="nomChamp" value="#{const.C_CODE_ARTICLE}" />
+						<p:ajax event="blur" update="@this,@widgetVar(wvMenuRefArticleFournisseur#{variableNomWvIDUnique})" />
+					</p:inputText>
+						<p:outputLabel value="Code barre fournisseur" />
+						<p:inputText value="#{refArticleFournisseurController.selectedTaRefArticleFournisseurDTO.codeBarreFournisseur}" validator="#{refArticleFournisseurController.validateCompteBanque}"
+							disabled="#{refArticleFournisseurController.editable()}">
+							<f:attribute name="nomChamp" value="#{const.C_CODE_BARRE_ARTICLE}" />
+							<p:ajax event="blur" update="@this,@widgetVar(wvMenuRefArticleFournisseur#{variableNomWvIDUnique})" />
+						</p:inputText>									
+						<p:outputLabel value="Descriptif" />
+						<p:inputTextarea value="#{refArticleFournisseurController.selectedTaRefArticleFournisseurDTO.descriptif}" validator="#{refArticleFournisseurController.validateCompteBanque}"
+							disabled="#{refArticleFournisseurController.editable()}" styleClass="large-input-100">
+							<f:attribute name="nomChamp" value="#{const.C_DESCRIPTION}" />
+							<p:ajax event="blur" update="@this,@widgetVar(wvMenuRefArticleFournisseur#{variableNomWvIDUnique})" />
+						</p:inputTextarea>	
+
+
+				</f:validateBean>
+
+				<f:facet name="footer">
+					<p:commandButton value="Enregistrer" styleClass="icon-save icon" actionListener="#{refArticleFournisseurController.actEnregistrer}"
+						update="@this"
+						oncomplete="handleSubmitRequest(xhr, status, args, 'controleDlg','newControleForm'); " />
+				</f:facet>
+			</p:panelGrid>
+		</h:form>
+	</ui:define>
+     
+</ui:composition>

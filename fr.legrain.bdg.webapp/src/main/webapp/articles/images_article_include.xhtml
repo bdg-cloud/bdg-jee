@@ -1,0 +1,141 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
+xmlns:f="http://java.sun.com/jsf/core" 
+xmlns:h="http://java.sun.com/jsf/html"
+xmlns:ui="http://java.sun.com/jsf/facelets" 
+xmlns:o="http://omnifaces.org/ui" 
+xmlns:p="http://primefaces.org/ui">
+
+<p:panel id="imageArticleFormPrincipal" widgetVar="imageArticleForm#{variableNomWvIDUnique}">
+		
+<!-- 		<p:commandLink update="@widgetVar(wvDataGridImageArticle)" actionListener="#{imageArticleController.regenereTout}"> -->
+<!-- 		            	<h:outputText styleClass="ui-icon pi pi-step-forward" value="Regénére miniature"/> -->
+<!-- 		            </p:commandLink> -->
+		<p:menubar styleClass="menu-onglet">
+			<p:menuitem title="Regénére toutes les miniatures" styleClass="icon-refresh icon" 
+				actionListener="#{imageArticleController.regenereTout}" process="@this" update="@widgetVar(wvDataGridImageArticle)" />
+		</p:menubar>
+		            
+		 <p:dataGrid var="img" value="#{imageArticleController.values}" columns="3" layout="grid" widgetVar="wvDataGridImageArticle"
+	        rows="12" >
+<!-- 	        paginator="true" -->
+<!-- 	        paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}" -->
+<!-- 	        rowsPerPageTemplate="6,12,16" -->
+	         
+<!-- 	        <f:facet name="header"> -->
+<!-- 	            Image -->
+<!-- 	        </f:facet> -->
+	 
+	        <p:panel header="#{img.nomImageArticle!=null?img.nomImageArticle:''}" style="text-align:center">
+	        	
+	        	<f:facet name="actions">
+		            <p:commandLink update="@widgetVar(wvDataGridImageArticle)" actionListener="#{imageArticleController.actImagePositionPrecedent}">
+		            	<f:attribute name="idImage" value="#{img.id}" />
+		            	<h:outputText styleClass="ui-icon pi pi-step-backward" />
+		            </p:commandLink>
+		            <p:commandLink update="@widgetVar(wvDataGridImageArticle)" actionListener="#{imageArticleController.actImageDefaut}">
+		            	<f:attribute name="idImage" value="#{img.id}" />
+		            	<h:outputText styleClass="ui-icon pi pi-star" rendered="#{img.defautImageArticle!=null and img.defautImageArticle}" /> 
+		            	<h:outputText styleClass="ui-icon pi pi-star-o" rendered="#{img.defautImageArticle==null or !img.defautImageArticle}" /> 
+		            </p:commandLink>
+		            <p:commandLink update="@widgetVar(wvDataGridImageArticle)" actionListener="#{imageArticleController.actImageDetail}">
+		            	<f:attribute name="idImage" value="#{img.id}" />
+		            	<h:outputText styleClass="ui-icon pi pi-pencil"/> 
+		            	<p:ajax event="dialogReturn" update="@widgetVar(wvDataGridImageArticle)" listener="#{imageArticleController.handleReturnDialogDetail}"/> 
+		            </p:commandLink>
+		            <p:commandLink update="@widgetVar(wvDataGridImageArticle)" actionListener="#{imageArticleController.actImagePositionSuivant}">
+		            	<f:attribute name="idImage" value="#{img.id}" />
+		            	<h:outputText styleClass="ui-icon pi pi-step-forward" />
+		            </p:commandLink>
+		        </f:facet>
+	            <h:panelGrid columns="1" style="width:100%" rendered="#{img.id!=0}">
+	                <p:graphicImage value="/image_article/#{img.id}"  height="80"/>
+	                
+	                <p:commandButton title="Supprimer" icon="pi pi-trash" actionListener="#{imageArticleController.actSupprimer}" update="@widgetVar(wvDataGridImageArticle)">
+	                	<p:confirm message="Etes vous sur de vouloir supprimer cette image ?"></p:confirm>
+	                	<f:attribute name="idImage" value="#{img.id}" />
+	                </p:commandButton>
+	 
+<!-- 	                <h:outputText value="#{img.year}" /> -->
+	 
+<!-- 	                <p:commandLink update=":form:imgDetail" oncomplete="PF('imgDialog').show()" title="View Detail"> -->
+<!-- 	                    <h:outputText styleClass="pi pi-search" style="margin:0 auto;"/> -->
+<!-- 	                    <f:setPropertyActionListener value="#{img}" target="#{dataGridView.selectedimg}" /> -->
+<!-- 	                </p:commandLink> -->
+	            </h:panelGrid>
+	            <h:panelGrid columns="1" style="width:100%" rendered="#{img.id==0}">
+	                <p:graphicImage value="/image_article/#{img.id}"  height="80"/>
+	                
+	                		<p:fileUpload
+								listener="#{imageArticleController.handleFileUpload}" label="Choisir"
+								type="button" mode="advanced" update="@widgetVar(wvDataGridImageArticle)" auto="true" 
+								sizeLimit="#{msg.image_taille_max_piecejonte_5mo}" allowTypes="#{msg.image_type_fichier_autorise}"
+								value="#{imageArticleController.handleFileUpload()}">
+								<f:attribute name="idImage" value="#{img.id}" />
+							</p:fileUpload>
+							
+	            </h:panelGrid>
+	        </p:panel>
+	 
+	    </p:dataGrid>
+
+	</p:panel>
+
+	<p:messages id="imageArticleMessages" showDetail="true" autoUpdate="true" closable="true" />
+
+	<p:panel id="imageArticlePanel" visible="true" widgetVar="varLabelArticlePanel">
+		<p:panel onLoad="reset()" resizable="false" id="imageArticlePanelCache" rendered="#{imageArticleController.modeEcran.dataSetEnModif()}">
+			
+			<f:validateBean disabled="true">
+				<div class="ui-grid ui-grid-responsive" id="imageArticleGridResp">
+					<div class="ui-grid-row">
+						<div class="ui-grid-col-4">
+							<h:outputText value="Nom Image :"/>
+						</div>
+						<div class="ui-grid-col-8">
+							<h:inputText
+								value="#{imageArticleController.nouveau.nomImageArticle}"
+								required="false">
+							</h:inputText>
+						</div>
+					</div>
+					<div class="ui-grid-row">
+						<div class="ui-grid-col-4">
+							<h:outputText value="Aperçu :"/>
+						</div>
+						<div class="ui-grid-col-8">
+						 	<p:panel widgetVar="wvPanelLogoTypeCertification">
+								<p:graphicImage value="#{imageArticleController.logo}" stream="false" 
+									rendered="#{imageArticleController.nouveau.blobImageOrigine !=null}">
+								</p:graphicImage>
+							</p:panel>
+						</div>
+					</div>
+
+					<div class="ui-grid-row">
+						<div class="ui-grid-col-12 text-center">
+							<p:commandButton value="Enregistrer" styleClass="btn-save btn"
+								disabled="#{imageArticleController.etatBouton('enregistrer')}"
+								update="@widgetVar(imageArticleForm), @widgetVar(varLabelArticlePanel)"
+								actionListener="#{imageArticleController.actEnregistrer}" />
+
+							<p:commandButton id="imageArticleAnnuler" value="Annuler"
+								styleClass="btn-cancel btn" process="@this"
+								disabled="#{imageArticleController.etatBouton('annuler')}"
+								update="@widgetVar(imageArticleForm), @widgetVar(varLabelArticlePanel)"
+								actionListener="#{imageArticleController.actAnnuler}" 
+								rendered="#{dansDialogue != null ? false : true}" />
+
+							<p:commandButton id="imageArticleAnnulerDialogue" value="Annuler"
+								styleClass="btn-cancel btn" process="@this"
+								disabled="#{imageArticleController.etatBouton('annuler')}"
+								actionListener="#{imageArticleController.actFermerDialog}"
+								rendered="#{dansDialogue != null ? true : false}" />
+						</div>
+					</div>
+				</div>
+			</f:validateBean>
+
+		</p:panel>
+	</p:panel>
+		
+</ui:composition>

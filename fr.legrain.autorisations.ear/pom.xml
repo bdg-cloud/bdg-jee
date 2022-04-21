@@ -1,0 +1,105 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>fr.legrain</groupId>
+	<artifactId>fr.legrain.autorisations.ear</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>ear</packaging>
+
+	<parent>
+		<groupId>fr.legrain</groupId>
+		<artifactId>fr.legrain.autorisations.parent</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+		<relativePath>../fr.legrain.autorisations.parent/pom.xml</relativePath>
+	</parent>
+
+	<dependencies>
+	
+		<dependency>
+			<groupId>org.osgi</groupId>
+			<artifactId>org.osgi.core</artifactId>
+			<version>5.0.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>net.sf.dozer</groupId>
+			<artifactId>dozer</artifactId>
+			<version>5.5.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>3.8.1</version>
+			<scope>test</scope>
+		</dependency>
+
+
+		<!-- Dependencies on the ejb and web modules so that they can be found 
+			by the ear plugin -->
+
+		<dependency>
+			<groupId>fr.legrain</groupId>
+			<artifactId>fr.legrain.autorisations.ejb</artifactId>
+			<type>ejb</type>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+
+		<dependency>
+			<groupId>fr.legrain</groupId>
+			<artifactId>fr.legrain.autorisations.webapp</artifactId>
+			<type>war</type>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		
+	</dependencies>
+
+
+	<build>
+	
+		<finalName>${project.artifactId}</finalName>
+
+		<pluginManagement>
+			<plugins>
+				<!-- <plugin> -->
+				<!-- <groupId>org.jboss.as.plugins</groupId> -->
+				<!-- <artifactId>jboss-as-maven-plugin</artifactId> -->
+				<!-- <version>7.4.Final</version> -->
+				<!-- </plugin> -->
+				<plugin>
+					<groupId>org.wildfly.plugins</groupId>
+					<artifactId>wildfly-maven-plugin</artifactId>
+					<version>2.0.1.Final</version>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-ear-plugin</artifactId>
+				<version>2.9.1</version>
+				<configuration>
+					<defaultLibBundleDir>/lib</defaultLibBundleDir>
+					<skinnyWars>true</skinnyWars>
+					<modules>
+						<ejbModule>
+							<groupId>fr.legrain</groupId>
+							<artifactId>fr.legrain.autorisations.ejb</artifactId>
+							<bundleFileName>fr.legrain.autorisations.ejb.jar</bundleFileName>
+						</ejbModule>
+						<webModule>
+							<groupId>fr.legrain</groupId>
+							<bundleFileName>fr.legrain.autorisations.webapp.war</bundleFileName>
+							<artifactId>fr.legrain.autorisations.webapp</artifactId>
+<!-- 							<contextRoot>autorisations</contextRoot> -->
+							<contextRoot>/</contextRoot>
+						</webModule>
+					</modules>
+				</configuration>
+			</plugin>
+
+		</plugins>
+	</build>
+</project>

@@ -1,0 +1,271 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
+xmlns:f="http://java.sun.com/jsf/core" 
+xmlns:h="http://java.sun.com/jsf/html"
+xmlns:ui="http://java.sun.com/jsf/facelets" 
+xmlns:o="http://omnifaces.org/ui" 
+xmlns:p="http://primefaces.org/ui">
+
+
+	<div class="ui-g-12 ui-md-12">
+		<h:panelGrid columns="2" cellpadding="0">
+			<p:outputLabel value="Votre dossier est très volumineux, Cliquez sur le bouton pour raffraîchir les données" style="font-weight : bold;"
+				rendered="#{articleController.dashBoardParArticleController.grosFichierArticles}">
+			</p:outputLabel>
+			<p:commandButton process="@this" rendered="#{articleController.dashBoardParArticleController.grosFichierArticles}"
+				update="@this,idZoneTotauxGeneral, @widgetVar(wvArticleListeGeneral),@widgetVar(wvRappelPeriodePanelArticleGeneral)"
+				action="#{articleController.dashBoardParArticleController.initAllValueGeneral(articleController.selectedTaArticleDTO.getCodeArticle())}"
+				value="Raffraîchir" styleClass="ui-orange" style="width:100%;" />
+		</h:panelGrid>
+	</div>
+	<div class="ui-g-12 ui-md-12">
+		<p:panel header="Critères et paramètres du tableau de bord" collapsed="true" toggleable="true" toggleOrientation="horizontal" >
+					<div class="ui-g-12 ui-md-4">
+					<p:fieldset style="margin-bottom:20px;">
+		
+						<p:panel header="Période" styleClass="panelgrey">
+						<f:facet name="footer">
+							<p:commandButton  
+							process="@this"
+							update="@this,idZoneTotauxGeneral, @widgetVar(wvArticleListeGeneral),@widgetVar(wvRappelPeriodePanelArticleGeneral)" 
+							action="#{articleController.dashBoardParArticleController.initAllValueGeneral(articleController.selectedTaArticleDTO.getCodeArticle())}" value="Appliquer" styleClass="ui-orange" 
+							style="width:100%;" />
+							
+						</f:facet>
+						 <div class="ui-g-12 ui-md-2" >
+						<i class="fa fa-calendar fa-3x" aria-hidden="true"></i>
+
+						 </div>
+						 <div class="ui-g-12 ui-md-10">
+			        	<h:panelGrid columns="2" cellpadding="0">
+						 <p:outputLabel value="Du"/>
+											<p:calendar value="#{articleController.dashBoardParArticleController.dateDebutGeneral}"
+												showOn="button" 
+												navigator="true" 
+												pattern="#{msg.date_pattern}" 
+												mask="true" 
+												locale="fr" 
+												timeZone="#{msg.time_zone}" >
+												<p:ajax event="dateSelect"/>
+													<p:ajax event="change"/>
+											</p:calendar>
+
+						 <p:outputLabel value="au"/>
+											<p:calendar value="#{articleController.dashBoardParArticleController.dateFinGeneral}"
+												showOn="button" 
+												navigator="true" 
+												pattern="#{msg.date_pattern}" 
+												mask="true" 
+												locale="fr" 
+												timeZone="#{msg.time_zone}" >
+												<p:ajax event="dateSelect"/>
+													<p:ajax event="change"/>
+											</p:calendar>
+
+        				</h:panelGrid>
+        				</div>
+        				 <p:separator />
+
+
+								</p:panel>
+    				</p:fieldset>
+    				</div>
+
+					<div class="ui-g-12 ui-md-4">
+
+    				</div>
+					<div class="ui-g-12 ui-md-4">
+
+    				</div>
+				</p:panel>
+				<p:panel widgetVar="wvRappelPeriodePanelArticleGeneral"  style="font-size : 20px;">
+				<p:outputLabel>Période du </p:outputLabel>
+				 <h:outputText value="#{articleController.dashBoardParArticleController.dateDebutGeneral}"  style="font-weight : bold;">
+				 	<f:convertDateTime type="date" pattern="dd MMMM yyyy" timeZone="#{msg.time_zone}"/>
+				 </h:outputText>
+				 <p:outputLabel> au  </p:outputLabel>
+				 <h:outputText value="#{articleController.dashBoardParArticleController.dateFinGeneral}"  style="font-weight : bold;">
+				 	<f:convertDateTime type="date" pattern="dd MMMM yyyy" timeZone="#{msg.time_zone}"/>
+				 </h:outputText>
+				 
+				</p:panel>
+				</div>
+
+				<p:outputPanel id="idZoneTotauxGeneral">
+				<div class="ui-g-12 ui-md-12">
+				<h:panelGroup id="idZonePanelGroupTotauxGeneral" rendered="#{articleController.dashBoardParArticleController.nbFactureNonTransforme gt 0}" layout="block" >
+					<div class="ui-g-12 ui-md-4 ">
+					<div class="card" style="padding-top: 0px;padding-left: 0px;padding-right: 0px;height: 160px;">
+					<p  style="background: #c9c9c9;margin-top: 0px;text-align:center;"><i class="fa fa-info-circle fa-2x" aria-hidden="true" style="color:#ae1414;padding-top: 8px;padding-bottom: 8px;"/>
+					<p:spacer width="20"></p:spacer></p>
+					
+					<p style="text-align: center;">
+					<p:outputLabel value="#{articleController.dashBoardParArticleController.nbFactureNonTransforme}"/>
+					<p:outputLabel value=" factures restent à régler pour un montant de : " rendered="#{articleController.dashBoardParArticleController.nbFactureNonTransforme gt 1}"/>
+					<p:outputLabel value=" facture reste à régler pour un montant de : " rendered="#{articleController.dashBoardParArticleController.nbFactureNonTransforme lt 2}"/>
+					<p:outputLabel value="#{articleController.dashBoardParArticleController.montantTotalTtcNonRegleFacture}">
+						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+						</p:outputLabel>
+					<p:outputLabel value=" TTC"/>
+					</p>
+					</div>
+					</div>
+				</h:panelGroup>
+
+					<div class="ui-g-12 ui-md-6">
+					<!-- <div class="card"  style="height: 160px;"> -->
+					<div class="card">
+					<p:panelGrid columns="2" id="idInfosArticleDashBoardGeneralArticle" columnClasses="ui-grid-col-6,ui-grid-col-6" styleClass="ui-panelgrid-blank" layout="grid">
+
+						<h:panelGroup>
+						<p:outputLabel value="Code Article: "/>
+						<p:outputLabel value="#{articleController.selectedTaArticleDTO.codeArticle}" style="font-weight: bold;"/>
+
+						</h:panelGroup>
+						
+						<h:panelGroup>
+						<p:outputLabel value="Famille par defaut : "/>
+						<p:outputLabel value="#{articleController.selectedTaArticleDTO.libcFamille}" style="font-weight: bold;"/>
+						</h:panelGroup>
+						
+						<h:panelGroup>
+						<p:outputLabel value="Code Barre : "/>
+						<p:outputLabel value="#{articleController.selectedTaArticleDTO.codeBarre}" style="font-weight: bold;"/>
+						</h:panelGroup>
+						
+						<h:panelGroup>
+						<p:outputLabel value=""/>
+						<p:outputLabel value="" style="font-weight: bold;"/>
+						</h:panelGroup>
+<!-- 						Col 2 -->
+						<h:panelGroup>
+						<p:outputLabel value="Libellé : "/>
+						<p:outputLabel value="#{articleController.selectedTaArticleDTO.libellecArticle}" style="font-weight: bold;"/>
+<!-- 						<hr/> -->
+						</h:panelGroup>
+						
+						<h:panelGroup>
+						<p:outputLabel value=""/>
+						<p:outputLabel value="" style="font-weight: bold;"/>
+						</h:panelGroup>
+						
+						<h:panelGroup>
+						<p:outputLabel value="Description : "/>
+						<p:outputLabel value=" #{articleController.selectedTaArticleDTO.libellelArticle}" style="font-weight: bold;"/>
+						</h:panelGroup>
+						
+						<h:panelGroup>
+						<p:outputLabel value=""/>
+						<p:outputLabel value="" style="font-weight: bold;"/>
+						</h:panelGroup>
+<!-- 						Col 1 -->
+						<h:panelGroup>
+						<p:outputLabel value="Prix Unitaire HT : "/>
+						<p:outputLabel value="#{articleController.selectedTaArticleDTO.prixPrix} €" style="font-weight: bold;"/>
+						</h:panelGroup>
+						
+						<h:panelGroup>
+						<p:outputLabel value=""/>
+						<p:outputLabel value="" style="font-weight: bold;"/>
+						</h:panelGroup>
+						
+						<h:panelGroup>
+						<p:outputLabel value="Prix Unitaire TTC : "/>
+						<p:outputLabel value="#{articleController.selectedTaArticleDTO.prixttcPrix} €" style="font-weight: bold;"/>
+						</h:panelGroup>
+						
+						
+						
+						<h:panelGroup>
+						<p:outputLabel value="Etat : "/>
+							<p:selectBooleanButton id="valueEtat"
+									value="#{articleController.selectedTaArticleDTO.actif}"
+									disabled="true" onLabel="Actif"
+									offLabel="Abandonné" onIcon="ui-icon-check"
+									offIcon="ui-icon-close">
+									<p:ajax event="change"  update="@this" />
+							</p:selectBooleanButton>
+						</h:panelGroup>
+
+					</p:panelGrid>
+						</div>
+					</div>
+					
+<!-- 					<h:panelGroup id="idZonePanelGroupDashBoardGeneralInfoComplementaire" rendered="#{articleController.dashBoardParArticleController.nbFactureNonTransforme lt 1}" layout="block" >
+					<div class="ui-g-12 ui-md-6 ">
+					<div class="card" style="height: 160px;">
+					<div class="ui-g-12 ui-md-6 ">
+					<p:panelGrid columns="2" id="idInfosComplTiersDashBoardGeneralTiers" columnClasses="ui-grid-col-6,ui-grid-col-6" styleClass="ui-panelgrid-blank" layout="grid">
+					
+					<p:outputLabel value="Famille : " />
+					<p:outputLabel value="#{articleController.selectedTaArticleDTO.codeFamilleTiers}" />
+					<br />
+					<p:outputLabel value="Saisie TTC : " />
+					<p:selectBooleanCheckbox value="#{articleController.selectedTaArticleDTO.ttcTiers}" disabled="true">
+					</p:selectBooleanCheckbox>
+					
+					<br />
+					<p:outputLabel value="Grille tarifaire : " />
+					<p:outputLabel value="#{articleController.selectedTaArticleDTO.codeTTarif}" />
+					<br />
+					<p:outputLabel value="Condition paiement : " />
+					<p:outputLabel value="#{articleController.selectedTaArticleDTO.codeCPaiement}" />
+					</p:panelGrid>
+					</div>
+
+					<div class="ui-g-12 ui-md-6 ">
+					</div>
+					</div>
+					</div>
+				</h:panelGroup> -->
+				
+				</div>
+				
+				<div class="ui-g-12 ui-md-12">
+				<div class="ui-g-12 ui-md-6 ui-lg-2">
+
+					<!-- <div class="card">
+						<h3 align="center">Factures réalisées</h3>
+						<p:outputLabel value="CA HT : "/> 
+						<p:outputLabel value="#{articleController.montantCaHt}" >
+						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+						</p:outputLabel>
+						<p:separator></p:separator>
+						<p:outputLabel value="Nombre : "/> 
+						<p:outputLabel value="#{articleController.dashBoardParArticleController.nbFacture}"/>
+					</div> -->
+					
+					<div class="card center">
+						<h3 align="center">CA HT  réalisé</h3>
+						
+						<p:outputLabel align="center" style="font-size : 30px;" value="#{articleController.dashBoardParArticleController.montantTotalHtFactureMoinsAvoirGeneral}" >
+						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+						</p:outputLabel>
+						<br/>
+						<p:outputLabel align="center" value="facturé : " />
+						<p:outputLabel align="center" value="#{articleController.dashBoardParArticleController.montantTotalHtFactureGeneral}" >
+						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+						</p:outputLabel>
+						<br/>
+						<p:outputLabel align="center" value="avoir : " />
+						<p:outputLabel align="center" value="#{articleController.dashBoardParArticleController.montantTotalHtFactureAvoirGeneral}" >
+						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+						</p:outputLabel>
+					</div>
+
+				</div>
+				<div class="ui-g-12 ui-md-2 ">
+
+				</div>
+
+				</div>
+				</p:outputPanel>
+
+				<div class="ui-g-12 ui-md-12">
+				
+				<div class="ui-g-12 ui-md-8 ">
+									
+				</div>
+
+				</div>
+				
+</ui:composition>

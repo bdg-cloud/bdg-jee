@@ -1,0 +1,54 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+
+
+	<p:panel widgetVar="wvSvgPanel">
+		<p:menubar styleClass="menu-onglet">
+			<p:menuitem title="Fermer"
+				styleClass="icon icon-close menuitem-fermer-droite" process="@this"
+				onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())">
+			</p:menuitem>
+		</p:menubar>
+
+		<p:panel widgetVar="widgetVarSvgPanel" header="Sauvegarde/Restauration">
+		
+			<p:panel header="Sauvegarde">
+				<p:inputText value="#{svgBean.tagDump}" placeholder="nom backup"/>
+				<p:inputText value="#{svgBean.nomSchemaDestination}" placeholder="nom dossier destination"/>
+				
+				
+				<p:commandButton value="Sauvegarder" actionListener="#{svgBean.sauvegardeDossier}" id="idCmdSvg" update="idDwl"/>
+	<!-- 			<p:selectBooleanCheckbox value="#{svgBean.telechargerDump}" widgetVar="wvCbTelechargeDump"/> -->
+				
+				<p:commandLink id="idDwl" value="Télécharger" ajax="false" disabled="#{svgBean.fichierDumpATelecharger==null}">
+					<p:fileDownload value="#{svgBean.fichierDumpATelecharger}"/>
+				</p:commandLink>
+			</p:panel>
+			
+			<p:panel header="Restauration">
+				<p:fileUpload listener="#{svgBean.handleFileUpload}" mode="advanced" dragDropSupport="false" 
+					auto="true" label="Sélectionner la sauvegarde à restaurer" fileLimit="1"  update="@parent"/>
+	<!--    				sizeLimit="5000000" fileLimit="1" allowTypes="/(\.|\/)(gif|jpe?g|png|pdf|txt)$/" -->
+				<p:commandButton value="Restaurer" actionListener="#{svgBean.restaureDossier}" disabled="#{svgBean.fichierDumpARestaurer==null}"
+					onsuccess="alert('La restauration a été effectuée avec succès. Vous devez vous reconnecter.')">
+					<p:confirm header="Confirmation" message="Etes vous sur de vouloir restaurer cette sauvegarde ?" icon="ui-icon-alert" />
+				</p:commandButton>
+			</p:panel>
+			
+<!-- 			<p:dataTable value="#{svgBean.listeDump}" var="d"> -->
+<!-- 				<p:column headerText="dump"> -->
+<!-- 					<p:outputLabel value="d"/> -->
+<!-- 				</p:column> -->
+<!-- 			</p:dataTable> -->
+
+		</p:panel>
+		
+		
+
+	</p:panel>
+
+</ui:composition>

@@ -1,0 +1,226 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
+xmlns:f="http://java.sun.com/jsf/core" 
+xmlns:h="http://java.sun.com/jsf/html"
+xmlns:ui="http://java.sun.com/jsf/facelets" 
+xmlns:o="http://omnifaces.org/ui" 
+xmlns:p="http://primefaces.org/ui">
+
+
+
+	<p:panel id="tarifArticleFormPrincipal" widgetVar="tarifArticleForm#{variableNomWvIDUnique}">
+
+		<p:menubar styleClass="menu-onglet" widgetVar="wvMenuTypeTarifArticle#{variableNomWvIDUnique}">
+			<p:menuitem title="Enregistrer les modifications en cours" styleClass="icon-save icon" actionListener="#{tarifArticlesController.actEnregistrer}"
+				process="@this" update="@widgetVar(panelListeTarif#{variableNomWvIDUnique}),@widgetVar(wvMenuTypeTarifArticle#{variableNomWvIDUnique}),@widgetVar(wvDetailTypeTarifArticle#{variableNomWvIDUnique}),@widgetVar(wvTarifDataTable#{variableNomWvIDUnique})" disabled="#{tarifArticlesController.etatBouton('enregistrer')}" />
+
+<!-- 			<p:menuitem title="Ajouter un nouveau type de tarif pour l'article" styleClass="icon-insert icon" actionListener="#{tarifArticlesController.actInserer}" -->
+<!-- 				process="@this" update="@widgetVar(panelListeTarif#{variableNomWvIDUnique}),@widgetVar(wvMenuTypeTarifArticle#{variableNomWvIDUnique}),@widgetVar(wvDetailTypeTarifArticle#{variableNomWvIDUnique}),@widgetVar(wvTarifDataTable#{variableNomWvIDUnique})" disabled="#{tarifArticlesController.etatBouton('inserer')}" /> -->
+
+<!-- 			<p:menuitem title="Modifier le type de tarif" styleClass="icon-update icon" actionListener="#{tarifArticlesController.actModifier}" process="@this" -->
+<!-- 				update="@widgetVar(panelListeTarif#{variableNomWvIDUnique}),@widgetVar(wvMenuTypeTarifArticle#{variableNomWvIDUnique}),@widgetVar(wvDetailTypeTarifArticle#{variableNomWvIDUnique}),@widgetVar(wvTarifDataTable#{variableNomWvIDUnique})" disabled="#{tarifArticlesController.etatBouton('modifier')}" /> -->
+
+			<p:menuitem title="Annuler les modifications en cours" styleClass="icon-cancel icon" actionListener="#{tarifArticlesController.actAnnuler}"
+				process="@this" update="@widgetVar(panelListeTarif#{variableNomWvIDUnique}),@widgetVar(wvMenuTypeTarifArticle#{variableNomWvIDUnique}),@widgetVar(wvDetailTypeTarifArticle#{variableNomWvIDUnique}),@widgetVar(wvTarifDataTable#{variableNomWvIDUnique})" disabled="#{tarifArticlesController.etatBouton('annuler')}" />
+
+			<p:menuitem title="Recalculer les tarifs de l'article" styleClass="icon-recalcultarif icon" actionListener="#{tarifArticlesController.actRecalculerTarifs}" process="@this"
+				update="@widgetVar(panelListeTarif#{variableNomWvIDUnique}),@widgetVar(wvMenuTypeTarifArticle#{variableNomWvIDUnique}),@widgetVar(wvDetailTypeTarifArticle#{variableNomWvIDUnique}),@widgetVar(wvTarifDataTable#{variableNomWvIDUnique})"  />
+
+<!-- 			<p:menuitem title="Supprimer le type de tarif" styleClass="icon icon-delete menuitem-poubelle-droite" -->
+<!-- 				actionListener="#{tarifArticlesController.actSupprimer}" process="@this" update="@widgetVar(panelListeTarif#{variableNomWvIDUnique}),@widgetVar(wvMenuTypeTarifArticle#{variableNomWvIDUnique}),@widgetVar(wvDetailTypeTarifArticle#{variableNomWvIDUnique}),@widgetVar(wvTarifDataTable#{variableNomWvIDUnique})"  -->
+<!-- 				disabled="#{tarifArticlesController.etatBouton('supprimer')}"> -->
+<!-- 				<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer ce type de tarif pour l'article ?" icon="ui-icon-alert" /> -->
+<!-- 			</p:menuitem> -->
+		</p:menubar>
+
+		<p:panel header="Liste des tarifs de l'article" widgetVar="panelListeTarif#{variableNomWvIDUnique}">
+			<p:fieldset style="margin-bottom:20px;" widgetVar="wvInfosComplementairesTarifArticle">
+		<h:panelGrid columns="13" cellpadding="15">
+			<p:outputLabel value="Article :" />
+			<p:outputLabel value="#{tarifArticlesController.codeArticle}" style="font-weight:bold;"/>	
+			<p:outputLabel value=" - " />
+			<p:outputLabel value="Libellé :" />
+			<p:outputLabel value="#{tarifArticlesController.libelle}"  style="font-weight:bold;"/>	
+			<p:outputLabel value=" - " />
+			<p:outputLabel value="Taux tva :" />
+			<p:outputLabel value="#{tarifArticlesController.tauxTva}" style="font-weight:bold;"/>					
+		</h:panelGrid>
+	</p:fieldset>
+			<p:dataTable id="idTarifDataTable" widgetVar="wvTarifDataTable#{variableNomWvIDUnique}" var="table" value="#{tarifArticlesController.values}"
+				rowKey="#{table.dto.id}" selectionMode="single" selection="#{tarifArticlesController.selectedTaPrixDTO}" scrollable="true" scrollHeight="500"
+				rows="#{msg.modele_datatable_ligne_par_page_debut}" paginatorTemplate="#{msg.modele_datatable_paginator}"
+				rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}" emptyMessage="#{msg.message_datatable_vide}"
+				currentPageReportTemplate="#{msg.modele_datatable_page_courante}" sortBy="#{table.dto.codeTTarif}" expandableRowGroups="true">
+
+				<p:ajax event="rowSelect" listener="#{tarifArticlesController.onRowSelect}"
+					update="@widgetVar(wvDetailTypeTarifArticle#{variableNomWvIDUnique}),@widgetVar(wvMenuTypeTarifArticle#{variableNomWvIDUnique})" />
+
+
+				<f:facet name="{Exporters}">
+					<h:commandLink>
+						<p:graphicImage library="images" name="excel.png" width="24" />
+						<p:dataExporter type="xls" target="banqueDataTable" fileName="type-de-tarif-pour-l-article" />
+					</h:commandLink>
+
+					<h:commandLink>
+						<p:graphicImage library="images" name="pdf.png" width="24" />
+						<p:dataExporter type="pdf" target="banqueDataTable" fileName="type-de-tarif-pour-l-article" />
+					</h:commandLink>
+
+					<h:commandLink>
+						<p:graphicImage library="images" name="csv.png" width="24" />
+						<p:dataExporter type="csv" target="banqueDataTable" fileName="type-de-tarif-pour-l-article" options="#{separateurCsvController.csvOptions}" />
+					</h:commandLink>
+
+					<h:commandLink>
+						<p:graphicImage library="images" name="xml.png" width="24" />
+						<p:dataExporter type="xml" target="banqueDataTable" fileName="type-de-tarif-pour-l-article" />
+					</h:commandLink>
+
+				</f:facet>
+					<p:headerRow>
+						<p:column colspan="3">
+							<h:outputText value="#{table.dto.codeTTarif}" />
+						</p:column>
+					</p:headerRow>
+					
+				<f:facet name="header">
+					<h:outputText value="#{tarifArticlesController.values.size()} tarif(s) pour l'article" />
+				</f:facet>
+					
+					<p:column style="width:16px" >
+						<p:rowEditor  styleClass="row-editor-debut" rendered="false"/>
+					</p:column>
+<!-- 				<p:column style="width:16px"> -->
+<!-- 					<f:facet name="header"> -->
+<!-- 						<h:outputText value="" /> -->
+<!-- 					</f:facet> -->
+<!-- 					<p:cellEditor> -->
+<!-- 						<f:facet name="output"> -->
+<!-- 							<p:commandButton title="Tarif par défaut de la grille" styleClass="icon-fleche-tarif icon icon-grille"  rendered="#{table.dto.codeTiers==null}"> -->
+<!-- 							</p:commandButton> -->
+<!-- 						</f:facet> -->
+<!-- 						<f:facet name="input"> -->
+<!-- 							<h:outputText value="" /> -->
+<!-- 						</f:facet> -->
+<!-- 					</p:cellEditor> -->
+<!-- 				</p:column>					 -->
+				<p:column style="width:16px">
+					<f:facet name="header">
+						<h:outputText value="" />
+					</f:facet>
+					<p:cellEditor>
+						<f:facet name="output">
+							<p:commandButton title="Tarif par défaut de la grille" styleClass="icon-fleche-tarif icon icon-grille"  rendered="#{table.dto.codeTiers==null}">
+							</p:commandButton>						
+							<p:commandButton title="Tarif spécifique de la grille pour un tiers" styleClass="icon-fleche-tarif-second icon icon-grille"  rendered="#{table.dto.codeTiers!=null}">
+							</p:commandButton>
+						</f:facet>
+						<f:facet name="input">
+							<h:outputText value="" />
+						</f:facet>
+					</p:cellEditor>
+				</p:column>
+
+					
+					
+				<p:column headerText="Tiers">
+					<p:commandLink value="#{table.dto.codeTiers}"
+						action="#{ouvertureDocumentBean.detailTiers(ouvertureDocumentBean.recupCodetiers(table.dto.codeTiers))}" update=":form:tabView"
+						oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+					</p:commandLink>
+				</p:column>
+
+				<p:column headerText="Prix HT">
+					<p:cellEditor>
+						<f:facet name="output">
+							<h:outputText value="#{table.dto.prixPrixCalc}" />
+						</f:facet>
+						<f:facet name="input">
+							<p:inputText id="idPrixHTCalc" value="#{table.dto.prixPrixCalc}" style="width:96%" disabled="#{!tarifArticlesController.saisieHT}">
+								<f:attribute name="nomChamp" value="#{const.C_PRIX_PRIX}" />
+								<p:ajax event="blur" listener="#{tarifArticlesController.recalculCoef(false)}" update="idCoef,idPrixHTCalc,idPrixTTCCalc" />
+							</p:inputText>
+						</f:facet>
+					</p:cellEditor>
+				</p:column>
+
+
+				<p:column headerText="Montant Tva">
+					<h:outputText value="#{table.dto.mtTva}" />
+				</p:column>
+
+				<p:column headerText="Prix TTC">
+					<p:cellEditor>
+						<f:facet name="output">
+							<h:outputText value="#{table.dto.prixttcPrixCalc}" />
+						</f:facet>
+						<f:facet name="input">
+							<p:inputText id="idPrixTTCCalc" value="#{table.dto.prixttcPrixCalc}" style="width:96%" disabled="#{tarifArticlesController.saisieHT}">
+								<f:attribute name="nomChamp" value="#{const.C_PRIXTTC_PRIX}" />
+								<p:ajax event="blur" listener="#{tarifArticlesController.recalculCoef(true)}" update="idCoef,idPrixHTCalc,idPrixTTCCalc" />
+							</p:inputText>
+						</f:facet>
+					</p:cellEditor>
+				</p:column>
+
+				<p:column headerText="Coefficient">
+					<p:cellEditor>
+						<f:facet name="output">
+							<h:outputText value="#{table.dto.coef}" />
+						</f:facet>
+						<f:facet name="input">
+							<p:inputText id="idCoef" value="#{table.dto.coef}" style="width:96%">
+								<f:attribute name="nomChamp" value="#{const.C_COEFFICIENT}" />
+								<p:ajax event="blur" listener="#{tarifArticlesController.majDesPrixCalcules(table.dto.coef)}" update="idCoef,idPrixHTCalc,idPrixTTCCalc" />
+							</p:inputText>
+						</f:facet>
+					</p:cellEditor>
+				</p:column>
+
+				<p:column style="width:16px">
+					<f:facet name="header">
+						<h:outputText value="" />
+					</f:facet>
+					<p:cellEditor>
+						<f:facet name="output">
+							<p:commandButton title="Recalculer le prix" styleClass="icon-recalcultarif icon icon-grille" 
+								action="#{tarifArticlesController.actRecalculerTarifsLigne}" rendered="#{table.dto.diff}" process="@this"
+								update="@widgetVar(wvTarifDataTable#{variableNomWvIDUnique})">
+								<f:setPropertyActionListener target="#{tarifArticlesController.selectedTaPrixDTO}" value="#{table}" />
+							</p:commandButton>
+						</f:facet>
+						<f:facet name="input">
+							<h:outputText value="" />
+						</f:facet>
+					</p:cellEditor>
+				</p:column>
+				
+					<p:column style="width:16px">
+						<f:facet name="header">
+							<h:outputText value="" />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<p:commandButton title="Supprimer" styleClass="icon-delete icon icon-grille" 
+									action="#{tarifArticlesController.actSupprimerLigne}" rendered="#{tarifArticlesController.suppressionAutorisee(table)}" 
+									process="@this"									
+									update="@widgetVar(panelListeTarif#{variableNomWvIDUnique}),@widgetVar(wvMenuTypeTarifArticle#{variableNomWvIDUnique})" >
+									<f:setPropertyActionListener target="#{tarifArticlesController.selectedTaPrixDTO}" value="#{table}" />
+								</p:commandButton>
+							</f:facet>
+							<f:facet name="input">
+								<h:outputText value="" />
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+									
+				<p:column style="width:26px">
+					<p:rowEditor styleClass="row-editor-fin" rendered="false"/>
+				</p:column>
+
+			</p:dataTable>
+
+		</p:panel>
+	</p:panel>
+
+</ui:composition>

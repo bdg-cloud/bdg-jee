@@ -1,0 +1,99 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core" 
+	xmlns:ui="http://java.sun.com/jsf/facelets" 
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/template_dialog_lgr.xhtml">
+	
+	<ui:define name="head">
+	<title>Ajout d'une limite critique au contrôle : 
+	<h:outputText value="#{listeConformiteController.nouveau.libelleConformite}" />
+	</title>
+<!-- 	<style type="text/css"> -->
+<!--/* 		.ui-widget { */-->
+<!--/* 			font-size: 90%; */-->
+<!--/* 		} */-->
+<!-- 	</style> -->
+	</ui:define>
+
+	<ui:define name="content">
+			<h:form id="idDialogCreerBaremeArticle">
+		<p:panel id="idListeConformitePanel" visible="true" widgetVar="widgetVarListeConformitePanel">
+			<p:panel resizable="false" id="listeConformitePanelCache">
+
+				<p:panel id="idBaremePanel" visible="true" widgetVar="widgetVarBaremePanel">
+					<p:panel resizable="false" id="baremePanelCache">
+
+						<f:validateBean disabled="true">
+							<div class="ui-g">
+								<div class="ui-g-4">
+									<h:outputText value="Code :" />
+								</div>
+								<div class="ui-g-8">
+									<p:inputText value="#{listeConformiteController.nouveauBareme.code}" style="width:100%" />
+								</div>
+							
+									<div class="ui-g-4">
+										<h:outputText value="Expression à vérifier :" />
+									</div>
+									<div class="ui-g-8">
+										<p:inputText value="#{listeConformiteController.nouveauBareme.expressionVerifiee}" />
+										<p:commandButton id="idAideBaremeBtn" value="Aide" type="button" />
+										<p:overlayPanel id="idAideBaremePanel" for="idAideBaremeBtn" hideEffect="fade">
+											<ui:include src="aide_formule_controles.xhtml" />						    	
+										</p:overlayPanel>
+									</div>
+<!-- 									<div class="ui-g-4"> -->
+<!-- 										<h:outputText value="Le résultat est quand même considéré comme conforme :" /> -->
+<!-- 									</div> -->
+<!-- 									<div class="ui-g-8"> -->
+<!-- 										<p:selectBooleanCheckbox value="#{listeConformiteController.nouveauBareme.forcage}" /> -->
+<!-- 									</div> -->
+									<div class="ui-g-4">
+										<h:outputText value="Le document suivant est proposé :" />
+									</div>
+									<div class="ui-g-8">
+<!-- 										<p:panel> -->
+										<p:inputText value="#{listeConformiteController.nouveauBareme.cheminDoc}" disabled="true" rendered="#{listeConformiteController.nouveauBareme.blobFichier!=null}"/>
+										<p:fileUpload listener="#{listeConformiteController.handleFileUpload}" mode="advanced" dragDropSupport="false" auto="true" label="Parcourrir"
+          									sizeLimit="5000000" fileLimit="1" allowTypes="/(\.|\/)(gif|jpe?g|png|pdf|txt)$/" update="@parent" rendered="#{listeConformiteController.nouveauBareme.blobFichier==null}"/>
+          								
+          								<p:commandButton value="Télécharger" ajax="false" onclick="PrimeFaces.monitorDownload(start, stop);" icon="ui-icon-arrowthick-1-s" update="@parent" rendered="#{listeConformiteController.nouveauBareme.blobFichier!=null}">
+        									<p:fileDownload value="#{listeConformiteController.file}" />
+    									</p:commandButton>
+    									
+    									<p:commandButton value="Supprimer" actionListener="#{listeConformiteController.actSupprimerFichier}" update="@parent" rendered="#{listeConformiteController.nouveauBareme.blobFichier!=null}"/>
+<!--     									</p:panel> -->
+									</div>
+									<div class="ui-g-4">
+										<h:outputText value="L'action corrective suivante doit être menée :" />
+									</div>
+									<div class="ui-g-8">
+										<p:inputTextarea value="#{listeConformiteController.nouveauBareme.actioncorrective}" style="width:100%" />
+									</div>
+
+									<div class="ui-g-12 text-center">
+										<p:commandButton value="Enregistrer la limite critique" styleClass="btn-save btn"
+											widgetVar="widgetVarBtnEnregistrerBareme"
+											disabled="#{listeConformiteController.etatBoutonBareme('enregistrer')}"
+											update="@widgetVar(widgetVarBaremePanel), @widgetVar(panelControleArticle), @widgetVar(widgetVarBtnInsererBareme), @widgetVar(widgetVarBtnModfierBareme), @widgetVar(widgetVarBtnSupprimerBareme)"
+											actionListener="#{listeConformiteController.actEnregistrerBareme}" />
+										<p:commandButton id="btnAnnulerBareme" value="Annuler" styleClass="btn-cancel btn"
+											widgetVar="widgetVarBtnAnnulerBareme" disabled="#{listeConformiteController.etatBoutonBareme('annuler')}"
+											update="@widgetVar(widgetVarBaremePanel), @widgetVar(panelControleArticle), @widgetVar(widgetVarBtnEnregistrerBareme), @widgetVar(widgetVarBtnInsererBareme), @widgetVar(widgetVarBtnModfierBareme), @widgetVar(widgetVarBtnSupprimerBareme)"
+											actionListener="#{listeConformiteController.actAnnulerBareme}" />
+
+									</div>
+							</div>
+						</f:validateBean>
+					</p:panel>
+
+				</p:panel>
+
+			</p:panel>
+
+		</p:panel>
+	</h:form>
+	</ui:define>
+     
+</ui:composition>

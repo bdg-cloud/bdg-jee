@@ -1,0 +1,67 @@
+<h1 class="titre">Mes services</h1>
+
+<!--
+<p-button label="Télécharger BDG" (onClick)="handleClick('BDG')"></p-button>
+<p-button label="Télécharger EPI" (onClick)="handleClick('EPI')"></p-button>
+-->
+
+<p-table [value]="abonnements" selectionMode="single"
+	[(selection)]="selectedAbonnement" dataKey="codeDocument"
+	emptymessage="Aucun abonnement en cours"
+	sortField="codeDocument" [sortOrder]="-1"> 
+	
+	<ng-template pTemplate="header">
+		<tr>
+			<th pSortableColumn="codeDocument">Code<p-sortIcon field="codeDocument"></p-sortIcon></th>
+			<th>Article</th>
+			<th>Libellé</th>
+			<th>Date début</th>
+			<th>Date fin</th>
+			<th>Suspendu</th>
+			<!--<th>Date suspension</th>-->
+			<th>Plan</th>
+			<th>Fréquence plan</th>
+			<th>Action</th>
+			
+		</tr>
+	</ng-template> 
+	
+	<ng-template pTemplate="body" let-abo>
+		<tr [pSelectableRow]="abo">
+			<td class="center">{{abo.codeDocument}}</td>
+			<td class="center">{{abo.codeArticle}}</td>
+			<td>{{abo.liblArticle}}</td>
+			<td class="center">{{abo.dateDebut | date:'dd/MM/yyyy'}}</td>
+			<td class="center">{{abo.dateFin | date:'dd/MM/yyyy'}}</td>
+			<td class="center"><p-checkbox binary="true" readonly=true [(ngModel)]="abo.suspension"></p-checkbox></td>
+			<!--<td class="center">{{abo.dateSuspension | date:'dd/MM/yyyy'}}</td>-->
+			
+			<td class="center">{{abo.nickname}}</td>
+			<td class="center">{{abo.liblFrequence}}</td>
+
+			<td class="center">
+<!-- 				<div *ngIf="fact.resteAReglerComplet!=null && fact.resteAReglerComplet <= 0; else apayer">Facture déjà payée</div> -->
+<!-- 				<ng-template #apayer> -->
+<!-- 				  <p-button label="Payer" (onClick)="handleClick($event, fact)" *ngIf="paiementPossible"></p-button> -->
+<!-- 				</ng-template> -->
+<!-- 			</td> -->
+<!-- 			<td> -->
+<!--  				<div *ngIf="abo.suspension===true ; else non_bloque"> -->
+ 				<div *ngIf="telechargementAutorise(abo) ; else non_bloque">
+ 					<a routerLink='/mes-abonnements' routerLinkActive="active">Payer</a>
+ 				</div>
+				
+				<ng-template #non_bloque>
+				 <p-button label="Téléchargement" (onClick)="telechargement($event, abo)" [disabled]="abo.isDisabled" *ngIf="abo.produitTelechargeable() && !abo.isDisabled"></p-button>
+				 <p-progressSpinner *ngIf="abo.isDisabled"></p-progressSpinner>
+				 <p-progressBar *ngIf="abo.isDisabled" [value]="abo.percentDone"></p-progressBar>
+				</ng-template>
+			</td>
+		</tr>
+	</ng-template> 
+	
+</p-table>
+
+<div *ngIf="loading" style="margin: auto; text-align: center;"><i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i></div>
+
+<p-toast [style]="{marginTop: '80px'}"></p-toast>

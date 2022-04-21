@@ -1,0 +1,76 @@
+
+
+<div class="fond">
+	<div class="centre">
+		<div class="cercle">
+
+			<div class="int">
+				<a class="logo" routerLink='/' routerLinkActive="active">
+	                
+	                <img  [src]='image' style="width: auto; height: auto; margin:auto;" *ngIf="image;else image_defaut">
+		             <ng-template #image_defaut>
+						<img src="../assets/images/logo-bdg-cloud-2.jpg"/>
+		             </ng-template>
+	            </a>
+				<div *ngIf="compte_cree">
+					<p class="titre" style="width: 355px;">Finalisation de la création de votre compte</p>
+					
+					<div *ngIf="codeTiers;else sans_tiers">
+						<div *ngIf="compte_lie;else compte_lie_auto">
+							Ce compte est maintenant lié au client : {{codeTiers}}<br/>
+						</div>
+						<ng-template #compte_lie_auto>
+							Votre adresse email nous a permis de retrouver automatiquement votre compte : {{codeTiers}}<br/>
+							Si cela ne correspond à votre numéro de compte chez nous, merci de bien vouloir nous contacter.
+						</ng-template>
+						<p class="message" style="width: 355px;">Votre compte est maintenant actif. Vous pouvez vous connecter.</p>
+						<br/>	
+						<br/>
+						<p-button label="Accueil" (onClick)="actAnnuler($event)"></p-button>
+					</div>
+					<ng-template #sans_tiers>
+						
+						<div *ngIf="liaisonNouveauCompteCodeClientAuto">
+							<div class="p-grid">
+								<div class="p-col-12">
+									<p-radioButton name="groupname" label="Nouveau client" value="1" [(ngModel)]="typeCompte" ></p-radioButton>
+								</div>
+								<div class="p-col-12">
+									<p-radioButton name="groupname" label="Client existant" value="2" [(ngModel)]="typeCompte"></p-radioButton>
+								</div>
+								<div class="p-col-12">
+									<div *ngIf="typeCompte==2">
+										Je saisie mon code client si dessous.<br/>
+										<input pInputText type="text" [(ngModel)]="codeTiersSaisi" placeholder="Code client" class="form-control ui-inputtext ui-widget" required="true" /> 
+										<div *ngIf="submitted && f.codeTiers.errors" class="invalid-feedback">
+											<div *ngIf="f.codeTiers.errors.required">Code client obligatoire</div>
+										</div>
+										
+									</div>
+								</div>
+								<div class="p-col-12">
+									<p-button label="Valider" (onClick)="actNouveauClient($event)" *ngIf="typeCompte==1"></p-button>
+									<p-button label="Valider" (onClick)="actLiaisonCompteExistant($event)" *ngIf="typeCompte==2" [disabled]="!codeTiersSaisi"></p-button>
+								</div>
+							</div>
+						</div>
+		             </ng-template>
+					 
+				</div>
+
+				<div *ngIf="compte_non_cree">
+					<p class="titre" style="width: 355px;">Erreur</p>
+					<p class="message" style="width: 355px;" *ngIf="!messageErreur">Erreur pendant la création du compte.</p>
+					<p class="message" style="width: 355px;" *ngIf="messageErreur" [innerHtml]="messageErreur"></p>
+
+					<br/>
+					<br/>
+					<p-button label="Accueil" (onClick)="actAnnuler($event)"></p-button>
+				</div>
+
+				
+			</div>
+
+		</div>
+
+	</div>

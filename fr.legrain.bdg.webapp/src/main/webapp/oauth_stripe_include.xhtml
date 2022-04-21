@@ -1,0 +1,54 @@
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+	
+	<p:panel header="Stripe" widgetVar="wvPanelStripe">
+	
+		<p:panelGrid columns="2">
+			<p:graphicImage library="images" name="Stripe wordmark - slate_lg.png" height="33px"/>
+			
+			<p:panelGrid columns="2" rendered="#{!gestionOAuthController.stripeBean.validToken}">
+
+				<p:commandButton  update="@this,@widgetVar(wvPanelStripe)" process="@this"
+					 styleClass="btn-oauth-stripe-connect" value=""
+					onclick="oauthWindowHandle = window.open('','_blank', 'resizable=no,toolbar=no,scrollbars=yes,height=700,width=700,top=145,left=235');" 
+					actionListener="#{gestionOAuthController.stripeBean.connectOAuth}"/>
+				
+				<p:selectCheckboxMenu value="#{gestionOAuthController.stripeBean.listeScopeStripeSelected}" 
+					label="Autorisations" filter="true" filterMatchMode="startsWith" panelStyle="width:250px" converter="entityConverter">
+		            <f:selectItems value="#{gestionOAuthController.stripeBean.listeScopeStripe}" var="a" itemLabel="#{a.libelle}" itemValue="#{a}" />
+		            <p:ajax/>
+		        </p:selectCheckboxMenu>
+		        
+<!-- 				        <p:commandButton  update="@this,@widgetVar(wvPanelStripe)" process="@this" -->
+<!-- 							value="Se connecter avec Stripe (API)" -->
+<!-- 							onclick="oauthWindowHandle = window.open('','_blank', 'resizable=no,toolbar=no,scrollbars=yes,height=700,width=700,top=145,left=235');"  -->
+<!-- 							actionListener="#{gestionOAuthController.stripeBean.connectApi}"/> -->
+			</p:panelGrid>
+	   		
+			<p:panelGrid columns="3" rendered="#{gestionOAuthController.stripeBean.validToken}">
+				<p:outputLabel value="Connecté en tant que :  #{gestionOAuthController.stripeBean.displayName} (#{gestionOAuthController.stripeBean.userPrincipalName})"/>
+<!-- 						<p:commandButton id="revokeStripeTokenBtn" value="Déconnexion" title="Revoke token" type="button" /> -->
+<!-- 					    <p:overlayPanel for="revokeStripeTokenBtn" hideEffect="fade" dismissable="true"> -->
+<!-- 					        Il est possible de déconnecter votre compte Stripe de l'application Bureau de Gestion à partir de votre compte Stripe. -->
+<!-- 					        <a href="https://dashboard.stripe.com/account/applications" target="_blank">https://dashboard.stripe.com/account/applications</a>  -->
+<!-- 					    </p:overlayPanel> -->
+			    <p:commandButton value="Déconnexion" title="Revoke token" update="@widgetVar(wvPanelStripe)" process="@this" 
+		        	actionListener="#{gestionOAuthController.stripeBean.revokeToken}" rendered="#{gestionOAuthController.stripeBean.validToken}"/>
+		        	<a href="https://dashboard.stripe.com" target="_blank">https://dashboard.stripe.com</a>
+		        <p:selectBooleanCheckbox value="#{gestionOAuthController.stripeBean.compteVerifieParStripe}" itemLabel="Compte vérifié par Stripe" disabled="true"/>
+		        <p:selectBooleanCheckbox value="#{gestionOAuthController.stripeBean.compteUtilisableParStripe}" itemLabel="Compte utilisable par Stripe" disabled="true"/>
+			</p:panelGrid>
+		</p:panelGrid>
+		<p:panel header="Détails techniques" rendered="#{auth.isDevLgr()}" toggleable="true" collapsed="true">
+			<p:outputLabel value="Token : #{gestionOAuthController.stripeBean.stripeTokenSessionBean.accessToken}"/>
+		</p:panel>
+		
+		<p:remoteCommand name="finStripeConnect" actionListener="#{gestionOAuthController.stripeBean.updateView}" update="@widgetVar(wvPanelStripe)"/>
+		
+	</p:panel>
+
+</ui:composition>

@@ -1,0 +1,1 @@
+update  ta_tiers t set id_adresse =(select a.id_adresse from ta_adresse a where a.id_tiers=t.id_tiers order by a.id_adresse desc limit 1) where t.id_adresse is null;

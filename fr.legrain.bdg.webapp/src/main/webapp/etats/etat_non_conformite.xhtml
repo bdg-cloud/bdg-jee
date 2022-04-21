@@ -1,0 +1,381 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:lgr="http://legrain.fr/ui"
+	xmlns:p="http://primefaces.org/ui">
+
+	<p:menubar styleClass="menu-onglet" >
+		<p:menuitem title="Aide" styleClass="icon icon-aidecontextuelle" onstart="PF('wvAideEtatControleConformite').show()" />
+		<p:separator styleClass="separateur-menu-vertical" />
+				
+		<p:menuitem title="Fermer l'écran" value="Fermer"
+			actionListener="#{etatNonConformiteBean.actFermer}"
+			styleClass="icon icon-close menuitem-fermer-droite" process="@this"	
+			onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())">
+		</p:menuitem>
+		
+<!-- 		<p:menuitem title="Marquer la sélection terminée" value="Marquer la sélection terminée" -->
+<!-- 			actionListener="#{etatNonConformiteBean.actTermineLot}" -->
+<!-- 			icon="fa fa-circle-o" process="@this" oncomplete="PF('wvDataTableDocumentNonConformite').filter()"  -->
+<!-- 			update="@widgetVar(wvDataTableDocumentNonConformite)"> -->
+<!-- 		</p:menuitem> -->
+		
+<!-- 		<p:menuitem title="Marquer la sélection non terminée" value="Marquer la sélection non terminée" -->
+<!-- 			actionListener="#{etatNonConformiteBean.actNonTermineLot}" -->
+<!-- 			icon="fa fa-circle" process="@this" oncomplete="PF('wvDataTableDocumentNonConformite').filter()"  -->
+<!-- 			update="@widgetVar(wvDataTableDocumentNonConformite)"> -->
+<!-- 		</p:menuitem> -->
+	</p:menubar>
+	
+	<p:overlayPanel widgetVar="wvAideEtatControleConformite" hideEffect="fade" dynamic="true" showCloseIcon="true"
+		styleClass="overlay-aide-contextuelle overlay-aide-contextuelle-big">
+		<ui:include src="/aide_contextuelle/controle_conformite_etat.xhtml" />
+	</p:overlayPanel>
+												
+	
+	<div class="ui-g">
+		<div class="ui-g-12">
+			<p:fieldset legend="Paramètres" >
+				<p:panelGrid columns="7">
+					<p:outputLabel value="Début" />
+					<p:calendar value="#{etatNonConformiteBean.dateDebut}" pattern="#{msg.date_pattern}"
+						 mask="true" locale="fr" navigator="true" showOn="button" timeZone="#{msg.time_zone}"> 
+					</p:calendar>
+					<p:outputLabel value="Fin" />
+					<p:calendar value="#{etatNonConformiteBean.dateFin}"  pattern="#{msg.date_pattern}"
+						 mask="true" locale="fr" navigator="true" showOn="button" timeZone="#{msg.time_zone}"> 
+					</p:calendar>
+					
+					<p:commandButton value="Valider" oncomplete="PF('wvDataTableDocumentNonConformite').filter()" 
+					actionListener="#{etatNonConformiteBean.actRecherche}"	update="@widgetVar(wvDataTableDocumentNonConformite)" />
+					
+				
+	
+				</p:panelGrid>
+					
+			</p:fieldset>
+			<p:commandButton  value="Marquer les lots sélectionnés comme terminés" process="@this"
+		update="@widgetVar(wvDataTableDocumentNonConformite)" oncomplete="PF('wvDataTableDocumentNonConformite').filter()"
+		actionListener="#{etatNonConformiteBean.actTermineLot}" class="btn-lot-termine btn" />
+		
+		<p:commandButton  value="Marquer les lots sélectionnés comme non terminés" process="@this"
+		update="@widgetVar(wvDataTableDocumentNonConformite)" oncomplete="PF('wvDataTableDocumentNonConformite').filter()"
+		actionListener="#{etatNonConformiteBean.actNonTermineLot}" class="btn-lot-non-termine btn" />
+		</div>
+	</div>
+
+	<p:panel header="Liste des lots">
+		<div class="ui-g">
+			<div class="ui-g-12">
+<!-- 			selection="#{etatNonConformiteBean.detailLigne}"  -->
+				<p:dataTable value="#{etatNonConformiteBean.model}"
+					id="dataTableDocumentNonConformite" 
+					var="doc" 
+					rowKey="#{doc.id}"
+					widgetVar="wvDataTableDocumentNonConformite"
+					selection="#{etatNonConformiteBean.selection}" 
+					resizableColumns="true"
+					paginator="true"
+					rows="#{msg.modele_datatable_ligne_par_page_debut}"
+					paginatorTemplate="#{msg.modele_datatable_paginator}"
+					rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+					emptyMessage="#{msg.message_datatable_vide}"
+					currentPageReportTemplate="#{msg.modele_datatable_page_courante}"
+					>
+					
+					<p:column selectionMode="multiple" style="width:16px;text-align:center" exportable="false" />
+					
+					<p:ajax event="toggleSelect" update="@this" process="@this" />
+					<p:ajax event="rowSelectCheckbox" update="@this" process="@this" />
+					  <p:ajax event="rowUnselectCheckbox" update="@this" process="@this" />
+					  <p:ajax event="rowSelect" update="@this" process="@this" />
+					  <p:ajax event="rowUnselect" update="@this" process="@this" />
+					<p:ajax event="rowToggle" listener="#{etatNonConformiteBean.onRowToggle}" update="@widgetVar(wvDataTableDocumentNonConformiteRC)" 
+						oncomplete="ligneSeperationExpend()"/>
+ 					
+					<f:facet name="{Exporters}">
+						<h:commandLink>
+							<p:graphicImage library="images" name="excel.png" width="24" />
+							<p:dataExporter type="xls" target="dataTableDocumentNonConformite"
+								fileName="etat_non_conformite" />
+						</h:commandLink>
+
+						<h:commandLink>
+							<p:graphicImage library="images" name="pdf.png" width="24" />
+							<p:dataExporter type="pdf" target="dataTableDocumentNonConformite"
+								fileName="etat_non_conformite" />
+						</h:commandLink>
+
+						<h:commandLink>
+							<p:graphicImage library="images" name="csv.png" width="24" />
+							<p:dataExporter type="csv" target="dataTableDocumentNonConformite"
+								fileName="etat_non_conformite" options="#{separateurCsvController.csvOptions}" />
+						</h:commandLink>
+
+						<h:commandLink>
+							<p:graphicImage library="images" name="xml.png" width="24" />
+							<p:dataExporter type="xml" target="dataTableDocumentNonConformite"
+								fileName="etat_non_conformite" />
+						</h:commandLink>
+					</f:facet>
+					
+					<p:column style="width:16px" styleClass="center" exportable="false" >
+			            <p:rowToggler />
+			        </p:column>
+					
+					<p:column headerText="N° lot" sortBy="#{doc.numLot}" filterBy="#{doc.numLot}" filterMatchMode="contains">
+						<p:outputLabel value="#{doc.numLot}" />
+					</p:column>
+					
+					<p:column headerText="Code article" sortBy="#{doc.codeArticle}"	filterBy="#{doc.codeArticle}" styleClass="center" filterMatchMode="contains">
+						<p:commandLink value="#{doc.codeArticle}"
+							action="#{ouvertureDocumentBean.detailArticle(ouvertureDocumentBean.recupCodeArticle(doc.codeArticle))}" 
+							update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');" process="@this">
+						</p:commandLink>
+					</p:column>
+					
+					<p:column headerText="Date" sortBy="#{doc.dateLot}" styleClass="center">
+						<p:outputLabel value="#{doc.dateLot}">
+							<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}" />
+						</p:outputLabel>
+					</p:column>
+					
+					<p:column headerText="DLC/DDM" sortBy="#{doc.dluo}" styleClass="center">
+						<p:outputLabel value="#{doc.dluo}">
+							<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}" />
+						</p:outputLabel>
+					</p:column>
+					
+					<p:column headerText="Qté en stock" sortBy="#{doc.qteRef}" styleClass="center">
+						<p:outputLabel value="#{doc.qteRef} "/> <p:outputLabel value="#{doc.codeUniteRef}"/>
+					</p:column>
+					
+<!-- 					<p:column headerText="Unité" sortBy="#{doc.codeUniteRef}" styleClass="center"> -->
+<!-- 						<p:outputLabel value="#{doc.codeUniteRef}"/> -->
+<!-- 					</p:column> -->
+					
+					<p:column headerText="Présence de non conformité" sortBy="#{doc.presenceDeNonConformite}" filterBy="#{doc.presenceDeNonConformite}" filterMatchMode="exact" styleClass="center">
+			            <f:facet name="filter">
+			                 <p:selectOneMenu onchange="PF('wvDataTableDocumentNonConformite').filter()" styleClass="filtre-datatable">
+			                    <f:selectItem itemLabel="Tous" itemValue="" noSelectionOption="true"/>
+			                    <f:selectItem itemLabel="Vrai" itemValue="true" />
+			                    <f:selectItem itemLabel="Faux" itemValue="false" />
+			                </p:selectOneMenu>
+			            </f:facet>
+						<p:selectBooleanCheckbox  value="#{doc.presenceDeNonConformite}" disabled="true"/>
+					</p:column>
+					
+					<p:column headerText="Lot conforme" sortBy="#{doc.lotConforme}"	filterBy="#{doc.lotConforme}" filterMatchMode="exact" styleClass="center">
+<!-- 					filterMatchMode="equals" -->
+<!-- 					filterMatchMode="exact" -->
+			            <f:facet name="filter">
+			                <p:selectOneMenu onchange="PF('wvDataTableDocumentNonConformite').filter()" styleClass="filtre-datatable">
+			                    <f:selectItem itemLabel="Tous" itemValue="" noSelectionOption="true"/>
+			                    <f:selectItem itemLabel="Vrai" itemValue="true" />
+			                    <f:selectItem itemLabel="Faux" itemValue="false" />
+			                </p:selectOneMenu>
+<!-- 			                <p:selectOneButton onchange="PF('wvDataTableDocumentNonConformite').filter()"> -->
+<!-- 			                    <f:converter converterId="javax.faces.Boolean" /> -->
+<!-- 			                    <f:selectItem itemLabel="Tous" itemValue="" /> -->
+<!-- 			                    <f:selectItem itemLabel="Vrai" itemValue="true" /> -->
+<!-- 			                    <f:selectItem itemLabel="Faux" itemValue="false" /> -->
+<!-- 			                </p:selectOneButton> -->
+			            </f:facet>
+						<p:selectBooleanCheckbox value="#{doc.lotConforme}" disabled="true"/>
+					</p:column>
+					
+					<p:column headerText="Status" filterBy="#{doc.codeStatusConformite}" sortBy="#{doc.codeStatusConformite}" styleClass="center" filterMatchMode="in" exportable="false">			
+			            <f:facet name="filter">
+			                <p:selectCheckboxMenu label="Status" onchange="PF('wvDataTableDocumentNonConformite').filter()" >
+			                    <f:selectItems value="#{etatNonConformiteBean.listeTaStatusConformite}" itemLabel="#{s.libelleStatusConformite}" var="s" itemValue="#{s.codeStatusConformite}"/>
+			                </p:selectCheckboxMenu>
+			            </f:facet>								
+<!-- 						<lgr:iconStatusConformite id="dd" codeStatus="#{doc.codeStatusConformite}"/> -->
+						
+						<p:commandLink process="@this" update=":form:messages" 
+								actionListener="#{etatNonConformiteBean.actDialogControleLot}">
+								<!-- ouverture du dialogue générique, fonctionne quelque soit le controleur qui herite de AbstractDocumentcontroller -->
+								<p:graphicImage library="images" name="report.png" title="Controles" alt="Controles" height="16"/>
+					
+								<lgr:iconStatusConformite id="dd" codeStatus="#{doc.codeStatusConformite}"/>
+
+								<f:attribute name="lot" value="#{doc.numLot}" />
+								<p:ajax event="dialogReturn" listener="#{etatNonConformiteBean.handleReturnDialogControleLot}" 
+									update="@widgetVar(wvDataTableDocumentNonConformite)"
+									oncomplete="PF('wvDataTableDocumentNonConformite').filter()" />
+								<!-- le retour doit être spécifique dans ce cas là pour mettre à jour l'icone du status de conformité -->
+							</p:commandLink>
+					</p:column>
+					
+					<p:column headerText="Terminé" sortBy="#{doc.termine}" filterBy="#{doc.termine}" filterMatchMode="exact" styleClass="center">
+			            <f:facet name="filter">
+			                 <p:selectOneMenu onchange="PF('wvDataTableDocumentNonConformite').filter()" styleClass="filtre-datatable">
+			                    <f:selectItem itemLabel="Tous" itemValue="" noSelectionOption="true"/>
+			                    <f:selectItem itemLabel="Vrai" itemValue="true" />
+			                    <f:selectItem itemLabel="Faux" itemValue="false" />
+			                </p:selectOneMenu>
+			            </f:facet>
+						<p:selectBooleanCheckbox  value="#{doc.termine}" disabled="true"/>
+					</p:column>
+					
+<!-- 					<p:column width="40" styleClass="center" rendered="#{ auth.isDevLgr()}"> -->
+<!-- 						<f:facet name="header"> -->
+<!-- 							<h:outputText value="EAN128" /> -->
+<!-- 						</f:facet>	 -->
+<!-- 						<p:commandLink actionListener="#{gestionLotController.actImprimerEtiquetteCB128}" rendered="#{ auth.isDevLgr()}"> -->
+<!-- 							<p:graphicImage library="images" name="btn/imprimer-code-barre.svg" title="Détail complet" alt="Détail complet" height="16" /> -->
+<!-- 							<f:attribute name="numLot" value="#{doc.numLot}" /> -->
+<!-- 						</p:commandLink> -->
+<!-- 					</p:column> -->
+					
+					<p:column headerText=" " styleClass="center" exportable="false">
+						<p:commandButton title="Imprimer les résultats des controles de conformité de ce lot" 
+							styleClass="icon-print icon"
+							onsuccess="window.open('#{request.contextPath}/output?__report=/reports/solstyce/Fiche_de_non_conformite.rptdesign&amp;__format=pdf')"
+							action="#{etatNonConformiteBean.actImprimerControleLot}">
+							<f:setPropertyActionListener target="#{etatNonConformiteBean.idLot}" value="#{doc.id}" />
+						</p:commandButton>
+						
+						<p:commandButton actionListener="#{etatNonConformiteBean.actImprimerEtiquetteCB128}" rendered="#{ auth.isDevLgr()}"
+							styleClass="icon-barcode icon"
+							title="Code barre" >
+							<f:attribute name="numLot" value="#{doc.numLot}" />
+							<f:attribute name="qteRef" value="#{doc.qteRef} "/> 
+							<f:attribute name="codeUniteRef" value="#{doc.codeUniteRef}"/>
+						</p:commandButton>
+						
+<!-- 						<p:commandLink value="Traça" process="@this"  -->
+<!-- 							update="@widgetVar(wvPanelGridDetailTracaLot)" action="#{etatNonConformiteBean.actDetailTracaLot}" -->
+<!-- 							oncomplete="PF('wvOverlayPanelDetailTracaLot').show('#{component.clientId}');"> -->
+<!-- 							<f:setPropertyActionListener value="#{doc}" target="#{etatNonConformiteBean.detailLigne}" /> -->
+<!-- 						</p:commandLink> -->
+					</p:column>
+					
+					<p:rowExpansion>
+						<div class="ui-g">
+						<div class="ui-g-8">
+			            <p:dataTable value="#{etatNonConformiteBean.dernieresValeur}"
+							id="dataTableDocumentNonConformiteRC" 
+							var="rc" 
+							selectionMode="single"
+							selection="#{etatNonConformiteBean.selectionRC}"
+							rowKey="#{doc.id}"
+							widgetVar="wvDataTableDocumentNonConformiteRC"
+							emptyMessage="Aucun contrôle définit sur ce lot"
+							resizableColumns="true">
+							
+			                <f:facet name="header">
+			                    <p:outputLabel value="Contrôles de conformité du lot #{doc.numLot}"/>
+			                </f:facet>
+			                
+					 		<p:column headerText="Controle" sortBy="#{rc.taConformite.libelleConformite}" styleClass="center">
+								<p:outputLabel value="#{rc.taConformite.libelleConformite}" id="idListeLibelleControle"/>
+								<p:tooltip value="#{rc.taConformite.libelleConformite}" shared="true" for="idListeLibelleControle" showEffect="clip" position="top"/>
+							</p:column>
+							<p:column headerText="Status" sortBy="#{rc.taStatusConformite.libelleStatusConformite}" styleClass="center">
+								<p:outputLabel value="#{rc.taStatusConformite.libelleStatusConformite}"/>
+							</p:column>
+<!-- 							<p:column headerText="Valeur constatée" sortBy="#{rc.valeurConstatee}" styleClass="center"> -->
+<!-- 								<p:outputLabel value="#{rc.valeurConstatee}"/> -->
+<!-- 							</p:column> -->
+							<p:column headerText="Facultatif" sortBy="#{rc.taConformite.ctrlFacultatif}" styleClass="center">
+								<p:selectBooleanCheckbox value="#{rc.taConformite.ctrlFacultatif}" disabled="true"/>
+							</p:column>
+							
+							<p:column headerText="Status" sortBy="#{rc.taStatusConformite.libelleStatusConformite}" styleClass="center">							
+								<lgr:iconStatusConformite id="dd" statusObject="#{rc.taStatusConformite}"/>
+							</p:column>
+							
+							<p:column headerText=" " styleClass="center" exportable="false">
+								<p:commandButton title="Imprimer le résultat de ce contrôle de conformité" 
+									styleClass="icon-print icon"
+									onsuccess="window.open('#{request.contextPath}/output?__report=/reports/solstyce/Fiche_de_non_conformite.rptdesign&amp;__format=pdf')"
+									action="#{etatNonConformiteBean.actImprimerUneFiche}">
+									<f:setPropertyActionListener target="#{etatNonConformiteBean.selectionRC}" value="#{rc}" />
+									<f:setPropertyActionListener target="#{etatNonConformiteBean.idLot}" value="#{doc.id}" />
+								</p:commandButton>
+							</p:column>
+											 		
+			            </p:dataTable>
+			            </div>
+			            <div class="ui-g-4">
+			            <p:panel header="Origine &amp; Utilisation">
+			            	<p:commandLink value="Traçabilité" actionListener="#{detailLotController.afficheTraca}" update=":form:tabView" oncomplete="activeLastTabTracabilite();">
+								<p:graphicImage library="images" name="zoom.png" title="Détail complet" alt="Détail complet" height="16" />
+								<f:attribute name="numLot" value="#{doc.numLot}" />
+							</p:commandLink>
+							<br/>
+							
+			            	<p:commandLink value="Réception d'origine #{etatNonConformiteBean.tracaLot.origineBonReception.codeDocument}"
+			            			rendered="#{etatNonConformiteBean.tracaLot.origineBonReception!=null}"
+									action="#{ouvertureDocumentBean.detailDocument(ouvertureDocumentBean.recupCodeDocument(etatNonConformiteBean.tracaLot.origineBonReception.codeDocument,ouvertureDocumentBean.getTypeDocumentBonReception()))}" 
+									update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');" process="@this">
+							</p:commandLink>	
+							
+							<p:commandLink value="Fabrication d'origine #{etatNonConformiteBean.tracaLot.origineFabrication.codeDocument}"
+									rendered="#{etatNonConformiteBean.tracaLot.origineFabrication!=null}"
+									action="#{ouvertureDocumentBean.detailDocument(ouvertureDocumentBean.recupCodeDocument(etatNonConformiteBean.tracaLot.origineFabrication.codeDocument,ouvertureDocumentBean.getTypeDocumentFabrication()))}" 
+									update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');" process="@this">
+							</p:commandLink>	
+							
+							<p:panel rendered="#{etatNonConformiteBean.tracaLot.listeUtilFabrication!=null}">
+			            		<ui:repeat var="f" value="#{etatNonConformiteBean.tracaLot.listeUtilFabrication}" >
+			            			<p:commandLink value="Utilisé dans la fabrication #{f.codeDocument}"
+										action="#{ouvertureDocumentBean.detailDocument(ouvertureDocumentBean.recupCodeDocument(f.codeDocument,ouvertureDocumentBean.getTypeDocumentFabrication()))}" 
+										update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');" process="@this">
+									</p:commandLink>
+									<br/>	
+			            		</ui:repeat>
+			            	</p:panel>
+			            	
+			            </p:panel>
+			            </div>
+			            </div>
+			        </p:rowExpansion>
+					
+					
+
+				</p:dataTable>
+				
+<!-- 				<p:overlayPanel widgetVar="wvOverlayPanelDetailTracaLot" hideEffect="fade"> -->
+<!-- 					<p:outputPanel widgetVar="wvPanelGridDetailTracaLot" style="text-align:center;"> -->
+<!-- 						  <p:panel header="Origine &amp; Utilisation"> -->
+<!-- 			            	<p:commandLink value="Traçabilité" actionListener="#{detailLotController.afficheTraca}" update=":form:tabView" oncomplete="activeLastTabTracabilite();"> -->
+<!-- 								<p:graphicImage library="images" name="zoom.png" title="Détail complet" alt="Détail complet" height="16" /> -->
+<!-- 								<f:attribute name="numLot" value="#{doc.numLot}" /> -->
+<!-- 							</p:commandLink> -->
+<!-- 							<br/> -->
+							
+<!-- 			            	<p:commandLink value="Réception d'origine #{etatNonConformiteBean.tracaLot.origineBonReception.codeDocument}" -->
+<!-- 			            			rendered="#{etatNonConformiteBean.tracaLot.origineBonReception!=null}" -->
+<!-- 									action="#{ouvertureDocumentBean.detailDocument(ouvertureDocumentBean.recupCodeDocument(etatNonConformiteBean.tracaLot.origineBonReception.codeDocument,ouvertureDocumentBean.getTypeDocumentBonReception()))}"  -->
+<!-- 									update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');" process="@this"> -->
+<!-- 							</p:commandLink>	 -->
+							
+<!-- 							<p:commandLink value="Fabrication d'origine #{etatNonConformiteBean.tracaLot.origineFabrication.codeDocument}" -->
+<!-- 									rendered="#{etatNonConformiteBean.tracaLot.origineFabrication!=null}" -->
+<!-- 									action="#{ouvertureDocumentBean.detailDocument(ouvertureDocumentBean.recupCodeDocument(etatNonConformiteBean.tracaLot.origineFabrication.codeDocument,ouvertureDocumentBean.getTypeDocumentFabrication()))}"  -->
+<!-- 									update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');" process="@this"> -->
+<!-- 							</p:commandLink>	 -->
+							
+<!-- 							<p:panel rendered="#{etatNonConformiteBean.tracaLot.listeUtilFabrication!=null}"> -->
+<!-- 			            		<ui:repeat var="f" value="#{etatNonConformiteBean.tracaLot.listeUtilFabrication}" > -->
+<!-- 			            			<p:commandLink value="Utilisé dans la fabrication #{f.codeDocument}" -->
+<!-- 										action="#{ouvertureDocumentBean.detailDocument(ouvertureDocumentBean.recupCodeDocument(f.codeDocument,ouvertureDocumentBean.getTypeDocumentFabrication()))}"  -->
+<!-- 										update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');" process="@this"> -->
+<!-- 									</p:commandLink> -->
+<!-- 									<br/>	 -->
+<!-- 			            		</ui:repeat> -->
+<!-- 			            	</p:panel> -->
+			            	
+<!-- 			            </p:panel> -->
+<!-- 					</p:outputPanel> -->
+<!-- 				</p:overlayPanel> -->
+
+			</div>
+
+		</div>
+	</p:panel>
+
+</ui:composition>

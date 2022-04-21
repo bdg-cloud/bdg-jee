@@ -1,0 +1,92 @@
+<project name="Bureau de gestion" default="MAJ_0">
+		
+    <property name="jdbcDriver" value="org.postgresql.Driver"/>
+	<!-- jdbc:postgresql://host:port/database -->
+	
+	<!--<property name="dbFile" value="${db}"/>-->
+	<!--<property name="serveur" value="jdbc:firebirdsql:"/>-->
+	<!--<property name="debutURL" value="${serveur}${debutURLLoc}"/>-->
+	<!--<property name="dbURL" value="${debutURL}${dbFile}"/>-->
+	<property name="dbURL" value="jdbc:postgresql:bdg"/>
+	<property name="dbUser" value="${userLoc}"/>
+	<property name="dbPass" value="${passLoc}"/>
+
+
+	<!--<property name="old_Version" value="${oldVersion}"  />--> 
+	<!--<property name="dbPath" value="${path}"/>-->
+	 
+	<target name="MAJ_0" >		
+		<!-- <antcall target="MAJ_2.0.2"></antcall> -->
+		<antcall target="MAJ_DEV"></antcall>
+		<!-- <antcall target="MAJ_3.0.0"></antcall> -->
+	</target>
+	
+	<target name="MAJ_DEV" >		
+		<echo message="Debug : target MAJ_DEV" />
+		<sql driver="${jdbcDriver}"
+			url="${dbURL}" userid="${dbUser}" password="${dbPass}" output="log/db.log" encoding="UTF-8" delimitertype="row" delimiter="^"  keepformat="on">
+			<!--<transaction><fileset dir="MAJ" includes="MAJ_2.0.2-1.SQL"/></transaction>-->
+			
+			<transaction>
+				set schema '${dossier}';
+	    	</transaction>
+			<!--
+		    <transaction>
+		    	select * from ta_entreprise where id_entreprise=16;
+	    	</transaction>
+	    	-->
+			<transaction src="sql/maj_dev.sql"/>
+		</sql>
+	</target>
+	
+	<target name="MAJ_3.0.0" >		
+		<echo message="Debug : target MAJ_3.0.0" />
+		<sql driver="${jdbcDriver}"
+			url="${dbURL}" userid="${dbUser}" password="${dbPass}" output="log/db.log" encoding="UTF-8" delimitertype="row" delimiter="^"  keepformat="on">
+			<!--<transaction><fileset dir="MAJ" includes="MAJ_2.0.2-1.SQL"/></transaction>-->
+			
+			
+			<transaction src="sql/maj_3.0.0-1.sql"/>
+			<!-- <transaction src="sql/MAJ_2.0.12-2.SQL"/> -->	
+		</sql>
+		<!-- Le dernier set de MAJ doit mettre à jour les fichiers -->	
+		<antcall target="MAJ_Fichiers"></antcall>
+	</target>
+	
+	<target name="MAJ_Fichiers" >		
+		<echo message="Debug : target MAJ_Fichiers" />
+		
+		<!-- <antcall target="MAJ_FichiersToujours"></antcall> -->
+	</target>	
+		
+	<target name="MAJ_FichiersToujours" >		
+		<echo message="Debug : target MAJ_FichiersToujours" />
+		<copy file="IDBD.ini" toDir="${dbPath}/" />
+		<copy file="CtrlBD.ini" toDir="${dbPath}/" />
+		<copy file="ListeChampGrille.properties" toDir="${dbPath}/" />
+		<copy file="Modif.properties" toDir="${dbPath}/" />
+		<copy file="TitreBD2.lst" toDir="${dbPath}/" />
+		<!--<copy file="GestCode.properties" toDir="${dbPath}/" />-->
+		<copy file="ChampMaj.ini" toDir="${dbPath}/" />
+		
+		<copy file="AttributeEtiquette.properties" toDir="${dbPath}/" />
+		<copy file="AttributeModelLettre.properties" toDir="${dbPath}/" />
+		<copy file="AttributeTableEdition.properties" toDir="${dbPath}/" />
+		<antcall target="update"></antcall>
+	</target>
+	
+	<target name="update" >
+		<echo message="Debug : target update" />
+		<sql driver="${jdbcDriver}"
+       		url="${dbURL}" userid="${dbUser}" password="${dbPass}" encoding="UTF-8" output="db.txt"  keepformat="on">
+    		<classpath refid="jdbc.driver.class.path"/>
+		    	<transaction>
+	  				update ta_version set old_version = num_version;
+	    		</transaction>		
+  		</sql>	 	
+	 </target>
+	
+</project>
+
+
+

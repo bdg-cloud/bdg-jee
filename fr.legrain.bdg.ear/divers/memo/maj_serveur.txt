@@ -1,0 +1,92 @@
+
+vérifer l'espace libre et faire le ménage eventuel
+faire un snapshot
+tuer bdg/wildfly
+
+apt-get update
+apt-get upgrade
+do-release-upgrade -c
+do-release-upgrade
+si il faut faire d'autre maj
+
+apt update
+apt list --upgradable
+apt upgrade
+do-release-upgrade
+
+
+
+16:38:00 => 17:00 => 22 minutes
+redémarrage gandi / tuer bdg/wildfly
+
+
+nano /etc/postgresql/12/main/postgresql.conf
+max_locks_per_transaction = 1024 # min 10
+
+systemctl stop postgresql
+pg_dropcluster 12 main --stop
+pg_upgradecluster 10 main
+pg_dropcluster 10 main --stop
+
+ environ 10 minutes
+ 
+Il peut être utile de lancer un VACUUM FULL sur la base
+ 
+
+#update-initramfs -c -k all
+#update-grub
+
+
+
+cd /etc/apt/sources.list.d#
+echo "deb [arch=amd64] https://mirrors.gandi.net/gandi/ubuntu/ bionic main" >> ubuntu-bionic-gandi.list
+echo "deb [arch=amd64] https://mirrors.gandi.net/ubuntu/ bionic main multiverse universe" >> ubuntu-bionic.list
+echo "deb [arch=amd64] https://mirrors.gandi.net/ubuntu/ bionic-updates main multiverse universe" >> ubuntu-bionic-updates.list
+echo "deb [arch=amd64] https://mirrors.gandi.net/ubuntu/ bionic-security main multiverse universe" >> ubuntu-bionic-security.list
+
+
+
+barman - sauvegarde postgresql
+en cas de problème de sauvegarde suite à une mise à jour
+
+supprimer les fichier dans les repertoires wal et incoming : 
+rm /srv/bck_app_prod/barman/prod/wals/* 
+rm /srv/bck_app_prod/barman/prod/incoming/*
+
+supprimer les sauvegarde existante
+barman show-backup prod xxxxxxxxxxxxxx
+barman delete prod xxxxxxxxxxxxxx
+
+arreter le slot s'il est actif
+barman receive-wal --stop prod
+
+supprimer le slot
+barman receive-wal --drop-slot prod
+
+recreer un slot
+barman receive-wal --create-slot prod
+
+réinitialiser le slot si besoin
+barman switch-xlog --force --archive prod
+
+relancer le cron
+barman cron
+
+se connecter en ssh manuellement dans les 2 sens pour écrire les fingerprints
+sur le serveur de sauvegarde : su barman; ssh postgres@IP_SERVEUR_A_SAUVEGARDER
+sur le serveur à sauvegarder : su postgres; ssh barman@IP_SERVEUR_DE_SAUVEGARDE
+
+vérifier la config
+barman check prod
+barman switch-wal --force --archive prod
+
+relancer un base_backup
+barman backup prod
+
+en cas de problème vérifier les logs : /var/mog/barman/barman.log
+
+
+WARNING: pg_basebackup does not copy the PostgreSQL configuration files that reside outside PGDATA. Please manually backup the following files:
+    /etc/postgresql/12/main/postgresql.conf
+    /etc/postgresql/12/main/pg_hba.conf
+    /etc/postgresql/12/main/pg_ident.conf

@@ -1,0 +1,191 @@
+<ui:composition 
+	xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:h="http://java.sun.com/jsf/html" 
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets" 
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+	<ui:define name="content">
+
+		<f:facet name="last">
+			<!-- surcharge des CSS primefaces -->
+			<h:outputStylesheet library="css" name="icarus-bdg.css" />
+			<h:outputStylesheet library="css" name="theme-compteclient.css" />
+		</f:facet>
+
+		<h:form>
+
+			<div class="ui-g  ui-fluid">
+
+				<div class="ui-g-12">
+<!-- 					<p:outputLabel class="affiche-utilisateur" -->
+<!-- 						value="#{c_langue.formule_politesse} #{indexCompteController.utilisateur.prenom} #{indexCompteController.utilisateur.nom}" /> -->
+						<h:outputFormat class="affiche-utilisateur" value="#{c_langue.formule_politesse}">
+				            <f:param value="#{auth.user.prenom}" />
+				            <f:param value="#{auth.user.nom}" />
+				        </h:outputFormat>
+					<br />
+				</div>
+
+				<div class="container_onglet_menu_fournisseurs" onclick="window.location.href='/ajout-fournisseur.xhtml'">
+					<h:graphicImage class="picto-fournisseurs" library="images" name="picto-fournisseurs.png" />
+					<div class="ui-g-8">
+						<p:outputLabel styleClass="titre-picto" value="#{c_langue.panel_bleu_titre_Fournisseurs}" />
+						<p:outputLabel styleClass="texte-picto" value="#{c_langue.panel_bleu_sous_titre_Fournisseurs}" />
+					</div>
+				</div>
+
+				<div class="container_onglet_menu_documents" onclick="window.location.href='/page-mes-fournisseurs.xhtml'">
+					<h:graphicImage class="picto-documents" library="images" name="picto-documents.png" />
+					<div class="ui-g-8">
+						<p:outputLabel styleClass="titre-picto" value="#{c_langue.panel_jaune_titre_Documents}" />
+						<p:outputLabel styleClass="texte-picto" value="#{c_langue.panel_jaune_sous_titre_Documents}" />
+					</div>
+				</div>
+
+				<div class="container_onglet_menu_informations">
+					<h:graphicImage class="picto-informations" library="images" name="picto-information.png" />
+					<div class="ui-g-8">
+						<p:outputLabel styleClass="titre-picto" value="#{c_langue.panel_rouge_titre_Informations}" />
+						<p:outputLabel styleClass="texte-picto" value="#{c_langue.panel_rouge_sous_titre_Informations}" />
+					</div>
+				</div>
+
+				<div class="ui-g-12">
+					<p:outputLabel styleClass="info-page" value="#{c_langue.mes_fournisseurs_titre}" />
+					<p:outputLabel styleClass="info-texte" value="#{c_langue.mes_fournisseurs_sous_titre}" />
+				</div>
+
+				<!-- Coté gauche -->
+				<div class="ui-g-12 ui-lg-12">
+
+					<div id="j_idt30_content" class="ui-panelgrid-content ui-widget-content ui-grid ui-grid-responsive">
+					
+						<div class="ui-g-12" align="center">
+
+							<p:dataTable 
+								var="f" 
+								value="#{mesFournisseursController.listeMesFournisseurs}" 
+								selected="false" 
+								selectionMode="single"
+								selection="#{mesFournisseursController.mesFournisseurs}" 
+								rowKey="#{f.idFournisseur}" 
+								emptyMessage="Aucun enregistrement trouvé">
+
+								<f:facet name="header" icon="fa fa-user-plus">
+									<p:outputLabel value="#{c_langue.mes_fournisseurs_barre_titre}" />
+								</f:facet>
+
+								<p:ajax event="rowSelect" listener="#{mesFournisseursController.onRowSelect}" update="@widgetVar(carDialogmf)"
+									oncomplete="PF('carDialogmf').show()" />
+									
+								<p:column headerText="#{c_langue.datatable_col_visuel}" class="visuel">
+									<p:graphicImage library="images" name="logo.jpeg" class="logo" rendered="#{f.taFournisseur.blobLogo == null}" />
+									<p:graphicImage value="/image_log_frs_cpt_client/#{f.taFournisseur.idFournisseur}"  height="10"/>
+								</p:column>
+
+								<p:column filterBy="#{f.taFournisseur.raisonSocialeFournisseur}" headerText="#{c_langue.datatable_col_fournisseur}" class="fournisseur">
+									<h:outputText value="#{f.taFournisseur.raisonSocialeFournisseur}" />
+								</p:column>
+
+								<p:column filterBy="#{f.taFournisseur.siretFournisseur}" headerText="#{c_langue.datatable_col_siret}" class="siret">
+									<h:outputText value="#{f.taFournisseur.siretFournisseur}" />
+								</p:column>
+								
+								<p:column filterBy="#{f.taFournisseur.adresse1Fournisseur}" headerText="#{c_langue.datatable_col_adresse}" class="adresse">
+									<h:outputText value="#{f.taFournisseur.adresse1Fournisseur} #{f.taFournisseur.adresse2Fournisseur} #{f.taFournisseur.adresse3Fournisseur}" />
+								</p:column>
+								
+								<p:column filterBy="#{f.taFournisseur.codePostalFournisseur}" headerText="#{c_langue.datatable_col_cp}" class="cp">
+									<h:outputText value="#{f.taFournisseur.codePostalFournisseur}" />
+								</p:column>
+								
+								<p:column filterBy="#{f.taFournisseur.villeFournisseur}" headerText="#{c_langue.datatable_col_ville}" class="ville">
+									<h:outputText value="#{f.taFournisseur.villeFournisseur}" />
+								</p:column>
+								
+								<p:column filterBy="#{f.taFournisseur.paysFournisseur}" headerText="#{c_langue.datatable_col_pays}" class="pays">
+									<h:outputText value="#{f.taFournisseur.paysFournisseur}" />
+								</p:column>
+								
+								<p:column class="liaison" priority="1">
+									<p:commandButton update="@widgetVar(carDialogmf)" oncomplete="PF('carDialogmf').show()" icon="ui-icon-search" title="Info du fournisseur">
+										<f:setPropertyActionListener value="#{f}" target="#{mesFournisseursController.mesFournisseurs}" />
+									</p:commandButton>
+								</p:column>
+							</p:dataTable>
+
+							<p:dialog header="Détail de votre fournisseur" 
+										widgetVar="carDialogmf" 
+										modal="true" 
+										showEffect="fade" 
+										hideEffect="fade" 
+										resizable="false"
+										class="dialog-pmf">
+
+								<p:outputPanel id="carDetail" style="text-align:center;">
+									<p:panelGrid columns="2" rendered="#{not empty mesFournisseursController.mesFournisseurs}">
+
+										<f:facet name="header">
+											<p:graphicImage value="/image_log_frs_cpt_client/#{mesFournisseursController.mesFournisseurs.taFournisseur.idFournisseur}"  height="30"/>
+										</f:facet>
+
+										<h:outputText value="#{c_langue.popup_info_fournisseur_footer_raison_sociale}" />
+										<h:outputText value="#{mesFournisseursController.mesFournisseurs.taFournisseur.raisonSocialeFournisseur}" />
+
+										<h:outputText value="#{c_langue.popup_info_fournisseur_footer_siret}" />
+										<h:outputText value="#{mesFournisseursController.mesFournisseurs.taFournisseur.siretFournisseur}" />
+
+										<h:outputText value="#{c_langue.popup_info_fournisseur_footer_rcs}" />
+										<h:outputText value="#{mesFournisseursController.mesFournisseurs.taFournisseur.rcsFournisseur}" />
+
+										<h:outputText value="#{c_langue.popup_info_fournisseur_footer_tva}" />
+										<h:outputText value="#{mesFournisseursController.mesFournisseurs.taFournisseur.tvaIntraFournisseur}" />
+
+										<h:outputText value="#{c_langue.popup_info_fournisseur_footer_capital}" />
+										<h:outputText value="€#{mesFournisseursController.mesFournisseurs.taFournisseur.capitalFournisseur}" />
+
+										<h:outputText value="Adresse:" />
+										<h:outputText
+											value="#{mesFournisseursController.mesFournisseurs.taFournisseur.adresse1Fournisseur}
+													 #{mesFournisseursController.mesFournisseurs.taFournisseur.adresse2Fournisseur}
+													 #{mesFournisseursController.mesFournisseurs.taFournisseur.adresse3Fournisseur}" />
+
+										<h:outputText value="Cp" />
+										<h:outputText value="#{mesFournisseursController.mesFournisseurs.taFournisseur.codePostalFournisseur}" />
+
+										<h:outputText value="Ville" />
+										<h:outputText value="#{mesFournisseursController.mesFournisseurs.taFournisseur.villeFournisseur}" />
+
+										<h:outputText value="Pays" />
+										<h:outputText value="#{mesFournisseursController.mesFournisseurs.taFournisseur.paysFournisseur}" />
+
+										<h:outputText value="Téléphone" />
+										<h:outputText value="#{mesFournisseursController.mesFournisseurs.taFournisseur.telFournisseur}" />
+
+										<h:outputText value="Fax" />
+										<h:outputText value="#{mesFournisseursController.mesFournisseurs.taFournisseur.faxFournisseur}" />
+
+										<h:outputText value="Email" />
+										<h:outputText value="#{mesFournisseursController.mesFournisseurs.taFournisseur.emailFournisseur}" />
+									</p:panelGrid>
+								</p:outputPanel>
+
+								<div class="ui-g-12" align="center">
+									<p:commandButton value="Vos documents" icon="fa fa-edit" type="button"
+										onclick="window.location.href='/page-fournisseur.xhtml?idFrs=#{mesFournisseursController.mesFournisseurs.idFournisseur}'"
+										class="vosDoc" ajax="false" />
+									<p:spacer />
+								</div>
+
+							</p:dialog>
+
+						</div>
+					</div>
+				</div>
+			</div>
+
+		</h:form>
+
+	</ui:define>
+</ui:composition>

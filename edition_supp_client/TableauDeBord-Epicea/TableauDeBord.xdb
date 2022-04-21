@@ -1,0 +1,292 @@
+<?xml version="1.0"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xdb="http://www.borland.com/schemas/delphi/6.0/XMLDataBinding">
+  <xs:element name="tableauDeBord" type="tableauDeBordType"/>
+  <xs:complexType name="tableauDeBordType"><xs:annotation>
+      <xs:appinfo xdb:docElement="tableauDeBord"/>
+    </xs:annotation>
+    
+    <xs:sequence>
+      <xs:element name="dossier" type="dossierType"/>
+      <xs:element name="pages" type="pagesType"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="dossierType">
+    <xs:sequence>
+      <xs:element name="code-dossier" type="xs:integer"><xs:annotation>
+          <xs:appinfo xdb:dataType="string"/>
+        </xs:annotation>
+        
+      </xs:element>
+      <xs:element name="code-exercice" type="xs:integer"><xs:annotation>
+          <xs:appinfo xdb:dataType="string"/>
+        </xs:annotation>
+        
+      </xs:element>
+      <xs:element name="Nom_Exercice" type="xs:integer"><xs:annotation>
+          <xs:appinfo xdb:dataType="string"/>
+        </xs:annotation>
+        
+      </xs:element>
+      <xs:element name="Raison_sociale" type="xs:string"><xs:annotation>
+          <xs:appinfo xdb:dataType="string"/>
+        </xs:annotation>
+        
+      </xs:element>
+      <xs:element name="debut-n" type="xs:string"><xs:annotation>
+          <xs:appinfo xdb:dataType="tdateTime"/>
+        </xs:annotation>
+        
+      </xs:element>
+      <xs:element name="fin-n" type="xs:string"><xs:annotation>
+          <xs:appinfo xdb:dataType="tdateTime"/>
+        </xs:annotation>
+        
+      </xs:element>
+      <xs:element name="fin-n1" type="xs:string"><xs:annotation>
+          <xs:appinfo xdb:dataType="tdateTime"/>
+        </xs:annotation>
+        
+      </xs:element>
+      <xs:element name="fin-n2" type="xs:string"/>
+      <xs:element name="adresse1" type="xs:string"><xs:annotation>
+          <xs:appinfo xdb:dataType="string"/>
+        </xs:annotation>
+        
+      </xs:element>
+      <xs:element name="adresse2" type="xs:decimal"/>
+      <xs:element name="cp" type="xs:integer"><xs:annotation>
+          <xs:appinfo xdb:dataType="string"/>
+        </xs:annotation>
+        
+      </xs:element>
+      <xs:element name="ville" type="xs:string"><xs:annotation>
+          <xs:appinfo xdb:dataType="string"/>
+        </xs:annotation>
+        
+      </xs:element>
+      <xs:element name="siret" type="xs:integer"><xs:annotation>
+          <xs:appinfo xdb:dataType="string"/>
+        </xs:annotation>
+        
+      </xs:element>
+      <xs:element name="tva-intra" type="xs:integer"><xs:annotation>
+          <xs:appinfo xdb:dataType="string"/>
+        </xs:annotation>
+        
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="pagesType">
+    <xs:sequence>
+      <xs:element name="page" type="pageType" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="pageType">
+    <xs:sequence>
+      <xs:element name="tresorerie" type="tresorerieType" minOccurs="0"/>
+      <xs:element name="Dettes-et-creances" type="Dettes-et-creancesType" minOccurs="0"/>
+      <xs:element name="charges-produits" type="charges-produitsType" minOccurs="0"/>
+      <xs:element name="Bilan" type="BilanType" minOccurs="0"/>
+      <xs:element name="CompteResultat" type="CompteResultatType" minOccurs="0"/>
+      <xs:element name="RepartitionCharges" type="RepartitionChargesType"/>
+      <xs:element name="RepartitionProduits" type="RepartitionProduitsType"/>
+      <xs:element name="RepartitionDettes" type="RepartitionDettesType"/>
+      <xs:element name="RepartitionCreances" type="RepartitionCreancesType"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="tresorerieType">
+    <xs:sequence>
+      <xs:element name="solde-comptes" type="solde-comptesType"/>
+      <xs:element name="courbes-evolution-tresorerie" type="courbes-evolution-tresorerieType"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="solde-comptesType">
+    <xs:sequence>
+      <xs:element name="ligne" type="ligneType" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ligneType">
+    <xs:sequence>
+      <xs:element name="comptes" type="xs:integer" minOccurs="0"><xs:annotation>
+          <xs:appinfo xdb:dataType="string"/>
+        </xs:annotation>
+        
+      </xs:element>
+      <xs:element name="libellé" type="xs:string" minOccurs="0"><xs:annotation>
+          <xs:appinfo xdb:dataType="string"/>
+        </xs:annotation>
+        
+      </xs:element>
+      <xs:element name="Rapprochement" type="xs:decimal" minOccurs="0"><xs:annotation>
+          <xs:appinfo xdb:dataType="currency"/>
+        </xs:annotation>
+        
+      </xs:element>
+      <xs:element name="balance" type="xs:decimal" minOccurs="0"><xs:annotation>
+          <xs:appinfo xdb:dataType="currency"/>
+        </xs:annotation>
+        
+      </xs:element>
+      <xs:element name="Compte" type="xs:integer" minOccurs="0"><xs:annotation>
+          <xs:appinfo xdb:dataType="string"/>
+        </xs:annotation>
+        
+      </xs:element>
+      <xs:element name="ExoN" type="xs:decimal" minOccurs="0"><xs:annotation>
+          <xs:appinfo xdb:dataType="currency"/>
+        </xs:annotation>
+        
+      </xs:element>
+      <xs:element name="ExoN-1" type="xs:decimal" minOccurs="0"><xs:annotation>
+          <xs:appinfo xdb:dataType="currency"/>
+        </xs:annotation>
+        
+      </xs:element>
+      <xs:element name="EcoN-2" type="xs:decimal" minOccurs="0"><xs:annotation>
+          <xs:appinfo xdb:dataType="currency"/>
+        </xs:annotation>
+        
+      </xs:element>
+      <xs:element name="compte" type="xs:integer" minOccurs="0"><xs:annotation>
+          <xs:appinfo xdb:dataType="string"/>
+        </xs:annotation>
+        
+      </xs:element>
+      <xs:element name="Total" type="xs:decimal" minOccurs="0"><xs:annotation>
+          <xs:appinfo xdb:dataType="currency"/>
+        </xs:annotation>
+        
+      </xs:element>
+      <xs:element name="Echéance" type="xs:string" minOccurs="0"><xs:annotation>
+          <xs:appinfo xdb:dataType="tdateTime"/>
+        </xs:annotation>
+        
+      </xs:element>
+      <xs:element name="Exo" type="xs:string" minOccurs="0"><xs:annotation>
+          <xs:appinfo xdb:dataType="string"/>
+        </xs:annotation>
+        
+      </xs:element>
+      <xs:element name="Dettes" type="xs:decimal" minOccurs="0"><xs:annotation>
+          <xs:appinfo xdb:dataType="currency"/>
+        </xs:annotation>
+        
+      </xs:element>
+      <xs:element name="Créances" type="xs:decimal" minOccurs="0"><xs:annotation>
+          <xs:appinfo xdb:dataType="currency"/>
+        </xs:annotation>
+        
+      </xs:element>
+      <xs:element name="mois" type="xs:string" minOccurs="0"><xs:annotation>
+          <xs:appinfo xdb:dataType="string"/>
+        </xs:annotation>
+        
+      </xs:element>
+      <xs:element name="dettes" type="xs:decimal" minOccurs="0"><xs:annotation>
+          <xs:appinfo xdb:dataType="currency"/>
+        </xs:annotation>
+        
+      </xs:element>
+      <xs:element name="creances" type="xs:decimal" minOccurs="0"><xs:annotation>
+          <xs:appinfo xdb:dataType="currency"/>
+        </xs:annotation>
+        
+      </xs:element>
+      <xs:element name="Charges" type="xs:decimal" minOccurs="0"><xs:annotation>
+          <xs:appinfo xdb:dataType="currency"/>
+        </xs:annotation>
+        
+      </xs:element>
+      <xs:element name="Produits" type="xs:decimal" minOccurs="0"><xs:annotation>
+          <xs:appinfo xdb:dataType="currency"/>
+        </xs:annotation>
+        
+      </xs:element>
+      <xs:element name="Resultat" type="xs:decimal" minOccurs="0"><xs:annotation>
+          <xs:appinfo xdb:dataType="currency"/>
+        </xs:annotation>
+        
+      </xs:element>
+      <xs:element name="ExoN-2" type="xs:decimal"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="courbes-evolution-tresorerieType">
+    <xs:sequence>
+      <xs:element name="ligne" type="ligneType" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="Dettes-et-creancesType">
+    <xs:sequence>
+      <xs:element name="Dettes" type="DettesType"/>
+      <xs:element name="courbes-dettes-annuelle" type="courbes-dettes-annuelleType"/>
+      <xs:element name="Creances" type="CreancesType"/>
+      <xs:element name="courbes-dettes-mensuelle" type="courbes-dettes-mensuelleType"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="DettesType">
+    <xs:sequence>
+      <xs:element name="ligne" type="ligneType" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="courbes-dettes-annuelleType">
+    <xs:sequence>
+      <xs:element name="ligne" type="ligneType" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="CreancesType">
+    <xs:sequence>
+      <xs:element name="ligne" type="ligneType" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="courbes-dettes-mensuelleType">
+    <xs:sequence>
+      <xs:element name="ligne" type="ligneType" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="charges-produitsType">
+    <xs:sequence>
+      <xs:element name="courbes-charges-produits-annuelle" type="courbes-charges-produits-annuelleType"/>
+      <xs:element name="courbes-charges-produits-mensuelle" type="courbes-charges-produits-mensuelleType"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="courbes-charges-produits-annuelleType">
+    <xs:sequence>
+      <xs:element name="ligne" type="ligneType" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="courbes-charges-produits-mensuelleType">
+    <xs:sequence>
+      <xs:element name="ligne" type="ligneType" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="BilanType">
+    <xs:sequence>
+      <xs:element name="ligne" type="ligneType" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="CompteResultatType">
+    <xs:sequence>
+      <xs:element name="ligne" type="ligneType" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="RepartitionChargesType">
+    <xs:sequence>
+      <xs:element name="ligne" type="ligneType" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="RepartitionProduitsType">
+    <xs:sequence>
+      <xs:element name="ligne" type="ligneType" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="RepartitionDettesType">
+    <xs:sequence>
+      <xs:element name="ligne" type="ligneType" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="RepartitionCreancesType">
+    <xs:sequence>
+      <xs:element name="ligne" type="ligneType" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>

@@ -1,0 +1,227 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<p:menubar styleClass="menu-onglet" >
+		<p:menuitem title="Fermer l'écran" value="Fermer"
+			styleClass="icon icon-close menuitem-fermer-droite" process="@this"	
+			onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())">
+		</p:menuitem>
+	</p:menubar>
+	
+	<div class="ui-g">
+		<div class="ui-g-12">
+			<p:fieldset legend="Paramètres">
+				<p:panelGrid columns="6">
+					<p:outputLabel value="Début" />
+					<p:calendar value="#{etatStocksBean.dateDebut}" pattern="dd/MM/yyyy"
+						 mask="true" locale="fr" navigator="true" showOn="button" timeZone="#{msg.time_zone}"> 
+					</p:calendar>
+					<p:outputLabel value="Fin" />
+					<p:calendar value="#{etatStocksBean.dateFin}"  pattern="dd/MM/yyyy"
+						 mask="true" locale="fr" navigator="true" showOn="button" timeZone="#{msg.time_zone}"> 
+					</p:calendar>
+
+<!-- 					<p:panelGrid columns="2"> -->
+<!-- 						<p:selectBooleanCheckbox title="Par famille" -->
+<!-- 							value="#{etatStocksBean.parFamille}"> -->
+<!-- 						</p:selectBooleanCheckbox> -->
+<!-- 						<p:outputLabel value="Par famille" /> -->
+<!-- 					</p:panelGrid> -->
+
+					
+<!-- 					<p:panelGrid columns="2"> -->
+						<p:selectBooleanCheckbox title="Afficher aussi les lots terminés"
+							value="#{etatStocksBean.afficherLesTermine}" >
+						</p:selectBooleanCheckbox>
+						<p:outputLabel value="Afficher aussi les lots terminés" />
+						
+						
+<!-- 					</p:panelGrid>  -->
+					<p:outputLabel value="Entrepôt" />
+					<p:autoComplete value="#{etatStocksBean.taEntrepot}" 
+						converter="entityConverter"
+						completeMethod="#{etatStocksBean.entrepotAutoComplete}"
+						var="entrepot" itemLabel="#{entrepot.codeEntrepot}" itemValue="#{entrepot}"
+						forceSelection="true" dropdown="true" placeholder="Entrepôt">					
+						<p:column>
+							<h:outputText value="#{entrepot.codeEntrepot}" />
+						</p:column>
+
+						<p:column>
+							<h:outputText value="#{entrepot.libelle}" />
+						</p:column>						
+						<p:ajax event="itemSelect"  update="@this" />
+					</p:autoComplete>
+
+					<p:outputLabel value="Emplacement" />
+					<p:autoComplete value="#{etatStocksBean.emplacement}"
+						converter="entityConverter"
+						completeMethod="#{etatStocksBean.emplacementAutoComplete}"
+						var="emplacement" itemLabel="#{emplacement}" itemValue="#{emplacement}"
+						forceSelection="true" dropdown="true" placeholder="Emplacement">
+						<p:column>
+							<h:outputText value="#{emplacement}" />
+						</p:column>
+							<p:ajax event="itemSelect"  update="@this" />
+					</p:autoComplete>
+
+									
+					</p:panelGrid>
+					
+
+				<p:commandButton value="Valider" oncomplete="PF('wvDataTableDocumentEtatStocks').filter()" 
+					actionListener="#{etatStocksBean.actRecherche}"	update="@widgetVar(wvDataTableDocumentEtatStocks), @widgetVar(wvCheckEtatStocks)" />
+				<ui:include src="/etats/etat_choix_edition.xhtml" />
+				
+<!-- 				<p:selectBooleanCheckbox widgetVar="wvCheckEtatStocks" title="Afficher Choix d'édition" style="margin-left:10px" -->
+<!-- 							value="#{etatChoixEditionBean.choixEdition}" -->
+<!-- 							onchange="PF('interfacePrintEtatStock').show()" disabled="#{!etatChoixEditionBean.tcheckEdition}"> -->
+<!-- 							<p:ajax update="@this" /> -->
+<!-- 				</p:selectBooleanCheckbox> -->
+<!-- 						<p:outputLabel value=" Afficher Choix des éditions" disabled="#{!etatChoixEditionBean.tcheckEdition}"/> -->
+			</p:fieldset>
+			
+			<p:commandButton widgetVar="wvCheckEtatStocks" value="Imprimer ..." oncomplete="PF('interfacePrintEtatStock').show()"
+				style="margin-left:10px; width:210px" disabled="#{!etatChoixEditionBean.tcheckEdition}"/>
+		</div>
+	</div>
+
+	<p:panel header="Liste des documents" widgetVar="aaa">
+		<div class="ui-g">
+			<div class="ui-g-12">
+				<p:dataTable value="#{etatStocksBean.modelDocument}"
+					id="dataTableDocumentEtatStocks" var="doc" rowKey="#{doc.id}"
+					filteredValue="#{etatStocksBean.filteredValues}"
+					widgetVar="wvDataTableDocumentEtatStocks"
+					selection="#{etatStocksBean.selection}" resizableColumns="true"
+					paginator="true"
+					rows="#{msg.modele_datatable_ligne_par_page_debut}"
+					paginatorTemplate="#{msg.modele_datatable_paginator}"
+					rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+					emptyMessage="#{msg.message_datatable_vide}"
+					currentPageReportTemplate="#{msg.modele_datatable_page_courante}"
+					>
+<!-- filteredValue="#{etatStocksBean.filteredValues}" -->
+<!--  					<p:ajax event="filter" listener="#{etatStocksBean.filterListener}" process="@this" update="e1,e2"/> -->
+ 					
+					<f:facet name="{Exporters}">
+						<h:commandLink>
+							<p:graphicImage library="images" name="excel.png" width="24" />
+							<p:dataExporter type="xls" target="dataTableDocumentEtatStocks"
+								fileName="etat_stocks_entrepot"
+								postProcessor="#{etatStocksBean.postProcessXLS}" />
+						</h:commandLink>
+						
+						<p:commandLink onsuccess="window.open('#{request.contextPath}/output?__report=/reports/stock/ListeEtatDesStocks.rptdesign&amp;__format=pdf')"
+			actionListener="#{etatStocksBean.actImprimerListeEtatDesStocks}" process="@this">
+		                <p:graphicImage  library="images" name="pdf.png"  width="24"/>
+<!-- 		                <p:dataExporter type="pdf" target="dataTableListeTiers" fileName="liste_tiers" /> -->
+		            </p:commandLink>
+		            
+<!-- 						<h:commandLink> -->
+<!-- 							<p:graphicImage library="images" name="pdf.png" width="24" /> -->
+<!-- 							<p:dataExporter type="pdf" target="dataTableDocumentEtatStocks" -->
+<!-- 								fileName="etat_stocks_entrepot" -->
+<!-- 								preProcessor="#{etatStocksBean.preProcessPDF}" /> -->
+<!-- 						</h:commandLink> -->
+
+						<h:commandLink>
+							<p:graphicImage library="images" name="csv.png" width="24" />
+							<p:dataExporter type="csv" target="dataTableDocumentEtatStocks"
+								fileName="etat_stocks_entrepot" options="#{separateurCsvController.csvOptions}" />
+						</h:commandLink>
+
+						<h:commandLink>
+							<p:graphicImage library="images" name="xml.png" width="24" />
+							<p:dataExporter type="xml" target="dataTableDocumentEtatStocks"
+								fileName="etat_stocks_entrepot" />
+						</h:commandLink>
+					</f:facet>
+					<!-- 					<p:column headerText="Exporté" selectionMode="multiple" style="width:40px;text-align:center" /> -->
+
+					<p:column headerText="Code famille"  sortBy="#{doc.codeFamille}" filterBy="#{doc.codeFamille}" filterMatchMode="contains" >
+<!-- 						<f:facet name="filter"> -->
+<!-- 							<p:selectCheckboxMenu label="Selection" showHeader="false" onchange="PF('wvDataTableDocumentEtatStocks').filter()" panelStyle="width:125px" -->
+<!-- 								scrollHeight="150"  > -->
+<!-- 								<f:selectItems value="#{etatStocksBean.listeTaFamille}" /> -->
+<!-- 							</p:selectCheckboxMenu> -->
+<!-- 						</f:facet>				 -->
+						<p:outputLabel value="#{doc.codeFamille}" />
+					</p:column>
+					
+					<p:column headerText="Code article" sortBy="#{doc.codeArticle}"	filterBy="#{doc.codeArticle}"  filterMatchMode="contains">
+<!-- 						<f:facet name="filter"> -->
+<!-- 							<p:selectCheckboxMenu label="Selection" showHeader="false" onchange="PF('wvDataTableDocumentEtatStocks').filter()"  panelStyle="width:125px" -->
+<!-- 								scrollHeight="150" > -->
+<!-- 								<f:selectItems value="#{etatStocksBean.listeTaArticle}" /> -->
+<!-- 							</p:selectCheckboxMenu> -->
+<!-- 						</f:facet> -->
+						<p:outputLabel value="#{doc.codeArticle}" />
+					</p:column>
+					
+					<p:column headerText="Libellé" sortBy="#{doc.libelleStock}" filterBy="#{doc.libelleStock}"  filterMatchMode="contains">
+						<p:outputLabel value="#{doc.libelleStock}" />
+					</p:column>
+					<p:column headerText="N° lot" sortBy="#{doc.numLot}"	filterBy="#{doc.numLot}" filterMatchMode="contains">
+						<p:outputLabel value="#{doc.numLot}" />
+					</p:column>
+					<p:column headerText="Code entrepôt" sortBy="#{doc.codeEntrepot}"	filterBy="#{doc.codeEntrepot}" filterMatchMode="contains" >
+<!-- 						<f:facet name="filter"> -->
+<!-- 							<p:selectCheckboxMenu label="Selection" showHeader="false" onchange="PF('wvDataTableDocumentEtatStocks').filter()" panelStyle="width:125px" -->
+<!-- 								scrollHeight="150" > -->
+<!-- 								<f:selectItems value="#{etatStocksBean.listeTaEntrepot}" /> -->
+<!-- 							</p:selectCheckboxMenu> -->
+<!-- 						</f:facet>					 -->
+						<p:outputLabel value="#{doc.codeEntrepot}" />
+					</p:column>
+					<p:column headerText="Emplacement" sortBy="#{doc.emplacement}"	filterBy="#{doc.emplacement}" filterMatchMode="contains">
+						<p:outputLabel value="#{doc.emplacement}" />
+					</p:column>
+					<p:column headerText="Départ" sortBy="#{doc.depart}"	filterBy="#{doc.depart}"  filterFunction="#{etatStocksBean.filterByPrice}">
+						<p:outputLabel value="#{doc.depart}" />
+					</p:column>
+					<p:column headerText="Entrée" sortBy="#{doc.entree}"	filterBy="#{doc.entree}"  filterFunction="#{etatStocksBean.filterByPrice}">
+						<p:outputLabel value="#{doc.entree}" />
+					</p:column>
+					<p:column headerText="Sortie" sortBy="#{doc.sortie}"	filterBy="#{doc.sortie}"  filterFunction="#{etatStocksBean.filterByPrice}">
+						<p:outputLabel value="#{doc.sortie}" />
+					</p:column>
+					<p:column headerText="Disponibilité" sortBy="#{doc.dispo}"	filterBy="#{doc.dispo}" filterFunction="#{etatStocksBean.filterByPrice}">
+					 <p:outputLabel value="#{doc.dispo}" />
+					</p:column>
+					<p:column headerText="U. Référence" sortBy="#{doc.unRef}"	filterBy="#{doc.unRef}" >
+					 <p:outputLabel value="#{doc.unRef}" />
+					</p:column>					
+					<p:column headerText="T" sortBy="#{doc.termine}"	filterBy="#{doc.termine}" style="width:15px">
+					<p:selectBooleanCheckbox value="#{doc.termine}" disabled="true"/>
+					</p:column>					
+<!--         <p:summaryRow> -->
+<!--             <p:column colspan="8" style="text-align:right"> -->
+<!--                 <h:outputText value="Total:" /> -->
+<!--             </p:column> -->
+<!--             <p:column> -->
+<!--                 <h:outputText value="#{etatStocksBean.ligneTotaux.depart}"> -->
+<!--                 <f:convertNumber type="currency" currencySymbol="$" /> -->
+<!--                 </h:outputText> -->
+<!--             </p:column> -->
+<!--         </p:summaryRow> -->
+<!-- 					<p:columnGroup type="footer" id="ddd"> -->
+<!-- 						<p:row id="eee"> -->
+<!-- 							<p:column colspan="6" style="text-align:right"	footerText="Totaux:" /> -->
+<!-- 							<p:column footerText="#{etatStocksBean.ligneTotaux.depart}" id="e1"/> -->
+<!-- 							<p:column footerText="#{etatStocksBean.ligneTotaux.entree}" /> -->
+<!-- 							<p:column footerText="#{etatStocksBean.ligneTotaux.sortie}" id="e2"/> -->
+<!-- 							<p:column footerText="#{etatStocksBean.ligneTotaux.dispo}" /> -->
+<!-- 						</p:row> -->
+<!-- 					</p:columnGroup> -->
+				</p:dataTable>
+
+			</div>
+
+		</div>
+	</p:panel>
+	
+</ui:composition>

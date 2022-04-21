@@ -1,0 +1,172 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui">
+
+	<p:panel id="typeCiviliteFormPrincipal" widgetVar="widgetVarTypeCiviliteForm">
+
+
+		<p class="subtitle">
+			<p:outputLabel value="Gestion des types de civilités, titres et qualités" rendered="#{dansDialogue == null ? true : false}" />
+		</p>
+			
+		<!-- boutons -->		
+		<p:panel id="typeCiviliteDataTableF" styleClass="mt30"  style="position:relative;"
+			rendered="#{dansDialogue == null ? true : false}">
+			
+			<p:commandButton id="idInsererTypeCivilite"  value="Ajouter" title="Insérer" process="@this"
+				update=":form:tabView,:form:messages,:form" 
+				actionListener="#{typeCiviliteController.actDialogTypes}"
+				styleClass="icon-insert icon" >
+				<p:ajax event="dialogReturn" listener="#{typeCiviliteController.handleReturnDialogTypes}" 
+					update=":form"/>
+			</p:commandButton>
+			
+<!-- 			<p:commandButton id="typeCiviliteInserer" value="Insérer" -->
+<!-- 				process="@this" disabled="#{typeCiviliteController.etatBouton('inserer')}" -->
+<!-- 				update="@widgetVar(varTypeCivilitePanel), @this, @parent:typeCiviliteModifier, @parent:typeCiviliteSupprimer" -->
+<!-- 				actionListener="#{typeCiviliteController.actInserer}" -->
+<!-- 				styleClass="btn-insert btn" /> -->
+
+			<p:commandButton id="idModifierTypeCivilite"  value="Modifier" title="Modifier" process="@this"
+				update=":form:tabView,:form:messages,:form" 
+				actionListener="#{typeCiviliteController.actDialogModifier}"
+				styleClass="icon-update icon" >
+				<p:ajax event="dialogReturn" listener="#{typeCiviliteController.handleReturnDialogTypes}" update=":form"/>
+			</p:commandButton>
+			
+<!-- 			<p:commandButton id="typeCiviliteModifier" value="Modifier" -->
+<!-- 				process="@this" class="btn-update btn" -->
+<!-- 				disabled="#{typeCiviliteController.etatBouton('modifier')}" -->
+<!-- 				update="@widgetVar(varTypeCivilitePanel), @parent:typeCiviliteInserer, @this, @parent:typeCiviliteSupprimer" -->
+<!-- 				actionListener="#{typeCiviliteController.actModifier}" /> -->
+
+
+			<p:commandButton id="typeCiviliteSupprimer" value="Supprimer"
+				styleClass="icon-delete icon menuitem-poubelle-droite"
+				disabled="#{typeCiviliteController.etatBouton('supprimer')}"
+				actionListener="#{typeCiviliteController.actSupprimer}"
+				update="@widgetVar(wvTypeCiviliteDataTable)" process="@this"
+				 >
+<!-- 				type="button" onclick="PF('famillecd1').show()" -->
+				<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer cet enregistrement ?" icon="ui-icon-alert" />
+			</p:commandButton>
+
+			<p:commandButton id="typeCiviliteFermer" title="Fermer"
+				class="icon-close icon menuitem-fermer-droite" rendered="#{dansDialogue == null ? true : false}"
+				onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())">
+<!-- 				type="button" onclick="PF('famillecd2').show()" -->
+				<p:confirm header="Confirmation" message="#{msg_diag.alert_fermeture_onglet}" icon="ui-icon-alert" disabled="#{!typeCiviliteController.modeEcran.dataSetEnModif()}"/>
+			</p:commandButton>
+				
+			<p:commandButton id="typeCiviliteFermerDialogue" title="Fermer" process="@this"
+				class="icon-close icon menuitem-fermer-droite" actionListener="#{typeCiviliteController.actFermerDialog}"
+				rendered="#{dansDialogue != null ? true : false}"/>
+<!-- Fin boutons -->
+
+<!-- 			<p:confirmDialog message="#{msg_diag.alert_suppresion}"  -->
+<!-- 			header="Confirmation" severity="alert" appendTo="@(body)" widgetVar="typeCivilitecd1"> -->
+<!-- 				<p:commandButton value="#{msg_diag.Oui}" update="@form" oncomplete="PF('typeCivilitecd1').hide()"> -->
+<!-- 					<p:ajax listener="#{typeCiviliteController.actSupprimer}" /> -->
+<!-- 				</p:commandButton> -->
+<!-- 				<p:commandButton value="#{msg_diag.Non}" onclick="PF('typeCivilitecd1').hide();" type="button" /> -->
+<!-- 			</p:confirmDialog> -->
+
+<!-- 			<p:confirmDialog message="#{msg_diag.alert_fermeture_onglet}" header="Confirmation" severity="alert" widgetVar="typeCivilitecd2" appendTo="@(body)"> -->
+<!-- 				<p:commandButton value="#{msg_diag.Oui}" onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())" oncomplete="PF('typeCivilitecd2').hide()" /> -->
+
+<!-- 				<p:commandButton value="#{msg_diag.Non}" onclick="PF('typeCivilitecd2').hide();" type="button" /> -->
+<!-- 			</p:confirmDialog> -->
+		</p:panel>
+		
+		<p:dataTable id="typeCiviliteDataTable" widgetVar="wvTypeCiviliteDataTable" var="table" 
+			rendered="#{dansDialogue == null ? true : false}" value="#{typeCiviliteController.values}" 
+			rowKey="#{table.id}" selectionMode="single" styleClass="datatable" 
+			selection="#{typeCiviliteController.selection}" paginator="false"
+			rows="#{msg.modele_datatable_ligne_par_page_debut}" 
+			paginatorTemplate="#{msg.modele_datatable_paginator}" 
+			rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}" 
+			emptyMessage="#{msg.message_datatable_vide}" 
+			currentPageReportTemplate="#{msg.modele_datatable_page_courante}">
+
+			<p:ajax event="rowSelect" listener="#{typeCiviliteController.onRowSelect}" />
+
+			<f:facet name="{Exporters}">
+				<h:commandLink>
+					<p:graphicImage library="images" name="excel.png" width="24" />
+					<p:dataExporter type="xls" target="typeCiviliteDataTable" fileName="type_civilite" />
+				</h:commandLink>
+
+				<h:commandLink>
+					<p:graphicImage library="images" name="pdf.png" width="24" />
+					<p:dataExporter type="pdf" target="typeCiviliteDataTable" fileName="type_civilite" />
+				</h:commandLink>
+
+				<h:commandLink>
+					<p:graphicImage library="images" name="csv.png" width="24" />
+					<p:dataExporter type="csv" target="typeCiviliteDataTable" fileName="type_civilite" />
+				</h:commandLink>
+
+				<h:commandLink>
+					<p:graphicImage library="images" name="xml.png" width="24" />
+					<p:dataExporter type="xml" target="typeCiviliteDataTable" fileName="type_civilite" />
+				</h:commandLink>
+			</f:facet>
+
+			<p:column sortBy="#{table.codeTCivilite}">
+<!-- 			 filterBy="#{table.codeTCivilite}" filterMatchMode="contains"> -->
+				<f:facet name="header">
+					<h:outputText value="Civilité, Titre ou Qualité" />
+				</f:facet>
+				<h:outputText value="#{table.codeTCivilite}" />
+			</p:column>
+		</p:dataTable>
+	</p:panel>
+	<!-- 	 -->
+
+	<p:messages id="typeCiviliteMessages" showDetail="true" autoUpdate="true" closable="true" />
+
+
+	<p:panel id="typeCivilitePanel" visible="true"  widgetVar="varTypeCivilitePanel">
+		<p:panel resizable="false" id="typeCivilitePanelCache" rendered="#{typeCiviliteController.modeEcran.dataSetEnModif()}">
+			<!--  <h:form id="typeCiviliteFormCreation"> -->
+<!-- 				<f:validateBean disabled="true"> -->
+
+					<div class="ui-grid ui-grid-responsive" id="typeCiviliteGridResp">
+						<div class="ui-grid-row">
+
+							<div class="ui-grid-col-4">
+								<h:outputText value="Code :"></h:outputText>
+							</div>
+							<div class="ui-grid-col-8">
+								<h:inputText id="idTxtCodeTypeCivilite" value="#{typeCiviliteController.nouveau.codeTCivilite}" styleClass="Input50"  
+								validator="#{typeCiviliteController.validateObject}">
+									<f:attribute name="nomChamp" value="#{const.C_CODE_T_CIVILITE}" />
+									<p:ajax event="blur" update="@this"/>
+							</h:inputText>
+							</div>
+						</div>
+						<div class="ui-grid-row">
+							<div class="ui-grid-col-12 text-center">
+								<p:commandButton id="idEnregistrerTypeCivilite" value="Enregistrer" styleClass="btn-save btn"
+									disabled="#{typeCiviliteController.etatBouton('enregistrer')}"
+									update="@widgetVar(widgetVarTypeCiviliteForm), @widgetVar(varTypeCivilitePanel)"
+									actionListener="#{typeCiviliteController.actEnregistrer}" />
+
+								<p:commandButton id="typeCiviliteAnnuler" value="Annuler"
+									styleClass="btn-cancel btn" process="@this"
+									disabled="#{typeCiviliteController.etatBouton('annuler')}"
+									update="@widgetVar(widgetVarTypeCiviliteForm), @widgetVar(varTypeCivilitePanel)"
+									actionListener="#{typeCiviliteController.actAnnuler}" 
+									rendered="#{dansDialogue != null ? false : true}"/>
+									
+								<p:commandButton id="typeCiviliteAnnulerDialogue" value="Annuler"
+									styleClass="btn-cancel btn" process="@this"
+									disabled="#{typeCiviliteController.etatBouton('annuler')}"
+									actionListener="#{typeCiviliteController.actFermerDialog}"
+									rendered="#{dansDialogue != null ? true : false}"/>
+							</div>
+						</div>
+					</div>
+<!-- 				</f:validateBean> -->
+			<!-- </h:form> -->
+		</p:panel>
+	</p:panel>
+</ui:composition>

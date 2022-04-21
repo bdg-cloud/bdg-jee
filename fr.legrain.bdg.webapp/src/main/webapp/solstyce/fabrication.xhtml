@@ -1,0 +1,1058 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html" 
+	xmlns:ui="http://java.sun.com/jsf/facelets" 
+	xmlns:lgr="http://legrain.fr/ui"
+	xmlns:p="http://primefaces.org/ui">
+
+<!-- 	<f:validateBean disabled="true"> -->
+
+
+				
+				<p:menubar styleClass="menu-onglet" widgetVar="wvMenuBarFab">
+
+					<p:menuitem title="Enregistrer" styleClass="icon icon-save"
+						process="@this idPanelFab idTabViewFab"
+						actionListener="#{fabricationController.actEnregistrer}"
+						update=":form:messages,@widgetVar(wvMenuListeFabrication),@widgetVar(wvTabViewPrincipalFabrication),idPanelFab,@widgetVar(wvMenuBarFab),@widgetVar(wvMenuListeFabrication),@widgetVar(wvDataTableListeFabrication)"
+						disabled="#{fabricationController.etatBouton('enregistrer')}" />
+
+					<p:menuitem title="Ajouter" styleClass="icon icon-insert"
+						actionListener="#{fabricationController.actInserer}" process="@this"
+						update=":form:messages,@widgetVar(wvMenuListeFabrication),@widgetVar(wvTabViewPrincipalFabrication),idPanelFab,@widgetVar(wvMenuBarFab),@widgetVar(wvMenuListeFabrication),@widgetVar(wvDataTableListeFabrication)"
+						disabled="#{fabricationController.etatBouton('inserer')}" />
+
+					<p:menuitem title="Modifier" styleClass="icon icon-update"
+						actionListener="#{fabricationController.actModifier}"
+						process="@this"
+						onclick="recupTabCourant(PF('wvTabViewPrincipalFabrication'))"
+						oncomplete="selectTabCourant(PF('wvTabViewPrincipalFabrication'))"
+						update=":form:messages,@widgetVar(wvMenuListeFabrication),@widgetVar(wvTabViewPrincipalFabrication),idPanelFab,@widgetVar(wvMenuBarFab),@widgetVar(wvMenuListeFabrication),@widgetVar(wvDataTableListeFabrication)"
+						disabled="#{fabricationController.etatBouton('modifier')}" />
+
+					<p:menuitem title="Annuler" styleClass="icon icon-cancel" actionListener="#{fabricationController.actAnnuler}" 
+					process="@this" update=":form:messages,@widgetVar(wvMenuListeFabrication),@widgetVar(wvTabViewPrincipalFabrication),idPanelFab,@widgetVar(wvMenuBarFab),@widgetVar(wvMenuListeFabrication),@widgetVar(wvDataTableListeFabrication)" 
+					disabled="#{fabricationController.etatBouton('annuler')}" >
+					<p:confirm header="Confirmation" message="Etes vous sur de vouloir annuler les modifications en cours ?"  icon="ui-icon-alert" />
+					</p:menuitem>	
+					
+					<p:menuitem title="Supprimer" styleClass="icon icon-delete menuitem-poubelle-droite"
+						actionListener="#{fabricationController.actSupprimer}"
+						process="@this"
+						update=":form:messages,@widgetVar(wvMenuListeFabrication),@widgetVar(wvTabViewPrincipalFabrication),idPanelFab,@widgetVar(wvMenuBarFab),@widgetVar(wvMenuListeFabrication),@widgetVar(wvDataTableListeFabrication)"
+						disabled="#{fabricationController.etatBouton('supprimer')}" >
+						<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer cet enregistrement ?" icon="ui-icon-alert" />
+					</p:menuitem>
+						
+					<p:separator styleClass="separateur-menu-vertical"/>
+
+					<p:menuitem title="Fermer" styleClass="icon icon-close menuitem-fermer-droite"
+						actionListener="#{fabricationController.actFermer}"
+						process="@this" update=":form:messages,@widgetVar(wvMenuListeFabrication),@widgetVar(wvTabViewPrincipalFabrication),idPanelFab,@widgetVar(wvMenuBarFab),@widgetVar(wvMenuListeFabrication),@widgetVar(wvDataTableListeFabrication)"
+						disabled="#{fabricationController.etatBouton('fermer')}"
+						onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())">
+						<p:confirm header="Confirmation"
+							message="#{msg_diag.alert_fermeture_onglet}" icon="ui-icon-alert" disabled="#{!fabricationController.modeEcran.dataSetEnModif()}"/>
+					</p:menuitem>
+
+		<p:menuitem title="Créer un évènement" styleClass="icon-agenda icon" 
+			
+			oncomplete="$('.classHiddenCommandForDialogAgendaReturnFab').click()"
+			process="@this" 
+			update="@this" 
+			disabled="#{fabricationController.etatBouton('modifier')}"/>
+
+		<p:separator styleClass="separateur-menu-vertical"/>
+					<p:menuitem title="Imprimer" styleClass="icon icon-print" 	process="@this"
+						onsuccess="window.open('#{request.contextPath}/output?__report=/reports/solstyce/Fiche_Fabrication.rptdesign&amp;__format=pdf')"
+						actionListener="#{fabricationController.actImprimer}"
+						disabled="#{fabricationController.etatBouton('imprimer')}" />
+						
+					<p:menuitem title="Imprimer étiquette code barre" styleClass="icon icon-barcode"
+						onsuccess="window.open('#{request.contextPath}/articles/etiquette_cb.xhtml')"
+							process="@this"
+						actionListener="#{fabricationController.actImprimerEtiquetteCB}"/>	
+						
+		<p:menuitem title="Envoyer par email" styleClass="icon icon-envoi-mail"
+			oncomplete="$('.classHiddenCommandForDialogEmailReturnFab').click()"
+			process="@this" 
+			update=":form:messages" 
+			disabled="#{fabricationController.etatBouton('modifier')}"/>
+
+		<p:separator styleClass="separateur-menu-vertical" />
+
+					<p:menuitem title="Liste"  	process="@this" styleClass="icon icon-liste" oncomplete="PF('wvOverlayListeFabrication').show();"/>
+				
+			</p:menubar>
+	<p:commandButton styleClass="classHiddenCommandForDialogAgendaReturnFab" actionListener="#{fabricationController.actDialogEvenement}" style="display:none" process="@this"  >
+        <p:ajax event="dialogReturn" update="@widgetVar(wvAgenda)"  />  
+    </p:commandButton>
+    	<p:commandButton styleClass="classHiddenCommandForDialogEmailReturnFab" actionListener="#{fabricationController.actDialogEmail}" style="display:none" process="@this"  >
+        <p:ajax event="dialogReturn" listener="#{fabricationController.handleReturnDialogEmail}" update=":form:messages"  />  
+    </p:commandButton>    
+<!-- 		<p:wizard nextLabel="Suivant" backLabel="Précédent" showStepStatus="false" widgetVar="widgetVarWizardFabrication"> -->
+
+<!-- 			<p:tab id="idFabTab" title="Fabrication"> -->
+				<p:panel header="Fabrication" id="idPanelFab" styleClass="panel-fabrication">
+				
+					<h:panelGrid id="infoFab" columns="2" cellpadding="10">
+							
+							
+						<p:outputLabel value="Type : " />
+						<p:autoComplete value="#{fabricationController.taTFabricationDTO}"
+						    id="idtypeFabrication" converter="entityConverter"
+							completeMethod="#{fabricationController.typeFabricationAutoCompleteDTOLight}"
+							disabled="#{!fabricationController.modeEcran.dataSetEnModif()}" var="tfabrication"
+							itemLabel="#{tfabrication.codeTFabrication}" itemValue="#{tfabrication}"
+							forceSelection="true" dropdown="true" placeholder="Type de fabrication" >
+							<p:column>
+								<h:outputText value="#{tfabrication.codeTFabrication}" />
+							</p:column>
+							
+							<p:column>
+								<h:outputText value="#{tfabrication.liblTFabrication}" />
+							</p:column>
+			
+							<f:attribute name="nomChamp" value="#{const.C_CODE_T_FABRICATION}" />
+							<p:ajax event="itemSelect" listener="#{fabricationController.autcompleteSelection}" update="@this,idCodeFab" />
+						</p:autoComplete>
+							
+						<h:outputText value="Numero de fabrication" styleClass="labelchob"/>
+			<h:panelGroup>
+				<p:inputText id="idCodeFab" value="#{fabricationController.selectedTaFabricationDTO.codeDocument}"
+					disabled="#{!fabricationController.modeEcran.dataSetEnModif()}" validator="#{fabricationController.validateDocument}">
+					<f:attribute name="nomChamp" value="#{const.C_CODE_DOCUMENT}" />
+					<p:ajax event="blur" update="@this" />
+				</p:inputText>
+
+				<!-- 							<h:outputText value="Mettre à jour n° lots" /> -->
+				<p:commandButton title="Mettre à jour n° lots" styleClass="icon icon-refresh" process="@this" actionListener="#{fabricationController.majNumLot}"
+					update="@widgetVar(tableMouvement2)" disabled="#{fabricationController.etatBouton('majNumLot')}" />
+
+			</h:panelGroup>
+
+			<p:outputLabel value="Prestation de service pour" />
+						<p:panel styleClass="panel-autocomplete">
+	
+						<p:autoComplete value="#{fabricationController.taTiersDTO}"
+						    id="idtiers" converter="entityConverter"
+							completeMethod="#{fabricationController.tiersAutoCompleteDTOLight}"
+							disabled="#{!fabricationController.modeEcran.dataSetEnModif()}" var="tiers"
+							itemLabel="#{tiers.codeTiers}" itemValue="#{tiers}"
+							forceSelection="true" dropdown="true" placeholder="Tiers" >
+							<p:column>
+								<h:outputText value="#{tiers.codeTiers}" required="true" requiredMessage="#{msg_diag.alert_champs_obligatoir}"/>
+							</p:column>
+							
+							<p:column>
+								<h:outputText value="#{tiers.nomTiers}" />
+							</p:column>
+			
+							<f:attribute name="nomChamp" value="#{const.C_CODE_TIERS_PRESTATION}" />
+							<p:ajax event="itemSelect" listener="#{fabricationController.autcompleteSelection}" update="@this, idNomTiers, idLibelleFab" />
+						</p:autoComplete>
+						<p:outputLabel id="idNomTiers" value="#{fabricationController.taTiersDTO.nomTiers}" />
+						</p:panel>
+													 
+						<h:outputText value="Libellé de la fabrication" styleClass="labelchob"/>
+						<p:inputText id="idLibelleFab" value="#{fabricationController.selectedTaFabricationDTO.libelleDocument}" 
+						style="width:300%" disabled="#{!fabricationController.modeEcran.dataSetEnModif()}"
+						validator="#{fabricationController.validateDocument}">
+							<f:attribute name="nomChamp" value="#{const.C_LIBELLE_DOCUMENT}" />
+							<p:ajax event="blur" update="@this" />
+						</p:inputText>
+
+						<h:outputText value="Date" styleClass="labelchob"/>
+						<h:panelGroup>
+							<p:calendar value="#{fabricationController.selectedTaFabricationDTO.dateDebR}" 
+								pattern="dd/MM/yyyy HH:mm" mask="true" locale="fr" navigator="true" showOn="button" 
+								disabled="#{!fabricationController.modeEcran.dataSetEnModif()}"
+								validator="#{fabricationController.validateDocument}">
+								<f:attribute name="nomChamp" value="#{const.C_DATE_DEB_RELLE_FABRICATION}" />
+								<p:ajax event="dateSelect" update="@this,@widgetVar(tableMouvement2)" />
+								<p:ajax event="change"  update="@this,@widgetVar(tableMouvement2)"/>
+							</p:calendar>
+							<p:commandButton title="Mettre à jour les DDM/DLC" styleClass="icon icon-refresh"
+							process="@this"  actionListener="#{fabricationController.majDLUO}"
+							update="@widgetVar(tableMouvement2)"
+							disabled="#{fabricationController.etatBouton('majNumLot')}"/>
+				<p:selectBooleanCheckbox value="#{fabricationController.majDlc}" 
+					disabled="#{!fabricationController.modeEcran.dataSetEnModif()}"  >
+					<p:ajax process="@this" />
+				</p:selectBooleanCheckbox>							
+						</h:panelGroup>
+
+						<h:outputText value="Commentaire" />
+						<p:inputTextarea value="#{fabricationController.selectedTaFabricationDTO.commentaire}" 
+						style="width:300%"
+						disabled="#{!fabricationController.modeEcran.dataSetEnModif()}"
+						validator="#{fabricationController.validateDocument}">
+							<f:attribute name="nomChamp" value="#{const.C_COMMENTAIRE}" />
+							<p:ajax event="blur" update="@this" />
+						</p:inputTextarea>
+						
+						<p:outputLabel value="Certification : " />
+						<p:autoComplete 
+							value="#{fabricationController.selectedTaFabricationDTO.taLabelArticleDTOs}"
+							multiple="true"
+							completeMethod="#{fabricationController.certificationAutoCompleteLight}"
+							disabled="#{!fabricationController.modeEcran.dataSetEnModif()}"
+							var="famille" itemLabel="#{famille.codeLabelArticle}"
+							itemValue="#{famille}" forceSelection="true" dropdown="true" widgetVar="wvAutoCompleteCertificationLight"
+							placeholder="Certification" converter="entityConverter">
+<!-- 							<p:column> -->
+<!-- 								<f:facet name="header"> -->
+<!-- 									<p:commandButton value="Ajouter" title="Insérer" -->
+<!-- 										process="@this" update="@this" -->
+<!-- 										actionListener="#{articleController.actDialogFamille}" -->
+<!-- 										styleClass="btn-insert btn"> -->
+<!-- 										<p:ajax event="dialogReturn" listener="#{articleController.handleReturnDialogFamille}" update="@parent:@parent" /> -->
+<!-- 									</p:commandButton> -->
+<!-- 								</f:facet>								 -->
+<!-- 								<h:outputText value="#{famille.codeFamille}" /> -->
+<!-- 							</p:column> -->
+							<p:column>
+								<h:outputText value="#{famille.codeLabelArticle}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{famille.desciptionLabelArticle}" />
+							</p:column>
+							<p:column styleClass="center">
+								<p:graphicImage value="/image_label_article/#{famille.id}"  height="20"/>
+							</p:column>
+							
+							<f:attribute name="nomChamp" value="#{const.C_CODE_LABEL_ARTICLE}" />
+							<p:ajax event="itemSelect" listener="#{fabricationController.autcompleteSelection}" update="@this" />
+							<p:ajax event="itemUnselect" listener="#{fabricationController.autcompleteUnSelect}" update="@this" />
+						</p:autoComplete>
+						
+						<p:outputLabel value="Rédacteur" />
+						<p:panel styleClass="panel-autocomplete">
+	
+						<p:autoComplete value="#{fabricationController.redacteurDTO}"
+						    id="idRedacteur" converter="entityConverter"
+							completeMethod="#{fabricationController.utilisateurAutoCompleteDTOLight}"
+						
+							disabled="#{!fabricationController.modeEcran.dataSetEnModif()}" var="utilisateur"
+							itemLabel="#{utilisateur.email}" itemValue="#{utilisateur}"
+							forceSelection="true" dropdown="true" placeholder="Utilisateur" >
+							<p:column>
+								<h:outputText value="#{utilisateur.email}" required="true" requiredMessage="#{msg_diag.alert_champs_obligatoir}"/>
+							</p:column>
+							
+							<p:column>
+								<h:outputText value="#{utilisateur.nom}" />
+							</p:column>
+							
+							<p:column>
+								<h:outputText value="#{utilisateur.prenom}" />
+							</p:column>
+			
+<!-- 							<f:attribute name="nomChamp" value="#{const.C_CODE_TIERS}" /> -->
+							<f:attribute name="nomChamp" value="redacteur" />
+							<p:ajax event="itemSelect" listener="#{fabricationController.autcompleteSelection}" update="@this" />
+						</p:autoComplete>
+						</p:panel>
+						
+						<p:outputLabel value="Controleur" />
+						<p:panel styleClass="panel-autocomplete">
+	
+						<p:autoComplete value="#{fabricationController.controleurDTO}"
+						    id="idControleur" converter="entityConverter"
+							completeMethod="#{fabricationController.utilisateurAutoCompleteDTOLight}"
+				
+							disabled="#{!fabricationController.modeEcran.dataSetEnModif()}" var="utilisateur"
+							itemLabel="#{utilisateur.email}" itemValue="#{utilisateur}"
+							forceSelection="true" dropdown="true" placeholder="Utilisateur" >
+							<p:column>
+								<h:outputText value="#{utilisateur.email}" required="true" requiredMessage="#{msg_diag.alert_champs_obligatoir}"/>
+							</p:column>
+							
+							<p:column>
+								<h:outputText value="#{utilisateur.nom}" />
+							</p:column>
+							
+							<p:column>
+								<h:outputText value="#{utilisateur.prenom}" />
+							</p:column>
+			
+<!-- 							<f:attribute name="nomChamp" value="#{const.C_CODE_TIERS}" /> -->
+							<f:attribute name="nomChamp" value="controleur" />
+							<p:ajax event="itemSelect" listener="#{fabricationController.autcompleteSelection}" update="@this" />
+						</p:autoComplete>
+						</p:panel>
+
+					</h:panelGrid>
+				</p:panel>
+			
+
+	<p:tabView widgetVar="wvTabViewPrincipalFabrication" id="idTabViewFab">
+			<p:tab id="idProduit" title="Produits finis">
+				<p:panel widgetVar="widgetVarTabProduit" styleClass="panel-fabrication">
+
+<!-- 					<div> -->
+<!-- 						<p:commandButton value="Nouveau" update="@parent" styleClass="btn-insert btn" -->
+<!-- 							actionListener="#{fabricationController.actInsererProduit}"  -->
+<!-- 							widgetVar="widgetVarBtnInsererPF" -->
+<!-- 							disabled="#{!fabricationController.modeEcran.dataSetEnModif() or fabricationController.etatBoutonProduit('inserer')}" -->
+<!-- 							oncomplete="jQuery('.myclassPF .ui-datatable-data tr').last().find('span.ui-icon-pencil').each(function(){jQuery(this).click()});" /> -->
+<!-- 						<p:commandButton value="Supprimer" styleClass="btn-delete btn" update="@parent" -->
+<!-- 							widgetVar="widgetVarBtnSupprimerPF" -->
+<!-- 							actionListener="#{fabricationController.actSupprimerProduit}" disabled="#{!fabricationController.modeEcran.dataSetEnModif() or fabricationController.etatBoutonProduit('supprimer')}" /> -->
+<!-- 					</div> -->
+					
+					<p:menubar styleClass="menu-onglet" widgetVar="wvMenuBarFabPF">
+						<p:menuitem title="Nouveau"  styleClass="icon-insert icon" process="@this dataTable2"
+								update="@parent:@parent"
+								actionListener="#{fabricationController.actInsererProduit}" 
+								widgetVar="widgetVarBtnInsererPF"
+								disabled="#{fabricationController.etatBoutonProduit('inserer')}"
+								oncomplete="editionDerniereLigne('myclassPF');" />
+							<p:menuitem title="Supprimer" styleClass="icon-delete icon" 
+							process="@this" update="@parent:@parent"
+								widgetVar="widgetVarBtnSupprimerPF" 
+								actionListener="#{fabricationController.actSupprimerProduit}" 
+								disabled="#{fabricationController.etatBoutonProduit('supprimer')}" />
+							<p:menuitem title="essai" styleClass="icon-delete icon" 
+							process="@this" update="@parent:@parent"
+								 
+								actionListener="#{fabricationController.actEssai}"
+								/> 
+					</p:menubar>
+						
+						<p:dataTable id="dataTable2" 
+							var="ligne" 
+							editable="true" 
+							resizableColumns="true"
+							value="#{fabricationController.valuesLignePF}"
+							rowKey="#{ligne.dto.numLigneLDocument}" 
+							widgetVar="tableMouvement2" 
+							selectionMode="single"
+							styleClass="datatable mt10 myclassPF" 
+							emptyMessage="#{msg.message_datatable_vide}"
+							selection="#{fabricationController.selectedTaProduit}">
+							
+							<p:ajax event="rowEdit" listener="#{fabricationController.onRowEditPF}"  oncomplete="if(!handleCompleteValidationError(xhr, status, args)) {incrementPF();};autreLigneModifiable('myclassPF');" />
+							<p:ajax event="rowEditCancel" listener="#{fabricationController.onRowCancelPF}" update="@widgetVar(wvMenuBarFabPF),@widgetVar(widgetVarBtnSupprimerPF)" oncomplete="autreLigneModifiable('myclassPF');"/>
+							<p:ajax event="rowSelect" listener="#{fabricationController.onRowSelectLignePF}"/>
+							<p:ajax event="rowEditInit" listener="#{fabricationController.onRowEditInitPF}" update="@widgetVar(wvMenuBarFabPF)" oncomplete="autreLigneNonModifiable('myclassPF');"/>
+
+							<f:facet name="header">
+								Liste des produits finis
+							</f:facet>
+							
+							<p:column style="width:16px" >
+								<p:rowEditor rendered="#{fabricationController.etatBoutonProduit('rowEditor')}" styleClass="row-editor-debut"/>
+							</p:column>
+<!-- 							<p:column sortBy="#{ligne.dto.numLigneLDocument}"> -->
+<!-- 								<f:facet name="header"> -->
+<!-- 									<h:outputText value="Num" /> -->
+<!-- 								</f:facet> -->
+<!-- 								<p:cellEditor > -->
+<!-- 									<f:facet name="output"> -->
+<!-- 										<h:outputText value="#{ligne.dto.numLigneLDocument}"/>	 -->
+<!-- 									</f:facet> -->
+<!-- 									<f:facet name="input" > -->
+<!-- 										<p:inputText value="#{ligne.dto.numLigneLDocument}" > -->
+<!-- 										 </p:inputText>	 -->
+<!-- 									</f:facet> -->
+<!-- 								</p:cellEditor> -->
+<!-- 							</p:column>							 -->
+
+							<p:column sortBy="#{ligne.taArticleDTO.codeArticle}">
+								<f:facet name="header">
+									<h:outputText value="Article" />
+								</f:facet>
+								<p:cellEditor>
+									<f:facet name="output">
+										<h:outputText value="#{ligne.taArticleDTO.codeArticle}"/>
+									</f:facet>
+									<f:facet name="input">
+						
+										<p:autoComplete value="#{ligne.taArticleDTO}"
+											completeMethod="#{fabricationController.articleAutoCompleteDTOLightPF}"
+											id="idarticle"
+											var="art" itemLabel="#{art.codeArticle}" itemValue="#{art}"
+											forceSelection="true" dropdown="true"
+											required="true" requiredMessage="Le code article est obligatoire"
+											 placeholder="Article" converter="entityConverter"
+											style="width:100%">
+<!-- 											#{art.libellecArticle} -->
+											<p:column>
+												<h:outputText value="#{art.codeArticle}" />
+											</p:column>
+											<p:column>
+												<h:outputText value="#{art.libellecArticle}" />
+											</p:column>
+		
+											<f:attribute name="nomChamp" value="#{const.C_CODE_ARTICLE}" />
+											<p:ajax event="itemSelect" listener="#{fabricationController.autcompleteSelection}" update="u1PF,u2PF,libPF,dluoPF,idLotPF"/>
+										</p:autoComplete>
+								
+									</f:facet>
+								</p:cellEditor >
+							</p:column>
+
+							<p:column sortBy="#{ligne.dto.numLot}">
+								<f:facet name="header">
+									<h:outputText value="Numéro de Lot" />
+								</f:facet>
+								<p:cellEditor >
+									<f:facet name="output">
+										<h:outputText value="#{ligne.dto.numLot}"/>	
+									</f:facet>
+									<f:facet name="input" >
+										<p:inputText value="#{ligne.dto.numLot}" id="idLotPF" required="true" requiredMessage="Le numéro de lot est obligatoire" disabled="#{!fabricationController.lotEstUnique(ligne.taLot)}" >
+										 </p:inputText>	
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+
+							<p:column sortBy="#{ligne.dto.libelleLot}" style="width:140px">
+								<f:facet name="header">
+									<h:outputText value="Libellé" />
+								</f:facet>
+								<p:cellEditor >
+									<f:facet name="output">
+										<h:outputText value="#{ligne.dto.libelleLot}"/>	
+									</f:facet>
+									<f:facet name="input" >
+										<p:inputText value="#{ligne.dto.libelleLot}" id="libPF">
+										 </p:inputText>	
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+
+							<p:column sortBy="#{ligne.taEntrepot.libelle}">
+								<f:facet name="header">
+									<h:outputText value="Entrepot" />
+								</f:facet>
+								<p:cellEditor>
+									<f:facet name="output">
+										<h:outputText value="#{ligne.taEntrepot.libelle}"/>
+									</f:facet>
+									<f:facet name="input">
+
+										<p:autoComplete value="#{ligne.taEntrepot}"
+											completeMethod="#{fabricationController.entrepotAutoComplete}"
+											var="e" itemLabel="#{e.codeEntrepot}" itemValue="#{e}"
+											forceSelection="true" dropdown="true"
+											 placeholder="Entrepot" 
+											style="width:100%">
+											<p:column>
+												<h:outputText value="#{e.codeEntrepot}" />
+											</p:column>
+											<p:column>
+												<h:outputText value="#{e.libelle}" />
+											</p:column>
+		
+											<f:attribute name="nomChamp" value="#{const.C_CODE_ENTREPOT}" />
+											<p:ajax event="itemSelect" listener="#{fabricationController.autcompleteSelection}"/>
+										</p:autoComplete>
+
+									</f:facet>
+								</p:cellEditor >
+							</p:column>
+
+							<p:column sortBy="#{ligne.dto.emplacement}">
+								<f:facet name="header">
+									<h:outputText value="Emplacement" />
+								</f:facet>
+								<p:cellEditor>
+									<f:facet name="output">
+										<h:outputText value="#{ligne.dto.emplacement}"/>
+									</f:facet>
+									<f:facet name="input">
+						
+										<p:autoComplete value="#{ligne.dto.emplacement}"
+											completeMethod="#{fabricationController.emplacementAutoComplete}"
+											dropdown="true"
+											placeholder="Emplacement" style="width:100%">
+										</p:autoComplete>
+								
+									</f:facet>
+								</p:cellEditor >
+							</p:column>
+
+					<p:column  sortBy="#{ligne.dto.dluo}" style="width:80px">
+						<f:facet name="header">
+							<h:outputText value="DDM/DLC" />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{ligne.dto.dluo}">
+									<f:convertDateTime pattern="dd/MM/yyyy" timeZone="#{msg.time_zone}"  />
+								</h:outputText>
+							</f:facet>
+							<f:facet name="input">
+								<p:calendar value="#{ligne.dto.dluo}" pattern="dd/MM/yyyy" mask="true"  timeZone="#{msg.time_zone}" 
+									locale="fr" navigator="true" id="dluoPF"/>
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+					
+							<p:column sortBy="#{ligne.dto.qteLDocument}">
+								<f:facet name="header">
+									<h:outputText value="Quantité 1" />
+								</f:facet>
+								<p:cellEditor >
+									<f:facet name="output">
+										<h:outputText value="#{ligne.dto.qteLDocument}"/>	
+									</f:facet>
+									<f:facet name="input" >
+										<p:inputText value="#{ligne.dto.qteLDocument}" style="width:100%" id="idQte1PF"										
+											validator="#{fabricationController.validateLignesPF}">
+											<f:attribute name="nomChamp" value="#{const.C_QTE_L_DOCUMENT}" /> 
+											<p:ajax event="blur" update="idQte2PF"/>
+										 </p:inputText>	
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+
+							<p:column sortBy="#{ligne.dto.u1LDocument}">
+								<f:facet name="header">
+									<h:outputText value="Unité 1" />
+								</f:facet>
+<!-- 								<h:outputText value="#{ligne.dto.u1LDocument}" id="u1PF" /> -->
+								<p:cellEditor >
+									<f:facet name="output">
+										<h:outputText value="#{ligne.taUnite1.codeUnite}" />
+									</f:facet>
+									<f:facet name="input">
+		<!-- 								<p:inputText value="#{ligne.taUnite1.codeUnite}" style="width:100%" id="u1"/> -->
+										<p:autoComplete value="#{ligne.taUnite1}"
+											completeMethod="#{fabricationController.uniteAutoCompletePF}"
+											var="unit" itemLabel="#{unit.codeUnite}" itemValue="#{unit}"
+											forceSelection="true" dropdown="true"
+											placeholder="U1" style="width:100%" id="u1PF">
+											<p:column>
+												<h:outputText value="#{unit.codeUnite}" />
+											</p:column>
+											
+											<f:attribute name="nomChamp" value="#{const.C_U1_L_DOCUMENT}" />
+											<p:ajax event="itemSelect" listener="#{fabricationController.autcompleteSelection}" />
+										</p:autoComplete>
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+
+							<p:column sortBy="#{ligne.dto.qte2LDocument}">
+								<f:facet name="header">
+									<h:outputText value="Quantité 2" />
+								</f:facet>
+<!-- 								<h:outputText value="#{ligne.dto.qte2LDocument}" id="idQte2PF"/> -->
+								<p:cellEditor>
+									<f:facet name="output">
+										<h:outputText value="#{ligne.dto.qte2LDocument}"/>
+									</f:facet>
+									<f:facet name="input">
+										<p:inputText value="#{ligne.dto.qte2LDocument}"	style="width:100%" id="idQte2PF"/>
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+
+							<p:column sortBy="#{ligne.dto.u2LDocument}">
+								<f:facet name="header">
+									<h:outputText value="Unité 2" />
+								</f:facet>
+<!-- 								<h:outputText value="#{ligne.dto.u2LDocument}" id="u2PF" /> -->
+								<p:cellEditor>
+									<f:facet name="output">
+										<h:outputText value="#{ligne.taUnite2.codeUnite}"/>
+									</f:facet>
+									<f:facet name="input">
+		<!-- 								<p:inputText value="#{ligne.taUnite2.codeUnite}" style="width:100%" id="u2"/> -->
+										<p:autoComplete value="#{ligne.taUnite2}"
+											completeMethod="#{fabricationController.uniteAutoComplete}"
+											var="unit" itemLabel="#{unit.codeUnite}" itemValue="#{unit}"
+											forceSelection="true" dropdown="true"
+											placeholder="U2" style="width:100%" id="u2PF">
+											<p:column>
+												<h:outputText value="#{unit.codeUnite}" />
+											</p:column>
+											
+											<f:attribute name="nomChamp" value="#{const.C_U2_L_DOCUMENT}" />
+											<p:ajax event="itemSelect" listener="#{fabricationController.autcompleteSelection}" />
+										</p:autoComplete>
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+							
+							<p:column styleClass="center">
+								<f:facet name="header">
+									<h:outputText value="Certif" />
+								</f:facet>
+								<p:cellEditor>
+									<f:facet name="output">
+										<h:outputText value="#{ligne.listeCertificationDTO.size() gt 0 ? 'X':''}"/>
+									</f:facet>
+									<f:facet name="input">
+										<p:selectCheckboxMenu value="#{ligne.listeCertificationDTO}" label="Certif" style="width:100%"
+									          filter="true" filterMatchMode="startsWith" panelStyle="width:250px" converter="entityConverter">
+									    	<f:selectItems value="#{fabricationController.listeToutesCertification}" var="a" itemLabel="#{a.libelleLabelArticle}" itemDescription="#{a.desciptionLabelArticle}"/>
+									    	<p:ajax listener="#{fabricationController.actChangeCertificationLot}" />
+									    </p:selectCheckboxMenu>
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+
+							<p:column style="width:32px">
+								<f:facet name="header">
+									<p:outputLabel value="Ctrl" title="Contrôles de conformité"/>
+								</f:facet>
+
+								<p:cellEditor>
+									<f:facet name="output">				
+<!-- 									disabled="#{!fabricationController.modeEcran.dataSetEnModif() or fabricationController.etatBoutonProduit('supprimer')}">				 -->
+										<p:commandLink process="@this" update=":form:tabView,:form:messages" 
+											actionListener="#{fabricationController.actDialogControleLot}"
+											disabled="#{ligne.taLot==null or ligne.taLot.idLot lt 1}" >
+											<p:graphicImage library="images" name="report.png" title="Controles" alt="Controles" height="16"/>
+
+<!-- 			<p:graphicImage library="images" name="btn/controle-valide.svg" title="Tous les contrôles obligatoire sont effectués et valide" height="16" rendered="#{ligne.taLot.taStatusConformite.codeStatusConformite eq  'ok'}"/> -->
+<!-- 			<p:graphicImage library="images" name="btn/controle-action-corrective-effectuee-avec-succes.svg" title="Tous les contrôles obligatoires sont effectués et valide après correction" height="16" rendered="#{ligne.taLot.taStatusConformite.codeStatusConformite eq 'corrige'}"/> -->
+<!-- 			<p:graphicImage library="images" name="btn/controle-action-corrective-invalide.svg" title="Tous les contrôles obligatoire sont effectués mais certains controle non bloquant sont encore faux" height="16" rendered="#{ligne.taLot.taStatusConformite.codeStatusConformite eq 'noncorrige'}"/> -->
+<!-- 			<p:graphicImage library="images" name="btn/controle-action-corrective-a-faire.svg" title="Au moins un controle obligatoire et bloquant est faux" height="16" rendered="#{ligne.taLot.taStatusConformite.codeStatusConformite eq 'acorriger'}"/> -->
+<!-- 			<p:graphicImage library="images" name="btn/controle-a-faire.svg" title="Au moins un controle n'est pas fait" height="16" rendered="#{ligne.taLot.taStatusConformite.codeStatusConformite eq  'vide'}"/> -->
+<!-- 			<p:graphicImage library="images" name="btn/controle-action-corrective-a-faire.svg" title="Au moins un controle obligatoire n'est pas fait" height="16" rendered="#{fabricationController.validationLot(ligne.taLot) eq  'vide'}"/> -->
+											<lgr:iconStatusConformite id="dd" statusObject="#{ligne.taLot.taStatusConformite}"/>
+
+
+											<f:attribute name="lot" value="#{ligne.dto.numLot}" />
+											<p:ajax event="dialogReturn" listener="#{fabricationController.handleReturnDialogControleLot}" update="@parent"/>
+										</p:commandLink>
+									</f:facet>
+									
+									<f:facet name="input">
+										<h:outputText value="" />
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+
+							<p:column style="width:16px">
+								<f:facet name="header">
+									<h:outputText value="" />
+								</f:facet>
+								<p:cellEditor>
+									<f:facet name="output">
+										<p:commandButton title="Supprimer" styleClass="icon-delete icon icon-grille" widgetVar="widgetVarBtnSupprimerPF"
+											action="#{fabricationController.actSupprimerProduit}" process="@this"
+											disabled="#{!fabricationController.modeEcran.dataSetEnModif() or fabricationController.etatBoutonProduit('supprimer')}"
+											update="@widgetVar(widgetVarTabProduit)">
+											<!-- 									<f:attribute name="idLigne" value="#{ligne.dto.id}" /> -->
+											<f:setPropertyActionListener target="#{fabricationController.selectedTaProduit}" value="#{ligne}" />
+										</p:commandButton>
+									</f:facet>
+									<f:facet name="input">
+										<h:outputText value="" />
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+		
+							<p:column style="width:26px">
+								<p:rowEditor rendered="#{fabricationController.etatBoutonProduit('rowEditor')}" styleClass="row-editor-fin" />
+							</p:column>
+
+						</p:dataTable>
+
+					</p:panel>
+
+			</p:tab>
+			
+			
+			<p:tab id="idMatierePremiereTab" title="Matière première">
+				<p:panel widgetVar="widgetVarTabMatierePremiere" styleClass="panel-fabrication">
+
+<!-- 					<div> -->
+<!-- 						<p:commandButton value="Insérer" update="@parent" styleClass="btn-insert btn" -->
+<!-- 							actionListener="#{fabricationController.actInsererMatierePremiere}" -->
+<!-- 							disabled="#{!fabricationController.modeEcran.dataSetEnModif() or fabricationController.etatBoutonMatierePremiere('inserer')}" -->
+<!-- 							widgetVar="widgetVarBtnInsererMP" -->
+<!-- 							oncomplete="jQuery('.myclassMP .ui-datatable-data tr').last().find('span.ui-icon-pencil').each(function(){jQuery(this).click()});"  /> -->
+<!-- 						<p:commandButton value="Supprimer" update="@parent" styleClass="btn-delete btn" -->
+<!-- 							actionListener="#{fabricationController.actSupprimerMatierePremiere}" -->
+<!-- 							widgetVar="widgetVarBtnSupprimerMP" -->
+<!-- 							disabled="#{!fabricationController.modeEcran.dataSetEnModif() or fabricationController.etatBoutonMatierePremiere('supprimer')}"/> -->
+<!-- 						<p:commandButton value="Affecter les matières premières" update="@parent"  -->
+<!-- 							actionListener="#{fabricationController.actAffecterMatierePremiere}" -->
+<!-- 							styleClass="btn"/> -->
+<!-- 					</div> -->
+					<p:menubar styleClass="menu-onglet" widgetVar="wvMenuBarFabMP">
+						<p:menuitem title="Insérer" update="@parent:@parent" styleClass="icon-insert icon"	process="@this"
+								actionListener="#{fabricationController.actInsererMatierePremiere}"
+								disabled="#{fabricationController.etatBoutonMatierePremiere('inserer')}"
+								widgetVar="widgetVarBtnInsererMP"
+								oncomplete="editionDerniereLigne('myclassMP');" />
+						<p:menuitem title="Supprimer" update="@parent:@parent" styleClass="icon-delete icon"	process="@this"
+								actionListener="#{fabricationController.actSupprimerMatierePremiere}"
+								widgetVar="widgetVarBtnSupprimerMP"
+								disabled="#{fabricationController.etatBoutonMatierePremiere('supprimer')}"/>
+						<p:menuitem styleClass="icon-affecter-matiere-premiere icon" title="Affecter les matières premières" update="@parent:@parent"
+								disabled="#{fabricationController.etatBoutonMatierePremiere('affecterMP')}" 
+									process="@this" actionListener="#{fabricationController.actAffecterMatierePremiere}"
+								/>
+<!-- 								styleClass="icon" -->
+					</p:menubar>
+
+						<p:dataTable id="dataTable" var="ligne"
+							value="#{fabricationController.valuesLigneMP}"
+							rowKey="#{ligne.dto.numLigneLDocument}" 
+							selectionMode="single"
+							editable="true" 
+							resizableColumns="true"
+							emptyMessage="#{msg.message_datatable_vide}"
+							styleClass="datatable mt10 myclassMP" 
+							selection="#{fabricationController.selectedTaMatierePremiere}">
+							<!-- 							scrollable="true" scrollHeight="250" -->
+
+							<p:ajax event="rowEdit" listener="#{fabricationController.onRowEditMP}" oncomplete="if(!handleCompleteValidationError(xhr, status, args)) {incrementMP();};autreLigneModifiable('myclassMP');" />
+							<p:ajax event="rowEditCancel" listener="#{fabricationController.onRowCancelMP}" update="@widgetVar(wvMenuBarFabMP),@widgetVar(widgetVarBtnSupprimerMP)" oncomplete="autreLigneModifiable('myclassMP');"/>
+							<p:ajax event="rowSelect" listener="#{fabricationController.onRowSelectLigneMP}" />
+							<p:ajax event="rowEditInit" listener="#{fabricationController.onRowEditInitMP}" update="@widgetVar(wvMenuBarFabMP)" oncomplete="autreLigneNonModifiable('myclassMP');"/>
+
+							<f:facet name="header">
+								Liste des matières premières
+							</f:facet>
+							
+							<p:column style="width:16px" >
+								<p:rowEditor rendered="#{fabricationController.etatBoutonMatierePremiere('rowEditor')}" styleClass="row-editor-debut"/>
+							</p:column>
+
+<!-- 							<p:column sortBy="#{ligne.dto.numLigneLDocument}"> -->
+<!-- 								<f:facet name="header"> -->
+<!-- 									<h:outputText value="Num" /> -->
+<!-- 								</f:facet> -->
+<!-- 								<p:cellEditor > -->
+<!-- 									<f:facet name="output"> -->
+<!-- 										<h:outputText value="#{ligne.dto.numLigneLDocument}"/>	 -->
+<!-- 									</f:facet> -->
+<!-- 									<f:facet name="input" > -->
+<!-- 										<p:inputText value="#{ligne.dto.numLigneLDocument}" > -->
+<!-- 										 </p:inputText>	 -->
+<!-- 									</f:facet> -->
+<!-- 								</p:cellEditor> -->
+<!-- 							</p:column>							 -->
+
+
+							<p:column sortBy="#{ligne.taArticleDTO.codeArticle}" style="width:10%">
+								<f:facet name="header">
+									<h:outputText value="Code article" />
+								</f:facet>
+								<p:cellEditor>
+									<f:facet name="output">
+										<h:outputText value="#{ligne.taArticleDTO.codeArticle}"/>
+									</f:facet>
+									<f:facet name="input">
+						
+										<p:autoComplete value="#{ligne.taArticleDTO}"
+											completeMethod="#{fabricationController.articleAutoCompleteDTOLightMP}"
+											id="idarticleMP" converter="entityConverter"
+											var="art" itemLabel="#{art.codeArticle}" itemValue="#{art}"
+											forceSelection="true" dropdown="true"
+									maxResults="#{fabricationController.taPreferencesService.nbMaxChargeListeArticle()}"
+									moreText="Il y a #{component.maxResults} affichés sur #{component.suggestions.size()} au total, Veuillez affiner votre recherche ou cliquer ici pour en afficher plus ..."
+											 placeholder="Article" 
+											style="width:100%">
+											<p:column>
+												<h:outputText value="#{art.codeArticle}" />
+											</p:column>
+											<p:column>
+												<h:outputText value="#{art.libellecArticle}" />
+											</p:column>
+		
+											<f:attribute name="nomChamp" value="#{const.C_CODE_ARTICLE}" />
+											<p:ajax event="itemSelect" listener="#{fabricationController.autcompleteSelectionMP}" update="u1MP,u2MP,idLotMP,libLotMP,idAideEtatStock"/>
+											<p:ajax event="moreText" listener="#{fabricationController.onMoreTextArticle}" />
+										</p:autoComplete>
+								
+									</f:facet>
+								</p:cellEditor >
+							</p:column>
+							
+<!-- 							<p:column sortBy="#{ligne.taArticleDTO.libellecArticle}"> -->
+<!-- 								<f:facet name="header"> -->
+<!-- 									<h:outputText value="Lib. article" /> -->
+<!-- 								</f:facet> -->
+<!-- 								<h:outputText value="#{ligne.taArticleDTO.libellecArticle}" id="libAMP"/> -->
+<!-- 							</p:column> -->
+
+							<p:column sortBy="#{ligne.taLot.numLot}" style="width:10%">
+								<f:facet name="header">
+									<h:outputText value="Numéro de lot" />
+								</f:facet>
+								<p:cellEditor>
+									<f:facet name="output">
+										<h:outputText value="#{ligne.articleLotEntrepotDTO.numLot}" />
+									</f:facet>
+									<f:facet name="input" > 
+						
+										<p:autoComplete value="#{ligne.articleLotEntrepotDTO}" completeMethod="#{fabricationController.lotAutoComplete}" 
+										disabled="#{fabricationController.lotEstVirtuelEtAUneSeuleLigne(ligne.taArticle)}"	converter="#{articleLotEntrepotDTOConverter}"
+											var="lot" itemLabel="#{lot.numLot}" itemValue="#{lot}" id="idLotMP"
+											forceSelection="true" dropdown="true"
+											 placeholder="Lot" 
+											style="width:100%">
+											<p:column>
+												<f:facet name="header">
+													<h:outputText value="Numéro de lot" />
+												</f:facet>
+												<h:outputText value="#{lot.numLot}" />
+											</p:column>
+											<p:column>
+												<f:facet name="header">
+													<h:outputText value="Libellé lot" />
+												</f:facet>
+												<h:outputText value="#{lot.libelleLot}" />
+											</p:column>
+											<p:column>
+												<f:facet name="header">
+													<h:outputText value="Code entrepot" />
+												</f:facet>
+												<h:outputText value="#{lot.codeEntrepot}" />
+											</p:column>
+											<p:column>
+												<f:facet name="header">
+													<h:outputText value="Entrepot" />
+												</f:facet>
+												<h:outputText value="#{lot.libelleEntrepot}" />
+											</p:column>
+											<p:column>
+												<f:facet name="header">
+													<h:outputText value="Emplacement" />
+												</f:facet>
+												<h:outputText value="#{lot.emplacement}" />
+											</p:column>
+											<p:column styleClass="right">
+												<f:facet name="header">
+													<h:outputText value="Qté en stock" />
+												</f:facet>
+												<h:outputText value="#{lot.qte1}" styleClass="#{lot.css}"/>
+											</p:column>
+											<p:column>
+												<f:facet name="header" styleClass="center">
+													<h:outputText value="Unité" />
+												</f:facet>
+												<h:outputText value="#{lot.codeUnite}" />
+											</p:column>
+											<p:column>
+												<f:facet name="header">
+													<h:outputText value="Date lot" />
+												</f:facet>
+												<h:outputText value="#{lot.dateLot}" />
+											</p:column>		
+											<p:column>
+												<f:facet name="header">
+													<h:outputText value="Dluo" />
+												</f:facet>
+												<h:outputText value="#{lot.dluo}" />
+											</p:column>												
+											<f:attribute name="nomChamp" value="#{const.C_NUM_LOT}" />
+												<p:ajax event="itemSelect" listener="#{fabricationController.autcompleteSelectionMP}" update="libLotMP,idEntrepotMP,idEmplcementMP"/>
+										</p:autoComplete>
+								
+									</f:facet>
+								</p:cellEditor >
+							</p:column>
+							
+							<p:column sortBy="#{ligne.dto.libLDocument}" style="width:20%">
+								<f:facet name="header">
+									<h:outputText value="Lib" />
+								</f:facet>
+								<p:cellEditor >
+									<f:facet name="output">
+										<h:outputText value="#{ligne.dto.libLDocument}"/>
+									</f:facet>
+									<f:facet name="input" >
+										<p:inputText value="#{ligne.dto.libLDocument}" validator="#{fabricationController.validateLignesMP}" id="libLotMP" style="width:100%">
+											<f:attribute name="nomChamp" value="#{const.C_LIB_L_DOCUMENT}" /> 
+											<p:ajax event="blur" update="@this" />
+										 </p:inputText>	
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+
+							<p:column sortBy="#{ligne.taEntrepot.libelle}" style="width:10%">
+								<f:facet name="header">
+									<h:outputText value="Entrepot" />
+								</f:facet>
+								<h:outputText value="#{ligne.dto.codeEntrepot}" id="idEntrepotMP"/>
+							</p:column>
+
+							<p:column sortBy="#{ligne.dto.emplacement}">
+								<f:facet name="header">
+									<h:outputText value="Emplacement" />
+								</f:facet>
+								<h:outputText value="#{ligne.dto.emplacement}" id="idEmplcementMP"/>
+							</p:column>
+
+							<p:column sortBy="#{ligne.dto.qteLDocument}" style="width:5%">
+								<f:facet name="header">
+									<h:outputText value="Quantité 1" />
+								</f:facet>
+								<p:cellEditor >
+									<f:facet name="output">
+										<h:outputText value="#{ligne.dto.qteLDocument}"/>
+									</f:facet>
+
+									<f:facet name="input" >
+										<p:inputText value="#{ligne.dto.qteLDocument}" style="width:100%" id="idQte1MP"
+											validator="#{fabricationController.validateLignesMP}">
+											<f:attribute name="nomChamp" value="#{const.C_QTE_L_DOCUMENT}" /> 
+											<p:ajax event="blur" update="idQte2MP"/>
+										 </p:inputText>										 	
+									</f:facet>
+									
+								</p:cellEditor>
+							</p:column>
+
+							<p:column style="width:5px" >
+								<f:facet name="header">
+									<h:outputText value="" />
+								</f:facet>
+								<p:cellEditor>
+									<f:facet name="output">
+										<h:outputText value="" />
+									</f:facet>
+									<f:facet name="input">
+										<p:commandLink id="idAideEtatStock" value="?" process="@this" update="@widgetVar(wvPanelGridDetailLotStock)" 
+										disabled="#{ligne.articleLotEntrepotDTO==null or ligne.articleLotEntrepotDTO.gestionLot}"
+										actionListener="#{fabricationController.etatStockQte1}"
+										oncomplete="PF('wvOverlayPanelDetailLotStock').show('#{component.clientId}');">
+<!-- 											<f:setPropertyActionListener value="#{ligne.articleLotEntrepotDTO}" target="#{fabricationController.detailLigneOverLayPanel}" /> -->
+										</p:commandLink>
+										
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+							
+							<p:column sortBy="#{ligne.dto.u1LDocument}" style="width:5%">
+								<f:facet name="header">
+									<h:outputText value="Unité 1" />
+								</f:facet>
+<!-- 								<h:outputText value="#{ligne.dto.u1LDocument}" id="u1MP"/> -->
+								<p:cellEditor >
+									<f:facet name="output">
+										<h:outputText value="#{ligne.taUnite1.codeUnite}" />
+									</f:facet>
+									<f:facet name="input">
+		<!-- 								<p:inputText value="#{ligne.taUnite1.codeUnite}" style="width:100%" id="u1"/> -->
+										<p:autoComplete value="#{ligne.taUnite1}"
+											completeMethod="#{fabricationController.uniteAutoCompleteMP}"
+											var="unit" itemLabel="#{unit.codeUnite}" itemValue="#{unit}"
+											forceSelection="true" dropdown="true"
+											placeholder="U1" style="width:100%" id="u1MP">
+											<p:column>
+												<h:outputText value="#{unit.codeUnite}" />
+											</p:column>
+											
+											<f:attribute name="nomChamp" value="#{const.C_U1_L_DOCUMENT}" />
+											<p:ajax event="itemSelect" listener="#{fabricationController.autcompleteSelection}" />
+										</p:autoComplete>
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+
+							<p:column sortBy="#{ligne.dto.qte2LDocument}" style="width:5%">
+								<f:facet name="header">
+									<h:outputText value="Quantité 2" />
+								</f:facet>
+<!-- 								<h:outputText value="#{ligne.dto.qte2LDocument}" id="idQte2MP"/> -->
+								<p:cellEditor>
+									<f:facet name="output">
+										<h:outputText value="#{ligne.dto.qte2LDocument}"/>
+									</f:facet>
+									<f:facet name="input">
+										<p:inputText value="#{ligne.dto.qte2LDocument}"	style="width:100%" id="idQte2MP"/>
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+
+							<p:column sortBy="#{ligne.dto.u2LDocument}" style="width:5%">
+								<f:facet name="header">
+									<h:outputText value="Unité 2" />
+								</f:facet>
+<!-- 								<h:outputText value="#{ligne.dto.u2LDocument}" id="u2MP"/> -->
+								<p:cellEditor>
+									<f:facet name="output">
+										<h:outputText value="#{ligne.taUnite2.codeUnite}"/>
+									</f:facet>
+									<f:facet name="input">
+		<!-- 								<p:inputText value="#{ligne.taUnite2.codeUnite}" style="width:100%" id="u2"/> -->
+										<p:autoComplete value="#{ligne.taUnite2}"
+											completeMethod="#{fabricationController.uniteAutoComplete}"
+											var="unit" itemLabel="#{unit.codeUnite}" itemValue="#{unit}"
+											forceSelection="true" dropdown="true"
+											placeholder="U2" style="width:100%" id="u2MP">
+											<p:column>
+												<h:outputText value="#{unit.codeUnite}" />
+											</p:column>
+											
+											<f:attribute name="nomChamp" value="#{const.C_U2_L_DOCUMENT}" />
+											<p:ajax event="itemSelect" listener="#{fabricationController.autcompleteSelection}" />
+										</p:autoComplete>
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+							
+							<p:column style="width:16px">
+								<f:facet name="header">
+									<h:outputText value="" />
+								</f:facet>
+								<p:cellEditor>
+									<f:facet name="output">
+										<p:commandButton title="Supprimer" styleClass="icon-delete icon icon-grille" widgetVar="widgetVarBtnSupprimerMP"
+											action="#{fabricationController.actSupprimerMatierePremiere}"
+											process="@this"
+											disabled="#{!fabricationController.modeEcran.dataSetEnModif() or fabricationController.etatBoutonMatierePremiere('supprimer')}"
+											update="@widgetVar(widgetVarTabMatierePremiere)">
+		<!-- 									<f:attribute name="idLigne" value="#{ligne.dto.id}" /> -->
+											<f:setPropertyActionListener target="#{fabricationController.selectedTaMatierePremiere}" value="#{ligne}" />
+										</p:commandButton>
+									</f:facet>
+									<f:facet name="input">
+										<h:outputText value="" />
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+		
+							<p:column style="width:26px">
+								<p:rowEditor rendered="#{fabricationController.etatBoutonMatierePremiere('rowEditor')}" styleClass="row-editor-fin"/>
+							</p:column>
+
+						</p:dataTable>
+						<p:overlayPanel widgetVar="wvOverlayPanelDetailLotStock" hideEffect="fade" >
+							<p:panel widgetVar="wvPanelGridDetailLotStock" style="text-align:center;" >
+								<p:panelGrid columns="2" rendered="#{not empty fabricationController.detailLigneOverLayPanel}">
+<!-- 							<p:dataList value="#{fabricationController.detailLigneOverLayPanel}" var="obj" type="ordered"  rendered="#{not empty fabricationController.detailLigneOverLayPanel}"> -->
+<!-- 								<f:facet name="header"> -->
+           						 
+<!--         						</f:facet> -->
+<!--         						<h:outputText value="Qté en stock : #{obj.qte1}" /> -->
+<!--     						</p:dataList> -->
+									<h:outputText value="Qté en stock" />
+									<h:outputText value="#{fabricationController.detailLigneOverLayPanel.get(0).qte1}" />
+								</p:panelGrid>
+							</p:panel>
+						</p:overlayPanel>						
+
+				</p:panel>
+			</p:tab>
+			</p:tabView>
+<!-- </p:tab> -->
+			
+<!-- 		</p:wizard> -->
+
+<!-- 	</f:validateBean> -->
+ 
+    
+	<p:remoteCommand name="incrementPF" actionListener="#{fabricationController.actAutoInsererLignePF}" process="@this"
+		update="@widgetVar(widgetVarTabProduit)" disabled="#{fabricationController.insertAutoPF}" />
+
+	<p:remoteCommand name="incrementMP" actionListener="#{fabricationController.actAutoInsererLigneMP}" process="@this"
+		update="@widgetVar(widgetVarTabMatierePremiere)" disabled="#{fabricationController.insertAutoMP}" />
+		
+	<p:remoteCommand name="verifModeScanCodeBarreFabrication" 
+		actionListener="#{fabricationController.changeModeSaisieCodeBarre}"
+		process="@this" />
+
+</ui:composition>

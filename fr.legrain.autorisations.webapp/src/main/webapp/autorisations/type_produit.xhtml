@@ -1,0 +1,187 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<!-- 	<f:metadata> -->
+	<!-- 		<f:viewParam name="modeEcranDefaut" value="#{typeProduitController.modeEcranDefaut}" /> -->
+	<!-- 		<f:event type="preRenderView" listener="#{typeProduitController.refresh}" /> -->
+	<!-- 	</f:metadata> -->
+
+	<p:panel id="typeProduitFormPrincipal" widgetVar="widgetVartypeProduitForm">
+
+
+		<p class="subtitle">
+			<p:outputLabel value="Gestion des types de produits"
+				rendered="#{dansDialogue == null ? true : false}" />
+		</p>
+
+		<!-- 		rendered="#{dansDialogue == null ? true : false}" -->
+		<p:dataTable id="typeProduitDataTable" var="table"
+			rendered="#{dansDialogue == null ? true : false}"
+			value="#{typeProduitController.values}" rowKey="#{table.idType}"
+			selectionMode="single" styleClass="datatable"
+			selection="#{typeProduitController.selection}" paginator="true"
+			rows="#{msg.modele_datatable_ligne_par_page_debut}"
+			paginatorTemplate="#{msg.modele_datatable_paginator}"
+			rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+			emptyMessage="#{msg.message_datatable_vide}"
+			currentPageReportTemplate="#{msg.modele_datatable_page_courante}">
+
+			<p:ajax event="rowSelect" listener="#{typeProduitController.onRowSelect}" />
+
+			<f:facet name="{Exporters}">
+				<h:commandLink>
+					<p:graphicImage library="images" name="excel.png" width="24" />
+					<p:dataExporter type="xls" target="typeProduitDataTable"
+						fileName="type_tiers" />
+				</h:commandLink>
+
+				<h:commandLink>
+					<p:graphicImage library="images" name="pdf.png" width="24" />
+					<p:dataExporter type="pdf" target="typeProduitDataTable"
+						fileName="type_tiers" />
+				</h:commandLink>
+
+				<h:commandLink>
+					<p:graphicImage library="images" name="csv.png" width="24" />
+					<p:dataExporter type="csv" target="typeProduitDataTable"
+						fileName="type_tiers" />
+				</h:commandLink>
+
+				<h:commandLink>
+					<p:graphicImage library="images" name="xml.png" width="24" />
+					<p:dataExporter type="xml" target="typeProduitDataTable"
+						fileName="type_tiers" />
+				</h:commandLink>
+			</f:facet>
+
+			<p:column sortBy="#{table.code}" filterBy="#{table.code}" filterMatchMode="contains">
+				<f:facet name="header">
+					<h:outputText value="Code" />
+				</f:facet>
+				<h:outputText value="#{table.code}" />
+			</p:column>
+
+			<p:column sortBy="#{table.libelle}"
+				filterBy="#{table.libelle}" filterMatchMode="contains">
+				<f:facet name="header">
+					<h:outputText value="Libellé" />
+				</f:facet>
+				<h:outputText value="#{table.libelle}" />
+			</p:column>
+
+		</p:dataTable>
+
+		<!-- bouton -->
+		<p:panel id="typeProduitDataTableF" styleClass="text-center mt30 bg-grey"
+			rendered="#{dansDialogue == null ? true : false}">
+			<p:commandButton id="typeProduitInserer" value="Insérer" process="@this"
+				disabled="#{typeProduitController.etatBouton('inserer')}"
+				update="@widgetVar(vartypeProduitPanel), @this, @parent:typeProduitModifier, @parent:typeProduitSupprimer"
+				actionListener="#{typeProduitController.actInserer}" styleClass="btn-insert btn" />
+
+			<p:commandButton id="typeProduitModifier" value="Modifier"
+				process="@this" class="btn-update btn"
+				disabled="#{typeProduitController.etatBouton('modifier')}"
+				update="@widgetVar(vartypeProduitPanel), @parent:typeProduitInserer, @this, @parent:typeProduitSupprimer"
+				actionListener="#{typeProduitController.actModifier}" />
+
+			<p:commandButton id="typeProduitSupprimer" value="Supprimer"
+				styleClass="btn-delete btn"
+				disabled="#{typeProduitController.etatBouton('supprimer')}"
+				type="button" onclick="PF('typeProduitcd1').show()">
+			</p:commandButton>
+
+			<p:commandButton id="typeProduitFermer" value="Fermer"
+				class="btn-close btn" type="button"
+				onclick="PF('typeProduitcd2').show()"
+				rendered="#{dansDialogue == null ? true : false}" />
+
+			<p:commandButton id="typeProduitFermerDialogue" value="Fermer"
+				process="@this" class="btn-close btn"
+				actionListener="#{typeProduitController.actFermerDialog}"
+				rendered="#{dansDialogue != null ? true : false}" />
+
+			<p:confirmDialog message="#{msg_diag.alert_suppresion}"
+				header="Confirmation" severity="alert" appendTo="@(body)"
+				widgetVar="typeProduitcd1">
+				<p:commandButton value="#{msg_diag.Oui}" update="@form"
+					oncomplete="PF('typeProduitcd1').hide()">
+					<p:ajax listener="#{typeProduitController.actSupprimer}" />
+				</p:commandButton>
+				<p:commandButton value="#{msg_diag.Non}"
+					onclick="PF('typeProduitcd1').hide();" type="button" />
+			</p:confirmDialog>
+
+			<p:confirmDialog message="#{msg_diag.alert_fermeture_onglet}"
+				header="Confirmation" severity="alert" widgetVar="typeProduitcd2"
+				appendTo="@(body)">
+				<p:commandButton value="#{msg_diag.Oui}"
+					onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())"
+					oncomplete="PF('typeProduitcd2').hide()" />
+
+				<p:commandButton value="#{msg_diag.Non}"
+					onclick="PF('typeProduitcd2').hide();" type="button" />
+			</p:confirmDialog>
+		</p:panel>
+	</p:panel>
+
+	<p:messages id="typeProduitMessages" showDetail="true" autoUpdate="true"
+		closable="true" />
+
+	<p:panel id="typeProduitPanel" visible="true" widgetVar="vartypeProduitPanel">
+		<p:panel resizable="false" id="typeProduitPanelCache"
+			rendered="#{typeProduitController.modeEcran.dataSetEnModif()}">
+			<!-- 			<h:form id="typeProduitFormCreation"> -->
+			<f:validateBean disabled="true">
+				<div class="ui-grid ui-grid-responsive" id="typeProduitGridResp">
+					<div class="ui-grid-row">
+						<div class="ui-grid-col-4">
+							<h:outputText value="Code :"></h:outputText>
+						</div>
+						<div class="ui-grid-col-8">
+							<h:inputText value="#{typeProduitController.nouveau.code}"
+								required="true"
+								requiredMessage="#{msg_diag.alert_champs_obligatoir}" />
+						</div>
+					</div>
+					<div class="ui-grid-row">
+						<div class="ui-grid-col-4">
+							<h:outputText value="Libelle :" ></h:outputText>
+						</div>
+						<div class="ui-grid-col-8">
+							<h:inputText value="#{typeProduitController.nouveau.libelle}"
+								required="true"
+								requiredMessage="#{msg_diag.alert_champs_obligatoir}">
+							</h:inputText>
+						</div>
+					</div>
+	
+					<div class="ui-grid-row">
+						<div class="ui-grid-col-12 text-center">
+							<p:commandButton value="Enregistrer" styleClass="btn-save btn"
+								disabled="#{typeProduitController.etatBouton('enregistrer')}"
+								update="@widgetVar(widgetVartypeProduitForm), @widgetVar(vartypeProduitPanel)"
+								actionListener="#{typeProduitController.actEnregistrer}" />
+							<p:commandButton id="typeProduitAnnuler" value="Annuler"
+								styleClass="btn-cancel btn"
+								disabled="#{typeProduitController.etatBouton('annuler')}"
+								update="@widgetVar(widgetVartypeProduitForm), @widgetVar(vartypeProduitPanel)"
+								actionListener="#{typeProduitController.actAnnuler}"
+								rendered="#{dansDialogue == null ? true : false}" />
+
+							<p:commandButton id="typeProduitAnnulerDialogue" value="Annuler"
+								styleClass="btn-cancel btn" process="@this"
+								disabled="#{typeProduitController.etatBouton('annuler')}"
+								actionListener="#{typeProduitController.actFermerDialog}"
+								rendered="#{dansDialogue != null ? true : false}" />
+						</div>
+					</div>
+				</div>
+			</f:validateBean>
+			<!-- 			</h:form> -->
+		</p:panel>
+	</p:panel>
+</ui:composition>

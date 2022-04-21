@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<title>Dev - Gestion des controles de saisie</title>
+	<link rel="shortcut icon" type="image/x-icon"
+		href="#{resource['images:solstyce.ico']}" />
+
+	<f:facet name="first">
+	</f:facet>
+</h:head>
+<h:body>
+	<f:facet name="last">
+		<!-- surcharge des CSS primefaces -->
+		<h:outputStylesheet library="css" name="hacks.css" />
+	</f:facet>
+
+	<p:layout fullPage="true" widgetVar="widgetLayoutPage">
+
+		<!-- 		<p:ajax event="toggle" listener="#{leftBean.handleToggle}"/> -->
+
+		<p:layoutUnit position="north" size="100" gutter="0" class="north">
+			<div class="ui-grid ui-grid-responsive">
+				<div class="ui-grid-col-2">
+					<p:link href="/index.xhtml">
+						<p:graphicImage library="images" name="solstyce_32x32.png" />
+						<h:outputText value="Solstyce" />
+					</p:link>
+				</div>
+				<div class="ui-grid-col-3">
+					<p:ajaxStatus>
+						<f:facet name="start">
+							<p:graphicImage library="images" name="ajax-loader.gif" />
+						</f:facet>
+						<f:facet name="complete">
+							<!-- 							<h:outputText value="Done!" /> -->
+						</f:facet>
+					</p:ajaxStatus>
+				</div>
+				<div class="ui-grid-col-10 text-right">
+					Mon compte -
+					<p:commandLink value="déconnexion" actionListener="#{auth.logout}" />
+				</div>
+
+
+			</div>
+			<!-- 			<ui:include src="../../menu.xhtml" /> -->
+		</p:layoutUnit>
+		<!-- 
+		<p:layoutUnit position="south" size="100" resizable="true">
+		</p:layoutUnit>
+ -->
+		<!-- 		<p:layoutUnit id="idWestUnit" position="west" size="550" resizable="true" collapsed="#{leftBean.collapsed}"  -->
+		<!-- 			collapsible="true" header="" gutter="4" class="west"> -->
+
+
+		<!-- 		</p:layoutUnit> -->
+
+		<!-- 		<p:layoutUnit position="east" size="200" resizable="true" -->
+		<!-- 			collapsible="true" collapsed="true" header="" gutter="2" class="east"> -->
+		<!-- 		</p:layoutUnit> -->
+
+		<p:layoutUnit position="center" gutter="4" class="center">
+		
+			
+		<h:form id="form">
+		
+<br />
+# numéro des controles à faire pour chacuns des champs<br />
+# 101: controle d'unicité<br />
+# 102: ctrl_EstNonVide  //pas de condition sur le "mode etat"<br />
+# 103: controle si valeur existe dans table<br />
+# 104: controle un code postal (5 caracteres)<br />
+# 105: controle si une date à un format valide<br />
+# 106: controle si un montant qui doit être supérieur à 0<br />
+# 107: controle si la nouvelle valeur n'est pas vide<br />
+# 108: controle si la nouvelle valeur est du type boolean<br />
+# 109: controle si la nouvelle valeur ne contient que des chiffres<br />
+# 110: controle si la nouvelle valeur ne contient pas des caractères non autorisés<br />
+# 111: controle si la nouvelle valeur n'est pas vide sauf si elle est null dans le cas de valeur facultative suivant condition<br />
+# 112: controle la longueur maximal d'un champ dans la base de données<br />
+<br />
+
+			<p:dataTable id="dataTable" var="taControle"
+				value="#{controleController.values}"
+				rowKey="#{taControle.idControle}"
+				editable="true" 
+				selection="#{controleController.selectedTaControle}"
+				selectionMode="single" 
+				paginator="true" rows="20"
+				resizableColumns="true"
+				paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+				 rowsPerPageTemplate="10,20,50,100">
+
+				<p:ajax event="rowEdit" listener="#{controleController.OnRowEditControle}"  />
+
+				<f:facet name="header">  
+           			Controle (#{controleController.values.size()})
+        		</f:facet>
+
+				<p:column selectionMode="multiple" style="width:18px" />
+				<!-- ajouter sur le datatable pour une seule ligne selectionMode="single"-->
+
+				<p:column sortBy="#{taControle.idControle}">
+					<f:facet name="header">
+						<h:outputText value="ID" />
+					</f:facet>
+					<p:commandLink value="#{taControle.idControle}"
+						update=":controleDetailForm:display"
+						oncomplete="PF('controleDialog').show()" title="View">
+						<f:setPropertyActionListener value="#{taControle}"
+							target="#{controleController.selectedTaControle}" />
+					</p:commandLink>
+				</p:column>
+				
+
+					<p:column sortBy="#{taControle.champ}" filterBy="#{taControle.champ}">
+						<f:facet name="header">
+							<h:outputText value="Champ" />
+						</f:facet>
+						<p:cellEditor >
+							<f:facet name="output">
+								<h:outputText value="#{taControle.champ}" />
+							</f:facet>
+							<f:facet name="input">
+								<p:inputText value="#{taControle.champ}"/>
+							</f:facet>
+						</p:cellEditor>
+					</p:column>				
+				
+				<p:column sortBy="#{taControle.contexte}" filterBy="#{taControle.contexte}">
+					<f:facet name="header">
+						<h:outputText value="Contexte" />
+					</f:facet>
+					<h:outputText value="#{taControle.contexte}" />
+				</p:column>
+
+				<p:column sortBy="#{taControle.client}">
+					<f:facet name="header">
+						<h:outputText value="Client" />
+					</f:facet>
+					<h:outputText value="#{taControle.client}" />
+				</p:column>
+
+				<p:column sortBy="#{taControle.serveur}">
+					<f:facet name="header">
+						<h:outputText value="Serveur" />
+					</f:facet>
+					<h:outputText value="#{taControle.serveur}" />
+				</p:column>
+				
+					<p:column sortBy="#{taControle.controleDefaut}">
+						<f:facet name="header">
+							<h:outputText value="Controle Defaut" />
+						</f:facet>
+						<p:cellEditor >
+							<f:facet name="output">
+								<h:outputText value="#{taControle.controleDefaut}" />
+							</f:facet>
+							<f:facet name="input">
+								<p:inputText value="#{taControle.controleDefaut}" style="width:100%" id="u1"/>
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+									
+				<p:column sortBy="#{taControle.controleUtilisateur}">
+					<f:facet name="header">
+						<h:outputText value="Controle Utilisateur" />
+					</f:facet>
+					<h:outputText value="#{taControle.controleUtilisateur}" />
+				</p:column>
+				
+				<p:column >
+					<f:facet name="header">
+						<h:outputText value="Actions" />
+					</f:facet>
+					<p:commandLink value="Copier"
+						update=":copieDlg"
+						oncomplete="PF('copieDialog').show()" actionListener="#{controleController.prepareCopieControle}">
+						<f:setPropertyActionListener value="#{taControle}"
+							target="#{controleController.selectedTaControle}" />
+					</p:commandLink>
+				</p:column>
+
+				<f:facet name="footer">
+					<p:commandButton value="Nouveau1"
+						oncomplete="PF('newControleDialog').show()" icon="ui-icon-star"
+						title="Céer une nouvelle civilité" />
+					<p:commandButton value="Supprimer selection"
+						actionListener="#{controleController.doDeleteControles}"
+						update="dataTable" icon="ui-icon-trash" />
+					<p:commandButton value="Supprimer"
+						actionListener="#{controleController.doDeleteControle}"
+						update="dataTable" icon="ui-icon-trash" />
+				</f:facet>
+				<p:column style="width:32px">
+						<p:rowEditor rendered="true"/>
+<!-- 						<p:rowEditor/> -->
+					</p:column>
+			</p:dataTable>
+		</h:form>
+
+		<p:dialog header="Détail" widgetVar="controleDialog" resizable="false"
+			id="controleDlg">
+			<h:form id="controleDetailForm">
+				<p:panelGrid id="display" columns="2" cellpadding="4"
+					style="margin:0 auto;">
+					<f:validateBean disabled="true">
+						<h:outputText value="ID :"/>
+						<h:outputText
+							value="#{controleController.selectedTaControle.idControle}" />
+							
+						<h:outputText value="Champ :"/>
+						<p:inputText value="#{controleController.selectedTaControle.champ}" />
+						
+						<h:outputText value="Contexte :"/>
+						<p:inputText value="#{controleController.selectedTaControle.contexte}" />
+						
+						<h:outputText value="Client :"/>
+						<p:inputText value="#{controleController.selectedTaControle.client}" />
+						
+						<h:outputText value="Serveur :"/>
+						<p:inputText value="#{controleController.selectedTaControle.serveur}" />
+						
+						<h:outputText value="Controle Defaut :"/>
+						<p:inputText value="#{controleController.selectedTaControle.controleDefaut}" />
+						
+						<h:outputText value="Controle Utilisateur :"/>
+						<p:inputText value="#{controleController.selectedTaControle.controleUtilisateur}" />
+
+					</f:validateBean>
+
+					<f:facet name="footer">
+						<p:commandButton value="Mettre à jour"
+							update=":form:dataTable, :growl"
+							oncomplete="handleSubmitRequest(xhr, status, args, 'controleDlg','newControleForm'); "
+							actionListener="#{controleController.doUpdateControle}" />
+					</f:facet>
+				</p:panelGrid>
+			</h:form>
+		</p:dialog>
+		
+		<p:dialog header="Copie" widgetVar="copieDialog" resizable="false"
+			id="copieDlg">
+			<h:form id="controleCopieForm">
+				<p:panelGrid id="display" columns="2" cellpadding="4"
+					style="margin:0 auto;">
+					<f:validateBean disabled="true">
+							
+						<h:outputText value="Champ :"/>
+						<p:inputText value="#{controleController.copieTaControle.champ}" />
+						
+						<h:outputText value="Contexte :"/>
+						<p:inputText value="#{controleController.copieTaControle.contexte}" />
+						
+						<h:outputText value="Client :"/>
+						<p:inputText value="#{controleController.copieTaControle.client}" />
+						
+						<h:outputText value="Serveur :"/>
+						<p:inputText value="#{controleController.copieTaControle.serveur}" />
+						
+						<h:outputText value="Controle Defaut :"/>
+						<p:inputText value="#{controleController.copieTaControle.controleDefaut}" />
+						
+						<h:outputText value="Controle Utilisateur :"/>
+						<p:inputText value="#{controleController.copieTaControle.controleUtilisateur}" />
+
+					</f:validateBean>
+
+					<f:facet name="footer">
+						<p:commandButton value="Enregistrer"
+							update=":form:dataTable, :growl"
+							oncomplete="handleSubmitRequest(xhr, status, args, 'copieDlg','controleCopieForm'); "
+							actionListener="#{controleController.doCopieControle}" />
+					</f:facet>
+				</p:panelGrid>
+			</h:form>
+		</p:dialog>
+
+		<p:dialog header="Nouveau" onLoad="reset()"
+			widgetVar="newControleDialog" resizable="false" id="newControleDlg">
+			<h:form id="newControleForm">
+				<p:panelGrid id="displayNewControle" columns="2" cellpadding="4"
+					style="margin:0 auto;">
+					<f:validateBean disabled="true">
+						<h:outputText value="ID :"/>
+						<p:inputText
+							value="#{controleController.newTaControle.idControle}" />
+							
+						<h:outputText value="Champ :"/>
+						<p:inputText value="#{controleController.newTaControle.champ}" />
+						
+						<h:outputText value="Contexte :"/>
+						<p:inputText value="#{controleController.newTaControle.contexte}" />
+						
+						<h:outputText value="Client :"/>
+						<p:inputText value="#{controleController.newTaControle.client}" />
+						
+						<h:outputText value="Serveur :"/>
+						<p:inputText value="#{controleController.newTaControle.serveur}" />
+						
+						<h:outputText value="Controle Defaut :"/>
+						<p:inputText value="#{controleController.newTaControle.controleDefaut}" />
+						
+						<h:outputText value="Controle Utilisateur :"/>
+						<p:inputText value="#{controleController.newTaControle.controleUtilisateur}" />
+
+						
+					</f:validateBean>
+
+					<f:facet name="footer">
+						<p:commandButton value="Valider" update=":form:dataTable, :growl"
+							oncomplete=" handleSubmitRequest(xhr, status, args, 'newControleDlg','newControleForm');"
+							actionListener="#{controleController.doCreateControle}" />
+						<p:commandButton type="reset" value="Vider"></p:commandButton>
+					</f:facet>
+				</p:panelGrid>
+			</h:form>
+		</p:dialog>
+
+		<p:growl id="growl" showDetail="true" life="5000" />
+
+	</p:layoutUnit>
+
+	</p:layout>
+
+	<!-- 	<h:outputScript name="/js/functions.js"  /> -->
+
+</h:body>
+</html>

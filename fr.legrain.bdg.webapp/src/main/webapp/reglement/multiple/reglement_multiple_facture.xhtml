@@ -1,0 +1,600 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template_dialog_lgr.xhtml">
+
+	<ui:define name="head">
+		<title> #{reglementMultipleFacController.titlePartOne} #{reglementMultipleFacController.titlePartTwo}</title>
+		<style type="text/css">
+.ui-widget {
+	font-size: 90%;
+}
+</style>
+	</ui:define>
+
+	<ui:define name="content">
+		<h:form id="idDialogReglementFacture">
+			<p:menubar styleClass="menu-onglet">
+				<p:menuitem title="Fermer" styleClass="icon icon-close menuitem-fermer-droite" actionListener="#{reglementMultipleFacController.actFermerDialog}"
+					process="@this">
+					<p:confirm header="Confirmation" message="#{msg_diag.alert_fermeture_onglet}" icon="ui-icon-alert"
+						disabled="#{!reglementMultipleFacController.modeEcran.dataSetEnModif()}" />
+				</p:menuitem>
+			</p:menubar>
+			<div class="card">
+				<p:panel header="Infos de la facture à régler" style="width:100%;">
+				    <p:panelGrid columns="3" id="idInfosFacture" columnClasses="ui-grid-col-4,ui-grid-col-4,ui-grid-col-4 right" styleClass="ui-panelgrid-blank" layout="grid">
+						<h:panelGroup>
+						<p:outputLabel value="Code facture : " style="font-weight: bold;"/>
+						<p:outputLabel value="#{reglementMultipleFacController.masterEntityDTO.codeDocument}" />
+						</h:panelGroup>
+						<h:panelGroup>
+						<p:outputLabel value="Code tiers : " style="font-weight: bold;"/>
+						<p:outputLabel value="#{reglementMultipleFacController.masterEntityDTO.codeTiers}"/>
+						</h:panelGroup>
+						<h:panelGroup>
+						<p:outputLabel value="Date facture : " style="font-weight: bold;"/>
+						<p:outputLabel value="#{reglementMultipleFacController.masterEntityDTO.dateDocument}" >
+							<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+						</p:outputLabel>
+						</h:panelGroup>
+						<h:panelGroup>
+<!-- 						<p:outputLabel value="Libellé : "/> -->
+						<p:outputLabel value="#{reglementMultipleFacController.masterEntityDTO.libelleDocument}" />
+						</h:panelGroup>
+						<h:panelGroup>
+						<p:outputLabel value="Nom : " style="font-weight: bold;"/>
+						<p:outputLabel value="#{reglementMultipleFacController.masterEntityDTO.nomTiers} - #{reglementMultipleFacController.masterEntityDTO.nomEntreprise}"/>
+						</h:panelGroup>
+						<h:panelGroup>
+						<p:outputLabel value="Date échéance : " style="font-weight:bold;"/>
+						<p:outputLabel value="#{reglementMultipleFacController.masterEntityDTO.dateEchDocument}" >
+							<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+						</p:outputLabel>
+						</h:panelGroup>
+
+ 						<h:panelGroup> 
+						<div class="card" style="background:#ebebeb;text-align:center;center;padding: 5px;margin-top: 15px;">
+						<p:outputLabel value="Net TTC" style="font-weight: bold;"/>
+						<p:separator style="color:#9a9a9a"/>
+						<p:outputLabel value="#{reglementMultipleFacController.masterEntityDTO.netTtcCalc}">
+						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+						</p:outputLabel>
+<!-- 						<hr /> -->
+						</div>
+						</h:panelGroup>
+
+						<h:panelGroup>
+						<div class="card" style="background:#ebebeb;text-align:center;center;padding: 5px;margin-top: 15px;">
+<!-- 						<h:panelGroup> -->
+						<p:outputLabel value="Déjà réglé : " style="font-weight: bold;"/>
+						<p:separator style="color:#9a9a9a"/>
+						<p:outputLabel value="#{reglementMultipleFacController.masterEntityDTO.regleCompletDocument}">
+						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+						</p:outputLabel>
+<!-- 						<hr /> -->
+						</div>
+						</h:panelGroup>
+<!-- 						</h:panelGroup> -->
+<!--border-style: solid;border-width: thin;padding: 7px; -->
+						<h:panelGroup>
+						<div class="card" style="background: #ebf9cc;text-align: center;padding: 5px;margin-top: 15px;">
+						<p:outputLabel value="Reste à régler" style="font-weight: bold;"/>
+						<p:separator style="color:#9a9a9a"/>
+						<p:outputLabel value="#{reglementMultipleFacController.masterEntityDTO.resteAReglerComplet}" style="font-weight: bold;" >
+						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+						</p:outputLabel>
+<!-- 						<hr /> -->
+						</div>
+						</h:panelGroup>
+
+<!-- 						<p:graphicImage value="affectation verrouillée !!!" title="#{reglementMultipleFacController.masterEntityDTOEstVerrouille().message}" library="images" name="verrouiller.svg" width="32"  rendered="#{reglementMultipleFacController.masterEntityDTOEstVerrouille.verrouille}"/> 	 -->
+					</p:panelGrid>
+<!-- 					<p:dataTable var="doc" id="idInfosFacture"  -->
+<!-- 						value="#{reglementMultipleFacController.masterEntityDTO}" -->
+<!-- 						emptyMessage="#{msg.message_datatable_vide}" > -->
+
+
+<!-- 	    				    <p:column> -->
+<!-- 								<f:facet name="header"> -->
+<!-- 									<h:outputText value="Code facture" /> -->
+<!-- 								</f:facet> -->
+<!-- 								<h:outputText value="#{doc.codeDocument}" /> -->
+<!-- 							</p:column> -->
+
+<!-- 	    				    <p:column > -->
+<!-- 								<f:facet name="header"> -->
+<!-- 									<h:outputText value="Libellé" /> -->
+<!-- 								</f:facet> -->
+<!-- 								<h:outputText value="#{doc.libelleDocument}" /> -->
+<!-- 							</p:column> -->
+<!-- 	    				    <p:column > -->
+<!-- 								<f:facet name="header"> -->
+<!-- 									<h:outputText value="Date facture" /> -->
+<!-- 								</f:facet> -->
+<!-- 								<h:outputText value="#{doc.dateDocument}" > -->
+<!-- 									<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/> -->
+<!-- 								</h:outputText>									 -->
+<!-- 							</p:column> -->
+<!-- 	    				    <p:column > -->
+<!-- 								<f:facet name="header"> -->
+<!-- 									<h:outputText value="Date échéance" /> -->
+<!-- 								</f:facet> -->
+<!-- 								<h:outputText value="#{doc.dateLivDocument}" > -->
+<!-- 									<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/> -->
+<!-- 								</h:outputText>									 -->
+<!-- 							</p:column> -->
+												
+<!-- 	    				    <p:column > -->
+<!-- 								<f:facet name="header"> -->
+<!-- 									<h:outputText value="Code tiers" /> -->
+<!-- 								</f:facet> -->
+<!-- 								<h:outputText value="#{doc.codeTiers}" />								 -->
+<!-- 							</p:column> -->
+<!-- 	    				    <p:column > -->
+<!-- 								<f:facet name="header"> -->
+<!-- 									<h:outputText value="Net TTC" /> -->
+<!-- 								</f:facet> -->
+<!-- 								<h:outputText value="#{doc.netTtcCalc}" /> -->
+<!-- 							</p:column> -->
+
+<!-- 	    				    <p:column > -->
+<!-- 								<f:facet name="header"> -->
+<!-- 									<h:outputText value="Déjà réglé" /> -->
+<!-- 								</f:facet> -->
+<!-- 								<h:outputText value="#{doc.regleCompletDocument}" /> -->
+<!-- 							</p:column> -->
+
+<!-- 	    				    <p:column> -->
+<!-- 								<f:facet name="header"> -->
+<!-- 									<h:outputText value="Reste à régler" /> -->
+<!-- 								</f:facet> -->
+<!-- 								<h:outputText value="#{doc.resteAReglerComplet}" /> -->
+<!-- 							</p:column> -->
+<!-- 					</p:dataTable> -->
+
+				</p:panel>
+			</div>			
+			<div class="ui-g-12">
+				<div class="ui-g-7  ui-md-7">
+<!-- 			<div class="ui-g-12 ui-md-12"> -->
+<!-- 				<div class="ui-g-6 ui-md-6 "> -->
+					<div class="card">
+						<p:panel header="Liste des règlements" style="width:100%;text-align: center;">
+<!-- 						<p:scrollPanel style="height:315px;width:480px;"> -->
+						<p:dataTable 	id="reglFacDataTableModifiable"
+										var="table"
+										value="#{reglementMultipleFacController.values}" 
+										scrollable="true"
+										scrollHeight="310"
+										widgetVar="wvreglementFactureDataTableModifiable" 
+										rows="#{msg.modele_datatable_ligne_par_page_debut}"
+										emptyMessage="#{msg.message_datatable_vide}"
+										selectionMode="single"
+										rowKey="#{table.dto.id}"
+										selection="#{reglementMultipleFacController.selection}" 
+										disabledSelection="#{reglementMultipleFacController.modeEcran.dataSetEnModif()}"
+										>					
+<!-- 						<p:dataTable 	id="reglFacDataTableModifiable" -->
+<!-- 										var="table" -->
+<!-- 										value="#{reglementMultipleFacController.values}"  -->
+<!-- 										scrollable="true" -->
+<!-- 										scrollHeight="310" -->
+<!-- 										liveResize="true"  -->
+<!-- 										widgetVar="wvreglementFactureDataTableModifiable"  -->
+<!-- 										resizableColumns="true"  -->
+<!-- 										paginator="true" -->
+<!-- 										rows="#{msg.modele_datatable_ligne_par_page_debut}" -->
+<!-- 										paginatorTemplate="#{msg.modele_datatable_paginator}" -->
+<!-- 										rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}" -->
+<!-- 										emptyMessage="#{msg.message_datatable_vide}" -->
+<!-- 										currentPageReportTemplate="#{msg.modele_datatable_page_courante}" -->
+<!-- 										selectionMode="single" -->
+<!-- 										rowKey="#{table.dto.id}" -->
+<!-- 										> -->
+<!-- 										reflow="true" -->
+<!-- 										selection="#{reglementMultipleFacController.selection}"  -->
+<!-- 										disabledSelection="#{reglementMultipleFacController.modeEcran.dataSetEnModif()}" -->
+<!-- 					rowStyleClass="#{table.dto.affectation.signum()>0 ? 'row-affecte-a-facture' : null}"> -->
+<!-- 					class="datatable"  -->
+<!-- 					paginatorTemplate="#{msg.modele_datatable_paginator}" -->
+<!-- 					paginator="false" -->
+
+						<p:ajax event="rowSelect" listener="#{reglementMultipleFacController.onRowSelect}" update="@widgetVar(wvInfosComplementairesReglementMultiple),@widgetVar(varReglementFacturePanel)" />
+
+						<p:column 	headerText="Infos"
+									sortBy="#{table.dto.codeDocument}" 
+									width="30%" 
+									styleClass="left">
+							<h:outputText value="Code : #{table.dto.codeDocument}" style="text-align: center;"/>
+							<br/>
+							<h:outputText value="#{table.dto.libelleDocument}" />
+							<br/>
+							<h:outputText value="#{table.dto.codeAcompte}" rendered="#{table.dto.idAcompte > 0 ? false : true}"/>
+							<br/>
+							<h:outputText value=" Affecté à la facture : " rendered="#{table.dto.affectation > 0}"/>
+							<h:outputText 	value="#{table.dto.affectation}" 
+											style="background:#b5d0ea;border-radius:5px;padding:1px;font-weight: bold;" 
+											rendered="#{table.dto.affectation > 0}">
+							<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+							</h:outputText>
+						</p:column>
+						
+
+						<p:column 	headerText="Date"
+									sortBy="#{table.dto.dateDocument}" 
+									width="15%">
+							<h:outputText value="#{table.dto.dateDocument}" >
+									<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+							</h:outputText>									
+						</p:column>
+
+						<p:column 	headerText="Montant"
+									sortBy="#{table.dto.netTtcCalc}"  
+									width="25%" 
+									styleClass="right">
+							<h:outputText value="#{table.dto.netTtcCalc}" >
+							<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+						</p:column>
+
+						<p:column 	headerText="Reste à affecter"
+									sortBy="#{table.dto.resteAAffecter}" 
+									width="20%" 
+									styleClass="right">
+							<h:outputText value="#{table.dto.resteAAffecter}"   style="font-weight: bold;color: orange"  rendered="#{reglementMultipleFacController.resteAAffecter(table.dto)}">
+							<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+							</h:outputText>									
+							<h:outputText value="#{table.dto.resteAAffecter}"   style="font-weight: bold;" rendered="#{!reglementMultipleFacController.resteAAffecter(table.dto)}">
+							<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+							</h:outputText>
+						</p:column>
+
+
+<!-- 						<p:column sortBy="#{table.dto.netTtcCalc}"> -->
+<!-- 							<f:facet name="header"> -->
+<!-- 								<h:outputText value="Montant" /> -->
+<!-- 							</f:facet> -->
+<!-- 							<h:outputText value="#{table.dto.netTtcCalc}" /> -->
+<!-- 						</p:column> -->
+
+<!-- 						<p:column sortBy="#{table.dto.codeTPaiement}" style="width:32px"> -->
+<!-- 							<f:facet name="header"> -->
+<!-- 								<h:outputText value="Type" /> -->
+<!-- 							</f:facet> -->
+<!-- 							<h:outputText value="#{table.dto.codeTPaiement}"  /> -->
+<!-- 						</p:column> -->
+
+<!-- 						<p:column sortBy="#{table.dto.dateLivDocument}"> -->
+<!-- 							<f:facet name="header"> -->
+<!-- 								<h:outputText value="Encaissé le" /> -->
+<!-- 							</f:facet> -->
+<!-- 							<h:outputText value="#{table.dto.dateLivDocument}" > -->
+<!-- 									<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/> -->
+<!-- 							</h:outputText>									 -->
+<!-- 						</p:column> -->
+
+<!-- 						<p:column sortBy="#{table.dto.affectation}"> -->
+<!-- 							<f:facet name="header"> -->
+<!-- 								<h:outputText value="Montant affecté" /> -->
+<!-- 							</f:facet> -->
+<!-- 							<h:outputText value="#{table.dto.affectation}" /> -->
+<!-- 						</p:column> -->
+
+<!-- 						<p:column sortBy="#{table.dto.resteAAffecter}"> -->
+<!-- 							<f:facet name="header"> -->
+<!-- 								<h:outputText value="Reste à affecté" /> -->
+<!-- 							</f:facet> -->
+<!-- 							<h:outputText value="#{table.dto.resteAAffecter}" /> -->
+<!-- 						</p:column> -->
+
+<!-- 						<p:column sortBy="#{table.dto.libelleDocument}"> -->
+<!-- 							<f:facet name="header"> -->
+<!-- 								<h:outputText value="Libellé" /> -->
+<!-- 							</f:facet> -->
+<!-- 							<h:outputText value="#{table.dto.libelleDocument}" /> -->
+<!-- 						</p:column> -->
+
+<!-- 						<p:column sortBy="#{table.dto.codeAcompte}"> -->
+<!-- 							<f:facet name="header"> -->
+<!-- 								<h:outputText value="Acompte" /> -->
+<!-- 							</f:facet> -->
+<!-- 							<h:outputText value="#{table.dto.codeAcompte}" /> -->
+<!-- 						</p:column>						 -->
+					</p:dataTable>
+<!-- 					 </p:scrollPanel> -->
+						</p:panel>
+					</div>
+				</div>
+				<div class="ui-g-5 ui-md-5 ">
+					<div class="card">
+<p:panel id="reglementFacturePanel" visible="true" widgetVar="varReglementFacturePanel"  >
+				<p:menubar styleClass="menu-onglet" widgetVar="wvMenuReglementAffectation" rendered="#{!reglementMultipleFacController.readOnly}">
+					<p:menuitem title="Enregistrer les modifications en cours" styleClass="icon-save icon"
+						actionListener="#{reglementMultipleFacController.actEnregistrer}"
+						update="@widgetVar(wvReglementFacturePanelCache),idInfosFacture,@widgetVar(wvMenuReglementAffectation),@widgetVar(wvreglementFactureDataTableModifiable),@widgetVar(wvInfosComplementairesReglementMultiple)" process="@this"
+						disabled="#{reglementMultipleFacController.etatBouton('enregistrer')}" />
+					
+					<p:menuitem title="Ajouter un nouveau règlement" styleClass="icon-insert icon" actionListener="#{reglementMultipleFacController.actInserer}"
+						update="@widgetVar(wvReglementFacturePanelCache),idInfosFacture,@widgetVar(wvMenuReglementAffectation),@widgetVar(wvreglementFactureDataTableModifiable),@widgetVar(wvInfosComplementairesReglementMultiple)" process="@this"
+						disabled="#{reglementMultipleFacController.etatBouton('inserer')}" />
+					
+					<p:menuitem title="Modifier le règlement courant" styleClass="icon-update icon" actionListener="#{reglementMultipleFacController.actModifier}"
+						update="@widgetVar(wvReglementFacturePanelCache),idInfosFacture,@widgetVar(wvMenuReglementAffectation),@widgetVar(wvreglementFactureDataTableModifiable),@widgetVar(wvInfosComplementairesReglementMultiple)" process="@this"
+						disabled="#{reglementMultipleFacController.etatBouton('modifier') or reglementMultipleFacController.selection == null}" />
+					
+					<p:menuitem title="Annuler les modifications en cours" styleClass="icon-cancel icon"
+						actionListener="#{reglementMultipleFacController.actAnnuler}"
+						update="@widgetVar(wvReglementFacturePanelCache),idInfosFacture,@widgetVar(wvMenuReglementAffectation),@widgetVar(wvreglementFactureDataTableModifiable),@widgetVar(wvInfosComplementairesReglementMultiple)" process="@this"
+						disabled="#{reglementMultipleFacController.etatBouton('annuler')}" />
+					
+					
+					
+					<p:menuitem title="Supprimer l'affectation courante" styleClass="icon icon-suppr-affectation"
+						actionListener="#{reglementMultipleFacController.actSupprimerAffectation}"
+						update="@widgetVar(wvReglementFacturePanelCache),idInfosFacture,@widgetVar(wvMenuReglementAffectation),@widgetVar(wvreglementFactureDataTableModifiable),@widgetVar(wvInfosComplementairesReglementMultiple)" process="@this"
+						disabled="#{reglementMultipleFacController.etatBouton('supprimer') or reglementMultipleFacController.rAffectationDTOEstVerrouille().verrouille or reglementMultipleFacController.selection == null}">
+					</p:menuitem>
+					
+					<p:menuitem title="affectation automatique" styleClass="icon icon-affectation-intelligente"
+						actionListener="#{reglementMultipleFacController.actAffecterAuto}"
+						update="@widgetVar(wvReglementFacturePanelCache),idInfosFacture,@widgetVar(wvMenuReglementAffectation),@widgetVar(wvreglementFactureDataTableModifiable),@widgetVar(wvInfosComplementairesReglementMultiple)" process="@this"
+						disabled="#{reglementMultipleFacController.etatBouton('modifier') or reglementMultipleFacController.rAffectationDTOEstVerrouille().verrouille or reglementMultipleFacController.selection == null}">
+					</p:menuitem>	
+					
+					<p:menuitem title="Supprimer le règlement courant" styleClass="icon icon-delete"
+						actionListener="#{reglementMultipleFacController.actSupprimer}"
+						update="@widgetVar(wvReglementFacturePanelCache),idInfosFacture,@widgetVar(wvMenuReglementAffectation),@widgetVar(wvreglementFactureDataTableModifiable),@widgetVar(wvInfosComplementairesReglementMultiple)" process="@this"
+						disabled="#{reglementMultipleFacController.etatBouton('supprimer') or reglementMultipleFacController.readOnlyReglement(reglementMultipleFacController.nouveau) or reglementMultipleFacController.documentDTOEstVerrouille().verrouille}">
+					</p:menuitem>				
+				</p:menubar>
+	<p:fieldset style="margin-bottom:20px;" widgetVar="wvInfosComplementaires">
+		<h:panelGrid columns="13" cellpadding="15" >
+<!-- 				<p:graphicImage name="btn/exporter.svg" title="Le règlement en cours est exporté. Il ne peut pas être supprimé ou modifié. Seule l'affectation est possible." library="images" -->
+<!-- 					width="20px" rendered="#{reglementMultipleFacController.nouveau.dto.exportAffectation}" /> -->
+<p:graphicImage value="Document verrouillé !!!" title="#{reglementMultipleFacController.documentDTOEstVerrouille().message}" library="images" name="verrouiller.svg" width="32"  rendered="#{reglementMultipleFacController.documentDTOEstVerrouille().verrouille}"/> 				
+<p:graphicImage value="affectation verrouillée !!!" title="#{reglementMultipleFacController.rAffectationDTOEstVerrouille().message}" library="images" name="verrouiller.svg" width="32"  rendered="#{reglementMultipleFacController.rAffectationDTOEstVerrouille().verrouille}"/> 				
+		</h:panelGrid>
+	</p:fieldset>				
+				<p:panel header="Détail règlement" onLoad="reset()" id="reglementFacturePanelCache" widgetVar="wvReglementFacturePanelCache" >
+					<f:validateBean disabled="true">
+						<h:panelGrid columns="2" cellpadding="10" >
+							<h:outputLabel value="Code règlement :" />
+							<h:inputText value="#{reglementMultipleFacController.nouveau.dto.codeDocument}" validator="#{reglementMultipleFacController.validateObject}"
+								disabled="true">
+								<f:attribute name="nomChamp" value="#{const.C_CODE_DOCUMENT}" />
+								<p:ajax event="blur" update="@this" />
+							</h:inputText>
+
+							<h:outputLabel value="Type paiement :" />
+							<p:autoComplete value="#{reglementMultipleFacController.nouveau.taTPaiement}" converter="entityConverter" 
+								completeMethod="#{reglementMultipleFacController.typePaiementAutoComplete}" var="tp" itemLabel="#{tp.codeTPaiement}" itemValue="#{tp}"
+								forceSelection="true" dropdown="true"
+								disabled="#{reglementMultipleFacController.readOnly or reglementMultipleFacController.editable() or reglementMultipleFacController.readOnlyReglement(reglementMultipleFacController.nouveau) or reglementMultipleFacController.documentDTOEstVerrouille().verrouille}"
+								placeholder="Type de paiement" style="width:100%">
+								<p:column>
+									<h:outputText value="#{tp.codeTPaiement}" />
+								</p:column>
+								<p:column>
+									<h:outputText value="#{tp.libTPaiement}" />
+								</p:column>
+
+								<p:column>
+									<h:outputText value="#{tp.compte}" />
+								</p:column>
+								<f:attribute name="nomChamp" value="#{const.C_CODE_T_PAIEMENT}" />
+								<p:ajax event="itemSelect" listener="#{reglementMultipleFacController.autcompleteSelection}" update="idLibellePaiement" />
+							</p:autoComplete>
+
+							<h:outputLabel value="Compte bancaire (iban) :" />
+<!-- 								<p:selectOneMenu  value="#{reglementMultipleFacController.nouveau.taCompteBanque}" style="width:150px" converter="entityConverter" -->
+<!-- 								disabled="#{reglementMultipleFacController.editable() or reglementMultipleFacController.readOnlyReglement(reglementMultipleFacController.nouveau)}"  -->
+<!-- 								placeholder="Compte bancaire"> -->
+<!-- 									<f:selectItems var="tp" itemLabel="#{tp.iban}" itemValue="#{tp}" value="#{reglementMultipleFacController.compteBancaireAutoComplete()}" /> -->
+<!-- 								</p:selectOneMenu> -->
+								
+
+							<p:autoComplete value="#{reglementMultipleFacController.nouveau.taCompteBanque}" converter="entityConverter"
+								completeMethod="#{reglementMultipleFacController.compteBancaireAutoComplete}" var="tp" itemLabel="#{tp.iban}" itemValue="#{tp}"
+								forceSelection="true" dropdown="true" 
+								disabled="#{reglementMultipleFacController.readOnly or reglementMultipleFacController.editable() or reglementMultipleFacController.readOnlyReglement(reglementMultipleFacController.nouveau) or reglementMultipleFacController.documentDTOEstVerrouille().verrouille}"
+								placeholder="Compte bancaire" style="width:100%">
+								<p:column>
+									<h:outputText value="#{tp.codeBanque}" />
+								</p:column>
+
+								<p:column>
+									<h:outputText value="#{tp.nomBanque}" />
+								</p:column>
+
+								<p:column>
+									<h:outputText value="#{tp.compte}" />
+								</p:column>
+
+								<p:column>
+									<h:outputText value="#{tp.iban}" />
+								</p:column>
+
+								<p:column>
+									<h:outputText value="#{tp.cptcomptable}" />
+								</p:column>
+								<f:attribute name="nomChamp" value="#{const.C_COMPTE_BANQUE}" />
+								<p:ajax event="itemSelect" listener="#{reglementMultipleFacController.autcompleteSelection}" />
+								<p:ajax event="itemUnselect" listener="#{reglementMultipleFacController.autcompleteSelection}" />
+							</p:autoComplete>
+
+
+							<h:outputLabel value="Date règlement :" />
+							<p:calendar value="#{reglementMultipleFacController.nouveau.dto.dateDocument}" id="idDateDocumentReglMulti"
+								disabled="#{reglementMultipleFacController.readOnly or reglementMultipleFacController.editable() or reglementMultipleFacController.readOnlyReglement(reglementMultipleFacController.nouveau) or reglementMultipleFacController.documentDTOEstVerrouille().verrouille}"
+								pattern="dd/MM/yyyy" mask="true" locale="fr" navigator="true" showOn="button"  timeZone="#{msg.time_zone}">
+								<f:attribute name="nomChamp" value="#{const.C_DATE_REGLEMENT}" />
+								<p:ajax event="dateSelect" update="@this,idDateEncaissementReglMulti" listener="#{reglementMultipleFacController.controleDate}"  />
+								<p:ajax event="change" update="@this,idDateEncaissementReglMulti"  listener="#{reglementMultipleFacController.controleDate}" />
+							</p:calendar>
+
+
+							<h:outputLabel value="Montant règlement :" />
+							<h:inputText value="#{reglementMultipleFacController.nouveau.dto.netTtcCalc}" validator="#{reglementMultipleFacController.validateObject}"
+								disabled="#{reglementMultipleFacController.readOnly or reglementMultipleFacController.editable() or reglementMultipleFacController.readOnlyReglement(reglementMultipleFacController.nouveau) or reglementMultipleFacController.documentDTOEstVerrouille().verrouille}">
+								<f:attribute name="nomChamp" value="#{const.C_NET_TTC_CALC}" />
+								<p:ajax event="change" update="@this,idMontantAffecte" />
+							</h:inputText>
+
+
+							<h:outputLabel value="Date Encaissement :" />
+							<p:calendar value="#{reglementMultipleFacController.nouveau.dto.dateLivDocument}" id="idDateEncaissementReglMulti"
+								disabled="#{reglementMultipleFacController.readOnly or reglementMultipleFacController.editable() or reglementMultipleFacController.readOnlyReglement(reglementMultipleFacController.nouveau) or reglementMultipleFacController.documentDTOEstVerrouille().verrouille}"
+								pattern="dd/MM/yyyy" mask="true" locale="fr" navigator="true" showOn="button"  timeZone="#{msg.time_zone}">
+								<f:attribute name="nomChamp" value="#{const.C_DATE_ENCAISSEMENT}" />
+								<p:ajax event="dateSelect" update="@this,idDateDocumentReglMulti"  listener="#{reglementMultipleFacController.controleDate}" />
+								<p:ajax event="change" update="@this,idDateDocumentReglMulti"  listener="#{reglementMultipleFacController.controleDate}" />
+							</p:calendar>
+
+							<h:outputLabel value="Montant affecté :" />
+							<p:inputText value="#{reglementMultipleFacController.nouveau.dto.affectation}" disabled="#{reglementMultipleFacController.readOnly or reglementMultipleFacController.editable() or reglementMultipleFacController.rAffectationDTOEstVerrouille().verrouille}" id="idMontantAffecte">
+								<f:attribute name="nomChamp" value="#{const.C_MONTANT_AFFECTE}" />
+								<!-- j'utilise un listener à la place du validator car on est amené à modifier ce que l'on saisi si l'affectation est supérieur à ce qu'il reste à affecter au niveau
+									de la facture ou du règlement lui même, et le validator ne permet pas cela-->
+								<p:ajax event="blur"
+									listener="#{reglementMultipleFacController.validateUIField(const.C_MONTANT_AFFECTE,reglementMultipleFacController.nouveau.dto.affectation)}"
+									update="@this,idLibellePaiement" />
+							</p:inputText>
+
+							<h:outputLabel value="Libellé :" />
+							<h:inputText value="#{reglementMultipleFacController.nouveau.dto.libelleDocument}" id="idLibellePaiement"
+								validator="#{reglementMultipleFacController.validateObject}"
+								disabled="#{reglementMultipleFacController.readOnly or reglementMultipleFacController.editable() or reglementMultipleFacController.readOnlyReglement(reglementMultipleFacController.nouveau) or reglementMultipleFacController.documentDTOEstVerrouille().verrouille}">
+								<f:attribute name="nomChamp" value="#{const.C_LIBELLE_DOCUMENT}" />
+								<p:ajax event="blur" update="@this" />
+							</h:inputText>
+
+
+						</h:panelGrid>
+					</f:validateBean>
+
+				</p:panel>
+			</p:panel>
+			</div>
+				</div>
+			</div>
+			<br />
+<!-- 			<div class="card"> -->
+<!-- 				<p:panel header="Liste des règlements" style="width:100%;text-align: center;"> -->
+
+<!-- 					<p:dataTable id="reglFacDataTableModifiable"  -->
+<!-- 					widgetVar="wvreglementFactureDataTableModifiable"  -->
+<!-- 					var="table" -->
+<!-- 					rendered="#{dansDialogue == null ? true : false}"  -->
+<!-- 					value="#{reglementMultipleFacController.values}"  -->
+<!-- 					rowKey="#{table.dto.id}" -->
+<!-- 					selectionMode="single" -->
+<!-- 					class="datatable"  -->
+<!-- 					selection="#{reglementMultipleFacController.selection}"  -->
+<!-- 					paginator="false" -->
+<!-- 					rows="#{msg.modele_datatable_ligne_par_page_debut}"  -->
+<!-- 					paginatorTemplate="#{msg.modele_datatable_paginator}" -->
+<!-- 					rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"  -->
+<!-- 					emptyMessage="#{msg.message_datatable_vide}" -->
+<!-- 					currentPageReportTemplate="#{msg.modele_datatable_page_courante}" -->
+<!-- 					disabledSelection="#{reglementMultipleFacController.modeEcran.dataSetEnModif()}" -->
+<!-- 					rowStyleClass="#{table.dto.affectation.signum()>0 ? 'row-affecte-a-facture' : null}"> -->
+
+<!-- 						<p:ajax event="rowSelect" listener="#{reglementMultipleFacController.onRowSelect}" update="@widgetVar(wvInfosComplementaires),@widgetVar(varReglementFacturePanel)" /> -->
+
+<!-- 						<f:facet name="{Exporters}"> -->
+<!-- 							<h:commandLink> -->
+<!-- 								<p:graphicImage library="images" name="excel.png" width="24" /> -->
+<!-- 								<p:dataExporter type="xls" target="reglFacDataTableModifiable" fileName="type_tva" /> -->
+<!-- 							</h:commandLink> -->
+
+<!-- 							<h:commandLink> -->
+<!-- 								<p:graphicImage library="images" name="pdf.png" width="24" /> -->
+<!-- 								<p:dataExporter type="pdf" target="reglFacDataTableModifiable" fileName="type_tva" /> -->
+<!-- 							</h:commandLink> -->
+
+<!-- 							<h:commandLink> -->
+<!-- 								<p:graphicImage library="images" name="csv.png" width="24" /> -->
+<!-- 								<p:dataExporter type="csv" target="reglFacDataTableModifiable" fileName="type_tva" /> -->
+<!-- 							</h:commandLink> -->
+
+<!-- 							<h:commandLink> -->
+<!-- 								<p:graphicImage library="images" name="xml.png" width="24" /> -->
+<!-- 								<p:dataExporter type="xml" target="reglFacDataTableModifiable" fileName="type_tva" /> -->
+<!-- 							</h:commandLink> -->
+
+
+<!-- 						</f:facet> -->
+
+<!-- 						<p:column sortBy="#{table.dto.codeDocument}"> -->
+<!-- 							<f:facet name="header"> -->
+<!-- 								<h:outputText value="Code" /> -->
+<!-- 							</f:facet> -->
+<!-- 							<h:outputText value="#{table.dto.codeDocument}" /> -->
+<!-- 						</p:column> -->
+
+
+<!-- 						<p:column sortBy="#{table.dto.dateDocument}"> -->
+<!-- 							<f:facet name="header"> -->
+<!-- 								<h:outputText value="Réglé le" /> -->
+<!-- 							</f:facet> -->
+<!-- 							<h:outputText value="#{table.dto.dateDocument}" > -->
+<!-- 									<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/> -->
+<!-- 							</h:outputText>									 -->
+<!-- 						</p:column> -->
+<!-- 						<p:column sortBy="#{table.dto.netTtcCalc}"> -->
+<!-- 							<f:facet name="header"> -->
+<!-- 								<h:outputText value="M ontant" /> -->
+<!-- 							</f:facet> -->
+<!-- 							<h:outputText value="#{table.dto.netTtcCalc}" /> -->
+<!-- 						</p:column> -->
+<!-- 						<p:column sortBy="#{table.dto.codeTPaiement}" style="width:32px"> -->
+<!-- 							<f:facet name="header"> -->
+<!-- 								<h:outputText value="Type" /> -->
+<!-- 							</f:facet> -->
+<!-- 							<h:outputText value="#{table.dto.codeTPaiement}"  /> -->
+<!-- 						</p:column> -->
+<!-- 						<p:column sortBy="#{table.dto.dateLivDocument}"> -->
+<!-- 							<f:facet name="header"> -->
+<!-- 								<h:outputText value="Encaissé le" /> -->
+<!-- 							</f:facet> -->
+<!-- 							<h:outputText value="#{table.dto.dateLivDocument}" > -->
+<!-- 									<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/> -->
+<!-- 							</h:outputText>									 -->
+<!-- 						</p:column> -->
+<!-- 						<p:column sortBy="#{table.dto.affectation}"> -->
+<!-- 							<f:facet name="header"> -->
+<!-- 								<h:outputText value="Montant affecté" /> -->
+<!-- 							</f:facet> -->
+<!-- 							<h:outputText value="#{table.dto.affectation}" /> -->
+<!-- 						</p:column> -->
+<!-- 						<p:column sortBy="#{table.dto.resteAAffecter}"> -->
+<!-- 							<f:facet name="header"> -->
+<!-- 								<h:outputText value="Reste à affecté" /> -->
+<!-- 							</f:facet> -->
+<!-- 							<h:outputText value="#{table.dto.resteAAffecter}" /> -->
+<!-- 						</p:column> -->
+<!-- 						<p:column sortBy="#{table.dto.libelleDocument}"> -->
+<!-- 							<f:facet name="header"> -->
+<!-- 								<h:outputText value="Libellé" /> -->
+<!-- 							</f:facet> -->
+<!-- 							<h:outputText value="#{table.dto.libelleDocument}" /> -->
+<!-- 						</p:column> -->
+<!-- 						<p:column sortBy="#{table.dto.codeAcompte}"> -->
+<!-- 							<f:facet name="header"> -->
+<!-- 								<h:outputText value="Acompte" /> -->
+<!-- 							</f:facet> -->
+<!-- 							<h:outputText value="#{table.dto.codeAcompte}" /> -->
+<!-- 								<p:commandLink value="#{table.dto.codeAcompte}" -->
+<!-- 									action="#{ouvertureDocumentBean.detailDocument(reglementMultipleFacController.recupCodeDocumentAcompte(table.dto.codeAcompte))}"  oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');"> -->
+<!-- 								</p:commandLink>							 -->
+<!-- 						</p:column>						 -->
+<!-- 					</p:dataTable> -->
+<!-- 				</p:panel> -->
+<!-- 			</div> -->
+			<p:messages id="reglementFactureMessages" showDetail="true" autoUpdate="true" closable="true" />
+
+
+			
+
+		</h:form>
+	</ui:define>
+</ui:composition>

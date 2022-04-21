@@ -1,0 +1,729 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+<!-- 	<p:importConstants type="fr.legrain.bdg.dossier.service.remote.ITaPreferencesServiceRemote" var="ConstPreferences" /> -->
+<!-- 	<p:importConstants type="fr.legrain.bdg.webapp.importation.ImportComptaBean" var="ConstController" /> -->
+
+
+	<f:validateBean disabled="true">
+	
+		<p:menubar styleClass="menu-onglet">
+			
+			<p:menuitem title="Fermer" styleClass="icon icon-close menuitem-fermer-droite" process="@this" 
+				actionListener="#{prestashopController.actFermer}"
+				onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())">
+<!-- 				<p:confirm header="Confirmation" message="#{msg_diag.alert_fermeture_onglet}" icon="ui-icon-alert"/> -->
+			</p:menuitem>
+<!-- 			<p:menuitem title="Rafraîchir" update="@widgetVar(wvTabViewImportCompta1),@widgetVar(wvDateEtatImportation),:form:messages"  process="@this"  -->
+<!-- 			actionListener="#{exportComptaBean.actRefresh}" styleClass="icon icon-refresh" /> -->
+		</p:menubar>
+		
+		<p:tabView>
+			<p:tab title="Lignes à traiter">
+				<p:panel id="idPanelSynchroPrestashop"  widgetVar="wvPanelSynchroPrestashop" >
+<!-- 			<p:ajax event="tabChange" listener="#{importComptaBean.onTabChange}" update="@this"/> -->
+			
+			
+				<p:panelGrid columns="2" >
+					<p:outputLabel value="Importer les commandes  :  "/> 
+					<p:commandButton title="Importer les commandes" value="Importer les commandes" style="width:100%" styleClass="" icon="fa fa-download "
+								process="@this"
+								update="@this, @widgetVar(wvDatatableLignesPrestashop), @widgetVar(wvPanelSynchroPrestashop)"
+								actionListener="#{prestashopController.actImporter}">
+					</p:commandButton>
+					<p:outputLabel value="Rafraîchir les liaisons et la liste :  "/> 
+					<p:commandButton value="Rafraîchir les liaisons " title="Rafraîchir la liste ci-dessous en leur attribuant un tiers ou articles en fonction des liaisons crées" style="width:100%" styleClass=" classHiddenCommandForRafraichirLiaisonPrestashop" icon="fa fa-refresh"
+								widgetVar="wvBtnRafraichirLiaisonPrestashop"
+								process="@this"
+								update="@this, @widgetVar(wvDatatableLignesPrestashop)"
+								actionListener="#{prestashopController.actRafraichirLiaisons}">
+					</p:commandButton>
+					<p:outputLabel>Créer le(s) document(s) :</p:outputLabel>
+				    <p:commandButton value="Créer le(s) document(s)" title="Créer le(s) document(s)" style="width:100%" styleClass="" icon="fa fa-check" widgetVar="wvBoutonCreerDocPrestashop"
+								process="@this"  disabled="#{prestashopController.disabledBoutonCreation()}"
+								update="@this, @widgetVar(wvDatatableLignesPrestashop)"
+								actionListener="#{prestashopController.actEnregistrer}">
+								<p:ajax event="dialogReturn" listener="#{prestashopController.handleReturnDialogGenerationDocument}" update="@this, @widgetVar(wvPanelSynchroPrestashop), @widgetVar(wvDatatableLignesPrestashopAll) " /> 
+					</p:commandButton>
+					
+					<p:outputLabel>Date de la dernière importation :</p:outputLabel>
+					<p:outputLabel value="#{prestashopController.derniereSynchro}">
+						<f:convertDateTime pattern="dd/MM/yyyy HH:mm" timeZone="#{msg.time_zone}"/> 
+					 </p:outputLabel>
+				
+				</p:panelGrid>
+				
+				<div class="card">
+					<p:panel header="Choix pour la génération de document">
+			    		<!-- <p:selectOneRadio value="#{prestashopController.selectionParamCreeDoc}" layout="pageDirection" columns="1">
+							<f:selectItems value="#{prestashopController.listeParamCreeDoc}" var="p" itemLabel="#{p}" itemValue="#{p}" />
+						</p:selectOneRadio>
+						<p:selectBooleanCheckbox value="#{prestashopController.fusionArticle}" itemLabel="Fusionner les articles">
+				        </p:selectBooleanCheckbox> -->
+				        <p:selectBooleanCheckbox value="#{prestashopController.regleDoc}" itemLabel="Régler les documents générés">
+				        	 <p:ajax event="change" update="@this" />
+				        </p:selectBooleanCheckbox>
+			    	</p:panel>
+				</div>
+				<p:commandButton title="Selectionner toutes les lignes prêtes" value="Selectionner toutes les lignes prêtes" actionListener="#{prestashopController.selectAllRow()}" update="@widgetVar(wvDatatableLignesPrestashop), @widgetVar(wvBoutonCreerDocPrestashop)">
+				 </p:commandButton>
+				 <p:commandButton title="Tout désélectionner" value="Tout désélectionner" actionListener="#{prestashopController.deselectAllRow()}" update="@widgetVar(wvDatatableLignesPrestashop), @widgetVar(wvBoutonCreerDocPrestashop)">
+				 </p:commandButton>
+				<p:commandButton title="Exporter la liste" ajax="false" styleClass="icon icon-export">
+					<p:fileDownload value="#{prestashopController.exportationLigneServiceExterne}"/>
+				 </p:commandButton>
+				
+				<p:treeTable value="#{prestashopController.treeNodeLignesDTOJSF}" var="ligne" 
+								selectionMode="checkbox" 
+								widgetVar="wvDatatableLignesPrestashop"
+								editable="true" 
+								selection="#{prestashopController.selectedNodesLignesDTOJSF}"
+								resizableColumns="true" liveResize="true" 
+								>
+								
+					 <p:ajax event="select" update="@widgetVar(wvBoutonCreerDocPrestashop)" />
+       				 <p:ajax event="unselect"  update="@widgetVar(wvBoutonCreerDocPrestashop)" />
+	       			 
+					 <p:ajax event="rowEdit" listener="#{prestashopController.onRowEdit}" update="@this,@widgetVar(wvDatatableLignesPrestashop)" oncomplete="$('.classHiddenCommandForRafraichirLiaisonPrestashop').click()"/>
+	       			 <p:ajax event="rowEditInit" listener="#{prestashopController.onRowEditInit}"  />
+	       			 <p:ajax event="rowEditCancel" listener="#{prestashopController.onRowCancel}" update="@widgetVar(widgetVarBtnSupprimer)"/>
+								
+						
+								
+			         <p:column style="width:20%" headerText="Libellé" sortBy="#{ligne.dto.libelle}" filterBy="#{ligne.dto.libelle}" filterMatchMode="contains">
+			            <h:outputText value="#{ligne.dto.libelle}"/>
+			        </p:column>
+			        <p:column style="width:6%"	styleClass="center"
+							sortBy="#{ligne.dto.dateCreationExterne}"
+							filterBy="#{prestashopController.customFormatDate(ligne.dto.dateCreationExterne)}" 
+							filterMatchMode="contains">
+				
+					<f:facet name="header">
+						<h:outputText value="Date" />
+					</f:facet>
+					<h:outputText value="#{ligne.dto.dateCreationExterne}">
+						 <f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/> 
+					</h:outputText>
+				</p:column>
+			        
+			        <p:column headerText="ref tiers" sortBy="#{ligne.dto.refTiers}" filterBy="#{ligne.dto.refTiers}" filterMatchMode="contains">
+			            <h:outputText value="#{ligne.dto.refTiers}"/>
+			        </p:column>
+			         <p:column headerText="Nom/prenom tiers" sortBy="#{ligne.dto.nomTiers} #{ligne.dto.prenomTiers}" filterBy="#{ligne.dto.nomTiers} #{ligne.dto.prenomTiers}" filterMatchMode="contains">
+			           <strong><h:outputText value="#{ligne.dto.nomTiers} #{ligne.dto.prenomTiers}"/></strong> 
+			        </p:column>
+		
+			       <p:column  style="width:6%"  sortBy="#{ligne.taTiersDTO.codeTiers}" filterBy="#{ligne.taTiersDTO.codeTiers}" filterMatchMode="contains">
+						<f:facet name="header">
+							<h:outputText value="Tiers BDG" />
+						</f:facet>
+						<p:cellEditor disabled="#{!ligne.dto.enteteDoc}">
+							<f:facet name="output">
+								<p:commandLink value="#{ligne.taTiersDTO.codeTiers}"
+																action="#{ouvertureDocumentBean.detailTiers(ouvertureDocumentBean.recupCodetiers(ligne.taTiersDTO.codeTiers))}" 
+																update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');" process="@this">
+								</p:commandLink> 
+							</f:facet>
+							<f:facet name="input">
+							<p:focus>
+								<p:autoComplete value="#{ligne.taTiersDTO}"
+									completeMethod="#{prestashopController.tiersAutoCompleteDTOLight}"
+									id="idCodeTiersPrestashop" converter="entityConverter"
+									var="tiers" itemLabel="#{tiers.codeTiers}" itemValue="#{tiers}"
+									forceSelection="true" dropdown="true" 
+									maxResults="#{prestashopController.taPreferencesService.nbMaxChargeListeTiers()}"
+									moreText="Il y a #{component.maxResults} affichés sur #{component.suggestions.size()} au total, Veuillez affiner votre recherche ou cliquer ici pour en afficher plus ..."
+									 placeholder="Tiers" 
+									style="width:100%">
+<!-- 									required="true" requiredMessage="Le code article est obligatoire" -->
+									
+									<p:column>
+										<h:outputText value="#{tiers.codeTiers}" />
+									</p:column>
+									
+									<p:column>
+										<h:outputText value="#{tiers.nomTiers}" />
+									</p:column>
+
+									<f:attribute name="nomChamp" value="#{const.C_CODE_TIERS}" />
+									<p:ajax event="moreText" listener="#{prestashopController.onMoreTextTiers}" />
+									<p:ajax event="clear" listener="#{prestashopController.onClearTiers}" />
+									<p:ajax event="itemSelect" listener="#{prestashopController.autcompleteSelection}" />
+								</p:autoComplete>
+							</p:focus>
+							</f:facet>
+						</p:cellEditor >
+					</p:column >
+			         <p:column headerText="ref article" sortBy="#{ligne.dto.refArticle}" filterBy="#{ligne.dto.refArticle}" filterMatchMode="contains">
+			            <h:outputText value="#{ligne.dto.refArticle}"/>
+			        </p:column>
+			         <p:column headerText="nom article" sortBy="#{ligne.dto.nomArticle}" filterBy="#{ligne.dto.nomArticle}" filterMatchMode="contains">
+			            <h:outputText value="#{ligne.dto.nomArticle}"/>
+			        </p:column>
+			         <!-- <p:column headerText="codeeee article" sortBy="#{ligne.dto.refArticle}" filterBy="#{ligne.dto.refArticle}" filterMatchMode="contains">
+			            <p:commandLink value="#{ligne.taArticleDTO.codeArticle}"
+																action="#{ouvertureDocumentBean.detailArticle(ouvertureDocumentBean.recupCodeArticle(ligne.taArticleDTO.codeArticle))}" 
+																update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+								</p:commandLink> 
+			        </p:column> -->
+			        <p:column  sortBy="#{ligne.taArticleDTO.codeArticle}" filterBy="#{ligne.taArticleDTO.codeArticle}" filterMatchMode="contains">
+						<f:facet name="header">
+							<h:outputText value="Code article BDG" />
+						</f:facet>
+						<p:cellEditor disabled="#{ligne.dto.enteteDoc}">
+							<f:facet name="output">
+								<p:commandLink value="#{ligne.taArticleDTO.codeArticle}"
+																action="#{ouvertureDocumentBean.detailArticle(ouvertureDocumentBean.recupCodeArticle(ligne.taArticleDTO.codeArticle))}" 
+																update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');" process="@this">
+								</p:commandLink> 
+							 </f:facet>
+							<f:facet name="input">
+								<p:focus>
+									<p:autoComplete value="#{ligne.taArticleDTO}" completeMethod="#{prestashopController.articleAutoCompleteDTOLight}" id="idarticlePrestashop"
+										converter="entityConverter" var="art" itemLabel="#{art.codeArticle}" itemValue="#{art}" forceSelection="true" dropdown="true"
+									maxResults="#{prestashopController.taPreferencesService.nbMaxChargeListeArticle()}"
+									moreText="Il y a #{component.maxResults} affichés sur #{component.suggestions.size()} au total, Veuillez affiner votre recherche ou cliquer ici pour en afficher plus ..."
+										placeholder="Article" style="width:100%">
+										<!-- 									required="true" requiredMessage="Le code article est obligatoire" -->
+
+										<p:column>
+											<h:outputText value="#{art.codeArticle}" />
+										</p:column>
+
+										<p:column>
+											<h:outputText value="#{art.libellecArticle}" />
+										</p:column>
+									<p:column >
+										<h:outputText value="#{art.commentaireArticle}" rendered="#{refArticleFournisseurController.rechercheAvecCommentaire(false)}"/>
+									</p:column>
+
+										<f:attribute name="nomChamp" value="#{const.C_CODE_ARTICLE}" />
+										 <p:ajax event="itemSelect" listener="#{prestashopController.autcompleteSelection}"
+										 update="" />
+										 <p:ajax event="clear" listener="#{prestashopController.onClearArticle}" 
+										 update=""/> 	
+										 <p:ajax event="moreText" listener="#{prestashopController.onMoreTextArticle}" />								
+									</p:autoComplete>
+								</p:focus>
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+					<p:column style="width:6%" headerText="Code TVA" sortBy="#{ligne.taArticleDTO.codeTva}" filterBy="#{ligne.taArticleDTO.codeTva}" filterMatchMode="contains">
+			            <h:outputText value="#{ligne.taArticleDTO.codeTva}"  rendered="#{ligne.taArticleDTO.codeTva != null}"/>
+			             <h:outputText style="color : red; font-weight: bold;" value="Veuillez choisir un code TVA pour cet article BDG et rafraîchir cette liste" rendered="#{ligne.taArticleDTO != null and ligne.taArticleDTO.codeTva == null}"/>
+			        </p:column>
+					<p:column style="width:3%" headerText="Qte" sortBy="#{ligne.dto.qteArticle}" filterBy="#{ligne.dto.qteArticle}" filterMatchMode="contains">
+			            <h:outputText value="#{ligne.dto.qteArticle}"/>
+			        </p:column>
+					<p:column style="width:4%" headerText="Montant TTC" sortBy="#{ligne.dto.montantTtc}" filterBy="#{ligne.dto.montantTtc}" filterMatchMode="contains">
+			            <h:outputText value="#{ligne.dto.montantTtc}">
+			            </h:outputText>
+			        </p:column>
+			        
+			       <p:column style="width:6%" sortBy="#{ligne.taLotDTO.numLot}" >
+						<f:facet name="header">
+							<h:outputText value="N° lot" />
+						</f:facet>
+						<p:cellEditor disabled="#{ligne.dto.enteteDoc}">
+							<f:facet name="output">
+								<p:commandLink value="#{ligne.taLotDTO.numLot}" id="idLotLigneService" process="@this" update="@widgetVar(wvPanelGridDetailLotLignesServicePrestashop)"
+									oncomplete="PF('wvOverlayPanelDetailLotLignesServicesPrestashop').show('#{component.clientId}');">
+									<f:setPropertyActionListener value="#{ligne}" target="#{prestashopController.detailLigneOverLayPanel}" />
+								</p:commandLink>
+							</f:facet>
+							<f:facet name="input">
+
+								<p:autoComplete value="#{ligne.articleLotEntrepotDTO}" completeMethod="#{prestashopController.lotAutoComplete}"
+									converter="#{articleLotEntrepotDTOLigneServiceWebExterneConverter}" var="lot" itemLabel="#{lot.numLot}" itemValue="#{lot}" id="idLotMPLigneServicePrestashop"
+									forceSelection="true" dropdown="true" placeholder="Lot" style="width:100%" >
+									<p:column>
+										<f:facet name="header">
+											<h:outputText value="Numéro de lot" />
+										</f:facet>
+										<h:outputText value="#{lot.numLot}" />
+									</p:column>
+									<p:column>
+										<f:facet name="header">
+											<h:outputText value="Libellé lot" />
+										</f:facet>
+										<h:outputText value="#{lot.libelleLot}" />
+									</p:column>
+									<p:column>
+										<f:facet name="header">
+											<h:outputText value="Code entrepot" />
+										</f:facet>
+										<h:outputText value="#{lot.codeEntrepot}" />
+									</p:column>
+									<p:column >
+										<f:facet name="header">
+											<h:outputText value="Entrepot" />
+										</f:facet>
+										<h:outputText value="#{lot.libelleEntrepot}" />
+									</p:column>
+									<p:column>
+										<f:facet name="header">
+											<h:outputText value="Emplacement" />
+										</f:facet>
+										<h:outputText value="#{lot.emplacement}" />
+									</p:column>
+									<p:column styleClass="right" >
+										<f:facet name="header">
+											<h:outputText value="Qté en stock"/>
+										</f:facet>
+										<h:outputText value="#{lot.qte1}" styleClass="#{lot.css}" />
+									</p:column>
+									<p:column styleClass="center">
+										<f:facet name="header">
+											<h:outputText value="Unité" />
+										</f:facet>
+										<h:outputText value="#{lot.codeUnite}" />
+									</p:column>
+									<p:column>
+										<f:facet name="header">
+											<h:outputText value="Date lot" />
+										</f:facet>
+										<h:outputText value="#{lot.dateLot}" />
+									</p:column>
+									<p:column>
+										<f:facet name="header">
+											<h:outputText value="Dluo" />
+										</f:facet>
+										<h:outputText value="#{lot.dluo}" />
+									</p:column>
+									<f:attribute name="nomChamp" value="#{const.C_NUM_LOT}" />
+									<f:attribute name="codeArticle" value="#{ligne.taArticleDTO.codeArticle}" />
+									<!-- 												<p:ajax event="itemSelect" listener="#{prestashopController.autcompleteSelectionMP}" update="libLotMP,idEntrepotMP,idEmplcementMP"/> -->
+									<p:ajax event="itemSelect" listener="#{prestashopController.autcompleteSelection}"/>
+								</p:autoComplete>
+
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+					
+					<p:column headerText="ref type paiement" sortBy="#{ligne.dto.refTypePaiement}" filterBy="#{ligne.dto.refTypePaiement}" filterMatchMode="contains">
+			            <h:outputText value="#{ligne.dto.refTypePaiement}"/>
+			        </p:column>
+					<p:column  style="width:6%"  sortBy="#{ligne.taTPaiementDTO.codeTPaiement}" filterBy="#{ligne.taTPaiementDTO.codeTPaiement}" filterMatchMode="contains">
+						<f:facet name="header">
+							<h:outputText value="Type paiement BDG" />
+						</f:facet>
+						<p:cellEditor disabled="#{!ligne.dto.enteteDoc}">
+							<f:facet name="output">
+								<p:outputLabel value="#{ligne.taTPaiementDTO.codeTPaiement}">
+								</p:outputLabel> 
+							</f:facet>
+							<f:facet name="input">
+							<p:focus>
+								<p:autoComplete value="#{ligne.taTPaiementDTO}"
+									completeMethod="#{prestashopController.typePaiementAutoCompleteDTO}"
+									id="idCodeTPaiementPrestashop" converter="entityConverter"
+									var="tp" itemLabel="#{tp.codeTPaiement}" itemValue="#{tp}"
+									forceSelection="true" dropdown="true" 
+									 placeholder="Type de paiement" 
+									style="width:100%">
+<!-- 									required="true" requiredMessage="Le code article est obligatoire" -->
+									
+									<p:column>
+										<h:outputText value="#{tp.codeTPaiement}" />
+									</p:column>
+									
+									<p:column>
+										<h:outputText value="#{tp.libTPaiement}" />
+									</p:column>
+
+									<f:attribute name="nomChamp" value="#{const.C_CODE_T_PAIEMENT}" />
+									<!-- <p:ajax event="clear" listener="#{prestashopController.onClearTiers}" /> -->
+									<p:ajax event="itemSelect" listener="#{prestashopController.autcompleteSelection}" />
+								</p:autoComplete>
+							</p:focus>
+							</f:facet>
+						</p:cellEditor >
+					</p:column >
+					
+					<p:column style="width:26px">
+						<p:rowEditor styleClass="row-editor-fin" />
+					</p:column>
+			       
+			    </p:treeTable>
+				
+				<p:dataTable id="idDatatableLignesPrestashop" 
+					 sortBy="#{ligne.dto.id}" 
+					 sortOrder="descending" 
+					 var="ligne" 
+					 value="#{prestashopController.lignesDTOJSF}"
+					 scrollable="true"
+					 scrollHeight="300"
+					 liveResize="true" 
+					 widgetVar="wvDatatableLignesPrestashopOld"
+					 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+					 paginator="true"
+					 rows="10"
+					 rendered="false"
+					 editable="true"
+					 dblClickSelect="true"
+					 selection="#{prestashopController.selectedlignesDTOJSF}"
+					 disabledSelection="#{ligne.taTiersDTO == null || ligne.taArticleDTO == null || ligne.taArticleDTO.codeTva == null}"
+					 rowKey="#{ligne.dto.id}"  >
+					
+					 <p:ajax event="rowSelectCheckbox" listener="#{prestashopController.onRowSelectLignePrestashopAll}" update="@widgetVar(wvPanelSynchroPrestashop)"></p:ajax>
+	       			 <p:ajax event="rowUnselectCheckbox" listener="#{prestashopController.onRowUnSelectLignePrestashopAll}" update="@widgetVar(wvPanelSynchroPrestashop)"></p:ajax>
+	       			 <p:ajax event="toggleSelect" listener="#{prestashopController.onToggleSelectLignePrestashopAll}" update="@widgetVar(wvPanelSynchroPrestashop)"></p:ajax>
+	       			 
+	       			 <p:ajax event="rowEdit" listener="#{prestashopController.onRowEdit}"
+						update="@this,@widgetVar(wvDatatableLignesPrestashop)" oncomplete="$('.classHiddenCommandForRafraichirLiaisonPrestashop').click()"/>
+	       			 <p:ajax event="rowEditInit" listener="#{prestashopController.onRowEditInit}"  />
+	       			 <p:ajax event="rowEditCancel" listener="#{prestashopController.onRowCancel}" update="@widgetVar(widgetVarBtnSupprimer)"/>
+				
+				    <p:column selectionMode="multiple" style="width:16px;text-align:center" toggleable="false"  />
+				    
+				    
+
+					<p:column style="width:16px">
+						<p:rowEditor styleClass="row-editor-debut" />
+					</p:column>
+				    
+				    <p:column style="width:4%" headerText="ID BDG" sortBy="#{ligne.dto.id}" filterBy="#{ligne.dto.id}" filterMatchMode="contains">
+							<h:outputText value="#{ligne.dto.id}"/>		          
+			        </p:column> 
+			        <p:column headerText="compte service" sortBy="#{ligne.dto.libelleCompteServiceWebExterne}" filterBy="#{ligne.dto.libelleCompteServiceWebExterne}" filterMatchMode="contains">
+			            <h:outputText value="#{ligne.dto.libelleCompteServiceWebExterne}"/>
+			        </p:column>
+			        
+			        <p:column headerText="Libellé" sortBy="#{ligne.dto.libelle}" filterBy="#{ligne.dto.libelle}" filterMatchMode="contains">
+			            <h:outputText value="#{ligne.dto.libelle}"/>
+			        </p:column>
+			         <p:column headerText="ref commande" sortBy="#{ligne.dto.refCommandeExterne}" filterBy="#{ligne.dto.refCommandeExterne}" filterMatchMode="contains">
+			            <h:outputText value="#{ligne.dto.refCommandeExterne}"/>
+			        </p:column>
+<!-- 			        <p:column headerText="Date création" sortBy="#{ligne.dto.dateCreationExterne}" filterBy="#{ligne.dto.dateCreationExterne}" filterMatchMode="contains">
+			            <h:outputText value="#{ligne.dto.dateCreationExterne}">
+			            </h:outputText>
+			        </p:column> -->
+			        <p:column headerText="ref tiers" sortBy="#{ligne.dto.refTiers}" filterBy="#{ligne.dto.refTiers}" filterMatchMode="contains">
+			            <h:outputText value="#{ligne.dto.refTiers}"/>
+			        </p:column>
+			         <p:column headerText="Nom/prenom tiers" sortBy="#{ligne.dto.nomTiers} #{ligne.dto.prenomTiers}" filterBy="#{ligne.dto.nomTiers} #{ligne.dto.prenomTiers}" filterMatchMode="contains">
+			            <h:outputText value="#{ligne.dto.nomTiers} #{ligne.dto.prenomTiers}"/>
+			        </p:column>
+		
+			       <p:column  style="width:6%"  sortBy="#{ligne.taTiersDTO.codeTiers}" filterBy="#{ligne.taTiersDTO.codeTiers}" filterMatchMode="contains">
+						<f:facet name="header">
+							<h:outputText value="Code tiers BDG" />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<p:commandLink value="#{ligne.taTiersDTO.codeTiers}"
+																action="#{ouvertureDocumentBean.detailTiers(ouvertureDocumentBean.recupCodetiers(ligne.taTiersDTO.codeTiers))}" 
+																update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');" process="@this">
+								</p:commandLink> 
+							</f:facet>
+							<f:facet name="input">
+							<p:focus>
+								<p:autoComplete value="#{ligne.taTiersDTO}"
+									completeMethod="#{prestashopController.tiersAutoCompleteDTOLight}"
+									id="idCodeTiersPrestashop" converter="entityConverter"
+									var="tiers" itemLabel="#{tiers.codeTiers}" itemValue="#{tiers}"
+									forceSelection="true" dropdown="true" 
+									maxResults="#{prestashopController.taPreferencesService.nbMaxChargeListeTiers()}"
+									moreText="Il y a #{component.maxResults} affichés sur #{component.suggestions.size()} au total, Veuillez affiner votre recherche ou cliquer ici pour en afficher plus ..."
+									 placeholder="Tiers" 
+									style="width:100%">
+<!-- 									required="true" requiredMessage="Le code article est obligatoire" -->
+									
+									<p:column>
+										<h:outputText value="#{tiers.codeTiers}" />
+									</p:column>
+									
+									<p:column>
+										<h:outputText value="#{tiers.nomTiers}" />
+									</p:column>
+
+									<f:attribute name="nomChamp" value="#{const.C_CODE_TIERS}" />
+									<p:ajax event="moreText" listener="#{prestashopController.onMoreTextTiers}" />
+									<p:ajax event="clear" listener="#{prestashopController.onClearTiers}" />
+									<p:ajax event="itemSelect" listener="#{prestashopController.autcompleteSelection}" />
+								</p:autoComplete>
+							</p:focus>
+							</f:facet>
+						</p:cellEditor >
+					</p:column >
+			         <p:column headerText="ref article" sortBy="#{ligne.dto.refArticle}" filterBy="#{ligne.dto.refArticle}" filterMatchMode="contains">
+			            <h:outputText value="#{ligne.dto.refArticle}"/>
+			        </p:column>
+			         <p:column headerText="nom article" sortBy="#{ligne.dto.nomArticle}" filterBy="#{ligne.dto.nomArticle}" filterMatchMode="contains">
+			            <h:outputText value="#{ligne.dto.nomArticle}"/>
+			        </p:column>
+			         <!-- <p:column headerText="codeeee article" sortBy="#{ligne.dto.refArticle}" filterBy="#{ligne.dto.refArticle}" filterMatchMode="contains">
+			            <p:commandLink value="#{ligne.taArticleDTO.codeArticle}"
+																action="#{ouvertureDocumentBean.detailArticle(ouvertureDocumentBean.recupCodeArticle(ligne.taArticleDTO.codeArticle))}" 
+																update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+								</p:commandLink> 
+			        </p:column> -->
+			        <p:column  sortBy="#{ligne.taArticleDTO.codeArticle}" filterBy="#{ligne.taArticleDTO.codeArticle}" filterMatchMode="contains">
+						<f:facet name="header">
+							<h:outputText value="Code article BDG" />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<p:commandLink value="#{ligne.taArticleDTO.codeArticle}"
+																action="#{ouvertureDocumentBean.detailArticle(ouvertureDocumentBean.recupCodeArticle(ligne.taArticleDTO.codeArticle))}" 
+																update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');" process="@this">
+								</p:commandLink> 
+							 </f:facet>
+							<f:facet name="input">
+								<p:focus>
+									<p:autoComplete value="#{ligne.taArticleDTO}" completeMethod="#{prestashopController.articleAutoCompleteDTOLight}" id="idarticlePrestashop"
+										converter="entityConverter" var="art" itemLabel="#{art.codeArticle}" itemValue="#{art}" forceSelection="true" dropdown="true"
+									maxResults="#{prestashopController.taPreferencesService.nbMaxChargeListeArticle()}"
+									moreText="Il y a #{component.maxResults} affichés sur #{component.suggestions.size()} au total, Veuillez affiner votre recherche ou cliquer ici pour en afficher plus ..."
+										placeholder="Article" style="width:100%">
+										<!-- 									required="true" requiredMessage="Le code article est obligatoire" -->
+
+										<p:column>
+											<h:outputText value="#{art.codeArticle}" />
+										</p:column>
+
+										<p:column>
+											<h:outputText value="#{art.libellecArticle}" />
+										</p:column>
+									<p:column >
+										<h:outputText value="#{art.commentaireArticle}" rendered="#{prestashopController.rechercheAvecCommentaire(false)}"/>
+									</p:column>
+
+										<f:attribute name="nomChamp" value="#{const.C_CODE_ARTICLE}" />
+										 <p:ajax event="itemSelect" listener="#{prestashopController.autcompleteSelection}"
+										 update="" />
+										 <p:ajax event="clear" listener="#{prestashopController.onClearArticle}" 
+										 update=""/> 	
+										 <p:ajax event="moreText" listener="#{prestashopController.onMoreTextArticle}" />								
+									</p:autoComplete>
+								</p:focus>
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+					<p:column style="width:6%" headerText="Code TVA" sortBy="#{ligne.taArticleDTO.codeTva}" filterBy="#{ligne.taArticleDTO.codeTva}" filterMatchMode="contains">
+			            <h:outputText value="#{ligne.taArticleDTO.codeTva}"  rendered="#{ligne.taArticleDTO.codeTva != null}"/>
+			             <h:outputText style="color : red; font-weight: bold;" value="Veuillez choisir un code TVA pour cet article BDG et rafraîchir cette liste" rendered="#{ligne.taArticleDTO != null and ligne.taArticleDTO.codeTva == null}"/>
+			        </p:column>
+					<p:column style="width:4%" headerText="Quantité" sortBy="#{ligne.dto.qteArticle}" filterBy="#{ligne.dto.qteArticle}" filterMatchMode="contains">
+			            <h:outputText value="#{ligne.dto.qteArticle}"/>
+			        </p:column>
+					<p:column style="width:4%" headerText="Montant TTC" sortBy="#{ligne.dto.montantTtc}" filterBy="#{ligne.dto.montantTtc}" filterMatchMode="contains">
+			            <h:outputText value="#{ligne.dto.montantTtc}">
+			            </h:outputText>
+			        </p:column>
+			        
+			       <p:column sortBy="#{ligne.taLotDTO.numLot}" >
+						<f:facet name="header">
+							<h:outputText value="Numéro de lot" />
+						</f:facet>
+						<p:cellEditor>
+							<f:facet name="output">
+								<p:commandLink value="#{ligne.taLotDTO.numLot}" id="idLotLigneService" process="@this" update="@widgetVar(wvPanelGridDetailLotLignesServicePrestashop)"
+									oncomplete="PF('wvOverlayPanelDetailLotLignesServicesPrestashop').show('#{component.clientId}');">
+									<f:setPropertyActionListener value="#{ligne}" target="#{prestashopController.detailLigneOverLayPanel}" />
+								</p:commandLink>
+							</f:facet>
+							<f:facet name="input">
+
+								<p:autoComplete value="#{ligne.articleLotEntrepotDTO}" completeMethod="#{prestashopController.lotAutoComplete}"
+									converter="#{articleLotEntrepotDTOLigneServiceWebExterneConverter}" var="lot" itemLabel="#{lot.numLot}" itemValue="#{lot}" id="idLotMPLigneServicePrestashop"
+									forceSelection="true" dropdown="true" placeholder="Lot" style="width:100%" >
+									<p:column>
+										<f:facet name="header">
+											<h:outputText value="Numéro de lot" />
+										</f:facet>
+										<h:outputText value="#{lot.numLot}" />
+									</p:column>
+									<p:column>
+										<f:facet name="header">
+											<h:outputText value="Libellé lot" />
+										</f:facet>
+										<h:outputText value="#{lot.libelleLot}" />
+									</p:column>
+									<p:column>
+										<f:facet name="header">
+											<h:outputText value="Code entrepot" />
+										</f:facet>
+										<h:outputText value="#{lot.codeEntrepot}" />
+									</p:column>
+									<p:column >
+										<f:facet name="header">
+											<h:outputText value="Entrepot" />
+										</f:facet>
+										<h:outputText value="#{lot.libelleEntrepot}" />
+									</p:column>
+									<p:column>
+										<f:facet name="header">
+											<h:outputText value="Emplacement" />
+										</f:facet>
+										<h:outputText value="#{lot.emplacement}" />
+									</p:column>
+									<p:column styleClass="right" >
+										<f:facet name="header">
+											<h:outputText value="Qté en stock"/>
+										</f:facet>
+										<h:outputText value="#{lot.qte1}" styleClass="#{lot.css}" />
+									</p:column>
+									<p:column styleClass="center">
+										<f:facet name="header">
+											<h:outputText value="Unité" />
+										</f:facet>
+										<h:outputText value="#{lot.codeUnite}" />
+									</p:column>
+									<p:column>
+										<f:facet name="header">
+											<h:outputText value="Date lot" />
+										</f:facet>
+										<h:outputText value="#{lot.dateLot}" />
+									</p:column>
+									<p:column>
+										<f:facet name="header">
+											<h:outputText value="Dluo" />
+										</f:facet>
+										<h:outputText value="#{lot.dluo}" />
+									</p:column>
+									<f:attribute name="nomChamp" value="#{const.C_NUM_LOT}" />
+									<!-- 												<p:ajax event="itemSelect" listener="#{prestashopController.autcompleteSelectionMP}" update="libLotMP,idEntrepotMP,idEmplcementMP"/> -->
+									<p:ajax event="itemSelect" listener="#{prestashopController.autcompleteSelection}"/>
+								</p:autoComplete>
+
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+					
+					<p:column style="width:26px">
+						<p:rowEditor styleClass="row-editor-fin" />
+					</p:column>
+			        
+			        <!-- <p:column headerText="JSON Initial" sortBy="#{ligne.dto.jsonInitial}" filterBy="#{ligne.dto.jsonInitial}" filterMatchMode="contains">
+				            <h:outputText value="#{ligne.dto.jsonInitial}"/>
+				    </p:column> -->
+		        
+		        </p:dataTable>
+		        
+		        <p:overlayPanel widgetVar="wvOverlayPanelDetailLotLignesServicesPrestashop" hideEffect="fade">
+					<p:panel widgetVar="wvPanelGridDetailLotLignesServicePrestashop" style="text-align:center;">
+						<!-- <p:panelGrid columns="2" rendered="#{not empty prestashopController.detailLigneOverLayPanel}">
+							<h:outputText value="Lot" />
+							<h:outputText value="#{prestashopController.detailLigneOverLayPanel.dto.numLot} - #{prestashopController.detailLigneOverLayPanel.dto.libelleLot}" />
+
+							<h:outputText value="Entrepot" />
+							<h:outputText value="#{prestashopController.detailLigneOverLayPanel.dto.codeEntrepot}" />
+
+							<h:outputText value="Qte" />
+							<h:outputText
+								value="#{prestashopController.detailLigneOverLayPanel.dto.qteLDocument} #{prestashopController.detailLigneOverLayPanel.dto.u1LDocument}" />
+
+							<h:outputText value="DLUO" />
+							<h:outputText value="#{prestashopController.detailLigneOverLayPanel.dto.dluo}" />
+						</p:panelGrid> -->
+					</p:panel>
+				</p:overlayPanel>
+			
+			
+
+				</p:panel>
+				
+			
+			</p:tab>
+			
+			
+			<p:tab  title="Lignes terminées">
+				<p:panel id="idPanelSynchroPrestashopAll"  widgetVar="wvPanelSynchroPrestashopAll" >
+
+				
+					<p:dataTable id="idDatatableLignesPrestashopAll"
+						 sortBy="#{ligne.id}" 
+						 sortOrder="descending" 
+						 var="ligne" 
+						 value="#{prestashopController.lignesServiceWebExterneDTOTermine}"
+						 scrollable="true"
+						 scrollHeight="300"
+						 liveResize="true" 
+						 widgetVar="wvDatatableLignesPrestashopAll"
+						 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+						 paginator="true"
+						 rows="100"
+						 >
+					
+					    
+					    <p:column headerText="ID" sortBy="#{ligne.id}" filterBy="#{ligne.id}" filterMatchMode="contains">
+								<h:outputText value="#{ligne.id}"/>		          
+				        </p:column> 
+				        
+				        <p:column headerText="Libellé" sortBy="#{ligne.libelle}" filterBy="#{ligne.libelle}" filterMatchMode="contains">
+				            <h:outputText value="#{ligne.libelle}"/>
+				        </p:column>
+				         <p:column headerText="ref commande" sortBy="#{ligne.refCommandeExterne}" filterBy="#{ligne.refCommandeExterne}" filterMatchMode="contains">
+				            <h:outputText value="#{ligne.refCommandeExterne}"/>
+				        </p:column>
+				        <p:column headerText="Date création" sortBy="#{ligne.dateCreationExterne}" filterBy="#{ligne.dateCreationExterne}" filterMatchMode="contains">
+				            <h:outputText value="#{ligne.dateCreationExterne}"/>
+				        </p:column>
+				          <p:column headerText="Nom/prenom tiers" sortBy="#{ligne.nomTiers} #{ligne.prenomTiers}" filterBy="#{ligne.nomTiers} #{ligne.prenomTiers}" filterMatchMode="contains">
+				            <h:outputText value="#{ligne.nomTiers} #{ligne.prenomTiers}"/>
+				        </p:column>
+				        <p:column headerText="ref tiers" sortBy="#{ligne.refTiers}" filterBy="#{ligne.refTiers}" filterMatchMode="contains">
+				            <h:outputText value="#{ligne.refTiers}"/>
+				        </p:column>
+				        <p:column headerText="Code Tiers BDG"  sortBy="#{ligne.codeTiers}" filterBy="#{ligne.codeTiers}" filterMatchMode="contains">
+							<p:commandLink value="#{ligne.codeTiers}"
+																action="#{ouvertureDocumentBean.detailTiers(ouvertureDocumentBean.recupCodetiers(ligne.codeTiers))}" 
+																update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');" process="@this">
+								</p:commandLink> 
+						</p:column >
+						<p:column headerText="ref article" sortBy="#{ligne.refArticle}" filterBy="#{ligne.refArticle}" filterMatchMode="contains">
+			            	<h:outputText value="#{ligne.refArticle}"/>
+			       		</p:column>
+			       		  <p:column headerText="nom article" sortBy="#{ligne.nomArticle}" filterBy="#{ligne.nomArticle}" filterMatchMode="contains">
+			            <h:outputText value="#{ligne.nomArticle}"/>
+			        </p:column>
+			       		<p:column headerText="Code Article BDG"  sortBy="#{ligne.codeArticle}" filterBy="#{ligne.codeArticle}" filterMatchMode="contains">
+							<p:commandLink value="#{ligne.codeArticle}"
+																action="#{ouvertureDocumentBean.detailArticle(ouvertureDocumentBean.recupCodeArticle(ligne.codeArticle))}" 
+																update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');" process="@this">
+								</p:commandLink> 
+						</p:column >
+						
+						<p:column headerText="Quantité" sortBy="#{ligne.qteArticle}" filterBy="#{ligne.qteArticle}" filterMatchMode="contains">
+				            <h:outputText value="#{ligne.qteArticle}"/>
+				        </p:column>
+						<p:column headerText="Montant TTC" sortBy="#{ligne.montantTtc}" filterBy="#{ligne.montantTtc}" filterMatchMode="contains">
+				            <h:outputText value="#{ligne.montantTtc}"/>
+				        </p:column>
+				        <p:column headerText="Lot"  sortBy="#{ligne.numLot}" filterBy="#{ligne.numLot}" filterMatchMode="contains">
+							<h:outputText value="#{ligne.numLot}"/>
+						</p:column >
+				        
+				        <p:column headerText="Terminée" sortBy="#{ligne.termine}" filterBy="#{ligne.termine}" filterMatchMode="equals" styleClass="center">
+			            <f:facet name="filter">
+			                <p:selectOneButton onchange="PF('wvDatatableLignesPrestashopAll').filter()" >
+			                    <f:converter converterId="javax.faces.Boolean" />
+			                    <f:selectItem itemLabel="Tous" itemValue="" />
+			                    <f:selectItem itemLabel="Oui" itemValue="true" />
+			                    <f:selectItem itemLabel="Non" itemValue="false" />
+			                </p:selectOneButton>
+					</f:facet>
+					<p:selectBooleanCheckbox value="#{ligne.termine}"  disabled="true"/>
+				</p:column>
+			        
+			        
+			        </p:dataTable>
+			
+			
+
+				</p:panel>
+				
+			</p:tab>
+		</p:tabView>
+
+		
+
+
+
+	</f:validateBean>
+
+</ui:composition>

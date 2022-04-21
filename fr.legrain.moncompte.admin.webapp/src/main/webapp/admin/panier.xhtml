@@ -1,0 +1,296 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:p="http://primefaces.org/ui">
+	
+	<o:importConstants type="fr.legrain.moncompte.admin.webapp.app.LgrTab" />
+
+	<!-- 	<f:metadata> -->
+	<!-- 		<f:viewParam name="modeEcranDefaut" value="#{panierController.modeEcranDefaut}" /> -->
+	<!-- 		<f:event type="preRenderView" listener="#{panierController.refresh}" /> -->
+	<!-- 	</f:metadata> -->
+
+	<p:panel >
+
+
+		<p class="subtitle">
+			<p:outputLabel value="Gestion des paniers"/>
+		</p>
+
+		Du <p:calendar value="#{panierController.debutRecherche}" />
+		au <p:calendar value="#{panierController.finRecherche}" />
+		<p:commandButton value="Rechercher" actionListener="#{panierController.actRecherche}" update="@widgetVar(wvDataTablePanier)"/>
+<!-- 		<p:link href="https://stripe.com/fr"> -->
+<!-- 			<h:graphicImage library="images" style="height:50px" name="Stripe Logo (blue).svg"/> -->
+<!-- 		</p:link> -->
+			
+		<p:dataTable id="idDataTablePanier" 
+			widgetVar="wvDataTablePanier"
+			var="panier"
+			rendered="#{dansDialogue == null ? true : false}"
+			value="#{panierController.values}" 
+			rowKey="#{panier.idPanier}"
+			selectionMode="single" 
+			styleClass="datapanier"
+			selection="#{panierController.selection}" 
+			paginator="true">
+
+			<p:ajax event="rowSelect" listener="#{panierController.onRowSelect}" />
+
+			<f:facet name="{Exporters}">
+				<h:commandLink>
+					<p:graphicImage library="images" name="excel.png" width="24" />
+					<p:dataExporter type="xls" target="typeProduitDataTable"
+						fileName="type_tiers" />
+				</h:commandLink>
+
+				<h:commandLink>
+					<p:graphicImage library="images" name="pdf.png" width="24" />
+					<p:dataExporter type="pdf" target="typeProduitDataTable"
+						fileName="type_tiers" />
+				</h:commandLink>
+
+				<h:commandLink>
+					<p:graphicImage library="images" name="csv.png" width="24" />
+					<p:dataExporter type="csv" target="typeProduitDataTable"
+						fileName="type_tiers" />
+				</h:commandLink>
+
+				<h:commandLink>
+					<p:graphicImage library="images" name="xml.png" width="24" />
+					<p:dataExporter type="xml" target="typeProduitDataTable"
+						fileName="type_tiers" />
+				</h:commandLink>
+			</f:facet>
+			
+			<p:column style="width:16px">
+            	<p:rowToggler />
+        	</p:column>
+
+			<p:column sortBy="#{panier.idPanier}" filterBy="#{panier.idPanier}">
+				<f:facet name="header">
+					<h:outputText value="ID" />
+				</f:facet>
+				<h:outputText value="#{panier.idPanier}" />
+			</p:column>
+			
+			<p:column sortBy="#{panier.taClient.code}" filterBy="#{panier.taClient.code}">
+				<f:facet name="header">
+					<h:outputText value="Code client" />
+				</f:facet>
+<!-- 				<h:outputText value="#{panier.taClient.code}" /> -->
+				<p:commandLink value="#{panier.taClient.code}" action="#{clientController.openClient}" update=":form:tabView" oncomplete="activeTabCenter('#{LgrTab.CSS_CLASS_TAB_CLIENT}');">
+					<f:setPropertyActionListener target="#{clientController.taClient}" value="#{panier.taClient}" />
+				</p:commandLink>
+			</p:column>
+			
+			<p:column sortBy="#{panier.taDossier.code}" filterBy="#{panier.taDossier.code}">
+				<f:facet name="header">
+					<h:outputText value="Code dossier" />
+				</f:facet>
+				<h:outputText value="#{panier.taDossier.code}" />
+			</p:column>
+			
+<!-- 			filterBy="#{panier.dateCreation}" -->
+			<p:column sortBy="#{panier.dateCreation}" >
+<!-- 				<f:facet name="filter"> -->
+<!-- 				    <p:calendar  pattern="dd/MM/yyyy"> -->
+<!-- 				        <p:ajax event="dateSelect"  oncomplete="PF('wvDataTablePanier').filter()"/> -->
+<!-- 				    </p:calendar> -->
+<!-- 				</f:facet> -->
+				<f:facet name="header">
+					<h:outputText value="Créé le" />
+				</f:facet>
+				<h:outputText value="#{panier.dateCreation}">
+					<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+				</h:outputText>
+			</p:column>
+			
+			<p:column sortBy="#{panier.totalHT}" styleClass="right" filterBy="#{panier.totalHT}">
+				<f:facet name="header">
+					<h:outputText value="HT" />
+				</f:facet>
+				<h:outputText value="#{panier.totalHT}" >	
+					<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+				</h:outputText>
+			</p:column>
+			
+			<p:column sortBy="#{panier.totalTTC}" styleClass="right" filterBy="#{panier.totalTTC}">
+				<f:facet name="header">
+					<h:outputText value="TTC" />
+				</f:facet>
+				<h:outputText value="#{panier.totalTTC}" >	
+					<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+				</h:outputText>
+			</p:column>
+			
+			<p:column sortBy="#{panier.taTypePaiement.libelle}" filterBy="#{panier.taTypePaiement.libelle}">
+				<f:facet name="filter">
+	                <p:selectOneMenu onchange="PF('wvDataTablePanier').filter()" >
+	                    <f:selectItem itemLabel="Tous" itemValue="#{null}" noSelectionOption="true" />
+	                    <f:selectItems value="#{panierController.listeTypePaiement}" var="tp" itemValue="#{tp.libelle}" itemLabel="#{tp.libelle}"/>
+	                </p:selectOneMenu>
+	            </f:facet>
+				<f:facet name="header">
+					<h:outputText value="Type de paiement" />
+				</f:facet>
+	            <h:outputText value="#{panier.taTypePaiement.libelle}"/>
+			</p:column>
+			
+			<p:column sortBy="#{panier.paye}" styleClass="center" filterBy="#{panier.paye}">
+				<f:facet name="header">
+					<h:outputText value="Payé" />
+				</f:facet>
+				<f:facet name="filter">
+	                <p:selectOneButton onchange="PF('wvDataTablePanier').filter()">
+	                    <f:converter converterId="javax.faces.Boolean" />
+	                    <f:selectItem itemLabel="Tous" itemValue="" />
+	                    <f:selectItem itemLabel="Payé" itemValue="true" />
+	                    <f:selectItem itemLabel="Non payé" itemValue="false" />
+	                </p:selectOneButton>
+            	</f:facet>
+				<p:selectBooleanCheckbox value="#{panier.paye}" disabled="true"/>
+			</p:column>
+			
+			<p:column>
+				<f:facet name="header">
+					<h:outputText value="Action" />
+				</f:facet>
+<!-- 				<p:commandLink value="Payer" action="#{panierController.actPayerPanier}" update="@widgetVar(wvDataTablePanier)" rendered="#{!panier.paye}"> -->
+				<p:commandLink value="Payer" action="#{panierController.actAfficheDialogCommentaire}" oncomplete="PF('wvDlgPaiementPanier').show();" update="@widgetVar(wvDataTablePanier), @widgetVar(wvDlgPanelPaiementPanier)">
+					<f:setPropertyActionListener target="#{panierController.selection}" value="#{panier}" />
+<!-- 					<p:confirm header="Confirmation" message="Etes vous sur de vouloir marquer ce panier comme payé ?" icon="ui-icon-alert" /> -->
+				</p:commandLink>
+				.
+				<p:commandLink value="Commentaire" action="#{panierController.actAfficheDialogCommentaire}" oncomplete="PF('wvDlgCommentairePanier').show();" update="@widgetVar(wvDataTablePanier), @widgetVar(wvDlgPanelCommentairePanier)">
+					<f:setPropertyActionListener target="#{panierController.selection}" value="#{panier}" />
+				</p:commandLink>
+			</p:column>
+			
+			<p:rowExpansion>
+			
+			     <p:panelGrid  columns="2">
+			     	<h:outputText value="Client :" />
+	                <h:outputText value="#{panier.taClient.nom} #{panier.taClient.prenom}" />
+	                
+	                <h:outputText value="Nb utilisateur :" />
+	                <h:outputText value="#{panier.nbUtilisateur} utilisateurs" />
+	 
+	                <h:outputText value="Nb mois" />
+	                <h:outputText value="#{panier.nbMois} mois" />
+	 
+	                <h:outputText value="Nb poste installé" />
+	                <h:outputText value="#{panier.nbPosteInstalle} postes"/>
+	 
+	                <h:outputText value="Web service" />
+	                <p:selectBooleanCheckbox value="#{panier.accesWS}" disabled="true"/>
+	                
+	                <h:outputText value="Type de paiement" />
+	                <h:outputText value="#{panier.taTypePaiement.libelle}"/>
+	                
+	                <h:outputText value="Payé" />
+	                <p:selectBooleanCheckbox value="#{panier.paye}" disabled="true"/>
+	                
+	                <h:outputText value="Payé le" />
+	                <h:outputText value="#{panier.datePaiement}">
+						<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+					</h:outputText>
+	                
+	                <h:outputText value="Validé par le client" />
+	                <p:selectBooleanCheckbox value="#{panier.valideParClient}" disabled="true"/>
+	                
+	                <h:outputText value="Référence paiement" />
+	                <h:outputText value="#{panier.refPaiement}"/>
+	                
+	                <h:outputText value="Commentaire client" />
+	                <h:outputText value="#{panier.commentaireClient}" escape="false"/>
+	                
+	                <h:outputText value="Commentaire Legrain (interne)" />
+	                <h:outputText value="#{panier.commentaireLegrain}" escape="false"/>
+            	</p:panelGrid>
+            	
+				<p:dataTable var="ligne" value="#{panier.lignes}">
+				
+					<p:column sortBy="#{ligne.codeProduit}">
+						<f:facet name="header">
+							<h:outputText value="Code produit" />
+						</f:facet>
+						<p:commandLink value="#{ligne.codeProduit}" action="#{produitController.openProduit}" 
+							update=":form:tabView" oncomplete="activeTabCenter('#{LgrTab.CSS_CLASS_TAB_ARTICLE}');"
+							rendered="#{ligne.taProduit!=null}">
+							<f:setPropertyActionListener target="#{produitController.taProduit}" value="#{ligne.taProduit}" />
+						</p:commandLink>
+						<h:outputText value="#{ligne.codeProduit}" rendered="#{ligne.taProduit==null}"/>
+					</p:column>
+					
+					<p:column sortBy="#{ligne.libelleProduit}">
+						<f:facet name="header">
+							<h:outputText value="Produit" />
+						</f:facet>
+						<h:outputText value="#{ligne.libelleProduit}" />
+					</p:column>
+					
+					<p:column sortBy="#{ligne.libelleProduit}">
+						<f:facet name="header">
+							<h:outputText value="Produit" />
+						</f:facet>
+						<h:outputText value="#{ligne.libelleProduit}" />
+					</p:column>
+					
+					<p:column sortBy="#{ligne.montantHT}" styleClass="right">
+						<f:facet name="header">
+							<h:outputText value="HT" />
+						</f:facet>
+						<h:outputText value="#{ligne.montantHT}" >	
+							<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+						</h:outputText>
+					</p:column>
+				</p:dataTable>
+
+        	</p:rowExpansion>
+
+		</p:dataTable>
+		
+	</p:panel>
+	
+	<p:dialog header="Commentaire" widgetVar="wvDlgCommentairePanier" minHeight="40">
+		<p:panel widgetVar="wvDlgPanelCommentairePanier">
+			<p:panelGrid>
+				<h:outputText value="Commentaire public" />
+    			<p:textEditor secure="false" value="#{panierController.selection.commentaireClient}" />
+    			
+    			<h:outputText value="Commentaire interne (Legrain)" />
+    			<p:textEditor secure="false" value="#{panierController.selection.commentaireLegrain}" />
+    		</p:panelGrid>
+    		
+    		<p:commandButton value="Annuler" type="button" onclick="PF('wvDlgCommentairePanier').hide();"/>
+			.
+			<p:commandButton value="Enregistrer"
+				actionListener="#{panierController.actEnregistrerCommentaire}" update="@widgetVar(wvDataTablePanier)" 
+				oncomplete="PF('wvDlgCommentairePanier').hide();"/>
+    	</p:panel>
+	</p:dialog>
+	
+	<p:dialog header="Paiement" widgetVar="wvDlgPaiementPanier" minHeight="40">
+		<p:panel widgetVar="wvDlgPanelPaiementPanier">
+			<h:panelGrid columns="2">
+				<h:outputText value="Type paiement" />
+    			<p:selectOneMenu value="#{panierController.taTypePaiment}" converter="entityConverter">
+		            <f:selectItems value="#{panierController.listeTypePaiement}" var="tp" itemValue="#{tp}" itemLabel="#{tp.libelle} (#{tp.code})"/>
+		        </p:selectOneMenu>
+    			
+    			<h:outputText value="Référence paiement" />
+    			<p:inputText value="#{panierController.selection.refPaiement}" />
+    		</h:panelGrid>
+    		
+    		<p:commandButton value="Annuler" type="button" onclick="PF('wvDlgPaiementPanier').hide();"/>
+			.
+			<p:commandButton value="Enregistrer"
+				actionListener="#{panierController.actPayerPanier}" update="@widgetVar(wvDataTablePanier)" 
+				oncomplete="PF('wvDlgPaiementPanier').hide();"/>
+    	</p:panel>
+	</p:dialog>
+	
+</ui:composition>

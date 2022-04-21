@@ -1,0 +1,60 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/template_dialog_lgr.xhtml">
+
+	<ui:define name="head">
+		<title>Modifier l'unité de référence</title>
+		<style type="text/css">
+.ui-widget {
+	font-size: 90%;
+}
+</style>
+	</ui:define>
+
+	<ui:define name="content">
+		<h:form id="idDialogModifierUniteRef">
+			<span style="color:red; font-weight: bold;">ATTENTION</span><br/>
+			Vous avez demandé à modifier l'unité de référence de l'article : #{changementUniteReferenceController.taArticle.libellecArticle} (#{changementUniteReferenceController.taArticle.codeArticle}).<br/>
+			En conséquence cela aura plusieurs effet sur votre dossier :<br/>
+			<ul>
+				<li> Modification dans tous les mouvements concernant cet article que la quantité correspodant à l'unité de référence.</li>
+				<li> Recalcul des stocks de cet article.</li>
+			</ul>
+			La nouvelle unité de référence doit avoir un coefficient de convertion définit avec l'ancienne.<br/>
+			Cette modification peut être longue.
+			<br/>
+			<br/>
+			<p:outputLabel value="Nouvelle unité de référence : " />
+
+			<p:autoComplete value="#{changementUniteReferenceController.taUniteReferenceDTO}"
+				completeMethod="#{changementUniteReferenceController.uniteAutoCompleteLight}"
+				var="unite" itemLabel="#{unite.codeUnite}" itemValue="#{unite}"
+				forceSelection="true" dropdown="true"
+				placeholder="Unité de référence" converter="entityConverter">
+				<p:column>
+					<h:outputText value="#{unite.codeUnite}" />
+				</p:column>
+				<p:column>
+					<h:outputText value="#{unite.liblUnite}" />
+				</p:column>
+
+				<f:attribute name="nomChamp" value="#{const.C_CODE_UNITE_REFERENCE}" />
+<!-- 				<p:ajax event="itemSelect" listener="#{changementUniteReferenceController.autcompleteSelection}" update="@this" /> -->
+				<p:ajax event="itemSelect" update="@this" />
+			</p:autoComplete>
+			
+			<br/>
+			<br/>
+			<br/>
+			<p:commandButton value="Annuler" process="@this" actionListener="#{changementUniteReferenceController.actFermerDialog}">
+			</p:commandButton>
+
+			<p:commandButton value="Modifier" process="@this" actionListener="#{changementUniteReferenceController.actEnregistrer}">
+			</p:commandButton>
+		</h:form>
+	</ui:define>
+
+</ui:composition>

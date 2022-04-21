@@ -1,0 +1,53 @@
+<ui:composition 
+
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui">
+    
+    
+    <!-- TOPBAR START -->    
+    <div id="layout-topbar">
+        <div id="layout-topbar-indent">
+            <a id="menu-button"><i class="icon-th-menu"></i></a>
+<!--             <a href="dashboard.xhtml"><h:graphicImage name="images/logo.svg" id="logo" library="volt-layout" /></a> -->
+             <a href="#{request.contextPath}"><p:graphicImage library="images" name="legrain_new.ico"/></a><h:outputLabel value="Mon compte" styleClass="Blue FontBold Fs30" />
+            
+            <span class="DispInlBlock Fright" style="margin:10px 10px 0px 0px;">
+                <h:form styleClass="DispInline">
+                    <p:splitButton value="Menu" icon="ui-icon-check fa fa-cog" styleClass="White Fs14" appendTo="@this">
+                        <p:menuitem value="Users" icon="fa fa-user" />
+                        <p:menuitem value="Reports" icon="fa fa-file-text-o" />
+                        <p:menuitem value="Charts" icon="fa fa-line-chart" />
+                        <p:separator />
+                        <p:menuitem value="Tasks" icon="fa fa-tasks" />
+                        <p:menuitem value="Messages" icon="fa fa-envelope-o" />
+                        <p:menuitem value="Notes" icon="fa fa-file-zip-o" />
+                        <p:separator />
+                        <p:menuitem value="Log In / Log Out" actionListener="#{auth.logout}" icon="fa fa-key" />
+                    </p:splitButton>
+                </h:form>
+            </span>
+        </div>
+    </div>
+    <!-- TOPBAR END -->
+    
+    <!-- TOPMENU START -->
+    <ul id="top-menu">
+        <li style="float:left; border:none;">
+            <a href="#"><i class="icon-vcard Opac80"></i><span><span class="Fs16"><h:outputText value="#{auth.username}"/>, Bienvenue</span> <br/> <span class="Opac50 Fs12">Dernière connexion <h:outputText value="#{auth.user.dernierAcces}"><f:convertDateTime pattern="dd/MM/yyyy-HH:mm:ss" timeZone="Europe/Paris"/></h:outputText> </span></span></a>
+        </li>
+        <li>
+            <a href="#"><i class="icon-book3 Opac80"></i><span><span class="Fs16">Produits</span> <br/> <span class="Opac50 Fs12"><h:outputText value="#{topBarController.nbProduit}"/> Produits</span></span></a>
+        </li>
+        <li>
+            <a href="#"><i class="icon-users Opac80"></i><span><span class="Fs16">Clients</span> <br/> <span class="Opac50 Fs12"><h:outputText value="#{topBarController.nbClient}"/> Clients</span></span></a>
+        </li>
+        <li>
+            <a href="#"><i class="icon-shopping-cart Opac80"></i><span><span class="Fs16">Panier</span> <br/> <span class="Opac50 Fs12"><h:outputText value="#{topBarController.nbPanier}"/> Paniers</span></span></a>
+        </li>
+    </ul>
+    <!-- TOPMENU END -->
+    
+</ui:composition>

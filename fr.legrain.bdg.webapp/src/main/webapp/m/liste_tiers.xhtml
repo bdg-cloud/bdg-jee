@@ -1,0 +1,161 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/template.xhtml">
+
+    <ui:define name="head">
+        <script type="text/javascript">
+            function skinChart() {
+                this.cfg.shadow = false;
+                this.cfg.title = '';
+                this.cfg.seriesColors = ['#0097A7', '#0277BD', '#E53935'];
+                this.cfg.grid = {
+                    background: '#ffffff',
+                    borderColor: '#ffffff',
+                    gridLineColor: '#F5F5F5',
+                    shadow: false
+                };
+                this.cfg.axesDefaults = {
+                    rendererOptions: {
+                        textColor: '#666F77'
+                    }
+                };
+                this.cfg.seriesDefaults = {
+                    shadow: false,
+                    lineWidth:1,
+                    markerOptions: {
+                        shadow: false,
+                        size:7,
+                        style:'circle'
+                    }
+                };
+                this.cfg.axes.yaxis.tickOptions.show = false;
+            }
+        </script>
+        <style type="text/css">
+            .jqplot-target, .jqplot-axis {
+                color: #546E7A;
+            }
+        </style>
+    </ui:define>
+    
+    <ui:define name="subheader">
+        Liste bon de réception
+    </ui:define>
+
+    <ui:define name="content">
+        
+       liste des tiers
+<h:form id="form" prependId="true"> 
+<ui:include src="confirm_dialog.xhtml"/>
+	<p:menubar >
+		 <p:menuitem value="Ajouter" title="Ajouter" update="@form"  action="#{tiersController.nouveauResponsive}" icon="fa fa-plus-circle" ajax="false"/>
+		 <p:menuitem value="Détail" title="Détail" action="#{tiersController.detailResponsive}" update="@form"  icon="fa fa-eye" ajax="false">
+<!-- 		 	<f:attribute name="selectionTiers" value="#{tiersController.selectedTaTiersDTO}"/> -->
+<!-- 		       url="/m/tiers.xhtml?selectedTaTiersDTO=#{tiersController.selectedTaTiersDTO.id}"> -->
+		 </p:menuitem>
+<!-- 									<p:commandLink onclick="window.open('#{request.contextPath}/detail_piece_careco_template.xhtml?parameter=#{ligneResultat.id}')"> -->
+<!-- 										<p:graphicImage library="images" name="show.jpg" title="Détail" alt="Détail" height="16"/> -->
+<!-- 									</p:commandLink> -->
+											 
+		 <p:menuitem value="Supprimer" title="Supprimer" update="@form" actionListener="#{tiersController.supprimer}" icon="fa fa-trash">
+							<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer cet enregistrement ?" icon="fa fa-exclamation-triangle" />
+		</p:menuitem>					
+
+		 <p:menuitem value="Rafraîchir" title="Rafraîchir" update="@form" actionListener="#{tiersController.refresh}" icon="fa fa-refresh"/>
+	</p:menubar>
+	
+	<p:dataTable id="dataTableListeTiers" var="taTiers"
+				widgetVar="wvDataTableListeTiers"
+				value="#{tiersController.values}"
+				rowKey="#{taTiers.id}"
+				selection="#{tiersController.selectedTaTiersDTO}"
+				selectionMode="single"
+				dblClickSelect="true"
+				styleClass="datatable mt10"
+				resizableColumns="true"
+				paginator="true" 
+				rows="#{msg.modele_datatable_ligne_par_page_debut}"
+				paginatorTemplate="#{msg.modele_datatable_paginator}"
+				rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+				emptyMessage="#{msg.message_datatable_vide}"
+				currentPageReportTemplate="#{msg.modele_datatable_page_courante}"
+				disabledSelection="#{tiersController.modeEcran.dataSetEnModif()}" reflow="true">
+				
+				<p:ajax event="rowDblselect" listener="#{tiersController.onRowSelect}" update="@form" /> 
+				<p:ajax event="rowSelect" listener="#{tiersController.onRowSelect}" disabled="#{tiersController.pasDejaOuvert()}" update="@form" />
+
+
+  <f:facet name="{Exporters}">
+            <h:commandLink>
+                <p:graphicImage library="images" name="excel.png" width="24"/>
+                <p:dataExporter type="xls" target="dataTableListeTiers" fileName="liste_tiers" />
+            </h:commandLink>
+ 
+            <h:commandLink>
+                <p:graphicImage  library="images" name="pdf.png"  width="24"/>
+                <p:dataExporter type="pdf" target="dataTableListeTiers" fileName="liste_tiers"/>
+            </h:commandLink>
+ 
+            <h:commandLink>
+                <p:graphicImage  library="images" name="csv.png"  width="24"/>
+                <p:dataExporter type="csv" target="dataTableListeTiers" fileName="liste_tiers" />
+            </h:commandLink>
+ 
+            <h:commandLink>
+                <p:graphicImage  library="images" name="xml.png"  width="24"/>
+                <p:dataExporter type="xml" target="dataTableListeTiers" fileName="liste_tiers" />
+            </h:commandLink>
+        </f:facet>
+        
+<!-- 				<p:column sortBy="#{taTiers.id}"> -->
+<!-- 					<f:facet name="header"> -->
+<!-- 						<h:outputText value="ID" /> -->
+<!-- 					</f:facet> -->
+<!-- 					<h:outputText value="#{taTiers.id}" /> -->
+<!-- 				</p:column> -->
+
+				<p:column sortBy="#{taTiers.codeTiers}">
+					<f:facet name="header">
+						<h:outputText value="Code" />
+					</f:facet>
+					<h:outputText value="#{taTiers.codeTiers}" />
+				</p:column>
+				
+				<p:column sortBy="#{taTiers.codeTTiers}">
+					<f:facet name="header">
+						<h:outputText value="Type Tiers" />
+					</f:facet>
+					<h:outputText value="#{taTiers.codeTTiers}" />
+				</p:column>
+				
+				<p:column sortBy="#{taTiers.nomTiers}">
+					<f:facet name="header">
+						<h:outputText value="Nom" />
+					</f:facet>
+					<h:outputText value="#{taTiers.nomTiers}" />
+				</p:column>
+				
+				<p:column sortBy="#{taTiers.prenomTiers}">
+					<f:facet name="header">
+						<h:outputText value="Prénom" />
+					</f:facet>
+					<h:outputText value="#{taTiers.prenomTiers}" />
+				</p:column>
+                    <p:column headerText="Action" footerText="Action" styleClass="ui-fluid actions">
+                      <p:panelGrid columns="3" styleClass="ui-panelgrid-blank" layout="grid">
+						<p:commandLink icon="fa fa-eye"  type="button"  actionListener="#{tiersController.repondreMessage}" ajax="false" >
+						 <p:graphicImage  library="images" name="zoom.png"  title="Détail" alt="Détail" height="16"/>
+						  <f:attribute name="idTiers" value="#{taTiers.id}"/>
+						</p:commandLink>
+                      </p:panelGrid>
+                    </p:column>	
+
+
+			</p:dataTable>
+</h:form>        
+    </ui:define>
+
+</ui:composition>

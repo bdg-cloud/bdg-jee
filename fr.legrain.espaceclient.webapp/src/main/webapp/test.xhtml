@@ -1,0 +1,97 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/template.xhtml">
+
+    <ui:define name="content">
+    <h:form>
+    
+    	<p:commandButton value="test" actionListener="#{testController.test}" update="@form"/>
+        <hr/>
+        <p:commandButton value="Init liste fournisseur" actionListener="#{testController.refeshListeFournisseur}" update="@form"/>
+        <p:dataTable value="#{testController.listeFrs}" var="d" selectionMode="single" selection="#{testController.selectedDossier}" rowKey="#{d}">
+        	<p:ajax event="rowSelect" update="@form" listener="#{testController.updateFrs}"/>
+        	<f:facet name="header">  
+           		<p:outputLabel value="Liste des fournisseurs utilisant les comptes client"/>
+        	</f:facet>
+        	<p:column headerText="dossier">
+        		<p:outputLabel value="#{d.codeDossier}"/>
+        	</p:column>
+        </p:dataTable>
+        <p:panelGrid columns="2">
+       		<f:facet name="header">  
+           		<p:outputLabel value="Infos fournisseur"/>
+        	</f:facet>
+        	
+       		<p:outputLabel value="Dossier BDG"/>
+       		<p:outputLabel value="#{testController.selectedDossier.codeDossier}"/>
+       		
+       		<p:outputLabel value="Code tiers"/>
+       		<p:outputLabel value="#{testController.selectedDossier.taTiers.codeTiers}"/>
+       		
+       		<p:outputLabel value="Nom tiers"/>
+       		<p:outputLabel value="#{testController.selectedDossier.taTiers.nomTiers}"/>
+       		
+       		<p:graphicImage value="#{testController.logo}" stream="false" rendered="#{testController.selectedDossier.taTiers.blobLogo !=null}"/>
+       </p:panelGrid>
+       
+       <hr/>
+       
+       <p:outputLabel value="Code client final (chez le fournisseur) 3818/3133"/> <p:inputText value="#{testController.codeClient}"/>
+       <br/>
+       <p:commandButton value="Init infos client" actionListener="#{testController.rechercheClient}" update="@form"/>
+       <p:panelGrid columns="2">
+       		<f:facet name="header">  
+           		<p:outputLabel value="Infos client final"/>
+        	</f:facet>
+        	
+       		<p:outputLabel value="Nom"/>
+       		<p:outputLabel value="#{testController.clientFinal.nomTiers}"/>
+       		
+       		<p:outputLabel value="Code"/>
+       		<p:outputLabel value="#{testController.clientFinal.codeTiers}"/>
+       </p:panelGrid>
+       
+       <hr/>
+       
+       <p:commandButton value="Init liste facture" actionListener="#{testController.rechercheFacture}" update="@form"/>
+       
+       <p:dataTable value="#{testController.listeFacture}" var="f" selectionMode="single" selection="#{testController.selectedFacture}" rowKey="#{f.codeDocument}">
+       		<p:ajax event="rowSelect" update="@form"/>
+        	<f:facet name="header">  
+           		<p:outputLabel value="Liste des factures de #{testController.codeClient}"/>
+        	</f:facet>
+        	<p:column headerText="dossier">
+        		<p:outputLabel value="#{f.codeDocument}"/>
+        	</p:column>
+        </p:dataTable>
+        
+        <p:panelGrid columns="2">
+        	<f:facet name="header">  
+           		<p:outputLabel value="Infos facture"/>
+        	</f:facet>
+       		<p:outputLabel value="Code"/>
+       		<p:outputLabel value="#{testController.selectedFacture.codeDocument}"/>
+       		
+       		<p:outputLabel value="Libelle"/>
+       		<p:outputLabel value="#{testController.selectedFacture.libelleDocument}"/>
+       </p:panelGrid>
+       
+       <hr/>
+       
+       <p:commandButton title="Imprimer la facture courante" value="Imprimer" styleClass="icon icon-print" actionListener="#{testController.imprimer}"
+       		onsuccess="window.open('https://dev.demo.promethee.biz:8443/output?__report=/reports/tiers/FicheTiers.rptdesign&amp;__format=pdf')" />
+
+<!-- onsuccess="window.open('https://dev.demo.promethee.biz:8443/output?__report=/reports/documents/facture/FicheFacture.rptdesign&amp;__format=pdf')" /> -->
+<!-- 			onsuccess="window.open('#{request.contextPath}/output?__report=/reports/test/FicheFactureEJB.rptdesign&amp;__format=pdf')" /> -->
+		
+	<p:commandButton value="Download" ajax="false" icon="ui-icon-arrowthick-1-s" actionListener="#{testController.download}">
+        <p:fileDownload value="#{testController.file}" />
+    </p:commandButton>
+        
+        </h:form>
+    </ui:define>
+
+</ui:composition>

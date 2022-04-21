@@ -1,0 +1,118 @@
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+	
+<!-- 	<f:metadata> -->
+<!-- 		<f:viewParam name="parameter" value="#{controleLotController.parameter}"/> -->
+<!-- 		<f:event type="preRenderView" listener="#{controleLotController.refresh}" /> -->
+<!-- 	</f:metadata> -->
+	
+		<p:menubar styleClass="menu-onglet">
+			<p:menuitem title="Envoyer" styleClass="icon icon-envoi-mail" update="@form"
+				actionListener="#{envoyerMessagePushController.actEnvoyerMessagePush}" />
+			
+			<p:menuitem title="Fermer" styleClass="icon icon-close menuitem-fermer-droite"
+				actionListener="#{envoyerMessagePushController.actFermerDialog}"
+				process="@this" >
+				<p:confirm header="Confirmation" message="#{msg_diag.alert_fermeture_onglet}" icon="ui-icon-alert" disabled="#{!envoyerMessagePushController.modeEcran.dataSetEnModif()}"/>
+			</p:menuitem>
+		</p:menubar>
+
+		
+		
+		<p:separator/>
+		
+		<p:messages autoUpdate="true" showDetail="true"/>
+		
+		<p:panel id="idPanelGlobalEmail" widgetVar="wvPanelGlobalEmail">
+			<div class="ui-g ui-g-nopad">
+								
+				<div class="ui-g-2 ui-g-nopad">
+					<p:outputLabel value="Destinataire"/>
+				</div>
+				<div class="ui-g-10">
+					<div class="ui-g-11 ui-g-nopad">
+						<p:autoComplete value="#{envoyerMessagePushController.taTiersDTODestinataires}"
+									completeMethod="#{envoyerMessagePushController.tiersAutoCompleteLight}"
+									var="adr"
+									itemLabel="#{adr.codeTiers}" itemValue="#{adr}" multiple="true"
+									forceSelection="true" dropdown="true" placeholder="Destinataire"
+									converter="entityConverter">
+									<p:column>
+										<f:facet name="header">
+										</f:facet>
+										<h:outputText value="#{adr.codeTiers}" />
+									</p:column>
+									<p:column>
+										<h:outputText value=" &lt; #{adr.nomTiers} #{adr.prenomTiers} &gt;" />
+									</p:column>
+		
+									<f:attribute name="nomChamp" value="#{const.C_CODE_TIERS}" />
+									<p:ajax event="itemSelect" listener="#{envoyerMessagePushController.autcompleteSelection}" update="@this" />
+									<p:ajax event="itemUnselect" listener="#{envoyerMessagePushController.autcompleteUnSelect}" update="@this" />
+						</p:autoComplete>
+					</div>
+				</div>
+				
+				<div class="ui-g-12">
+					<p:inputText placeholder="Sujet" value="#{envoyerMessagePushController.selectedTaMessagePushDTO.sujet}" style="width:100%;" >
+	
+					</p:inputText>
+				</div>
+				
+				<div class="ui-g-12">
+					<p:inputText placeholder="Résumé" value="#{envoyerMessagePushController.selectedTaMessagePushDTO.resume}" style="width:100%;" >
+					</p:inputText>
+				</div>
+				
+				<div class="ui-g-12">
+					<p:inputText placeholder="URL" value="#{envoyerMessagePushController.selectedTaMessagePushDTO.url}" style="width:100%;" >
+					</p:inputText>
+				</div>
+				
+				<div class="ui-g-12">
+					<p:inputText placeholder="URL Image" value="#{envoyerMessagePushController.selectedTaMessagePushDTO.urlImage}" style="width:100%;" >
+					</p:inputText>
+				</div>
+				
+				<div class="ui-g-12">
+<!-- 			placeholder="Contenu" -->
+<!-- 					<p:textEditor  secure="false" value="#{envoyerMessagePushController.selectedTaMessagePushDTO.contenu}" style="width:100%; height:200px;" > -->
+<!-- 						<f:facet name="toolbar"> -->
+<!-- 					        <span class="ql-formats"> -->
+					<!--             <button class="ql-bold"></button> -->
+					<!--             <button class="ql-italic"></button> -->
+<!-- 								Message long -->
+<!-- 					        </span> -->
+<!--     					</f:facet> -->
+<!-- 					</p:textEditor> -->
+					<p:inputTextarea placeholder="Message long" value="#{envoyerMessagePushController.selectedTaMessagePushDTO.contenu}" style="width:100%">
+						<p:ajax event="blur" update="@this" />
+					</p:inputTextarea>
+				</div>
+				
+				
+				
+			</div>
+			
+			<div class="ui-g-12" style="margin-top:20px;">
+			• Message long <b>ou</b> image
+			</div>
+
+		</p:panel>
+		
+		<p:confirmDialog global="true" showEffect="fade">
+				<p:commandButton id="idConfirmDialogCtrlLotOui" value="Oui" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+				<p:commandButton id="idConfirmDialogCtrlLotNon" value="Non" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+		</p:confirmDialog>
+		
+		<style type="text/css">
+			.ui-panel .ui-panel-content {
+				padding: 0;
+			}
+		</style>
+		
+</ui:composition>

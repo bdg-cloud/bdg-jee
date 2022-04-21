@@ -1,0 +1,271 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+	
+<!-- 			<f:metadata> -->
+<!-- 				<f:viewParam name="paramRefresh" value="#{gestionLotController.paramRefresh}"/> -->
+<!-- 				<f:event type="preRenderView" listener="#{gestionLotController.refresh}" /> -->
+<!-- 			</f:metadata> -->
+
+	<p:panel id="labelArticleFormPrincipal" widgetVar="labelArticleForm">
+
+		<p class="subtitle">
+			<p:outputLabel value="Gestion des lots"
+				rendered="#{dansDialogue == null ? true : false}" />
+		</p>
+		
+		<!-- bouton -->
+		<p:panel id="labelArticleDataTableF" class="mt30" style="position:relative;"
+			rendered="#{dansDialogue == null ? true : false}">
+			
+
+			<p:commandButton value="Modifier" title="Modifier" process="@this"
+				update=":form:tabView,:form:messages,:form" 
+				actionListener="#{gestionLotController.actDialogModifier}"
+				styleClass="icon-update icon" >
+				<p:ajax event="dialogReturn" listener="#{gestionLotController.handleReturnDialogTypes}" update=":form"/>
+			</p:commandButton>
+			
+			<p:commandButton value="Rafraîchir" title="Supprimer les lots non utilisés et Rafraîchir" actionListener="#{gestionLotController.refresh}" disabled="#{gestionLotController.modeEcran.dataSetEnModif()}"
+				styleClass="icon-refresh icon" process="@this" update=":form:tabView,:form:messages,:form" >
+			</p:commandButton>	
+	
+
+			<p:commandButton id="labelArticleFermer" title="Fermer"
+				styleClass="icon-close icon menuitem-fermer-droite" onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())">
+				 <p:confirm header="Confirmation" message="#{msg_diag.alert_fermeture_onglet}" icon="ui-icon-alert" disabled="#{!gestionLotController.modeEcran.dataSetEnModif()}"/>
+			</p:commandButton>
+				 
+
+			<p:commandButton id="labelArticleFermerDialogue" title="Fermer"
+				process="@this" styleClass="icon-close icon menuitem-fermer-droite"
+				actionListener="#{gestionLotController.actFermerDialog}"
+				rendered="#{dansDialogue != null ? true : false}" />
+
+
+<!-- 			<p:confirmDialog message="#{msg_diag.alert_fermeture_onglet}" -->
+<!-- 				header="Confirmation" severity="alert" widgetVar="labelArticlecd2" -->
+<!-- 				appendTo="@(body)"> -->
+<!-- 				<p:commandButton value="#{msg_diag.Oui}" -->
+<!-- 					onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())" -->
+<!-- 					oncomplete="PF('labelArticlecd2').hide()" /> -->
+<!-- 				<p:commandButton value="#{msg_diag.Non}" -->
+<!-- 					onclick="PF('labelArticlecd2').hide();" type="button" /> -->
+<!-- 			</p:confirmDialog> -->
+		</p:panel>
+		
+		<p:sticky target="labelArticleDataTableF" />
+		
+		<p:dataTable id="labelArticleDataTable" var="table"
+			rendered="#{dansDialogue == null ? true : false}"
+			value="#{gestionLotController.values}"
+			rowKey="#{table.id}" selectionMode="single"
+			class="datatable" selection="#{gestionLotController.selection}"
+			paginator="true" rows="#{msg.modele_datatable_ligne_par_page_debut}"
+			paginatorTemplate="#{msg.modele_datatable_paginator}"
+			rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+			emptyMessage="#{msg.message_datatable_vide}"
+			currentPageReportTemplate="#{msg.modele_datatable_page_courante}">
+
+			<p:ajax event="rowSelect"
+				listener="#{gestionLotController.onRowSelect}" />
+
+			<f:facet name="{Exporters}">
+				<h:commandLink>
+					<p:graphicImage library="images" name="excel.png" width="24" />
+					<p:dataExporter type="xls" target="labelArticleDataTable"
+						fileName="gestion_lot" />
+				</h:commandLink>
+				
+				<p:commandLink onsuccess="window.open('#{request.contextPath}/output?__report=/reports/stock/ListeGestionDesLots.rptdesign&amp;__format=pdf')"
+			actionListener="#{gestionLotController.actImprimerListeGestionDesLots}" process="@this">
+		                <p:graphicImage  library="images" name="pdf.png"  width="24"/>
+<!-- 		                <p:dataExporter type="pdf" target="dataTableListeTiers" fileName="liste_tiers" /> -->
+		            </p:commandLink>
+		            
+<!-- 				<h:commandLink> -->
+<!-- 					<p:graphicImage library="images" name="pdf.png" width="24" /> -->
+<!-- 					<p:dataExporter type="pdf" target="labelArticleDataTable" -->
+<!-- 						fileName="gestion_lot" /> -->
+<!-- 				</h:commandLink> -->
+
+				<h:commandLink>
+					<p:graphicImage library="images" name="csv.png" width="24" />
+					<p:dataExporter type="csv" target="labelArticleDataTable"
+						fileName="gestion_lot" options="#{separateurCsvController.csvOptions}" />
+				</h:commandLink>
+
+				<h:commandLink>
+					<p:graphicImage library="images" name="xml.png" width="24" />
+					<p:dataExporter type="xml" target="labelArticleDataTable"
+						fileName="gestion_lot" />
+				</h:commandLink>
+
+<!-- 				<p:commandButton value="Imprimer" styleClass="btn-print btn" -->
+<!-- 					onsuccess="window.open('#{request.contextPath}/output?__report=/reports/label_article_test_image_report.rptdesign&amp;__format=pdf')" -->
+<!-- 					actionListener="#{gestionLotController.actImprimer}" -->
+<!-- 					disabled="#{gestionLotController.etatBouton('imprimer')}" /> -->
+			</f:facet>
+
+			<p:column sortBy="#{table.codeArticle}"
+				filterBy="#{table.codeArticle}" filterMatchMode="contains" >
+				<f:facet name="header">
+					<h:outputText value="Code article" />
+				</f:facet>
+				<h:outputText value="#{table.codeArticle}" />
+			</p:column>
+
+			<p:column sortBy="#{table.numLot}" filterBy="#{table.numLot}" filterMatchMode="contains" >
+				<f:facet name="header">
+					<h:outputText value="Numéro lot" />
+				</f:facet>
+				<h:outputText value="#{table.numLot}"  />
+			</p:column>
+
+			<p:column sortBy="#{table.codeUnite1}" filterBy="#{table.codeUnite1}" filterMatchMode="contains" >
+				<f:facet name="header">
+					<h:outputText value="Unité 1" />
+				</f:facet>
+				<h:outputText value="#{table.codeUnite1}" />
+			</p:column>
+
+			<p:column sortBy="#{table.codeUnite2}" filterBy="#{table.codeUnite2}" filterMatchMode="contains" >
+				<f:facet name="header" >
+					<h:outputText value="Unité 2" />
+				</f:facet>
+				<h:outputText value="#{table.codeUnite2}" />
+			</p:column>
+
+			<p:column sortBy="#{table.termine}" styleClass="center"
+				filterBy="#{table.termine}" filterMatchMode="contains">
+				<f:facet name="header">
+					<h:outputText value="Terminé" />
+				</f:facet>
+				<p:selectBooleanCheckbox value="#{table.termine}" disabled="#{gestionLotController.editable()}"/>
+<!-- 				<h:outputText value="#{table.termine}" /> -->
+			</p:column>
+			
+			<p:column width="28" styleClass="center">
+				<f:facet name="header">
+					<h:outputText value="Détail" />
+				</f:facet>
+<!-- 				<p:commandLink actionListener="#{detailLotController.actDialogDetailLot}"> -->
+<!-- 					<p:graphicImage library="images" name="zoom.png" title="Détail" alt="Détail" height="16" /> -->
+<!-- 					<f:attribute name="lot" value="#{table.numLot}" /> -->
+<!-- 				</p:commandLink> -->
+				
+				<p:commandLink actionListener="#{detailLotController.afficheTraca}" update="@form" oncomplete="activeLastTabTracabilite();">
+					<p:graphicImage library="images" name="zoom.png" title="Détail complet" alt="Détail complet" height="16" />
+					<f:attribute name="numLot" value="#{table.numLot}" />
+				</p:commandLink>
+			</p:column>
+			
+			<p:column width="40" styleClass="center" rendered="#{ auth.isDevLgr()}">
+				<f:facet name="header">
+					<h:outputText value="EAN128" />
+				</f:facet>	
+				<p:commandLink actionListener="#{gestionLotController.actImprimerEtiquetteCB128}" rendered="#{ auth.isDevLgr()}">
+					<p:graphicImage library="images" name="btn/imprimer-code-barre.svg" title="Détail complet" alt="Détail complet" height="16" />
+					<f:attribute name="numLot" value="#{table.numLot}" />
+				</p:commandLink>
+				
+			</p:column>
+			
+		</p:dataTable>
+
+		
+	</p:panel>
+	<!-- 	 -->
+
+	<p:messages id="labelArticleMessages" showDetail="true"
+		autoUpdate="true" closable="true" />
+
+	<p:panel id="labelArticlePanel" visible="true"
+		widgetVar="varLabelArticlePanel">
+		<p:panel onLoad="reset()" resizable="false"
+			id="labelArticlePanelCache"
+			rendered="#{gestionLotController.modeEcran.dataSetEnModif()}">
+			<!-- 			<h:form id="labelArticleFormCreation"> -->
+<!-- 			<f:validateBean disabled="true"> -->
+				<div class="ui-grid ui-grid-responsive" id="labelArticleGridResp">
+					<div class="ui-grid-row">
+						<div class="ui-grid-col-4">
+							<h:outputText value="Code article : "></h:outputText>
+						</div>
+						<div class="ui-grid-col-8">
+							<h:inputText
+								value="#{gestionLotController.nouveau.codeArticle}" disabled="true">
+							</h:inputText>
+						</div>
+					</div>
+					<div class="ui-grid-row">
+						<div class="ui-grid-col-4">
+							<h:outputText value="Numéro lot :"></h:outputText>
+						</div>
+						<div class="ui-grid-col-8">
+							<h:inputText
+								value="#{gestionLotController.nouveau.numLot}" disabled="true">
+							</h:inputText>
+						</div>
+					</div>
+					<div class="ui-grid-row">
+						<div class="ui-grid-col-4">
+							<h:outputText value="Unité 1 :"></h:outputText>
+						</div>
+						<div class="ui-grid-col-8">
+							<h:inputText
+								value="#{gestionLotController.nouveau.codeUnite1}" disabled="true">
+							</h:inputText>
+						</div>
+					</div>
+					<div class="ui-grid-row">
+						<div class="ui-grid-col-4">
+							<h:outputText value="Unité 2 :"></h:outputText>
+						</div>
+						<div class="ui-grid-col-8">
+							<h:inputText
+								value="#{gestionLotController.nouveau.codeUnite2}" disabled="true">
+							</h:inputText>
+						</div>
+					</div>
+					<div class="ui-grid-row">
+						<div class="ui-grid-col-4">
+							<h:outputText value="Terminé :"></h:outputText>
+						</div>
+						<div class="ui-grid-col-8">
+							<p:selectBooleanCheckbox value="#{gestionLotController.nouveau.termine}">	
+								<p:ajax event="change" update="@this"/>
+							</p:selectBooleanCheckbox>					
+						</div>
+					</div>
+
+
+					<div class="ui-grid-row">
+						<div class="ui-grid-col-12 text-center">
+							<p:commandButton value="Enregistrer" styleClass="btn-save btn"
+								disabled="#{gestionLotController.etatBouton('enregistrer')}"
+								update="@widgetVar(labelArticleForm), @widgetVar(varLabelArticlePanel)"
+								actionListener="#{gestionLotController.actEnregistrer}" />
+
+							<p:commandButton id="labelArticleAnnuler" value="Annuler"
+								styleClass="btn-cancel btn" process="@this"
+								disabled="#{gestionLotController.etatBouton('annuler')}"
+								update="@widgetVar(labelArticleForm), @widgetVar(varLabelArticlePanel)"
+								actionListener="#{gestionLotController.actAnnuler}" 
+								rendered="#{dansDialogue != null ? false : true}" />
+
+							<p:commandButton id="labelArticleAnnulerDialogue" value="Annuler"
+								styleClass="btn-cancel btn" process="@this"
+								disabled="#{gestionLotController.etatBouton('annuler')}"
+								actionListener="#{gestionLotController.actFermerDialog}"
+								rendered="#{dansDialogue != null ? true : false}" />
+						</div>
+					</div>
+				</div>
+<!-- 			</f:validateBean> -->
+			<!-- 			</h:form> -->
+		</p:panel>
+	</p:panel>
+</ui:composition>

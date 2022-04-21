@@ -1,0 +1,68 @@
+ <ui:composition xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core" 
+	xmlns:ui="http://java.sun.com/jsf/facelets" 
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/template_dialog_lgr.xhtml">
+	
+		<p:importConstants type="fr.legrain.bdg.webapp.generation.duplicationArticleController" var="ConstController" />
+		
+	<ui:define name="head">
+		<title> <h:outputText
+				value="#{duplicationArticleController.titreEcran}" />
+		</title>
+	
+		<style type="text/css">
+			.ui-widget {font-size: 90%;}
+		</style>
+	</ui:define>
+
+	<ui:define name="content">
+		<h:form id="idDialogDuplicationArticle">
+			<p:panel id="idDuplicationArticlePanel" visible="true" widgetVar="widgetVarDuplicationArticlePanel">
+	
+					<div class="ui-g">
+						<div class="ui-g-12">
+							<p:fieldset legend="Duplication de l'article : ">
+								<p:panelGrid columns="3">
+							<p:outputLabel value="#{duplicationArticleController.article.codeArticle}" />
+							<p:outputLabel value="#{duplicationArticleController.article.libellecArticle}" />
+							<p:outputLabel value="#{duplicationArticleController.article.libellelArticle}" />
+							</p:panelGrid>
+							</p:fieldset>
+						</div>
+					</div>
+
+				
+					<div class="ui-g">
+						<div class="ui-g-12">
+							<p:fieldset legend="Paramètre de la duplication">
+							<p:panelGrid columns="2">
+							<p:outputLabel value="Reprendre les prix"/>
+							<p:selectBooleanCheckbox  value="#{duplicationArticleController.param.reprisePrix}"  />
+<!-- 							<p:outputLabel value="Reprendre les contôles"/> -->
+<!-- 							<p:selectBooleanCheckbox  value="#{duplicationArticleController.param.repriseControls}"/> -->
+							<p:outputLabel value="Reprendre les recettes"/>
+							<p:selectBooleanCheckbox  value="#{duplicationArticleController.param.repriseRecettes}" />
+							<p:outputLabel value="Reprendre les références fournisseur" />
+							<p:selectBooleanCheckbox value="#{duplicationArticleController.param.repriseFournisseurs}"  />								
+							<p:outputLabel  value="Reprendre les familles"/>
+							<p:selectBooleanCheckbox value="#{duplicationArticleController.param.repriseFamilles}"  />			
+							</p:panelGrid>
+							<p:panelGrid columns="2">
+								<p:commandButton value="Valider" actionListener="#{duplicationArticleController.actImprimer}"/>
+								<p:commandButton value="Fermer" actionListener="#{duplicationArticleController.actFermer}" process="@this" />							
+							</p:panelGrid>
+							</p:fieldset>
+						</div>
+					
+					</div>
+			</p:panel>
+					
+		</h:form>
+	</ui:define>
+
+	
+
+
+</ui:composition>

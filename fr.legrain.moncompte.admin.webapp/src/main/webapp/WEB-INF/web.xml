@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+	id="WebApp_ID" version="3.0">
+	<distributable/>
+
+	<display-name>fr.legrain.moncompte.admin.webapp</display-name>
+
+	<welcome-file-list>
+		<welcome-file>index.xhtml</welcome-file>
+	</welcome-file-list>
+
+	<mime-mapping>
+		<extension>ico</extension>
+		<mime-type>image/vnd.microsoft.icon</mime-type>
+	</mime-mapping>
+	<mime-mapping> 
+	    <extension>woff2</extension> 
+	    <mime-type>application/x-font-woff2</mime-type> 
+	</mime-mapping>
+	<mime-mapping>
+	    <extension>eot</extension>
+	    <mime-type>application/vnd.ms-fontobject</mime-type>
+	</mime-mapping>
+	<mime-mapping> 
+	    <extension>otf</extension> 
+	    <mime-type>font/opentype</mime-type> 
+	</mime-mapping>     
+	<mime-mapping> 
+	    <extension>ttf</extension> 
+	    <mime-type>application/x-font-ttf</mime-type> 
+	</mime-mapping>     
+	<mime-mapping> 
+	    <extension>woff</extension> 
+	    <mime-type>application/x-font-woff</mime-type> 
+	</mime-mapping>
+
+	<servlet>
+		<servlet-name>Faces Servlet</servlet-name>
+		<servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>Faces Servlet</servlet-name>
+		<url-pattern>*.jsf</url-pattern>
+		<url-pattern>*.xhtml</url-pattern>
+	</servlet-mapping>
+
+	<context-param>
+		<param-name>primefaces.THEME</param-name>
+		<!-- <param-value>bootstrap</param-value> -->
+		<!-- <param-value>volt</param-value> -->
+		<param-value>icarus-green</param-value>
+		<!-- <param-value>aristo</param-value> -->
+		<!-- <param-value>metroui</param-value> -->
+		<!-- <param-value>#{auth.theme}</param-value> -->
+	</context-param>
+
+	<context-param>
+		<param-name>primefaces.FONT_AWESOME</param-name>
+		<param-value>true</param-value>
+	</context-param>
+
+	<context-param>
+		<param-name>javax.faces.FACELETS_SKIP_COMMENTS</param-name>
+		<param-value>true</param-value>
+	</context-param>
+
+	<!-- Birt Engine Servlet -->
+	<!-- <servlet> -->
+	<!-- <servlet-name>EngineServlet</servlet-name> -->
+	<!-- <servlet-class>org.eclipse.birt.report.servlet.BirtEngineServlet</servlet-class> -->
+	<!-- </servlet> -->
+
+	<servlet-mapping>
+		<servlet-name>EngineServlet</servlet-name>
+		<url-pattern>/output</url-pattern>
+	</servlet-mapping>
+
+	<!-- http://forum.primefaces.org/viewtopic.php?f=3&t=20114 -->
+	<!-- Pour pouvoir utiliser ui:include dans un c:forEach pour creer les onglets -->
+	<context-param>
+		<param-name>javax.faces.STATE_SAVING_METHOD</param-name>
+		<param-value>server</param-value>
+	</context-param>
+	<context-param>
+		<param-name>javax.faces.PARTIAL_STATE_SAVING</param-name>
+		<param-value>true</param-value>
+	</context-param>
+	<context-param>
+		<param-name>javax.faces.FULL_STATE_SAVING_VIEW_IDS</param-name>
+		<param-value>/index.xhtml</param-value>
+	</context-param>
+
+	<!-- Roles -->
+	<security-role>
+		<description>Administrateur</description>
+		<role-name>admin</role-name>
+	</security-role>
+	<security-role>
+		<description>Utilisateur</description>
+		<role-name>utilisateur</role-name>
+	</security-role>
+	
+	<!-- Resource / Role Mapping -->
+	<security-constraint>
+		<display-name>Admin Area</display-name>
+		<web-resource-collection>
+			<web-resource-name>admin_resources</web-resource-name>
+			<!-- <url-pattern>/admin/*</url-pattern> -->
+			<url-pattern>/admin/*</url-pattern>
+			<http-method>GET</http-method>
+			<http-method>POST</http-method>
+		</web-resource-collection>
+		<auth-constraint>
+			<description>For admin role only</description>
+			<role-name>admin</role-name>
+		</auth-constraint>
+		<user-data-constraint>
+			<transport-guarantee>NONE</transport-guarantee>
+		</user-data-constraint>
+	</security-constraint>
+	
+	<!-- Active la redirection du HTTP vers le HTTPS -->
+	<security-constraint>
+	  <web-resource-collection>
+	  	<web-resource-name>SSL</web-resource-name>
+	      <url-pattern>/*</url-pattern>
+	  </web-resource-collection>
+	  <user-data-constraint>
+	      <transport-guarantee>CONFIDENTIAL</transport-guarantee>
+	  </user-data-constraint>
+	</security-constraint>
+	
+	<!-- Login Prompt -->
+	<login-config>
+		<auth-method>FORM</auth-method>
+		<form-login-config>
+			<form-login-page>/login/login.xhtml</form-login-page>
+			<form-error-page>/error.xhtml</form-error-page>
+		</form-login-config>
+	</login-config>
+
+</web-app>

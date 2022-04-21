@@ -1,0 +1,1282 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:o="http://omnifaces.org/ui">
+    
+	<o:importConstants type="fr.legrain.bdg.webapp.dashboard.DashBoardDocumentController" />
+	
+    <ui:define name="head">
+        <script type="text/javascript">
+            //<![CDATA[
+            function skinChart() {
+                this.cfg.shadow = false;
+                this.cfg.title = '';
+                this.cfg.seriesColors = ['#EA9624', '#5BA5D8'];
+                this.cfg.grid = {
+                    background: '#ffffff',
+                    borderColor: '#ffffff',
+                    gridLineColor: '#F5F5F5',
+                    shadow: false
+                };
+                this.cfg.axesDefaults = {
+                    rendererOptions: {
+                        textColor: '#666F77'
+                    }
+                };
+                this.cfg.seriesDefaults = {
+                    shadow: false,
+                    lineWidth: 1,
+                    markerOptions: {
+                        shadow: false,
+                        size: 7,
+                        style: 'circle'
+                    }
+                }
+            }
+            //]]>  
+        </script>
+        <style type="text/css">
+            .main-content {
+                padding: 0;
+            }
+            
+            #main-wrapper-content-proforma {
+                padding: 10px;
+            }
+        </style>
+    </ui:define>
+    
+    
+        <div class="dashboard">
+            <div class="dashboard-header">
+                <div class="ui-g">
+                        <p:commandButton value="Fermer" styleClass="icon icon-close menuitem-fermer-droite" process="@this" 
+							onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())"/>
+   						<h:graphicImage name="dashboard/proforma.svg" id="imagedashboard" library="images" />
+
+                    <div class="ui-g-12 ui-md-6">
+                        <div class="dashboard-title">
+                            <h2>Proforma : Tableau de bord</h2>
+
+                        </div>
+                    </div>
+
+                    <div class="ui-g-12 ui-g-nopad">
+
+                    </div>
+                </div>
+            </div>
+            
+            <div id="main-wrapper-content-proforma">
+
+                    
+                <div class="ui-g">
+
+
+				<div class="ui-g-12 ui-md-12">
+				<p:panel collapsed="true" toggleable="true" id="idPanelCriteresDashboardProforma" >
+						<f:facet name="header">
+							<h:outputText value="Critères et paramètres du tableau de bord - " />
+							<h:outputText value="Période du " />
+							<h:outputText value="#{dashBoardProformaController.dateDebut}" >
+								<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" type="localDate"/>
+							</h:outputText>
+							<h:outputText value=" au " />
+							<h:outputText value="#{dashBoardProformaController.dateFin}" >
+								<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" type="localDate"/>
+							</h:outputText>
+						</f:facet>
+				
+					<div class="ui-g-12 ui-md-3">
+					<div class="card">
+		
+						<p:panel header="Période en cours" styleClass="panelgrey" >
+						<f:facet name="footer">
+						<i class="fa fa-calendar fa-2x" aria-hidden="true" style="color:skyblue;"></i>
+							<p:commandButton oncomplete="PF('wvListeProforma').filter()" 
+											update="@this,
+													idPanelCriteresDashboardProforma,
+													@widgetVar(wvDashProformaPanelProforma),
+													@widgetVar(wvCountNbProformaNonTransforme),
+													@widgetVar(wvCountNbProformaTransforme),
+													@widgetVar(wvListeProforma),
+													@widgetVar(wvListeProformaMois),
+													idPanelMensuelTitrePeriodeProforma,
+													@widgetVar(wvGraphiqueProforma),
+													@widgetVar(wvCountNbProformaNonTransformeARelancer),
+													@widgetVar(wvTauxProformaTransforme),
+													@widgetVar(wvTabViewProformaJour),
+													@widgetVar(wvPanelProformaJourDataTable),
+													@widgetVar(wvListeProformaMoisArticles),
+													@widgetVar(wvListeProformaJour),
+													@widgetVar(wvListeProformaJourArticles)"  
+							action="#{dashBoardProformaController.refreshDashBoard('tous')}" value="Appliquer" id="idPeriodeProforma" styleClass="ui-green" 
+							style="width:80%;margin-left: 15px;bottom: 5px;" />
+							
+						</f:facet>
+						 <div class="ui-g-12 ui-md-1" >
+
+						 </div>
+						 <div class="ui-g-12 ui-md-11">
+			        	<h:panelGrid columns="2" cellpadding="0">
+						 <p:outputLabel value="Du"/>
+											<p:calendar value="#{dashBoardProformaController.dateDebut}"
+												showOn="button" 
+												pattern="#{msg.date_pattern}" 
+												mask="true" 
+												pages="3"
+												locale="fr" 
+												timeZone="#{msg.time_zone}" >
+											</p:calendar>
+
+						 <p:outputLabel value="au"/>
+											<p:calendar value="#{dashBoardProformaController.dateFin}"
+												showOn="button" 
+												navigator="true" 
+												pattern="#{msg.date_pattern}" 
+												mask="true" 
+												locale="fr" 
+												timeZone="#{msg.time_zone}" >
+											</p:calendar>
+
+        				</h:panelGrid>
+        				</div>
+        				 <p:separator />
+
+
+								</p:panel>
+					
+					</div>
+
+    				</div>
+
+					<div class="ui-g-12 ui-md-2">
+					<div class="card">
+					<p:panel header="Raccourcis périodes" styleClass="panelgrey">
+						<p:panelGrid columns="1" cellpadding="0" columnClasses="ui-grid-col-12" style="width:100%">
+							<p:commandButton oncomplete="PF('wvListeProforma').filter()" 
+											update="@this,
+													idPanelCriteresDashboardProforma,
+													@widgetVar(wvDashProformaPanelProforma),
+													@widgetVar(wvCountNbProformaNonTransforme),
+													@widgetVar(wvCountNbProformaTransforme),
+													@widgetVar(wvListeProforma),
+													@widgetVar(wvListeProformaMois),
+													idPanelMensuelTitrePeriodeProforma,
+													@widgetVar(wvGraphiqueProforma),
+													@widgetVar(wvCountNbProformaNonTransformeARelancer),
+													@widgetVar(wvTauxProformaTransforme),
+													@widgetVar(wvTabViewProformaJour),
+													@widgetVar(wvPanelProformaJourDataTable),
+													@widgetVar(wvListeProformaMoisArticles),
+													@widgetVar(wvListeProformaJour),
+													@widgetVar(wvListeProformaJourArticles)"  
+							action="#{dashBoardProformaController.initBornePeriodeAujourdhui()}" value="Aujourd'hui" id="idPeriodeProformaJourCourant"  
+							 style="font-size: 12px;height: 22px;width:100%;border-bottom: 2px solid #7FA128;"/>
+<!-- 							 styleClass="ui-orange"					 -->
+							<p:commandButton oncomplete="PF('wvListeProforma').filter()" 
+											update="@this,
+													idPanelCriteresDashboardProforma,
+													@widgetVar(wvDashProformaPanelProforma),
+													@widgetVar(wvCountNbProformaNonTransforme),
+													@widgetVar(wvCountNbProformaTransforme),
+													@widgetVar(wvListeProforma),
+													@widgetVar(wvListeProformaMois),
+													idPanelMensuelTitrePeriodeProforma,
+													@widgetVar(wvGraphiqueProforma),
+													@widgetVar(wvCountNbProformaNonTransformeARelancer),
+													@widgetVar(wvTauxProformaTransforme),
+													@widgetVar(wvTabViewProformaJour),
+													@widgetVar(wvPanelProformaJourDataTable),
+													@widgetVar(wvListeProformaMoisArticles),
+													@widgetVar(wvListeProformaJour),
+													@widgetVar(wvListeProformaJourArticles)"  
+							action="#{dashBoardProformaController.initBornePeriodeHier()}" value="Hier" id="idPeriodeProformaJourPrecedent"  
+							 style="font-size: 12px;height: 22px;width:100%;border-bottom: 2px solid #7FA128;"/>
+							<p:commandButton oncomplete="PF('wvListeProforma').filter()" 
+											update="@this,
+													idPanelCriteresDashboardProforma,
+													@widgetVar(wvDashProformaPanelProforma),
+													@widgetVar(wvCountNbProformaNonTransforme),
+													@widgetVar(wvCountNbProformaTransforme),
+													@widgetVar(wvListeProforma),
+													@widgetVar(wvListeProformaMois),
+													idPanelMensuelTitrePeriodeProforma,
+													@widgetVar(wvGraphiqueProforma),
+													@widgetVar(wvCountNbProformaNonTransformeARelancer),
+													@widgetVar(wvTauxProformaTransforme),
+													@widgetVar(wvTabViewProformaJour),
+													@widgetVar(wvPanelProformaJourDataTable),
+													@widgetVar(wvListeProformaMoisArticles),
+													@widgetVar(wvListeProformaJour),
+													@widgetVar(wvListeProformaJourArticles)"  
+							action="#{dashBoardProformaController.initBornePeriodeMoisCourant()}" value="Mois courant" id="idPeriodeProformaMoisCourant"  
+							style="font-size: 12px;height: 22px;width:100%;border-bottom: 2px solid #7FA128;"/>
+							<p:commandButton oncomplete="PF('wvListeProforma').filter()" 
+											update="@this,
+													idPanelCriteresDashboardProforma,
+													@widgetVar(wvDashProformaPanelProforma),
+													@widgetVar(wvCountNbProformaNonTransforme),
+													@widgetVar(wvCountNbProformaTransforme),
+													@widgetVar(wvListeProforma),
+													@widgetVar(wvListeProformaMois),
+													idPanelMensuelTitrePeriodeProforma,
+													@widgetVar(wvGraphiqueProforma),
+													@widgetVar(wvCountNbProformaNonTransformeARelancer),
+													@widgetVar(wvTauxProformaTransforme),
+													@widgetVar(wvTabViewProformaJour),
+													@widgetVar(wvPanelProformaJourDataTable),
+													@widgetVar(wvListeProformaMoisArticles),
+													@widgetVar(wvListeProformaJour),
+													@widgetVar(wvListeProformaJourArticles)"  
+							action="#{dashBoardProformaController.initBornePeriodeAnneeCourante()}" value="Année courante" id="idPeriodeProformaAnneeCourante"  
+							 style="font-size: 12px;height: 22px;width:100%;border-bottom: 2px solid #7FA128;"/>
+						</p:panelGrid>
+					</p:panel>
+					</div>
+    				</div>
+
+<!-- 					<div class="ui-g-12 ui-md-2"> -->
+<!-- 					<div class="card"> -->
+<!-- 					<p:panel header="Comparer périodes" styleClass="panelgrey"> -->
+<!--         					<p:selectBooleanCheckbox itemLabel="Activer" style="margin-bottom:3px;"> -->
+<!--         					</p:selectBooleanCheckbox> -->
+<!-- 					<h:panelGrid columns="2" style="margin-bottom:3px;background: skyblue;" cellpadding="5"> -->
+<!--         					<p:outputLabel value="Du"/> -->
+<!--         					<p:outputLabel value="01/01/2018"/> -->
+<!--         					<p:outputLabel value="Au"/> -->
+<!--         					<p:outputLabel value="31/01/2018"/> -->
+<!--     					</h:panelGrid> -->
+<!-- 					<h:panelGrid columns="2" style="margin-bottom:0px;background-color: orange;" cellpadding="5"> -->
+<!--         					<p:outputLabel value="Du"/> -->
+<!--         					<p:outputLabel value="01/01/2018"/> -->
+<!--         					<p:outputLabel value="Au"/> -->
+<!--         					<p:outputLabel value="31/01/2018"/> -->
+<!--     					</h:panelGrid> -->
+<!-- 					</p:panel> -->
+<!-- 					</div> -->
+<!--     				</div> -->
+
+<!-- 					<div class="ui-g-12 ui-md-2"> -->
+<!-- 					<div class="card"> -->
+<!-- 					</div> -->
+
+<!--     				</div> -->
+
+<!-- 					<div class="ui-g-12 ui-md-3"> -->
+<!-- 					<div class="card"> -->
+		
+<!-- 						<p:panel header="Période précédente" styleClass="panelgrey" > -->
+<!-- 						<f:facet name="footer"> -->
+<!-- 						<i class="fa fa-calendar fa-2x" aria-hidden="true" style="color:orange;"></i> -->
+<!-- 							<p:commandButton oncomplete="PF('wvListeProforma').filter()"  -->
+<!-- 											update="@this, -->
+<!-- 													idPanelCriteresDashboardProforma, -->
+<!-- 													@widgetVar(wvDashProformaPanelProforma), -->
+<!-- 													@widgetVar(wvCountNbProformaNonTransforme), -->
+<!-- 													@widgetVar(wvCountNbProformaTransforme), -->
+<!-- 													@widgetVar(wvListeProforma), -->
+<!-- 													@widgetVar(wvListeProformaMois), -->
+<!-- 													idPanelMensuelTitrePeriodeProforma, -->
+<!-- 													@widgetVar(wvGraphiqueProforma), -->
+<!-- 													@widgetVar(wvCountNbProformaNonTransformeARelancer), -->
+<!-- 													@widgetVar(wvTauxProformaTransforme), -->
+<!-- 													@widgetVar(wvTabViewProformaJour), -->
+<!-- 													@widgetVar(wvPanelProformaJourDataTable), -->
+<!-- 													@widgetVar(wvListeProformaMoisArticles), -->
+<!-- 													@widgetVar(wvListeProformaJour), -->
+<!-- 													@widgetVar(wvListeProformaJourArticles)"   -->
+<!-- 							action="#{dashBoardProformaController.refresh('tous')}" value="Appliquer" id="idPeriodePrecedenteProforma" styleClass="ui-green"  -->
+<!-- 							style="width:80%;margin-left: 15px;bottom: 5px;" /> -->
+							
+<!-- 						</f:facet> -->
+<!-- 						 <div class="ui-g-12 ui-md-1" > -->
+<!-- 						 </div> -->
+<!-- 						 <div class="ui-g-12 ui-md-11"> -->
+<!-- 			        	<h:panelGrid columns="2" cellpadding="0"> -->
+<!-- 						 <p:outputLabel value="Du"/> -->
+<!-- 											<p:calendar value="#{dashBoardProformaController.dateDebut}" -->
+<!-- 												showOn="button"  -->
+<!-- 												pattern="#{msg.date_pattern}"  -->
+<!-- 												mask="true"  -->
+<!-- 												pages="3" -->
+<!-- 												locale="fr"  -->
+<!-- 												timeZone="#{msg.time_zone}" > -->
+<!-- 											</p:calendar> -->
+
+<!-- 						 <p:outputLabel value="au"/> -->
+<!-- 											<p:calendar value="#{dashBoardProformaController.dateFin}" -->
+<!-- 												showOn="button"  -->
+<!-- 												navigator="true"  -->
+<!-- 												pattern="#{msg.date_pattern}"  -->
+<!-- 												mask="true"  -->
+<!-- 												locale="fr"  -->
+<!-- 												timeZone="#{msg.time_zone}" > -->
+<!-- 											</p:calendar> -->
+
+<!--         				</h:panelGrid> -->
+<!--         				</div> -->
+<!--         				 <p:separator /> -->
+
+
+<!-- 								</p:panel>					 -->
+<!-- 					</div> -->
+
+<!--     				</div> -->
+				</p:panel>
+				</div>
+
+				<div class="ui-g-12 ui-md-12" style="background:#ebebeb;">
+					<div class="ui-g-12 ui-md-6 ui-lg-3">
+						<p:panel header="Proforma sur la période" style="background:#ebebeb;" widgetVar="wvCountNbProformaTransforme">
+							<div class="box #{dashBoardProformaController.cSbNbDocumentSurPeriode}" >
+							<i class="fa fa-file-text-o"></i>
+							<h2>#{dashBoardProformaController.nbProformaSurPeriode} Proforma réalisés</h2>
+							<h3>Total HT : #{dashBoardProformaController.totauxCaPeriodeProforma.mtHtCalc} € </h3>
+							<p>Du 
+							<p:outputLabel value="#{dashBoardProformaController.dateDebut}">
+								<f:convertDateTime pattern="#{msg.date_pattern}"
+										               timeZone="#{msg.time_zone}" type="localDate"/>		
+							</p:outputLabel>
+							  au 
+							<p:outputLabel value="#{dashBoardProformaController.dateFin}">
+								<f:convertDateTime pattern="#{msg.date_pattern}"
+										               timeZone="#{msg.time_zone}" type="localDate"/>		
+							</p:outputLabel>
+							
+							
+							</p>
+
+						<p:selectBooleanButton style="width:50%;" id="proformaTous" 
+												value="true" onLabel="Sélection active"
+												widgetVar="wvProformaTous" 
+												offLabel="Afficher" onIcon="ui-icon-check" offIcon="ui-icon-close">
+								<p:ajax oncomplete="PF('wvListeProforma').filter()" 
+										update="@this,
+												@widgetVar(wvDashProformaPanelProforma),
+												@widgetVar(wvCountNbProformaNonTransforme),
+												@widgetVar(wvCountNbProformaTransforme),
+												@widgetVar(wvGraphiqueProforma),
+												@widgetVar(wvListeProforma),
+												@widgetVar(wvListeProformaMois),
+												@widgetVar(wvCountNbProformaNonTransformeARelancer),
+												@widgetVar(wvTauxProformaTransforme),
+												@widgetVar(wvTabViewProformaJour),
+												@widgetVar(wvPanelProformaJourDataTable),
+												@widgetVar(wvListeProformaMoisArticles),
+												@widgetVar(wvListeProformaJour),
+												@widgetVar(wvListeProformaJourArticles)" 
+										listener="#{dashBoardProformaController.refreshDashBoard('tous')}"/>	 
+        					</p:selectBooleanButton>
+							</div> 
+						</p:panel>
+					</div>
+					<div class="ui-g-12 ui-md-6 ui-lg-3" style="background:#ebebeb;">
+						<p:panel header="Proforma en cours" style="background:#ebebeb;" widgetVar="wvCountNbProformaNonTransforme">
+							<div class="box #{dashBoardProformaController.cSbNbDocumentNonTransformeSurPeriode}">
+						
+							
+							<i class="fa fa-file-text-o"></i>
+							<h2>#{dashBoardProformaController.nbProformaNonTransformeSurPeriode} Proforma non transformés</h2>
+							<h3>Total HT : #{dashBoardProformaController.totauxCaPeriodeProformaNonTransforme.mtHtCalc} € </h3>
+							<p>Du 
+							<p:outputLabel value="#{dashBoardProformaController.dateDebut}">
+								<f:convertDateTime pattern="#{msg.date_pattern}"
+										               timeZone="#{msg.time_zone}" type="localDate"/>		
+							</p:outputLabel>
+							  au 
+							<p:outputLabel value="#{dashBoardProformaController.dateFin}">
+								<f:convertDateTime pattern="#{msg.date_pattern}"
+										               timeZone="#{msg.time_zone}" type="localDate"/>		
+							</p:outputLabel>
+							
+							
+							</p>
+							 <p:selectBooleanButton style="width:50%;" id="Proformanontrans" value="false" onLabel="Sélection active" offLabel="Afficher" onIcon="ui-icon-check" offIcon="ui-icon-close" >
+								<p:ajax oncomplete="PF('wvListeProforma').filter()" 
+										event="change" 
+										update="@this,
+												@widgetVar(wvDashProformaPanelProforma),
+												@widgetVar(wvCountNbProformaNonTransforme),
+												@widgetVar(wvGraphiqueProforma),
+												@widgetVar(wvCountNbProformaTransforme),
+												@widgetVar(wvListeProforma),
+												@widgetVar(wvListeProformaMois), 
+												@widgetVar(wvCountNbProformaNonTransformeARelancer),
+												@widgetVar(wvTauxProformaTransforme),
+												@widgetVar(wvTabViewProformaJour),
+												@widgetVar(wvPanelProformaJourDataTable),
+												@widgetVar(wvListeProformaMoisArticles),
+												@widgetVar(wvListeProformaJour),
+												@widgetVar(wvListeProformaJourArticles)" 
+										listener="#{dashBoardProformaController.refreshDashBoard('nontransforme')}"/>	 
+        					 </p:selectBooleanButton>
+							</div>
+						</p:panel>
+					</div>
+					<div class="ui-g-12 ui-md-6 ui-lg-3" style="background:#ebebeb;">
+						<p:panel header="Proforma arrivant à échéance dans moins de 15 jours"  widgetVar="wvCountNbProformaNonTransformeARelancer" 
+							style="background:#ebebeb;">
+							<div class="box #{dashBoardProformaController.cSbNbDocumentNonTransformeARelancerSurPeriode}" >
+							<i class="fa fa-file-text-o"></i>
+							<h2>#{dashBoardProformaController.nbProformaNonTransformeARelancerSurPeriode} Proforma à relancer</h2>
+							<h3>Total HT : #{dashBoardProformaController.totauxCaPeriodeProformaNonTransformeARelancer.mtHtCalc} € </h3>
+							<p>Du 
+							<p:outputLabel value="#{dashBoardProformaController.dateDebut}">
+								<f:convertDateTime pattern="#{msg.date_pattern}"
+										               timeZone="#{msg.time_zone}" type="localDate"/>		
+							</p:outputLabel>
+							  au 
+							<p:outputLabel value="#{dashBoardProformaController.dateFin}">
+								<f:convertDateTime pattern="#{msg.date_pattern}"
+										               timeZone="#{msg.time_zone}" type="localDate"/>		
+							</p:outputLabel>
+							
+							
+							</p>
+
+						    <p:selectBooleanButton  style="width:50%;" id="Proforma15jours" value="false" onLabel="Sélection active" offLabel="Afficher" onIcon="ui-icon-check" offIcon="ui-icon-close" >
+
+										<p:ajax oncomplete="PF('wvListeProforma').filter()" 
+										event="change" 
+										update="@this,
+												@widgetVar(wvDashProformaPanelProforma),
+												@widgetVar(wvCountNbProformaNonTransforme),
+												@widgetVar(wvCountNbProformaTransforme),
+												@widgetVar(wvGraphiqueProforma),
+												@widgetVar(wvListeProforma),
+												@widgetVar(wvListeProformaMois),
+												@widgetVar(wvCountNbProformaNonTransformeARelancer), 
+												@widgetVar(wvTauxProformaTransforme), 
+												@widgetVar(wvTabViewProformaJour), 
+												@widgetVar(wvPanelProformaJourDataTable),
+												@widgetVar(wvListeProformaMoisArticles), 
+												@widgetVar(wvListeProformaJour), 
+												@widgetVar(wvListeProformaJourArticles)"  
+										listener="#{dashBoardProformaController.refreshDashBoard('nontransformearelancer')}"/>	 
+        					</p:selectBooleanButton>
+							</div> 
+						</p:panel>
+					</div>
+					<div class="ui-g-12 ui-md-6 ui-lg-3" style="background:#ebebeb;"> 
+						<p:panel header="Taux de transformation" widgetVar="wvTauxProformaTransforme" 
+						style="background:#ebebeb;">
+							<div class="box #{dashBoardProformaController.cSbNbDocumentTransformeSurPeriode}" >
+								<p:tabView style="text-align:left;">
+									<p:tab title="Montant HT" >
+									<h3 style="text-align:center;">Total HT : #{dashBoardProformaController.totauxCaPeriodeProformaTransforme.mtHtCalc} € </h3>
+									<div class="knob-container  ui-corner-all" style="text-align:center;">
+										<p:knob labelTemplate="{value}%" value="#{dashBoardProformaController.tauxTransfoCa}" height="70"
+											width="70" disabled="true"/>
+									</div>
+									</p:tab>
+									<p:tab title="Nombre de Proforma" >
+									<h3 style="text-align:center;">#{dashBoardProformaController.nbProformaTransformeSurPeriode} Proforma transformés</h3>
+									<div class="knob-container  ui-corner-all" style="text-align:center;">
+										<p:knob labelTemplate="{value}%" value="#{dashBoardProformaController.tauxTransfoNb}" height="70"
+											width="70" disabled="true" />
+									</div>
+									</p:tab>
+								</p:tabView>
+								<p:selectBooleanButton  style="width:50%;" id="ProformaTransforme" value="false" onLabel="Sélection active" offLabel="Afficher" onIcon="ui-icon-check" offIcon="ui-icon-close" >
+								<p:ajax oncomplete="PF('wvListeProforma').filter()" event="change" 
+										update="@this,
+												@widgetVar(wvDashProformaPanelProforma),
+												@widgetVar(wvCountNbProformaNonTransforme),
+												@widgetVar(wvCountNbProformaTransforme),
+												@widgetVar(wvGraphiqueProforma),
+												@widgetVar(wvListeProforma),
+												@widgetVar(wvListeProformaMois),
+												@widgetVar(wvCountNbProformaNonTransformeARelancer), 
+												@widgetVar(wvTauxProformaTransforme), 
+												@widgetVar(wvTabViewProformaJour), 
+												@widgetVar(wvPanelProformaJourDataTable),
+												@widgetVar(wvListeProformaMoisArticles), 
+												@widgetVar(wvListeProformaJour), 
+												@widgetVar(wvListeProformaJourArticles)" 
+										listener="#{dashBoardProformaController.refreshDashBoard('transforme')}"/>	 
+        					</p:selectBooleanButton>
+
+							</div> 
+						</p:panel>
+					</div>
+				</div>
+
+				<div class="ui-g-12 ui-md-12">
+				<p:panel header="Liste des Proforma " widgetVar="wvDashProformaPanelProforma" >
+
+						<p:dataTable id="taProforma" var="a"
+							value="#{dashBoardProformaController.valueLignesDocument}"
+							scrollable="true"
+							scrollHeight="150"
+							liveResize="true"
+							widgetVar="wvListeProforma" resizableColumns="true" 
+							paginator="true"
+							rows="#{msg.modele_datatable_ligne_par_page_debut}"
+							paginatorTemplate="#{msg.modele_datatable_paginator}"
+							rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+							emptyMessage="#{msg.message_datatable_vide}"
+							currentPageReportTemplate="#{msg.modele_datatable_page_courante}"
+							
+							selectionMode="single" rowKey="#{a.codeDocument}" reflow="true">
+							<p:ajax event="rowToggle" listener="#{tiersController.onRowToggle}" update=":@this"/>
+							
+							<f:facet name="header">
+							
+							<span style="float:left;">
+									        <p:commandButton id="idBtnListePrintEcranDasboardProforma"
+							 title="Imprimer la liste" 
+			onsuccess="window.open('#{request.contextPath}/output?__report=/reports/documents/proforma/ListeDashboardProforma.rptdesign&amp;__format=pdf')"
+			actionListener="#{dashBoardProformaController.actImprimerListeProforma}" styleClass="ui-priority-primary boutonPrint" style="color : white;" icon="fa fa-print"
+			process="@this" ></p:commandButton>
+									    </span>
+									    
+        						Liste des Proformas
+        						
+        						<span style="float:right;" class="searchbar_list">
+						            <p:outputPanel>
+							                <p:inputText id="globalFilter" onkeyup="PF('wvListeProforma').filter()" style="width:150px" placeholder="Rechercher"/>
+							            </p:outputPanel>
+						        </span>
+    						</f:facet>
+    				        <p:column style="width:12px">
+            					<p:rowToggler />
+        					</p:column> 
+							<p:column width="15%" rendered="true" filterMatchMode="contains"
+								filterBy="#{a.codeDocument}" sortBy="#{a.codeDocument}"  >
+								<f:facet name="header">
+									<h:outputText value="Code" />
+								</f:facet>
+<!-- 								<h:outputText value="#{a.codeDocument}" /> -->
+								<p:commandLink value="#{a.codeDocument}"
+									action="#{ouvertureDocumentBean.detailDocument(ouvertureDocumentBean.recupCodeDocument(a.codeDocument,ouvertureDocumentBean.getTypeDocumentProforma()))}" 
+									update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+								</p:commandLink>
+							</p:column>
+
+							<p:column width="38%" filterMatchMode="contains" 
+								filterBy="#{a.libelleDocument}" sortBy="#{a.libelleDocument}">
+								<f:facet name="header">
+									<h:outputText value="Libellé" />
+								</f:facet>
+								<h:outputText value="#{a.libelleDocument}" id="idListeLibelleProforma"/>
+								<p:tooltip id="toolTipListeLibelleProforma" value="#{a.libelleDocument}" shared="true" for="idListeLibelleProforma" showEffect="clip" position="top"/>
+								
+							</p:column>
+
+							<p:column styleClass="center" width="12%"
+								filterMatchMode="contains" filterBy="#{proformaController.customFormatDate(a.dateDocument)}"
+								sortBy="#{a.dateDocument}">
+								<f:facet name="header">
+									<h:outputText value="Date" />
+								</f:facet>
+								<h:outputText value="#{a.dateDocument}">
+									<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="center" width="15%"
+								filterMatchMode="contains" filterBy="#{a.codeTiers}"
+								sortBy="#{a.codeTiers}">
+								<f:facet name="header">
+									<h:outputText value="Code Tiers" />
+								</f:facet>
+
+<!-- 								<h:outputText value="#{a.codeTiers}"> -->
+<!-- 								</h:outputText> -->
+										<p:commandLink value="#{a.codeTiers}"
+											action="#{ouvertureDocumentBean.detailTiers(ouvertureDocumentBean.recupCodetiers(a.codeTiers))}" update=":form:tabView"
+											oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+										</p:commandLink>
+							</p:column>
+
+							<p:column styleClass="center" width="25%"
+								filterMatchMode="contains" filterBy="#{a.nomTiers}"
+								sortBy="#{a.nomTiers}">
+								<f:facet name="header">
+									<h:outputText value="Tiers" />
+								</f:facet>
+								<h:outputText value="#{a.nomTiers}">
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="right" width="12%"
+								filterMatchMode="contains" filterBy="#{a.netHtCalc}"
+								sortBy="#{a.netHtCalc}">
+								<f:facet name="header">
+									<h:outputText value="Montant HT" />
+								</f:facet>
+								<h:outputText value="#{a.netHtCalc}">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="right" width="10%"
+								filterMatchMode="contains" filterBy="#{a.netTvaCalc}"
+								sortBy="#{a.netTvaCalc}">
+								<f:facet name="header">
+									<h:outputText value="Montant TVA" />
+								</f:facet>
+								<h:outputText value="#{a.netTvaCalc}">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="right" width="12%"
+								filterMatchMode="contains" filterBy="#{a.netTtcCalc}"
+								sortBy="#{a.netTtcCalc}">
+								<f:facet name="header">
+									<h:outputText value="Montant TTC" />
+								</f:facet>
+								<h:outputText value="#{a.netTtcCalc}">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="center" width="12%"
+								filterMatchMode="contains" filterBy="#{proformaController.customFormatDate(a.dateEchDocument)}"
+								sortBy="#{a.dateEchDocument}">
+								<f:facet name="header">
+									<h:outputText value="Expire le" />
+								</f:facet>
+								<h:outputText value="#{a.dateEchDocument}">
+									<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" />
+								</h:outputText>
+							</p:column>
+        					<p:rowExpansion>
+<!--         						<p:dataTable id="idTiersListeDetailFacture" var="fact" value="#{tiersController.listeFactureTiersPeriode}" widgetVar="wvTiersListeDetailFacture"> -->
+        							<h:outputLabel value="#{a.codeDocument}" />
+<!--         							    <p:mindmap value="#{a.codeDocument}" style="width: 100%;height: 600px;border: 1px solid black;"> -->
+<!--         									<p:ajax event="select" listener="#{mindmapView.onNodeSelect}" /> -->
+<!--         									<p:ajax event="dblselect" listener="#{mindmapView.onNodeDblselect}" update="output" oncomplete="PF('details').show();" /> -->
+<!--     									</p:mindmap> -->
+<!--         						</p:dataTable> -->
+        					</p:rowExpansion>
+							
+						</p:dataTable>
+					</p:panel>
+				</div>
+
+				<div class="ui-g-12 ui-md-12" style="background:#ebebeb;">
+				<div class="ui-g-12 ui-md-4">
+						<p:panel id="idPanelMensuelTitrePeriodeProforma">
+						<f:facet name="header">
+							<h:outputText value="Période du " />
+							<h:outputText value="#{dashBoardProformaController.dateDebut}" >
+								<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" type="localDate"/>
+							</h:outputText>
+							<h:outputText value=" au " />
+							<h:outputText value="#{dashBoardProformaController.dateFin}" >
+								<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" type="localDate"/>
+							</h:outputText>
+						</f:facet>
+					</p:panel>
+					<p:tabView widgetVar="wvGraphiqueProforma">
+						<p:tab title="Proforma">
+								<p:chart type="bar" model="#{dashBoardProformaController.barChartModelProforma}" 
+								
+								responsive="true" 
+								style="height:300px;">
+								
+							<p:ajax event="itemSelect" 
+									listener="#{dashBoardProformaController.itemSelectMois}" 
+									update="@widgetVar(wvListeProformaMois),
+											@widgetVar(wvGraphiqueProformaJour),
+											@widgetVar(wvTabViewProformaJour),
+											@widgetVar(wvPanelProformaJourDataTable),
+											@widgetVar(wvListeProformaMoisArticles)"
+											style="cursor: pointer;"/>
+							</p:chart>
+
+						</p:tab>
+					</p:tabView>
+					</div>
+					
+					
+					<div class="ui-g-12 ui-md-8">
+				
+					<p:tabView>
+						<p:tab title="Liste des documents par mois">
+            			<h:panelGrid columns="2" cellpadding="10">
+                	
+						<br/>
+						
+						<p:dataTable id="taProformaMois" var="a"
+							value="#{dashBoardProformaController.listeDocumentDetailMois}"
+							scrollable="true"
+							scrollHeight="135"
+							liveResize="true"
+							
+							widgetVar="wvListeProformaMois" resizableColumns="true" 
+							paginator="true"
+							rows="#{msg.modele_datatable_ligne_par_page_debut}"
+							paginatorTemplate="#{msg.modele_datatable_paginator}"
+							rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+							emptyMessage="#{msg.message_datatable_vide}"
+							currentPageReportTemplate="#{msg.modele_datatable_page_courante}"
+							
+							selectionMode="single" rowKey="#{a.codeDocument}" reflow="true">
+							
+							<f:facet name="header">
+							
+							<span style="float:left;">
+							<p:commandButton id="idBtnListePrintEcranDasboardProformaDocMois"
+							 title="Imprimer la liste" 
+			onsuccess="window.open('#{request.contextPath}/output?__report=/reports/documents/proforma/ListeDashboardProformaArticle.rptdesign&amp;__format=pdf')"
+			actionListener="#{dashBoardProformaController.actImprimerListeProformaDocMois}" styleClass="ui-priority-primary boutonPrint" style="color : white;" icon="fa fa-print"
+			process="@this" ></p:commandButton>
+							</span>
+
+    								#{dashBoardProformaController.infosLabelRapportMensuelDataTable}
+    						</f:facet>
+    						 
+							<p:column width="20%" rendered="true" filterMatchMode="contains"
+								filterBy="#{a.codeDocument}" sortBy="#{a.codeDocument}"  >
+								<f:facet name="header">
+									<h:outputText value="Code" />
+								</f:facet>
+<!-- 								<h:outputText value="#{a.codeDocument}" /> -->
+								<p:commandLink value="#{a.codeDocument}"
+									action="#{ouvertureDocumentBean.detailDocument(ouvertureDocumentBean.recupCodeDocument(a.codeDocument,ouvertureDocumentBean.getTypeDocumentProforma()))}" 
+									update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+								</p:commandLink>
+
+							</p:column>
+
+							<p:column width="33%" filterMatchMode="contains" 
+								filterBy="#{a.libelleDocument}" sortBy="#{a.libelleDocument}">
+								<f:facet name="header">
+									<h:outputText value="Libellé" />
+								</f:facet>
+								<h:outputText value="#{a.libelleDocument}" />
+							</p:column>
+
+							<p:column styleClass="center" width="17%"
+								filterMatchMode="contains" filterBy="#{proformaController.customFormatDate(a.dateDocument)}"
+								sortBy="#{a.dateDocument}">
+								<f:facet name="header">
+									<h:outputText value="Date" />
+								</f:facet>
+								<h:outputText value="#{a.dateDocument}">
+									<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="center" width="20%"
+								filterMatchMode="contains" filterBy="#{a.codeTiers}"
+								sortBy="#{a.codeTiers}">
+								<f:facet name="header">
+									<h:outputText value="Code Tiers" />
+								</f:facet>
+
+<!-- 								<h:outputText value="#{a.codeTiers}"> -->
+<!-- 								</h:outputText> -->
+										<p:commandLink value="#{a.codeTiers}"
+											action="#{ouvertureDocumentBean.detailTiers(ouvertureDocumentBean.recupCodetiers(a.codeTiers))}" update=":form:tabView"
+											oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+										</p:commandLink>
+							</p:column>
+
+							<p:column styleClass="center" width="20%"
+								filterMatchMode="contains" filterBy="#{a.nomTiers}"
+								sortBy="#{a.nomTiers}">
+								<f:facet name="header">
+									<h:outputText value="Tiers" />
+								</f:facet>
+								<h:outputText value="#{a.nomTiers}">
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="right" width="12%"
+								filterMatchMode="contains" filterBy="#{a.netHtCalc}"
+								sortBy="#{a.netHtCalc}">
+								<f:facet name="header">
+									<h:outputText value="HT" />
+								</f:facet>
+								<h:outputText value="#{a.netHtCalc}">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="right" width="10%"
+								filterMatchMode="contains" filterBy="#{a.netTvaCalc}"
+								sortBy="#{a.netTvaCalc}">
+								<f:facet name="header">
+									<h:outputText value="TVA" />
+								</f:facet>
+								<h:outputText value="#{a.netTvaCalc}">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="right" width="12%"
+								filterMatchMode="contains" filterBy="#{a.netTtcCalc}"
+								sortBy="#{a.netTtcCalc}">
+								<f:facet name="header">
+									<h:outputText value="TTC" />
+								</f:facet>
+								<h:outputText value="#{a.netTtcCalc}">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="center" width="12%"
+								filterMatchMode="contains" filterBy="#{proformaController.customFormatDate(a.dateEchDocument)}"
+								sortBy="#{a.dateEchDocument}">
+								<f:facet name="header">
+									<h:outputText value="Expire le" />
+								</f:facet>
+								<h:outputText value="#{a.dateEchDocument}">
+									<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" />
+								</h:outputText>
+							</p:column>
+
+							
+						</p:dataTable>
+                		
+            			</h:panelGrid>
+        				</p:tab>
+						<p:tab title="Détail des articles par mois">
+						<h:panelGrid columns="2" cellpadding="10">
+						
+						<p:dataTable id="taProformaArticlesParTiersParMois" var="a"
+							value="#{dashBoardProformaController.listeDocumentArticleParTiersParMois}"
+							scrollable="true"
+							scrollHeight="135"
+							liveResize="true"
+							
+							widgetVar="wvListeProformaMoisArticles" resizableColumns="true" 
+							paginator="true"
+							rows="#{msg.modele_datatable_ligne_par_page_debut}"
+							paginatorTemplate="#{msg.modele_datatable_paginator}"
+							rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+							emptyMessage="#{msg.message_datatable_vide}"
+							currentPageReportTemplate="#{msg.modele_datatable_page_courante}"
+							
+							selectionMode="single" rowKey="#{a.codeDocument}" reflow="true">
+							
+							<f:facet name="header">
+							
+							<span style="float:left;">
+							<p:commandButton id="idBtnListePrintEcranDasboardProformaDocDetailMois"
+							 title="Imprimer la liste" 
+			onsuccess="window.open('#{request.contextPath}/output?__report=/reports/documents/proforma/ListeDashboardProformaDetailArticle.rptdesign&amp;__format=pdf')"
+			actionListener="#{dashBoardProformaController.actImprimerListeProformaDocDetailMois}" styleClass="ui-priority-primary boutonPrint" style="color : white;" icon="fa fa-print"
+			process="@this" ></p:commandButton>
+							</span>	
+
+    								#{dashBoardProformaController.infosLabelRapportArticlesDataTable}
+    						</f:facet>
+    					
+							<p:column styleClass="center" width="20%"
+								filterMatchMode="contains" filterBy="#{a.codeDocument}"
+								sortBy="#{a.codeDocument}">
+								<f:facet name="header">
+									<h:outputText value="Code" />
+								</f:facet>
+<!-- 								<h:outputText value="#{a.codeDocument}"> -->
+<!-- 								</h:outputText> -->
+								<p:commandLink value="#{a.codeDocument}"
+									action="#{ouvertureDocumentBean.detailDocument(ouvertureDocumentBean.recupCodeDocument(a.codeDocument,ouvertureDocumentBean.getTypeDocumentProforma()))}" 
+									update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+								</p:commandLink>
+							</p:column>
+							
+							<p:column width="20%" filterMatchMode="contains" 
+								filterBy="#{a.libellecArticle}" sortBy="#{a.libellecArticle}">
+								<f:facet name="header">
+									<h:outputText value="Libellé article(s)" />
+								</f:facet>
+								<h:outputText value="#{a.libellecArticle}" />
+							</p:column>
+
+							<p:column styleClass="center" width="15%"
+								filterMatchMode="contains" filterBy="#{proformaController.customFormatDate(a.dateDocument)}"
+								sortBy="#{a.dateDocument}">
+								<f:facet name="header">
+									<h:outputText value="Fait le" />
+								</f:facet>
+								<h:outputText value="#{a.dateDocument}">
+									<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="center" width="20%"
+								filterMatchMode="contains" filterBy="#{a.codeTiers}"
+								sortBy="#{a.codeTiers}">
+								<f:facet name="header">
+									<h:outputText value="Code Tiers" />
+								</f:facet>
+
+<!-- 								<h:outputText value="#{a.codeTiers}"> -->
+<!-- 								</h:outputText> -->
+										<p:commandLink value="#{a.codeTiers}"
+											action="#{ouvertureDocumentBean.detailTiers(ouvertureDocumentBean.recupCodetiers(a.codeTiers))}" update=":form:tabView"
+											oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+										</p:commandLink>
+							</p:column>
+
+							<p:column styleClass="center" width="20%"
+								filterMatchMode="contains" filterBy="#{a.nomTiers}"
+								sortBy="#{a.nomTiers}">
+								<f:facet name="header">
+									<h:outputText value="Tiers" />
+								</f:facet>
+								<h:outputText value="#{a.nomTiers}">
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="right" width="15%"
+								filterMatchMode="contains" filterBy="#{a.mtHtLDocument}"
+								sortBy="#{a.mtHtLDocument}">
+								<f:facet name="header">
+									<h:outputText value="HT" />
+								</f:facet>
+								<h:outputText value="#{a.mtHtLDocument}">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="right" width="15%"
+								filterMatchMode="contains" filterBy="#{a.mtTtcLDocument}"
+								sortBy="#{a.mtTtcLDocument}">
+								<f:facet name="header">
+									<h:outputText value="TTC" />
+								</f:facet>
+								<h:outputText value="#{a.mtTtcLDocument}">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+							
+						</p:dataTable>
+						</h:panelGrid>
+						</p:tab>
+	 				</p:tabView>
+						
+					</div>
+					
+					</div>
+					
+<!-- 					//////////////////////////////////////////////////////////////////////////// -->
+<!-- 					Début second graphique proformaJour lié a son datatable -->
+					
+					<div class="ui-g-12 ui-md-12" style="background:#ebebeb;">
+				<div class="ui-g-12 ui-md-12">
+					
+					<p:tabView widgetVar="wvTabViewProformaJour">
+								
+						<p:tab title="Détail des proforma par jour pour #{dashBoardProformaController.nomMoisDetail}" 
+						rendered="#{dashBoardProformaController.afficheDocumentJour}">
+						<br/><br/>
+								<h:panelGrid columns="2" cellpadding="0" >
+								
+<!-- 						<f:facet name="header"> -->
+<!--         						Graphique journalier des documents pour le mois de #{dashBoardProformaController.nomMoisDetail} pour un montant de #{dashBoardProformaController.montantTotalHtMois} € de type #{dashBoardProformaController.infoEtatDocument} -->
+<!--     						</f:facet> -->
+						
+					</h:panelGrid>
+					
+<!-- 								rendered="#{dashBoardProformaController.afficheProformaJour}" -->
+								<p:chart type="bar" model="#{dashBoardProformaController.barChartModelProformaJour}" widgetVar="wvGraphiqueProformaJour" 
+								responsive="true" 
+								style="height:240px;">
+								
+							<p:ajax event="itemSelect" listener="#{dashBoardProformaController.itemSelectJour}" update="@widgetVar(wvListeProformaJour),@widgetVar(wvPanelProformaJourDataTable)" style="cursor: pointer"/>
+							</p:chart>
+
+						</p:tab>
+					
+					</p:tabView>
+					</div>
+					
+					
+						<div class="ui-g-12 ui-md-12">
+						
+					<p:tabView widgetVar="wvPanelProformaJourDataTable">
+					
+						<p:tab title="Liste des documents par jour" rendered="#{dashBoardProformaController.afficheDocumentJourDataTable}">
+						<h:panelGrid columns="2" cellpadding="10">
+				
+						<p:dataTable id="taProformaJour" var="a"
+							value="#{dashBoardProformaController.listeDocumentDetailJour}"
+							scrollable="true"
+							scrollHeight="150"
+							liveResize="true"
+							widgetVar="wvListeProformaJour" resizableColumns="true" 
+							
+							paginator="true"
+							rows="#{msg.modele_datatable_ligne_par_page_debut}"
+							paginatorTemplate="#{msg.modele_datatable_paginator}"
+							rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+							emptyMessage="#{msg.message_datatable_vide}"
+							currentPageReportTemplate="#{msg.modele_datatable_page_courante}"
+							
+							selectionMode="single" rowKey="#{a.codeDocument}" reflow="true">
+							
+							<f:facet name="header">
+							
+							<span style="float:left;">
+							<p:commandButton id="idBtnListePrintEcranDasboardProformaDocJour"
+							 title="Imprimer la liste" 
+			onsuccess="window.open('#{request.contextPath}/output?__report=/reports/documents/proforma/ListeDashboardProformaArticle.rptdesign&amp;__format=pdf')"
+			actionListener="#{dashBoardProformaController.actImprimerListeProformaDocJour}" styleClass="ui-priority-primary boutonPrint" style="color : white;" icon="fa fa-print"
+			process="@this" ></p:commandButton>
+							</span>	
+							
+        						#{dashBoardProformaController.infosLabelRapportJournalierDataTable}
+    						</f:facet>
+    						 
+							<p:column width="20%" rendered="true" filterMatchMode="contains"
+								filterBy="#{a.codeDocument}" sortBy="#{a.codeDocument}"  >
+								<f:facet name="header">
+									<h:outputText value="Code" />
+								</f:facet>
+<!-- 								<h:outputText value="#{a.codeDocument}" /> -->
+								<p:commandLink value="#{a.codeDocument}"
+									action="#{ouvertureDocumentBean.detailDocument(ouvertureDocumentBean.recupCodeDocument(a.codeDocument,ouvertureDocumentBean.getTypeDocumentProforma()))}" 
+									update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+								</p:commandLink>
+							</p:column>
+
+							<p:column width="33%" filterMatchMode="contains" 
+								filterBy="#{a.libelleDocument}" sortBy="#{a.libelleDocument}">
+								<f:facet name="header">
+									<h:outputText value="Libellé" />
+								</f:facet>
+								<h:outputText value="#{a.libelleDocument}" />
+							</p:column>
+
+							<p:column styleClass="center" width="17%"
+								filterMatchMode="contains" filterBy="#{proformaController.customFormatDate(a.dateDocument)}"
+								sortBy="#{a.dateDocument}">
+								<f:facet name="header">
+									<h:outputText value="Date" />
+								</f:facet>
+								<h:outputText value="#{a.dateDocument}">
+									<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="center" width="20%"
+								filterMatchMode="contains" filterBy="#{a.codeTiers}"
+								sortBy="#{a.codeTiers}">
+								<f:facet name="header">
+									<h:outputText value="Code Tiers" />
+								</f:facet>
+
+<!-- 								<h:outputText value="#{a.codeTiers}"> -->
+<!-- 								</h:outputText> -->
+										<p:commandLink value="#{a.codeTiers}"
+											action="#{ouvertureDocumentBean.detailTiers(ouvertureDocumentBean.recupCodetiers(a.codeTiers))}" update=":form:tabView"
+											oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+										</p:commandLink>
+							</p:column>
+
+							<p:column styleClass="center" width="20%"
+								filterMatchMode="contains" filterBy="#{a.nomTiers}"
+								sortBy="#{a.nomTiers}">
+								<f:facet name="header">
+									<h:outputText value="Tiers" />
+								</f:facet>
+								<h:outputText value="#{a.nomTiers}">
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="right" width="12%"
+								filterMatchMode="contains" filterBy="#{a.netHtCalc}"
+								sortBy="#{a.netHtCalc}">
+								<f:facet name="header">
+									<h:outputText value="HT" />
+								</f:facet>
+								<h:outputText value="#{a.netHtCalc}">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="right" width="10%"
+								filterMatchMode="contains" filterBy="#{a.netTvaCalc}"
+								sortBy="#{a.netTvaCalc}">
+								<f:facet name="header">
+									<h:outputText value="TVA" />
+								</f:facet>
+								<h:outputText value="#{a.netTvaCalc}">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="right" width="12%"
+								filterMatchMode="contains" filterBy="#{a.netTtcCalc}"
+								sortBy="#{a.netTtcCalc}">
+								<f:facet name="header">
+									<h:outputText value="TTC" />
+								</f:facet>
+								<h:outputText value="#{a.netTtcCalc}">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="center" width="12%"
+								filterMatchMode="contains" filterBy="#{proformaController.customFormatDate(a.dateEchDocument)}"
+								sortBy="#{a.dateEchDocument}">
+								<f:facet name="header">
+									<h:outputText value="Expire le" />
+								</f:facet>
+								<h:outputText value="#{a.dateEchDocument}">
+									<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" />
+								</h:outputText>
+							</p:column>
+
+							
+						</p:dataTable>
+						</h:panelGrid>
+						</p:tab>
+						
+						<p:tab title="Détail des articles par jour" rendered="#{dashBoardProformaController.afficheDocumentJourDataTable}">
+						<h:panelGrid columns="2" cellpadding="10">
+						
+						<br/>
+						
+						<p:dataTable id="taProformaArticlesParTiersParJour" var="a"
+							value="#{dashBoardProformaController.listeDocumentArticleParTiersParJour}"
+							scrollable="true"
+							scrollHeight="150"
+							liveResize="true"
+							
+							widgetVar="wvListeProformaJourArticles" resizableColumns="true" 
+							paginator="true"
+							rows="#{msg.modele_datatable_ligne_par_page_debut}"
+							paginatorTemplate="#{msg.modele_datatable_paginator}"
+							rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+							emptyMessage="#{msg.message_datatable_vide}"
+							currentPageReportTemplate="#{msg.modele_datatable_page_courante}"
+							
+							selectionMode="single" rowKey="#{a.codeDocument}" reflow="true">
+							
+							<f:facet name="header">
+							
+							<span style="float:left;">
+							<p:commandButton id="idBtnListePrintEcranDasboardProformaDocDetailJour"
+							 title="Imprimer la liste" 
+			onsuccess="window.open('#{request.contextPath}/output?__report=/reports/documents/proforma/ListeDashboardProformaDetailArticle.rptdesign&amp;__format=pdf')"
+			actionListener="#{dashBoardProformaController.actImprimerListeProformaDocDetailJour}" styleClass="ui-priority-primary boutonPrint" style="color : white;" icon="fa fa-print"
+			process="@this" ></p:commandButton>
+							</span>	
+
+    								#{dashBoardProformaController.infosLabelRapportArticlesJourDataTable}
+    						</f:facet>
+    						
+							<p:column styleClass="center" width="20%"
+								filterMatchMode="contains" filterBy="#{a.codeDocument}"
+								sortBy="#{a.codeDocument}">
+								<f:facet name="header">
+									<h:outputText value="Code" />
+								</f:facet>
+<!-- 								<h:outputText value="#{a.codeDocument}"> -->
+<!-- 								</h:outputText> -->
+								<p:commandLink value="#{a.codeDocument}"
+									action="#{ouvertureDocumentBean.detailDocument(ouvertureDocumentBean.recupCodeDocument(a.codeDocument,ouvertureDocumentBean.getTypeDocumentProforma()))}" 
+									update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+								</p:commandLink>
+							</p:column>
+							
+							<p:column width="20%" filterMatchMode="contains" 
+								filterBy="#{a.libellecArticle}" sortBy="#{a.libellecArticle}">
+								<f:facet name="header">
+									<h:outputText value="Libellé article(s)" />
+								</f:facet>
+								<h:outputText value="#{a.libellecArticle}" />
+							</p:column>
+
+							<p:column styleClass="center" width="15%"
+								filterMatchMode="contains" filterBy="#{proformaController.customFormatDate(a.dateDocument)}"
+								sortBy="#{a.dateDocument}">
+								<f:facet name="header">
+									<h:outputText value="Fait le" />
+								</f:facet>
+								<h:outputText value="#{a.dateDocument}">
+									<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="center" width="20%"
+								filterMatchMode="contains" filterBy="#{a.codeTiers}"
+								sortBy="#{a.codeTiers}">
+								<f:facet name="header">
+									<h:outputText value="Code Tiers" />
+								</f:facet>
+
+<!-- 								<h:outputText value="#{a.codeTiers}"> -->
+<!-- 								</h:outputText> -->
+										<p:commandLink value="#{a.codeTiers}"
+											action="#{ouvertureDocumentBean.detailTiers(ouvertureDocumentBean.recupCodetiers(a.codeTiers))}" update=":form:tabView"
+											oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+										</p:commandLink>
+							</p:column>
+
+							<p:column styleClass="center" width="20%"
+								filterMatchMode="contains" filterBy="#{a.nomTiers}"
+								sortBy="#{a.nomTiers}">
+								<f:facet name="header">
+									<h:outputText value="Tiers" />
+								</f:facet>
+								<h:outputText value="#{a.nomTiers}">
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="right" width="15%"
+								filterMatchMode="contains" filterBy="#{a.mtHtLDocument}"
+								sortBy="#{a.mtHtLDocument}">
+								<f:facet name="header">
+									<h:outputText value="HT" />
+								</f:facet>
+								<h:outputText value="#{a.mtHtLDocument}">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="right" width="15%"
+								filterMatchMode="contains" filterBy="#{a.mtTtcLDocument}"
+								sortBy="#{a.mtTtcLDocument}">
+								<f:facet name="header">
+									<h:outputText value="TTC" />
+								</f:facet>
+								<h:outputText value="#{a.mtTtcLDocument}">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+							
+						</p:dataTable>
+						</h:panelGrid>
+						</p:tab>
+						</p:tabView>
+					</div>
+					
+					</div>
+
+<!-- 				////////////////////////////////////////////////////////////////////////////////////////// -->
+					
+
+                    <div class="ui-g-12 ui-md-4">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+
+    
+</ui:composition>

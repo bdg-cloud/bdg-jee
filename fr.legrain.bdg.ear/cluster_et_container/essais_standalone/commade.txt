@@ -1,0 +1,20 @@
+sudo docker build -t test_bdg -f ./bdg.Dockerfile .
+
+sudo docker ps
+
+sudo docker stop 1007bbec2d67
+
+sudo docker exec -it 1007bbec2d67 /bin/bash
+
+sudo docker run --net=host -p 8080:8080 -p 5432:5432 -it test_bdg
+
+sudo docker rmi 1007bbec2d67
+
+sudo docker images
+
+sudo docker run --net=host -e DB_HOST_IP=$DB_HOST_IP -p 8080:8080 -p 5432:5432 -it test_bdg
+
+
+*****************************************************************************************
+DB_HOST_IP=$(hostname -I | awk '{print $1}')
+DB_HOST_IP=hostname -I | awk '{print $1}'

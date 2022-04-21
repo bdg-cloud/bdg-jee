@@ -1,0 +1,238 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:p="http://primefaces.org/ui">
+	
+	<o:importConstants type="fr.legrain.bdg.webapp.app.LgrTab" />
+	
+	<p:commandLink id="listeAcompteBtn" >
+		<i class="top-submenu-icon fa fa-fw fa-file-text-o"></i>
+<!-- 		<i class="top-bar-badge animated rubberBand"><h:outputText value="#{topBarController.nbClient}"/></i> -->
+<!-- 		<i class="fa fa-book animated swing" aria-hidden="true"></i> -->
+		<span><h:outputText value="Liste des acomptes" /></span>
+	</p:commandLink>
+	
+	<p:overlayPanel id="idListeAcomptePanel" for="listeAcompteBtn" hideEffect="fade" dynamic="true" 
+		dismissable="true" appendTo="@(body)" widgetVar="wvOverlayListeAcompte" showCloseIcon="true">
+	
+		<h:form>
+		<div class="dashboard-title" style="background:#f6f6f6;">
+              <h:panelGrid columns="3" cellpadding="5">
+            	<h:graphicImage name="dashboard/fact-acompte.svg" library="images" height="35px" style="margin-top:1px;" />
+                <p:outputLabel value="Liste des factures d'acompte" style="font-size:20px;"/>
+              </h:panelGrid>  
+              <p:separator/>
+        </div>
+		<p:menubar styleClass="menu-onglet" widgetVar="wvMenuListeAcompte" id="idMenuListeAcompte">
+			<p:menuitem title="Créer un nouvel acompte" update=":form:tabView,:form:messages,@widgetVar(wvMenuListeAcompte),@widgetVar(wvDataTableListeAcompte)" 
+				actionListener="#{acompteController.nouveau}" styleClass="icon icon-insert" disabled="#{acompteController.etatBouton('inserer')}" 
+				oncomplete="PF('wvOverlayListeAcompte').hide();" />
+	<!-- 	 	<p:menuitem title="Détail" update=":form:tabView,:form:messages" actionListener="#{acompteController.detail}" styleClass="icon icon-detail" disabled="#{acompteController.modeEcran.dataSetEnModif()}" oncomplete="PF('wvOverlayListeAcompte').hide();"/> -->
+<!-- 		 	<p:menuitem title="Supprimer les acomptes sélectionnés"  update=":form:tabView,@widgetVar(wvDataTableListeAcompte),@widgetVar(wvMenuListeAcompte),:form:messages,@form"  -->
+<!-- 		 	actionListener="#{acompteController.supprimer}" styleClass="icon icon-delete" disabled="#{acompteController.etatBouton('supprimerListe')}"> -->
+<!-- 		 		<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer les acomptes sélectionnés ?" icon="ui-icon-alert" /> -->
+<!-- 		 	</p:menuitem> -->
+		 	<p:menuitem title="Rafraîchir la liste" update="@form,@widgetVar(wvDataTableListeAcompte),@widgetVar(wvMenuListeAcompte),:form:messages" actionListener="#{acompteController.refresh}" styleClass="icon icon-refresh" disabled="#{acompteController.modeEcran.dataSetEnModif()}"/>
+		</p:menubar>
+		
+		<p:sticky target="idMenuListeAcompte" />
+	 
+	<p:dataTable id="dataTableListeAcompte" var="acompte"
+				widgetVar="wvDataTableListeAcompte"
+				value="#{acompteController.values}"
+				rowKey="#{acompte.id}"
+				selection="#{acompteController.selectedDocumentDTOs}"
+				dblClickSelect="true"
+				styleClass="datatable mt10"
+				resizableColumns="true"
+				paginator="true" 
+				rows="#{msg.modele_datatable_ligne_par_page_debut}"
+				paginatorTemplate="#{msg.modele_datatable_paginator}"
+				rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+				emptyMessage="#{msg.message_datatable_vide}"
+				currentPageReportTemplate="#{msg.modele_datatable_page_courante}"
+				disabledSelection="#{acompteController.modeEcran.dataSetEnModif()}">
+				
+<!-- 				<p:ajax event="rowDblselect" listener="#{acompteController.onRowSelect}" update=":form:tabView,:form:messages,@form"/>  -->
+<!-- 				<p:ajax event="rowSelect" listener="#{acompteController.onRowSelect}" update=":form:tabView,:form:messages" oncomplete="PF('wvOverlayListeAcompte').hide();"/> -->
+				
+				<p:ajax event="rowSelect" delay="#{msg.datatable_rowselect_delay}" listener="#{acompteController.onRowSelect}" update=":form:tabView,:form:messages" oncomplete="activeTabCenter('#{LgrTab.CSS_CLASS_TAB_ACOMPTE}');PF('wvOverlayListeAcompte').hide();scrollToTop();"/>
+				
+<!-- 				<p:ajax event="rowSelectCheckbox" listener="#{renouvellementBean.onRowSelect}" update="@parent:idPrixHTPanier" /> -->
+<!-- 				<p:ajax event="rowUnselectCheckbox" listener="#{renouvellementBean.onRowUnselect}" update="@parent:idPrixHTPanier" /> -->
+<!-- 				<p:ajax event="toggleSelect" listener="#{renouvellementBean.onToggleSelect}" update="@parent:idPrixHTPanier" /> -->
+			
+				<f:facet name="header">  
+           			<h:outputText value="Acompte" />
+           			<span style="float:right;" class="searchbar_list">
+			            <p:outputPanel>
+				                <p:inputText id="globalFilter" onkeyup="PF('wvDataTableListeAcompte').filter()" style="width:150px" placeholder="Rechercher"/>
+				            </p:outputPanel>
+			        </span>
+        		</f:facet>
+
+		  		<f:facet name="{Exporters}">
+		            <h:commandLink>
+		                <p:graphicImage library="images" name="excel.png" width="24"/>
+		                <p:dataExporter type="xls" target="dataTableListeAcompte" fileName="liste_acompte" />
+		            </h:commandLink>
+		 
+		            <p:commandLink onsuccess="window.open('#{request.contextPath}/output?__report=/reports/documents/acompte/ListeDesAcomptes.rptdesign&amp;__format=pdf')"
+			actionListener="#{acompteController.actImprimerListeDesAcomptes}" process="@this">
+		                <p:graphicImage  library="images" name="pdf.png"  width="24"/>
+<!-- 		                <p:dataExporter type="pdf" target="dataTableListeTiers" fileName="liste_tiers" /> -->
+		            </p:commandLink>
+		 
+		            <h:commandLink>
+		                <p:graphicImage  library="images" name="csv.png"  width="24"/>
+		                <p:dataExporter type="csv" target="dataTableListeAcompte" fileName="liste_acompte" options="#{separateurCsvController.csvOptions}" />
+		            </h:commandLink>
+		 
+		            <h:commandLink>
+		                <p:graphicImage  library="images" name="xml.png"  width="24"/>
+		                <p:dataExporter type="xml" target="dataTableListeAcompte" fileName="liste_acompte" />
+		            </h:commandLink>
+		        </f:facet>
+        
+<!-- 				<p:column sortBy="#{acompte.id}"> -->
+<!-- 					<f:facet name="header"> -->
+<!-- 						<h:outputText value="ID" /> -->
+<!-- 					</f:facet> -->
+<!-- 					<h:outputText value="#{acompte.id}" /> -->
+<!-- 				</p:column> -->
+
+				<p:column selectionMode="multiple" style="width:16px;text-align:center" exportable="false"/>
+			
+				<p:column style="width:16px" exportable="false">
+					<f:facet name="header">
+						<h:outputText value="" />
+					</f:facet>
+					<p:commandButton title="Détail" update=":form:tabView,:form:messages" 
+						action="#{acompteController.detail}" styleClass="icon icon-detail icon-grille" 
+						disabled="#{acompteController.modeEcran.dataSetEnModif()}" oncomplete="PF('wvOverlayListeAcompte').hide();">
+						<f:setPropertyActionListener target="#{acompteController.selectedDocumentDTO}" value="#{acompte}" />
+					</p:commandButton>
+				</p:column>
+
+				<p:column sortBy="#{acompte.codeDocument}" filterBy="#{acompte.codeDocument}" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="Code" />
+					</f:facet>
+					<h:outputText value="#{acompte.codeDocument}" />
+				</p:column>
+
+				<p:column styleClass="center" sortBy="#{acompte.dateDocument}"
+					filterBy="#{acompteController.customFormatDate(acompte.dateDocument)}" filterMatchMode="contains">
+
+					<f:facet name="header">
+						<h:outputText value="Date" />
+					</f:facet>
+					<h:outputText value="#{acompte.dateDocument}">
+						<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}" />
+					</h:outputText>
+				</p:column>
+
+				<p:column sortBy="#{acompte.codeTiers}" filterBy="#{acompte.codeTiers}" filterMatchMode="contains">
+
+					<f:facet name="header">
+						<h:outputText value="Code tiers" />
+					</f:facet>
+					<h:outputText value="#{acompte.codeTiers}" />
+				</p:column>
+
+				<p:column sortBy="#{acompte.nomTiers}" filterBy="#{acompte.nomTiers}" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="Nom" />
+					</f:facet>
+					<h:outputText value="#{acompte.nomTiers}" />
+				</p:column>
+
+				<p:column sortBy="#{acompte.prenomTiers}" filterBy="#{acompte.prenomTiers}" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="Prénom" />
+					</f:facet>
+					<h:outputText value="#{acompte.prenomTiers}" />
+				</p:column>
+
+
+				<p:column sortBy="#{acompte.nomEntreprise}" filterBy="#{acompte.nomEntreprise}" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="Entreprise" />
+					</f:facet>
+					<h:outputText value="#{acompte.nomEntreprise}" />
+				</p:column>
+
+				<p:column styleClass="right" sortBy="#{acompte.netHtCalc}" filterBy="#{acompte.netHtCalc}" filterMatchMode="contains"
+							exportFunction="#{separateurCsvController.exportNumber}">
+					<f:facet name="header">
+						<h:outputText value="HT" />
+					</f:facet>
+					<h:outputText value="#{acompte.netHtCalc}">
+						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+					</h:outputText>
+				</p:column>
+
+				<p:column styleClass="right" sortBy="#{acompte.netTvaCalc}" filterBy="#{acompte.netTvaCalc}" filterMatchMode="contains"
+							exportFunction="#{separateurCsvController.exportNumber}">
+					<f:facet name="header">
+						<h:outputText value="TVA" />
+					</f:facet>
+					<h:outputText value="#{acompte.netTvaCalc}">
+						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+					</h:outputText>
+				</p:column>
+
+				<p:column styleClass="right" sortBy="#{acompte.netTtcCalc}" filterBy="#{acompte.netTtcCalc}" filterMatchMode="contains"
+							exportFunction="#{separateurCsvController.exportNumber}">
+					<f:facet name="header">
+						<h:outputText value="TTC" />
+					</f:facet>
+					<h:outputText value="#{acompte.netTtcCalc}">
+						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+					</h:outputText>
+				</p:column>
+				
+								<p:column styleClass="center" sortBy="#{acompte.dateEchDocument}"
+					filterBy="#{acompteController.customFormatDate(acompte.dateEchDocument)}" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="Echéance" />
+					</f:facet>
+					<h:outputText value="#{acompte.dateEchDocument}">
+						<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}" />
+					</h:outputText>
+				</p:column>
+
+
+					<p:column style="width:16px" exportable="false">
+						<f:facet name="header">
+							<h:outputText value="" />
+						</f:facet>
+						
+<!--
+commentaire :  déclenche un bouton invisible pour mettre à jour le message personnalisé
+ -->
+						<p:commandButton title="Supprimer" styleClass="icon-delete icon icon-grille" widgetVar="widgetVarBtnSupprimerAcompteListe"
+							action="#{acompteController.actBeforeSupprimer(acompte)}" oncomplete="$('.classHiddenCommandForSuppressionAC').click()"
+							process="@this"
+							update="@widgetVar(widgetVarBtnSupprimerAcompteListe2)">
+							<f:setPropertyActionListener target="#{acompteController.selectedDocumentDTO}" value="#{acompte}" />
+<!-- 							<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer cet acompte ?" icon="ui-icon-alert" /> -->
+<!-- 			<p:confirm header="Confirmation de la suppression" message="#{acompteController.messageSuppression}" icon="ui-icon-alert" /> -->
+						</p:commandButton>
+							
+					</p:column>
+
+			</p:dataTable>
+		<p:commandButton styleClass="classHiddenCommandForSuppressionAC" widgetVar="widgetVarBtnSupprimerAcompteListe2" 
+		actionListener="#{acompteController.actSupprimer}" style="display:none" process="@this" 
+		 update="@widgetVar(wvDataTableListeAcompte)" >
+        <p:confirm header="Confirmation de la suppression" message="#{acompteController.messageSuppression}" icon="ui-icon-alert" /> 
+    </p:commandButton>			
+		</h:form>
+	</p:overlayPanel>
+	
+<!-- 	</h:form> -->
+
+</ui:composition>

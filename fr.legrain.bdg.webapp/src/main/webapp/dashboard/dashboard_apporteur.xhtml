@@ -1,0 +1,1209 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    
+    <ui:define name="head">
+        <script type="text/javascript">
+            //<![CDATA[
+            function skinChart() {
+                this.cfg.shadow = false;
+                this.cfg.title = '';
+                this.cfg.seriesColors = ['#EA9624', '#5BA5D8'];
+                this.cfg.grid = {
+                    background: '#ffffff',
+                    borderColor: '#ffffff',
+                    gridLineColor: '#F5F5F5',
+                    shadow: false
+                };
+                this.cfg.axesDefaults = {
+                    rendererOptions: {
+                        textColor: '#666F77'
+                    }
+                };
+                this.cfg.seriesDefaults = {
+                    shadow: false,
+                    lineWidth: 1,
+                    markerOptions: {
+                        shadow: false,
+                        size: 7,
+                        style: 'circle'
+                    }
+                }
+            }
+            //]]>  
+        </script>
+        <style type="text/css">
+            .main-content {
+                padding: 0;
+            }
+            
+            #main-wrapper-content {
+                padding: 10px;
+            }
+        </style>
+    </ui:define>
+    
+    
+        <div class="dashboard">
+            <div class="dashboard-header">
+                <div class="ui-g">
+                        <p:commandButton value="Fermer" styleClass="icon icon-close menuitem-fermer-droite" process="@this" 
+							onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())"/>
+<!-- 					<i class="fa fa-file-text-o fa-3x" style="color:#d2524f"></i> -->
+					<h:graphicImage name="dashboard/facture-apporteur.svg" library="images" height="60px" style="margin-top:1px;" />
+                    <div class="ui-g-12 ui-md-6">
+                        <div class="dashboard-title">
+                            <h2>Apporteur : Tableau de bord</h2>
+
+                        </div>
+                    </div>
+
+                    <div class="ui-g-12 ui-g-nopad">
+
+                    </div>
+                </div>
+            </div>
+            
+            <div id="main-wrapper-content-apporteur">
+
+                    
+                <div class="ui-g">
+
+
+				<div class="ui-g-12 ui-md-12">
+				<p:panel collapsed="true" toggleable="true" id="idPanelCriteresDashboardApporteur" >
+						<f:facet name="header">
+							<h:outputText value="Critères et paramètres du tableau de bord - " />
+							<h:outputText value="Période du " />
+							<h:outputText value="#{dashBoardApporteurController.dateDebut}" >
+								<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" type="localDate"/>
+							</h:outputText>
+							<h:outputText value=" au " />
+							<h:outputText value="#{dashBoardApporteurController.dateFin}" >
+								<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" type="localDate"/>
+							</h:outputText>
+						</f:facet>
+				
+					<div class="ui-g-12 ui-md-3">
+					<div class="card">
+		
+						<p:panel header="Période en cours" styleClass="panelgrey" >
+						<f:facet name="footer">
+						<i class="fa fa-calendar fa-2x" aria-hidden="true" style="color:skyblue;"></i>
+							<p:commandButton oncomplete="PF('wvListeApporteur').filter()" 
+											update="@this,
+													idPanelCriteresDashboardApporteur,
+													@widgetVar(wvDashApporteurPanelApporteur),
+													@widgetVar(wvCountNbApporteurNonTransforme),
+													@widgetVar(wvCountNbApporteurTransforme),
+													@widgetVar(wvListeApporteur),
+													@widgetVar(wvListeApporteurMois),
+													idPanelMensuelTitrePeriodeApporteur,
+													@widgetVar(wvGraphiqueApporteur),
+													@widgetVar(wvCountNbApporteurNonTransformeARelancer),
+													@widgetVar(wvTauxApporteurTransforme),
+													@widgetVar(wvTabViewApporteurJour),
+													@widgetVar(wvPanelApporteurJourDataTable),
+													@widgetVar(wvListeApporteurMoisArticles),
+													@widgetVar(wvListeApporteurJour),
+													@widgetVar(wvListeApporteurJourArticles)"  
+							action="#{dashBoardApporteurController.refreshDashBoard('tous')}" value="Appliquer" id="idPeriodeApporteur" styleClass="ui-green" 
+							style="width:60%;margin-left: 15px;bottom: 5px;" />
+							
+						</f:facet>
+						 <div class="ui-g-12 ui-md-1" >
+
+						 </div>
+						 <div class="ui-g-12 ui-md-11">
+			        	<h:panelGrid columns="2" cellpadding="0">
+						 <p:outputLabel value="Du"/>
+											<p:calendar value="#{dashBoardApporteurController.dateDebut}"
+												showOn="button" 
+												pattern="#{msg.date_pattern}" 
+												mask="true" 
+												pages="3"
+												locale="fr" 
+												timeZone="#{msg.time_zone}"
+												size="8" >
+											</p:calendar>
+
+						 <p:outputLabel value="au"/>
+											<p:calendar value="#{dashBoardApporteurController.dateFin}"
+												showOn="button" 
+												navigator="true" 
+												pattern="#{msg.date_pattern}" 
+												mask="true" 
+												locale="fr" 
+												timeZone="#{msg.time_zone}" 
+												size="8">
+											</p:calendar>
+
+        				</h:panelGrid>
+        				</div>
+        				 <p:separator />
+
+
+								</p:panel>
+					
+					</div>					
+
+    				</div>
+    				
+    				<div class="ui-g-12 ui-md-2">
+					<div class="card">
+					<p:panel header="Raccourcis périodes" styleClass="panelgrey">
+						<p:panelGrid columns="1" cellpadding="0" columnClasses="ui-grid-col-12" style="width:100%">
+							<p:commandButton oncomplete="PF('wvListeApporteur').filter()" 
+											update="@this,
+													idPanelCriteresDashboardApporteur,
+													@widgetVar(wvDashApporteurPanelApporteur),
+													@widgetVar(wvCountNbApporteurNonTransforme),
+													@widgetVar(wvCountNbApporteurTransforme),
+													@widgetVar(wvListeApporteur),
+													@widgetVar(wvListeApporteurMois),
+													idPanelMensuelTitrePeriodeApporteur,
+													@widgetVar(wvGraphiqueApporteur),
+													@widgetVar(wvCountNbApporteurNonTransformeARelancer),
+													@widgetVar(wvTauxApporteurTransforme),
+													@widgetVar(wvTabViewApporteurJour),
+													@widgetVar(wvPanelApporteurJourDataTable),
+													@widgetVar(wvListeApporteurMoisArticles),
+													@widgetVar(wvListeApporteurJour),
+													@widgetVar(wvListeApporteurJourArticles)"  
+							action="#{dashBoardApporteurController.initBornePeriodeAujourdhui()}" value="Aujourd'hui" id="idPeriodeApporteurJourCourant"  
+							 style="font-size: 12px;height: 22px;width:100%;border-bottom: 2px solid #7FA128;"/>
+<!-- 							 styleClass="ui-orange"					 -->
+							<p:commandButton oncomplete="PF('wvListeApporteur').filter()" 
+											update="@this,
+													idPanelCriteresDashboardApporteur,
+													@widgetVar(wvDashApporteurPanelApporteur),
+													@widgetVar(wvCountNbApporteurNonTransforme),
+													@widgetVar(wvCountNbApporteurTransforme),
+													@widgetVar(wvListeApporteur),
+													@widgetVar(wvListeApporteurMois),
+													idPanelMensuelTitrePeriodeApporteur,
+													@widgetVar(wvGraphiqueApporteur),
+													@widgetVar(wvCountNbApporteurNonTransformeARelancer),
+													@widgetVar(wvTauxApporteurTransforme),
+													@widgetVar(wvTabViewApporteurJour),
+													@widgetVar(wvPanelApporteurJourDataTable),
+													@widgetVar(wvListeApporteurMoisArticles),
+													@widgetVar(wvListeApporteurJour),
+													@widgetVar(wvListeApporteurJourArticles)"  
+							action="#{dashBoardApporteurController.initBornePeriodeHier()}" value="Hier" id="idPeriodeApporteurJourPrecedent"  
+							 style="font-size: 12px;height: 22px;width:100%;border-bottom: 2px solid #7FA128;"/>
+							<p:commandButton oncomplete="PF('wvListeApporteur').filter()" 
+											update="@this,
+													idPanelCriteresDashboardApporteur,
+													@widgetVar(wvDashApporteurPanelApporteur),
+													@widgetVar(wvCountNbApporteurNonTransforme),
+													@widgetVar(wvCountNbApporteurTransforme),
+													@widgetVar(wvListeApporteur),
+													@widgetVar(wvListeApporteurMois),
+													idPanelMensuelTitrePeriodeApporteur,
+													@widgetVar(wvGraphiqueApporteur),
+													@widgetVar(wvCountNbApporteurNonTransformeARelancer),
+													@widgetVar(wvTauxApporteurTransforme),
+													@widgetVar(wvTabViewApporteurJour),
+													@widgetVar(wvPanelApporteurJourDataTable),
+													@widgetVar(wvListeApporteurMoisArticles),
+													@widgetVar(wvListeApporteurJour),
+													@widgetVar(wvListeApporteurJourArticles)"  
+							action="#{dashBoardApporteurController.initBornePeriodeMoisCourant()}" value="Mois courant" id="idPeriodeApporteurMoisCourant"  
+							style="font-size: 12px;height: 22px;width:100%;border-bottom: 2px solid #7FA128;"/>
+							<p:commandButton oncomplete="PF('wvListeApporteur').filter()" 
+											update="@this,
+													idPanelCriteresDashboardApporteur,
+													@widgetVar(wvDashApporteurPanelApporteur),
+													@widgetVar(wvCountNbApporteurNonTransforme),
+													@widgetVar(wvCountNbApporteurTransforme),
+													@widgetVar(wvListeApporteur),
+													@widgetVar(wvListeApporteurMois),
+													idPanelMensuelTitrePeriodeApporteur,
+													@widgetVar(wvGraphiqueApporteur),
+													@widgetVar(wvCountNbApporteurNonTransformeARelancer),
+													@widgetVar(wvTauxApporteurTransforme),
+													@widgetVar(wvTabViewApporteurJour),
+													@widgetVar(wvPanelApporteurJourDataTable),
+													@widgetVar(wvListeApporteurMoisArticles),
+													@widgetVar(wvListeApporteurJour),
+													@widgetVar(wvListeApporteurJourArticles)"  
+							action="#{dashBoardApporteurController.initBornePeriodeAnneeCourante()}" value="Année courante" id="idPeriodeApporteurAnneeCourante"  
+							 style="font-size: 12px;height: 22px;width:100%;border-bottom: 2px solid #7FA128;"/>
+						</p:panelGrid>
+					</p:panel>
+					</div>
+    				</div>
+
+					<div class="ui-g-12 ui-md-4">
+
+    				</div>
+					<div class="ui-g-12 ui-md-4">
+
+    				</div>
+				</p:panel>
+				</div>
+
+				<div class="ui-g-12 ui-md-12" style="background:#ebebeb;">
+					<div class="ui-g-12 ui-md-6 ui-lg-3">
+						<p:panel header="Apporteur sur la période" style="background:#ebebeb;" widgetVar="wvCountNbApporteurTransforme">
+							<div class="box #{dashBoardApporteurController.cSbNbDocumentSurPeriode}" >
+<!-- 							<h:graphicImage name="dashboard/apporteur.svg" id="imagedashboard" library="images" height="40px"/> -->
+							<i class="fa fa-file-text-o"></i>
+							<h2>#{dashBoardApporteurController.nbApporteurSurPeriode} apporteur réalisés</h2>
+							<h3>Total HT : <p:outputLabel value="#{dashBoardApporteurController.totauxCaPeriodeApporteur.mtHtCalc}">
+								<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />		
+							</p:outputLabel>
+							</h3>
+<!-- 							<h3>Total HT : #{dashBoardApporteurController.totauxCaPeriodeApporteur.mtHtCalc} € </h3> -->
+							<p>Du 
+							<p:outputLabel value="#{dashBoardApporteurController.dateDebut}">
+								<f:convertDateTime pattern="#{msg.date_pattern}"
+										               timeZone="#{msg.time_zone}" type="localDate"/>		
+							</p:outputLabel>
+							  au 
+							<p:outputLabel value="#{dashBoardApporteurController.dateFin}">
+								<f:convertDateTime pattern="#{msg.date_pattern}"
+										               timeZone="#{msg.time_zone}" type="localDate"/>		
+							</p:outputLabel>
+							
+							
+							</p>
+
+
+
+						<p:selectBooleanButton style="width:50%;" id="apporteurtous" 
+												value="true" onLabel="Sélection active"
+												widgetVar="wvApporteurTous" 
+												offLabel="Afficher" onIcon="ui-icon-check" offIcon="ui-icon-close">
+								<p:ajax oncomplete="PF('wvListeApporteur').filter()"
+										event="change" 
+										update="@this,
+												idPanelCriteresDashboardApporteur,
+												@widgetVar(wvDashApporteurPanelApporteur),
+												@widgetVar(wvCountNbApporteurNonTransforme),
+												@widgetVar(wvCountNbApporteurTransforme),
+												@widgetVar(wvListeApporteur),
+												@widgetVar(wvListeApporteurMois),
+												idPanelMensuelTitrePeriodeApporteur,
+												@widgetVar(wvGraphiqueApporteur),
+												@widgetVar(wvCountNbApporteurNonTransformeARelancer),
+												@widgetVar(wvTauxApporteurTransforme),
+												@widgetVar(wvTabViewApporteurJour),
+												@widgetVar(wvPanelApporteurJourDataTable),
+												@widgetVar(wvListeApporteurMoisArticles),
+												@widgetVar(wvListeApporteurJour),
+												@widgetVar(wvListeApporteurJourArticles)" 		
+												listener="#{dashBoardApporteurController.refreshDashBoard('tous')}"/>	 
+        					</p:selectBooleanButton>
+							</div> 
+						</p:panel>
+					</div>
+					<!-- <div class="ui-g-12 ui-md-6 ui-lg-3" style="background:#ebebeb;">
+						<p:panel header="Apporteur en cours" style="background:#ebebeb;" widgetVar="wvCountNbApporteurNonTransforme">
+							<div class="box #{dashBoardApporteurController.cSbNbDocumentNonTransformeSurPeriode}">
+						
+							
+							<i class="fa fa-file-text-o"></i>
+							<h2>#{dashBoardApporteurController.nbApporteurNonTransformeSurPeriode} apporteur non transformés</h2>
+							<h3>Total HT : <p:outputLabel value="#{dashBoardApporteurController.totauxCaPeriodeApporteurNonTransforme.mtHtCalc}">
+								<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />		
+							</p:outputLabel></h3>
+							<h3>Total HT : #{dashBoardApporteurController.totauxCaPeriodeApporteurNonTransforme.mtHtCalc} € </h3>
+							<p>Du 
+							<p:outputLabel value="#{dashBoardApporteurController.dateDebut}">
+								<f:convertDateTime pattern="#{msg.date_pattern}"
+										               timeZone="#{msg.time_zone}" />		
+							</p:outputLabel>
+							  au 
+							<p:outputLabel value="#{dashBoardApporteurController.dateFin}">
+								<f:convertDateTime pattern="#{msg.date_pattern}"
+										               timeZone="#{msg.time_zone}" />		
+							</p:outputLabel>
+							
+							
+							</p>
+							 <p:selectBooleanButton style="width:50%;" id="apporteurnontrans" value="false" onLabel="Sélection active" offLabel="Afficher" onIcon="ui-icon-check" offIcon="ui-icon-close" >
+								<p:ajax  oncomplete="PF('wvListeApporteur').filter()" 
+										event="change" 
+										update="@this,
+												idPanelCriteresDashboardApporteur,
+												@widgetVar(wvDashApporteurPanelApporteur),
+												@widgetVar(wvCountNbApporteurNonTransforme),
+												@widgetVar(wvCountNbApporteurTransforme),
+												@widgetVar(wvListeApporteur),
+												@widgetVar(wvListeApporteurMois),
+												idPanelMensuelTitrePeriodeApporteur,
+												@widgetVar(wvGraphiqueApporteur),
+												@widgetVar(wvCountNbApporteurNonTransformeARelancer),
+												@widgetVar(wvTauxApporteurTransforme),
+												@widgetVar(wvTabViewApporteurJour),
+												@widgetVar(wvPanelApporteurJourDataTable),
+												@widgetVar(wvListeApporteurMoisArticles),
+												@widgetVar(wvListeApporteurJour),
+												@widgetVar(wvListeApporteurJourArticles)" 		
+										
+										listener="#{dashBoardApporteurController.refreshDashBoard('nontransforme')}"/>	 
+        					 </p:selectBooleanButton>
+							</div>
+						</p:panel>
+					</div> -->
+					<!-- <div class="ui-g-12 ui-md-6 ui-lg-3" style="background:#ebebeb;">
+						<p:panel header="Apporteur arrivant à échéance dans moins de 15 jours"  widgetVar="wvCountNbApporteurNonTransformeARelancer" 
+							style="background:#ebebeb;">
+							<div class="box #{dashBoardApporteurController.cSbNbDocumentNonTransformeARelancerSurPeriode}" >
+							<i class="fa fa-file-text-o"></i>
+							<h2>#{dashBoardApporteurController.nbApporteurNonTransformeARelancerSurPeriode} apporteur à relancer</h2>
+							<h3>Total HT : <p:outputLabel value="#{dashBoardApporteurController.totauxCaPeriodeApporteurNonTransformeARelancer.mtHtCalc}">
+								<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />		
+							</p:outputLabel></h3>
+														<h3>Total HT : #{dashBoardApporteurController.totauxCaPeriodeApporteurNonTransformeARelancer.mtHtCalc} € </h3>
+							<p>Du 
+							<p:outputLabel value="#{dashBoardApporteurController.dateDebut}">
+								<f:convertDateTime pattern="#{msg.date_pattern}"
+										               timeZone="#{msg.time_zone}" />		
+							</p:outputLabel>
+							  au 
+							<p:outputLabel value="#{dashBoardApporteurController.dateFin}">
+								<f:convertDateTime pattern="#{msg.date_pattern}"
+										               timeZone="#{msg.time_zone}" />		
+							</p:outputLabel>
+							
+							
+							</p>
+														<p>Du #{dashBoardApporteurController.dateDebut} au #{dashBoardApporteurController.dateFin}</p>
+						    <p:commandButton value="Ajax Submit" id="ajax" update="growl" actionListener="#{buttonView.buttonAction}" styleClass="ui-priority-primary" />
+						    <p:selectBooleanButton  style="width:50%;" id="apporteur15jours" value="false" onLabel="Sélection active" offLabel="Afficher" onIcon="ui-icon-check" offIcon="ui-icon-close" >
+								<p:ajax  oncomplete="PF('wvListeApporteur').filter()" 
+										event="change" 
+										update="@this,
+												idPanelCriteresDashboardApporteur,
+												@widgetVar(wvDashApporteurPanelApporteur),
+												@widgetVar(wvCountNbApporteurNonTransforme),
+												@widgetVar(wvCountNbApporteurTransforme),
+												@widgetVar(wvListeApporteur),
+												@widgetVar(wvListeApporteurMois),
+												idPanelMensuelTitrePeriodeApporteur,
+												@widgetVar(wvGraphiqueApporteur),
+												@widgetVar(wvCountNbApporteurNonTransformeARelancer),
+												@widgetVar(wvTauxApporteurTransforme),
+												@widgetVar(wvTabViewApporteurJour),
+												@widgetVar(wvPanelApporteurJourDataTable),
+												@widgetVar(wvListeApporteurMoisArticles),
+												@widgetVar(wvListeApporteurJour),
+												@widgetVar(wvListeApporteurJourArticles)" 		
+												
+												listener="#{dashBoardApporteurController.refreshDashBoard('nontransformearelancer')}"/>	 
+        					</p:selectBooleanButton>
+							</div> 
+						</p:panel>
+					</div> -->
+					<!-- <div class="ui-g-12 ui-md-6 ui-lg-3" style="background:#ebebeb;"> 
+						<p:panel header="Taux de transformation" widgetVar="wvTauxApporteurTransforme" 
+						style="background:#ebebeb;">
+							<div class="box #{dashBoardApporteurController.cSbNbDocumentTransformeSurPeriode}" >
+								<p:tabView style="text-align:left;">
+									<p:tab title="Montant HT" >
+									<h3 style="text-align:center;">Total HT : <p:outputLabel value="#{dashBoardApporteurController.totauxCaPeriodeApporteurTransforme.mtHtCalc}">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />		
+									</p:outputLabel></h3>									
+									<h3 style="text-align:center;">Total HT : #{dashBoardApporteurController.totauxCaPeriodeApporteurTransforme.mtHtCalc} € </h3>
+									<div class="knob-container  ui-corner-all" style="text-align:center;">
+										<p:knob labelTemplate="{value}%" value="#{dashBoardApporteurController.tauxTransfoCa}" height="70"
+											width="70" disabled="true"/>
+									</div>
+									</p:tab>
+									<p:tab title="Nombre de apporteur" >
+									<h3 style="text-align:center;">#{dashBoardApporteurController.nbApporteurTransformeSurPeriode} apporteur transformés</h3>
+									<div class="knob-container  ui-corner-all" style="text-align:center;">
+										<p:knob labelTemplate="{value}%" value="#{dashBoardApporteurController.tauxTransfoNb}" height="70"
+											width="70" disabled="true" />
+									</div>
+									</p:tab>
+								</p:tabView>
+								<p:selectBooleanButton  style="width:50%;" id="apporteurTransforme" value="false" onLabel="Sélection active" offLabel="Afficher" onIcon="ui-icon-check" offIcon="ui-icon-close" >
+								<p:ajax  oncomplete="PF('wvListeApporteur').filter()" 
+										event="change" 
+										update="@this,
+												idPanelCriteresDashboardApporteur,
+												@widgetVar(wvDashApporteurPanelApporteur),
+												@widgetVar(wvCountNbApporteurNonTransforme),
+												@widgetVar(wvCountNbApporteurTransforme),
+												@widgetVar(wvListeApporteur),
+												@widgetVar(wvListeApporteurMois),
+												idPanelMensuelTitrePeriodeApporteur,
+												@widgetVar(wvGraphiqueApporteur),
+												@widgetVar(wvCountNbApporteurNonTransformeARelancer),
+												@widgetVar(wvTauxApporteurTransforme),
+												@widgetVar(wvTabViewApporteurJour),
+												@widgetVar(wvPanelApporteurJourDataTable),
+												@widgetVar(wvListeApporteurMoisArticles),
+												@widgetVar(wvListeApporteurJour),
+												@widgetVar(wvListeApporteurJourArticles)" 		
+ 
+										listener="#{dashBoardApporteurController.refreshDashBoard('transforme')}"/>	 
+        					</p:selectBooleanButton>
+							</div> 
+						</p:panel>
+					</div> -->
+				</div>
+
+				<div class="ui-g-12 ui-md-12">
+				<p:panel header="Liste des apporteur " widgetVar="wvDashApporteurPanelApporteur" >
+
+						<p:dataTable id="taApporteur" var="a"
+							value="#{dashBoardApporteurController.valueLignesDocument}"
+							scrollable="true"
+							scrollHeight="150"
+							liveResize="true"								
+							
+							widgetVar="wvListeApporteur" resizableColumns="true" 
+							paginator="true"
+							rows="#{msg.modele_datatable_ligne_par_page_debut}"
+							paginatorTemplate="#{msg.modele_datatable_paginator}"
+							rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+							emptyMessage="#{msg.message_datatable_vide}"
+							currentPageReportTemplate="#{msg.modele_datatable_page_courante}"
+							
+							selectionMode="single" rowKey="#{a.codeDocument}" reflow="true">
+							
+							<f:facet name="header">
+							<span style="float:left;">
+							<p:commandButton id="idBtnListePrintEcranDasboardApporteur"
+							 title="Imprimer la liste" 
+			onsuccess="window.open('#{request.contextPath}/output?__report=/reports/documents/apporteur/ListeDashboardApporteur.rptdesign&amp;__format=pdf')"
+			actionListener="#{dashBoardApporteurController.actImprimerListeApporteur}" styleClass="ui-priority-primary boutonPrint" style="color : white;" icon="fa fa-print"
+			process="@this" ></p:commandButton>
+							</span>	
+        						Liste des apporteur
+        						
+        						<span style="float:right;" class="searchbar_list">
+						            <p:outputPanel>
+							                <p:inputText id="globalFilter" onkeyup="PF('wvListeApporteur').filter()" style="width:150px" placeholder="Rechercher"/>
+							            </p:outputPanel>
+						        </span>
+    						</f:facet>
+    						 
+							<p:column width="15%" rendered="true" filterMatchMode="contains"
+								filterBy="#{a.codeDocument}" sortBy="#{a.codeDocument}"  >
+								<f:facet name="header">
+									<h:outputText value="Code document" />
+								</f:facet>
+<!-- 								<h:outputText value="#{a.codeDocument}" /> -->
+								<p:commandLink value="#{a.codeDocument}"
+									action="#{ouvertureDocumentBean.detailDocument(ouvertureDocumentBean.recupCodeDocument(a.codeDocument,ouvertureDocumentBean.getTypeDocumentApporteur()))}" 
+									update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+								</p:commandLink>
+								</p:column>
+
+							<p:column width="38%" filterMatchMode="contains" 
+								filterBy="#{a.libelleDocument}" sortBy="#{a.libelleDocument}">
+								<f:facet name="header">
+									<h:outputText value="Libellé" />
+								</f:facet>
+								<h:outputText value="#{a.libelleDocument}" id="idListeLibelleApporteur"/>
+								<p:tooltip id="toolTipListeLibelleApporteur" value="#{a.libelleDocument}" shared="true" for="idListeLibelleApporteur" showEffect="clip" position="top"/>
+								
+							</p:column>
+
+							<p:column styleClass="center" width="12%"
+								filterMatchMode="contains" filterBy="#{apporteurController.customFormatDate(a.dateDocument)}"
+								sortBy="#{a.dateDocument}">
+								<f:facet name="header">
+									<h:outputText value="Fait le" />
+								</f:facet>
+								<h:outputText value="#{a.dateDocument}">
+									<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="center" width="20%"
+								filterMatchMode="contains" filterBy="#{a.codeTiers}"
+								sortBy="#{a.codeTiers}">
+								<f:facet name="header">
+									<h:outputText value="Code Tiers" />
+								</f:facet>
+<!-- 								<h:outputText value="#{a.codeTiers}"> -->
+<!-- 								</h:outputText> -->
+								<p:commandLink  value="#{a.codeTiers}"
+												action="#{ouvertureDocumentBean.detailTiers(ouvertureDocumentBean.recupCodetiers(a.codeTiers))}" update=":form:tabView"
+												oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+								</p:commandLink>
+							</p:column>
+
+							<p:column styleClass="center" width="25%"
+								filterMatchMode="contains" filterBy="#{a.nomTiers}"
+								sortBy="#{a.nomTiers}">
+								<f:facet name="header">
+									<h:outputText value="Tiers" />
+								</f:facet>
+								<h:outputText value="#{a.nomTiers}">
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="right" width="12%"
+								filterMatchMode="contains" filterBy="#{a.netHtCalc}"
+								sortBy="#{a.netHtCalc}">
+								<f:facet name="header">
+									<h:outputText value="Montant HT" />
+								</f:facet>
+								<h:outputText value="#{a.netHtCalc}">
+									<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="right" width="10%"
+								filterMatchMode="contains" filterBy="#{a.netTvaCalc}"
+								sortBy="#{a.netTvaCalc}">
+								<f:facet name="header">
+									<h:outputText value="Montant TVA" />
+								</f:facet>
+								<h:outputText value="#{a.netTvaCalc}">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="right" width="12%"
+								filterMatchMode="contains" filterBy="#{a.netTtcCalc}"
+								sortBy="#{a.netTtcCalc}">
+								<f:facet name="header">
+									<h:outputText value="Montant TTC" />
+								</f:facet>
+								<h:outputText value="#{a.netTtcCalc}">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="center" width="12%"
+								filterMatchMode="contains" filterBy="#{apporteurController.customFormatDate(a.dateEchDocument)}"
+								sortBy="#{a.dateEchDocument}">
+								<f:facet name="header">
+									<h:outputText value="Expire le" />
+								</f:facet>
+								<h:outputText value="#{a.dateEchDocument}">
+									<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" />
+								</h:outputText>
+							</p:column>
+
+							
+						</p:dataTable>
+					</p:panel>
+				</div>
+				
+				<div class="ui-g-12 ui-md-12" style="background:#ebebeb;">
+				<div class="ui-g-12 ui-md-4">
+						<p:panel id="idPanelMensuelTitrePeriodeApporteur">
+						<f:facet name="header">
+							<h:outputText value="Période du " />
+							<h:outputText value="#{dashBoardApporteurController.dateDebut}" >
+								<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" type="localDate"/>
+							</h:outputText>
+							<h:outputText value=" au " />
+							<h:outputText value="#{dashBoardApporteurController.dateFin}" >
+								<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" type="localDate"/>
+							</h:outputText>
+						</f:facet>
+					</p:panel>
+					<p:tabView widgetVar="wvGraphiqueApporteur">
+						<p:tab title="Apporteur">
+								<p:chart type="bar" model="#{dashBoardApporteurController.barChartModelApporteur}" 
+								
+								responsive="true" 
+								style="height:300px;">
+								
+							<p:ajax event="itemSelect" 
+									listener="#{dashBoardApporteurController.itemSelectMois}" 
+									update="@widgetVar(wvListeApporteurMois),
+											@widgetVar(wvGraphiqueApporteurJour),
+											@widgetVar(wvTabViewApporteurJour),
+											@widgetVar(wvPanelApporteurJourDataTable),
+											@widgetVar(wvListeApporteurMoisArticles)"
+											style="cursor: pointer;"/>
+							</p:chart>
+
+						</p:tab>
+					</p:tabView>
+					</div>
+					
+					
+					<div class="ui-g-12 ui-md-8">
+				
+					<p:tabView>
+						<p:tab title="Liste des documents par mois">
+            			<h:panelGrid columns="2" cellpadding="10">
+                	
+						<br/>
+						
+						<p:dataTable id="taApporteurMois" var="a"
+							value="#{dashBoardApporteurController.listeDocumentDetailMois}"
+							scrollable="true"
+							scrollHeight="135"
+							liveResize="true"
+							
+							widgetVar="wvListeApporteurMois" resizableColumns="true" 
+							paginator="true"
+							rows="#{msg.modele_datatable_ligne_par_page_debut}"
+							paginatorTemplate="#{msg.modele_datatable_paginator}"
+							rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+							emptyMessage="#{msg.message_datatable_vide}"
+							currentPageReportTemplate="#{msg.modele_datatable_page_courante}"
+							
+							selectionMode="single" rowKey="#{a.codeDocument}" reflow="true">
+							
+							<f:facet name="header">
+							
+							<span style="float:left;">
+							<p:commandButton id="idBtnListePrintEcranDasboardApporteurDocMois"
+							 title="Imprimer la liste" 
+			onsuccess="window.open('#{request.contextPath}/output?__report=/reports/documents/apporteur/ListeDashboardDocMois.rptdesign&amp;__format=pdf')"
+			actionListener="#{dashBoardApporteurController.actImprimerListeDocMois}" styleClass="ui-priority-primary boutonPrint" style="color : white;" icon="fa fa-print"
+			process="@this" ></p:commandButton>
+							</span>
+
+    								#{dashBoardApporteurController.infosLabelRapportMensuelDataTable}
+    						</f:facet>
+    						 
+							<p:column width="20%" rendered="true" filterMatchMode="contains"
+								filterBy="#{a.codeDocument}" sortBy="#{a.codeDocument}"  >
+								<f:facet name="header">
+									<h:outputText value="Code" />
+								</f:facet>
+<!-- 								<h:outputText value="#{a.codeDocument}" /> -->
+								<p:commandLink value="#{a.codeDocument}"
+									action="#{ouvertureDocumentBean.detailDocument(ouvertureDocumentBean.recupCodeDocument(a.codeDocument,ouvertureDocumentBean.getTypeDocumentApporteur()))}" 
+									update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+								</p:commandLink>
+
+							</p:column>
+
+							<p:column width="33%" filterMatchMode="contains" 
+								filterBy="#{a.libelleDocument}" sortBy="#{a.libelleDocument}">
+								<f:facet name="header">
+									<h:outputText value="Libellé" />
+								</f:facet>
+								<h:outputText value="#{a.libelleDocument}" />
+							</p:column>
+
+							<p:column styleClass="center" width="17%"
+								filterMatchMode="contains" filterBy="#{a.dateDocument}"
+								sortBy="#{a.dateDocument}">
+								<f:facet name="header">
+									<h:outputText value="Date" />
+								</f:facet>
+								<h:outputText value="#{a.dateDocument}">
+									<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="center" width="20%"
+								filterMatchMode="contains" filterBy="#{a.codeTiers}"
+								sortBy="#{a.codeTiers}">
+								<f:facet name="header">
+									<h:outputText value="Code Tiers" />
+								</f:facet>
+
+<!-- 								<h:outputText value="#{a.codeTiers}"> -->
+<!-- 								</h:outputText> -->
+										<p:commandLink value="#{a.codeTiers}"
+											action="#{ouvertureDocumentBean.detailTiers(ouvertureDocumentBean.recupCodetiers(a.codeTiers))}" update=":form:tabView"
+											oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+										</p:commandLink>
+							</p:column>
+
+							<p:column styleClass="center" width="20%"
+								filterMatchMode="contains" filterBy="#{a.nomTiers}"
+								sortBy="#{a.nomTiers}">
+								<f:facet name="header">
+									<h:outputText value="Tiers" />
+								</f:facet>
+								<h:outputText value="#{a.nomTiers}">
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="right" width="12%"
+								filterMatchMode="contains" filterBy="#{a.netHtCalc}"
+								sortBy="#{a.netHtCalc}">
+								<f:facet name="header">
+									<h:outputText value="HT" />
+								</f:facet>
+								<h:outputText value="#{a.netHtCalc}">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="right" width="10%"
+								filterMatchMode="contains" filterBy="#{a.netTvaCalc}"
+								sortBy="#{a.netTvaCalc}">
+								<f:facet name="header">
+									<h:outputText value="TVA" />
+								</f:facet>
+								<h:outputText value="#{a.netTvaCalc}">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="right" width="12%"
+								filterMatchMode="contains" filterBy="#{a.netTtcCalc}"
+								sortBy="#{a.netTtcCalc}">
+								<f:facet name="header">
+									<h:outputText value="TTC" />
+								</f:facet>
+								<h:outputText value="#{a.netTtcCalc}">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="center" width="12%"
+								filterMatchMode="contains" filterBy="#{a.dateEchDocument}"
+								sortBy="#{a.dateEchDocument}">
+								<f:facet name="header">
+									<h:outputText value="Expire le" />
+								</f:facet>
+								<h:outputText value="#{a.dateEchDocument}">
+									<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" />
+								</h:outputText>
+							</p:column>
+
+							
+						</p:dataTable>
+                		
+            			</h:panelGrid>
+        				</p:tab>
+						<p:tab title="Détail des articles par mois">
+						<h:panelGrid columns="2" cellpadding="10">
+						
+						<p:dataTable id="taApporteurArticlesParTiersParMois" var="a"
+							value="#{dashBoardApporteurController.listeDocumentArticleParTiersParMois}"
+							scrollable="true"
+							scrollHeight="135"
+							liveResize="true"
+							
+							widgetVar="wvListeApporteurMoisArticles" resizableColumns="true" 
+							paginator="true"
+							rows="#{msg.modele_datatable_ligne_par_page_debut}"
+							paginatorTemplate="#{msg.modele_datatable_paginator}"
+							rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+							emptyMessage="#{msg.message_datatable_vide}"
+							currentPageReportTemplate="#{msg.modele_datatable_page_courante}"
+							
+							selectionMode="single" rowKey="#{a.codeDocument}" reflow="true">
+							
+							<f:facet name="header">
+							
+							<span style="float:left;">
+							<p:commandButton id="idBtnListePrintEcranDasboardApporteurDocArticleMois"
+							 title="Imprimer la liste" 
+			onsuccess="window.open('#{request.contextPath}/output?__report=/reports/documents/apporteur/ListeDashboardArticleMois.rptdesign&amp;__format=pdf')"
+			actionListener="#{dashBoardApporteurController.actImprimerListeArticleMois}" styleClass="ui-priority-primary boutonPrint" style="color : white;" icon="fa fa-print"
+			process="@this" ></p:commandButton>
+							</span>	
+
+    								#{dashBoardApporteurController.infosLabelRapportArticlesDataTable}
+    						</f:facet>
+    					
+							<p:column styleClass="center" width="20%"
+								filterMatchMode="contains" filterBy="#{a.codeDocument}"
+								sortBy="#{a.codeDocument}">
+								<f:facet name="header">
+									<h:outputText value="Code" />
+								</f:facet>
+<!-- 								<h:outputText value="#{a.codeDocument}"> -->
+<!-- 								</h:outputText> -->
+								<p:commandLink value="#{a.codeDocument}"
+									action="#{ouvertureDocumentBean.detailDocument(ouvertureDocumentBean.recupCodeDocument(a.codeDocument,ouvertureDocumentBean.getTypeDocumentApporteur()))}" 
+									update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+								</p:commandLink>
+							</p:column>
+							
+							<p:column width="20%" filterMatchMode="contains" 
+								filterBy="#{a.libellecArticle}" sortBy="#{a.libellecArticle}">
+								<f:facet name="header">
+									<h:outputText value="Libellé article(s)" />
+								</f:facet>
+								<h:outputText value="#{a.libellecArticle}" />
+							</p:column>
+
+							<p:column styleClass="center" width="15%"
+								filterMatchMode="contains" filterBy="#{a.dateDocument}"
+								sortBy="#{a.dateDocument}">
+								<f:facet name="header">
+									<h:outputText value="Fait le" />
+								</f:facet>
+								<h:outputText value="#{a.dateDocument}">
+									<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="center" width="20%"
+								filterMatchMode="contains" filterBy="#{a.codeTiers}"
+								sortBy="#{a.codeTiers}">
+								<f:facet name="header">
+									<h:outputText value="Code Tiers" />
+								</f:facet>
+
+<!-- 								<h:outputText value="#{a.codeTiers}"> -->
+<!-- 								</h:outputText> -->
+										<p:commandLink value="#{a.codeTiers}"
+											action="#{ouvertureDocumentBean.detailTiers(ouvertureDocumentBean.recupCodetiers(a.codeTiers))}" update=":form:tabView"
+											oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+										</p:commandLink>
+							</p:column>
+
+							<p:column styleClass="center" width="20%"
+								filterMatchMode="contains" filterBy="#{a.nomTiers}"
+								sortBy="#{a.nomTiers}">
+								<f:facet name="header">
+									<h:outputText value="Tiers" />
+								</f:facet>
+								<h:outputText value="#{a.nomTiers}">
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="right" width="15%"
+								filterMatchMode="contains" filterBy="#{a.mtHtLDocument}"
+								sortBy="#{a.mtHtLDocument}">
+								<f:facet name="header">
+									<h:outputText value="HT" />
+								</f:facet>
+								<h:outputText value="#{a.mtHtLDocument}">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="right" width="15%"
+								filterMatchMode="contains" filterBy="#{a.mtTtcLDocument}"
+								sortBy="#{a.mtTtcLDocument}">
+								<f:facet name="header">
+									<h:outputText value="TTC" />
+								</f:facet>
+								<h:outputText value="#{a.mtTtcLDocument}">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+							
+						</p:dataTable>
+						</h:panelGrid>
+						</p:tab>
+	 				</p:tabView>
+						
+					</div>
+					
+					</div>
+					
+<!-- 					//////////////////////////////////////////////////////////////////////////// -->
+<!-- 					Début second graphique ApporteurJour lié a son datatable -->
+					
+					<div class="ui-g-12 ui-md-12" style="background:#ebebeb;">
+				<div class="ui-g-12 ui-md-12">
+					
+					<p:tabView widgetVar="wvTabViewApporteurJour">
+								
+						<p:tab title="Détail des Apporteur par jour pour #{dashBoardApporteurController.nomMoisDetail}" 
+						rendered="#{dashBoardApporteurController.afficheDocumentJour}">
+						<br/><br/>
+								<h:panelGrid columns="2" cellpadding="0" >
+								
+<!-- 						<f:facet name="header"> -->
+<!--         						Graphique journalier des documents pour le mois de #{dashBoardApporteurController.nomMoisDetail} pour un montant de #{dashBoardApporteurController.montantTotalHtMois} € de type #{dashBoardApporteurController.infoEtatDocument} -->
+<!--     						</f:facet> -->
+						
+					</h:panelGrid>
+					
+<!-- 								rendered="#{dashBoardApporteurController.afficheApporteurJour}" -->
+								<p:chart type="bar" model="#{dashBoardApporteurController.barChartModelApporteurJour}" widgetVar="wvGraphiqueApporteurJour" 
+								responsive="true" 
+								style="height:240px;">
+								
+							<p:ajax event="itemSelect" listener="#{dashBoardApporteurController.itemSelectJour}" update="@widgetVar(wvListeApporteurJour),@widgetVar(wvPanelApporteurJourDataTable)" style="cursor: pointer"/>
+							</p:chart>
+
+						</p:tab>
+					
+					</p:tabView>
+					</div>
+					
+					
+						<div class="ui-g-12 ui-md-12">
+						
+					<p:tabView widgetVar="wvPanelApporteurJourDataTable">
+					
+						<p:tab title="Liste des documents par jour" rendered="#{dashBoardApporteurController.afficheDocumentJourDataTable}">
+						<h:panelGrid columns="2" cellpadding="10">
+				
+						<p:dataTable id="taApporteurJour" var="a"
+							value="#{dashBoardApporteurController.listeDocumentDetailJour}"
+							scrollable="true"
+							scrollHeight="150"
+							liveResize="true"
+							widgetVar="wvListeApporteurJour" resizableColumns="true" 
+							
+							paginator="true"
+							rows="#{msg.modele_datatable_ligne_par_page_debut}"
+							paginatorTemplate="#{msg.modele_datatable_paginator}"
+							rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+							emptyMessage="#{msg.message_datatable_vide}"
+							currentPageReportTemplate="#{msg.modele_datatable_page_courante}"
+							
+							selectionMode="single" rowKey="#{a.codeDocument}" reflow="true">
+							
+							<f:facet name="header">
+							
+							<span style="float:left;">
+							<p:commandButton id="idBtnListePrintEcranDasboardApporteurDocJour"
+							 title="Imprimer la liste" 
+			onsuccess="window.open('#{request.contextPath}/output?__report=/reports/documents/apporteur/ListeDashboardDocJour.rptdesign&amp;__format=pdf')"
+			actionListener="#{dashBoardApporteurController.actImprimerListeDocJour}" styleClass="ui-priority-primary boutonPrint" style="color : white;" icon="fa fa-print"
+			process="@this" ></p:commandButton>
+							</span>	
+							
+        						#{dashBoardApporteurController.infosLabelRapportJournalierDataTable}
+    						</f:facet>
+    						 
+							<p:column width="20%" rendered="true" filterMatchMode="contains"
+								filterBy="#{a.codeDocument}" sortBy="#{a.codeDocument}"  >
+								<f:facet name="header">
+									<h:outputText value="Code" />
+								</f:facet>
+<!-- 								<h:outputText value="#{a.codeDocument}" /> -->
+								<p:commandLink value="#{a.codeDocument}"
+									action="#{ouvertureDocumentBean.detailDocument(ouvertureDocumentBean.recupCodeDocument(a.codeDocument,ouvertureDocumentBean.getTypeDocumentApporteur()))}" 
+									update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+								</p:commandLink>
+							</p:column>
+
+							<p:column width="33%" filterMatchMode="contains" 
+								filterBy="#{a.libelleDocument}" sortBy="#{a.libelleDocument}">
+								<f:facet name="header">
+									<h:outputText value="Libellé" />
+								</f:facet>
+								<h:outputText value="#{a.libelleDocument}" />
+							</p:column>
+
+							<p:column styleClass="center" width="17%"
+								filterMatchMode="contains" filterBy="#{a.dateDocument}"
+								sortBy="#{a.dateDocument}">
+								<f:facet name="header">
+									<h:outputText value="Date" />
+								</f:facet>
+								<h:outputText value="#{a.dateDocument}">
+									<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="center" width="20%"
+								filterMatchMode="contains" filterBy="#{a.codeTiers}"
+								sortBy="#{a.codeTiers}">
+								<f:facet name="header">
+									<h:outputText value="Code Tiers" />
+								</f:facet>
+
+<!-- 								<h:outputText value="#{a.codeTiers}"> -->
+<!-- 								</h:outputText> -->
+										<p:commandLink value="#{a.codeTiers}"
+											action="#{ouvertureDocumentBean.detailTiers(ouvertureDocumentBean.recupCodetiers(a.codeTiers))}" update=":form:tabView"
+											oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+										</p:commandLink>
+							</p:column>
+
+							<p:column styleClass="center" width="20%"
+								filterMatchMode="contains" filterBy="#{a.nomTiers}"
+								sortBy="#{a.nomTiers}">
+								<f:facet name="header">
+									<h:outputText value="Tiers" />
+								</f:facet>
+								<h:outputText value="#{a.nomTiers}">
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="right" width="12%"
+								filterMatchMode="contains" filterBy="#{a.netHtCalc}"
+								sortBy="#{a.netHtCalc}">
+								<f:facet name="header">
+									<h:outputText value="HT" />
+								</f:facet>
+								<h:outputText value="#{a.netHtCalc}">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="right" width="10%"
+								filterMatchMode="contains" filterBy="#{a.netTvaCalc}"
+								sortBy="#{a.netTvaCalc}">
+								<f:facet name="header">
+									<h:outputText value="TVA" />
+								</f:facet>
+								<h:outputText value="#{a.netTvaCalc}">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="right" width="12%"
+								filterMatchMode="contains" filterBy="#{a.netTtcCalc}"
+								sortBy="#{a.netTtcCalc}">
+								<f:facet name="header">
+									<h:outputText value="TTC" />
+								</f:facet>
+								<h:outputText value="#{a.netTtcCalc}">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="center" width="12%"
+								filterMatchMode="contains" filterBy="#{a.dateEchDocument}"
+								sortBy="#{a.dateEchDocument}">
+								<f:facet name="header">
+									<h:outputText value="Expire le" />
+								</f:facet>
+								<h:outputText value="#{a.dateEchDocument}">
+									<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" />
+								</h:outputText>
+							</p:column>
+
+							
+						</p:dataTable>
+						</h:panelGrid>
+						</p:tab>
+						
+						<p:tab title="Détail des articles par jour" rendered="#{dashBoardApporteurController.afficheDocumentJourDataTable}">
+						<h:panelGrid columns="2" cellpadding="10">
+						
+						<br/>
+						
+						<p:dataTable id="taApporteurArticlesParTiersParJour" var="a"
+							value="#{dashBoardApporteurController.listeDocumentArticleParTiersParJour}"
+							scrollable="true"
+							scrollHeight="150"
+							liveResize="true"
+							
+							widgetVar="wvListeApporteurJourArticles" resizableColumns="true" 
+							paginator="true"
+							rows="#{msg.modele_datatable_ligne_par_page_debut}"
+							paginatorTemplate="#{msg.modele_datatable_paginator}"
+							rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+							emptyMessage="#{msg.message_datatable_vide}"
+							currentPageReportTemplate="#{msg.modele_datatable_page_courante}"
+							
+							selectionMode="single" rowKey="#{a.codeDocument}" reflow="true">
+							
+							<f:facet name="header">
+							
+							<span style="float:left;">
+							<p:commandButton id="idBtnListePrintEcranDasboardApporteurDocArticleJour"
+							 title="Imprimer la liste" 
+			onsuccess="window.open('#{request.contextPath}/output?__report=/reports/documents/apporteur/ListeDashboardArticleJour.rptdesign&amp;__format=pdf')"
+			actionListener="#{dashBoardApporteurController.actImprimerListeArticleJour}" styleClass="ui-priority-primary boutonPrint" style="color : white;" icon="fa fa-print"
+			process="@this" ></p:commandButton>
+							</span>	
+
+    								#{dashBoardApporteurController.infosLabelRapportArticlesJourDataTable}
+    						</f:facet>
+    						
+							<p:column styleClass="center" width="20%"
+								filterMatchMode="contains" filterBy="#{a.codeDocument}"
+								sortBy="#{a.codeDocument}">
+								<f:facet name="header">
+									<h:outputText value="Code" />
+								</f:facet>
+<!-- 								<h:outputText value="#{a.codeDocument}"> -->
+<!-- 								</h:outputText> -->
+								<p:commandLink value="#{a.codeDocument}"
+									action="#{ouvertureDocumentBean.detailDocument(ouvertureDocumentBean.recupCodeDocument(a.codeDocument,ouvertureDocumentBean.getTypeDocumentApporteur()))}" 
+									update=":form:tabView" oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+								</p:commandLink>
+							</p:column>
+							
+							<p:column width="20%" filterMatchMode="contains" 
+								filterBy="#{a.libellecArticle}" sortBy="#{a.libellecArticle}">
+								<f:facet name="header">
+									<h:outputText value="Libellé article(s)" />
+								</f:facet>
+								<h:outputText value="#{a.libellecArticle}" />
+							</p:column>
+
+							<p:column styleClass="center" width="15%"
+								filterMatchMode="contains" filterBy="#{a.dateDocument}"
+								sortBy="#{a.dateDocument}">
+								<f:facet name="header">
+									<h:outputText value="Fait le" />
+								</f:facet>
+								<h:outputText value="#{a.dateDocument}">
+									<f:convertDateTime pattern="#{msg.date_pattern}"
+										timeZone="#{msg.time_zone}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="center" width="20%"
+								filterMatchMode="contains" filterBy="#{a.codeTiers}"
+								sortBy="#{a.codeTiers}">
+								<f:facet name="header">
+									<h:outputText value="Code Tiers" />
+								</f:facet>
+
+<!-- 								<h:outputText value="#{a.codeTiers}"> -->
+<!-- 								</h:outputText> -->
+										<p:commandLink value="#{a.codeTiers}"
+											action="#{ouvertureDocumentBean.detailTiers(ouvertureDocumentBean.recupCodetiers(a.codeTiers))}" update=":form:tabView"
+											oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+										</p:commandLink>
+							</p:column>
+
+							<p:column styleClass="center" width="20%"
+								filterMatchMode="contains" filterBy="#{a.nomTiers}"
+								sortBy="#{a.nomTiers}">
+								<f:facet name="header">
+									<h:outputText value="Tiers" />
+								</f:facet>
+								<h:outputText value="#{a.nomTiers}">
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="right" width="15%"
+								filterMatchMode="contains" filterBy="#{a.mtHtLDocument}"
+								sortBy="#{a.mtHtLDocument}">
+								<f:facet name="header">
+									<h:outputText value="HT" />
+								</f:facet>
+								<h:outputText value="#{a.mtHtLDocument}">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column styleClass="right" width="15%"
+								filterMatchMode="contains" filterBy="#{a.mtTtcLDocument}"
+								sortBy="#{a.mtTtcLDocument}">
+								<f:facet name="header">
+									<h:outputText value="TTC" />
+								</f:facet>
+								<h:outputText value="#{a.mtTtcLDocument}">
+										<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+								</h:outputText>
+							</p:column>
+							
+						</p:dataTable>
+						</h:panelGrid>
+						</p:tab>
+						</p:tabView>
+					</div>
+					
+					</div>
+					
+                </div>
+            </div>
+        </div>
+        
+
+    
+</ui:composition>

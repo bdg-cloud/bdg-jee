@@ -1,0 +1,166 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+	
+	<p:menubar styleClass="menu-onglet" >
+		<p:menuitem title="Fermer l'écran" value="Fermer"
+			styleClass="icon icon-close menuitem-fermer-droite" process="@this"	
+			onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())">
+		</p:menuitem>
+	</p:menubar>
+	
+	<div class="ui-g">
+		<div class="ui-g-12">
+			<p:fieldset legend="Paramètres">
+				<p:panelGrid columns="4">
+					<p:outputLabel value="Début" />
+					<p:calendar value="#{etatProduitsFournisseurBean.dateDebut}" showOn="button"
+						navigator="true">
+						<f:convertDateTime pattern="#{msg.date_pattern}"
+							timeZone="#{msg.time_zone}" />
+					</p:calendar>
+					<p:outputLabel value="Fin" />
+					<p:calendar value="#{etatProduitsFournisseurBean.dateFin}" showOn="button"
+						navigator="true">
+						<f:convertDateTime pattern="#{msg.date_pattern}"
+							timeZone="#{msg.time_zone}" />
+					</p:calendar>
+
+			
+					<p:outputLabel value="Fournisseur" />
+					<p:autoComplete value="#{etatProduitsFournisseurBean.taFournisseur}" 
+						converter="entityConverter"
+						completeMethod="#{etatProduitsFournisseurBean.fournisseursAutoComplete}"
+						var="fournisseur" itemLabel="#{fournisseur.codeTiers}" itemValue="#{fournisseur}"
+						forceSelection="true" dropdown="true" placeholder="Fournisseur">					
+						<p:column>
+							<h:outputText value="#{fournisseur.codeTiers}" />
+						</p:column>
+
+						<p:column>
+							<h:outputText value="#{fournisseur.nomTiers}" />
+						</p:column>
+						<p:ajax event="itemSelect"  update="@this" />
+					</p:autoComplete>
+					
+					</p:panelGrid>
+					
+
+				<p:commandButton value="Valider"  
+					actionListener="#{etatProduitsFournisseurBean.actRecherche}"	update="@widgetVar(wvDataTableDocumentProduitsFournisseur)" 
+					oncomplete="PF('wvDataTableDocumentProduitsFournisseur').filter()"/>
+			</p:fieldset>
+		</div>
+	</div>
+
+	<p:panel header="Liste des documents" >
+		<div class="ui-g">
+			<div class="ui-g-12">
+				<p:dataTable value="#{etatProduitsFournisseurBean.modelDocument}"
+					id="dataTableDocumentProduitsFournisseur" var="doc" rowKey="#{doc.dto.id}"
+					widgetVar="wvDataTableDocumentProduitsFournisseur"
+					selection="#{etatProduitsFournisseurBean.selection}" resizableColumns="true"
+					paginator="true"
+					rows="#{msg.modele_datatable_ligne_par_page_debut}"
+					paginatorTemplate="#{msg.modele_datatable_paginator}"
+					rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+					emptyMessage="#{msg.message_datatable_vide}"
+					currentPageReportTemplate="#{msg.modele_datatable_page_courante}">
+
+<!--  					<p:ajax event="filter" listener="#{etatProduitsFournisseurBean.filterListener}"/> -->
+ 
+					<f:facet name="{Exporters}">
+						<h:commandLink>
+							<p:graphicImage library="images" name="excel.png" width="24" />
+							<p:dataExporter type="xls" target="dataTableDocumentProduitsFournisseur"
+								fileName="etat_stocks_entrepot"
+								postProcessor="#{etatProduitsFournisseurBean.postProcessXLS}" />
+						</h:commandLink>
+						
+						<p:commandLink onsuccess="window.open('#{request.contextPath}/output?__report=/reports/stock/ListeEtatProduitFournisseur.rptdesign&amp;__format=pdf')"
+			actionListener="#{etatProduitsFournisseurBean.actImprimerListeEtatProduitFournisseur}" process="@this">
+		                <p:graphicImage  library="images" name="pdf.png"  width="24"/>
+<!-- 		                <p:dataExporter type="pdf" target="dataTableListeTiers" fileName="liste_tiers" /> -->
+		            </p:commandLink>
+		            
+<!-- 						<h:commandLink> -->
+<!-- 							<p:graphicImage library="images" name="pdf.png" width="24" /> -->
+<!-- 							<p:dataExporter type="pdf" target="dataTableDocumentProduitsFournisseur" -->
+<!-- 								fileName="etat_stocks_entrepot" -->
+<!-- 								preProcessor="#{etatProduitsFournisseurBean.preProcessPDF}" /> -->
+<!-- 						</h:commandLink> -->
+
+						<h:commandLink>
+							<p:graphicImage library="images" name="csv.png" width="24" />
+							<p:dataExporter type="csv" target="dataTableDocumentProduitsFournisseur"
+								fileName="etat_stocks_entrepot" options="#{separateurCsvController.csvOptions}" />
+						</h:commandLink>
+
+						<h:commandLink>
+							<p:graphicImage library="images" name="xml.png" width="24" />
+							<p:dataExporter type="xml" target="dataTableDocumentProduitsFournisseur"
+								fileName="etat_stocks_entrepot" />
+						</h:commandLink>
+					</f:facet>
+					<!-- 					<p:column headerText="Exporté" selectionMode="multiple" style="width:40px;text-align:center" /> -->
+
+					<p:column headerText="Code Article"  sortBy="#{doc.dto.codeArticle}" filterBy="#{doc.dto.codeArticle}" filterMatchMode="contains">			
+						<p:commandLink value="#{doc.dto.codeArticle}"
+							action="#{etatProduitsFournisseurBean.detailArticle}"
+							update=":form:tabView"
+							oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');">
+							<f:setPropertyActionListener value="#{doc.taArticle}"
+								target="#{etatProduitsFournisseurBean.detailLigne}" />
+						</p:commandLink>
+					</p:column>
+					
+
+					
+					<p:column headerText="Libellé" sortBy="#{doc.dto.libLDocument}" filterBy="#{doc.dto.libLDocument}"  filterMatchMode="contains">
+						<p:outputLabel value="#{doc.dto.libLDocument}" />
+					</p:column>					
+					
+					<p:column headerText="Lot" sortBy="#{doc.dto.numLot}" filterBy="#{doc.dto.numLot}"  filterMatchMode="contains">
+<!-- 						<p:commandLink value="#{doc.dto.numLot}" -->
+<!-- 							action="#{etatProduitsFournisseurBean.detailLot}" -->
+<!-- 							update=":form:tabView" -->
+<!-- 							oncomplete="activeTabCenter('#{ouvertureDocumentBean.event.cssLgrTab}');"> -->
+<!-- 							<f:setPropertyActionListener value="#{doc.taLot}" -->
+<!-- 								target="#{etatProduitsFournisseurBean.detailLigneLot}" /> -->
+<!-- 						</p:commandLink> -->
+					</p:column>
+					
+					<p:column headerText="Qté 1" sortBy="#{doc.dto.qteLDocument}" filterBy="#{doc.dto.qteLDocument}"  filterMatchMode="contains" >
+						<p:outputLabel value="#{doc.dto.qteLDocument}" styleClass="right"/>
+					</p:column>					
+					
+					<p:column headerText="U 1" sortBy="#{doc.dto.u1LDocument}" filterBy="#{doc.dto.u1LDocument}"  filterMatchMode="contains">
+						<p:outputLabel value="#{doc.dto.u1LDocument}" />
+					</p:column>					
+					
+					<p:column headerText="Qté 2" sortBy="#{doc.dto.qte2LDocument}" filterBy="#{doc.dto.qte2LDocument}"  filterMatchMode="contains">
+						<p:outputLabel value="#{doc.dto.qte2LDocument}" styleClass="right"/>
+					</p:column>					
+					
+					<p:column headerText="U 2" sortBy="#{doc.dto.u2LDocument}" filterBy="#{doc.dto.u2LDocument}"  filterMatchMode="contains">
+						<p:outputLabel value="#{doc.dto.u2LDocument}" />
+					</p:column>					
+<!-- 					<p:columnGroup type="footer"> -->
+<!-- 						<p:row> -->
+<!-- 							<p:column colspan="3" style="text-align:right"	footerText="Totaux:" /> -->
+<!-- 							<p:column footerText="#{etatProduitsFournisseurBean.ligneTotaux.qteLDocument}" /> -->
+<!-- 							<p:column footerText="" /> -->
+<!-- 							<p:column footerText="#{etatProduitsFournisseurBean.ligneTotaux.qte2LDocument}" /> -->
+<!-- 							<p:column footerText="" /> -->
+<!-- 						</p:row> -->
+<!-- 					</p:columnGroup> -->
+				</p:dataTable>
+				
+			</div>
+
+		</div>
+	</p:panel>
+
+</ui:composition>

@@ -1,0 +1,242 @@
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:lgr="http://legrain.fr/ui"
+	xmlns:p="http://primefaces.org/ui">
+
+	<p:column style="width:35%" >
+		<p:outputLabel value="#{c.c.libelleConformite} " ondblclick="PF('wv#{c.c.idConformite}Detail').show();"/>
+		
+<!-- 		<p:outputLabel id="idLabelCtrlBloquant" value=" *" rendered="#{c.c.ctrlBloquant}" style="font-weight: bold;color: red;"/> -->
+		<p:outputLabel id="idLabelCtrlFacultatif" value=" *" rendered="#{c.c.ctrlFacultatif}" style="font-weight: bold;color: green;"/>
+<!-- 		<p:tooltip for="idLabelCtrlBloquant" value="contôle bloquant" position="top" rendered="#{c.c.ctrlBloquant}"/> -->
+		<p:tooltip for="idLabelCtrlFacultatif" value="contôle facultatif" position="top" rendered="#{c.c.ctrlFacultatif}"/>
+		
+		<p:overlayPanel widgetVar="wv#{c.c.idConformite}Detail" dismissable="true" showCloseIcon="true">
+			<p:panelGrid columns="2">
+			
+				<p:outputLabel value="Etat JSF"/>
+				<p:outputLabel value="#{c.action}"/>
+				
+				<p:outputLabel value="ID"/>
+				<p:outputLabel value="#{c.c.idConformite}"/>
+				
+				<p:outputLabel value="Libelle"/>
+				<p:outputLabel value="#{c.c.libelleConformite}"/>
+				
+				<p:outputLabel value="valeurDefaut"/>
+				<p:outputLabel value="#{c.c.valeurDefaut}"/>
+				
+				<p:outputLabel value="deuxiemeValeur"/>
+				<p:outputLabel value="#{c.c.deuxiemeValeur}"/>
+				
+				<p:outputLabel value="valeurCalculee"/>
+				<p:outputLabel value="#{c.c.valeurCalculee}"/>
+				
+				<p:outputLabel value="ctrlFacultatif"/>
+				<p:outputLabel value="#{c.c.ctrlFacultatif}"/>
+				
+				<p:outputLabel value="ctrlBloquant"/>
+				<p:outputLabel value="#{c.c.ctrlBloquant}"/>
+				
+				<p:outputLabel value="supprime"/>
+				<p:outputLabel value="#{c.c.supprime}"/>
+				
+				<p:outputLabel value="taTypeConformite"/>
+				<p:outputLabel value="#{c.c.taTypeConformite.libelle}"/>
+				
+				<p:outputLabel value="taArticle"/>
+				<p:outputLabel value="#{c.c.taArticle.codeArticle}"/>
+				
+				<p:outputLabel value="taBaremes ID" rendered="#{c.c.taBaremes!=null and !c.c.taBaremes.isEmpty()}"/>
+				<p:outputLabel value="#{c.c.taBaremes.iterator().next().idBareme}" rendered="#{c.c.taBaremes!=null and !c.c.taBaremes.isEmpty()}"/>
+				
+				<p:outputLabel value="taBaremes" rendered="#{c.c.taBaremes!=null and !c.c.taBaremes.isEmpty()}"/>
+				<p:outputLabel value="#{c.c.taBaremes.iterator().next().expressionVerifiee}" rendered="#{c.c.taBaremes!=null and !c.c.taBaremes.isEmpty()}"/>
+
+			</p:panelGrid>
+	    	
+	    </p:overlayPanel>
+	</p:column>
+
+	<p:column style="width:35%">
+		<p:panel styleClass="maj-defaut">
+			<p:inputText value="#{c.valeurTexte}" disabled="#{(!controleLotController.modeEcran.dataSetEnModif() or c.disabled) and !affiche_tout}" rendered="#{c.c.taTypeConformite.code eq 'txt'}">
+				 <f:attribute name="c" value="#{c}" />
+				<p:ajax event="blur" update="@(.maj)" listener="#{controleLotController.validateControle}" />
+			</p:inputText>
+
+			<p:inputNumber padControl="false" decimalPlaces="#{c.c.deuxiemeValeur}" value="#{c.valeurTexte}" disabled="#{(!controleLotController.modeEcran.dataSetEnModif() or c.disabled) and !affiche_tout}" rendered="#{c.c.taTypeConformite.code eq 'num'}">
+				 <f:attribute name="c" value="#{c}" />
+				<p:ajax event="blur" update="@(.maj)" listener="#{controleLotController.validateControle}" />
+				<p:ajax event="change" delay="1000" update="@(.maj)" listener="#{controleLotController.validateControle}" />
+			</p:inputNumber>
+
+			<p:selectOneMenu value="#{c.valeurTexte}" disabled="#{(!controleLotController.modeEcran.dataSetEnModif() or c.disabled) and !affiche_tout}" rendered="#{c.c.taTypeConformite.code eq 'liste'}">
+			 	<f:attribute name="c" value="#{c}" />
+			 	<f:selectItem itemLabel="- Sélectionner une valeur -" itemValue="" />
+				<f:selectItems value="#{c.valeurPossible}" />
+				<p:ajax event="change" update="@(.maj)" listener="#{controleLotController.validateControle}" />
+			</p:selectOneMenu>
+
+			<p:selectOneRadio value="#{c.valeurTexte}" disabled="#{(!controleLotController.modeEcran.dataSetEnModif() or c.disabled) and !affiche_tout}" rendered="#{c.c.taTypeConformite.code eq 'choix_s'}">
+				<f:selectItems value="#{c.valeurPossible}" />
+				<f:attribute name="c" value="#{c}" />
+				<p:ajax update="@(.maj)" listener="#{controleLotController.validateControle}" >
+<!-- 						<f:setPropertyActionListener target="#{controleLotController.controleConformiteJSF}" value="#{c}"/> -->
+				</p:ajax>
+			</p:selectOneRadio>
+
+			<p:selectManyCheckbox value="#{c.valeurResultat}" disabled="#{(!controleLotController.modeEcran.dataSetEnModif() or c.disabled) and !affiche_tout}" rendered="#{c.c.taTypeConformite.code eq 'choix_m'}">
+				<f:selectItems value="#{c.valeurPossible}" />
+				<f:attribute name="c" value="#{c}" />
+				<p:ajax event="change" update="@(.maj)" listener="#{controleLotController.validateControle}" />
+			</p:selectManyCheckbox>
+
+			<p:calendar value="#{c.date}" showOn="button" pattern="#{msg.date_pattern}" mask="true" locale="fr" navigator="true" timeZone="#{msg.time_zone}" 
+				disabled="#{(!controleLotController.modeEcran.dataSetEnModif() or c.disabled) and !affiche_tout}" rendered="#{c.c.taTypeConformite.code eq 'date'}">
+			    <f:attribute name="c" value="#{c}" />
+				<p:ajax event="dateSelect" update="@(.maj)" listener="#{controleLotController.validateControle}" />
+				<p:ajax event="change" update="@(.maj)" listener="#{controleLotController.validateControle}" />
+			</p:calendar>
+
+			<p:calendar value="#{c.date}" showOn="button" mask="true" locale="fr" navigator="true" timeZone="#{msg.time_zone}" pattern="#{msg.time_pattern}" timeOnly="true"
+				disabled="#{(!controleLotController.modeEcran.dataSetEnModif() or c.disabled) and !affiche_tout}" rendered="#{c.c.taTypeConformite.code eq 'heure'}">
+				 <f:attribute name="c" value="#{c}" />
+				<p:ajax event="dateSelect" listener="#{controleLotController.validateControle}" />
+				<p:ajax event="blur" update="@(.maj)" listener="#{controleLotController.validateControle}" />
+			</p:calendar>
+
+			<p:inputText value="#{c.valeurTexte}" disabled="#{(!controleLotController.modeEcran.dataSetEnModif() or c.disabled) and !affiche_tout}" rendered="#{c.c.taTypeConformite.code eq 'intercal'}">
+				 <f:attribute name="c" value="#{c}" />
+				<p:ajax event="blur" update="@(.maj)" listener="#{controleLotController.validateControle}" />
+			</p:inputText>
+
+<!-- 					<p:inputText value="#{c.valeurTexte}" disabled="#{!controleLotController.modeEcran.dataSetEnModif()}" rendered="#{c.c.taTypeConformite.code eq 'calc'}"> -->
+			<p:inputText styleClass="maj" value="#{c.valeurTexte}" disabled="true" rendered="#{c.c.taTypeConformite.code eq 'calc'}">
+				<f:attribute name="c" value="#{c}" />
+				<p:ajax event="blur" update="@(.maj)" listener="#{controleLotController.validateControle}" />
+			</p:inputText>
+		</p:panel>
+	</p:column>
+	
+	<p:column style="width:10%" styleClass="center">
+<!-- 					<p:selectBooleanCheckbox disabled="#{(!controleLotController.modeEcran.dataSetEnModif() or c.disabled or (c.c.valeurDefaut==null or c.c.valeurDefaut=='')) and !affiche_tout}"> -->
+<!-- 						<f:attribute name="c" value="#{c}" /> -->
+<!-- 						<p:ajax update="@(.maj),@(.maj-defaut)" listener="#{controleLotController.valideValeurParDefautControle}" /> -->
+<!-- 					</p:selectBooleanCheckbox> -->
+		<p:commandButton value="X" disabled="#{
+						(
+							!controleLotController.modeEcran.dataSetEnModif() 
+							or c.disabled 
+							or (c.c.valeurDefaut==null or c.c.valeurDefaut=='')
+							and !( (c.c.taTypeConformite.code eq 'date') or (c.c.taTypeConformite.code eq 'heure'))
+						) and !affiche_tout 
+						}">
+			<f:attribute name="c" value="#{c}" />
+			<p:ajax update="@(.maj),@(.maj-defaut)" listener="#{controleLotController.valideValeurParDefautControle}" />
+		</p:commandButton>
+	</p:column>
+
+	<p:column style="width:10%">
+		<p:calendar value="#{c.dateControle}" 
+			placeholder="Date du controle"
+			styleClass="maj"
+			disabled="#{(!controleLotController.modeEcran.dataSetEnModif() or c.disabled) and !affiche_tout}"
+			pattern="#{msg.datetime_pattern}" mask="true" locale="fr"
+			navigator="true">
+			<f:attribute name="nomChamp" value="#{const.C_DATE_DEB_RELLE_FABRICATION}" />
+			<!-- 										<p:ajax event="dateSelect" update="@this" /> -->
+			<!-- 										<f:ajax event="blur"  update="@this"/> -->
+			<p:ajax event="dateSelect"/>
+			<p:ajax event="blur"/>
+		</p:calendar>
+	</p:column>
+
+	<p:column style="width:10%">
+		<p:autoComplete 
+			value="#{c.utilisateurControleurDTO}"
+			styleClass="maj"
+			converter="entityConverter"
+			completeMethod="#{controleLotController.utilisateurAutoCompleteDTOLight}"
+			disabled="#{(!controleLotController.modeEcran.dataSetEnModif() or c.disabled) and !affiche_tout}"
+			var="utilisateur" 
+			itemLabel="#{utilisateur.nom}"
+			itemValue="#{utilisateur}" 
+			forceSelection="true" dropdown="true"
+			placeholder="Utilisateur">
+			<p:column>
+				<h:outputText value="#{utilisateur.email}" required="true" requiredMessage="#{msg_diag.alert_champs_obligatoir}" />
+			</p:column>
+
+			<p:column>
+				<h:outputText value="#{utilisateur.nom}" />
+			</p:column>
+
+			<p:column>
+				<h:outputText value="#{utilisateur.prenom}" />
+			</p:column>
+
+			<f:attribute name="nomChamp" value="#{const.C_CODE_TIERS}" />
+			<p:ajax event="itemSelect" listener="#{fabricationController.autcompleteSelection}" update="@this" />
+		</p:autoComplete>
+	</p:column>
+
+	<p:column style="width:10%" styleClass="center">
+		<p:panel styleClass="maj">
+			<div class="ui-g-6">
+<!-- 				<lgr:iconStatusConformite id="dd" codeStatus="#{c.action}"/> -->
+				
+				<p:commandLink id="idActionOk" disabled="#{!controleLotController.modeEcran.dataSetEnModif()}"  rendered="#{c.action eq 'ok'}"
+					actionListener="#{controleLotController.actDialogActionCorrective(c)}" process="@this" update="@form">
+					<lgr:iconStatusConformite id="dd" codeStatus="#{c.action}"/>
+				</p:commandLink>
+		
+				<p:commandLink id="idActionACorriger" 
+					actionListener="#{controleLotController.actDialogActionCorrective(c)}"
+					disabled="#{!controleLotController.modeEcran.dataSetEnModif()}"
+					rendered="#{(c.action eq 'invalide_a_corrige')}" update="@form" process="@this">
+					<lgr:iconStatusConformite id="dd" codeStatus="#{c.action}"/>
+					
+				</p:commandLink>
+		
+				<p:commandLink id="idActionCorrige" 
+					actionListener="#{controleLotController.actDialogActionCorrective(c)}"
+					disabled="#{!controleLotController.modeEcran.dataSetEnModif()}"
+					rendered="#{c.action eq 'ok_apres_correction'}" update="@form">
+					<lgr:iconStatusConformite id="dd" codeStatus="#{c.action}"/>
+				</p:commandLink>
+		
+				<p:commandLink id="idActionNonCorrige"
+					actionListener="#{controleLotController.actDialogActionCorrective(c)}"
+					disabled="#{!controleLotController.modeEcran.dataSetEnModif()}"
+					rendered="#{(c.action eq 'invalide_meme_apres_correction')}"
+					update="@form">
+					<lgr:iconStatusConformite id="dd" codeStatus="#{c.action}"/>
+				</p:commandLink>
+		
+				<p:commandLink id="idActionVide" disabled="#{!controleLotController.modeEcran.dataSetEnModif()}" rendered="#{(c.action eq 'non_fait')}">
+					<lgr:iconStatusConformite id="dd" codeStatus="#{c.action}"/>
+				</p:commandLink>
+			</div>
+			
+			<div class="ui-g-6">
+				<h:panelGroup rendered="#{c.r.taResultatCorrections!=null and !c.r.taResultatCorrections.isEmpty() and c.r.taResultatCorrections.get(0).taResultatConformiteApresActionCorrective!=null}">
+					<p:outputLabel id="idNouvelleValeurEnAttente" value="*" style="font-weight: bold;color: red; margin-left:4px" />
+					<p:tooltip for="idNouvelleValeurEnAttente" value="Nouvelle valeur en attente d'enregistrement : #{c.r.taResultatCorrections.get(0).taResultatConformiteApresActionCorrective.valeurConstatee}" position="top"/>
+				</h:panelGroup>
+				<h:panelGroup rendered="#{c.r.taResultatCorrections!=null 
+						and !c.r.taResultatCorrections.isEmpty() 
+						and c.r.taResultatCorrections.get(0).validationForcee
+						and !((c.action eq 'ok') or (c.action eq 'ok_apres_correction'))}">
+					<p:outputLabel id="idValidationForceeEnAttente" value="*" style="font-weight: bold;color: green; margin-left:4px" />
+					<p:tooltip for="idValidationForceeEnAttente" value="Validation forcee en attente d'enregistrement." position="top"/>
+				</h:panelGroup>
+			</div>
+		</p:panel>
+	</p:column>
+
+</ui:composition>
+

@@ -1,0 +1,241 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:p="http://primefaces.org/ui">
+	
+	<o:importConstants type="fr.legrain.bdg.webapp.app.LgrTab" />
+	
+	<p:commandLink id="listeAvisEcheanceBtn" >
+		<i class="top-submenu-icon fa fa-fw fa-file-text-o"></i>
+<!-- 		<i class="top-bar-badge animated rubberBand"><h:outputText value="#{topBarController.nbClient}"/></i> -->
+<!-- 		<i class="fa fa-book animated swing" aria-hidden="true"></i> -->
+		<span><h:outputText value="Liste des avis d'échéance" /></span>
+	</p:commandLink>
+	
+	<p:overlayPanel id="idListeAvisEcheancePanel" for="listeAvisEcheanceBtn" hideEffect="fade" dynamic="true" 
+		dismissable="true" appendTo="@(body)" widgetVar="wvOverlayListeAvisEcheance" showCloseIcon="true">
+	
+		<h:form>
+		<div class="dashboard-title" style="background:#f6f6f6;">
+              <h:panelGrid columns="3" cellpadding="5">
+            	<h:graphicImage name="dashboard/avisEcheance.svg" library="images" height="35px" style="margin-top:1px;" />
+                <p:outputLabel value="Liste des avis d'échéance" style="font-size:20px;"/>
+              </h:panelGrid>  
+              <p:separator/>
+        </div>
+		<p:menubar styleClass="menu-onglet" widgetVar="wvMenuListeAvisEcheance" id="idMenuListeAvisEcheance">
+			<p:menuitem title="Créer un nouvel avis d'échéance" update=":form:tabView,:form:messages,@widgetVar(wvMenuListeAvisEcheance),@widgetVar(wvDataTableListeAvisEcheance)" 
+				actionListener="#{avisEcheanceController.nouveau}" styleClass="icon icon-insert" disabled="#{avisEcheanceController.etatBouton('inserer')}" oncomplete="PF('wvOverlayListeAvisEcheance').hide();"/>
+	<!-- 	 	<p:menuitem title="Détail" update=":form:tabView,:form:messages" actionListener="#{avisEcheanceController.detail}" styleClass="icon icon-detail" disabled="#{avisEcheanceController.modeEcran.dataSetEnModif()}" oncomplete="PF('wvOverlayListeAvisEcheance').hide();"/> -->
+<!-- 		 	<p:menuitem title="Supprimer les avisEcheance sélectionnés" update=":form:tabView,@widgetVar(wvDataTableListeAvisEcheance),@widgetVar(wvMenuListeAvisEcheance),:form:messages,@form"  -->
+<!-- 		 	actionListener="#{avisEcheanceController.supprimer}" styleClass="icon icon-delete" disabled="#{avisEcheanceController.etatBouton('supprimerListe')}"> -->
+<!-- 		 		<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer les avisEcheance sélectionnés ?" icon="ui-icon-alert" /> -->
+<!-- 		 	</p:menuitem> -->
+		 	<p:menuitem title="Rafraîchir la liste" update="@form,@widgetVar(wvDataTableListeAvisEcheance),@widgetVar(wvMenuListeAvisEcheance),:form:messages" actionListener="#{avisEcheanceController.refresh}" styleClass="icon icon-refresh" disabled="#{avisEcheanceController.modeEcran.dataSetEnModif()}"/>
+		</p:menubar>
+		
+		<p:sticky target="idMenuListeAvisEcheance" />
+	 
+	<p:dataTable id="dataTableListeAvisEcheance" var="avisEcheance"
+				widgetVar="wvDataTableListeAvisEcheance"
+				value="#{avisEcheanceController.values}"
+				rowKey="#{avisEcheance.id}"
+				selection="#{avisEcheanceController.selectedDocumentDTOs}"
+				dblClickSelect="true"
+				styleClass="datatable mt10"
+				resizableColumns="true"
+				paginator="true" 
+				rows="#{msg.modele_datatable_ligne_par_page_debut}"
+				paginatorTemplate="#{msg.modele_datatable_paginator}"
+				rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+				emptyMessage="#{msg.message_datatable_vide}"
+				currentPageReportTemplate="#{msg.modele_datatable_page_courante}"
+				disabledSelection="#{avisEcheanceController.modeEcran.dataSetEnModif()}">
+				
+<!-- 				<p:ajax event="rowDblselect" listener="#{avisEcheanceController.onRowSelect}" update=":form:tabView,:form:messages,@form"/>  -->
+<!-- 				<p:ajax event="rowSelect" listener="#{avisEcheanceController.onRowSelect}" update=":form:tabView,:form:messages" oncomplete="PF('wvOverlayListeAvisEcheance').hide();"/> -->
+				
+				<p:ajax event="rowSelect" delay="#{msg.datatable_rowselect_delay}" listener="#{avisEcheanceController.onRowSelect}" update=":form:tabView,:form:messages" oncomplete="activeTabCenter('#{LgrTab.CSS_CLASS_TAB_PROFORMA}');PF('wvOverlayListeAvisEcheance').hide();scrollToTop();"/>
+				
+<!-- 				<p:ajax event="rowSelectCheckbox" listener="#{renouvellementBean.onRowSelect}" update="@parent:idPrixHTPanier" /> -->
+<!-- 				<p:ajax event="rowUnselectCheckbox" listener="#{renouvellementBean.onRowUnselect}" update="@parent:idPrixHTPanier" /> -->
+<!-- 				<p:ajax event="toggleSelect" listener="#{renouvellementBean.onToggleSelect}" update="@parent:idPrixHTPanier" /> -->
+			
+				<f:facet name="header">  
+           			<h:outputText value="AvisEcheance" />
+           			<span style="float:right;" class="searchbar_list">
+			            <p:outputPanel>
+				                <p:inputText id="globalFilter" onkeyup="PF('wvDataTableListeAvisEcheance').filter()" style="width:150px" placeholder="Rechercher"/>
+				            </p:outputPanel>
+			        </span>
+        		</f:facet>
+
+		  		<f:facet name="{Exporters}">
+		            <h:commandLink>
+		                <p:graphicImage library="images" name="excel.png" width="24"/>
+		                <p:dataExporter type="xls" target="dataTableListeAvisEcheance" fileName="liste_avisEcheance" />
+		            </h:commandLink>
+		 
+		            <p:commandLink onsuccess="window.open('#{request.contextPath}/output?__report=/reports/documents/avisEcheance/ListeDesAvisEcheance.rptdesign&amp;__format=pdf')"
+			actionListener="#{avisEcheanceController.actImprimerListeDesAvisEcheance}" process="@this">
+		                <p:graphicImage  library="images" name="pdf.png"  width="24"/>
+<!-- 		                <p:dataExporter type="pdf" target="dataTableListeTiers" fileName="liste_tiers" /> -->
+		            </p:commandLink>
+
+		 
+		            <h:commandLink>
+		                <p:graphicImage  library="images" name="csv.png"  width="24"/>
+		                <p:dataExporter type="csv" target="dataTableListeAvisEcheance" fileName="liste_avisEcheance" options="#{separateurCsvController.csvOptions}" />
+		            </h:commandLink>
+		 
+		            <h:commandLink>
+		                <p:graphicImage  library="images" name="xml.png"  width="24"/>
+		                <p:dataExporter type="xml" target="dataTableListeAvisEcheance" fileName="liste_avisEcheance" />
+		            </h:commandLink>
+		        </f:facet>
+        
+<!-- 				<p:column sortBy="#{avisEcheance.id}"> -->
+<!-- 					<f:facet name="header"> -->
+<!-- 						<h:outputText value="ID" /> -->
+<!-- 					</f:facet> -->
+<!-- 					<h:outputText value="#{avisEcheance.id}" /> -->
+<!-- 				</p:column> -->
+
+				<p:column selectionMode="multiple" style="width:16px;text-align:center" exportable="false"/>
+<!-- 				<p:column  style="width:16px;text-align:center" exportable="false"/> -->
+			
+				<p:column style="width:16px" exportable="false">
+					<f:facet name="header">
+						<h:outputText value="" />
+					</f:facet>
+					<p:commandButton title="Détail" update=":form:tabView,:form:messages" 
+						action="#{avisEcheanceController.detail}" styleClass="icon icon-detail icon-grille" 
+						disabled="#{avisEcheanceController.modeEcran.dataSetEnModif()}" oncomplete="PF('wvOverlayListeAvisEcheance').hide();">
+						<f:setPropertyActionListener target="#{avisEcheanceController.selectedDocumentDTO}" value="#{avisEcheance}" />
+					</p:commandButton>
+				</p:column>
+
+				<p:column sortBy="#{avisEcheance.codeDocument}" filterBy="#{avisEcheance.codeDocument}" filterMatchMode="contains" >
+					<f:facet name="header">
+						<h:outputText value="Code" />
+					</f:facet>
+					<h:outputText value="#{avisEcheance.codeDocument}" />
+				</p:column>
+				
+				<p:column 	styleClass="center"
+							sortBy="#{avisEcheance.dateDocument}" 
+							filterBy="#{avisEcheanceController.customFormatDate(avisEcheance.dateDocument)}" 
+							filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="Date" />
+					</f:facet>
+					<h:outputText value="#{avisEcheance.dateDocument}">
+						<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+					</h:outputText>
+				</p:column>
+				
+				<p:column sortBy="#{avisEcheance.codeTiers}" filterBy="#{avisEcheance.codeTiers}" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="Code tiers" />
+					</f:facet>
+					<h:outputText value="#{avisEcheance.codeTiers}" />
+				</p:column>
+				
+				<p:column sortBy="#{avisEcheance.nomTiers}" filterBy="#{avisEcheance.nomTiers}" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="Nom" />
+					</f:facet>
+					<h:outputText value="#{avisEcheance.nomTiers}" />
+				</p:column>
+				
+				<p:column sortBy="#{avisEcheance.prenomTiers}" filterBy="#{avisEcheance.prenomTiers}" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="Prénom" />
+					</f:facet>
+					<h:outputText value="#{avisEcheance.prenomTiers}" />
+				</p:column>
+
+				
+				<p:column sortBy="#{avisEcheance.nomEntreprise}" filterBy="#{avisEcheance.nomEntreprise}" filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="Entreprise" />
+					</f:facet>
+					<h:outputText value="#{avisEcheance.nomEntreprise}" />
+				</p:column>
+
+				<p:column 	styleClass="right" 
+							sortBy="#{avisEcheance.netHtCalc}" 
+							filterBy="#{avisEcheance.netHtCalc}" 
+							filterMatchMode="contains"
+							exportFunction="#{separateurCsvController.exportNumber}">
+					<f:facet name="header">
+						<h:outputText value="HT" />
+					</f:facet>
+					<h:outputText value="#{avisEcheance.netHtCalc}" >
+						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+					</h:outputText>
+				</p:column>
+				
+				<p:column 	styleClass="right" 
+							sortBy="#{avisEcheance.netTvaCalc}" 
+							filterBy="#{avisEcheance.netTvaCalc}" 
+							filterMatchMode="contains"
+							exportFunction="#{separateurCsvController.exportNumber}">
+					<f:facet name="header">
+						<h:outputText value="TVA" />
+					</f:facet>
+					<h:outputText value="#{avisEcheance.netTvaCalc}" >
+						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+					</h:outputText>
+				</p:column>
+
+				<p:column 	styleClass="right" 
+							sortBy="#{avisEcheance.netTtcCalc}" 
+							filterBy="#{avisEcheance.netTtcCalc}" 
+							filterMatchMode="contains"
+							exportFunction="#{separateurCsvController.exportNumber}">
+					<f:facet name="header">
+						<h:outputText value="TTC" />
+					</f:facet>
+					<h:outputText value="#{avisEcheance.netTtcCalc}" >
+						<f:convertNumber type="currency" currencySymbol="#{msg.currency_code}" />
+					</h:outputText>
+				</p:column>
+
+				<p:column 	styleClass="center"
+							sortBy="#{avisEcheance.dateEchDocument}" 
+							filterBy="#{avisEcheanceController.customFormatDate(avisEcheance.dateEchDocument)}" 
+							filterMatchMode="contains">
+					<f:facet name="header">
+						<h:outputText value="Echéance" />
+					</f:facet>
+					<h:outputText value="#{avisEcheance.dateEchDocument}" >
+					<f:convertDateTime pattern="#{msg.date_pattern}" timeZone="#{msg.time_zone}"/>
+					</h:outputText>
+				</p:column>
+
+					<p:column style="width:16px" exportable="false">
+						<f:facet name="header">
+							<h:outputText value="" />
+						</f:facet>
+						
+						<p:commandButton title="Supprimer" styleClass="icon-delete icon icon-grille" widgetVar="widgetVarBtnSupprimerAvisEcheanceListe"
+							action="#{avisEcheanceController.actSupprimer}"
+							process="@this"
+							update="@widgetVar(wvDataTableListeAvisEcheance)">
+							<f:setPropertyActionListener target="#{avisEcheanceController.selectedDocumentDTO}" value="#{avisEcheance}" />
+							<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer cet avis d'échéance ?" icon="ui-icon-alert" />
+						</p:commandButton>
+							
+					</p:column>
+
+			</p:dataTable>
+	
+		</h:form>
+	</p:overlayPanel>
+	
+<!-- 	</h:form> -->
+
+</ui:composition>

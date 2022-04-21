@@ -1,0 +1,212 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<p:panel id="typeReceptionFormPrincipal" widgetVar="typeReceptionForm">
+
+		<p class="subtitle">
+			<p:outputLabel value="Gestion des types de réception"
+				rendered="#{dansDialogue == null ? true : false}" />
+		</p>
+		
+		<!-- bouton -->
+		<p:panel id="typeReceptionDataTableF" class="mt30" style="position:relative;"
+			rendered="#{dansDialogue == null ? true : false}">
+			
+			<p:commandButton id="idInsererTypeReception" value="Ajouter" title="Insérer" process="@this"
+				update=":form:tabView,:form:messages,:form" 
+				actionListener="#{typeReceptionController.actDialogTypes}"
+				styleClass="icon-insert icon" >
+				<p:ajax event="dialogReturn" listener="#{typeReceptionController.handleReturnDialogTypes}" 
+					update=":form"/>
+			</p:commandButton>
+			
+<!-- 			<p:commandButton id="typeReceptionInsérer" value="Insérer" process="@this" -->
+<!-- 				disabled="#{typeReceptionController.etatBouton('inserer')}" -->
+<!-- 				update="@widgetVar(varTypeReceptionPanel), @this, @parent:typeReceptionModifier, @parent:typeReceptionSupprimer" -->
+<!-- 				actionListener="#{typeReceptionController.actInserer}" -->
+<!-- 				class="btn-insert btn" /> -->
+
+			<p:commandButton id="idModifierTypeReception" value="Modifier" title="Modifier" process="@this"
+				update=":form:tabView,:form:messages,:form" 
+				actionListener="#{typeReceptionController.actDialogModifier}"
+				styleClass="icon-update icon" >
+				<p:ajax event="dialogReturn" listener="#{typeReceptionController.handleReturnDialogTypes}" update=":form"/>
+			</p:commandButton>
+			
+<!-- 			<p:commandButton id="typeReceptionModifier" value="Modifier" -->
+<!-- 				process="@this" class="btn-update btn" -->
+<!-- 				disabled="#{typeReceptionController.etatBouton('modifier')}" -->
+<!-- 				update="@widgetVar(varTypeReceptionPanel), @parent:typeReceptionInsérer, @this, @parent:typeReceptionSupprimer" -->
+<!-- 				actionListener="#{typeReceptionController.actModifier}" /> -->
+
+			<p:commandButton id="typeReceptionSupprimer" value="Supprimer"
+				class="icon-delete icon menuitem-poubelle-droite"
+				disabled="#{typeReceptionController.etatBouton('supprimer')}"
+				actionListener="#{typeReceptionController.actSupprimer}"
+				update="@widgetVar(wvTypeReceptionDataTable)" process="@this"
+				 >
+<!-- 				type="button" onclick="PF('famillecd1').show()" -->
+				<p:confirm header="Confirmation" message="Etes vous sur de vouloir supprimer cet enregistrement ?" icon="ui-icon-alert" />
+			</p:commandButton>
+
+			<p:commandButton id="typeReceptionFermer" title="Fermer"
+				class="icon-close icon menuitem-fermer-droite" onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())">
+<!-- 				type="button" onclick="PF('famillecd2').show()" -->
+				<p:confirm header="Confirmation" message="#{msg_diag.alert_fermeture_onglet}" icon="ui-icon-alert" disabled="#{!typeReceptionController.modeEcran.dataSetEnModif()}"/>
+			</p:commandButton>
+
+			<p:commandButton id="typeReceptionFermerDialogue" title="Fermer"
+				process="@this" class="icon-close icon menuitem-fermer-droite"
+				actionListener="#{typeReceptionController.actFermerDialog}"
+				rendered="#{dansDialogue != null ? true : false}" />
+
+<!-- 			<p:confirmDialog message="#{msg_diag.alert_suppresion}" -->
+<!-- 				header="Confirmation" severity="alert" appendTo="@(body)" -->
+<!-- 				widgetVar="typeReceptioncd1"> -->
+<!-- 				<p:commandButton value="#{msg_diag.Oui}" update="@form" -->
+<!-- 					oncomplete="PF('typeReceptioncd1').hide()"> -->
+<!-- 					<p:ajax listener="#{typeReceptionController.actSupprimer}" /> -->
+<!-- 				</p:commandButton> -->
+<!-- 				<p:commandButton value="#{msg_diag.Non}" -->
+<!-- 					onclick="PF('typeReceptioncd1').hide();" type="button" /> -->
+<!-- 			</p:confirmDialog> -->
+
+<!-- 			<p:confirmDialog message="#{msg_diag.alert_fermeture_onglet}" -->
+<!-- 				header="Confirmation" severity="alert" widgetVar="typeReceptioncd2" -->
+<!-- 				appendTo="@(body)"> -->
+<!-- 				<p:commandButton value="#{msg_diag.Oui}" -->
+<!-- 					onstart="PF('widgetVarTabView').remove(PF('widgetVarTabView').getActiveIndex())" -->
+<!-- 					oncomplete="PF('typeReceptioncd2').hide()" /> -->
+<!-- 				<p:commandButton value="#{msg_diag.Non}" -->
+<!-- 					onclick="PF('typeReceptioncd2').hide();" type="button" /> -->
+<!-- 			</p:confirmDialog> -->
+		</p:panel>
+
+		<p:dataTable id="typeReceptionDataTable" widgetVar="wvTypeReceptionDataTable" var="table"
+			rendered="#{dansDialogue == null ? true : false}"
+			value="#{typeReceptionController.values}" rowKey="#{table.id}"
+			selectionMode="single" class="datatable"
+			selection="#{typeReceptionController.selection}" paginator="false"
+			rows="#{msg.modele_datatable_ligne_par_page_debut}"
+			paginatorTemplate="#{msg.modele_datatable_paginator}"
+			rowsPerPageTemplate="#{msg.modele_datatable_lignes_par_page}"
+			emptyMessage="#{msg.message_datatable_vide}"
+			currentPageReportTemplate="#{msg.modele_datatable_page_courante}">
+
+			<p:ajax event="rowSelect"
+				listener="#{typeReceptionController.onRowSelect}" />
+
+			<f:facet name="{Exporters}">
+				<h:commandLink>
+					<p:graphicImage library="images" name="excel.png" width="24" />
+					<p:dataExporter type="xls" target="typeReceptionDataTable"
+						fileName="type_typeReception" />
+				</h:commandLink>
+
+				<h:commandLink>
+					<p:graphicImage library="images" name="pdf.png" width="24" />
+					<p:dataExporter type="pdf" target="typeReceptionDataTable"
+						fileName="type_typeReception" />
+				</h:commandLink>
+
+				<h:commandLink>
+					<p:graphicImage library="images" name="csv.png" width="24" />
+					<p:dataExporter type="csv" target="typeReceptionDataTable"
+						fileName="type_typeReception" options="#{separateurCsvController.csvOptions}" />
+				</h:commandLink>
+
+				<h:commandLink>
+					<p:graphicImage library="images" name="xml.png" width="24" />
+					<p:dataExporter type="xml" target="typeReceptionDataTable"
+						fileName="type_typeReception" />
+				</h:commandLink>
+
+				<!-- 				<p:commandButton value="Imprimer" styleClass="btn-print btn" -->
+				<!-- 						onsuccess="window.open('#{request.contextPath}/output?__report=/reports/dima_tmp1.rptdesign&amp;__format=pdf')" -->
+				<!-- 						actionListener="#{typeReceptionController.actImprimer}" -->
+				<!-- 						disabled="#{typeReceptionController.etatBouton('imprimer')}"/> -->
+			</f:facet>
+
+			<p:column sortBy="#{table.codeTReception}">
+<!-- 				filterBy="#{table.codeTypeReception}" filterMatchMode="contains"> -->
+				<f:facet name="header">
+					<h:outputText value="Code" />
+				</f:facet>
+				<h:outputText value="#{table.codeTReception}" />
+			</p:column>
+			<p:column sortBy="#{table.liblTReception}">
+<!-- 			 filterBy="#{table.libelle}" filterMatchMode="contains"> -->
+				<f:facet name="header">
+					<h:outputText value="Libellé" />
+				</f:facet>
+				<h:outputText value="#{table.liblTReception}" />
+			</p:column>
+		</p:dataTable>
+	</p:panel>
+	<!-- 	 -->
+
+	<p:messages id="typeReceptionMessages" showDetail="true" autoUpdate="true"
+		closable="true" />
+
+	<p:panel id="typeReceptionPanel" visible="true" widgetVar="varTypeReceptionPanel">
+		<p:panel onLoad="reset()" resizable="false" id="typeReceptionPanelCache"
+			rendered="#{typeReceptionController.modeEcran.dataSetEnModif()}">
+			<!-- 			<h:form id="typeReceptionFormCreation"> -->
+			<f:validateBean disabled="true">
+				<div class="ui-grid ui-grid-responsive" id="typeReceptionGridResp">
+					<div class="ui-grid-row">
+						<div class="ui-grid-col-4">
+							<h:outputText value="Code :"></h:outputText>
+						</div>
+						<div class="ui-grid-col-8">
+							<h:inputText id="idTxtCodeTypeReception" value="#{typeReceptionController.nouveau.codeTReception}" styleClass="Input50"
+								required="true"
+								requiredMessage="#{msg_diag.alert_champs_obligatoir}" validator="#{typeReceptionController.validateObject}">
+									<f:attribute name="nomChamp" value="#{const.C_CODE_T_RECEPTION}" />
+									<p:ajax event="blur" update="@this"/>
+							</h:inputText>
+						</div>
+					</div>
+					<div class="ui-grid-row">
+
+						<div class="ui-grid-col-4">
+							<h:outputText value="Libelle :"></h:outputText>
+						</div>
+						<div class="ui-grid-col-8">
+							<h:inputText id="idTxtLibelleTypeReception" value="#{typeReceptionController.nouveau.liblTReception}" styleClass="Input100"
+								required="true"
+								requiredMessage="#{msg_diag.alert_champs_obligatoir}" validator="#{typeReceptionController.validateObject}">
+									<f:attribute name="nomChamp" value="#{const.C_LIBL_T_RECEPTION}" />
+									<p:ajax event="blur" update="@this"/>
+							</h:inputText>
+						</div>
+					</div>
+					<div class="ui-grid-row">
+						<div class="ui-grid-col-12 text-center">
+							<p:commandButton id="idEnregistrerTypeReception" value="Enregistrer" styleClass="btn-save btn"
+								disabled="#{typeReceptionController.etatBouton('enregistrer')}"
+								update="@widgetVar(typeReceptionForm), @widgetVar(varTypeReceptionPanel)"
+								actionListener="#{typeReceptionController.actEnregistrer}" />
+							
+							<p:commandButton id="typeReceptionAnnuler" value="Annuler" styleClass="btn-cancel btn"
+								disabled="#{typeReceptionController.etatBouton('annuler')}"
+								update="@widgetVar(typeReceptionForm), @widgetVar(varTypeReceptionPanel)"
+								actionListener="#{typeReceptionController.actAnnuler}" 
+								rendered="#{dansDialogue != null ? false : true}" />
+
+							<p:commandButton id="typeReceptionAnnulerDialogue" value="Annuler"
+								styleClass="btn-cancel btn" process="@this"
+								disabled="#{typeReceptionController.etatBouton('annuler')}"
+								actionListener="#{typeReceptionController.actFermerDialog}"
+								rendered="#{dansDialogue != null ? true : false}" />
+						</div>
+					</div>
+				</div>
+			</f:validateBean>
+			<!-- 			</h:form> -->
+		</p:panel>
+	</p:panel>
+</ui:composition>

@@ -1,0 +1,406 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>fr.legrain</groupId>
+	<artifactId>fr.legrain.bdg.parent</artifactId>
+
+	<packaging>pom</packaging>
+	<version>0.0.1-SNAPSHOT</version>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<tycho-version>1.4.0</tycho-version>
+		<!-- <tycho-version>0.26.0</tycho-version> -->
+		<!-- <tycho-version>0.21.0</tycho-version> -->
+		<!-- <tycho-version>0.18.1</tycho-version> -->
+
+		<!-- maven-compiler-plugin -->
+		<maven.compiler.target>1.8</maven.compiler.target>
+		<maven.compiler.source>1.8</maven.compiler.source>
+
+		<!-- other plugin versions -->
+		<version.compiler.plugin>2.3.1</version.compiler.plugin>
+
+		<kepler-repo.url>http://download.eclipse.org/releases/kepler</kepler-repo.url>
+		<neon-repo.url>http://download.eclipse.org/releases/neon</neon-repo.url>
+
+	</properties>
+
+	<repositories>
+
+		<repository>
+			<id>neon</id>
+			<!-- <url>${kepler-repo.url}</url> -->
+			<!-- <url>${neon-repo.url}</url> -->
+			<url>https://download.eclipse.org/releases/2019-06/</url>
+			<layout>p2</layout>
+		</repository>
+
+		<repository>
+			<!-- wiki.eclipse.org/Tycho/How_Tos/Dependency_on_pom-first_artifacts#It_is_not_possible_to_mix_pom-first_and_manifest-first_projects_in_the_same_reactor_build -->
+			<id>orbit</id>
+			<layout>p2</layout>
+			<url>http://download.eclipse.org/tools/orbit/downloads/drops/R20130517111416/repository/</url>
+		</repository>
+
+		<repository>
+			<id>jboss</id>
+			<url>https://repository.jboss.org/nexus/content/groups/public-jboss/</url>
+		</repository>
+
+		<!-- <repository> -->
+		<!-- <id>glassfish</id> -->
+		<!-- <name>Glassfish</name> -->
+		<!-- <url>https://repository.jboss.org/nexus/content/repositories/glassfish</url> -->
+		<!-- </repository> -->
+
+		<repository>
+			<id>p2-babel</id>
+			<layout>p2</layout>
+			<!-- <url>http://download.eclipse.org/technology/babel/update-site/R0.11.1/kepler</url> -->
+			<url>http://archive.eclipse.org/technology/babel/update-site/R0.11.1/kepler/</url>
+		</repository>
+
+	</repositories>
+
+	<profiles>
+
+		<profile>
+			<id>prod</id>
+			<activation>
+				<!-- this profile is active by default -->
+				<activeByDefault>true</activeByDefault>
+				<!-- activate if system properties 'env=dev' -->
+				<property>
+					<name>env</name>
+					<value>prod</value>
+				</property>
+			</activation>
+			<modules>
+				<module>../Lib</module>
+				<module>../org.hibernate</module>
+				<module>../fr.legrain.bdg.lib.osgi</module>
+<!-- 				<module>../../lib-legrain/fr.legrain.bdg.lib.osgi</module> -->
+				<module>../fr.legrain.bdg.lib.server.osgi</module>
+				<module>../fr.legrain.bdg.edition.osgi</module>
+				<module>../fr.legrain.bdg.ejb.lib.osgi</module>
+				<module>../fr.legrain.bdg.preferences.osgi</module>
+				<module>../fr.legrain.bdg.model.osgi</module>
+				<module>../fr.legrain.autorisation.xml.osgi</module>
+				<module>../fr.legrain.autorisations.ws</module>
+				<module>../fr.legrain.moncompte.ws</module>
+
+				<module>../fr.legrain.gwihostingfr.api.ws</module>
+
+				<module>../fr.legrain.bdg.ws</module>
+				<module>../fr.legrain.bdg.ws.rest.client</module>
+
+				<module>../fr.legrain.bdg.service.interface.osgi</module>
+				<module>../fr.legrain.bdg.ejb</module>
+				<module>../fr.legrain.bdg.webapp</module>
+				<module>../fr.legrain.bdg.welcome.webapp</module>
+				<!-- <module>../fr.legrain.autorisations.webapp</module> -->
+				<!-- <module>../fr.legrain.moncompte.admin.webapp</module> -->
+				<!-- <module>../fr.legrain.moncompte.client.webapp</module> -->
+				<module>../fr.legrain.bdg.ear</module>
+			</modules>
+		</profile>
+
+		<profile>
+			<id>dev</id>
+			<modules>
+				<module>../Lib</module>
+				<module>../org.hibernate</module>
+				<!-- <module>../fr.legrain.bdg.lib.osgi</module> -->
+				<module>../../lib-legrain/fr.legrain.bdg.lib.osgi</module>
+				<module>../fr.legrain.bdg.lib.server.osgi</module>
+				<module>../fr.legrain.bdg.edition.osgi</module>
+				<module>../fr.legrain.bdg.ejb.lib.osgi</module>
+				<module>../fr.legrain.bdg.preferences.osgi</module>
+				<module>../fr.legrain.bdg.model.osgi</module>
+				<module>../fr.legrain.autorisation.xml.osgi</module>
+				<module>../fr.legrain.autorisations.ws</module>
+				<module>../fr.legrain.moncompte.ws</module>
+
+				<module>../fr.legrain.gwihostingfr.api.ws</module>
+
+				<module>../fr.legrain.bdg.ws</module>
+				<module>../fr.legrain.bdg.ws.rest.client</module>
+
+				<module>../fr.legrain.bdg.service.interface.osgi</module>
+				<module>../fr.legrain.bdg.ejb</module>
+				<module>../fr.legrain.bdg.webapp</module>
+				<module>../fr.legrain.bdg.welcome.webapp</module>
+				<!-- <module>../fr.legrain.autorisations.webapp</module> -->
+				<!-- <module>../fr.legrain.moncompte.admin.webapp</module> -->
+				<!-- <module>../fr.legrain.moncompte.client.webapp</module> -->
+				<module>../fr.legrain.bdg.ear</module>
+			</modules>
+		</profile>
+
+	</profiles>
+
+	<!-- <modules> <module>../fr.legrain.bdg.ejb.mvn.osgi</module> </modules> -->
+
+	<dependencies>
+		<!-- <dependency> -->
+		<!-- <groupId>org.jboss.arquillian.testng</groupId> -->
+		<!-- <artifactId>arquillian-testng-container</artifactId> -->
+		<!-- <scope>test</scope> -->
+		<!-- </dependency> -->
+
+		<dependency>
+			<groupId>org.jboss.arquillian.junit</groupId>
+			<artifactId>arquillian-junit-container</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.wildfly.arquillian</groupId>
+			<artifactId>wildfly-arquillian-container-managed</artifactId>
+			<version>2.0.2.Final</version>
+			<scope>test</scope>
+		</dependency>
+
+		<!-- <dependency> -->
+		<!-- <groupId>org.wildfly</groupId> -->
+		<!-- <artifactId>wildfly-arquillian-container-managed</artifactId> -->
+		<!-- <version>8.2.0.Final</version> -->
+		<!-- <scope>test</scope> -->
+		<!-- </dependency> -->
+
+
+
+		<!-- <dependency> -->
+		<!-- <groupId>org.wildfly.arquillian</groupId> -->
+		<!-- <artifactId>wildfly-arquillian-container-remote</artifactId> -->
+		<!-- <version>2.0.2.Final</version> -->
+		<!-- <scope>test</scope> -->
+		<!-- </dependency> -->
+
+		<!-- <dependency> -->
+		<!-- <groupId>org.wildfly.arquillian</groupId> -->
+		<!-- <artifactId>wildfly-arquillian-container-embedded</artifactId> -->
+		<!-- <version>2.0.2.Final</version> -->
+		<!-- <scope>test</scope> -->
+		<!-- </dependency> -->
+
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-simple</artifactId>
+			<version>1.6.4</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.17</version>
+		</dependency>
+
+		<!-- <dependency> -->
+		<!-- <groupId>org.wildfly</groupId> -->
+		<!-- <artifactId>wildfly-embedded</artifactId> -->
+		<!-- <version>8.2.0.Final</version> -->
+		<!-- </dependency> -->
+
+		<dependency>
+			<groupId>org.jboss.arquillian.graphene</groupId>
+			<artifactId>graphene-webdriver</artifactId>
+			<version>2.1.0.Final</version>
+			<type>pom</type>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.jboss.shrinkwrap.resolver</groupId>
+			<artifactId>shrinkwrap-resolver-impl-maven</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>xerces</groupId>
+			<artifactId>xercesImpl</artifactId>
+			<version>2.11.0</version>
+		</dependency>
+
+	</dependencies>
+
+	<dependencyManagement>
+		<dependencies>
+
+			<!-- 24/01/2017 Pour être pris en compte, doit être placé avant "arquillian-drone-bom" 
+				Par défaut (en commentaire), utilise selenium 2.53.1 (firefox <= 47.0.1) 
+				==> WebDriver A partir de firefox 48, il faut utilisé selenium 3.0 ==> Marionette 
+				(ne gère pas encore moveToElement, donc très limité) Pas de prblème particulier 
+				pour les autres navigateurs -->
+			<!-- <dependency> -->
+			<!-- <groupId>org.jboss.arquillian.selenium</groupId> -->
+			<!-- <artifactId>selenium-bom</artifactId> -->
+			<!-- <version>3.0.1</version> -->
+			<!-- <type>pom</type> -->
+			<!-- <scope>import</scope> -->
+			<!-- </dependency> -->
+
+			<dependency>
+				<groupId>org.jboss.arquillian</groupId>
+				<artifactId>arquillian-bom</artifactId>
+				<version>1.1.12.Final</version>
+				<scope>import</scope>
+				<type>pom</type>
+			</dependency>
+
+			<!-- <dependency> -->
+			<!-- <groupId>org.wildfly.bom</groupId> -->
+			<!-- <artifactId>wildfly-javaee7</artifactId> -->
+			<!-- <version>10.1.1.Final</version> -->
+			<!-- <scope>import</scope> -->
+			<!-- <type>pom</type> -->
+			<!-- </dependency> -->
+			<!-- https://mvnrepository.com/artifact/org.wildfly.bom/wildfly-javaee8 -->
+			<dependency>
+				<groupId>org.wildfly.bom</groupId>
+				<artifactId>wildfly-javaee8</artifactId>
+				<version>17.0.1.Final</version>
+				<scope>import</scope>
+				<type>pom</type>
+			</dependency>
+
+
+			<dependency>
+				<groupId>org.jboss.arquillian.extension</groupId>
+				<artifactId>arquillian-drone-bom</artifactId>
+				<version>2.0.1.Final</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+	<build>
+    
+		<plugins>
+
+			<plugin>
+				<!-- Surefire est spécialisé pour l'exécution des test unitaire -->
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.19.1</version>
+				<!-- Pendant la phase de test "standard" fait tous les tests unitaires 
+					unitaire uniquement -->
+				<!-- Pendant la phase integration-test fait tous les tests d'intégration 
+					uniquement -->
+				<configuration>
+					<systemProperties>
+						<property>
+							<name>java.util.logging.manager</name>
+							<value>org.jboss.logmanager.LogManager</value>
+						</property>
+					</systemProperties>
+					<excludes>
+						<exclude>**/fr.legrain.bdg.test.arquillian.integration/*.java</exclude>
+					</excludes>
+				</configuration>
+				<!-- <executions> -->
+				<!-- <execution> -->
+				<!-- <id>integration-test</id> -->
+				<!-- <goals> -->
+				<!-- <goal>test</goal> -->
+				<!-- </goals> -->
+				<!-- <phase>integration-test</phase> -->
+				<!-- <configuration> -->
+				<!-- <excludes> -->
+				<!-- <exclude>none</exclude> -->
+				<!-- </excludes> -->
+				<!-- <includes> -->
+				<!-- <include>**/fr.legrain.bdg.test.arquillian.integration/*.java</include> -->
+				<!-- </includes> -->
+				<!-- </configuration> -->
+				<!-- </execution> -->
+				<!-- </executions> -->
+			</plugin>
+
+			<!-- Failsafe est spécialisé pour l'exécution des tests d'intégration -->
+			<!-- <plugin> -->
+			<!-- <groupId>org.apache.maven.plugins</groupId> -->
+			<!-- <artifactId>maven-failsafe-plugin</artifactId> -->
+			<!-- <version>2.19.1</version> -->
+			<!-- <executions> -->
+			<!-- <execution> -->
+			<!-- <goals> -->
+			<!-- <goal>integration-test</goal> -->
+			<!-- <goal>verify</goal> -->
+			<!-- </goals> -->
+			<!-- </execution> -->
+			<!-- </executions> -->
+			<!-- </plugin> -->
+
+			<plugin>
+				<!-- enable tycho build extension -->
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-maven-plugin</artifactId>
+				<version>${tycho-version}</version>
+				<extensions>true</extensions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-compiler-plugin</artifactId>
+				<version>${tycho-version}</version>
+				<configuration>
+					<compilerArgument>-warn:-forbidden</compilerArgument>
+					<compilerArgument>-err:-forbidden</compilerArgument>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>target-platform-configuration</artifactId>
+				<version>${tycho-version}</version>
+				<configuration>
+					<!-- <pomDependencies>consider</pomDependencies> -->
+					<environments>
+						<environment>
+							<os>linux</os>
+							<ws>gtk</ws>
+							<arch>x86_64</arch>
+						</environment>
+					</environments>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>${version.compiler.plugin}</version>
+				<configuration>
+					<source>${maven.compiler.source}</source>
+					<target>${maven.compiler.target}</target>
+				</configuration>
+			</plugin>
+			
+<!-- 			<plugin> -->
+<!-- 	            <groupId>org.apache.maven.plugins</groupId> -->
+<!-- 	            <artifactId>maven-help-plugin</artifactId> -->
+<!-- 	            <version>3.2.0</version> -->
+<!-- 	            <executions> -->
+<!-- 	                <execution> -->
+<!-- 	                    <id>show-profiles</id> -->
+<!-- 	                    <phase>compile</phase> -->
+<!-- 	                    <goals> -->
+<!-- 	                        <goal>active-profiles</goal> -->
+<!-- 	                    </goals> -->
+<!-- 	                </execution> -->
+<!-- 	            </executions> -->
+<!-- 	        </plugin> -->
+
+		    <!-- To use the plugin goals in your POM or parent POM -->
+	      <plugin>
+	        <groupId>org.codehaus.mojo</groupId>
+	        <artifactId>license-maven-plugin</artifactId>
+	        </plugin>
+	        
+		</plugins>
+	</build>
+
+
+</project>
