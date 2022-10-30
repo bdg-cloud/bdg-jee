@@ -28,6 +28,13 @@ pg_dropcluster 12 main --stop
 pg_upgradecluster 10 main
 pg_dropcluster 10 main --stop
 
+#################
+systemctl stop postgresql
+pg_dropcluster 14 main --stop
+pg_upgradecluster 12 main
+pg_dropcluster 12 main --stop
+#################
+
  environ 10 minutes
  
 Il peut être utile de lancer un VACUUM FULL sur la base
