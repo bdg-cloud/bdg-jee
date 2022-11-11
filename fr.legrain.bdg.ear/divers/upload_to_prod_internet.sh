@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source $WORKSPACE/svn_legrain-secrets/fr.legrain.secrets/bdg/bdg-cloud-serveur/deploiement/param_prod.sh
+source "$WORKSPACE/svn_legrain-secrets/fr.legrain.secrets/bdg/bdg-cloud-serveur/deploiement/param_prod.sh"
 
 echo "Début envoi des fichier pour la mise à jour de l'application sur internet ====== $(date)"
 
