@@ -576,23 +576,23 @@ public class DatabaseService implements IDatabaseServiceLocal {
 			}
 			
 			//Appel du webservice utilisant les API de Gandi pour créer le nouveau sous domaine dans les DNS du domaine
-			if(ip!=null && !ip.equals("") && !ip.equals("127.0.0.1")) { //on est à prioris bien sur internet et pas sur un poste de développement
-//				GwiWebServiceClientCXF ws = new GwiWebServiceClientCXF();
+//			if(ip!=null && !ip.equals("") && !ip.equals("127.0.0.1")) { //on est à prioris bien sur internet et pas sur un poste de développement
+////				GwiWebServiceClientCXF ws = new GwiWebServiceClientCXF();
+////				System.out.println("Création du sous domaine dans les DNS ...");
+////				if(ws.creerSousDomaine(nomDomaine, nomDossier, ip)) {
+////					System.out.println("Le sous domaine a bien été créé dans les DNS");
+////				} else {
+////					System.out.println("Erreur pendant l'enregistrement du sous domaine dans les DNS");
+////				}
+//				
+//				GandiAPIWebServiceClientCXF ws = new GandiAPIWebServiceClientCXF();
 //				System.out.println("Création du sous domaine dans les DNS ...");
-//				if(ws.creerSousDomaine(nomDomaine, nomDossier, ip)) {
+//				if(ws.registerDNSSubDomain(nomDomaine, nomDossier, ip)) {
 //					System.out.println("Le sous domaine a bien été créé dans les DNS");
 //				} else {
 //					System.out.println("Erreur pendant l'enregistrement du sous domaine dans les DNS");
 //				}
-				
-				GandiAPIWebServiceClientCXF ws = new GandiAPIWebServiceClientCXF();
-				System.out.println("Création du sous domaine dans les DNS ...");
-				if(ws.registerDNSSubDomain(nomDomaine, nomDossier, ip)) {
-					System.out.println("Le sous domaine a bien été créé dans les DNS");
-				} else {
-					System.out.println("Erreur pendant l'enregistrement du sous domaine dans les DNS");
-				}
-			}
+//			}
 
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -676,23 +676,23 @@ public class DatabaseService implements IDatabaseServiceLocal {
 			}
 			
 			//Appel du webservice utilisant les API de Gandi pour supprimer le nouveau sous domaine dans les DNS du domaine
-			if(ip!=null && !ip.equals("") && !ip.equals("127.0.0.1")) { //on est à prioris bien sur internet et pas sur un poste de développement
-//				GwiWebServiceClientCXF ws = new GwiWebServiceClientCXF();
+//			if(ip!=null && !ip.equals("") && !ip.equals("127.0.0.1")) { //on est à prioris bien sur internet et pas sur un poste de développement
+////				GwiWebServiceClientCXF ws = new GwiWebServiceClientCXF();
+////				System.out.println("Création du sous domaine dans les DNS ...");
+////				if(ws.supprimerSousDomaine(nomDomaine, nomDossier)) {
+////					System.out.println("Le sous domaine a bien été créé dans les DNS");
+////				} else {
+////					System.out.println("Erreur pendant l'enregistrement du sous domaine dans les DNS");
+////				}
+//				
+//				GandiAPIWebServiceClientCXF ws = new GandiAPIWebServiceClientCXF();
 //				System.out.println("Création du sous domaine dans les DNS ...");
-//				if(ws.supprimerSousDomaine(nomDomaine, nomDossier)) {
+//				if(ws.deleteDNSSubdomain(nomDomaine, nomDossier)) {
 //					System.out.println("Le sous domaine a bien été créé dans les DNS");
 //				} else {
 //					System.out.println("Erreur pendant l'enregistrement du sous domaine dans les DNS");
 //				}
-				
-				GandiAPIWebServiceClientCXF ws = new GandiAPIWebServiceClientCXF();
-				System.out.println("Création du sous domaine dans les DNS ...");
-				if(ws.deleteDNSSubdomain(nomDomaine, nomDossier)) {
-					System.out.println("Le sous domaine a bien été créé dans les DNS");
-				} else {
-					System.out.println("Erreur pendant l'enregistrement du sous domaine dans les DNS");
-				}
-			}
+//			}
 
 		} catch (Exception ex) {
 			ex.printStackTrace();
