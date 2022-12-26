@@ -96,6 +96,7 @@ psql -U $PGUSER -h localhost -d login_db -c "INSERT INTO ta_r_role_utilisateur (
 ###
 ##Création d'un compte LEGRAIN pour la maintenance
 LOGIN_ADMIN_LEGRAIN_LOGINDB=$LOGIN_ADMIN_LEGRAIN"_"$NOM_DOSSIER
+MDP_ADMIN_LEGRAIN=$(echo -n $MDP_ADMIN_LEGRAIN | openssl dgst -sha256 -binary | openssl base64)
 
  echo "Création du compte d'administration pour LeGrain dans $NOM_DOSSIER"
   #Création de l'utilisateur par défaut
