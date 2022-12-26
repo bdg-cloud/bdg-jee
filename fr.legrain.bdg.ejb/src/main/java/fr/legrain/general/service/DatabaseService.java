@@ -540,7 +540,7 @@ public class DatabaseService implements IDatabaseServiceLocal {
 
 			//String executeCmd1 = "/donnees/Projet/Java/Eclipse/GestionCommerciale_branche_2_0_13_JEE_E43/fr.legrain.bdg.ear/divers/ajout_dossier.sh "+nomDossier+" "+jbossHome+" "+nomDomaine+" "+prefixeSousDomaine;
 			//String executeCmd1 = "/tmp/tmp_ajout_dossier.sh "+nomDossier+" "+nomDossierPosgres+" "+jbossHome+" "+nomDomaine+" '"+prefixeSousDomaine+"' "+dbUserName+" "+dbPassword+"' "+loginlgr+" "+pwdlgr;
-			String executeCmd1 = "/tmp/tmp_ajout_dossier.sh "+nomDossier+" "+nomDossierPosgres+" "+jbossHome+" "+nomDomaine+" '"+prefixeSousDomaine+"' "+loginlgr+" "+pwdlgr+" "+dbUserName+" "+dbPassword;
+			String executeCmd1 = "/tmp/tmp_ajout_dossier.sh "+nomDossier+" "+nomDossierPosgres+" "+jbossHome+" "+nomDomaine+" '"+prefixeSousDomaine+"' "+dbUserName+" "+dbPassword+" "+loginlgr+" "+pwdlgr;
 			//		String executeCmd1 = "pg_dump -h localhost -p 5432 -U "+dbUserName+" -F c -b -v -f "+cheminDump+"/"+tagDump+dbName1+"_$(date +%Y-%m-%d_%H-%M-%S).backup "+ dbName1;
 			
 			if(login!=null && password!=null) {
